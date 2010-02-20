@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.features.karaf</groupId>
+    <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
+  <packaging>pom</packaging>
+
+  <name>openHAB Add-ons :: Features :: Karaf :: Add-ons External</name>
+  <description>openHAB Add-ons External</description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifact</id>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>src/main/resources/conf/dynamodb.cfg</file>
+                  <type>cfg</type>
+                  <classifier>dynamodb</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/conf/influxdb.cfg</file>
+                  <type>cfg</type>
+                  <classifier>influxdb</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/conf/jdbc.cfg</file>
+                  <type>cfg</type>
+                  <classifier>jdbc</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/conf/jpa.cfg</file>
+                  <type>cfg</type>
+                  <classifier>jpa</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/conf/mapdb.cfg</file>
+                  <type>cfg</type>
+                  <classifier>mapdb</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/conf/rrd4j.cfg</file>
+                  <type>cfg</type>
+                  <classifier>rrd4j</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

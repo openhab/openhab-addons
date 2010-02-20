@@ -1,0 +1,23 @@
+os: linux
+dist: focal
+
+language: java
+jdk: openjdk11
+
+cache:
+  directories:
+  - $HOME/.m2
+
+before_cache:
+  # remove resolver-status.properties, they change with each run and invalidate the cache
+  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+
+notifications:
+    webhooks: https://www.travisbuddy.com/
+
+travisBuddy:
+    insertMode: update
+    successBuildLog: true
+
+install: true
+script: ./buildci.sh "$TRAVIS_COMMIT_RANGE"
