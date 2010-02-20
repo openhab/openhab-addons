@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="pv-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>PV Output</label>
+		<description>Photovoltaic Power Production</description>
+	</channel-type>
+	<channel-type id="battery-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>Battery Discharge</label>
+		<description>Battery discharges and provides Power</description>
+	</channel-type>
+	<channel-type id="battery-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge</label>
+		<description>Battery charges and consumes Power</description>
+	</channel-type>
+	<channel-type id="household-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Household Consumption</label>
+		<description>Household consuming Power</description>
+	</channel-type>
+	<channel-type id="grid-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Consumption</label>
+		<description>Grid Power is needed in order to satisfy your overall Power consumption</description>
+	</channel-type>
+	<channel-type id="grid-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Supply</label>
+		<description>More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid</description>
+	</channel-type>
+	<channel-type id="external-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>External Power Supply</label>
+		<description>Power produced by an external device which is attached to your E3DC device</description>
+	</channel-type>
+	<channel-type id="wallbox-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox Power Consumption</label>
+		<description>Power consumption of attached Wallboxes</description>
+	</channel-type>
+	<channel-type id="wallbox-pv-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox PV Power Consumption</label>
+		<description>Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes</description>
+	</channel-type>
+	<channel-type id="autarky-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky</label>
+		<description>Your current Autarky Level in Percent</description>
+	</channel-type>
+	<channel-type id="self-consumption-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumtion</label>
+		<description>Your current Photovoltaic Self Consumption Level in Percent</description>
+	</channel-type>
+	<channel-type id="battery-soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State Of Charge</label>
+		<description>Charge Level of your attached Battery in Percent</description>
+	</channel-type>
+</thing:thing-descriptions>

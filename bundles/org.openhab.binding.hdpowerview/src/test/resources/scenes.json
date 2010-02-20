@@ -1,0 +1,50 @@
+{
+	"sceneIds": [
+		18097,
+		22663,
+		35821,
+		6551
+	],
+	"sceneData": [
+		{
+			"roomId": 59611,
+			"name": "RG9vciBPcGVu",
+			"colorId": 6,
+			"iconId": 160,
+			"networkNumber": 19,
+			"id": 18097,
+			"order": 3,
+			"hkAssist": false
+		},
+		{
+			"roomId": 59611,
+			"name": "SGVhcnQ=",
+			"colorId": 15,
+			"iconId": 49,
+			"networkNumber": 3,
+			"id": 22663,
+			"order": 0,
+			"hkAssist": false
+		},
+		{
+			"roomId": 59611,
+			"name": "Q2xvc2U=",
+			"colorId": 5,
+			"iconId": 31,
+			"networkNumber": 8,
+			"id": 35821,
+			"order": 2,
+			"hkAssist": false
+		},
+		{
+			"roomId": 59611,
+			"name": "T3Blbg==",
+			"colorId": 10,
+			"iconId": 95,
+			"networkNumber": 20,
+			"id": 6551,
+			"order": 1,
+			"hkAssist": false
+		}
+	]
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="emergency-values">
+		<label>EMS Settings</label>
+		<description>Provides values of Emergency Power Status (EMS) and regulations like Battery charging / discharging
+			restrictions</description>
+		<channels>
+			<channel id="emergency-power-status" typeId="emergency-power-status-channel"/>
+			<channel id="battery-charging-lock" typeId="battery-charging-lock-channel"/>
+			<channel id="battery-discharging-lock" typeId="battery-discharging-lock-channel"/>
+			<channel id="emergency-power-possible" typeId="emergency-power-possible-channel"/>
+			<channel id="weather-predicted-charging" typeId="weather-predicted-charging-channel"/>
+			<channel id="regulation-status" typeId="regulation-status-channel"/>
+			<channel id="charge-lock-time" typeId="charge-lock-time-channel"/>
+			<channel id="discharge-lock-time" typeId="discharge-lock-time-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

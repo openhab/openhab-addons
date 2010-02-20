@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:iammeter:powermeter">
+		<parameter name="host" type="text" required="true">
+			<label>Device's IP Address</label>
+			<description>IP address for your device</description>
+			<context>network-address</context>
+			<default>127.0.0.1</default>
+		</parameter>
+		<parameter name="port" type="text" required="true" min="1" max="65535">
+			<label>Device's Port</label>
+			<description>Port</description>
+			<default>80</default>
+		</parameter>
+		<parameter name="username" type="text" required="false">
+			<label>User Name</label>
+			<description>User name to access device</description>
+			<default>admin</default>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Password</label>
+			<description>password to access device</description>
+			<context>password</context>
+			<default>admin</default>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" required="false" unit="s">
+			<label>Refresh interval in seconds</label>
+			<default>60</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="magentatv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="receiver">
+		<label>MagentaTV Media Receiver</label>
+		<description>Represents a Telekom Media Receiver for MagentaTV</description>
+
+		<channel-groups>
+			<channel-group id="control" typeId="control">
+				<label>Control</label>
+			</channel-group>
+			<channel-group id="program" typeId="program">
+				<label>Program Information</label>
+			</channel-group>
+			<channel-group id="status" typeId="status">
+				<label>Play Status</label>
+			</channel-group>
+		</channel-groups>
+
+
+		<config-description uri="thing-type:magentatv:receiver">
+			<parameter name="ipAddress" type="text">
+				<label>Device IP Address</label>
+				<description>IP address of the receiver</description>
+				<required>true</required>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="userId" type="text">
+				<label>User ID</label>
+				<description>Technical User ID required for pairing process</description>
+			</parameter>
+			<parameter name="accountName" type="text">
+				<label>Account Name</label>
+				<description>Credentials: Login name (e.g. xxx@t-online.de, same as for the Telekom Kundencenter)</description>
+			</parameter>
+			<parameter name="accountPassword" type="text">
+				<label>Account Password</label>
+				<description>Credentials: Account Password (same as for the Telekom Kundencenter)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Media Receiver</description>
+				<required>true</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="text">
+				<label>Port</label>
+				<description>Port address for UPnP</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="control">
+		<label>Control</label>
+		<description>Control function for your Media Receiver</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="channel" typeId="channelNumber"/>
+			<channel id="player" typeId="system.media-control"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="key" typeId="key"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="program">
+		<label>Program Information</label>
+		<description>Information on the running program</description>
+		<channels>
+			<channel id="title" typeId="system.media-title"/>
+			<channel id="text" typeId="programText"/>
+			<channel id="start" typeId="programStart"/>
+			<channel id="duration" typeId="programDuration"/>
+			<channel id="position" typeId="programPosition"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Play Status</label>
+		<description>Status information on media play</description>
+		<channels>
+			<channel id="channelCode" typeId="channelCode"/>
+			<channel id="runStatus" typeId="runStatus"/>
+			<channel id="playMode" typeId="playMode"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="channelNumber">
+		<item-type>Number</item-type>
+		<label>Channel</label>
+		<description>Send channel number to switch program</description>
+		<state min="1" max="999" step="1"></state>
+	</channel-type>
+	<channel-type id="channelCode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Channel Code</label>
+		<description>Channel code in the channel list</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="runStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Run status</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="playMode">
+		<item-type>String</item-type>
+		<label>Play Mode</label>
+		<description>Play Mode for running program</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programTitle">
+		<item-type>String</item-type>
+		<label>Program</label>
+		<description>Running program</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programText">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Some info on the running program</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+	<channel-type id="programStart">
+		<item-type>DateTime</item-type>
+		<label>Start</label>
+		<description>Program start time</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="programDuration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration of the program</description>
+		<state pattern="%d %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="programPosition">
+		<item-type>Number:Time</item-type>
+		<label>Play Position</label>
+		<description>Play Position since program started</description>
+		<state pattern="%d %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="key">
+		<item-type>String</item-type>
+		<label>Key</label>
+		<description>Send Key to the Media Receive (POWER/MENU/INFO... - see documentation)</description>
+		<command>
+			<options>
+				<option value="POWER">POWER</option>
+				<option value="HELP">Help</option>
+				<option value="INFO">Info</option>
+				<option value="MENU">Menu</option>
+				<option value="EPG">EPG</option>
+				<option value="TTEXT">TeleText</option>
+				<option value="PORTAL">Portal</option>
+				<option value="STAR">*</option>
+				<option value="POUND">#</option>
+				<option value="SPACE">Space</option>
+				<option value="OK">Ok</option>
+				<option value="ENTER ">Enter</option>
+				<option value="BACK">Back</option>
+				<option value="DELETE">Delete</option>
+				<option value="EXIT">Exit</option>
+				<option value="OPTION">Opt</option>
+				<option value="SETTINGS">Settings</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
+				<option value="PGUP">Page Up</option>
+				<option value="PGDOWN">Page Down</option>
+				<option value="FAV">Favorites</option>
+				<option value="RED">red</option>
+				<option value="GREEN">green</option>
+				<option value="YELLOW">yellow</option>
+				<option value="BLUE">blue</option>
+				<option value="SEARCH">Search</option>
+				<option value="NEXT">Next</option>
+				<option value="VOLUP">VolUp</option>
+				<option value="VOLDOWN">VolDown</option>
+				<option value="MUTE">Mute</option>
+				<option value="CHUP">ChanUp</option>
+				<option value="CHDOWN">ChanDown</option>
+				<option value="LASTCH">Last Channel</option>
+				<option value="NEXTCH">Next Channel</option>
+				<option value="PREVCH">Prev Channel</option>
+				<option value="BEGIN">Go Begin</option>
+				<option value="END">Go End</option>
+				<option value="PLAY">Play</option>
+				<option value="PAUSE">Pause</option>
+				<option value="REWIND">Rewind</option>
+				<option value="FORWARD">Forward</option>
+				<option value="PREVCHAP">Prev Chapter</option>
+				<option value="NEXTCHAP">Next Chapter</option>
+				<option value="TRACK">Track</option>
+				<option value="REPLAY">Replay</option>
+				<option value="SKIP">Skip</option>
+				<option value="STOP">Stop</option>
+				<option value="RECORD">Record</option>
+				<option value="SUBTITLES">Sub Titles</option>
+				<option value="MEDIA">Media</option>
+				<option value="INTER">Interaction</option>
+				<option value="SOURCE">Source</option>
+				<option value="SWITCH">Switch IPTV/DVB</option>
+				<option value="IPTV">IPTV</option>
+				<option value="PIP">PIP</option>
+				<option value="MULTIVIEW">Multi View</option>
+			</options>
+		</command>
+	</channel-type>
+
+</thing:thing-descriptions>

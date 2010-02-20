@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="icalendar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="calendar">
+		<label>Calendar</label>
+		<description>Calendar based on an iCal calendar.</description>
+
+		<channels>
+			<channel id="current_title" typeId="event_current_title"/>
+			<channel id="current_start" typeId="event_current_start"/>
+			<channel id="current_end" typeId="event_current_end"/>
+			<channel id="current_presence" typeId="event_current_presence"/>
+			<channel id="next_title" typeId="event_next_title"/>
+			<channel id="next_start" typeId="event_next_start"/>
+			<channel id="next_end" typeId="event_next_end"/>
+		</channels>
+
+		<config-description>
+			<parameter-group name="source">
+				<label>Source Settings</label>
+			</parameter-group>
+			<parameter-group name="parsing">
+				<label>Parsing Settings</label>
+			</parameter-group>
+			<parameter name="url" type="text" required="true" groupName="source">
+				<label>URL</label>
+				<description>URL for downloading iCalendar events</description>
+				<context>url</context>
+			</parameter>
+			<parameter name="refreshTime" type="integer" required="true" min="1" unit="min" groupName="source">
+				<label>Refresh Time</label>
+				<description>Frequency to scan for changes in minutes</description>
+			</parameter>
+			<parameter name="username" type="text" required="false" groupName="source">
+				<label>User Name</label>
+				<description>User name for fetching the calendar (usable in combination with password in HTTP basic auth)</description>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="source">
+				<label>Password</label>
+				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic auth)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="maxSize" type="integer" required="true" min="1" groupName="source">
+				<label>Maximum Calendar Size</label>
+				<description>The maximum size of the calendar in Megabytes</description>
+				<default>16</default>
+				<unitLabel>MB</unitLabel>
+			</parameter>
+			<parameter name="authorizationCode" type="text" required="false" groupName="parsing">
+				<label>Command Authorization Code</label>
+				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="event_current_title">
+		<item-type>String</item-type>
+		<label>Current Event Title</label>
+		<description>Title of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_start">
+		<item-type>DateTime</item-type>
+		<label>Current Event Start</label>
+		<description>Start of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_end">
+		<item-type>DateTime</item-type>
+		<label>Current Event End</label>
+		<description>End of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_current_presence">
+		<item-type>Switch</item-type>
+		<label>Current Event Presence</label>
+		<description>Current presence of an event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_title">
+		<item-type>String</item-type>
+		<label>Next Event Title</label>
+		<description>Title of the next starting event in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_start">
+		<item-type>DateTime</item-type>
+		<label>Next Event Start</label>
+		<description>Start of the next event in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event_next_end">
+		<item-type>DateTime</item-type>
+		<label>Next Event End</label>
+		<description>End of the next event in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

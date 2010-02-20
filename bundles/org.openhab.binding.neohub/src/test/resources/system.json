@@ -1,0 +1,32 @@
+{
+	"ALT_TIMER_FORMAT": 1,
+	"CORF": "C",
+	"DEVICE_ID": "NeoHub",
+	"DST_AUTO": true,
+	"DST_ON": true,
+	"EXTENDED_HISTORY": "off",
+	"FORMAT": 1,
+	"GDEVLIST": [
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8,
+		9,
+		10
+	],
+	"GLOBAL_HC_MODE": "heating",
+	"GLOBAL_SYSTEM_TYPE": "HeatOnly",
+	"HEATING_LEVELS": 4,
+	"HUB_TYPE": 2,
+	"HUB_VERSION": 2134,
+	"NTP_ON": "Running",
+	"PARTITION": "4",
+	"TIMESTAMP": 0,
+	"TIMEZONESTR": null,
+	"TIME_ZONE": 0.0,
+	"UTC": 1588513535
+}

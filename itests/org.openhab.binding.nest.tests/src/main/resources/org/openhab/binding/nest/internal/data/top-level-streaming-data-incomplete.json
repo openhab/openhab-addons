@@ -1,0 +1,45 @@
+{
+    "path": "/",
+    "data": {
+        "devices": {
+            "cameras": {
+                "_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ": {
+                    "device_id": "_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ"
+                },
+                "VG7C7BU6Zf8OjEfizmBCVnwnuKHSnOBIHgbQKa57xKJzrvokK_DzFQ": {
+                    "device_id": "VG7C7BU6Zf8OjEfizmBCVnwnuKHSnOBIHgbQKa57xKJzrvokK_DzFQ"
+                }
+            },
+            "smoke_co_alarms": {
+                "p1b1oySOcs_sbi4iczruW3Ou-iQr8PMV": {
+                    "device_id": "p1b1oySOcs_sbi4iczruW3Ou-iQr8PMV"
+                },
+                "p1b1oySOcs8W9WwaNu80oXOu-iQr8PMV": {
+                    "device_id": "p1b1oySOcs8W9WwaNu80oXOu-iQr8PMV"
+                },
+                "p1b1oySOcs-OJHIgmgeMkHOu-iQr8PMV": {
+                    "device_id": "p1b1oySOcs-OJHIgmgeMkHOu-iQr8PMV"
+                },
+                "p1b1oySOcs8Qu7IAJVrQ7XOu-iQr8PMV": {
+                    "device_id": "p1b1oySOcs8Qu7IAJVrQ7XOu-iQr8PMV"
+                }
+            },
+            "thermostats": {
+                "G1jouHN5yl6mXFaQw5iGwXOu-iQr8PMV": {
+                    "device_id": "G1jouHN5yl6mXFaQw5iGwXOu-iQr8PMV"
+                },
+                "OTQoylk2h5Ld3cfpm3esR0qx-iQr8PMV": {
+                    "device_id": "OTQoylk2h5Ld3cfpm3esR0qx-iQr8PMV"
+                }
+            }
+        },
+        "structures": {
+            "ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A": {
+                "structure_id": "ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A"
+            },
+            "SylKI7puaWd56ILAcJ46LzmtdZc3L4wGzScs8yLc5zccJofBIW9KTJ": {
+                "structure_id": "SylKI7puaWd56ILAcJ46LzmtdZc3L4wGzScs8yLc5zccJofBIW9KTJ"
+            }
+        }
+    }
+}

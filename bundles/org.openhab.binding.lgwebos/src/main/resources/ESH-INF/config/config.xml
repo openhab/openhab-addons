@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:lgwebos:WebOSTV">
+		<parameter name="host" type="text" required="true">
+			<label>Host</label>
+			<description>Hostname or IP address of TV.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="key" type="text" required="false">
+			<label>Access Key</label>
+			<description>Key exchanged with TV after pairing.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="macAddress" type="text" required="false">
+			<label>MAC Address</label>
+			<description>If MAC Address of TV is entered here, the binding will attempt to power on the device via Wake On Lan
+				(WOL), when it receives command ON on channel power. Accepted value is six groups of two hexadecimal digits,
+				separated by hyphens or colons, e.g '3c:cd:93:c2:20:e0'.)</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

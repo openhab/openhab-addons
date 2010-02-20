@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="partition">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Caddx Alarm Partition</label>
+		<description>Represents a controllable area within a Caddx Alarm System.</description>
+
+		<channels>
+			<channel id="partition_bypass_code_required" typeId="partition_condition">
+				<label>Bypass Code Required</label>
+				<description>Bypass code required</description>
+			</channel>
+			<channel id="partition_fire_trouble" typeId="partition_condition">
+				<label>Fire Trouble</label>
+				<description>Fire trouble</description>
+			</channel>
+			<channel id="partition_fire" typeId="partition_condition">
+				<label>Fire</label>
+				<description>Fire</description>
+			</channel>
+			<channel id="partition_pulsing_buzzer" typeId="partition_condition">
+				<label>Pulsing Buzzer</label>
+				<description>Pulsing Buzzer</description>
+			</channel>
+			<channel id="partition_tlm_fault_memory" typeId="partition_condition">
+				<label>TLM Fault Memory</label>
+				<description>TLM fault memory</description>
+			</channel>
+			<channel id="partition_armed" typeId="partition_condition">
+				<label>Armed</label>
+				<description>Armed</description>
+			</channel>
+			<channel id="partition_instant" typeId="partition_condition">
+				<label>Instant</label>
+				<description>Instant</description>
+			</channel>
+
+			<channel id="partition_previous_alarm" typeId="partition_condition">
+				<label>Previous Alarm</label>
+				<description>Previous Alarm</description>
+			</channel>
+			<channel id="partition_siren_on" typeId="partition_condition">
+				<label>Siren On</label>
+				<description>Siren on</description>
+			</channel>
+			<channel id="partition_steady_siren_on" typeId="partition_condition">
+				<label>Steady Siren On</label>
+				<description>Steady siren on</description>
+			</channel>
+			<channel id="partition_alarm_memory" typeId="partition_condition">
+				<label>Alarm Memory</label>
+				<description>Alarm memory</description>
+			</channel>
+			<channel id="partition_tamper" typeId="partition_condition">
+				<label>Tamper</label>
+				<description>Tamper</description>
+			</channel>
+			<channel id="partition_cancel_command_entered" typeId="partition_condition">
+				<label>Cancel Command Entered</label>
+				<description>Cancel command entered</description>
+			</channel>
+			<channel id="partition_code_entered" typeId="partition_condition">
+				<label>Code Entered</label>
+				<description>Code entered</description>
+			</channel>
+			<channel id="partition_cancel_pending" typeId="partition_condition">
+				<label>Cancel Pending</label>
+				<description>Cancel pending</description>
+			</channel>
+
+			<channel id="partition_silent_exit_enabled" typeId="partition_condition">
+				<label>Silent Exit Enabled</label>
+				<description>Silent exit enabled</description>
+			</channel>
+			<channel id="partition_entryguard" typeId="partition_condition">
+				<label>Entryguard (Stay Mode)</label>
+				<description>Entryguard (stay mode)</description>
+			</channel>
+			<channel id="partition_chime_mode_on" typeId="partition_condition">
+				<label>Chime Mode On</label>
+				<description>Chime mode on</description>
+			</channel>
+			<channel id="partition_entry" typeId="partition_condition">
+				<label>Entry</label>
+				<description>Entry</description>
+			</channel>
+			<channel id="partition_delay_expiration_warning" typeId="partition_condition">
+				<label>Delay Expiration Warning</label>
+				<description>Delay expiration warning</description>
+			</channel>
+			<channel id="partition_exit1" typeId="partition_condition">
+				<label>Exit1</label>
+				<description>Exit1</description>
+			</channel>
+			<channel id="partition_exit2" typeId="partition_condition">
+				<label>Exit2</label>
+				<description>Exit2</description>
+			</channel>
+
+			<channel id="partition_led_extinguish" typeId="partition_condition">
+				<label>Led Extinguish</label>
+				<description>Led extinguish</description>
+			</channel>
+			<channel id="partition_cross_timing" typeId="partition_condition">
+				<label>Cross Timing</label>
+				<description>Cross timing</description>
+			</channel>
+			<channel id="partition_recent_closing_being_timed" typeId="partition_condition">
+				<label>Recent Closing Being Timed</label>
+				<description>Recent closing being timed</description>
+			</channel>
+			<channel id="partition_exit_error_triggered" typeId="partition_condition">
+				<label>Exit Error Triggered</label>
+				<description>Exit error triggered</description>
+			</channel>
+			<channel id="partition_auto_home_inhibited" typeId="partition_condition">
+				<label>Auto Home Inhibited</label>
+				<description>Auto home inhibited</description>
+			</channel>
+			<channel id="partition_sensor_low_battery" typeId="partition_condition">
+				<label>Sensor Low Battery</label>
+				<description>Sensor low battery</description>
+			</channel>
+			<channel id="partition_sensor_lost_supervision" typeId="partition_condition">
+				<label>Sensor Lost Supervision</label>
+				<description>Sensor lost supervision</description>
+			</channel>
+
+			<channel id="partition_zone_bypassed" typeId="partition_condition">
+				<label>Zone Bypassed</label>
+				<description>Zone bypassed</description>
+			</channel>
+			<channel id="partition_force_arm_triggered_by_auto_arm" typeId="partition_condition">
+				<label>Force Arm triggered by Auto Arm</label>
+				<description>Force arm triggered by auto arm</description>
+			</channel>
+			<channel id="partition_ready_to_arm" typeId="partition_condition">
+				<label>Ready to Arm</label>
+				<description>Ready to arm</description>
+			</channel>
+			<channel id="partition_ready_to_force_arm" typeId="partition_condition">
+				<label>Ready to Force Arm</label>
+				<description>Ready to force arm</description>
+			</channel>
+			<channel id="partition_valid_pin_accepted" typeId="partition_condition">
+				<label>Valid PIN Accepted</label>
+				<description>Valid PIN accepted</description>
+			</channel>
+			<channel id="partition_chime_on" typeId="partition_condition">
+				<label>Chime On (Sounding)</label>
+				<description>Chime on (sounding)</description>
+			</channel>
+			<channel id="partition_error_beep" typeId="partition_condition">
+				<label>Error Beep (Triple Beep)</label>
+				<description>Error beep (triple beep)</description>
+			</channel>
+			<channel id="partition_tone_on" typeId="partition_condition">
+				<label>Tone On (Activation Tone)</label>
+				<description>Tone on (activation tone)</description>
+			</channel>
+
+			<channel id="partition_entry1" typeId="partition_condition">
+				<label>Entry 1</label>
+				<description>Entry 1</description>
+			</channel>
+			<channel id="partition_open_period" typeId="partition_condition">
+				<label>Open Period</label>
+				<description>Open period</description>
+			</channel>
+			<channel id="partition_alarm_sent_using_phone_number_1" typeId="partition_condition">
+				<label>Alarm Sent Using Phone 1</label>
+				<description>Alarm sent using phone number 1</description>
+			</channel>
+			<channel id="partition_alarm_sent_using_phone_number_2" typeId="partition_condition">
+				<label>Alarm Sent Using Phone 2</label>
+				<description>Alarm sent using phone number 2</description>
+			</channel>
+			<channel id="partition_alarm_sent_using_phone_number_3" typeId="partition_condition">
+				<label>Alarm Sent Using Phone 3</label>
+				<description>Alarm sent using phone number 3</description>
+			</channel>
+			<channel id="partition_cancel_report_is_in_the_stack" typeId="partition_condition">
+				<label>Cancel Report is in the Stack</label>
+				<description>Cancel report is in the stack</description>
+			</channel>
+			<channel id="partition_keyswitch_armed" typeId="partition_condition">
+				<label>Keyswitch Armed</label>
+				<description>Keyswitch armed</description>
+			</channel>
+			<channel id="partition_delay_trip_in_progress" typeId="partition_condition">
+				<label>Delay Trip in Progress</label>
+				<description>Delay Trip in progress (common zone)</description>
+			</channel>
+
+			<channel id="partition_secondary_command" typeId="partition_secondary">
+				<label>Partition Secondary Command</label>
+				<description>Partition Secondary Command</description>
+			</channel>
+		</channels>
+
+		<representation-property>partitionNumber</representation-property>
+
+		<config-description>
+			<parameter name="partitionNumber" type="integer" required="true" min="1" max="8">
+				<label>Partition Number</label>
+				<description>The Partition Number.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="userNumber" type="integer" required="true" min="1" max="192">
+				<label>User Number</label>
+				<description>The User Number.</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jablotron"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Oasis alarm -->
+	<thing-type id="oasis">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Oasis Alarm</label>
+		<description>A Jablotron Oasis alarm device.</description>
+
+		<channels>
+			<channel id="statusA" typeId="statusA"/>
+			<channel id="statusB" typeId="statusB"/>
+			<channel id="statusABC" typeId="statusABC"/>
+			<channel id="statusPGX" typeId="statusPGX"/>
+			<channel id="statusPGY" typeId="statusPGY"/>
+			<channel id="command" typeId="command"/>
+			<channel id="lastEvent" typeId="lastEvent"/>
+			<channel id="lastEventClass" typeId="lastEventClass"/>
+			<channel id="lastEventInvoker" typeId="lastEventInvoker"/>
+			<channel id="lastEventTime" typeId="lastEventTime"/>
+			<channel id="lastCheckTime" typeId="lastCheckTime"/>
+			<channel id="alarm" typeId="alarm"/>
+		</channels>
+		<config-description-ref uri="thing-type:jablotron:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

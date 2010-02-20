@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Dimmer -->
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="artnet-bridge"/>
+			<bridge-type-ref id="lib485-bridge"/>
+			<bridge-type-ref id="sacn-bridge"/>
+		</supported-bridge-type-refs>
+		<label>DMX Dimmer</label>
+		<description>A single/multi-channel dimmer</description>
+		<channels>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="switch" typeId="switch"/>
+		</channels>
+		<config-description>
+			<parameter name="dmxid" type="text">
+				<label>DMX Channel Configuration</label>
+				<description>Format is channel[,channel, ...] or channel[/width]</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="fadetime" type="integer" min="0">
+				<label>Fade Time</label>
+				<description>Fade time in ms for changing values</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="dimtime" type="integer" min="0">
+				<label>Dim Time</label>
+				<description>Time in ms for dimming from 0-100%</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="turnonvalue" type="text">
+				<label>Turn-On Value(s)</label>
+				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the
+					beginning.
+				</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="turnoffvalue" type="text">
+				<label>Turn-Off Value(s)</label>
+				<description>Format is "value[, value, ...]". If less values than channels are defined, they are reused from the
+					beginning.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="dynamicturnonvalue" type="boolean">
+				<label>Dynamic Turn-On Value</label>
+				<description>If enabled, values are stored on OFF command and restored on ON command</description>
+				<required>false</required>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

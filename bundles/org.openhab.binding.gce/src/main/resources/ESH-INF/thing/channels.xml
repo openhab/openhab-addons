@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gce" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Digital Input</label>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true"/>
+		<config-description-ref uri="channel-type:gce:contactConfig"/>
+	</channel-type>
+
+	<channel-type id="contactAdvanced" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Digital Input</label>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true"/>
+		<config-description-ref uri="channel-type:gce:contactConfig"/>
+	</channel-type>
+
+	<channel-type id="relay">
+		<item-type>Switch</item-type>
+		<label>Digital Output</label>
+		<config-description-ref uri="channel-type:gce:relayConfig"/>
+	</channel-type>
+
+	<channel-type id="relayAdvanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Digital Output</label>
+		<config-description-ref uri="channel-type:gce:relayConfig"/>
+	</channel-type>
+
+	<channel-type id="counter">
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="analog">
+		<item-type>Number</item-type>
+		<label>Analog Input</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="channel-type:gce:analogConfig"/>
+	</channel-type>
+
+	<channel-type id="analogAdvanced" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Input</label>
+		<config-description-ref uri="channel-type:gce:analogConfig"/>
+	</channel-type>
+
+	<channel-type id="duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Previous State Duration</label>
+		<description>Duration of previous state before state change.</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="contact-trigger">
+		<kind>trigger</kind>
+		<label>Push Button Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+				<option value="RELEASED">Released</option>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="LONG_PRESS">Long press</option>
+				<option value="PULSE">Pulse</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="contact-triggerAdvanced" advanced="true">
+		<kind>trigger</kind>
+		<label>Push Button Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+				<option value="RELEASED">Released</option>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="LONG_PRESS">Long press</option>
+				<option value="PULSE">Pulse</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

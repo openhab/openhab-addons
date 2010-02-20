@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Model of VarioTrack Channel Type -->
+	<channel-type id="Type">
+		<item-type>String</item-type>
+		<label>Model of VarioTrack</label>
+		<state readOnly="true">
+			<options>
+				<option value="VT80">VT-80</option>
+				<option value="VT65">VT-65</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- Voltage of the PV generator Channel Type -->
+	<channel-type id="Upv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PV Generator Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Power of the PV generator Channel Type -->
+	<channel-type id="Psol">
+		<item-type>Number:Power</item-type>
+		<label>Power of the PV Generator</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Production in (kWh) for the current day Channel Type -->
+	<channel-type id="Ed">
+		<item-type>Number:Energy</item-type>
+		<label>Current Day Production</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Operating state Channel Type -->
+	<channel-type id="Mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="NIGHT">Night</option>
+				<option value="STARTUP">StartUp</option>
+				<option value="UNKNOWN">---</option>
+				<option value="CHARGER">Charger</option>
+				<option value="SECURITY">Security</option>
+				<option value="OFF">OFF</option>
+				<option value="CHARGE">Charge</option>
+				<option value="CHARGEV">Charge V</option>
+				<option value="CHARGEI">Charge I</option>
+				<option value="CHARGET">Charge T</option>
+				<option value="CHIBSP">Ch. Ibsp</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- State of the VarioTrack Channel Type -->
+	<channel-type id="VTstate">
+		<item-type>Switch</item-type>
+		<label>State of the VarioTrack</label>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

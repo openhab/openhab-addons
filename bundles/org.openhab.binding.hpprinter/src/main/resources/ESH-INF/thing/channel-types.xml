@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="hpprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="inkLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Ink Level</label>
+		<description>Shows the amount of Ink/Toner remaining</description>
+		<state readOnly="true" pattern="%f %%"/>
+	</channel-type>
+
+	<channel-type id="totals">
+		<item-type>Number</item-type>
+		<label>Totals</label>
+		<description>Amount of pages.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="totalsAdv" advanced="true">
+		<item-type>Number</item-type>
+		<label>Totals</label>
+		<description>Amount of pages.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cumlMarkingUsed" advanced="true">
+		<item-type>Number:Volume</item-type>
+		<label>Cumulative Marking Used</label>
+		<description>Shows the amount of Ink/Toner used</description>
+		<state readOnly="true" pattern="%f mL"/>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Printer Status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="readonlyswitch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Read Only Switch Item</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

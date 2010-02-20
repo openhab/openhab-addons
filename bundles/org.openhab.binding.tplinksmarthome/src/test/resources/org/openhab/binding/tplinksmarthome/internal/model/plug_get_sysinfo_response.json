@@ -1,0 +1,29 @@
+{
+	"system": {
+		"get_sysinfo": {
+			"err_code": 0,
+			"sw_ver": "1.0.8 Build 151101 Rel.24452",
+			"hw_ver": "1.0",
+			"model": "HS100(EU)",
+			"deviceId": "DEVICEID_HERE",
+			"hwId": "HWID_HERE",
+			"oemId": "OEMID_HERE",
+			"alias": "My Smart Plug",
+			"active_mode": "schedule",
+			"rssi": -53,
+			"type": "smartplug",
+			"mac": "MAC_ADD_HERE",
+			"fwId": "FWID_HERE",
+			"dev_name": "Wi-Fi Smart Plug",
+			"icon_hash": "",
+			"relay_state": 1,
+			"on_time": 451,
+			"feature": "TIM",
+			"updating": 0,
+			"led_off": 0,
+			"latitude": 0.0,
+			"longitude": 0.0,
+			"is_factory": false
+		}
+	}
+}

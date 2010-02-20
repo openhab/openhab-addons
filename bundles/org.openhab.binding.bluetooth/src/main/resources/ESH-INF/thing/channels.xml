@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="rssi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="adapter-uid">
+		<item-type>String</item-type>
+		<label>Adapter UID</label>
+		<description>ThingUID of nearest adapter</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="adapter-location">
+		<item-type>String</item-type>
+		<label>Adapter Location</label>
+		<description>Location of the nearest adapter to this device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

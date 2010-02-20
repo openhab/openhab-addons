@@ -1,0 +1,10 @@
+{
+  "sleepers": [
+    {
+      "firstName": "Alice"
+    },
+    {
+      "firstName": "Bob"
+    }
+  ]
+}

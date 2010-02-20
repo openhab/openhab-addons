@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Automation (BTicino xxx/xxx/...) -->
+	<thing-type id="bus_automation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Automation</label>
+		<description>A OpenWebNet BUS/SCS automation device to control roller shutters, blinds, etc. BTicino models:
+			xxx/yyyy/etc.</description>
+
+		<channels>
+			<channel id="shutter" typeId="shutter"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-xxxx/yyyy/etc.</property>
+			<property name="ownDeviceType">514</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="shutterRun" type="text" required="true">
+				<label>Shutter Run</label>
+				<description>Time (in ms) to go from max position (e.g. CLOSED) to the other position (e.g. OPEN). Example: 12000
+					(=12sec).
+					Use AUTO (default) to calibrate the shutter automatically (UP->DOWN->Position%) the first time a Position
+					command (%)
+					is sent.</description>
+				<default>AUTO</default>
+			</parameter>
+
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Device Address (WHERE)</label>
+				<description>Example: A/PL address: A=1 PL=3 --> WHERE=13. On local bus: WHERE=13#4#01</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

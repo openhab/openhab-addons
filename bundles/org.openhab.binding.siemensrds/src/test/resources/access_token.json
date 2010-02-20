@@ -1,0 +1,8 @@
+{
+	"access_token": "this-is-not-a-valid-access_token",
+	"token_type": "bearer",
+	"expires_in": 1209599,
+	"userName": "software@whitebear.ch",
+	".issued": "Thu, 06 Jun 2019 10:27:50 GMT",
+	".expires": "Thu, 20 Jun 2019 10:27:50 GMT"
+}

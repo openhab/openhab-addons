@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="isouscType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>ISOUSC</label>
+		<description>Subscribed electric current</description>
+		<category>Energy</category>
+		<state pattern="%d A" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ptecType">
+		<item-type>String</item-type>
+		<label>PTEC</label>
+		<description>Current pricing period</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="TH">TH</option>
+				<option value="HC">HC</option>
+				<option value="HP">HP</option>
+				<option value="HN">HN</option>
+				<option value="PM">PM</option>
+				<option value="HCJB">HCJB</option>
+				<option value="HCJW">HCJW</option>
+				<option value="HCJR">HCJR</option>
+				<option value="HPJB">HPJB</option>
+				<option value="HPJW">HPJW</option>
+				<option value="HPJR">HPJR</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hhphcType">
+		<item-type>String</item-type>
+		<label>HHPHC</label>
+		<description>Pricing schedule group</description>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="A">A</option>
+				<option value="C">C</option>
+				<option value="D">D</option>
+				<option value="E">E</option>
+				<option value="Y">Y</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lastUpdateType">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of last received Teleinfo frame</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

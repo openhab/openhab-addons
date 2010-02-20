@@ -1,0 +1,847 @@
+{
+	"System": {
+		"PairingStatus": "Paired",
+		"TimeZoneOffset": 0,
+		"AutomaticDaylightSaving": true,
+		"SystemMode": "Heat",
+		"Version": 6,
+		"FotaEnabled": true,
+		"ValveProtectionEnabled": false,
+		"EcoModeEnabled": true,
+		"AwayModeAffectsHotWater": true,
+		"AwayModeSetPointLimit": 100,
+		"BoilerSettings": {
+			"ControlType": "HeatSourceType_OpenTherm",
+			"FuelType": "Gas",
+			"CycleRate": "CPH_6",
+			"OnOffHysteresis": 5
+		},
+		"CoolingModeDefaultSetpoint": 210,
+		"CoolingAwayModeSetpointLimit": 240,
+		"ComfortModeEnabled": true,
+		"PreheatTimeLimit": 10800,
+		"DegradedModeSetpointThreshold": 180,
+		"UnixTime": 1592420000,
+		"ActiveSystemVersion": "2.52.0-fcdebef127",
+		"BrandName": "WiserHeat",
+		"CloudConnectionStatus": "Connected",
+		"LocalDateAndTime": {
+			"Year": 2020,
+			"Month": "June",
+			"Date": 17,
+			"Day": "Wednesday",
+			"Time": 1234
+		},
+		"HeatingButtonOverrideState": "Off",
+		"UserOverridesActive": true,
+		"HotWaterButtonOverrideState": "Off",
+		"OpenThermConnectionStatus": "Connected"
+	},
+	"Cloud": {
+		"Environment": "Prod",
+		"DetailedPublishing": true,
+		"EnableDiagnosticTelemetry": false,
+		"WiserApiHost": "api-nl.wiserair.com",
+		"BootStrapApiHost": "bootstrap.gl.struxurewarecloud.com"
+	},
+	"HeatingChannel": [
+		{
+			"id": 1,
+			"Name": "Channel-1",
+			"RoomIds": [
+				1,
+				2,
+				3,
+				4,
+				5,
+				6
+			],
+			"PercentageDemand": 0,
+			"DemandOnOffOutput": "Off",
+			"HeatingRelayState": "Off",
+			"IsSmartValvePreventingDemand": true
+		}
+	],
+	"Room": [
+		{
+			"id": 1,
+			"ManualSetPoint": 200,
+			"OverrideType": "Manual",
+			"OverrideSetpoint": 200,
+			"ScheduleId": 1,
+			"ComfortModeScore": 1905,
+			"HeatingRate": 2719,
+			"RoomStatId": 10,
+			"SmartValveIds": [
+				21
+			],
+			"UfhRelayIds": [],
+			"Name": "Master Bedroom",
+			"Mode": "Auto",
+			"DemandType": "Modulating",
+			"WindowDetectionActive": true,
+			"ControlSequenceOfOperation": "HeatingOnly",
+			"HeatingType": "HydronicRadiator",
+			"CalculatedTemperature": 242,
+			"CurrentSetPoint": 200,
+			"PercentageDemand": 0,
+			"ControlOutputState": "Off",
+			"WindowState": "Closed",
+			"SetpointOrigin": "FromManualOverride",
+			"DisplayedSetPoint": 200,
+			"ScheduledSetPoint": 200,
+			"RoundedAlexaTemperature": 240,
+			"EffectiveMode": "Auto",
+			"PercentageDemandForItrv": 0
+		},
+		{
+			"id": 2,
+			"ManualSetPoint": 210,
+			"OverrideType": "EcoIQ",
+			"OverrideSetpoint": 180,
+			"ScheduleId": 2,
+			"ComfortModeScore": 1049,
+			"HeatingRate": 3228,
+			"RoomStatId": 11,
+			"SmartValveIds": [
+				23,
+				22,
+				24,
+				25
+			],
+			"UfhRelayIds": [],
+			"Name": "Downstairs",
+			"Mode": "Auto",
+			"DemandType": "Modulating",
+			"WindowDetectionActive": true,
+			"ControlSequenceOfOperation": "HeatingOnly",
+			"HeatingType": "HydronicRadiator",
+			"CalculatedTemperature": 229,
+			"CurrentSetPoint": 180,
+			"PercentageDemand": 0,
+			"ControlOutputState": "Off",
+			"WindowState": "Closed",
+			"SetpointOrigin": "FromEcoIQ",
+			"DisplayedSetPoint": 210,
+			"ScheduledSetPoint": 210,
+			"AwayModeSuppressed": false,
+			"RoundedAlexaTemperature": 230,
+			"EffectiveMode": "Auto",
+			"PercentageDemandForItrv": 0
+		},
+		{
+			"id": 3,
+			"ManualSetPoint": 180,
+			"OverrideType": "EcoIQ",
+			"OverrideSetpoint": 180,
+			"ScheduleId": 3,
+			"ComfortModeScore": 580,
+			"HeatingRate": 882,
+			"SmartValveIds": [
+				26
+			],
+			"UfhRelayIds": [],
+			"Name": "Hallway",
+			"Mode": "Auto",
+			"DemandType": "Modulating",
+			"WindowDetectionActive": true,
+			"ControlSequenceOfOperation": "HeatingOnly",
+			"HeatingType": "HydronicRadiator",
+			"CalculatedTemperature": 224,
+			"CurrentSetPoint": 180,
+			"PercentageDemand": 0,
+			"ControlOutputState": "Off",
+			"WindowState": "Closed",
+			"SetpointOrigin": "FromEcoIQ",
+			"DisplayedSetPoint": 200,
+			"ScheduledSetPoint": 200,
+			"AwayModeSuppressed": false,
+			"RoundedAlexaTemperature": 225,
+			"EffectiveMode": "Auto",
+			"PercentageDemandForItrv": 0
+		},
+		{
+			"id": 4,
+			"ManualSetPoint": 180,
+			"ScheduleId": 4,
+			"ComfortModeScore": 6128,
+			"HeatingRate": 3292,
+			"RoomStatId": 13,
+			"SmartValveIds": [
+				27
+			],
+			"UfhRelayIds": [],
+			"Name": "Front Bedroom",
+			"Mode": "Auto",
+			"DemandType": "Modulating",
+			"WindowDetectionActive": true,
+			"ControlSequenceOfOperation": "HeatingOnly",
+			"HeatingType": "HydronicRadiator",
+			"CalculatedTemperature": 241,
+			"CurrentSetPoint": 180,
+			"PercentageDemand": 0,
+			"ControlOutputState": "Off",
+			"WindowState": "Closed",
+			"SetpointOrigin": "FromSchedule",
+			"DisplayedSetPoint": 180,
+			"ScheduledSetPoint": 180,
+			"AwayModeSuppressed": false,
+			"RoundedAlexaTemperature": 240,
+			"EffectiveMode": "Auto",
+			"PercentageDemandForItrv": 0
+		},
+		{
+			"id": 5,
+			"ManualSetPoint": 200,
+			"OverrideType": "None",
+			"ScheduleId": 5,
+			"ComfortModeScore": 30510,
+			"HeatingRate": 1680,
+			"RoomStatId": 12,
+			"SmartValveIds": [
+				29
+			],
+			"UfhRelayIds": [],
+			"Name": "Nursery",
+			"Mode": "Auto",
+			"DemandType": "Modulating",
+			"WindowDetectionActive": true,
+			"ControlSequenceOfOperation": "HeatingOnly",
+			"HeatingType": "HydronicRadiator",
+			"CalculatedTemperature": 237,
+			"CurrentSetPoint": 200,
+			"PercentageDemand": 0,
+			"ControlOutputState": "Off",
+			"WindowState": "Closed",
+			"SetpointOrigin": "FromSchedule",
+			"DisplayedSetPoint": 200,
+			"ScheduledSetPoint": 200,
+			"RoundedAlexaTemperature": 235,
+			"EffectiveMode": "Auto",
+			"PercentageDemandForItrv": 0
+		},
+		{
+			"id": 6,
+			"ManualSetPoint": 180,
+			"ScheduleId": 6,
+			"ComfortModeScore": 3155,
+			"HeatingRate": 1817,
+			"RoomStatId": 14,
+			"SmartValveIds": [
+				30
+			],
+			"UfhRelayIds": [],
+			"Name": "Study",
+			"Mode": "Auto",
+			"DemandType": "Modulating",
+			"WindowDetectionActive": true,
+			"ControlSequenceOfOperation": "HeatingOnly",
+			"HeatingType": "HydronicRadiator",
+			"CalculatedTemperature": 247,
+			"CurrentSetPoint": 180,
+			"PercentageDemand": 0,
+			"ControlOutputState": "Off",
+			"WindowState": "Closed",
+			"SetpointOrigin": "FromSchedule",
+			"DisplayedSetPoint": 180,
+			"ScheduledSetPoint": 180,
+			"AwayModeSuppressed": false,
+			"RoundedAlexaTemperature": 245,
+			"EffectiveMode": "Auto",
+			"PercentageDemandForItrv": 0
+		}
+	],
+	"Device": [
+		{
+			"id": 0,
+			"NodeId": 0,
+			"ProductType": "Controller",
+			"ProductIdentifier": "Controller",
+			"ActiveFirmwareVersion": "2.52.0",
+			"ModelIdentifier": "WT714R1S0902",
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "VeryGood",
+			"ReceptionOfController": {
+				"Rssi": -33
+			},
+			"ReceptionOfDevice": {
+				"Rssi": 0,
+				"Lqi": 255
+			}
+		},
+		{
+			"id": 10,
+			"NodeId": 10,
+			"ProductType": "RoomStat",
+			"ProductIdentifier": "RoomStat",
+			"ActiveFirmwareVersion": "04E1000900042002",
+			"ModelIdentifier": "Thermostat",
+			"HardwareVersion": "0",
+			"SerialNumber": "0000000000000000",
+			"ProductModel": "Thermostat",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 2,
+			"ParentNodeId": 63230,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "VeryGood",
+			"BatteryVoltage": 28,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -60,
+				"Lqi": 160
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -80,
+				"Lqi": 80
+			}
+		},
+		{
+			"id": 21,
+			"NodeId": 45065,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "1111111111111111",
+			"ProductModel": "",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 0,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": true,
+			"DisplayedSignalStrength": "Poor",
+			"BatteryVoltage": 26,
+			"BatteryLevel": "Low",
+			"ReceptionOfController": {
+				"Rssi": -82,
+				"Lqi": 72
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -73,
+				"Lqi": 108
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 11,
+			"NodeId": 11,
+			"ProductType": "RoomStat",
+			"ProductIdentifier": "RoomStat",
+			"ActiveFirmwareVersion": "04E1000900042002",
+			"ModelIdentifier": "Thermostat",
+			"HardwareVersion": "1",
+			"SerialNumber": "2222222222222222",
+			"ProductModel": "Thermostat",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 2,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "VeryGood",
+			"BatteryVoltage": 29,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -60,
+				"Lqi": 160
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -56,
+				"Lqi": 176
+			}
+		},
+		{
+			"id": 41,
+			"NodeId": 63230,
+			"ProductType": "SmartPlug",
+			"ProductIdentifier": "OwonSmartplug",
+			"ActiveFirmwareVersion": "",
+			"ModelIdentifier": "WSP402",
+			"HardwareVersion": "",
+			"SerialNumber": "3333333333333333",
+			"ProductModel": "",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Good",
+			"ReceptionOfDevice": {
+				"Rssi": -81,
+				"Lqi": 76
+			}
+		},
+		{
+			"id": 22,
+			"NodeId": 22,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "4444444444444444",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": true,
+			"DisplayedSignalStrength": "VeryGood",
+			"BatteryVoltage": 29,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -48,
+				"Lqi": 212
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -42,
+				"Lqi": 232
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 23,
+			"NodeId": 54921,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "5555555555555555",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 0,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Medium",
+			"BatteryVoltage": 30,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -77,
+				"Lqi": 92
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -67,
+				"Lqi": 132
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 24,
+			"NodeId": 27963,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "6666666666666666",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": true,
+			"DisplayedSignalStrength": "Good",
+			"BatteryVoltage": 26,
+			"BatteryLevel": "Low",
+			"ReceptionOfController": {
+				"Rssi": -68,
+				"Lqi": 128
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -62,
+				"Lqi": 152
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 25,
+			"NodeId": 25,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "7777777777777777",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": true,
+			"DisplayedSignalStrength": "VeryGood",
+			"BatteryVoltage": 26,
+			"BatteryLevel": "Low",
+			"ReceptionOfController": {
+				"Rssi": -60,
+				"Lqi": 160
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -53,
+				"Lqi": 188
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 26,
+			"NodeId": 26,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "8888888888888888",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Medium",
+			"BatteryVoltage": 26,
+			"BatteryLevel": "Low",
+			"ReceptionOfController": {
+				"Rssi": -79,
+				"Lqi": 84
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -70,
+				"Lqi": 120
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 27,
+			"NodeId": 27,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "9999999999999999",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 63230,
+			"DeviceLockEnabled": true,
+			"DisplayedSignalStrength": "Good",
+			"BatteryVoltage": 31,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -65,
+				"Lqi": 140
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -80,
+				"Lqi": 80
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 29,
+			"NodeId": 29,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "AAAAAAAAAAAAAAAA",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": true,
+			"DisplayedSignalStrength": "Good",
+			"BatteryVoltage": 27,
+			"BatteryLevel": "OneThird",
+			"ReceptionOfController": {
+				"Rssi": -63,
+				"Lqi": 148
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -58,
+				"Lqi": 168
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 12,
+			"NodeId": 12,
+			"ProductType": "RoomStat",
+			"ProductIdentifier": "RoomStat",
+			"ActiveFirmwareVersion": "04E1000900042002",
+			"ModelIdentifier": "Thermostat",
+			"HardwareVersion": "1",
+			"SerialNumber": "BBBBBBBBBBBBBBBB",
+			"ProductModel": "Thermostat",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 2,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Medium",
+			"BatteryVoltage": 29,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -76,
+				"Lqi": 96
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -66,
+				"Lqi": 136
+			}
+		},
+		{
+			"id": 30,
+			"NodeId": 30,
+			"ProductType": "iTRV",
+			"ProductIdentifier": "iTRV",
+			"ActiveFirmwareVersion": "0201000000042002",
+			"ModelIdentifier": "iTRV",
+			"HardwareVersion": "0",
+			"SerialNumber": "CCCCCCCCCCCCCCCC",
+			"ProductModel": "iTRV",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Medium",
+			"BatteryVoltage": 26,
+			"BatteryLevel": "Low",
+			"ReceptionOfController": {
+				"Rssi": -74,
+				"Lqi": 104
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -68,
+				"Lqi": 128
+			},
+			"PendingZigbeeMessageMask": 0
+		},
+		{
+			"id": 13,
+			"NodeId": 13,
+			"ProductType": "RoomStat",
+			"ProductIdentifier": "RoomStat",
+			"ActiveFirmwareVersion": "04E1000900042002",
+			"ModelIdentifier": "Thermostat",
+			"HardwareVersion": "1",
+			"SerialNumber": "DDDDDDDDDDDDDDDD",
+			"ProductModel": "Thermostat",
+			"OtaImageQueryCount": 0,
+			"LastOtaImageQueryCount": 0,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Medium",
+			"BatteryVoltage": 26,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -77,
+				"Lqi": 92
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -69,
+				"Lqi": 124
+			}
+		},
+		{
+			"id": 14,
+			"NodeId": 14,
+			"ProductType": "RoomStat",
+			"ProductIdentifier": "RoomStat",
+			"ActiveFirmwareVersion": "04E1000900042002",
+			"ModelIdentifier": "Thermostat",
+			"HardwareVersion": "1",
+			"SerialNumber": "EEEEEEEEEEEEEEEE",
+			"ProductModel": "Thermostat",
+			"OtaImageQueryCount": 1,
+			"LastOtaImageQueryCount": 1,
+			"ParentNodeId": 0,
+			"DeviceLockEnabled": false,
+			"DisplayedSignalStrength": "Medium",
+			"BatteryVoltage": 29,
+			"BatteryLevel": "Normal",
+			"ReceptionOfController": {
+				"Rssi": -77,
+				"Lqi": 92
+			},
+			"ReceptionOfDevice": {
+				"Rssi": -69,
+				"Lqi": 124
+			}
+		}
+	],
+	"Zigbee": {
+		"Error72Reset": 32,
+		"JPANCount": 27,
+		"NetworkChannel": 25,
+		"UpdateEBLState": "Successful",
+		"CurrentEBLFile": "CICIE-1.0.1-c8271d47.ebl",
+		"TargetEBLFile": "CICIE-1.0.1-c8271d47.ebl",
+		"UpdateAttempts": 1,
+		"ZigbeeModuleVersion": "1.0.1-c8271d47",
+		"ZigbeeEUI": "FFFFFFFFFFFFFFFF"
+	},
+	"UpgradeInfo": [
+		{
+			"id": 1,
+			"FirmwareFilename": "0201000000042002FOTA.BIN"
+		},
+		{
+			"id": 2,
+			"FirmwareFilename": "0401000000010005FOTA.BIN"
+		},
+		{
+			"id": 3,
+			"FirmwareFilename": "0401010100010005FOTA.BIN"
+		},
+		{
+			"id": 4,
+			"FirmwareFilename": "0441000000010005FOTA.BIN"
+		},
+		{
+			"id": 5,
+			"FirmwareFilename": "0441010100010005FOTA.BIN"
+		},
+		{
+			"id": 6,
+			"FirmwareFilename": "04E1000900042002FOTA.BIN"
+		},
+		{
+			"id": 7,
+			"FirmwareFilename": "05E1000900000023FOTA.BIN"
+		},
+		{
+			"id": 8,
+			"FirmwareFilename": "0A00000000032000FOTA.BIN"
+		}
+	],
+	"SmartValve": [
+		{
+			"id": 21,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 200,
+			"MeasuredTemperature": 238,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 242
+		},
+		{
+			"id": 22,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 218,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 229
+		},
+		{
+			"id": 23,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 227,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 229
+		},
+		{
+			"id": 24,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 222,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 229
+		},
+		{
+			"id": 25,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 229,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 229
+		},
+		{
+			"id": 26,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 224,
+			"PercentageDemand": 0,
+			"WindowState": "Closed"
+		},
+		{
+			"id": 27,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 233,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 241
+		},
+		{
+			"id": 29,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 200,
+			"MeasuredTemperature": 233,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 237
+		},
+		{
+			"id": 30,
+			"MountingOrientation": "Vertical",
+			"SetPoint": 180,
+			"MeasuredTemperature": 239,
+			"PercentageDemand": 0,
+			"WindowState": "Closed",
+			"ExternalRoomStatTemperature": 247
+		}
+	],
+	"RoomStat": [
+		{
+			"id": 10,
+			"SetPoint": 200,
+			"MeasuredTemperature": 242,
+			"MeasuredHumidity": 50
+		},
+		{
+			"id": 11,
+			"SetPoint": 180,
+			"MeasuredTemperature": 229,
+			"MeasuredHumidity": 55
+		},
+		{
+			"id": 12,
+			"SetPoint": 200,
+			"MeasuredTemperature": 237,
+			"MeasuredHumidity": 54
+		},
+		{
+			"id": 13,
+			"SetPoint": 180,
+			"MeasuredTemperature": 241,
+			"MeasuredHumidity": 51
+		},
+		{
+			"id": 14,
+			"SetPoint": 180,
+			"MeasuredTemperature": 247,
+			"MeasuredHumidity": 52
+		}
+	],
+	"SmartPlug": [
+		{
+			"id": 41,
+			"ScheduleId": 2000,
+			"ManualState": "Off",
+			"Name": "Booster",
+			"Mode": "Manual",
+			"AwayAction": "NoChange",
+			"OutputState": "Off",
+			"ControlSource": "FromManualMode",
+			"ScheduledState": "Off"
+		}
+	],
+	"DeviceCapabilityMatrix": {
+		"Roomstat": true,
+		"ITRV": true,
+		"SmartPlug": true,
+		"UFH": false,
+		"UFHFloorTempSensor": false,
+		"UFHDewSensor": false,
+		"HACT": false,
+		"LACT": false
+	}
+}

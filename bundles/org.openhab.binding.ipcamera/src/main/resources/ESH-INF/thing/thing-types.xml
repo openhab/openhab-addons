@@ -1,0 +1,2670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ipcamera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="group">
+		<label>Group Multiple Cameras</label>
+		<description>Show multiple cameras as a single rotating feed</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to setup a group of cameras.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings"
+				unit="ms">
+				<label>Time Before Rotating to Next Camera</label>
+				<description>Time in milliseconds of how long to display a camera before changing to the next camera in the group.
+				</description>
+				<default>2000</default>
+			</parameter>
+
+			<parameter name="motionChangesOrder" type="boolean" required="true" groupName="Settings">
+				<label>Motion Changes Order</label>
+				<description>When switched ON, any motion on a camera will make it show ahead of other cameras in the rotation.
+				</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="firstCamera" type="text" required="true" groupName="Settings">
+				<label>First Camera ID</label>
+				<description>Enter the 'Unique ID' of the camera you wish to show first.
+				</description>
+			</parameter>
+
+			<parameter name="secondCamera" type="text" required="true" groupName="Settings">
+				<label>Second Camera ID</label>
+				<description>Enter the 'Unique ID' of the camera you wish to show second.
+				</description>
+			</parameter>
+
+			<parameter name="thirdCamera" type="text" required="false" groupName="Settings">
+				<label>Third Camera ID</label>
+				<description>Enter the 'Unique ID' of the camera you wish to show third. Leave blank if the group is less than 3.
+				</description>
+			</parameter>
+
+			<parameter name="forthCamera" type="text" required="false" groupName="Settings">
+				<label>Forth Camera ID</label>
+				<description>Enter the 'Unique ID' of the camera you wish to show forth. Leave blank if the group is less than 4.
+				</description>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. Default should work for
+					Linux, but For windows use this format, c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="generic">
+		<label>RTSP/HTTP IP Camera</label>
+		<description>Use when your camera is not ONVIF compatible.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls ie for fetching the snapshot.
+				</description>
+				<default>80</default>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Enter a HTTP URL to where a snapshot can be seen if entered into any browser.
+				</description>
+				<default>ffmpeg</default>
+			</parameter>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Full HTTP address to where a MJPEG stream can be watched if entered into any browser.
+				</description>
+				<default>ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Enter any HTTP or RTSP URL that FFmpeg can use as an input. Best if H.264 format is used.
+				</description>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. Default should work for
+					Linux, but For windows use this format, c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique for each
+					camera.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="onvif">
+		<label>ONVIF IP Camera</label>
+		<description>Use when the binding does not list your brand of ONVIF camera.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="cellMotionAlarm" typeId="cellMotionAlarm"/>
+			<channel id="lineCrossingAlarm" typeId="lineCrossingAlarm"/>
+			<channel id="fieldDetectionAlarm" typeId="fieldDetectionAlarm"/>
+			<channel id="faceDetected" typeId="faceDetected"/>
+			<channel id="parkingAlarm" typeId="parkingAlarm"/>
+			<channel id="itemLeft" typeId="itemLeft"/>
+			<channel id="itemTaken" typeId="itemTaken"/>
+			<channel id="tamperAlarm" typeId="tamperAlarm"/>
+			<channel id="tooDarkAlarm" typeId="tooDarkAlarm"/>
+			<channel id="storageAlarm" typeId="storageAlarm"/>
+			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
+			<channel id="tooBrightAlarm" typeId="tooBrightAlarm"/>
+			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
+			<channel id="pan" typeId="pan"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="zoom" typeId="zoom"/>
+			<channel id="gotoPreset" typeId="gotoPreset"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Full HTTP address to where a MJPEG stream can be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
+					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>80</default>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave blank to use the autodetected URL for snapshots, or enter a HTTP URL to where a snapshot can be
+					seen if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="amcrest">
+		<label>Amcrest Camera with API</label>
+		<description>Use for older Amcrest Cameras, that wont work as dahua thing type.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="autoLED" typeId="autoLED"/>
+			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="pan" typeId="pan"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="zoom" typeId="zoom"/>
+			<channel id="gotoPreset" typeId="gotoPreset"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Leave this blank to use the auto detected URL, or enter a full HTTP address to where a MJPEG stream can
+					be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
+					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the FFmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="nvrChannel" type="integer" required="true" min="0" max="64" groupName="Settings">
+				<label>NVR Input Channel</label>
+				<description>Set this to 1 if it is a stand alone camera, or to the input channel number of your NVR that the camera
+					is connected to.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave this empty to auto detect the snapshot URL. Enter a HTTP address if you wish to over-ride with a
+					different address which also makes the camera connect quicker.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings"
+				unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+	<thing-type id="dahua">
+		<label>Dahua Camera with API</label>
+		<description>Use for all current Dahua cameras, as they support an API as well as ONVIF.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="enableLineCrossingAlarm" typeId="enableLineCrossingAlarm"/>
+			<channel id="lineCrossingAlarm" typeId="lineCrossingAlarm"/>
+			<channel id="fieldDetectionAlarm" typeId="fieldDetectionAlarm"/>
+			<channel id="faceDetected" typeId="faceDetected"/>
+			<channel id="parkingAlarm" typeId="parkingAlarm"/>
+			<channel id="externalAlarmInput" typeId="externalAlarmInput"/>
+			<channel id="externalAlarmInput2" typeId="externalAlarmInput2"/>
+			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
+			<channel id="activateAlarmOutput2" typeId="activateAlarmOutput2"/>
+			<channel id="itemLeft" typeId="itemLeft"/>
+			<channel id="itemTaken" typeId="itemTaken"/>
+			<channel id="autoLED" typeId="autoLED"/>
+			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="textOverlay" typeId="textOverlay"/>
+			<channel id="pan" typeId="pan"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="zoom" typeId="zoom"/>
+			<channel id="gotoPreset" typeId="gotoPreset"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Leave this blank to use the auto detected URL, or enter a full HTTP address to where a MJPEG stream can
+					be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
+					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="nvrChannel" type="integer" required="true" min="0" max="255" groupName="Settings">
+				<label>NVR Input Channel</label>
+				<description>Set this to 1 if it is a stand alone camera, or to the input channel number of your NVR that the camera
+					is connected to.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave blank to use the autodetected URL for snapshots, or enter a HTTP URL to where a snapshot can be
+					seen if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="doorbird">
+		<label>Doorbird Camera with API</label>
+		<description>Use for all current Doorbird Cameras, as they support an API as well as ONVIF.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
+			<channel id="activateAlarmOutput2" typeId="activateAlarmOutput2"/>
+			<channel id="doorBell" typeId="doorBell"/>
+			<channel id="externalLight" typeId="externalLight"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Leave this blank to use the auto detected URL, or enter a full HTTP address to where a MJPEG stream can
+					be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
+					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave this empty to auto detect the snapshot URL. Enter a HTTP address if you wish to over-ride with a
+					different address which also makes the camera connect quicker.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings"
+				unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+	<thing-type id="foscam">
+		<label>Foscam Camera with API</label>
+		<description>Use for all current HD FOSCAM Cameras as they support an API as well as ONVIF.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="autoLED" typeId="autoLED"/>
+			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="pan" typeId="pan"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="zoom" typeId="zoom"/>
+			<channel id="gotoPreset" typeId="gotoPreset"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Leave this blank to use the auto detected URL, or enter a full HTTP address to where a MJPEG stream can
+					be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
+					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>88</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave blank to use the autodetected URL for snapshots, or enter a HTTP URL to where a snapshot can be
+					seen if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="customMotionAlarmUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Create your own custom enable Motion Alarm settings by entering a custom URL</label>
+				<description>Leave this empty to use the default, or create your own setting.
+				</description>
+			</parameter>
+
+			<parameter name="customAudioAlarmUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Create your own custom enable Audio Alarm settings by entering a custom URL</label>
+				<description>Leave this empty to use the default, or create your own setting.
+				</description>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>888</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="hikvision">
+		<label>Hikvision Camera with API</label>
+		<description>Use for all current Hikvision Cameras as they support an API as well as ONVIF.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="enablePirAlarm" typeId="enablePirAlarm"/>
+			<channel id="pirAlarm" typeId="pirAlarm"/>
+			<channel id="enableLineCrossingAlarm" typeId="enableLineCrossingAlarm"/>
+			<channel id="lineCrossingAlarm" typeId="lineCrossingAlarm"/>
+			<channel id="itemLeft" typeId="itemLeft"/>
+			<channel id="itemTaken" typeId="itemTaken"/>
+			<channel id="faceDetected" typeId="faceDetected"/>
+			<channel id="enableFieldDetectionAlarm" typeId="enableFieldDetectionAlarm"/>
+			<channel id="fieldDetectionAlarm" typeId="fieldDetectionAlarm"/>
+			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
+			<channel id="enableExternalAlarmInput" typeId="enableExternalAlarmInput"/>
+			<channel id="triggerExternalAlarmInput" typeId="triggerExternalAlarmInput"/>
+			<channel id="externalAlarmInput" typeId="externalAlarmInput"/>
+			<channel id="textOverlay" typeId="textOverlay"/>
+			<channel id="pan" typeId="pan"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="zoom" typeId="zoom"/>
+			<channel id="gotoPreset" typeId="gotoPreset"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Leave this blank to use the auto detected URL, or enter a full HTTP address to where a MJPEG stream can
+					be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
+					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="nvrChannel" type="integer" required="true" min="1" max="9" groupName="Settings">
+				<label>NVR Input Channel</label>
+				<description>Set this to 1 if it is a stand alone camera, or to the input channel number if you use a compatible
+					NVR.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave blank to use the autodetected URL for snapshots, or enter a HTTP URL to where a snapshot can be
+					seen if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="instar">
+		<label>Instar Camera with API</label>
+		<description>Use for all current INSTAR HD Cameras, as they support an API as well as ONVIF.</description>
+		<channels>
+			<channel id="startStream" typeId="startStream"/>
+			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="image" typeId="image"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
+			<channel id="gifHistory" typeId="gifHistory"/>
+			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
+			<channel id="mp4Preroll" typeId="mp4Preroll"/>
+			<channel id="mp4History" typeId="mp4History"/>
+			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
+			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
+			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
+			<channel id="motionAlarm" typeId="motionAlarm"/>
+			<channel id="externalMotion" typeId="externalMotion"/>
+			<channel id="enablePirAlarm" typeId="enablePirAlarm"/>
+			<channel id="pirAlarm" typeId="pirAlarm"/>
+			<channel id="enableAudioAlarm" typeId="enableAudioAlarm"/>
+			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
+			<channel id="audioAlarm" typeId="audioAlarm"/>
+			<channel id="enableExternalAlarmInput" typeId="enableExternalAlarmInput"/>
+			<channel id="textOverlay" typeId="textOverlay"/>
+			<channel id="autoLED" typeId="autoLED"/>
+			<channel id="pan" typeId="pan"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="zoom" typeId="zoom"/>
+			<channel id="gotoPreset" typeId="gotoPreset"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
+			<channel id="rtspUrl" typeId="rtspUrl"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="hlsUrl" typeId="hlsUrl"/>
+		</channels>
+		<config-description>
+
+			<parameter-group name="Settings">
+				<label>Main Settings</label>
+				<description>Settings required to connect to the camera.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="FFmpeg Setup">
+				<label>FFmpeg Settings</label>
+				<description>Settings that setup or effect the video stream.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter-group name="Image ch Settings">
+				<label>Image channel settings</label>
+				<description>Settings for the image channel features which is not recommended to be used. See readme for more info.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>MJPEG URL</label>
+				<description>Leave this blank to use the auto detected URL, or enter a full HTTP address to where a MJPEG stream can
+					be watched if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInput" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>FFmpeg Input</label>
+				<description>Leave this blank to use the auto detected RTSP address, or enter any URL that FFmpeg can use as an
+					input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Install Location</label>
+				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
+					c:\ffmpeg\bin\ffmpeg.exe
+				</description>
+				<default>/usr/bin/ffmpeg</default>
+			</parameter>
+
+			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Output Folder</label>
+				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
+					format, c:\openhabconf\html\ipcamera\
+				</description>
+				<default>/etc/openhab2/html/camera1/</default>
+			</parameter>
+
+			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>HLS Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used.
+				</description>
+				<default>-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2
+					-hls_list_size 4</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifOutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>GIF Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
+				</description>
+				<default>-r 2 -filter_complex
+					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mp4OutOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MP4 Out Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
+				</description>
+				<default>-c:v copy -c:a copy</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>MJPEG Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
+				</description>
+				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
+				<context>url</context>
+				<label>Alarm Input URL</label>
+				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Motion Options</label>
+				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="gifPreroll" type="integer" required="true" min="0" max="30" groupName="Settings">
+				<label>GIF Preroll</label>
+				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+				<label>Server Port</label>
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
+					for each camera. Setting the port to -1 will turn the feature off.
+				</description>
+			</parameter>
+
+			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
+				<label>IP Whitelist</label>
+				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
+					allow all devices on your network unrestricted access.
+				</description>
+				<default>DISABLE</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
+				</description>
+				<default>0</default>
+				<options>
+					<option value="0">Image channel never updates (0)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
+					<option value="2">Start Motion Alarm (2)</option>
+					<option value="3">Start Audio Alarm (3)</option>
+					<option value="23">Start of Motion and Audio Alarms (23)</option>
+					<option value="4">During Motion Alarm (4)</option>
+					<option value="5">During Audio Alarm (5)</option>
+					<option value="45">During Motion and Audio Alarms (45)</option>
+				</options>
+			</parameter>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>Use this format 192.168.1.2 and do not include the port number.
+				</description>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true" min="1" max="65535" groupName="Settings">
+				<label>Port for HTTP</label>
+				<description>This port will be used for HTTP calls for fetching the snapshot and alarm states.
+				</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
+				<context>url</context>
+				<label>Snapshot URL</label>
+				<description>Leave blank to use the autodetected URL for snapshots, or enter a HTTP URL to where a snapshot can be
+					seen if entered into any browser.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
+				<label>ONVIF Port</label>
+				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
+					discovery of RTSP and snapshot URLs.
+				</description>
+				<default>8080</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false" groupName="Settings">
+				<label>Username</label>
+				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
+					details.
+				</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="false" groupName="Settings">
+				<context>password</context>
+				<label>Password</label>
+				<description>Enter the password for your camera. Leave blank if your camera does not use one.
+				</description>
+			</parameter>
+
+			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
+				</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
+				<label>ONVIF Media Profile</label>
+				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
+					and 1 or above are the sub-streams. Sometimes you need to turn on sub-streams in the cameras setup before they can
+					be used.
+				</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings"
+				unit="ms">
+				<label>Poll Time</label>
+				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
+					Default is "1000" which is 1 second.
+				</description>
+				<default>1000</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>Low frame rate image from your camera. Recommend this is NOT used unless you have large pollTime.</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="pollImage">
+		<item-type>Switch</item-type>
+		<label>Poll Image</label>
+		<description>This can be used to trigger snapshot updates when an external PIR, button or other form of sensor turns
+			this channel ON.</description>
+	</channel-type>
+
+	<channel-type id="recordingGif">
+		<item-type>Number</item-type>
+		<label>GIF Recording (Seconds)</label>
+		<description>Indicates how long the recording will occur for and when the file is created, the channel will
+			change to 0
+			by itself.</description>
+		<category>Time</category>
+		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gifHistory">
+		<item-type>String</item-type>
+		<label>Gif Filename History</label>
+		<description>A history of the last GIFs created in a CSV formatted string.</description>
+	</channel-type>
+
+	<channel-type id="gifHistoryLength">
+		<item-type>Number</item-type>
+		<label>GIF History Length</label>
+		<description>How many GIFs are stored in the history.</description>
+	</channel-type>
+
+	<channel-type id="recordingMp4">
+		<item-type>Number</item-type>
+		<label>MP4 Recording (Seconds)</label>
+		<description>Indicates how long the recording will occur for and when the file is created, the channel will
+			change to 0
+			by itself.</description>
+		<category>Time</category>
+		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mp4History">
+		<item-type>String</item-type>
+		<label>Mp4 Filename History</label>
+		<description>A history of the last mp4 recordings created in a CSV formatted string.</description>
+	</channel-type>
+
+	<channel-type id="mp4HistoryLength">
+		<item-type>Number</item-type>
+		<label>mp4HistoryLength</label>
+		<description>How many mp4 recordings are stored in the history.</description>
+	</channel-type>
+
+	<channel-type id="mp4Preroll">
+		<item-type>Number</item-type>
+		<label>MP4 preroll</label>
+		<description>Set this channel to a number of how many seconds you wish to record for using the HLS files as a source.</description>
+		<category>Time</category>
+		<state min="0" max="10" step="1" pattern="%.1f Seconds" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="imageUrl">
+		<item-type>String</item-type>
+		<label>Image URL</label>
+		<description>A link you can use to fetch a static image from the camera.</description>
+		<category>Camera</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rtspUrl">
+		<item-type>String</item-type>
+		<label>RTSP URL</label>
+		<description>A link that the camera uses for RTSP.</description>
+		<category>Camera</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mjpegUrl">
+		<item-type>String</item-type>
+		<label>MJPEG URL</label>
+		<description>A link you can use in openHAB/HABpanel to fetch a MJPEG video feed from the camera.</description>
+		<category>Camera</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hlsUrl">
+		<item-type>String</item-type>
+		<label>HLS URL (m3u8)</label>
+		<description>A link you can use in openHAB to cast video feeds.</description>
+		<category>Camera</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pan">
+		<item-type>Dimmer</item-type>
+		<label>Pan</label>
+		<description>Pan the camera to a new position.</description>
+		<category>MoveControl</category>
+	</channel-type>
+
+	<channel-type id="tilt">
+		<item-type>Dimmer</item-type>
+		<label>Tilt</label>
+		<description>Tilt the camera to a new position.</description>
+		<category>MoveControl</category>
+	</channel-type>
+
+	<channel-type id="zoom">
+		<item-type>Dimmer</item-type>
+		<label>Zoom</label>
+		<description>Zoom the camera to a new value.</description>
+		<category>Zoom</category>
+	</channel-type>
+
+	<channel-type id="lastMotionType">
+		<item-type>String</item-type>
+		<label>Last Motion Type</label>
+		<description>A string that contains the type of motion alarm that was last triggered.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="motionAlarm">
+		<item-type>Switch</item-type>
+		<label>Motion Alarm</label>
+		<description>Motion has been detected.</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fieldDetectionAlarm">
+		<item-type>Switch</item-type>
+		<label>Intrusion/Field Alarm ON/OFF</label>
+		<description>Intrusion has detected movement. AKA Field Detection Alarm.</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enableFieldDetectionAlarm">
+		<item-type>Switch</item-type>
+		<label>Intrusion/Field Alarm</label>
+		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
+	</channel-type>
+
+	<channel-type id="enablePirAlarm">
+		<item-type>Switch</item-type>
+		<label>PIR Alarm ON/OFF</label>
+		<description>Enable/Disable the PIR Alarm.</description>
+		<category>Motion</category>
+	</channel-type>
+
+	<channel-type id="cellMotionAlarm">
+		<item-type>Switch</item-type>
+		<label>Cell Motion Detection Alarm</label>
+		<description>Cell based motion has been detected.</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pirAlarm">
+		<item-type>Switch</item-type>
+		<label>PIR Alarm</label>
+		<description>PIR motion has been detected.</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tamperAlarm">
+		<item-type>Switch</item-type>
+		<label>Tamper Alarm</label>
+		<description>Camera may be stolen or damaged.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tooDarkAlarm">
+		<item-type>Switch</item-type>
+		<label>Too Dark Alarm</label>
+		<description>Image is too dark.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sceneChangeAlarm">
+		<item-type>Switch</item-type>
+		<label>Scene Change Alarm</label>
+		<description>Camera may have been moved.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tooBrightAlarm">
+		<item-type>Switch</item-type>
+		<label>Too Bright Alarm</label>
+		<description>Image is too bright.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tooBlurryAlarm">
+		<item-type>Switch</item-type>
+		<label>Too Blurry Alarm</label>
+		<description>Image is out of focus.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="storageAlarm">
+		<item-type>Switch</item-type>
+		<label>Storage Alarm</label>
+		<description>An issue with the cameras storage has been reported.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ffmpegMotionAlarm">
+		<item-type>Switch</item-type>
+		<label>FFmpeg Motion Alarm</label>
+		<description>FFmpeg has detected motion.</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lineCrossingAlarm">
+		<item-type>Switch</item-type>
+		<label>Line Crossing Alarm</label>
+		<description>Motion has been detected.</description>
+		<category>Motion</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="faceDetected">
+		<item-type>Switch</item-type>
+		<label>Face Detected Alarm</label>
+		<description>A face has been detected.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="itemLeft">
+		<item-type>Switch</item-type>
+		<label>Item Left Alarm</label>
+		<description>An item has been left.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="parkingAlarm">
+		<item-type>Switch</item-type>
+		<label>Car Parking Alarm</label>
+		<description>A car has triggered the ParkingDetection.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="itemTaken">
+		<item-type>Switch</item-type>
+		<label>Item Taken Alarm</label>
+		<description>An item may have been stolen.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audioAlarm">
+		<item-type>Switch</item-type>
+		<label>Audio Alarm</label>
+		<description>Audio has triggered an Alarm.</description>
+		<category>SoundVolume</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enableExternalAlarmInput">
+		<item-type>Switch</item-type>
+		<label>Alarm In 1 ON/OFF</label>
+		<description>Turn the External Alarm Input feature on and off.</description>
+	</channel-type>
+
+	<channel-type id="triggerExternalAlarmInput">
+		<item-type>Switch</item-type>
+		<label>Alarm In 1 TRIGGER high ON/low OFF</label>
+		<description>Change the External Alarm Input to trigger on high or low states.</description>
+	</channel-type>
+
+	<channel-type id="externalAlarmInput">
+		<item-type>Switch</item-type>
+		<label>Alarm In 1</label>
+		<description>Some cameras have alarm input wires which can be used to connect to door bells or external PIR sensors.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="externalAlarmInput2">
+		<item-type>Switch</item-type>
+		<label>Alarm In 2</label>
+		<description>Some cameras have alarm input wires which can be used to connect to door bells or external PIR sensors.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enableMotionAlarm">
+		<item-type>Switch</item-type>
+		<label>Motion Alarm ON/OFF</label>
+		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
+		<category>Motion</category>
+	</channel-type>
+
+	<channel-type id="externalMotion">
+		<item-type>Switch</item-type>
+		<label>External Motion Sensor Input</label>
+		<description>Use other sensors external to the camera like a ZWave PIR sensor to flag that the camera has motion in
+			its field of view.</description>
+		<category>Motion</category>
+	</channel-type>
+
+	<channel-type id="ffmpegMotionControl">
+		<item-type>Dimmer</item-type>
+		<label>FFmpeg Motion Alarm ON/OFF/DIMMER</label>
+		<description>Enable/Disable the motion alarm and control the sensitivity.</description>
+		<category>Motion</category>
+	</channel-type>
+
+	<channel-type id="enableLineCrossingAlarm">
+		<item-type>Switch</item-type>
+		<label>Line Crossing ON/OFF</label>
+		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
+		<category>Motion</category>
+	</channel-type>
+
+	<channel-type id="enableAudioAlarm">
+		<item-type>Switch</item-type>
+		<label>Audio Alarm ON/OFF</label>
+		<description>By using this feature you can stop the camera from sending e-mails when you are having a party.</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="thresholdAudioAlarm">
+		<item-type>Dimmer</item-type>
+		<label>Audio Alarm Threshold ON/OFF/DIMMER</label>
+		<description>By moving this control you should be able to change how sensitive the audio alarm is to soft or loud
+			noises.</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="activateAlarmOutput">
+		<item-type>Switch</item-type>
+		<label>Alarm Output 1 ON/OFF</label>
+		<description>You can use the cameras output to trigger a device like a burglar alarm.</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<channel-type id="activateAlarmOutput2">
+		<item-type>Switch</item-type>
+		<label>Alarm Output 2 ON/OFF</label>
+		<description>You can use the cameras output 2 to trigger a device like a burglar alarm.</description>
+		<category>Alarm</category>
+	</channel-type>
+
+	<channel-type id="startStream">
+		<item-type>Switch</item-type>
+		<label>Start Stream (HLS .m3u8)</label>
+		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
+	</channel-type>
+
+	<channel-type id="enableLED">
+		<item-type>Dimmer</item-type>
+		<label>LED ON/OFF/Dimmer controls.</label>
+		<description>Turn the LED on and off and if supported allow Dimming.</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="autoLED">
+		<item-type>Switch</item-type>
+		<label>Auto LED ON/OFF</label>
+		<description>Turn automatic mode for the LED on and off.</description>
+	</channel-type>
+
+	<channel-type id="externalLight">
+		<item-type>Switch</item-type>
+		<label>External Light ON/OFF</label>
+		<description>Turn the lights on and off.</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="doorBell">
+		<item-type>Switch</item-type>
+		<label>Doorbell Pushed</label>
+		<description>The button has been pushed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="textOverlay">
+		<item-type>String</item-type>
+		<label>Text Overlay</label>
+		<description>Some custom text you wish to overlay over the cameras snapshot and video streams.</description>
+	</channel-type>
+
+	<channel-type id="gotoPreset">
+		<item-type>String</item-type>
+		<label>gotoPreset</label>
+		<description>Move a P.T.Z camera to this ONVIF preset location.</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Preset 1</option>
+				<option value="2">Preset 2</option>
+				<option value="3">Preset 3</option>
+				<option value="4">Preset 4</option>
+				<option value="5">Preset 5</option>
+				<option value="6">Preset 6</option>
+				<option value="7">Preset 7</option>
+				<option value="8">Preset 8</option>
+				<option value="9">Preset 9</option>
+				<option value="10">Preset 10</option>
+				<option value="11">Preset 11</option>
+				<option value="12">Preset 12</option>
+				<option value="13">Preset 13</option>
+				<option value="14">Preset 14</option>
+				<option value="15">Preset 15</option>
+				<option value="16">Preset 16</option>
+				<option value="17">Preset 17</option>
+				<option value="18">Preset 18</option>
+				<option value="19">Preset 19</option>
+				<option value="20">Preset 20</option>
+				<option value="21">Preset 21</option>
+				<option value="22">Preset 22</option>
+				<option value="23">Preset 23</option>
+				<option value="24">Preset 24</option>
+				<option value="25">Preset 25</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

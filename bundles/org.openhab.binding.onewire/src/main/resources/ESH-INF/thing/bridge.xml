@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onewire"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="owserver" extensible="owfs-string,owfs-number">
+		<label>OW Server</label>
+		<description>An owserver instance</description>
+		<config-description>
+			<parameter name="network-address" type="text">
+				<context>network_address</context>
+				<label>Network Address</label>
+				<description>Network address of the host running the owserver</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Listening port of the owserver</description>
+				<default>4304</default>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<channel-type id="owfs-string">
+		<item-type>String</item-type>
+		<label>Direct Access to OWFS-Path (String)</label>
+		<description>Allows direct access to the OWFS</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="path" type="text">
+				<label>OWFS Path</label>
+				<description>full path to the OWFS-node (e.g. statistics/errors/CRC8_errors)</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1">
+				<label>Refresh Time</label>
+				<description>Time in seconds after which the channel is refreshed</description>
+				<default>300</default>
+				<unitLabel>s</unitLabel>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="owfs-number">
+		<item-type>Number</item-type>
+		<label>Direct Access to OWFS-Path (Number)</label>
+		<description>Allows direct access to the OWFS</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="path" type="text">
+				<label>OWFS Path</label>
+				<description>full path to the OWFS-node (e.g. statistics/errors/CRC8_errors)</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1">
+				<label>Refresh Time</label>
+				<description>Time in seconds after which the channel is refreshed</description>
+				<default>300</default>
+				<unitLabel>s</unitLabel>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

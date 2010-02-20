@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kvv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Train Line Name</label>
+		<description>Name of the Train Line</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="destination">
+		<item-type>String</item-type>
+		<label>Destination of the train</label>
+		<description>Name of the Train Line</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="eta">
+		<item-type>String</item-type>
+		<label>Estimated Time Available</label>
+		<description>Time at which the train arrives</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-group-type id="train">
+		<label>KVV Train</label>
+		<description>This is a single KVV train</description>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="destination" typeId="destination"/>
+			<channel id="eta" typeId="eta"/>
+		</channels>
+	</channel-group-type>
+
+	<thing-type id="stop">
+		<label>KVV Stop</label>
+		<description>Train stop for KVV Binding.</description>
+
+		<config-description>
+			<parameter name="stopId" type="text">
+				<label>Stop ID</label>
+				<description>ID of the train stop.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

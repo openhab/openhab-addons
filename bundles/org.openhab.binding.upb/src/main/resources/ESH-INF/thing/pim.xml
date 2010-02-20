@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="serial-pim">
+		<label>Serial PIM</label>
+		<description>A serial Powerline Interface Module (PIM) is a modem for UPB</description>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial port</label>
+				<context>serial-port</context>
+				<description>The file name of the serial port to use to communicate with the PIM.</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+</thing:thing-descriptions>

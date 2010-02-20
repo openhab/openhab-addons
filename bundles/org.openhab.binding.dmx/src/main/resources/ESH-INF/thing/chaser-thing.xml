@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Dimmer -->
+	<thing-type id="chaser">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="artnet-bridge"/>
+			<bridge-type-ref id="lib485-bridge"/>
+			<bridge-type-ref id="sacn-bridge"/>
+		</supported-bridge-type-refs>
+		<label>DMX Chaser</label>
+		<description>A single/multi-channel chaser</description>
+		<channels>
+			<channel id="switch" typeId="switch"/>
+			<channel id="control" typeId="control"/>
+		</channels>
+		<config-description>
+			<parameter name="dmxid" type="text">
+				<label>DMX Channel Configuration</label>
+				<description>Format is channel[,channel, ...] or channel[/width]</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="resumeafter" type="boolean">
+				<label>Resume After Finish</label>
+				<description>resume old actions after this completes</description>
+				<default>false</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="steps" type="text">
+				<label>Step Configuration</label>
+				<description>fadeTime:value[, ...]:holdTime </description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

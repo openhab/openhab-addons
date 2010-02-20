@@ -1,0 +1,6 @@
+{
+  "id": "countdown.configure",
+  "params": {
+    "duration": 30
+  }
+}
