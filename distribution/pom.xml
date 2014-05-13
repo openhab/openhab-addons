@@ -222,12 +222,6 @@
             <type>zip</type>
             <classifier>win32.win32.x86</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.openhab.io</groupId>
-            <artifactId>org.openhab.io.squeezeserver</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
 
     </dependencies>
 
