@@ -16,7 +16,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>org.openhab.dependencies.feature</module>
     <module>org.openhab.runtime.feature</module>
   </modules>
 
