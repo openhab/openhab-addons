@@ -82,8 +82,8 @@
 <repository location="http://download.eclipse.org/releases/kepler"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.feature.group" version="0.7.0.201405102322"/>
-<unit id="org.eclipse.smarthome.feature.runtime.source.feature.group" version="0.7.0.201405102322"/>
+<unit id="org.eclipse.smarthome.feature.runtime.feature.group" version="0.7.0.201405221722"/>
+<unit id="org.eclipse.smarthome.feature.runtime.source.feature.group" version="0.7.0.201405221722"/>
 <repository location="http://download.eclipse.org/smarthome/updates-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">

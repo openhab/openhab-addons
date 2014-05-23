@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.library.tel.TelItemFactory;
 import org.openhab.library.tel.types.CallType;
 
 
@@ -35,7 +36,7 @@ public class CallItem extends GenericItem {
 	}
 	
 	public CallItem(String name) {
-		super(name);
+		super(TelItemFactory.ITEM_TYPE, name);
 	}
 
 	public List<Class<? extends State>> getAcceptedDataTypes() {

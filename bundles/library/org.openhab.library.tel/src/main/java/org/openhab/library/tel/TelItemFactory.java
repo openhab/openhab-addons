@@ -16,17 +16,18 @@ import org.openhab.library.tel.items.CallItem;
  * {@link ItemFactory}-Implementation for this library's ItemTypes
  * 
  * @author Thomas.Eichstaedt-Engelen
+ * @author Kai Kreuzer
  * @since 0.9.0
  */
 public class TelItemFactory implements org.eclipse.smarthome.core.items.ItemFactory {
 	
-	private static final String[] ITEM_TYPES = new String[] { "Call" };
+	public static final String ITEM_TYPE = "Call";
 
 	/**
 	 * @{inheritDoc}
 	 */
 	public GenericItem createItem(String itemTypeName, String itemName) {
-		if (itemTypeName.equals(ITEM_TYPES[0]))
+		if (itemTypeName.equals(ITEM_TYPE))
 			return new CallItem(itemName);
 		else {
 			return null;
@@ -37,7 +38,7 @@ public class TelItemFactory implements org.eclipse.smarthome.core.items.ItemFact
 	 * @{inheritDoc}
 	 */
 	public String[] getSupportedItemTypes() {
-		return ITEM_TYPES;
+		return new String[] { ITEM_TYPE };
 	}
 
 }
