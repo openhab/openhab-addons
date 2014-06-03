@@ -84,7 +84,7 @@
                                     <data>
                                         <src>${basedir}/target/distribution-${project.version}-runtime.zip</src>
                                         <type>archive</type>
-                                        <excludes>configurations/**,logs/**,etc/**,webapps/static/**</excludes>
+                                        <excludes>configurations/**,userdata/**</excludes>
                                         <mapper>
                                             <type>perm</type>
                                             <prefix>/opt/openhab</prefix>
@@ -104,13 +104,6 @@
                                             <user>openhab</user>
                                             <group>openhab</group>
                                         </mapper>
-                                    </data>
-                                    <data>
-                                        <!-- TODO better solution is to change jetty code to search jetty.xml in -Djetty.config -->
-                                        <type>link</type>
-                                        <linkName>/opt/openhab/etc</linkName>
-                                        <linkTarget>/etc/openhab/jetty/etc</linkTarget>
-                                        <symlink>true</symlink>
                                     </data>
                                     <data>
                                         <!-- TODO better solution is to change configurations search strategy -->
@@ -144,7 +137,7 @@
                                     <data>
                                         <src>${basedir}/openhabhome/configurations</src>
                                         <type>directory</type>
-                                        <includes>**/items/README,**/persistence/README,**/rules/README,**/scripts/README,**/sitemaps/README,**/transform/README,**/contexts/README</includes>
+                                        <includes>**/items/README,**/persistence/README,**/rules/README,**/scripts/README,**/sitemaps/README,**/transform/README,**/contexts/README,**/icons/*</includes>
                                         <mapper>
                                             <type>perm</type>
                                             <prefix>/etc/openhab/configurations</prefix>
@@ -183,7 +176,7 @@
                                         </mapper>
                                     </data>
                                     <data>
-                                        <src>${basedir}/openhabhome/etc/quartz.properties</src>
+                                        <src>${basedir}/openhabhome/runtime/etc/quartz.properties</src>
                                         <type>file</type>
                                         <mapper>
                                             <type>perm</type>
@@ -197,7 +190,7 @@
                                         <paths>
                                             <path>/var/lib/openhab</path>
                                             <path>/var/log/openhab</path>
-                                            <path>/opt/openhab/webapps/static</path>
+                                            <path>/opt/openhab/userdata/id</path>
                                         </paths>
                                         <mapper>
                                             <type>perm</type>
