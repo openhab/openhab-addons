@@ -12,8 +12,6 @@
       <directory>openhabhome</directory>
 	  <useDefaultExcludes>false</useDefaultExcludes>
 	  <excludes>
-		<exclude>**/drools/**</exclude>
-		<exclude>**/webapps/greent/**</exclude>
 		<exclude>**/demo*.*</exclude>
 	  	<exclude>**/persistence/*.persist</exclude>
 	  </excludes>
@@ -42,7 +40,7 @@
     	<useStrictFiltering>true</useStrictFiltering>
     	<useProjectArtifact>false</useProjectArtifact>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>server</outputDirectory>
+      <outputDirectory>runtime/server</outputDirectory>
       <unpack>true</unpack>
       <unpackOptions>
 				<!-- we need to manually exclude bundles that tycho adds to the product build
