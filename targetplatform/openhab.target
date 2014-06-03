@@ -67,7 +67,7 @@
 <unit id="org.slf4j.log4j" version="1.7.2.v20130115-1340"/>
 <unit id="org.slf4j.log4j.source" version="1.7.2.v20130115-1340"/>
 <unit id="org.apache.felix.gogo.runtime" version="0.10.0.v201209301036"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/S20140428023358/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.mwe2.runtime.sdk.feature.group" version="2.5.1.v201402030544"/>
@@ -82,8 +82,8 @@
 <repository location="http://download.eclipse.org/releases/kepler"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.feature.group" version="0.7.0.201405221722"/>
-<unit id="org.eclipse.smarthome.feature.runtime.source.feature.group" version="0.7.0.201405221722"/>
+<unit id="org.eclipse.smarthome.feature.runtime.feature.group" version="0.7.0.201406022222"/>
+<unit id="org.eclipse.smarthome.feature.runtime.source.feature.group" version="0.7.0.201406022222"/>
 <repository location="http://download.eclipse.org/smarthome/updates-nightly/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
