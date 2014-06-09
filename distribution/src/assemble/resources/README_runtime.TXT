@@ -5,7 +5,7 @@
 ===                                 RUNTIME                               ====
 ==============================================================================
 
-This zip file contains the core runtime package of openHAB.
+This is the core runtime of openHAB2 - see https://github.com/openhab/openhab2
 
-See http://code.google.com/p/openhab/wiki/Setup for setup and
-configuration instructions.
+For contributing to the project, please refer to
+https://github.com/openhab/openhab2/blob/master/CONTRIBUTING.md

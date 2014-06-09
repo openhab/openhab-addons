@@ -1,6 +1,0 @@
-/etc/default/openhab
-/etc/openhab/logback_debug.xml
-/etc/openhab/logback.xml
-/etc/openhab/quartz.properties
-/etc/openhab/configurations/openhab.cfg
-/etc/openhab/users.cfg

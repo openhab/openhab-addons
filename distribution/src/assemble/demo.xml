@@ -14,10 +14,6 @@
       <outputDirectory>/</outputDirectory>
       <directory>openhabhome</directory>
 	  <useDefaultExcludes>false</useDefaultExcludes>
-	  <excludes>
-		<exclude>**/drools/**</exclude>
-		<exclude>**/webapps/greent/**</exclude>
-	  </excludes>
 	  <includes>
 	  	<include>**/demo*.*</include>
 	  	<include>**/persistence/*.persist</include>
