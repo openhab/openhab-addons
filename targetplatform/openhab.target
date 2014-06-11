@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="60">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="61">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.ibm.icu.base" version="52.1.0.v201404171520"/>
@@ -87,11 +87,11 @@
 <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.source.feature.group" version="0.7.0.201406092222"/>
-<unit id="org.eclipse.smarthome.feature.designer.feature.group" version="0.7.0.201406092222"/>
-<unit id="org.eclipse.smarthome.feature.runtime.feature.group" version="0.7.0.201406092222"/>
-<unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.7.0.201406092222"/>
-<unit id="org.eclipse.smarthome.feature.designer.source.feature.group" version="0.7.0.201406092222"/>
+<unit id="org.eclipse.smarthome.feature.runtime.source.feature.group" version="0.7.0.201406102122"/>
+<unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.7.0.201406102122"/>
+<unit id="org.eclipse.smarthome.feature.designer.feature.group" version="0.7.0.201406102122"/>
+<unit id="org.eclipse.smarthome.feature.runtime.feature.group" version="0.7.0.201406102122"/>
+<unit id="org.eclipse.smarthome.feature.designer.source.feature.group" version="0.7.0.201406102122"/>
 <repository location="http://download.eclipse.org/smarthome/updates-nightly/"/>
 </location>
 </locations>
