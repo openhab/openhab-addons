@@ -8,7 +8,7 @@
  */
 package org.openhab.core.transform.actions;
 
-import org.openhab.core.compat1x.internal.Activator;
+import org.openhab.core.compat1x.internal.CompatibilityActivator;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
@@ -39,7 +39,7 @@ public class Transformation {
 	 */
 	public static String transform(String type, String function, String value) {
 		String result;
-		TransformationService service = TransformationHelper.getTransformationService(Activator.getContext(), type);
+		TransformationService service = TransformationHelper.getTransformationService(CompatibilityActivator.getContext(), type);
 		if(service!=null) {
 			try {
 				result = service.transform(function, value);

@@ -34,6 +34,9 @@
 	<logger name="org.openhab" level="INFO"/>
 	<logger name="org.eclipse.smarthome" level="INFO"/>
 
+    <logger name="OSGi" level="OFF"/>
+    <logger name="org.eclipse.jetty" level="ERROR"/>
+
 	<root level="WARN">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />

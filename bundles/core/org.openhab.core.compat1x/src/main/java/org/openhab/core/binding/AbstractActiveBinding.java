@@ -31,7 +31,7 @@ public abstract class AbstractActiveBinding<P extends BindingProvider> extends A
 	
 	/**
 	 * Adds <code>provider</code> to the list of {@link BindingProvider}s and 
-	 * adds <code>this</code> as {@link BindingChangeListener}. If 
+	 * adds <code>this</code> as {@link BindingConfigChangeListener}. If 
 	 * <code>provider</code> contains any binding an the refresh-Thread is
 	 * stopped it will be started.
 	 * 

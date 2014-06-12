@@ -15,8 +15,9 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.EventType;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
-abstract public class AbstractEventSubscriber {
+abstract public class AbstractEventSubscriber implements EventHandler {
 	
 	/**
 	 * {@inheritDoc}

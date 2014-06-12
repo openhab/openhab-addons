@@ -29,11 +29,13 @@ public class TransformationHelper {
 	 */
 	static public TransformationService getTransformationService(BundleContext context, String transformationType) {
 		if(context!=null) {
-			String filter = "(openhab.transform=" + transformationType + ")";
+			String filter = "(smarthome.transform=" + transformationType + ")";
 			try {
-				Collection<ServiceReference<TransformationService>> refs = context.getServiceReferences(TransformationService.class, filter);
+				Collection<ServiceReference<org.eclipse.smarthome.core.transform.TransformationService>> refs = 
+						context.getServiceReferences(org.eclipse.smarthome.core.transform.TransformationService.class, filter);
 				if(refs!=null && refs.size() > 0) {
-					return (TransformationService) context.getService(refs.iterator().next());
+					return new TransformationServiceDelegate(
+							(org.eclipse.smarthome.core.transform.TransformationService) context.getService(refs.iterator().next()));
 				} else {
 					logger.warn("Cannot get service reference for transformation service of type " + transformationType);
 				}
@@ -44,4 +46,23 @@ public class TransformationHelper {
 		return null;
 	}
 
+	static private class TransformationServiceDelegate implements TransformationService {
+
+		org.eclipse.smarthome.core.transform.TransformationService delegate;
+		
+		public TransformationServiceDelegate(org.eclipse.smarthome.core.transform.TransformationService delegate) {
+			this.delegate = delegate;
+		}
+		
+		@Override
+		public String transform(String function, String source)
+				throws TransformationException {
+			try {
+				return delegate.transform(function, source);
+			} catch (org.eclipse.smarthome.core.transform.TransformationException e) {
+				throw new TransformationException(e.getMessage());
+			}
+		}
+		
+	}
 }
