@@ -12,6 +12,8 @@ So far the "productive" openHAB code is at http://github.com/openhab/openhab.
 This project is the home of the next-generation openHAB aka openHAB2.
 A major focus of openHAB2 is adding administration UIs to the system to make it more user-friendly for "regular" users (i.e. not the developer type). For this, openHAB2 is now based on the [Eclipse SmartHome](http://www.eclipse.org/smarthome) project. openHAB2 is not yet ready to be used as it is in an early phase. We will try to provide regular updates on the state of things, so stay tuned!
 
+Nonetheless we have snapshot builds already [available at CloudBees](https://openhab.ci.cloudbees.com/job/openHAB2/) - they even include a 1.x compatibility bundle, so that a couple of openHAB 1.x addons can be used with it (we are working on further improving this compatibility layer).
+
 ## Community: How to get Support and How to Contribute
 
 If you are looking for support, please check out the [different support channels](https://github.com/openhab/openhab/wiki/Support-options-for-openHAB) that we provide.
