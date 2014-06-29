@@ -28,7 +28,6 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.equinox.server.core"/>
       <feature id="org.openhab.runtime.feature"/>
    </features>
 
@@ -38,15 +37,12 @@
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.shell" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.cm" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.p2.console" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.jetty.osgi.boot" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.jetty.osgi.httpservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.jetty.server" autoStart="true" startLevel="0" />
@@ -71,11 +67,13 @@
       <plugin id="org.eclipse.smarthome.model.rule" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.script" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.sitemap" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.model.thing" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.persistence" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.item.runtime" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.model.rule.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.script.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.sitemap.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.model.thing.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.persistence.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />

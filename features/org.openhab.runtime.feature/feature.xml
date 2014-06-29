@@ -27,18 +27,6 @@
       %license
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.osgi.services"/>
-      <import plugin="org.slf4j.api"/>
-      <import plugin="org.apache.commons.io"/>
-      <import plugin="org.apache.commons.lang"/>
-      <import plugin="org.eclipse.emf.common"/>
-      <import plugin="org.eclipse.emf.ecore"/>
-      <import plugin="org.antlr.runtime"/>
-      <import plugin="javax.servlet" version="2.5.0" match="greaterOrEqual"/>
-   </requires>
-
    <plugin
          id="ch.qos.logback.classic"
          download-size="0"
@@ -636,6 +624,41 @@
 
    <plugin
          id="org.eclipse.smarthome.ui.icon"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.core.thing"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.thing"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.supplement"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.equinox.registry"
          download-size="0"
          install-size="0"
          version="0.0.0"
