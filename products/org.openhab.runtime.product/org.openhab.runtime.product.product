@@ -41,6 +41,7 @@
       <plugin id="org.eclipse.equinox.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.registry" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.jetty.osgi.boot" autoStart="true" startLevel="0" />
@@ -54,8 +55,10 @@
       <plugin id="org.eclipse.smarthome.core.scriptengine" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.core.persistence" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.transform" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.core.thing" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.monitor" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.io.multimedia" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.net" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.smarthome.io.rest.item" autoStart="true" startLevel="0" />
