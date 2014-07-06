@@ -20,9 +20,10 @@ import java.util.logging.Handler;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.ConfigConstants;
-import org.eclipse.smarthome.config.core.ConfigDispatcher;
+import org.eclipse.smarthome.model.rule.runtime.RuleEngine;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -64,7 +65,7 @@ public class CoreActivator implements BundleActivator {
 			versionString = StringUtils.substringBeforeLast(versionString, ".");
 		}
 		createVersionFile(versionString);
-
+		
 		if (buildString.equals("")) {
 			logger.info("openHAB runtime has been started (v{}).",
 					versionString);
@@ -81,6 +82,20 @@ public class CoreActivator implements BundleActivator {
 		}
 
 		SLF4JBridgeHandler.install();
+
+		startRuleEngine(context);
+	}
+
+	private void startRuleEngine(BundleContext context) throws InterruptedException {
+		// TODO: This is a workaround as long as we cannot determine the time when all models have been loaded
+		Thread.sleep(2000);
+		
+		// we now request the RuleEngine, so that it is activated and starts processing the rules
+		// TODO: This should probably better be moved in a new bundle, so that the core bundle does
+		// not have a dependency on model.rule.runtime anymore.
+		ServiceTracker<RuleEngine, RuleEngine> tracker = new ServiceTracker<RuleEngine, RuleEngine>(context, RuleEngine.class, null);
+		tracker.open();
+		tracker.waitForService(10000);
 	}
 
 	/*
