@@ -3,19 +3,20 @@
 
   <parent>
     <groupId>org.openhab</groupId>
-    <artifactId>bundles</artifactId>
+    <artifactId>openhab</artifactId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab.bundles</groupId>
-  <artifactId>binding</artifactId>
+  <groupId>org.openhab</groupId>
+  <artifactId>addons</artifactId>
 
-  <name>openHAB Bindings</name>
+  <name>openHAB Add-ons</name>
 
   <packaging>pom</packaging>
 
   <modules>
+    <module>binding</module>
   </modules>
 
 </project>

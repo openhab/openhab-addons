@@ -16,7 +16,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>binding</module>
     <module>core</module>
     <module>io</module>
     <module>library</module>
