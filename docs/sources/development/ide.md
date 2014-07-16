@@ -7,6 +7,7 @@ Note that the project build is completely mavenized - so running "mvn install" o
 ## Prerequisites
 
 Make sure that you have the following things installed on your computer:
+
 1. Maven 3.x
 1. Oracle JavaSE 7 or 8 
 1. [Yoxos Installer](https://yoxos.eclipsesource.com/downloadlauncher.html)
