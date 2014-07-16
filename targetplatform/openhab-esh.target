@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="67">
+<?pde version="3.8"?><target name="openHAB 2 + Eclipse SmartHome" sequenceNumber="69">
 <locations>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.1.v201406120726"/>
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.10.0.v20140519-0339"/>
 <unit id="org.eclipse.xtext.sdk.feature.group" version="2.6.1.v201406120726"/>
 <unit id="org.eclipse.emf.mwe2.runtime.sdk.feature.group" version="2.6.1.v201406110919"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.10.0.v20140519-0339"/>
+<repository location="http://download.eclipse.org/modeling/emf/emf/updates/releases/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.2.1.201406101620"/>
@@ -102,18 +105,16 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.designer.source.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.designer.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.test.source.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.7.0.201406272022"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.7.0.201406272022"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.test.source.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.7.0.201407151307"/>
 <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 </locations>
