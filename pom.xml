@@ -197,22 +197,6 @@
         </pluginManagement>
     </build>
     
-    <pluginRepositories>
-        <pluginRepository>
-            <id>openhab.repository.snapshot</id>
-            <name>openHAB Cloudbees Repository</name>
-            <url>http://repository-openhab.forge.cloudbees.com/snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>openhab.repository</id>
-            <name>openHAB Cloudbees Repository</name>
-            <url>http://repository-openhab.forge.cloudbees.com/release/</url>
-        </pluginRepository>
-    </pluginRepositories>
-    
     <profiles>
         <profile>
             <id>prepare-release</id>
