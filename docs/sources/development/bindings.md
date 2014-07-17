@@ -17,7 +17,7 @@ Once you have [set up your IDE](ide.md), you can go ahead and create a skeleton 
 
 Now switch in Eclipse and choose `File->Import->General->Existing Projects into Workspace`, enter your workspace as the root directory and press "Finish".
 
-This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://github.com/eclipse/smarthome/blob/esh-documentation/docs/sources/howtos/bindings.md).
+This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://github.com/eclipse/smarthome/blob/master/docs/sources/howtos/bindings.md).
 
 ## Setup and Run the Binding
 
