@@ -8,6 +8,7 @@ Note that the project build is completely mavenized - so running "mvn install" o
 
 Make sure that you have the following things installed on your computer:
 
+1. Git
 1. Maven 3.x
 1. Oracle JavaSE 7 or 8 
 1. [Yoxos Installer](https://yoxos.eclipsesource.com/downloadlauncher.html)
@@ -15,13 +16,13 @@ Make sure that you have the following things installed on your computer:
 ## Setup Instructions
 
 Here are step-by-step instructions:
- 
+
+1. Create [your own fork of the openHAB2 repository](https://github.com/openhab/openhab2/fork) at Github
+1. Create a local clone of your repository on the local filesystem by running `git clone https://github.com/<your_github_user>/openhab2.git`
 1. Download and execute the file [openHAB2.yoxos](https://raw.githubusercontent.com/openhab/openhab2/master/targetplatform/openhab2.yoxos) (in linux that can be done via command line ./yoxos openhab2.yoxos 
 ). This will install you an Eclipse IDE with all required features to develop for openHAB 2. Alternatively, you can install all required plugins on top of an existing Eclipse 4.4 installation using this [update site](http://yoxos.eclipsesource.com/userdata/profile/ffb4645d9f172d6d927e2b25f19d1813) or [download a full distribution from Yoxos](http://yoxos.eclipsesource.com/userdata/profile/ffb4645d9f172d6d927e2b25f19d1813), if you register an account there.
-1. Create a new workspace and you are all set!
+1. Create a new workspace and choose `File->Import->General->Existing Projects into Workspace`, enter your repository root folder and press "Finish". All project should directly compile without errors.
 1. To launch openHAB from within your IDE, go to Run->Run Configurations->Eclipse Application->openHAB_Runtime
-
-The IDE setup will automatically do a git clone into the workspace folder under '.repositories/openhab2', so you will find all files located in there.
 
 To produce a binary zip of the runtime yourself, you can simply call `mvn clean install` from the repository root and you will find the result in the folder distribution/target.
 
