@@ -307,5 +307,17 @@
             </build>
         </profile>
     </profiles>
+
+	<repositories>
+		<repository>
+			<id>eclipse</id>
+			<name>Eclipse Snapshot Repository</name>
+			<layout>default</layout>
+			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
     
 </project>
