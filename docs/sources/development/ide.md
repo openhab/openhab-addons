@@ -22,6 +22,7 @@ Here are step-by-step instructions:
 1. Download and execute the file [openHAB2.yoxos](https://raw.githubusercontent.com/openhab/openhab2/master/targetplatform/openhab2.yoxos) (in linux that can be done via command line ./yoxos openhab2.yoxos 
 ). This will install you an Eclipse IDE with all required features to develop for openHAB 2. Alternatively, you can install all required plugins on top of an existing Eclipse 4.4 installation using this [update site](http://yoxos.eclipsesource.com/userdata/profile/ffb4645d9f172d6d927e2b25f19d1813) or [download a full distribution from Yoxos](http://yoxos.eclipsesource.com/userdata/profile/ffb4645d9f172d6d927e2b25f19d1813), if you register an account there.
 1. Create a new workspace and choose `File->Import->General->Existing Projects into Workspace`, enter your repository root folder and press "Finish". All project should directly compile without errors.
+1. Switch the perspective to "Plug-in Development"
 1. To launch openHAB from within your IDE, go to Run->Run Configurations->Eclipse Application->openHAB_Runtime
 
 To produce a binary zip of the runtime yourself, you can simply call `mvn clean install` from the repository root and you will find the result in the folder distribution/target.
