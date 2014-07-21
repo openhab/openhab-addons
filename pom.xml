@@ -28,17 +28,7 @@
         <developerConnection>scm:git:https://github.com/openhab/openhab2.git</developerConnection>
         <url>https://github.com/openhab/openhab2</url>
     </scm>
-    
-    <mailingLists>
-        <mailingList>
-            <name>openhab Mailing List</name>
-            <post>openhab@googlegroups.com</post>
-            <subscribe>http://groups.google.com/group/openhab</subscribe>
-            <unsubscribe>http://groups.google.com/group/openhab</unsubscribe>
-            <archive>http://groups.google.com/group/openhab</archive>
-        </mailingList>
-    </mailingLists>
-    
+        
     <issueManagement>
         <url>https://github.com/openhab/openhab2/issues</url>
         <system>Github</system>
@@ -50,11 +40,6 @@
         <tycho-version>0.20.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <wagon.version>1.0-beta-2</wagon.version>
-        <deb.maintainer>openHAB &lt;admin@openhab.org&gt;</deb.maintainer>
-        <deb.section>misc</deb.section>
-        <deb.distribution>development</deb.distribution>
-        <deb.depends>openhab-runtime</deb.depends>
     </properties>
     
     <packaging>pom</packaging>

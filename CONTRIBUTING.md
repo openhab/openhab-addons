@@ -33,8 +33,7 @@ that feature *on top of* openHAB.
 
 ### Discuss your design on the mailing list
 
-We recommend discussing your plans [on the mailing
-list](https://groups.google.com/group/openhab)
+We recommend discussing your plans [in the issue tracker](https://github.com/openhab/openhab2/issues?labels=enhancement&page=1&state=open)
 before starting to code - especially for more ambitious contributions.
 This gives other contributors a chance to point you in the right
 direction, give feedback on your design, and maybe point out if someone
@@ -43,7 +42,7 @@ else is working on the same thing.
 ### Create issues...
 
 Any significant improvement should be documented as [a GitHub
-issue](https://github.com/openhab/openhab2/issues) before anybody
+issue](https://github.com/openhab/openhab2/issues?labels=enhancement&page=1&state=open) before anybody
 starts working on it.
 
 ### ...but check for existing issues first!
@@ -174,7 +173,7 @@ There are several exceptions to the signing requirement. Currently these are:
 
 * Step 1: learn the component inside out
 * Step 2: make yourself useful by contributing code, bugfixes, support etc.
-* Step 3: volunteer on the discussion group (https://groups.google.com/group/openhab)
+* Step 3: volunteer on [the discussion group] (https://github.com/openhab/openhab2/issues?labels=question&page=1&state=open)
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!

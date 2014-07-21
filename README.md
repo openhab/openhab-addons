@@ -20,7 +20,9 @@ As any good open source project, openHAB welcomes community participation in the
 
 If you are a developer and want to jump right into the sources and execute openHAB 2 from within Eclipse, please have a look at the [IDE setup](docs/sources/development/ide.md) procedures.
 
-If you are not afraid of work in progress, you can have a [sneak preview on how openHAB 2 bindings are developed](docs/sources/development/bindings.md). These concepts and the APIs are still in an early stage, so please do not expect much support from us on this and do not be surprised if these things change over time. If you prefer something stable, openHAB 1.x is definitely the place to be for the moment! 
+If you are not afraid of work in progress, you can have a [sneak preview on how openHAB 2 bindings are developed](docs/sources/development/bindings.md). These concepts and the APIs are still in an early stage, so please do not expect much support from us on this and do not be surprised if these things change over time. If you prefer something stable, openHAB 1.x is definitely the place to be for the moment!
+
+In case of questions, please do NOT use the openHAB (1.x) mailing list, but refer to the [openHAB 2 issue tracker](https://github.com/openhab/openhab2/issues?labels=question&page=1&state=open) instead (using label "question").
 
 ## Trademark Disclaimer
 
