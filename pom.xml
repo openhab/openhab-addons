@@ -62,13 +62,6 @@
     </dependencies>
     
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>${wagon.version}</version>
-            </extension>
-        </extensions>
         <plugins>
             <plugin>
                 <groupId>${tycho-groupid}</groupId>
@@ -232,39 +225,6 @@
                         <configuration>
                             <sourceBundle>true</sourceBundle>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>wagon-maven-plugin</artifactId>
-                        <version>${wagon.version}</version>
-                        <executions>
-                            <execution>
-                                <id>upload-p2-repo</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>upload</goal>
-                                </goals>
-                                <configuration>
-                                    <serverId>${repo.id}</serverId>
-                                    <url>${repo.url}</url>
-                                    <fromDir>${project.basedir}/products/org.openhab.runtime.product/target/repository</fromDir>
-                                    <toDir>${p2.repo.dir}</toDir>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>upload-apt-repo</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>upload</goal>
-                                </goals>
-                                <configuration>
-                                    <serverId>${repo.id}</serverId>
-                                    <url>${repo.url}</url>
-                                    <fromDir>${project.basedir}/distribution/target/apt-repo</fromDir>
-                                    <toDir>${apt.repo.dir}</toDir>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
