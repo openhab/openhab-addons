@@ -20,7 +20,7 @@
 	  </includes>
     </fileSet>
   </fileSets>
-<!--   
+
   <dependencySets>
     <dependencySet>
     	<useStrictFiltering>true</useStrictFiltering>
@@ -29,12 +29,12 @@
       <outputDirectory>./addons</outputDirectory>
       <unpack>false</unpack>
       <includes>
-      	<include>org.openhab.persistence:org.openhab.persistence.rrd4j:jar:*</include>
+      	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
       </includes>
     </dependencySet>
   </dependencySets>
- -->  
-  <files>
+ 
+ <files>
     <file>
       <outputDirectory>/</outputDirectory>
       <source>src/assemble/resources/README_demo.TXT</source>
