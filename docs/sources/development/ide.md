@@ -25,6 +25,6 @@ Here are step-by-step instructions:
 1. Switch the perspective to "Plug-in Development"
 1. To launch openHAB from within your IDE, go to Run->Run Configurations->Eclipse Application->openHAB_Runtime
 
-To produce a binary zip of the runtime yourself, you can simply call `mvn clean install` from the repository root and you will find the result in the folder distribution/target.
+To produce a binary zip of the runtime yourself, you can simply call `mvn clean package` from the repository root and you will find the result in the folder distribution/target.
 
 To run a single test you have to use following command: `mvn -o org.eclipse.tycho:tycho-surefire-plugin:0.20.0:test` which activates the tycho-surefire-specific goal for OSGI unit test using the fragment bundle xxxx.test on xxxx bundle. The maven -o (offline) option accelerates the project dependency resolution by 10-20x since it lets maven search its local repository. Normally, snapshot-enabled projects are using external repositories to find latest built packages.
