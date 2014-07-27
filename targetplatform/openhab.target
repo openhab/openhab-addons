@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="85">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="87">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.1.v201406120726"/>
@@ -23,6 +23,8 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.google.inject" version="3.0.0.v201312141243"/>
 <unit id="com.google.inject.source" version="3.0.0.v201312141243"/>
+<unit id="com.google.gson" version="2.2.4.v201311231704"/>
+<unit id="com.google.gson.source" version="2.2.4.v201311231704"/>
 <unit id="com.google.guava" version="15.0.0.v201403281430"/>
 <unit id="com.google.guava.source" version="15.0.0.v201403281430"/>
 <unit id="com.ibm.icu.base" version="52.1.0.v201404171520"/>
@@ -101,18 +103,16 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.test.source.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.7.0.201407151307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.7.0.201407151307"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.7.0.201407262207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.7.0.201407262207"/>
 <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 </locations>
