@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="90">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="91">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.1.v201406120726"/>
@@ -116,7 +116,7 @@
 <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.jupnp.feature.feature.group" version="2.0.0.201408172018"/>
+<unit id="org.jupnp.feature.feature.group" version="2.0.0.201408181223"/>
 <repository location="http://www.openhab.org/jupnp/update-site/"/>
 </location>
 </locations>
