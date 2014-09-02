@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="93">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="95">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
@@ -102,21 +102,21 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.7.0.201408151306"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.7.0.201408151306"/>
-<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
+<unit id="org.jupnp.feature.feature.group" version="2.0.0.201409021135"/>
+<repository location="http://www.openhab.org/jupnp/update-site/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.jupnp.feature.feature.group" version="2.0.0.201408291114"/>
-<repository location="http://www.openhab.org/jupnp/update-site/"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.7.0.201409021706"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.7.0.201409021706"/>
+<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 </locations>
 </target>

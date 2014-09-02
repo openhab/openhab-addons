@@ -48,36 +48,41 @@
       <plugin id="org.eclipse.jetty.osgi.httpservice" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.jetty.server" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.config.core" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.config.discovery" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.config.xml" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.autoupdate" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.core.binding.xml" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.library" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.scheduler" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.scriptengine" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.core.persistence" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.transform" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.thing" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.core.thing.xml" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.console" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.monitor" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.multimedia" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.net" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="5" />
-      <plugin id="org.eclipse.smarthome.io.rest.item" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.io.rest.sitemap" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.io.servicediscovery" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.io.rest.item" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.io.rest.sitemap" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.io.mdns" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.storage.mapdb" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.smarthome.model.item" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.rule" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.script" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.sitemap" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.thing" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.persistence" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.model.rule" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.script" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.sitemap" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.thing" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.persistence" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.model.item.runtime" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.rule.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.script.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.sitemap.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.thing.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.persistence.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.model.rule.runtime" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.script.runtime" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.sitemap.runtime" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.thing.runtime" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.model.persistence.runtime" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.ui" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.webapp" autoStart="true" startLevel="0" />

@@ -406,13 +406,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.smarthome.io.servicediscovery"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.smarthome.io.transport.mqtt"
          download-size="0"
          install-size="0"
@@ -715,6 +708,13 @@
 
    <plugin
          id="org.jupnp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.io.mdns"
          download-size="0"
          install-size="0"
          version="0.0.0"
