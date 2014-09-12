@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Handler;
@@ -74,6 +76,12 @@ public class CoreActivator implements BundleActivator {
 					versionString, buildString);
 		}
 
+		if(logger.isDebugEnabled()) {
+			RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
+			long uptime = rb.getUptime();
+			logger.debug("Startup took {} ms", uptime);
+		}
+		
 		java.util.logging.Logger rootLogger = java.util.logging.LogManager
 				.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();
