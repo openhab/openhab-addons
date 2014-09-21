@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<!-- =============================================================== -->
+<!-- Mixin the RewriteHandler -->
+<!-- =============================================================== -->
+
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+	<!-- =========================================================== -->
+	<!-- configure rewrite handler -->
+	<!-- =========================================================== -->
+	<Get id="oldhandler" name="handler" />
+
+	<Set name="handler">
+		<New id="Rewrite" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
+			<Set name="handler">
+				<Ref id="oldhandler" />
+			</Set>
+			<Set name="rewriteRequestURI">true</Set>
+			<Set name="rewritePathInfo">false</Set>
+			<Set name="originalPathAttribute">requestedPath</Set>
+	
+			<!-- Add rule in order to take care of the X-Forwarded-Scheme header -->
+			<Call name="addRule">
+				<Arg>
+					<New class="org.eclipse.jetty.rewrite.handler.ForwardedSchemeHeaderRule">
+						<Set name="header">X-Forwarded-Scheme</Set>
+						<Set name="headerValue">https</Set> <!-- if this is unset, any value will match against the rule -->
+						<Set name="scheme">https</Set>
+					</New>
+				</Arg>
+			</Call>
+			<Call name="addRule">
+				<Arg>
+					<New class="org.eclipse.jetty.rewrite.handler.ForwardedSchemeHeaderRule">
+						<Set name="header">X-Forwarded-Scheme</Set>
+						<Set name="headerValue">http</Set> <!-- if this is unset, any value will match against the rule -->
+						<Set name="scheme">http</Set>
+					</New>
+				</Arg>
+			</Call>
+		</New>
+	</Set>
+
+</Configure>

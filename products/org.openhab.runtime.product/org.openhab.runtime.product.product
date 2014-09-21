@@ -8,7 +8,7 @@
 
    <launcherArgs>
       <programArgs>-console</programArgs>
-      <vmArgs>-Declipse.ignoreApp=true -Dosgi.noShutdown=true -D32 -Dorg.osgi.service.http.port=8080 -Dsmarthome.configfile=../configurations/openhab.cfg -Dlogback.configurationFile=../configurations/logback.xml -Djava.library.path=../lib -Djetty.home.bundle=org.eclipse.jetty.osgi.boot -DmdnsName=openhab</vmArgs>
+      <vmArgs>-Declipse.ignoreApp=true -Dosgi.noShutdown=true -D32 -Dorg.osgi.service.http.port=8080 -Dsmarthome.configfile=../configurations/openhab.cfg -Dlogback.configurationFile=../configurations/logback.xml -Djava.library.path=../lib -Djetty.home.bundle=org.openhab.io.jetty -DmdnsName=openhab</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
