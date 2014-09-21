@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Jetty
+Bundle-SymbolicName: org.openhab.io.jetty;singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Vendor: openHAB.org
+Bundle-ActivationPolicy: lazy
+Bundle-Classpath: .
+Import-Package: org.eclipse.jetty.rewrite.handler

@@ -18,4 +18,4 @@ set PROG_ARGS=-Dlogback.configurationFile=./runtime/etc/logback_debug.xml -Dmdns
 
 :: start Eclipse w/ java
 echo Launching the openHAB runtime...
-java %DEBUG_OPTS% %PROG_ARGS% -Dosgi.clean=true -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Djetty.home.bundle=org.eclipse.jetty.osgi.boot -Djetty.port=%HTTP_PORT% -Djetty.port.ssl=%HTTPS_PORT% -Dfelix.fileinstall.dir=addons -Djava.library.path=lib -Dequinox.ds.block_timeout=240000 -Dequinox.scr.waitTimeOnBlock=60000 -Dfelix.fileinstall.active.level=4 -Djava.awt.headless=true -jar %EQUINOXJAR% %* -console 
+java %DEBUG_OPTS% %PROG_ARGS% -Dosgi.clean=true -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Djetty.home.bundle=org.openhab.io.jetty -Djetty.port=%HTTP_PORT% -Djetty.port.ssl=%HTTPS_PORT% -Dfelix.fileinstall.dir=addons -Djava.library.path=lib -Dequinox.ds.block_timeout=240000 -Dequinox.scr.waitTimeOnBlock=60000 -Dfelix.fileinstall.active.level=4 -Djava.awt.headless=true -jar %EQUINOXJAR% %* -console 
