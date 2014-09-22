@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="org.openhab.core.compat1x.persistenceservicefactory">
+   <implementation class="org.openhab.core.persistence.internal.PersistenceServiceFactory"/>
+   <reference bind="addPersistenceService" cardinality="0..n" interface="org.openhab.core.persistence.PersistenceService" name="PersistenceService" policy="dynamic" unbind="removePersistenceService"/>
+</scr:component>
