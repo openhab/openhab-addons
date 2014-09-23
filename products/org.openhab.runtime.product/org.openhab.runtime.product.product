@@ -86,6 +86,7 @@
       <plugin id="org.eclipse.smarthome.ui" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.webapp" autoStart="true" startLevel="0" />
+      <plugin id="org.jupnp" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.core" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.core.compat1x" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.library.tel" autoStart="true" startLevel="0" />
