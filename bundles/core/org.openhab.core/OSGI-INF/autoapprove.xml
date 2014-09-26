@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" immediate="true" name="org.openhab.autoapprove">
+   <implementation class="org.openhab.core.internal.inbox.AutoApproveService"/>
+   <reference bind="setManagedThingProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.ManagedThingProvider" name="ManagedThingProvider" policy="static" unbind="unsetManagedThingProvider"/>
+   <reference bind="setInbox" cardinality="0..1" interface="org.eclipse.smarthome.config.discovery.inbox.Inbox" name="Inbox" policy="dynamic"/>
+   <service>
+      <provide interface="org.osgi.service.cm.ManagedService"/>
+   </service>
+   <property name="service.pid" type="String" value="org.openhab.autoapprove"/>
+</scr:component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.openhab.thinglinks">
+   <implementation class="org.openhab.core.internal.item.ThingItemChannelLinkProvider"/>
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.link.ItemChannelLinkProvider"/>
+   </service>
+   <reference bind="setThingItemUIProvider" cardinality="1..1" interface="org.openhab.core.internal.item.ThingItemUIProvider" name="ThingItemUIProvider" policy="static" unbind="unsetThingItemUIProvider"/>
+   <reference bind="setThingProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.ManagedThingProvider" name="ManagedThingProvider" policy="static" unbind="unsetThingProvider"/>
+</scr:component>

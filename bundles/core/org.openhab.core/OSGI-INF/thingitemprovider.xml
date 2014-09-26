@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" immediate="false" name="org.openhab.core.thingitemprovider">
+   <implementation class="org.openhab.core.internal.item.ThingItemUIProvider"/>
+   <reference bind="setThingProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.ManagedThingProvider" name="ManagedThingProvider" policy="static" unbind="unsetThingProvider"/>
+   <reference bind="setItemFactory" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemFactory" name="ItemFactory" policy="static" unbind="unsetItemFactory"/>
+   <service>
+      <provide interface="org.eclipse.smarthome.core.items.ItemProvider"/>
+      <provide interface="org.eclipse.smarthome.ui.items.ItemUIProvider"/>
+      <provide interface="org.openhab.core.internal.item.ThingItemUIProvider"/>
+      <provide interface="org.osgi.service.cm.ManagedService"/>
+   </service>
+   <reference bind="setThingTypeRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.type.ThingTypeRegistry" name="ThingTypeRegistry" policy="static" unbind="unsetThingTypeRegistry"/>
+   <property name="service.pid" type="String" value="org.openhab.thingitemprovider"/>
+</scr:component>

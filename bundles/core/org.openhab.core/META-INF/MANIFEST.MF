@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
-Service-Component: OSGI-INF/logservice.xml
+Service-Component: OSGI-INF/logservice.xml,OSGI-INF/autoapprove.xml,OSGI-INF/thingitemprovider.xml,
+ OSGI-INF/thinglinkprovider.xml
 Private-Package: org.openhab.core.internal,org.openhab.core.internal.e
  vents,org.openhab.core.internal.items,org.openhab.core.internal.loggi
  ng
@@ -23,8 +24,18 @@ Import-Package: com.google.common.cache;version="10.0.1",
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.inbox,
+ org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.model.rule.runtime,
+ org.eclipse.smarthome.model.sitemap,
+ org.eclipse.smarthome.ui.items,
  org.osgi.framework,
+ org.osgi.service.cm;version="1.5.0",
  org.osgi.service.component,
  org.osgi.service.event,
  org.osgi.service.log,
