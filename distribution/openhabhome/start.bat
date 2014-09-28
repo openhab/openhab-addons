@@ -11,7 +11,7 @@ set HTTPS_PORT=8443
 for /f "delims= tokens=1" %%c in ('dir /B /S /OD %ECLIPSEHOME%\plugins\org.eclipse.equinox.launcher_*.jar') do set EQUINOXJAR=%%c
  
 :: program params
-set PROG_ARGS=-Dlogback.configurationFile=./runtime/etc/logback.xml -DmdnsName=openhab -Dopenhab.logdir=./userdata/logs -Dsmarthome.servicecfg=./runtime/etc/services.cfg -Dsmarthome.servicepid=org.openhab -Dorg.quartz.properties=./runtime/etc/quartz.properties
+set PROG_ARGS=-Dlogback.configurationFile=./runtime/etc/logback.xml -DmdnsName=openhab -Dopenhab.logdir=./userdata/logs -Dsmarthome.servicecfg=./runtime/etc/services.cfg -Dsmarthome.userdata=./userdata -Dsmarthome.servicepid=org.openhab -Dorg.quartz.properties=./runtime/etc/quartz.properties
 
 :: start Eclipse w/ java
 echo Launching the openHAB runtime...
