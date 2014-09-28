@@ -43,6 +43,7 @@
     <logger name="OSGi" level="OFF"/>
     <logger name="org.eclipse.jetty" level="ERROR"/>
     <logger name="org.quartz" level="WARN"/>
+    <logger name="javax.jmdns.impl.DNSIncoming" level="ERROR"/>
 
 	<root level="WARN">
 		<appender-ref ref="FILE" />
