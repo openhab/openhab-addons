@@ -26,7 +26,6 @@ import org.eclipse.smarthome.model.sitemap.Widget;
 import org.eclipse.smarthome.ui.items.ItemUIProvider;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
-import org.osgi.service.component.ComponentContext;
 
 /**
  * This class dynamically provides items incl. labels from all things of the {@link ManagedThingProvider}.
@@ -42,13 +41,18 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 	private ManagedThingProvider thingProvider;
 	private ItemFactory itemFactory;
 	private ThingTypeRegistry thingTypeRegistry;
+	private GroupItem rootItem;
 
 	private boolean enabled = false;
 	
 	@Override
 	public String getIcon(String itemName) {
 		if(!enabled) return null; 
-			
+
+		if("Things".equals(itemName)) {
+			return "network";
+		}
+		
 		for(Thing thing : thingProvider.getAll()) {
 			if(thing.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
 				return "none";
@@ -101,7 +105,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 		if(!enabled) return Collections.emptySet();
 		
 		List<Item> items = new ArrayList<>();
-		GroupItem all = new GroupItem("Things");
+		GroupItem all = getRootItem();
 		for(Thing thing : thingProvider.getAll()) {
 			GroupItem group = createItemsForThing(thing);
 			if(!(thing instanceof Bridge) && thing.getBridgeUID()!=null) {
@@ -174,28 +178,43 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 	@Override
 	public void added(Provider<Thing> provider, Thing thing) {
 		for(ProviderChangeListener<Item> listener : listeners) {
+			listener.removed(this, getRootItem());
+			rootItem = null;
 			GroupItem group = createItemsForThing(thing);
 			listener.added(this, group);
 			for(Item item : group.getMembers()) {
 				listener.added(this, item);
 			}
+			listener.added(this, getRootItem());
 		}
 	}
 
 	@Override
 	public void removed(Provider<Thing> provider, Thing thing) {
 		for(ProviderChangeListener<Item> listener : listeners) {
+			listener.removed(this, getRootItem());
+			rootItem = null;
 			GroupItem group = createItemsForThing(thing);
 			listener.removed(this, group);
 			for(Item item : group.getMembers()) {
 				listener.removed(this, item);
 			}
+			listener.added(this, getRootItem());
+		}		
+	}
+
+	private synchronized GroupItem getRootItem() {
+		if(rootItem==null) {
+			rootItem = new GroupItem("Things");
+			getAll();
 		}
+		return rootItem;
 	}
 
 	@Override
 	public void updated(Provider<Thing> provider, Thing oldelement,
 			Thing element) {
+		added(provider, element);
 		removed(provider, oldelement);
 		added(provider, element);
 	}
@@ -203,19 +222,21 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 	@Override
 	public void updated(Dictionary<String, ?> properties)
 			throws ConfigurationException {
-		String enabled = (String) properties.get("enabled");
-		if("true".equalsIgnoreCase(enabled)) {
-			this.enabled = true;
-			for(ProviderChangeListener<Item> listener : listeners) {
-				for(Item item : getAll()) {
-					listener.added(this, item);
+		if(properties!=null) {
+			String enabled = (String) properties.get("enabled");
+			if("true".equalsIgnoreCase(enabled)) {
+				this.enabled = true;
+				for(ProviderChangeListener<Item> listener : listeners) {
+					for(Item item : getAll()) {
+						listener.added(this, item);
+					}
 				}
-			}
-		} else {
-	    	this.enabled = false;
-			for(ProviderChangeListener<Item> listener : listeners) {
-				for(Item item : getAll()) {
-					listener.removed(this, item);
+			} else {
+		    	this.enabled = false;
+				for(ProviderChangeListener<Item> listener : listeners) {
+					for(Item item : getAll()) {
+						listener.removed(this, item);
+					}
 				}
 			}
 		}
