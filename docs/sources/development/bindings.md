@@ -13,9 +13,11 @@ As a first step, you need to decide in which namespace you want to develop your 
 
 ## Creating a skeleton
 
-Once you have [set up your IDE](ide.md), you can go ahead and create a skeleton for your binding. For this, go into your git repository under `<your repository>/addons/binding` and call the script `create_esh_binding_skeleton.sh` (resp. `create_openhab_binding_skeleton.sh`) with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
+For the openHAB namespace: Once you have [set up your IDE](ide.md), you can go ahead and create a skeleton for your binding. For this, go into your git repository under `<your repository>/addons/binding` and call the script `create_openhab_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
 
-Now switch in Eclipse and choose `File->Import->General->Existing Projects into Workspace`, enter your workspace as the root directory and press "Finish".
+For the Eclipse SmartHome namespace: You need to have a private fork of the Eclipse SmartHome project (https://github.com/eclipse/smarthome). In the local checkout of this git repository, go to `<your eclipse smarthome repository>/binding` and call the script `create_esh_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
+
+Now switch in Eclipse and choose `File->Import->General->Existing Projects into Workspace`, enter the folder of the newly created skeleton as the root directory and press "Finish".
 
 This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://github.com/eclipse/smarthome/blob/master/docs/sources/howtos/bindings.md).
 
