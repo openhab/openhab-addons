@@ -1,16 +1,15 @@
 package org.openhab.core.internal.item;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.core.common.registry.Provider;
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.smarthome.core.common.registry.ProviderChangeListener;
+import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemFactory;
@@ -19,13 +18,14 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.eclipse.smarthome.model.sitemap.Widget;
 import org.eclipse.smarthome.ui.items.ItemUIProvider;
 import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 
 /**
  * This class dynamically provides items incl. labels from all things of the {@link ManagedThingProvider}.
@@ -34,11 +34,11 @@ import org.osgi.service.cm.ManagedService;
  * @author Kai Kreuzer
  *
  */
-public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, ProviderChangeListener<Thing>, ManagedService {
+public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, RegistryChangeListener<Thing> {
 
 	private Set<ProviderChangeListener<Item>> listeners = new HashSet<>();
 
-	private ManagedThingProvider thingProvider;
+	private ThingRegistry thingRegistry;
 	private ItemFactory itemFactory;
 	private ThingTypeRegistry thingTypeRegistry;
 	private GroupItem rootItem;
@@ -53,9 +53,29 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 			return "network";
 		}
 		
-		for(Thing thing : thingProvider.getAll()) {
+		for(Thing thing : thingRegistry.getAll()) {
 			if(thing.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
-				return "none";
+				String icon = null;
+				if(thing instanceof Bridge) {
+					icon = "network";
+				} else {
+					icon = "switch";
+				}
+				if(thing.getStatus().equals(ThingStatus.ONLINE)) {
+					return icon + "-on";
+				} else {
+					return icon + "-off";
+				}
+			}
+			for(Channel ch : thing.getChannels()) {
+				if(ch.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
+					if(ch.getAcceptedItemType().equals("Color")) {
+						return "switch";
+					}
+					if(ch.getAcceptedItemType().equals("Dimmer")) {
+						return "switch";
+					}
+				}
 			}
 		}
 		return null;
@@ -65,9 +85,14 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 	public String getLabel(String itemName) {
 		if(!enabled) return null;
 		
- 		for(Thing thing : thingProvider.getAll()) {
+ 		for(Thing thing : thingRegistry.getAll()) {
 			if(thing.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
-				return (String) thing.getConfiguration().get("label");
+				String label = (String) thing.getConfiguration().get("label");
+				if(label!=null) {
+					return label;
+				} else {
+					return WordUtils.capitalize(itemName.replace("_", " "));
+				}
 			}
 			for(Channel channel : thing.getChannels()) {
 				if(channel.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
@@ -104,14 +129,15 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 	public Collection<Item> getAll() {
 		if(!enabled) return Collections.emptySet();
 		
-		List<Item> items = new ArrayList<>();
+		Set<Item> items = new HashSet<>();
 		GroupItem all = getRootItem();
-		for(Thing thing : thingProvider.getAll()) {
+		for(Thing thing : thingRegistry.getAll()) {
 			GroupItem group = createItemsForThing(thing);
-			if(!(thing instanceof Bridge) && thing.getBridgeUID()!=null) {
-				group.addGroupName(thing.getBridgeUID().toString().replaceAll(":", "_"));
-			} else {
+			if((thing instanceof Bridge) || thing.getBridgeUID() == null) {
 				if(group!=null) {
+					if(all.getMembers().contains(group)) {
+						all.removeMember(group);
+					}
 					all.addMember(group);
 				}
 			}
@@ -129,6 +155,9 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 		for(Channel channel : thing.getChannels()) {
 			Item item = itemFactory.createItem(channel.getAcceptedItemType(), channel.getUID().toString().replaceAll(":",  "_"));
 			if(item!=null) {
+				if(group.getMembers().contains(item)) {
+					group.removeMember(item);
+				}
 				group.addMember(item);
 			}
 		}
@@ -144,6 +173,9 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 	@Override
 	public void addProviderChangeListener(ProviderChangeListener<Item> listener) {
 		listeners.add(listener);
+		for(Item item : getAll()) {
+			listener.added(this, item);
+		}
 	}
 
 	@Override
@@ -161,14 +193,14 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 		this.itemFactory = null;
 	}
 
-	protected void setThingProvider(ManagedThingProvider thingProvider) {
-		this.thingProvider = thingProvider;
-		this.thingProvider.addProviderChangeListener(this);
+	protected void setThingRegistry(ThingRegistry thingRegistry) {
+		this.thingRegistry = thingRegistry;
+		this.thingRegistry.addRegistryChangeListener(this);
 	}
 
-	protected void unsetThingProvider(ManagedThingProvider thingProvider) {
-		this.thingProvider.removeProviderChangeListener(this);
-		this.thingProvider = null;
+	protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+		this.thingRegistry.addRegistryChangeListener(this);
+		this.thingRegistry = null;
 	}
 
 	protected void setThingTypeRegistry(ThingTypeRegistry thingTypeRegistry) {
@@ -179,34 +211,6 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 		this.thingTypeRegistry = null;
 	}
 
-	@Override
-	public void added(Provider<Thing> provider, Thing thing) {
-		for(ProviderChangeListener<Item> listener : listeners) {
-			listener.removed(this, getRootItem());
-			rootItem = null;
-			GroupItem group = createItemsForThing(thing);
-			listener.added(this, group);
-			for(Item item : group.getMembers()) {
-				listener.added(this, item);
-			}
-			listener.added(this, getRootItem());
-		}
-	}
-
-	@Override
-	public void removed(Provider<Thing> provider, Thing thing) {
-		for(ProviderChangeListener<Item> listener : listeners) {
-			listener.removed(this, getRootItem());
-			rootItem = null;
-			GroupItem group = createItemsForThing(thing);
-			listener.removed(this, group);
-			for(Item item : group.getMembers()) {
-				listener.removed(this, item);
-			}
-			listener.added(this, getRootItem());
-		}		
-	}
-
 	private synchronized GroupItem getRootItem() {
 		if(rootItem==null) {
 			rootItem = new GroupItem("Things");
@@ -215,17 +219,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 		return rootItem;
 	}
 
-	@Override
-	public void updated(Provider<Thing> provider, Thing oldelement,
-			Thing element) {
-		added(provider, element);
-		removed(provider, oldelement);
-		added(provider, element);
-	}
-
-	@Override
-	public void updated(Dictionary<String, ?> properties)
-			throws ConfigurationException {
+	protected void activate(Map<String, Object> properties) throws ConfigurationException {
 		if(properties!=null) {
 			String enabled = (String) properties.get("enabled");
 			if("true".equalsIgnoreCase(enabled)) {
@@ -244,6 +238,42 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 				}
 			}
 		}
+	}
+
+	@Override
+	public void added(Thing element) {
+		for(ProviderChangeListener<Item> listener : listeners) {
+			listener.removed(this, getRootItem());
+		}
+		rootItem = null;
+		for(ProviderChangeListener<Item> listener : listeners) {
+			GroupItem group = createItemsForThing(element);
+			listener.added(this, group);
+			for(Item item : group.getMembers()) {
+				listener.added(this, item);
+			}
+			listener.added(this, getRootItem());
+		}
+	}
+
+	@Override
+	public void removed(Thing element) {
+		for(ProviderChangeListener<Item> listener : listeners) {
+			listener.removed(this, getRootItem());
+			rootItem = null;
+			GroupItem group = createItemsForThing(element);
+			listener.removed(this, group);
+			for(Item item : group.getMembers()) {
+				listener.removed(this, item);
+			}
+			listener.added(this, getRootItem());
+		}		
+	}
+
+	@Override
+	public void updated(Thing oldElement, Thing element) {
+		removed(oldElement);
+		added(element);
 	}
 	
 }
