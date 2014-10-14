@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="108">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="111">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
@@ -54,8 +54,8 @@
 <unit id="org.apache.commons.collections" version="3.2.0.v2013030210310"/>
 <unit id="org.apache.commons.httpclient" version="3.1.0.v201012070820"/>
 <unit id="org.apache.commons.httpclient.source" version="3.1.0.v201012070820"/>
-<unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
-<unit id="org.apache.commons.io.source" version="2.0.1.v201105210651"/>
+<unit id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<unit id="org.apache.commons.io.source" version="2.2.0.v201405211200"/>
 <unit id="org.apache.commons.net" version="3.2.0.v201305141515"/>
 <unit id="org.apache.commons.net.source" version="3.2.0.v201305141515"/>
 <unit id="org.apache.commons.lang.source" version="2.6.0.v201404270220"/>
@@ -102,21 +102,21 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.8.0.201410091157"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.8.0.201410091157"/>
-<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.jupnp.feature.feature.group" version="2.0.0.201410140825"/>
 <repository location="http://www.openhab.org/jupnp/update-site/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.8.0.201410141707"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.8.0.201410141707"/>
+<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 </locations>
 </target>

@@ -10,3 +10,10 @@ bundles/io/org.openhab.io.multimedia.tts.marytts/lib/
 distribution/openhabhome/logs/*.log
 distribution/openhabhome/*.zip
 distribution/openhabhome/etc/rrd4j/*.rrd
+distribution/openhabhome/userdata/id/uuid
+distribution/openhabhome/userdata/id/version
+distribution/openhabhome/userdata/logs/events.log
+distribution/openhabhome/userdata/logs/openhab.log
+distribution/openhabhome/userdata/mapdb/storage.mapdb
+distribution/openhabhome/userdata/mapdb/storage.mapdb.p
+distribution/openhabhome/userdata/mapdb/storage.mapdb.t

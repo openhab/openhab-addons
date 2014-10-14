@@ -392,13 +392,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.smarthome.io.rest.item"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.smarthome.io.rest.sitemap"
          download-size="0"
          install-size="0"
@@ -729,6 +722,20 @@
 
    <plugin
          id="org.openhab.io.jetty"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.config.dispatch"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.io.rest.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
