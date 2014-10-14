@@ -111,7 +111,9 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 			if(!(thing instanceof Bridge) && thing.getBridgeUID()!=null) {
 				group.addGroupName(thing.getBridgeUID().toString().replaceAll(":", "_"));
 			} else {
-				all.addMember(group);
+				if(group!=null) {
+					all.addMember(group);
+				}
 			}
 			for(Item item : group.getAllMembers()) {
 				items.add(item);
@@ -126,7 +128,9 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Provid
 		GroupItem group = new GroupItem(thing.getUID().toString().replaceAll(":",  "_"));
 		for(Channel channel : thing.getChannels()) {
 			Item item = itemFactory.createItem(channel.getAcceptedItemType(), channel.getUID().toString().replaceAll(":",  "_"));
-			group.addMember(item);
+			if(item!=null) {
+				group.addMember(item);
+			}
 		}
 		if(thing instanceof Bridge) {
 			Bridge bridge = (Bridge) thing;
