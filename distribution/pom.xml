@@ -16,7 +16,7 @@
     <name>openHAB Distribution</name>
 
     <properties>
-		<esh.version>0.7.0-SNAPSHOT</esh.version>
+		<esh.version>0.8.0-SNAPSHOT</esh.version>
     </properties>
 
     <build>
@@ -55,6 +55,11 @@
         <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.yahooweather</artifactId>
+            <version>${esh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.smarthome.binding</groupId>
+            <artifactId>org.eclipse.smarthome.binding.hue</artifactId>
             <version>${esh.version}</version>
         </dependency>
     </dependencies>

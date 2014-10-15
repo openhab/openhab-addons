@@ -13,6 +13,7 @@
 	  <useDefaultExcludes>false</useDefaultExcludes>
 	  <excludes>
 		<exclude>**/demo*.*</exclude>
+		<exclude>**/*.cfg</exclude>
 	  	<exclude>**/persistence/*.persist</exclude>
 	  </excludes>
     </fileSet>

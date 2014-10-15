@@ -16,6 +16,7 @@
 	  <useDefaultExcludes>false</useDefaultExcludes>
 	  <includes>
 	  	<include>**/demo*.*</include>
+	  	<include>**/*.cfg</include>
 	  	<include>**/persistence/*.persist</include>
 	  </includes>
     </fileSet>
@@ -30,6 +31,7 @@
       <unpack>false</unpack>
       <includes>
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
+      	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.hue:jar:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

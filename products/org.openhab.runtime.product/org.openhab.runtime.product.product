@@ -52,6 +52,7 @@
       <plugin id="org.eclipse.jetty.server" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.config.core" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.config.discovery" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.config.dispatch" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.config.xml" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.autoupdate" autoStart="true" startLevel="0" />
@@ -69,7 +70,7 @@
       <plugin id="org.eclipse.smarthome.io.multimedia" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.net" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="6" />
-      <plugin id="org.eclipse.smarthome.io.rest.item" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.io.rest.core" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.io.rest.sitemap" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="5" />
