@@ -5,9 +5,10 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.common.registry.Provider;
 import org.eclipse.smarthome.core.common.registry.ProviderChangeListener;
+import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
 import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLinkProvider;
 
@@ -18,10 +19,10 @@ import org.eclipse.smarthome.core.thing.link.ItemChannelLinkProvider;
  * @author Kai Kreuzer
  *
  */
-public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, ProviderChangeListener<Thing> {
+public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, RegistryChangeListener<Thing> {
 
 	private Set<ProviderChangeListener<ItemChannelLink>> listeners = new HashSet<>();
-	private ManagedThingProvider thingProvider;
+	private ThingRegistry thingRegistry;
 
 	@Override
 	public void addProviderChangeListener(
@@ -38,7 +39,7 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Pr
 	@Override
 	public Set<ItemChannelLink> getAll() {
 		Set<ItemChannelLink> links = new HashSet<>();
-		for(Thing thing : thingProvider.getAll()) {
+		for(Thing thing : thingRegistry.getAll()) {
 			links.addAll(getLinks(thing));
 		}
 		return links;
@@ -57,21 +58,33 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Pr
 		// as we only want to provide links for items of that service
 	}
 
-	protected void unsetThingItemUIProvider(ThingItemUIProvider thingProvider) {
+	protected void unsetThingItemUIProvider(ThingItemUIProvider thingItemUIProvider) {
 	}
 
-	protected void setThingProvider(ManagedThingProvider thingProvider) {
-		this.thingProvider = thingProvider;
-		this.thingProvider.addProviderChangeListener(this);
+	protected void setThingRegistry(ThingRegistry thingRegistry) {
+		this.thingRegistry = thingRegistry;
+		this.thingRegistry.addRegistryChangeListener(this);
 	}
 
-	protected void unsetThingProvider(ManagedThingProvider thingProvider) {
-		this.thingProvider.removeProviderChangeListener(this);
-		this.thingProvider = null;
+	protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+		this.thingRegistry.addRegistryChangeListener(this);
+		this.thingRegistry = null;
+	}
+
+	public void updated(Provider<Thing> provider, Thing oldelement,
+			Thing element) {
+		for(ProviderChangeListener<ItemChannelLink> listener : listeners) {
+			for(ItemChannelLink link : getLinks(oldelement)) {
+				listener.removed(this, link);
+			}
+			for(ItemChannelLink link : getLinks(element)) {
+				listener.added(this, link);
+			}
+		}
 	}
 
 	@Override
-	public void added(Provider<Thing> provider, Thing element) {
+	public void added(Thing element) {
 		for(ProviderChangeListener<ItemChannelLink> listener : listeners) {
 			for(ItemChannelLink link : getLinks(element)) {
 				listener.added(this, link);
@@ -80,7 +93,7 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Pr
 	}
 
 	@Override
-	public void removed(Provider<Thing> provider, Thing element) {
+	public void removed(Thing element) {
 		for(ProviderChangeListener<ItemChannelLink> listener : listeners) {
 			for(ItemChannelLink link : getLinks(element)) {
 				listener.removed(this, link);
@@ -89,10 +102,9 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Pr
 	}
 
 	@Override
-	public void updated(Provider<Thing> provider, Thing oldelement,
-			Thing element) {
+	public void updated(Thing oldElement, Thing element) {
 		for(ProviderChangeListener<ItemChannelLink> listener : listeners) {
-			for(ItemChannelLink link : getLinks(oldelement)) {
+			for(ItemChannelLink link : getLinks(oldElement)) {
 				listener.removed(this, link);
 			}
 			for(ItemChannelLink link : getLinks(element)) {
