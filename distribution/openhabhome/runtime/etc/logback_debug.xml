@@ -37,7 +37,8 @@
 	<logger name="org.eclipse.smarthome" level="DEBUG" />
 
 	<logger name="org.eclipse.jetty" level="WARN" />
-    <logger name="javax.jmdns.impl.DNSIncoming" level="ERROR"/>
+ 	<!-- temporary workaround for https://github.com/openhab/jmdns/issues/12 -->
+    <logger name="javax.jmdns" level="OFF"/>
 
 	<root level="INFO">
 		<appender-ref ref="FILE" />
