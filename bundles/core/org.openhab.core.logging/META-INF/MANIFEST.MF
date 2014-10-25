@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Service-Component: OSGI-INF/logservice.xml
+Bundle-Name: openHAB Logging Initializer
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Vendor: openHAB.org
+Bundle-Version: 2.0.0.qualifier
+Bundle-Activator: org.openhab.core.logging.internal.LoggingActivator
+Bundle-ManifestVersion: 2
+Bundle-Description: This is the logging initializer component of the
+ open Home Automation Bus (openHAB)
+Bundle-License: http://www.eclipse.org/legal/epl-v10.html
+Import-Package: org.osgi.framework,
+ org.osgi.service.log,
+ org.slf4j,
+ org.slf4j.bridge
+Bundle-SymbolicName: org.openhab.core.logging
+Bundle-DocURL: http://www.openhab.org
+

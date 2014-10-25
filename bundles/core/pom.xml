@@ -17,6 +17,7 @@
 
   <modules>
     <module>org.openhab.core</module>
+    <module>org.openhab.core.logging</module>
     <module>org.openhab.core.compat1x</module>
   </modules>
 

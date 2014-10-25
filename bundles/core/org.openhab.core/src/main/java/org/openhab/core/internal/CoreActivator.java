@@ -17,7 +17,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Handler;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +27,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * @author Kai Kreuzer
@@ -81,15 +79,6 @@ public class CoreActivator implements BundleActivator {
 			long uptime = rb.getUptime();
 			logger.debug("Startup took {} ms", uptime);
 		}
-		
-		java.util.logging.Logger rootLogger = java.util.logging.LogManager
-				.getLogManager().getLogger("");
-		Handler[] handlers = rootLogger.getHandlers();
-		for (Handler handler : handlers) {
-			rootLogger.removeHandler(handler);
-		}
-
-		SLF4JBridgeHandler.install();
 
 		startRuleEngine(context);
 	}
