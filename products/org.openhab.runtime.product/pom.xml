@@ -33,6 +33,13 @@
 	              <classifier>openhab</classifier>
 	            </artifact>
 	          </target>
+		      <filters>
+        		 <filter>
+            		<type>eclipse-plugin</type>
+            		<id>javax.inject</id>
+            		<removeAll />
+         		</filter>
+      		  </filters>
 	          <environments>
 	            <environment>
 	              <os>win32</os>
