@@ -10,14 +10,14 @@
   </parent>
 
   <properties>
-    <bundle.symbolicName>org.openhab.core.logging</bundle.symbolicName>
-    <bundle.namespace>org.openhab.core.logging</bundle.namespace>
+    <bundle.symbolicName>org.openhab.core.init</bundle.symbolicName>
+    <bundle.namespace>org.openhab.core.init</bundle.namespace>
   </properties>
 
   <groupId>org.openhab.core</groupId>
-  <artifactId>org.openhab.core.logging</artifactId>
+  <artifactId>org.openhab.core.init</artifactId>
 
-  <name>openHAB Logging Initializer</name>
+  <name>openHAB Initializer</name>
   <packaging>eclipse-plugin</packaging>
 
 </project>
