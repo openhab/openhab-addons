@@ -19,4 +19,3 @@ Import-Package: org.jupnp,
 Bundle-ActivationPolicy: lazy
 Export-Package: org.openhab.io.transport.upnp
 Service-Component: OSGI-INF/UpnpIOService.xml
-Require-Bundle: org.jupnp;bundle-version="2.0.0"

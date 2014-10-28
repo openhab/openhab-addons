@@ -15,15 +15,12 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.joda.time,
- org.joda.time.base,
- org.joda.time.format,
  org.openhab.io.net.http,
  org.openhab.io.transport.upnp,
  org.slf4j
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.sonos,
  org.openhab.binding.sonos.handler
-Require-Bundle: org.jupnp;bundle-version="2.0.0",
- org.openhab.io.transport.upnp;bundle-version="1.0.0"
+Require-Bundle: org.jupnp,
+ org.openhab.io.transport.upnp
 Bundle-ActivationPolicy: lazy

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.sonos.internal;
 
 import java.io.IOException;
@@ -8,14 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeField;
-import org.joda.time.LocalTime;
-import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -25,6 +24,12 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * The {@link SonosXMLParser} is a class of helper functions
+ * to parse XML data returned by the Zone Players
+ * 
+ * @author Karel Goderis - Initial contribution
+ */
 public class SonosXMLParser {
 
 	static final Logger logger = LoggerFactory.getLogger(SonosXMLParser.class);
@@ -354,8 +359,6 @@ public class SonosXMLParser {
 				int finalVolume = 0;
 				boolean finalEnabled = false;
 				boolean finalIncludeLinkedZones = false;
-				DateTime finalStartTime = null;
-				Period finalDuration = null;
 
 				try {
 					finalID = Integer.parseInt(id);
@@ -375,26 +378,7 @@ public class SonosXMLParser {
 					logger.debug("Error parsing Integer");
 				}
 
-				try {			
-					DateTimeFormatter formatter = DateTimeFormat.forPattern("HH:mm:ss");
-					finalStartTime = formatter.parseDateTime(startTime);
-					LocalTime localDateTime = finalStartTime.toLocalTime();
-					finalStartTime = localDateTime.toDateTimeToday();
-
-					PeriodFormatter pFormatter= new PeriodFormatterBuilder()
-					.appendHours()
-					.appendSeparator(":")
-					.appendMinutes()
-					.appendSeparator(":")
-					.appendSeconds()
-					.toFormatter();
-
-					finalDuration = pFormatter.parsePeriod(duration);		
-				} catch(Exception e) {
-					logger.error("Error parsing DateTime");
-				}
-
-				alarms.add(new SonosAlarm(finalID,  finalStartTime,  finalDuration,  recurrence,
+				alarms.add(new SonosAlarm(finalID,  startTime,  duration,  recurrence,
 						finalEnabled,  roomUUID,  programURI, 
 						programMetaData,  playMode,  finalVolume, finalIncludeLinkedZones));
 			}
@@ -680,11 +664,8 @@ public class SonosXMLParser {
 
 	public static  String compileMetadataString(SonosEntry entry) {
 		String upnpClass = entry.getUpnpClass();
-		//		if (upnpClass.startsWith("object.container")) {
-		//			upnpClass = "object.container";
-		//		}
-		String metadata = METADATA_FORMAT.format(new Object[] {entry.getId(), entry.getParentId(), entry.getTitle(), upnpClass});
 
+		String metadata = METADATA_FORMAT.format(new Object[] {entry.getId(), entry.getParentId(), entry.getTitle(), upnpClass});
 		return metadata;
 	}
 

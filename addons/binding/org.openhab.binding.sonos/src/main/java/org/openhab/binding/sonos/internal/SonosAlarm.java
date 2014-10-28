@@ -1,9 +1,21 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.sonos.internal;
 
-import org.joda.time.DateTime;
-import org.joda.time.Period;
+import java.util.Calendar;
+import java.util.Date;
 
-
+/**
+ * The {@link SonosAlarm} is a datastructure to describe
+ * alarms in the Sonos ecosystem
+ * 
+ * @author Karel Goderis - Initial contribution
+ */
 public class SonosAlarm implements Cloneable {
 	
 	public Object clone() {
@@ -19,19 +31,20 @@ public class SonosAlarm implements Cloneable {
 		return ID;
 	}
 
-	public DateTime getStartTime() {
+	public String getStartTime() {
+//	public DateTime getStartTime() {
 		return startTime;
 	}
 
 	/**
 	 * @param startTime the startTime to set
 	 */
-	public void setStartTime(DateTime startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 
 
-	public Period getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 
@@ -76,8 +89,8 @@ public class SonosAlarm implements Cloneable {
 	}
 
 	private final int ID;
-	private DateTime startTime;
-	private final Period duration;
+	private String startTime;
+	private final String duration;
 	private final String recurrence;
 	private boolean enabled;
 	private final String roomUUID;
@@ -87,7 +100,7 @@ public class SonosAlarm implements Cloneable {
 	private final int volume;
 	private final boolean includeLinkedZones;
 	
-	public SonosAlarm(int ID, DateTime startTime, Period duration, String recurrence,
+	public SonosAlarm(int ID, String startTime, String duration, String recurrence,
 			boolean enabled, String roomUUID, String programURI, String
 		programMetaData, String playMode, int volume, boolean includeLinkedZones) {
 		this.ID = ID;

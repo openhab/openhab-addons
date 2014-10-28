@@ -10,29 +10,20 @@ package org.openhab.binding.sonos.internal;
 import static org.openhab.binding.sonos.SonosBindingConstants.*;
 
 import java.util.Collection;
-
-import org.jupnp.UpnpService;
-import org.openhab.binding.sonos.config.ZonePlayerConfiguration;
 import org.openhab.binding.sonos.handler.ZonePlayerHandler;
-import org.openhab.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.io.transport.upnp.UpnpIOService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-
 import com.google.common.collect.Lists;
 
-import static org.openhab.binding.sonos.config.ZonePlayerConfiguration.FRIENDLY_NAME;
 import static org.openhab.binding.sonos.config.ZonePlayerConfiguration.UDN;
-import static org.openhab.binding.sonos.config.ZonePlayerConfiguration.DEVICE;
 
 
 /**

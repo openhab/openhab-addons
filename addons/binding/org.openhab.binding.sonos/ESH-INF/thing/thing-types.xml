@@ -39,14 +39,12 @@
 			<channel id="snooze" typeId="snooze" />
 			<channel id="standalone" typeId="standalone" />
 			<channel id="state" typeId="state" />
+			<channel id="stateswitch" typeId="stateswitch" />
 			<channel id="stop" typeId="stop" />
 			<channel id="volume" typeId="volume" />
 			<channel id="zonegroup" typeId="zonegroup" />
 			<channel id="zonegroupid" typeId="zonegroupid" />
 			<channel id="zonename" typeId="zonename" />
-			
-			<channel id="control" typeId="control" />
-			<channel id="stateswitch" typeId="stateswitch" />
 		</channels>
 
 		<config-description>
@@ -68,219 +66,213 @@
 
 	<channel-type id="add">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Add</label>
+		<description>Add a Zone Player to the group of the given Zone Player</description>
 	</channel-type>
 
 	<channel-type id="alarm">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Set Alarm</label>
+		<description>Set the first occurring alarm either ON or OFF. Alarms have first have to be defined through the Sonos Controller app</description>
 	</channel-type>
 
 	<channel-type id="alarmproperties">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Alarm Properties</label>
+		<description>Properties of the alarm currently running</description>
 	</channel-type>
 
 	<channel-type id="alarmrunning">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Alarm is running</label>
+		<description>Set to ON if the alarm was triggered</description>
 	</channel-type>
 
 	<channel-type id="currentalbum">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Current Album</label>
+		<description>Name of the album currently playing</description>
 	</channel-type>
 
 	<channel-type id="currentartist">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Current Artist</label>
+		<description>Name of the artist currently playing</description>
 	</channel-type>
 
 	<channel-type id="currenttitle">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Current Title</label>
+		<description>Title of the song currently playing</description>
 	</channel-type>
 
 	<channel-type id="currenttrack">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Current Track</label>
+		<description>Name of the current track or radio station currently playing</description>
 	</channel-type>
 
 	<channel-type id="led">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Led</label>
+		<description>Set or get the status of the white led on the front of the Zone Player </description>
 	</channel-type>
 
 	<channel-type id="linein">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Line-in connected</label>
+		<description>Indicator set to ON when the line-in of the Zone Player is connected</description>
 	</channel-type>
 
 	<channel-type id="localcoordinator">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Local Coordinator</label>
+		<description>Indicator set to ON if the this Zone Player is the Zone Group Coordinator</description>
 	</channel-type>
 
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Mute</label>
+		<description>Set or get the mute state of the master volume of the Zone Player</description>
 	</channel-type>
 
 	<channel-type id="next">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Next</label>
+		<description>Skip to the next track in the queue</description>
 	</channel-type>
 
 	<channel-type id="pause">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Pause</label>
+		<description>Pause the Zone Player</description>
 	</channel-type>
 
 	<channel-type id="play">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Play</label>
+		<description>Start the Zone Player</description>
 	</channel-type>
 
 	<channel-type id="playlinein">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Play Line-in</label>
+		<description>Play the Line-in of the the Zone Player corresponding to the given UIN</description>
 	</channel-type>
 
 	<channel-type id="playlist">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Play Playlist</label>
+		<description>Play the given playlist. The playlist has to predefined in the Sonos Controller app</description>
 	</channel-type>
 
 	<channel-type id="playuri">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Play URI</label>
+		<description>Play the given URI</description>
 	</channel-type>
 
 	<channel-type id="previous">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Previous</label>
+		<description>Skip to the previous track</description>
 	</channel-type>
 
 	<channel-type id="publicaddress">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Public Address</label>
+		<description>Put all Zone Players in one group, and stream audio from the line-in from the Zone Player that triggered the command</description>
 	</channel-type>
 
 	<channel-type id="radio">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Radio</label>
+		<description>Play the given radio station. The radio station has to be predefined in the Sonos Controller app</description>
 	</channel-type>
 
 	<channel-type id="remove">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Remove</label>
+		<description>Remove the given Zone Player to the group of this Zone Player</description>
 	</channel-type>
 
 	<channel-type id="restore">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Restore</label>
+		<description>Restore the state of the Zone Player</description>
 	</channel-type>
 
 	<channel-type id="restoreall">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Restore All</label>
+		<description>Restore the state of all the Zone Players</description>
 	</channel-type>
 
 	<channel-type id="save">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Save</label>
+		<description>Save the state of the Zone Player</description>
 	</channel-type>
 
 	<channel-type id="saveall">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Save All</label>
+		<description>Save the state of all the Zone Players</description>
 	</channel-type>
 
 	<channel-type id="snooze">
 		<item-type>Number</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Snooze</label>
+		<description>Snooze the running alarm, if any, with the given number of minutes</description>
 	</channel-type>
 
 	<channel-type id="standalone">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Stand Alone</label>
+		<description>Make the Zone Player leave its Group and become a standalone Zone Player</description>
 	</channel-type>
 
 	<!-- The Sonos State Type -->
 	<channel-type id="state">
 		<item-type>String</item-type>
-		<label>Sonos State</label>
+		<label>State</label>
 		<description>The State channel contains state of the Zone Player, e.g. PLAYING, STOPPED,...</description>
 	</channel-type>
 
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Stop</label>
+		<description>Stop the Zone Player</description>
 	</channel-type>
 
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Volume</label>
+		<description>Set or get the master volume</description>
 	</channel-type>
 
 	<channel-type id="zonegroup">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Zone Group</label>
+		<description>XML formatted string with the current zonegroup configuration</description>
 	</channel-type>
 
 	<channel-type id="zonegroupid">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Zone Group ID</label>
+		<description>Id of the Zone Group the Zone Player belongs to</description>
 	</channel-type>
 
 	<channel-type id="zonename">
 		<item-type>String</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
-	</channel-type>
-
-	<channel-type id="control">
-		<item-type>Number</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Zone Name</label>
+		<description>Name of the Zone Group the Zone Player belongs to</description>
 	</channel-type>
 
 	<channel-type id="stateswitch">
 		<item-type>Switch</item-type>
-		<label>TBC</label>
-		<description>TBC</description>
+		<label>Switch</label>
+		<description>Play (ON) or Stop (OFF) the Zone Player</description>
 	</channel-type>
 
 </thing:thing-descriptions>

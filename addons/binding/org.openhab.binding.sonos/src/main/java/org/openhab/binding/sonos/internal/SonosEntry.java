@@ -1,13 +1,24 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.sonos.internal;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+/**
+ * The {@link SonosEntry} is a datastructure to describe
+ * multimedia "entries" in the Sonos ecosystem
+ * 
+ * @author Karel Goderis - Initial contribution
+ */
 public class SonosEntry implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -4543607156929701588L;
 	private final String id;
     private final String title;
