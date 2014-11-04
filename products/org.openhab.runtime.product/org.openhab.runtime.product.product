@@ -32,9 +32,12 @@
 
    <features>
       <feature id="org.openhab.runtime.feature"/>
+      <feature id="org.openhab.dependencies.feature"/>
    </features>
 
    <configurations>
+      <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="1" />
+      <plugin id="ch.qos.logback.core" autoStart="true" startLevel="1" />
       <plugin id="org.apache.felix.fileinstall" autoStart="true" startLevel="3" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
@@ -69,9 +72,9 @@
       <plugin id="org.eclipse.smarthome.io.monitor" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.multimedia" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.net" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="6" />
-      <plugin id="org.eclipse.smarthome.io.rest.core" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.io.rest.sitemap" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.io.rest.core" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.io.rest.sitemap" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.smarthome.model.item" autoStart="true" startLevel="3" />
@@ -91,7 +94,10 @@
       <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.webapp" autoStart="true" startLevel="0" />
       <plugin id="org.jupnp" autoStart="true" startLevel="0" />
+      <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
+      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.core" autoStart="true" startLevel="5" />
+      <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
       <plugin id="org.openhab.core.compat1x" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.io.transport.serial" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.library.tel" autoStart="true" startLevel="0" />

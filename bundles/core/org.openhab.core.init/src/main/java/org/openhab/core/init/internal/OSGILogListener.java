@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.core.internal.logging;
+package org.openhab.core.init.internal;
 
 import java.util.HashMap;
 import java.util.Map;

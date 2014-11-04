@@ -10,6 +10,6 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" name="org.openhab.core.logservice">
-   <implementation class="org.openhab.core.internal.logging.OSGILogListener"/>
+   <implementation class="org.openhab.core.init.internal.OSGILogListener"/>
    <reference bind="addLogReaderService" cardinality="0..n" interface="org.osgi.service.log.LogReaderService" name="LogReaderService" policy="dynamic" unbind="removeLogReaderService"/>
 </scr:component>

@@ -88,7 +88,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
  		for(Thing thing : thingRegistry.getAll()) {
 			if(thing.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
 				String label = (String) thing.getConfiguration().get("label");
-				if(label!=null) {
+				if(label!=null && !label.isEmpty()) {
 					return label;
 				} else {
 					return WordUtils.capitalize(itemName.replace("_", " "));
@@ -166,6 +166,9 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 			for(Thing child : bridge.getThings()) {
 				group.addMember(createItemsForThing(child));
 			}
+		}
+		if(thing.getBridgeUID()!=null) {
+			group.addGroupName(thing.getBridgeUID().toString().replaceAll(":",  "_"));
 		}
 		return group;
 	}
@@ -248,10 +251,11 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 		rootItem = null;
 		for(ProviderChangeListener<Item> listener : listeners) {
 			GroupItem group = createItemsForThing(element);
-			listener.added(this, group);
 			for(Item item : group.getMembers()) {
 				listener.added(this, item);
 			}
+			rootItem = getRootItem();
+			listener.added(this, group);
 			listener.added(this, getRootItem());
 		}
 	}

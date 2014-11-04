@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="112">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="115">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
@@ -28,22 +28,17 @@
 <unit id="com.google.guava.source" version="15.0.0.v201403281430"/>
 <unit id="com.ibm.icu.base" version="52.1.0.v201404171520"/>
 <unit id="com.ibm.icu.base.source" version="52.1.0.v201404171520"/>
-<unit id="com.sun.jersey" version="1.17.0.v20130314-2020"/>
-<unit id="com.sun.jersey.source" version="1.17.0.v20130314-2020"/>
 <unit id="javax.persistence" version="1.0.0.v200905011740"/>
 <unit id="javax.persistence.source" version="1.0.0.v200905011740"/>
 <unit id="javax.xml.stream" version="1.0.1.v201004272200"/>
 <unit id="javax.xml" version="1.3.4.v201005080400"/>
 <unit id="javax.annotation" version="1.2.0.v201401042248"/>
-<unit id="javax.inject" version="1.0.0.v20091030"/>
 <unit id="javax.transaction" version="1.1.1.v201105210645"/>
 <unit id="javax.mail" version="1.4.0.v201005080615"/>
 <unit id="javax.servlet" version="3.1.0.v20140303-1611"/>
 <unit id="javax.servlet.source" version="3.1.0.v20140303-1611"/>
 <unit id="javax.activation" version="1.1.0.v201211130549"/>
 <unit id="javax.activation.source" version="1.1.0.v201211130549"/>
-<unit id="javax.ws.rs" version="1.1.1.v20130318-1750"/>
-<unit id="javax.ws.rs.source" version="1.1.1.v20130318-1750"/>
 <unit id="javax.xml" version="1.3.4.v201005080400"/>
 <unit id="javax.xml.bind" version="2.2.0.v201105210648"/>
 <unit id="org.apache.commons.exec" version="1.1.0.v201301240602"/>
@@ -63,14 +58,6 @@
 <unit id="org.apache.httpcomponents.httpclient" version="4.2.6.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpcore" version="4.2.5.v201311072007"/>
 <unit id="org.apache.httpcomponents.httpcore.nio" version="4.1.0.v201101201700"/>
-<unit id="org.codehaus.jackson.core" version="1.6.0.v20101005-0925"/>
-<unit id="org.codehaus.jackson.core.source" version="1.6.0.v20101005-0925"/>
-<unit id="org.codehaus.jackson.jaxrs" version="1.6.0.v20101005-1100"/>
-<unit id="org.codehaus.jackson.jaxrs.source" version="1.6.0.v20101005-1100"/>
-<unit id="org.codehaus.jackson.xc" version="1.6.0.v20101005-0925"/>
-<unit id="org.codehaus.jackson.xc.source" version="1.6.0.v20101005-0925"/>
-<unit id="org.codehaus.jackson.mapper" version="1.6.0.v20101005-0925"/>
-<unit id="org.codehaus.jackson.mapper.source" version="1.6.0.v20101005-0925"/>
 <unit id="org.mockito" version="1.9.5.v201311280930"/>
 <unit id="org.mockito.source" version="1.9.5.v201311280930"/>
 <unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
@@ -106,16 +93,27 @@
 <repository location="http://www.openhab.org/jupnp/update-site/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.8.0.201410211307"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.8.0.201410211307"/>
+<unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.gson.feature.source.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="4.1.1.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="4.1.1.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.security.feature.source.feature.group" version="2.0.0.201407131319"/>
+<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.8.0.201411032207"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.8.0.201411032207"/>
 <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 </locations>
