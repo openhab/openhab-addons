@@ -259,7 +259,7 @@ public class UpnpIOServiceImpl implements UpnpIOService {
 									.getFailure();
 							if (anException != null
 									&& anException.getMessage() != null) {
-								logger.warn(anException.getMessage());
+								logger.debug(anException.getMessage());
 							}
 
 							Map<String, ActionArgumentValue> result = invocation

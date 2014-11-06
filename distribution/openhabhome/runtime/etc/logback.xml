@@ -43,6 +43,8 @@
     <logger name="OSGi" level="OFF"/>
     <logger name="org.eclipse.jetty" level="ERROR"/>
     <logger name="org.quartz" level="WARN"/>
+    <logger name="org.jupnp" level="ERROR"/>
+
  	<!-- temporary workaround for https://github.com/openhab/jmdns/issues/12 -->
     <logger name="javax.jmdns" level="OFF"/>
     

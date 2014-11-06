@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.sonos.config.ZonePlayerConfiguration;
 import org.openhab.binding.sonos.internal.SonosAlarm;
 import org.openhab.binding.sonos.internal.SonosEntry;
@@ -52,7 +53,6 @@ import org.openhab.binding.sonos.internal.SonosMetaData;
 import org.openhab.binding.sonos.internal.SonosXMLParser;
 import org.openhab.binding.sonos.internal.SonosZoneGroup;
 import org.openhab.binding.sonos.internal.SonosZonePlayerState;
-import org.openhab.io.net.http.HttpUtil;
 import org.openhab.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.io.transport.upnp.UpnpIOService;
 import org.slf4j.Logger;
@@ -625,21 +625,23 @@ UpnpIOParticipant, DiscoveryListener {
 					}
 					lastOPMLQuery.setTime(new Date());
 
-					List<String> fields = SonosXMLParser
-							.getRadioTimeFromXML(response);
-
-					if (fields != null) {
-
-						resultString = new String();
-						// radio name should be first field
-						title = fields.get(0);
-
-						Iterator<String> listIterator = fields.listIterator();
-						while (listIterator.hasNext()) {
-							String field = listIterator.next();
-							resultString = resultString + field;
-							if (listIterator.hasNext()) {
-								resultString = resultString + " - ";
+					if(response != null) {
+						List<String> fields = SonosXMLParser
+								.getRadioTimeFromXML(response);
+	
+						if (fields != null) {
+	
+							resultString = new String();
+							// radio name should be first field
+							title = fields.get(0);
+	
+							Iterator<String> listIterator = fields.listIterator();
+							while (listIterator.hasNext()) {
+								String field = listIterator.next();
+								resultString = resultString + field;
+								if (listIterator.hasNext()) {
+									resultString = resultString + " - ";
+								}
 							}
 						}
 					}
