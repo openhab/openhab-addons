@@ -16,6 +16,7 @@
   <packaging>pom</packaging>
 
   <modules>
+	<module>org.openhab.binding.sonos</module>
   </modules>
 
 </project>

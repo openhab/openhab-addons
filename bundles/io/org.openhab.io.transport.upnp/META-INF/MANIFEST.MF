@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Upnp
+Bundle-Name: openHAB UPnP Transport Bundle
 Bundle-SymbolicName: org.openhab.io.transport.upnp
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.jupnp,
  org.jupnp.controlpoint,
@@ -19,3 +19,4 @@ Import-Package: org.jupnp,
 Bundle-ActivationPolicy: lazy
 Export-Package: org.openhab.io.transport.upnp
 Service-Component: OSGI-INF/UpnpIOService.xml
+Bundle-Vendor: openHAB.org
