@@ -111,9 +111,13 @@ UpnpIOParticipant, DiscoveryListener {
 		}
 	};
 
+	private String opmlPartnerID;
+
 	public ZonePlayerHandler(Thing thing, UpnpIOService upnpIOService,
-			DiscoveryServiceRegistry discoveryServiceRegistry) {
+			DiscoveryServiceRegistry discoveryServiceRegistry, String opmlPartnerID) {
 		super(thing);
+		this.opmlPartnerID = opmlPartnerID;
+		
 		logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing()
 				.getUID());
 		if (upnpIOService != null) {
@@ -591,8 +595,7 @@ UpnpIOParticipant, DiscoveryListener {
 			String album = null;
 			String title = null;
 
-			if (currentURI.contains("x-sonosapi-stream")) {
-				// TODO: Get partner ID for openhab.org
+			if (opmlPartnerID != null && currentURI.contains("x-sonosapi-stream")) {
 
 				String stationID = StringUtils.substringBetween(currentURI,
 						":s", "?sid");
@@ -609,10 +612,10 @@ UpnpIOParticipant, DiscoveryListener {
 
 					this.onValueReceived("StationID", stationID, "AVTransport");
 
-					String url = "http://opml.radiotime.com/Describe.ashx?c=nowplaying&id="
-							+ stationID
-							+ "&partnerId=IAeIhU42&serial="
-							+ getMACAddress();
+					String url = "http://opml.radiotime.com/Describe.ashx?c=nowplaying"
+							+ "&id=" + stationID
+							+ "&partnerId=" + opmlPartnerID
+							+ "&serial=" + getMACAddress();
 
 					String response = HttpUtil.executeUrl("GET", url,
 							SOCKET_TIMEOUT);

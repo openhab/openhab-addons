@@ -10,8 +10,11 @@ package org.openhab.binding.sonos.internal;
 import static org.openhab.binding.sonos.SonosBindingConstants.*;
 
 import java.util.Collection;
+import java.util.Dictionary;
+
 import org.openhab.binding.sonos.handler.ZonePlayerHandler;
 import org.openhab.io.transport.upnp.UpnpIOService;
+import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -21,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+
 import com.google.common.collect.Lists;
 
 import static org.openhab.binding.sonos.config.ZonePlayerConfiguration.UDN;
@@ -38,8 +42,17 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     
 	private UpnpIOService upnpIOService;
 	private DiscoveryServiceRegistry discoveryServiceRegistry;
+
+	// optional OPML partner id that can be configured through configuration admin 
+	private String opmlPartnerID = null;
 	
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(ZONEPLAYER_THING_TYPE_UID);
+    
+    protected void activate(ComponentContext componentContext) {
+    	super.activate(componentContext);
+    	Dictionary<String, Object> properties = componentContext.getProperties();
+		opmlPartnerID = (String) properties.get("opmlPartnerID");
+    };
     
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -67,7 +80,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(ZONEPLAYER_THING_TYPE_UID)) {
         	logger.debug("Creating a ZonePlayerHandler for thing '{}' with UDN '{}'",thing.getUID(),thing.getConfiguration().get(UDN));
-            return new ZonePlayerHandler(thing,upnpIOService, discoveryServiceRegistry);
+            return new ZonePlayerHandler(thing, upnpIOService, discoveryServiceRegistry, opmlPartnerID);
         }
 
         return null;

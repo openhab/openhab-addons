@@ -11,8 +11,7 @@
 		<parameter name="opmlPartnerID" type="text">
 			<label>OPML Partner ID</label>
 			<description>ID for the OPML/tunein.com service</description>
-			<required>true</required>
-			<default>IAeIhU42</default>
+			<required>false</required>
 		</parameter>
 
 	</config-description>
