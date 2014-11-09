@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.openhab.library.tel">
-   <implementation class="org.openhab.library.tel.TelItemFactory"/>
+   <implementation class="org.openhab.library.tel.internal.TelItemFactory"/>
    <service>
       <provide interface="org.eclipse.smarthome.core.items.ItemFactory"/>
    </service>

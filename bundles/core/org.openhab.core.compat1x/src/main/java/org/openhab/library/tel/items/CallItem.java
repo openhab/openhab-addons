@@ -11,20 +11,12 @@ package org.openhab.library.tel.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.library.tel.TelItemFactory;
+import org.openhab.core.items.GenericItem;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.library.tel.types.CallType;
 
-
-/**
- * This item identifies a telephone call by its origin and destination.
- * 
- * @author Thomas.Eichstaedt-Engelen
- * @since 0.9.0
- */
 public class CallItem extends GenericItem {
 	
 	private static List<Class<? extends State>> acceptedDataTypes = new ArrayList<Class<? extends State>>();
@@ -36,7 +28,7 @@ public class CallItem extends GenericItem {
 	}
 	
 	public CallItem(String name) {
-		super(TelItemFactory.ITEM_TYPE, name);
+		super(name);
 	}
 
 	public List<Class<? extends State>> getAcceptedDataTypes() {

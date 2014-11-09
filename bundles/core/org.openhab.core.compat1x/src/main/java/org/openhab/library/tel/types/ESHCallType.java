@@ -19,15 +19,7 @@ import org.eclipse.smarthome.core.types.ComplexType;
 import org.eclipse.smarthome.core.types.PrimitiveType;
 import org.eclipse.smarthome.core.types.State;
 
-
-/**
- * This type can be used for items that are dealing with telephony functionality.
- * 
- * @author Thomas.Eichstaedt-Engelen
- * @since 0.9.0
- * 
- */
-public class CallType implements ComplexType, Command, State {
+public class ESHCallType implements ComplexType, Command, State {
 	
 	protected static final String DEST_NUM = "destNum";
 	protected static final String ORIG_NUM = "origNum";
@@ -36,14 +28,14 @@ public class CallType implements ComplexType, Command, State {
 	private SortedMap<String, PrimitiveType> callDetails;
 
 	
-	public static final State EMPTY = new CallType(new StringType(""), new StringType(""));
+	public static final State EMPTY = new ESHCallType(new StringType(""), new StringType(""));
 	
 	
-	public CallType() {
+	public ESHCallType() {
 		callDetails = new TreeMap<String, PrimitiveType>();
 	}
 	
-	public CallType(String value) {
+	public ESHCallType(String value) {
 		this();
 		if (StringUtils.isNotBlank(value)) {
 			String[] elements = value.split(SEPARATOR);
@@ -54,11 +46,11 @@ public class CallType implements ComplexType, Command, State {
 		}
 	}
 	
-	public CallType(String origNum, String destNum) {
+	public ESHCallType(String origNum, String destNum) {
 		this(new StringType(origNum), new StringType(destNum));
 	}
 		
-	public CallType(StringType origNum, StringType destNum) {
+	public ESHCallType(StringType origNum, StringType destNum) {
 		this();
 		callDetails.put(DEST_NUM, destNum);
 		callDetails.put(ORIG_NUM, origNum);
@@ -93,8 +85,8 @@ public class CallType implements ComplexType, Command, State {
 		return String.format(pattern, callDetails.values().toArray());
 	}
 	
-	public CallType valueOf(String value) {
-		return new CallType(value);
+	public ESHCallType valueOf(String value) {
+		return new ESHCallType(value);
 	}
 	
 	@Override

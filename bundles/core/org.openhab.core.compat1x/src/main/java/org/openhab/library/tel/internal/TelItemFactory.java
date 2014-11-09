@@ -6,10 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.library.tel;
+package org.openhab.library.tel.internal;
 
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.openhab.library.tel.items.CallItem;
+import org.eclipse.smarthome.core.items.ItemFactory;
+import org.openhab.library.tel.items.ESHCallItem;
 
 
 /**
@@ -28,7 +29,7 @@ public class TelItemFactory implements org.eclipse.smarthome.core.items.ItemFact
 	 */
 	public GenericItem createItem(String itemTypeName, String itemName) {
 		if (itemTypeName.equals(ITEM_TYPE))
-			return new CallItem(itemName);
+			return new ESHCallItem(itemName);
 		else {
 			return null;
 		}

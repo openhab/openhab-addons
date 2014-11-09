@@ -68,6 +68,7 @@ public class BindingConfigReaderDelegate implements BindingConfigReader {
 		case "Contact" : return new org.openhab.core.library.items.ContactItem(itemName);
 		case "Rollershutter" : return new org.openhab.core.library.items.RollershutterItem(itemName);
 		case "DateTime" : return new org.openhab.core.library.items.DateTimeItem(itemName);
+		case "Call" : return new org.openhab.library.tel.items.CallItem(itemName);
 		}
 		throw new BindingConfigParseException("cannot process unknown item type " + itemType);
 	}
