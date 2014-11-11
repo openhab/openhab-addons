@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.smarthome.core.common.registry.ProviderChangeListener;
 import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
+import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemFactory;
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.model.sitemap.Widget;
 import org.eclipse.smarthome.ui.items.ItemUIProvider;
 import org.osgi.service.cm.ConfigurationException;
@@ -41,9 +43,11 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 	private ThingRegistry thingRegistry;
 	private ItemFactory itemFactory;
 	private ThingTypeRegistry thingTypeRegistry;
+	private EventPublisher eventPublisher;
 	private GroupItem rootItem;
 
 	private boolean enabled = false;
+
 	
 	@Override
 	public String getIcon(String itemName) {
@@ -206,6 +210,14 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 		this.thingRegistry = null;
 	}
 
+	protected void setEventPublisher(EventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
+	}
+
+	protected void unsetEventPublisher(EventPublisher eventPublisher) {
+		this.eventPublisher = null;
+	}
+
 	protected void setThingTypeRegistry(ThingTypeRegistry thingTypeRegistry) {
 		this.thingTypeRegistry = thingTypeRegistry;
 	}
@@ -249,15 +261,18 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 			listener.removed(this, getRootItem());
 		}
 		rootItem = null;
+		GroupItem group = createItemsForThing(element);
+		rootItem = getRootItem();
 		for(ProviderChangeListener<Item> listener : listeners) {
-			GroupItem group = createItemsForThing(element);
 			for(Item item : group.getMembers()) {
 				listener.added(this, item);
 			}
-			rootItem = getRootItem();
 			listener.added(this, group);
 			listener.added(this, getRootItem());
+
 		}
+		eventPublisher.postUpdate(group.getName(), UnDefType.UNDEF);
+		eventPublisher.postUpdate(rootItem.getName(), UnDefType.UNDEF);
 	}
 
 	@Override
@@ -271,7 +286,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 				listener.removed(this, item);
 			}
 			listener.added(this, getRootItem());
-		}		
+		}	
 	}
 
 	@Override

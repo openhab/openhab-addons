@@ -32,6 +32,7 @@
       <includes>
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.hue:jar:*</include>
+      	<include>org.openhab.binding:org.openhab.binding.sonos:jar:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

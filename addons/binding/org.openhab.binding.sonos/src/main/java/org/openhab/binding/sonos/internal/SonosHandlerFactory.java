@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Dictionary;
 
 import org.openhab.binding.sonos.handler.ZonePlayerHandler;
-import org.openhab.io.transport.upnp.UpnpIOService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 
 import com.google.common.collect.Lists;
 

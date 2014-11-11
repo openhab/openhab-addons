@@ -46,6 +46,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
+import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.sonos.config.ZonePlayerConfiguration;
 import org.openhab.binding.sonos.internal.SonosAlarm;
 import org.openhab.binding.sonos.internal.SonosEntry;
@@ -53,8 +55,6 @@ import org.openhab.binding.sonos.internal.SonosMetaData;
 import org.openhab.binding.sonos.internal.SonosXMLParser;
 import org.openhab.binding.sonos.internal.SonosZoneGroup;
 import org.openhab.binding.sonos.internal.SonosZonePlayerState;
-import org.openhab.io.transport.upnp.UpnpIOParticipant;
-import org.openhab.io.transport.upnp.UpnpIOService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

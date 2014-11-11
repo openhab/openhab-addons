@@ -45,6 +45,7 @@
     <packaging>pom</packaging>
     
     <modules>
+	<module>addons</module>
         <module>bundles</module>
         <module>features</module>
         <module>products</module>

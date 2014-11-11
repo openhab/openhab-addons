@@ -9,4 +9,5 @@
       <provide interface="org.openhab.core.internal.item.ThingItemUIProvider"/>
    </service>
    <reference bind="setThingTypeRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.type.ThingTypeRegistry" name="ThingTypeRegistry" policy="static" unbind="unsetThingTypeRegistry"/>
+   <reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="dynamic" unbind="unsetEventPublisher"/>
 </scr:component>
