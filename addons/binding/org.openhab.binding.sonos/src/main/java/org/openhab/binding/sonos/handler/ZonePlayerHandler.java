@@ -127,11 +127,7 @@ UpnpIOParticipant, DiscoveryListener {
 			this.discoveryServiceRegistry = discoveryServiceRegistry;
 			this.discoveryServiceRegistry.addDiscoveryListener(this);
 		}
-		if (!service.isRegistered(this)) {
-			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.OFFLINE);
-		}
+
 	}
 
 	@Override
@@ -141,6 +137,12 @@ UpnpIOParticipant, DiscoveryListener {
 		if (pollingJob != null && !pollingJob.isCancelled()) {
 			pollingJob.cancel(true);
 			pollingJob = null;
+		}
+		
+		if (getThing().getStatus() == ThingStatus.ONLINE) {
+			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.OFFLINE);
 		}
 	}
 
@@ -154,6 +156,12 @@ UpnpIOParticipant, DiscoveryListener {
 			onUpdate();
 		} else {
 			logger.warn("Cannot initalize the zoneplayer. UDN not set.");
+		}
+		
+		if (getThing().getStatus() == ThingStatus.OFFLINE) {
+			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.ONLINE);
 		}
 	}
 
