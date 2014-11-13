@@ -573,18 +573,15 @@ UpnpIOParticipant, DiscoveryListener {
 	protected void updateCurrentURIFormatted() {
 
 		String currentURI = null;
-		SonosMetaData currentURIMetaData = null;
 		SonosMetaData currentTrack = null;
 		String coordinator = getCoordinator();
 		ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinator);
 
 		if (!isGroupCoordinator() && coordinatorHandler != null) {
 			currentURI = coordinatorHandler.getCurrentURI();
-			currentURIMetaData = coordinatorHandler.getCurrentURIMetadata();
 			currentTrack = coordinatorHandler.getTrackMetadata();
 		} else {
 			currentURI = getCurrentURI();
-			currentURIMetaData = getCurrentURIMetadata();
 			currentTrack = getTrackMetadata();
 		}
 
