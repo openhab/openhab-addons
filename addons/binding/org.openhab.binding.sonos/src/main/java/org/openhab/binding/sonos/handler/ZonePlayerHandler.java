@@ -117,7 +117,7 @@ UpnpIOParticipant, DiscoveryListener {
 			DiscoveryServiceRegistry discoveryServiceRegistry, String opmlPartnerID) {
 		super(thing);
 		this.opmlPartnerID = opmlPartnerID;
-		
+
 		logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing()
 				.getUID());
 		if (upnpIOService != null) {
@@ -628,13 +628,13 @@ UpnpIOParticipant, DiscoveryListener {
 					if(response != null) {
 						List<String> fields = SonosXMLParser
 								.getRadioTimeFromXML(response);
-	
+
 						if (fields != null) {
-	
+
 							resultString = new String();
 							// radio name should be first field
 							title = fields.get(0);
-	
+
 							Iterator<String> listIterator = fields.listIterator();
 							while (listIterator.hasNext()) {
 								String field = listIterator.next();
@@ -1263,7 +1263,11 @@ UpnpIOParticipant, DiscoveryListener {
 			}
 		}
 
-		return (ZonePlayerHandler) thing.getHandler();
+		if(thing != null) { 
+			return (ZonePlayerHandler) thing.getHandler();
+		} else {
+			return null;
+		}
 
 	}
 
