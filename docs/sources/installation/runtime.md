@@ -1,4 +1,4 @@
-# Installation of openHAB 2.0
+# Installation of openHAB 2
 
 openHAB comes as a platform independent zip file, which you only need to extract to some folder.
 

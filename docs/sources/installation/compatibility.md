@@ -35,7 +35,7 @@ Here you can find the compatibility matrices in order to find out, which version
 | HDAnywhere |  |  |  |  |  |
 | Heatmiser |  |  |  |  |  |
 | Homematic / Homegear | X | X | X | X |  |
-| HTTP |  |  |  |  |  |
+| HTTP | X | X | X | X |  |
 | IEC 62056-21 |  |  |  |  |  |
 | IHC / ELKO |  |  |  |  |  |
 | Insteon Hub |  |  |  |  |  |
@@ -55,11 +55,11 @@ Here you can find the compatibility matrices in order to find out, which version
 | MQTTitude |  |  |  |  |  |
 | Neohub |  |  |  |  |  |
 | Netatmo |  |  |  |  |  |
-| Network Health |  |  |  |  |  |
+| Network Health | X | X | X | X |  |
 | Nibe Heatpump |  |  |  |  |  |
 | Nikobus |  |  |  |  |  |
 | Novelan/Luxtronic Heatpump |  |  |  |  |  |
-| NTP |  |  |  |  |  |
+| NTP | X | X | X | X |  |
 | One-Wire |  |  |  |  |  |
 | Onkyo AV Receiver |  |  |  |  |  |
 | Open Energy Monitor |  |  |  |  |  |
@@ -96,7 +96,7 @@ Here you can find the compatibility matrices in order to find out, which version
 
 ## Persistence Services
 
-| |  |  |  |  |  | Service | 2.0 alpha + 1.6.0 | 2.0 alpha + 1.7.0-SNAPSHOT | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
+| Persistence Service | 2.0 alpha + 1.6.0 | 2.0 alpha + 1.7.0-SNAPSHOT | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
 |-------|:------------------:|:---------------------------:|:----------------------:|:-------------------------------:|---|
 | db4o |  |  |  |  |  |
 | rrd4j | X | X | X | X | only persistence, no rrd4j charts supported |
