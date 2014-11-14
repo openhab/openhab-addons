@@ -117,7 +117,7 @@ UpnpIOParticipant, DiscoveryListener {
 			DiscoveryServiceRegistry discoveryServiceRegistry, String opmlPartnerID) {
 		super(thing);
 		this.opmlPartnerID = opmlPartnerID;
-		
+
 		logger.debug("Creating a ZonePlayerHandler for thing '{}'", getThing()
 				.getUID());
 		if (upnpIOService != null) {
@@ -127,11 +127,7 @@ UpnpIOParticipant, DiscoveryListener {
 			this.discoveryServiceRegistry = discoveryServiceRegistry;
 			this.discoveryServiceRegistry.addDiscoveryListener(this);
 		}
-		if (!service.isRegistered(this)) {
-			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.OFFLINE);
-		}
+
 	}
 
 	@Override
@@ -141,6 +137,12 @@ UpnpIOParticipant, DiscoveryListener {
 		if (pollingJob != null && !pollingJob.isCancelled()) {
 			pollingJob.cancel(true);
 			pollingJob = null;
+		}
+		
+		if (getThing().getStatus() == ThingStatus.ONLINE) {
+			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.OFFLINE);
 		}
 	}
 
@@ -154,6 +156,12 @@ UpnpIOParticipant, DiscoveryListener {
 			onUpdate();
 		} else {
 			logger.warn("Cannot initalize the zoneplayer. UDN not set.");
+		}
+		
+		if (getThing().getStatus() == ThingStatus.OFFLINE) {
+			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.ONLINE);
 		}
 	}
 
@@ -573,18 +581,15 @@ UpnpIOParticipant, DiscoveryListener {
 	protected void updateCurrentURIFormatted() {
 
 		String currentURI = null;
-		SonosMetaData currentURIMetaData = null;
 		SonosMetaData currentTrack = null;
 		String coordinator = getCoordinator();
 		ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinator);
 
 		if (!isGroupCoordinator() && coordinatorHandler != null) {
 			currentURI = coordinatorHandler.getCurrentURI();
-			currentURIMetaData = coordinatorHandler.getCurrentURIMetadata();
 			currentTrack = coordinatorHandler.getTrackMetadata();
 		} else {
 			currentURI = getCurrentURI();
-			currentURIMetaData = getCurrentURIMetadata();
 			currentTrack = getTrackMetadata();
 		}
 
@@ -628,13 +633,13 @@ UpnpIOParticipant, DiscoveryListener {
 					if(response != null) {
 						List<String> fields = SonosXMLParser
 								.getRadioTimeFromXML(response);
-	
+
 						if (fields != null) {
-	
+
 							resultString = new String();
 							// radio name should be first field
 							title = fields.get(0);
-	
+
 							Iterator<String> listIterator = fields.listIterator();
 							while (listIterator.hasNext()) {
 								String field = listIterator.next();
@@ -1263,7 +1268,11 @@ UpnpIOParticipant, DiscoveryListener {
 			}
 		}
 
-		return (ZonePlayerHandler) thing.getHandler();
+		if(thing != null) { 
+			return (ZonePlayerHandler) thing.getHandler();
+		} else {
+			return null;
+		}
 
 	}
 
