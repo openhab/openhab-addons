@@ -71,10 +71,12 @@ public class CoreActivator implements BundleActivator {
 		
 		// we now request the RuleEngine, so that it is activated and starts processing the rules
 		// TODO: This should probably better be moved in a new bundle, so that the core bundle does
-		// not have a dependency on model.rule.runtime anymore.
-		ServiceTracker<RuleEngine, RuleEngine> tracker = new ServiceTracker<RuleEngine, RuleEngine>(context, RuleEngine.class, null);
-		tracker.open();
-		tracker.waitForService(10000);
+		// not have a (optional) dependency on model.rule.runtime anymore.
+		try {
+			ServiceTracker<RuleEngine, RuleEngine> tracker = new ServiceTracker<RuleEngine, RuleEngine>(context, RuleEngine.class, null);
+			tracker.open();
+			tracker.waitForService(10000);
+		} catch(NoClassDefFoundError e) {}
 	}
 
 	/*

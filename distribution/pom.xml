@@ -34,6 +34,7 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>src/assemble/runtime.xml</descriptor>
+                                <descriptor>src/assemble/runtime-minimal.xml</descriptor>
 <!--                                 <descriptor>src/assemble/addons.xml</descriptor> -->
                                 <descriptor>src/assemble/demo.xml</descriptor>
                             </descriptors>
@@ -53,6 +54,13 @@
             <classifier>win32.win32.x86</classifier>
         </dependency>
         <dependency>
+            <groupId>org.openhab.products</groupId>
+            <artifactId>org.openhab.runtime.minimal.product</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>win32.win32.x86</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.sonos</artifactId>
             <version>${project.version}</version>
@@ -66,11 +74,6 @@
             <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.hue</artifactId>
             <version>${esh.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.sonos</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openHAB Runtime" uid="org.openhab.runtime.product" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="false">
+<product name="openHAB Minimal Runtime" uid="org.openhab.runtime.minimal.product" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -31,8 +31,8 @@
    </plugins>
 
    <features>
-      <feature id="org.openhab.runtime.feature"/>
-      <feature id="org.openhab.dependencies.feature"/>
+      <feature id="org.openhab.runtime.minimal.feature"/>
+      <feature id="org.openhab.dependencies.minimal.feature"/>
    </features>
 
    <configurations>
@@ -74,32 +74,14 @@
       <plugin id="org.eclipse.smarthome.io.net" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.rest.core" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.io.rest.sitemap" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.upnp" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="5" />
-      <plugin id="org.eclipse.smarthome.model.item" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.item.runtime" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.persistence" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.persistence.runtime" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.rule" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.rule.runtime" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.script" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.script.runtime" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.sitemap" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.sitemap.runtime" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.thing" autoStart="true" startLevel="3" />
-      <plugin id="org.eclipse.smarthome.model.thing.runtime" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.storage.mapdb" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.ui" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.ui.webapp" autoStart="true" startLevel="0" />
       <plugin id="org.jupnp" autoStart="true" startLevel="0" />
       <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.core" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
-      <plugin id="org.openhab.core.compat1x" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>

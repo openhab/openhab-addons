@@ -1,7 +1,7 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-  <id>runtime</id>
+  <id>minimal-runtime</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -58,12 +58,18 @@
 					<exclude>**/org.eclipse.compare*.jar</exclude>
 					<exclude>**/org.eclipse.search*.jar</exclude>
 					<exclude>**/org.eclipse.help*.jar</exclude>
+					<exclude>**/org.eclipse.xtext*.jar</exclude>
+					<exclude>**/org.eclipse.xtend*.jar</exclude>
+					<exclude>**/org.eclipse.emf*.jar</exclude>
+					<exclude>**/org.eclipse.smarthome.ui*.jar</exclude>
+					<exclude>**/org.eclipse.smarthome.model*.jar</exclude>
+					<exclude>**/org.eclipse.smarthome.core.scriptengine*.jar</exclude>
 					<exclude>**/org.eclipse.equinox.launcher.win32*</exclude>
 					<exclude>**/org.eclipse.equinox.launcher.win32*</exclude>
 				</excludes>
       </unpackOptions>      
       <includes>
-      	<include>*:org.openhab.runtime.product:zip:*</include>
+      	<include>*:org.openhab.runtime.minimal.product:zip:*</include>
       </includes>
     </dependencySet>
   </dependencySets>
