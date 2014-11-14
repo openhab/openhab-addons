@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.events.EventConstants;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.ItemNotFoundException;
+import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.types.TypeParser;
+import org.openhab.core.compat1x.internal.ItemMapper;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventHandler;
@@ -20,6 +25,7 @@ public class EventBridge implements EventHandler {
 
     private static final String BRIDGEMARKER = "bridgemarker";
 	private EventAdmin eventAdmin;
+	private ItemRegistry itemRegistry;
 
     public void setEventAdmin(EventAdmin eventAdmin) {
         this.eventAdmin = eventAdmin;
@@ -27,6 +33,14 @@ public class EventBridge implements EventHandler {
 
     public void unsetEventAdmin(EventAdmin eventAdmin) {
         this.eventAdmin = null;
+    }
+
+    public void setItemRegistry(ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
+
+    public void unsetItemRegistry(ItemRegistry itemRegistry) {
+        this.itemRegistry = null;
     }
 
 	@Override
@@ -55,8 +69,35 @@ public class EventBridge implements EventHandler {
 	private Map<String, Object> constructProperties(Event event) {
 		String[] propertyNames = event.getPropertyNames();
 		Map<String, Object> properties = new HashMap<>();
-		for(String propertyName : propertyNames) {
-			properties.put(propertyName, event.getProperty(propertyName));
+		String itemName = (String) event.getProperty("item");
+		if(itemName!=null) {
+			for(String propertyName : propertyNames) {
+				if(propertyName.equals("command")) {
+					try {
+						Item item = itemRegistry.getItem(itemName);
+						org.openhab.core.items.Item ohItem = ItemMapper.mapToOpenHABItem(item);
+						if(ohItem!=null) {
+							org.openhab.core.types.Command command = 
+									org.openhab.core.types.TypeParser.parseCommand(
+											ohItem.getAcceptedCommandTypes(), event.getProperty(propertyName).toString());
+							properties.put(propertyName, command);
+						}
+					} catch (ItemNotFoundException e) {}
+				} else if(propertyName.equals("state")) {
+					try {
+						Item item = itemRegistry.getItem(itemName);
+						org.openhab.core.items.Item ohItem = ItemMapper.mapToOpenHABItem(item);
+						if(ohItem!=null) {
+							org.openhab.core.types.State state = 
+									org.openhab.core.types.TypeParser.parseState(
+											ohItem.getAcceptedDataTypes(), event.getProperty(propertyName).toString());
+							properties.put(propertyName, state);
+						}
+					} catch (ItemNotFoundException e) {}
+				} else {
+					properties.put(propertyName, event.getProperty(propertyName));
+				}
+			}
 		}
 		properties.put(BRIDGEMARKER, true);
 		return properties;
