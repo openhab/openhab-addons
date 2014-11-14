@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.core.persistence.internal;
 
 import java.util.Dictionary;
@@ -7,6 +14,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.openhab.core.persistence.PersistenceService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -23,6 +31,7 @@ public class PersistenceServiceFactory {
 	private BundleContext context;
 	
 	private Set<PersistenceService> persistenceServices = new HashSet<>();
+	private ItemRegistry itemRegistry;
 	
 	public void activate(BundleContext context) {
 		this.context = context;
@@ -39,6 +48,14 @@ public class PersistenceServiceFactory {
 		this.context = null;
 	}
 	
+    public void setItemRegistry(ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
+
+    public void unsetItemRegistry(ItemRegistry itemRegistry) {
+        this.itemRegistry = null;
+    }
+
 	public void addPersistenceService(PersistenceService service) {
 		if(context!=null) {
 			registerDelegateService(service);			
@@ -55,7 +72,10 @@ public class PersistenceServiceFactory {
 
 	private void registerDelegateService(PersistenceService persistenceService) {
 		if(!delegates.containsKey(persistenceService.getName())) {
-			PersistenceServiceDelegate service = new PersistenceServiceDelegate(persistenceService);
+			org.eclipse.smarthome.core.persistence.PersistenceService service = 
+					(persistenceService instanceof org.openhab.core.persistence.QueryablePersistenceService) ?
+					new QueryablePersistenceServiceDelegate(persistenceService, itemRegistry) 
+				:	new PersistenceServiceDelegate(persistenceService);
 			Dictionary<String, Object> props = new Hashtable<String, Object>();
 			ServiceRegistration<org.eclipse.smarthome.core.persistence.PersistenceService> serviceReg = 
 					context.registerService(org.eclipse.smarthome.core.persistence.PersistenceService.class, service, props);

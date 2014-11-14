@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.core.compat1x.internal;
 
 import org.eclipse.smarthome.core.items.Item;
@@ -11,6 +18,7 @@ import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.types.TypeParser;
+import org.openhab.library.tel.items.ESHCallItem;
 
 public class ItemMapper {
 
@@ -24,6 +32,7 @@ public class ItemMapper {
 		if(item instanceof DimmerItem) result = new org.openhab.core.library.items.DimmerItem(item.getName());
 		if(item instanceof ColorItem) result = new org.openhab.core.library.items.ColorItem(item.getName());
 		if(item instanceof DateTimeItem) result = new org.openhab.core.library.items.DateTimeItem(item.getName());
+		if(item instanceof ESHCallItem) result = new org.openhab.library.tel.items.CallItem(item.getName());
 		
 		if(result instanceof org.openhab.core.items.GenericItem) {
 			org.openhab.core.items.GenericItem genericItem = (GenericItem) result;
