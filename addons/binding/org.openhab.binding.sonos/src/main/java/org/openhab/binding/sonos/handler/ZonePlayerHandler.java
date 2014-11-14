@@ -154,14 +154,9 @@ UpnpIOParticipant, DiscoveryListener {
 		if (configuration.udn != null) {
 			onSubscription();
 			onUpdate();
+			super.initialize();
 		} else {
 			logger.warn("Cannot initalize the zoneplayer. UDN not set.");
-		}
-		
-		if (getThing().getStatus() == ThingStatus.OFFLINE) {
-			logger.debug("Setting status for thing '{}' to ONLINE", getThing()
-					.getUID());
-			getThing().setStatus(ThingStatus.ONLINE);
 		}
 	}
 
@@ -1251,28 +1246,29 @@ UpnpIOParticipant, DiscoveryListener {
 
 	protected ZonePlayerHandler getHandlerByName(String remotePlayerName) {
 
-		Thing thing = thingRegistry.getByUID(new ThingUID(
-				ZONEPLAYER_THING_TYPE_UID, remotePlayerName));
-
-		if (thing == null) {
-			Collection<Thing> allThings = thingRegistry.getAll();
-			for (Thing aThing : allThings) {
-				if (aThing.getThingTypeUID().equals(
-						this.getThing().getThingTypeUID())) {
-					if (aThing.getConfiguration().get(UDN)
-							.equals(remotePlayerName)) {
-						thing = aThing;
-						break;
+		if(thingRegistry!=null) {
+			Thing thing = thingRegistry.getByUID(new ThingUID(
+					ZONEPLAYER_THING_TYPE_UID, remotePlayerName));
+	
+			if (thing == null) {
+				Collection<Thing> allThings = thingRegistry.getAll();
+				for (Thing aThing : allThings) {
+					if (aThing.getThingTypeUID().equals(
+							this.getThing().getThingTypeUID())) {
+						if (aThing.getConfiguration().get(UDN)
+								.equals(remotePlayerName)) {
+							thing = aThing;
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		if(thing != null) { 
-			return (ZonePlayerHandler) thing.getHandler();
-		} else {
-			return null;
+			if(thing != null) { 
+				return (ZonePlayerHandler) thing.getHandler();
+			}
 		}
+		return null;
 
 	}
 
