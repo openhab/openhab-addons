@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="maxcube"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+<bridge-type id="bridge">
+		<label>MAX!Cube LAN gateway</label>
+		<description>This bridge represents the MAX!Cube LAN gateway.</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network_address</context>
+				<label>MAX!Cube LAN gateway IP</label>
+				<description>The IP address of the MAX!Cube LAN gateway. If none provided, binding will try to discover it.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="port" type="integer">
+				<context>port</context>
+				<label>MAX!Cube LAN gateway port</label>
+				<description>
+                    Port of the LAN gateway. If empty, default port 62910 will be used.
+                </description>
+				<required>false</required>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in ms which is used to poll given MAX!Cube.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifier identifies one specific device.</description>
+                <required>false</required>
+            </parameter>
+		</config-description>
+	</bridge-type>
+	
+
+</thing:thing-descriptions>

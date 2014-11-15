@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="maxcube"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- All Thermostats (Heating, Heating+, Wall) -->
+	<thing-type id="thermostat">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+	
+		<label>MaxCube HeathingThermostat</label>
+		<description>MaxCube HeathingThermostat</description>
+
+		<channels>
+			<channel id="valve" typeId="valve-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="mode" typeId="mode-channel" />
+			<channel id="actual_temp" typeId="actual_temp-channel" />
+			<channel id="set_temp" typeId="set_temp-channel" />
+		</channels>
+
+        <config-description>
+            <parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifier identifies one specific device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<!-- All Switches (EcoSwitch, Pushbutton/ShutterContact) -->
+	<thing-type id="switch">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+	
+		<label>MaxCube Switches</label>
+		<description>MaxCube All Switches (EcoSwitch, Pushbutton/ShutterContact)</description>
+
+		<channels>
+			<channel id="state" typeId="switch_state-channel" />
+			<channel id="battery" typeId="battery-channel" />
+
+		</channels>
+
+        <config-description>
+            <parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifier identifies one specific device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<channel-type id="valve-channel">
+		<item-type>Number</item-type>
+		<label>Valve Position Channel</label>
+		<description>Thermostat Valve Position</description>
+	</channel-type>
+
+	<channel-type id="battery-channel">
+		<item-type>String</item-type>
+		<label>Battery Level Channel</label>
+		<description>Battery charge Level</description>
+	</channel-type>
+	
+		<channel-type id="mode-channel">
+		<item-type>String</item-type>
+		<label>Mode Channel</label>
+		<description>Thermostat Mode Setting</description>
+	</channel-type>
+	
+		<channel-type id="actual_temp-channel">
+			<item-type>Number</item-type>
+		<label>Actual Temperature Channel</label>
+		<description>Actual measured room temperature</description>
+	</channel-type>
+	
+		<channel-type id="set_temp-channel">
+			<item-type>Number</item-type>
+		<label>Set Temperature Channel</label>
+		<description>Thermostat temperature setpoint</description>
+	</channel-type>
+
+
+		<channel-type id="switch_state-channel">
+		<item-type>Contact</item-type>
+		<label>Switch state Channel</label>
+		<description>Switch state information</description>
+	</channel-type>
+
+</thing:thing-descriptions>
