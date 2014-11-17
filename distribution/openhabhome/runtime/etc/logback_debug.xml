@@ -40,6 +40,8 @@
     <logger name="org.jupnp" level="ERROR"/>
  	<!-- temporary workaround for https://github.com/openhab/jmdns/issues/12 -->
     <logger name="javax.jmdns" level="OFF"/>
+    <logger name="javax.jmdns.impl" level="OFF"/>
+    <logger name="javax.jmdns.impl.constants" level="OFF"/>
 
 	<root level="INFO">
 		<appender-ref ref="FILE" />
