@@ -60,6 +60,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private Runnable pollingRunnable = new Runnable() {
 		@Override
 		public void run() {
+			Thread.currentThread().setName("maxcube-sendcommand");
 			refreshData();  }
 	};
 	private ScheduledFuture<?> sendCommandJob;
@@ -67,6 +68,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private Runnable sendCommandRunnable = new Runnable() {
 		@Override
 		public void run() {
+			Thread.currentThread().setName("maxcube-datarefresh");
 			sendCommands(); }
 	};
 	@Override
@@ -148,11 +150,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 			if (bridge !=null){
 				bridge.refreshData();
 				if (bridge.isConnectionEstablished()){
-					if ( previousOnline == false) {
-						updateStatus(ThingStatus.ONLINE);
-						previousOnline = bridge.isConnectionEstablished();
-					}
-
+					updateStatus(ThingStatus.ONLINE);
+					previousOnline = true;
 					devices = bridge.getDevices();
 					for (Device di : devices){
 						if (lastActiveDevices.contains(di.getSerialNumber())) {

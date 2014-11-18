@@ -44,7 +44,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 	public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
 			ThingUID thingUID, ThingUID bridgeUID) {
 
-		if (MaxCubeBinding.CubeBridge_THING_TYPE.equals(thingTypeUID)) {
+		if (MaxCubeBinding.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
 			ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
 			return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
 		}
@@ -106,7 +106,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	@Override
 	protected ThingHandler createHandler(Thing thing) {
-		if (thing.getThingTypeUID().equals(MaxCubeBinding.CubeBridge_THING_TYPE)) {
+		if (thing.getThingTypeUID().equals(MaxCubeBinding.CUBEBRIDGE_THING_TYPE)) {
 			MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
 			registerDeviceDiscoveryService(handler);
 			return handler;

@@ -54,7 +54,7 @@ public class S_Command {
 		// 10 = Temporarily
 
 		bits[7] = false;  // A (MSB)
-		bits[6] = true;   // B
+		bits[6] = false;   // B
 	}
 
 	/**

@@ -136,12 +136,6 @@ public class MaxCubeBridge {
 	 * @return the raw message text as ArrayList of String 
 	 */
 	private ArrayList<String> getRawMessage() {
-		//Fake a message for testing purposes
-		if (ipAddress.equals( "fakeMessage")){
-			connectionEstablished = true;
-			logger.warn("Content based on faked data!!");
-			return getRawFAKEMessage();
-		}
 		synchronized (MaxCubeBridge.class){
 			Socket socket = null;
 			BufferedReader reader = null;
@@ -444,20 +438,5 @@ public class MaxCubeBridge {
 				logger.debug("Null Command not sent to {}", ipAddress);
 			}
 		}}
-
-
-
-
-	private ArrayList<String> getRawFAKEMessage(){ 
-		ArrayList<String> rawMessage = new ArrayList<String> () ;
-		rawMessage.add ("H:KEQ0565026,0b5951,0113,00000000,72aeba8b,03,32,0e090b,1127,03,0000");
-		rawMessage.add ("M:00,01,VgICAQhiYWRrYW1lcgsNowIMU3R1ZGVlcmthbWVyB7bnAgILDaNLRVEwNTQ0MjQyEUJhZGthbWVyIFJhZGlhdG9yAQEHtudLRVEwMTQ1MTcyFVJhZGlhdG9yIFN0dWRlZXJrYW1lcgIB");
-		rawMessage.add ("C:0b5951,7QtZUQATAf9LRVEwNTY1MDI2AQsABEAAAAAAAAAAAP///////////////////////////wsABEAAAAAAAAAAQf///////////////////////////2h0dHA6Ly9tYXguZXEtMy5kZTo4MC9jdWJlADAvbG9va3VwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAENFVAAACgADAAAOEENFU1QAAwACAAAcIA==");
-		rawMessage.add ("C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==");
-		rawMessage.add ("C:07b6e7,0ge25wECGP9LRVEwMTQ1MTcyKyE9CQcYAzAM/wBEflUaRSBFIEUgRSBFIEUgRSBFIEUgRSBFIER+VRpFIEUgRSBFIEUgRSBFIEUgRSBFIEUgRFRUcEjSVRJJIEkgSSBFIEUgRSBFIEUgRSBEVFRwSNJVEkkgSSBJIEUgRSBFIEUgRSBFIERUVG9U01URSSBJIEkgRSBFIEUgRSBFIEUgRFRUcEjSVRJJIEkgSSBFIEUgRSBFIEUgRSBEVFRwSNJVEkkgSSBJIEUgRSBFIEUgRSBFIA==");
-		rawMessage.add ("L:CwsNowkSGQAJAAAACwe25wkSGWAvAAAA");
-		return rawMessage;
-	}
-
 
 }

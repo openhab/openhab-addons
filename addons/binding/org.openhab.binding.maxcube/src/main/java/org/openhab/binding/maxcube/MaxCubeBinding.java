@@ -35,7 +35,7 @@ public class MaxCubeBinding {
 	    public final static ThingTypeUID SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_SWITCH);
 	    
 	 // List of all Thing Type UIDs
-	    public final static ThingTypeUID CubeBridge_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_MAXCUBE);
+	    public final static ThingTypeUID CUBEBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_MAXCUBE);
 
 	    // List of all Channel ids
 	    public final static String CHANNEL_VALVE = "valve";
@@ -46,12 +46,12 @@ public class MaxCubeBinding {
 	    public final static String CHANNEL_SWITCH_STATE = "state";
 	    
 	    public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
-	    		HEATHINGTHERMOSTAT_THING_TYPE, SWITCH_THING_TYPE, CubeBridge_THING_TYPE);
+	    		HEATHINGTHERMOSTAT_THING_TYPE, SWITCH_THING_TYPE, CUBEBRIDGE_THING_TYPE);
 
 	    public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS =ImmutableSet.of(
 	    		HEATHINGTHERMOSTAT_THING_TYPE,SWITCH_THING_TYPE);
 	    
 
 	    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS =ImmutableSet.of(
-	    		CubeBridge_THING_TYPE);
+	    		CUBEBRIDGE_THING_TYPE);
 }

@@ -61,11 +61,11 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 		if(cubeSerialNumber!=null) {
 			logger.debug("Adding new Max!Cube Lan Gateway on {} with id '{}' to Smarthome inbox", ipAddress, cubeSerialNumber);
 
-			ThingUID uid = new ThingUID( MaxCubeBinding.CubeBridge_THING_TYPE, "MaxCube_" + cubeSerialNumber);
+			ThingUID uid = new ThingUID( MaxCubeBinding.CUBEBRIDGE_THING_TYPE, "MaxCube_" + cubeSerialNumber);
 			if(uid!=null) {
 				DiscoveryResult result = DiscoveryResultBuilder.create(uid)
 						.withProperty(MaxCubeConfiguration.SERIAL_NUMBER,cubeSerialNumber)
-						.withLabel("MaxCube LAN Gateway on " + ipAddress )
+						.withLabel("MaxCube LAN Gateway (" + cubeSerialNumber + ")" )
 						.build();
 				thingDiscovered (result);
 			} 

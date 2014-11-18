@@ -14,11 +14,11 @@
 		<description>MaxCube HeathingThermostat</description>
 
 		<channels>
-			<channel id="valve" typeId="valve-channel" />
-			<channel id="battery" typeId="battery-channel" />
-			<channel id="mode" typeId="mode-channel" />
-			<channel id="actual_temp" typeId="actual_temp-channel" />
-			<channel id="set_temp" typeId="set_temp-channel" />
+			<channel id="valve" typeId="valve" />
+			<channel id="battery" typeId="battery" />
+			<channel id="mode" typeId="mode" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
 		</channels>
 
         <config-description>
@@ -40,8 +40,8 @@
 		<description>MaxCube All Switches (EcoSwitch, Pushbutton/ShutterContact)</description>
 
 		<channels>
-			<channel id="state" typeId="switch_state-channel" />
-			<channel id="battery" typeId="battery-channel" />
+			<channel id="state" typeId="switch_state" />
+			<channel id="battery" typeId="battery" />
 
 		</channels>
 
@@ -54,40 +54,40 @@
         </config-description>
 	</thing-type>
 
-	<channel-type id="valve-channel">
+	<channel-type id="valve">
 		<item-type>Number</item-type>
-		<label>Valve Position Channel</label>
+		<label>Valve Position</label>
 		<description>Thermostat Valve Position</description>
 	</channel-type>
 
-	<channel-type id="battery-channel">
+	<channel-type id="battery">
 		<item-type>String</item-type>
-		<label>Battery Level Channel</label>
+		<label>Battery Level</label>
 		<description>Battery charge Level</description>
 	</channel-type>
 	
-		<channel-type id="mode-channel">
+		<channel-type id="mode">
 		<item-type>String</item-type>
-		<label>Mode Channel</label>
+		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
 	</channel-type>
 	
-		<channel-type id="actual_temp-channel">
+		<channel-type id="actual_temp">
 			<item-type>Number</item-type>
-		<label>Actual Temperature Channel</label>
+		<label>Actual Temperature</label>
 		<description>Actual measured room temperature</description>
 	</channel-type>
 	
-		<channel-type id="set_temp-channel">
+		<channel-type id="set_temp">
 			<item-type>Number</item-type>
-		<label>Set Temperature Channel</label>
+		<label>Set Temperature</label>
 		<description>Thermostat temperature setpoint</description>
 	</channel-type>
 
 
-		<channel-type id="switch_state-channel">
+		<channel-type id="switch_state">
 		<item-type>Contact</item-type>
-		<label>Switch state Channel</label>
+		<label>Switch state</label>
 		<description>Switch state information</description>
 	</channel-type>
 
