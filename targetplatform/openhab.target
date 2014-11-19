@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="117">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="118">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
@@ -84,7 +84,7 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.jupnp.feature.feature.group" version="2.0.0.201410140825"/>
+<unit id="org.jupnp.feature.feature.group" version="0.0.0"/>
 <repository location="http://www.openhab.org/jupnp/update-site/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -99,16 +99,16 @@
 <repository location="http://hstaudacher.github.io/osgi-jax-rs-connector"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.8.0.201411162138"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.8.0.201411162138"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.0.0"/>
 <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
 </location>
 </locations>
