@@ -89,7 +89,9 @@ angular.module('SmartHomeManagerApp.controllers', []).controller('BodyController
         $('.mask').remove();
     });
 }).controller('ControlController', function($scope, $timeout, itemService) {
-
+    $scope.getItemName= function(itemName) {
+        return itemName.replace(/_/g, ' ');
+    }
 }).controller('ItemController', function($scope, $timeout, itemService) {
     $scope.itemList = [];
 
@@ -98,6 +100,7 @@ angular.module('SmartHomeManagerApp.controllers', []).controller('BodyController
             $scope.itemList = response;
         });
     };
+    
     $scope.getAll();
 }).controller('ViewItemController', function($scope, $timeout, itemService, thingService, linkService) {
     $scope.item = undefined;
@@ -512,7 +515,7 @@ angular.module('SmartHomeManagerApp.controllers', []).controller('BodyController
 
     $scope.link = function(thingUid, channelId) {
         var segments = thingUid.split(':');
-        var itemName = firstToUpperCase(segments[1]) + firstToUpperCase(segments[2]) + firstToUpperCase(channelId);
+        var itemName = firstToUpperCase(segments[1]) + '_' + firstToUpperCase(segments[2]) + '_' + firstToUpperCase(channelId);
         thingService.link({
             'thingUID' : thingUid,
             'channelId' : channelId
