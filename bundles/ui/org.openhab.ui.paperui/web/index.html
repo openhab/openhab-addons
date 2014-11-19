@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:ng="http://angularjs.org"
+	ng-app="SmartHomeManagerApp">
+<head>
+
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<title>Eclipse SmartHome Manager</title>
+
+
+<!-- lib css files -->
+<link
+	href='http://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,700,'
+	rel='stylesheet' type='text/css'></link>
+<link type="text/css" href="css/bootstrap.css" rel="stylesheet"></link>
+<link type="text/css" href="fonts/icomoon/icomoon.css" rel="stylesheet"
+	media="all"></link>
+<link type="text/css" href="css/cw-style.css" rel="stylesheet"></link>
+<link type="text/css" href="css/bootstrap-tagsinput.css" rel="stylesheet"></link>
+
+<!-- custom css files -->
+<link type="text/css" href="css/main.css" rel="stylesheet"></link>
+<link type="text/css" href="css/theme.openhab.css" rel="stylesheet"></link>
+
+<link rel="import" href="components/paper-elements/paper-elements.html">
+
+</head>
+
+<body ng-controller="BodyController" ng-class="getSchemeClass()">
+	<nav class="menu slide-menu-left" ng-controller="NavController">
+		<div class="top clickable" ng-click="navigateToRoot()">
+			<img id="logo" alt="Eclipse SmartHome Logo" ng-if="isEshTheme()"
+				src="img/esh_logo.png"> <img id="logo" alt="openHAB Logo"
+				ng-if="!isEshTheme()" src="img/openhab_logo.png">
+			<h1 class="title">{{isEshTheme() ? 'SmartHome' : 'openHAB 2.0'}}</h1>
+		</div>
+		<ul>
+			<!-- li><a href="#"><span class="icon icon-dashboard"></span>
+					Dashboard</a></li-->
+			<li ng-class="{active: isActive('control')}"><a href="#control"><span
+					class="icon icon-equalizer"></span> Control</a></li>
+			<li ng-class="{active: isActive('inbox')}"><a href="#inbox"><span
+					class="icon icon-box-add"></span> Inbox</a></li>
+			<!-- li><a href="#"><span class="icon icon-cogs"></span>
+					Automation</a></li-->
+			<li ng-class="{active: isActive('configuration')}"><a
+				href="#configuration"><span class="icon icon-wrench"></span>
+					Configuration</a></li>
+			<li ng-class="{active: isActive('preferences')}"><a
+				href="#preferences"><span class="icon icon-brightness-contrast"></span>
+					Preferences</a></li>
+		</ul>
+		<div class="bottom">
+			<span>Manager UI 0.15</span>
+		</div>
+	</nav>
+
+	<div id="wrapper">
+		<header>
+			<a href="#" class="open-menu">&#x2261;</a>
+			<h1>{{title}}</h1>
+		</header>
+
+		<ng-view></ng-view>
+
+		<footer>
+			<paper-toast id="default-toast"
+				text="">
+			</paper-toast>
+			<paper-toast id="success-toast"
+				text="">
+			</paper-toast>
+			<paper-toast id="error-toast"
+				text="">
+			</paper-toast>
+		</footer>
+	</div>
+
+	<!-- lib js files -->
+	<script src="js/lib/jquery.min.js"></script>
+	<script src="js/lib/jquery-ui.min.js"></script>
+	<script src="js/lib/angular.min.js"></script>
+	<script src="js/lib/angular-route.min.js"></script>
+	<script src="js/lib/angular-resource.min.js"></script>
+	<script src="js/lib/bootstrap.min.js"></script>
+	<script src="js/lib/bootstrap-tagsinput.min.js"></script>
+	<script src="js/lib/tinycolor.js"></script>
+	<script src="js/lib/masonry.pkgd.min.js"></script>
+
+	<!-- custom js files -->
+	<script src="js/app.js"></script>
+	<script src="js/services.js"></script>
+	<script src="js/controllers.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>

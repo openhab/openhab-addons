@@ -1,0 +1,372 @@
+<paper-tabs tabs noink> <paper-tab
+	ng-click="navigateTo('bindings')">Bindings</paper-tab> <paper-tab
+	ng-click="navigateTo('items')">Items</paper-tab> <paper-tab
+	ng-click="navigateTo('things')">Things</paper-tab></paper-tabs>
+<section id="main">
+	<div class="bindings tab-panel" ng-if="currentTab === 'bindings'">
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<paper-fab icon="file-download" ng-click="installBinding()"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div ng-controller="BindingController" class="bindings row">
+				<div class="col-md-4 col-sm-6 col-xs-12 item-wrapper"
+					ng-repeat="binding in bindings">
+					<div class="card binding collapsible"
+						data-binding-id="{{binding.id}}">
+						<div class="clabel">
+							<h3 ng-click="toggleCard($event)">
+								{{binding.name}} <br /> <small>{{binding.id}}</small>
+							</h3>
+							<p class="text-left">{{binding.author}}</p>
+						</div>
+						<div class="cbody hide">
+							<p>
+								<small>{{binding.description}}</small>
+							</p>
+							<div class="thing-types">
+								<div class="thing-type"
+									ng-repeat="thingType in binding.thingTypes">
+									<hr />
+									<p>
+										{{thingType.UID}} - {{thingType.label}}<br /> <small>{{thingType.description}}</small>
+									</p>
+									<p>
+										<paper-button raisedbutton="" label="Add" role="button"
+											icon="add"
+											ng-click="navigateTo('things/add/' + thingType.UID)"></paper-button>
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="card-buttons">
+							<paper-button label="" role="button" tabindex="0"
+								class="expand-button" icon="expand-more"
+								ng-click="expandCard($event)"></paper-button>
+							<paper-button label="" role="button" tabindex="0"
+								class="collapse-button hide" icon="expand-less"
+								ng-click="collapseCard($event)"></paper-button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="item-config tab-panel white-bg"
+		ng-if="currentTab === 'items' && !action"
+		ng-controller="ItemController">
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<paper-fab icon="add" ng-click="navigateTo('items/add')"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="items">
+				<input ng-model="search.$" class="search" placeholder="Search" />
+				<div class="item-wrapper clickable"
+					ng-repeat="item in itemList | filter:search"
+					ng-click="navigateTo('items/view/' + item.name)">
+					<div class="fab-item item {{item.type}}"
+						data-item-name="{{item.name}}">
+						<div class="circle icon-x"></div>
+						<div class="item-content">
+							<h3>{{item.name}} <span class="tag label label-default"
+									ng-repeat="tag in item.tags"> {{tag}} </span></h3>
+							<p>
+								{{item.type.replace('Item', '')}}<span class="members"
+									ng-show="item.type === 'GroupItem'"> [<span
+									class="member text-left" ng-repeat="member in item.members">{{member.name}}{{$last
+										? '' : ', '}}</span>]
+								</span>
+							</p>
+						</div>
+						<hr class="border-line" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="item-config-view white-bg"
+		ng-if="currentTab === 'items' && action === 'view'"
+		ng-controller="ViewItemController">
+		<div class="section-header">
+			<div class="container">
+				<h3>{{item.name}}</h3>
+				<p>{{item.type}}</p>
+				<div class="toolbar">
+					<paper-fab icon="arrow-back" ng-click="navigateTo('items')"></paper-fab>
+					<paper-fab icon="delete" ng-click="remove(item.name)"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="tags">
+				<h3>Tags</h3>
+				<p>Type and hit Enter to add a tag</p>
+				<input type="text" value="{{item.tags.join()}}" class="form-control"
+					data-role="tagsinput" />
+				<p class="system-tags">
+					System Tags: <span ng-repeat="systemTag in systemTags"
+						class="label label-default tag clickable"
+						ng-click="addSystemTag(systemTag)">+ {{systemTag}}</span>
+				</p>
+			</div>
+			<div class="links" ng-show="item.type !== 'GroupItem'">
+				<h3>Links</h3>
+				<form class="form-inline">
+					<select class="form-control" ng-model="selectedChannel">
+						<option ng-repeat="channel in channels">{{channel}}</option>
+					</select>
+					<button class="btn" ng-click="link(item.name, selectedChannel)">Add
+						Link</button>
+				</form>
+				<div class="link fab-item text-left"
+					ng-repeat="channel in boundChannels" style="position: relative;">
+					<div class="circle icon-link clickable"
+						ng-click="navigateTo('things/view/' + channel.substring(0, channel.lastIndexOf(':')))"></div>
+					<div class="cbody item-content">
+						<h3>
+							{{channel}}</small>
+						</h3>
+						<div class="actions">
+							<paper-button raisedbutton="true" role="button"
+								ng-click="unlink(item.name, channel)"> REMOVE</paper-button>
+						</div>
+					</div>
+					<hr class="border-line" />
+				</div>
+			</div>
+			<div class="members" ng-show="item.type === 'GroupItem'">
+				<h3>Members</h3>
+				<form class="form-inline">
+					<select class="form-control" ng-model="selectedMember">
+						<option ng-repeat="item in items">{{item.name}}</option>
+					</select>
+					<button class="btn" ng-click="addMember(item.name, selectedMember)">Add
+						Member</button>
+				</form>
+				<div class="member fab-item item {{member.type}}"
+					data-thing-uid="{{thing.UID}}" ng-repeat="member in item.members">
+					<div class="circle icon-x"></div>
+					<div class="cbody item-content">
+						<h3>
+							{{member.name}}</small>
+						</h3>
+						<p>{{item.type.replace('Item', '')}}</p>
+						<div class="actions">
+							<paper-button raisedbutton="true" role="button"
+								ng-click="removeMember(item.name, member.name)">
+							REMOVE</paper-button>
+						</div>
+					</div>
+					<hr class="border-line" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="item-config-add white-bg"
+		ng-show="currentTab === 'items' && action === 'add'">
+		<div ng-controller="AddItemController">
+			<div class="section-header">
+				<div class="container">
+					<h3>Add New Item</h3>
+					<p>Define a new Item to add</p>
+					<div class="toolbar">
+						<paper-fab icon="check" class="green" ng-click="add()"></paper-fab>
+						<paper-fab icon="close" ng-click="navigateTo('items')"></paper-fab>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="form-group parameter">
+					<label class="control-label">Item Name</label>
+					<paper-input required="true" type="text" id="itemName" value="" />
+				</div>
+				<div class="form-group parameter">
+					<label class="control-label">Item Type</label>
+					<p>
+						<small>Item Type to create (e.g. Switch, Number, ...)</small>
+					</p>
+					<paper-input type="text" id="itemType" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="thing-config tab-panel white-bg"
+		ng-if="currentTab === 'things' && !action"
+		ng-controller="ThingController">
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<paper-fab icon="add" ng-click="navigateTo('things/choose')"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<input ng-model="search.$" class="search" placeholder="Search" />
+			<div class="things">
+				<div class="clickable"
+					ng-repeat="thing in data.things | filter:search">
+					<div class="thing fab-item text-left"
+						data-thing-uid="{{thing.UID}}"
+						ng-click="navigateTo('things/view/' + thing.UID)">
+						<div class="circle">{{thing.UID.split(':')[1].substring(0,1).toUpperCase()}}</div>
+						<div class="cbody item-content">
+							<h3>
+								{{getThingType(thing.UID).label}} - {{thing.configuration.label ? thing.configuration.label : thing.UID.split(':')[2]}} <small>{{thing.status}}</small>
+							</h3>
+							<p>{{thing.UID}}</p>
+						</div>
+						<hr class="border-line" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="thing-config-choose white-bg"
+		ng-if="currentTab === 'things' && action === 'choose'">
+		<div class="section-header">
+			<div class="container">
+				<p>Choose a thing type to add</p>
+				<div class="toolbar">
+					<paper-fab icon="arrow-back" ng-click="navigateTo('things')"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div ng-controller="ThingController">
+				<input ng-model="search.$" class="search" placeholder="Search" />
+				<div class="thing-type fab-item"
+					ng-repeat="binding in data.bindings">
+					<h3>{{binding.name}}</h3>
+					<hr class="border-line" />
+					<div class="thing-type fab-item clickable"
+						ng-repeat="thingType in binding.thingTypes | filter:search"
+						ng-click="navigateTo('things/add/' + thingType.UID)">
+						<paper-fab icon="add"></paper-fab>
+						<div class="item-content">
+							<h3 class="clickable">{{thingType.label}}</h3>
+							<p>{{thingType.UID}}</p>
+							<p>
+								<small>{{thingType.description}}</small>
+							</p>
+						</div>
+						<hr class="border-line" ng-show="!$last" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="thing-config-add white-bg"
+		ng-if="currentTab === 'things' && action === 'add'"
+		ng-controller="AddThingController">
+		<div class="section-header">
+			<div class="container">
+				<h3>
+					Add {{thingType.label}} <small>{{thingType.UID}}</small>
+				</h3>
+				<p>{{thingType.description}}</p>
+				<div class="toolbar">
+					<paper-fab icon="check" class="green" ng-click="add()"></paper-fab>
+					<paper-fab icon="close" ng-click="navigateTo('things')"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="form-group parameter">
+				<label class="control-label">ID</label>
+				<p>
+					<small>Define a unique identifier</small>
+				</p>
+				<paper-input type="text" id="id" value="" required="true" />
+			</div>
+			<hr />
+			<div class="form-group parameter"
+				ng-repeat="parameter in thingType.configParameters">
+				<label class="control-label">{{parameter.label}}</label>
+				<p>
+					<small>{{parameter.description}}</small>
+				</p>
+				<paper-input type="text" id="{{parameter.name}}"
+					value="{{parameter.defaultValue !== 'null' ? parameter.defaultValue : ''}}" />
+			</div>
+		</div>
+	</div>
+	<div class="thing-config-edit white-bg"
+		ng-if="currentTab === 'things' && action === 'edit'">
+		<div ng-controller="EditThingController">
+			<div class="section-header">
+				<div class="container">
+					<h3>
+						Edit {{thing.UID}} <small>{{thingType.label}}</small>
+					</h3>
+					<p>{{thingType.description}}</p>
+					<div class="toolbar">
+						<paper-fab icon="check" class="green" ng-click="update()"></paper-fab>
+						<paper-fab icon="close"
+							ng-click="navigateTo('things/view/' + thing.UID)"></paper-fab>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="form-group parameter"
+					ng-repeat="parameter in thingType.configParameters">
+					<label class="control-label">{{parameter.label}}</label>
+					<p>
+						<small>{{parameter.description}}</small>
+					</p>
+					<paper-input type="text" id="{{parameter.name}}"
+						value="{{getConfigValue(parameter.name) ? getConfigValue(parameter.name) : parameter.defaultValue}}" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="thing-config-view white-bg"
+		ng-if="currentTab === 'things' && action === 'view'"
+		ng-controller="EditThingController">
+		<div class="section-header">
+			<div class="container">
+				<h3>{{thingType.label}}</h3>
+				<p>
+					<strong>{{thing.UID}}</strong>
+				</p>
+				<p>{{thingType.description}}</p>
+				<div class="toolbar">
+					<paper-fab icon="arrow-back" ng-click="navigateTo('things')"></paper-fab>
+					<paper-fab icon="settings"
+						ng-click="navigateTo('things/edit/' + thing.UID)"></paper-fab>
+					<paper-fab icon="delete" ng-click="remove(thing.UID)"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<h2>Channels</h2>
+			<div class="channels">
+				<div class="channel fab-item" ng-repeat="channel in thing.channels">
+					<paper-fab ng-if="!channel.boundItem" icon="add"
+						ng-click="link(thing.UID, channel.id)"></paper-fab>
+					<div class="circle icon-link clickable" ng-if="channel.boundItem"
+						ng-click="navigateTo('items/view/' + channel.boundItem)"
+						icon="add"></div>
+					<div class="item-content">
+						<h3>
+							{{getChannelById(channel.id).label}} <small>{{channel.id}}</small>
+						</h3>
+						<p>{{channel.itemType}}</p>
+						<p>{{getChannelById(channel.id).description}}</p>
+						<p>
+							<span class="label label-default tag"
+								ng-repeat="tag in getChannelById(channel.id).tags">{{tag}}</span>
+						</p>
+					</div>
+					<hr />
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
