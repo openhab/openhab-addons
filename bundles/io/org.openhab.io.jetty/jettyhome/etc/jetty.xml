@@ -15,8 +15,8 @@
 	<!-- Server Thread Pool -->
 	<!-- =========================================================== -->
 	<Get name="ThreadPool">
-		<Set name="minThreads">10</Set>
-		<Set name="maxThreads">200</Set>
+		<Set name="minThreads">5</Set>
+		<Set name="maxThreads">100</Set>
 	</Get>
 
 
@@ -29,6 +29,16 @@
 				<Array type="org.eclipse.jetty.server.Handler">
 					<Item>
 						<New id="Rewrite" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
+						
+							<!-- show the dashboard as default -->
+							<Call name="addRule">
+							  <Arg>
+							    <New class="org.eclipse.jetty.rewrite.handler.RedirectRegexRule">
+							      <Set name="regex">/$</Set>
+							      <Set name="replacement">/start/index.html</Set>
+							    </New>
+							  </Arg>
+							</Call>
 
 							<!-- Add rule in order to take care of the X-Forwarded-Scheme header -->
 							<Call name="addRule">
@@ -118,6 +128,7 @@
 				default="org.eclipse.jetty.jndi.InitialContextFactory" />
 		</Arg>
 	</Call>
+	
 	<Call class="java.lang.System" name="setProperty">
 		<Arg>java.naming.factory.url.pkgs</Arg>
 		<Arg>
