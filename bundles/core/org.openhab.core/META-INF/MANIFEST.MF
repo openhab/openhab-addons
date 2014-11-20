@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Service-Component: OSGI-INF/autoapprove.xml,OSGI-INF/thingitemprovider.xml,
- OSGI-INF/thinglinkprovider.xml
+ OSGI-INF/thinglinkprovider.xml,OSGI-INF/defaultsitemapprovider.xml
 Private-Package: org.openhab.core.internal,org.openhab.core.internal.e
  vents,org.openhab.core.internal.items
 Ignore-Package: org.openhab.core.internal.items,org.openhab.core.inter
@@ -21,6 +21,7 @@ Import-Package: com.google.common.cache;version="10.0.1",
  org.apache.commons.httpclient.params,
  org.apache.commons.io,
  org.apache.commons.lang,
+ org.eclipse.emf.common.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.inbox,
@@ -33,9 +34,10 @@ Import-Package: com.google.common.cache;version="10.0.1",
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.model.rule.runtime;resolution:=optional,
  org.eclipse.smarthome.model.sitemap;resolution:=optional,
+ org.eclipse.smarthome.model.sitemap.impl;resolution:=optional,
  org.eclipse.smarthome.ui.items;resolution:=optional,
  org.osgi.framework,
- org.osgi.service.cm;version="1.5.0",
+ org.osgi.service.cm,
  org.osgi.service.component,
  org.osgi.service.event,
  org.osgi.service.log,

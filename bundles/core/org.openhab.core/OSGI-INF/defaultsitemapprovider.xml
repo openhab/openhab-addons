@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" immediate="false" name="org.openhab.defaultsitemapprovider">
+   <implementation class="org.openhab.core.internal.item.DefaultSitemapProvider"/>
+   <service>
+      <provide interface="org.eclipse.smarthome.model.sitemap.SitemapProvider"/>
+   </service>
+   <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static" unbind="unsetItemRegistry"/>
+</scr:component>

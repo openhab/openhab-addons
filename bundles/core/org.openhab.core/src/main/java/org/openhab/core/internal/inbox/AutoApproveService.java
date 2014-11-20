@@ -8,7 +8,6 @@
  */
 package org.openhab.core.internal.inbox;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +18,6 @@ import org.eclipse.smarthome.config.discovery.inbox.Inbox;
 import org.eclipse.smarthome.config.discovery.inbox.InboxListener;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
 import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer
  *
  */
-public class AutoApproveService implements InboxListener, ManagedService {
+public class AutoApproveService implements InboxListener {
 
 	final static private Logger logger = LoggerFactory.getLogger(AutoApproveService.class);
 	
@@ -39,6 +37,20 @@ public class AutoApproveService implements InboxListener, ManagedService {
 
 	private Inbox inbox;
 	
+    protected void activate(Map<String, Object> configProps) throws ConfigurationException {
+		String enabled = (String) configProps.get("enabled");
+		if("true".equalsIgnoreCase(enabled)) {
+	    	inbox.addInboxListener(this);
+	    	for(DiscoveryResult result : inbox.getAll()) {
+	    		if(result.getFlag().equals(DiscoveryResultFlag.NEW)) {
+	    			thingAdded(inbox, result);
+	    		}
+	    	}
+		} else {
+	    	this.inbox.removeInboxListener(this);
+		}
+    }
+    
 	@Override
 	public void thingAdded(Inbox source, DiscoveryResult result) {
 		logger.debug("Approving inbox entry '{}'", result.toString());
@@ -77,21 +89,5 @@ public class AutoApproveService implements InboxListener, ManagedService {
     protected void unsetManagedThingProvider(ManagedThingProvider managedThingProvider) {
         this.managedThingProvider = null;
     }
-
-	@Override
-	public void updated(Dictionary<String, ?> properties)
-			throws ConfigurationException {
-		String enabled = (String) properties.get("enabled");
-		if("true".equalsIgnoreCase(enabled)) {
-	    	inbox.addInboxListener(this);
-	    	for(DiscoveryResult result : inbox.getAll()) {
-	    		if(result.getFlag().equals(DiscoveryResultFlag.NEW)) {
-	    			thingAdded(inbox, result);
-	    		}
-	    	}
-		} else {
-	    	this.inbox.removeInboxListener(this);
-		}
-	}
 
 }
