@@ -1,0 +1,45 @@
+.cw-colorwheel {
+	position: relative;
+	width: 100px;
+	height: 100px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	-ms-user-select: none;
+	margin: 0 auto;
+}
+
+.cw-colorwheel .cw-h {
+	width: 100px;
+	height: 100px;
+	background: url(cw-sprites.png) no-repeat 0 0;
+	background-size: 100px 157px;
+}
+
+.cw-colorwheel .cw-sl {
+	position: absolute;
+	top: 25px;
+	left: 25px;
+	width: 50px;
+	height: 50px;
+	background: white url(cw-sprites.png) no-repeat 0 -100px;
+	box-shadow: 0 0 0 rgba(0,0,0,0);
+	border-radius: 5px;
+	border: 2px solid #2c3e50;
+}
+
+.cw-colorwheel .cw-marker {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	margin: -7px 0 0 -7px;
+}
+
+.cw-colorwheel .cw-swatch {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	margin: -6px 0 0 -6px;
+	border-radius: 50%;
+	border: 2px solid #2c3e50;
+}

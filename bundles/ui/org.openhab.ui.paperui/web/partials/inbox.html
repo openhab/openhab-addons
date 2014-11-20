@@ -1,0 +1,57 @@
+<paper-tabs tabs noink> <paper-tab
+	ng-click="navigateTo('inbox')">Inbox</paper-tab> <paper-tab
+	ng-click="navigateTo('discovery')">Discovery</paper-tab></paper-tabs>
+<section id="main">
+	<div ng-controller="InboxController" class="white-bg tabs-panel inbox"
+		ng-show="currentTab === 'inbox'">
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<paper-fab icon="refresh" ng-click="getAll()"></paper-fab>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="fab-item" ng-repeat="discoveryResult in discoveryResults">
+				<paper-fab icon="done" class="green"
+					ng-click="approve(discoveryResult.thingUID)"></paper-fab>
+				<div class="item-content">
+					<h3>
+						{{discoveryResult.label}} <small>{{discoveryResult.flag}}</small>
+					</h3>
+					<p>{{discoveryResult.thingUID}}</p>
+					<div class="actions">
+						<paper-button raisedbutton="" icon="block"
+							ng-click="ignore(discoveryResult.thingUID)"></paper-button>
+						<paper-button raisedbutton="" icon="delete"
+							ng-click="remove(discoveryResult.thingUID)"></paper-button>
+					</div>
+				</div>
+				<hr class="border-line" ng-show="!$last" />
+			</div>
+			<p ng-if="discoveryResults.length == 0">Inbox is empty.</p>
+		</div>
+	</div>
+	<div ng-controller="DiscoveryController"
+		class="tabs-panel discovery container"
+		ng-show="currentTab === 'discovery'">
+
+		<div class="col-md-4 cold col-sm-6 col-xs-12"
+			ng-repeat="supportedBinding in supportedBindings">
+			<div class="card discovery-service">
+				<div class="clabel">
+					<h3>{{supportedBinding}}</h3>
+				</div>
+				<div class="cbody">
+					<p>Click to start a discovery for all supported things of the
+						binding</p>
+					<paper-button raisedbutton="" label="Scan"
+						icon="settings-input-antenna" ng-click="scan(supportedBinding)"></paper-button>
+					<br />
+					<paper-progress value="0" data-binding-id="{{supportedBinding}}"></paper-progress>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</section>
