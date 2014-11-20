@@ -218,7 +218,7 @@
 						<div class="circle">{{thing.UID.split(':')[1].substring(0,1).toUpperCase()}}</div>
 						<div class="cbody item-content">
 							<h3>
-								{{getThingType(thing.UID).label}} - {{thing.configuration.label ? thing.configuration.label : thing.UID.split(':')[2]}} <small>{{thing.status}}</small>
+								{{thing.configuration.label ? thing.configuration.label : getThingType(thing.UID).label + ' - ' + thing.UID.split(':')[2]}} <small>{{thing.status}}</small>
 							</h3>
 							<p>{{thing.UID}}</p>
 						</div>
