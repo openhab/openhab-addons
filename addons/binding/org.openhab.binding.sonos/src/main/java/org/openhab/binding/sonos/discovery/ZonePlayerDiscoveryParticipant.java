@@ -42,14 +42,18 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
 		ThingUID uid = getThingUID(device);
 		if (uid != null) {
 			Map<String, Object> properties = new HashMap<>(3);
-			properties
-			.put(FRIENDLY_NAME, device.getDetails().getFriendlyName());
+			String label = "Sonos device";
+			try {
+				label = device.getDetails().getModelDetails().getModelName();
+			} catch(Exception e) {
+				// ignore and use default label
+			}
 			properties.put(UDN, device.getIdentity().getUdn()
 					.getIdentifierString());
 
 			DiscoveryResult result = DiscoveryResultBuilder.create(uid)
 					.withProperties(properties)
-					.withLabel(device.getDetails().getFriendlyName()).build();
+					.withLabel(label).build();
 
 			logger.debug(
 					"Created a DiscoveryResult for device '{}' with UDN '{}'",

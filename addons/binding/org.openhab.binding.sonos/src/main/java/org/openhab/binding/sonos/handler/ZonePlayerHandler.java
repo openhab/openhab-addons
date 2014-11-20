@@ -166,8 +166,6 @@ UpnpIOParticipant, DiscoveryListener {
 				.equals(result.getProperties().get(UDN))) {
 			logger.debug("Discovered UDN '{}' for thing '{}'", result
 					.getProperties().get(UDN), getThing().getUID());
-			getThing().getConfiguration().put(FRIENDLY_NAME,
-					result.getProperties().get(FRIENDLY_NAME));
 			getThing().setStatus(ThingStatus.ONLINE);
 			onSubscription();
 			onUpdate();

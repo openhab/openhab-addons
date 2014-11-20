@@ -6,8 +6,8 @@
 
 	<!-- Player Thing Type -->
 	<thing-type id="zoneplayer">
-		<label>Sonos Zone Player Thing</label>
-		<description>The Zone Player thing represents a Sonos Zone Player like the ZP120, Connect:Amp, Play:1 etc</description>
+		<label>Zone Player</label>
+		<description>The Zone Player represents a Sonos Zone Player like the ZP120, Connect:Amp, Play:1 etc</description>
 
 		<channels>
 			<channel id="add" typeId="add" />
@@ -62,7 +62,6 @@
 
 		</config-description>
 	</thing-type>
-
 
 	<channel-type id="add">
 		<item-type>String</item-type>
