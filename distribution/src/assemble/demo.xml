@@ -15,27 +15,10 @@
       <directory>openhabhome</directory>
 	  <useDefaultExcludes>false</useDefaultExcludes>
 	  <includes>
-	  	<include>**/demo*.*</include>
-	  	<include>**/*.cfg</include>
-	  	<include>**/persistence/*.persist</include>
+	  	<include>conf/**</include>
 	  </includes>
     </fileSet>
   </fileSets>
-
-  <dependencySets>
-    <dependencySet>
-    	<useStrictFiltering>true</useStrictFiltering>
-    	<useProjectArtifact>false</useProjectArtifact>
-		<useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>./addons</outputDirectory>
-      <unpack>false</unpack>
-      <includes>
-      	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
-      	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.hue:jar:*</include>
-      	<include>org.openhab.binding:org.openhab.binding.sonos:jar:*</include>
-      </includes>
-    </dependencySet>
-  </dependencySets>
  
  <files>
     <file>
