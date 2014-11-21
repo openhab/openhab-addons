@@ -77,6 +77,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>
+            <artifactId>org.eclipse.smarthome.binding.wemo</artifactId>
+            <version>${esh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.lifx</artifactId>
             <version>${esh.version}</version>
         </dependency>
