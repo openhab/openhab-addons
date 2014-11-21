@@ -9,6 +9,9 @@
 
 package org.openhab.binding.maxcube.internal.message;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+
 /**
 *  MAX!Cube EcoSwitch. 
 * 
@@ -18,6 +21,8 @@ package org.openhab.binding.maxcube.internal.message;
 
 public class EcoSwitch extends ShutterContact {
 
+	private OnOffType ecoMode = null;
+	
 	/**
 	 * Class constructor. 
 	 * @param c
@@ -27,8 +32,13 @@ public class EcoSwitch extends ShutterContact {
 	}
 	@Override
 	public DeviceType getType() {
-		// TODO Auto-generated method stub
 		return DeviceType.EcoSwitch;
 	}
 
+	public OnOffType getEcoMode() {
+		return ecoMode;
+	}
+	public void setEcoMode(OnOffType ecoMode) {
+		this.ecoMode = ecoMode;
+	}
 }

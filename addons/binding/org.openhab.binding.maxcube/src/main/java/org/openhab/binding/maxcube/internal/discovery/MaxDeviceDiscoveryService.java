@@ -16,8 +16,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.maxcube.MaxCubeBinding;
-import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
-import org.openhab.binding.maxcube.internal.MaxCubeBridge;
+import org.openhab.binding.maxcube.internal.MaxCube;
 import org.openhab.binding.maxcube.internal.handler.DeviceStatusListener;
 import org.openhab.binding.maxcube.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.maxcube.internal.message.Device;
@@ -25,18 +24,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MaxCubeDevicesDiscover} class is used to discover Max!Cube devices that  
+ * The {@link MaxDeviceDiscoveryService} class is used to discover MAX! Cube devices that  
  * are connected to the Lan gateway. 
  * 
  * @author Marcel Verpaalen - Initial contribution
  */
-public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements DeviceStatusListener {
+public class MaxDeviceDiscoveryService  extends AbstractDiscoveryService implements DeviceStatusListener {
 
-	private final static Logger logger = LoggerFactory.getLogger(MaxCubeDevicesDiscover.class);
+	private final static Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
 
 	private MaxCubeBridgeHandler maxCubeBridgeHandler;
 
-	public MaxCubeDevicesDiscover( MaxCubeBridgeHandler maxCubeBridgeHandler) {
+	public MaxDeviceDiscoveryService( MaxCubeBridgeHandler maxCubeBridgeHandler) {
 		super(MaxCubeBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10,true);
 		this.maxCubeBridgeHandler = maxCubeBridgeHandler;
 	}
@@ -55,22 +54,24 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 	}
 
 	@Override
-	public void onDeviceAdded(MaxCubeBridge bridge, Device device) {
-		logger.debug("Adding new Max!Cube {} with id '{}' to smarthome inbox", device.getType(), device.getSerialNumber());
+	public void onDeviceAdded(MaxCube bridge, Device device) {
+		logger.trace("Adding new MAX! {} with id '{}' to smarthome inbox", device.getType(), device.getSerialNumber());
 		ThingUID thingUID = null;
-		String deviceid = device.getType() + "_" +  device.getSerialNumber();
-		deviceid = deviceid.replaceAll("\\s+","");
-		deviceid = deviceid.replaceAll("\\+","Plus");
 		switch (device.getType()) {
 		case WallMountedThermostat:
+			thingUID = new ThingUID(MaxCubeBinding.WALLTHERMOSTAT_THING_TYPE,device.getSerialNumber());
+			break;
 		case HeatingThermostat:
+			thingUID = new ThingUID(MaxCubeBinding.HEATINGTHERMOSTAT_THING_TYPE,device.getSerialNumber());
+			break;
 		case HeatingThermostatPlus:
-			thingUID = new ThingUID(MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE,deviceid);
+			thingUID = new ThingUID(MaxCubeBinding.HEATINGTHERMOSTATPLUS_THING_TYPE,device.getSerialNumber());
 			break;
 		case ShutterContact:
+			thingUID = new ThingUID(MaxCubeBinding.SHUTTERCONTACT_THING_TYPE, device.getSerialNumber() );
+			break;
 		case EcoSwitch:
-			
-			thingUID = new ThingUID(MaxCubeBinding.SWITCH_THING_TYPE, deviceid );
+			thingUID = new ThingUID(MaxCubeBinding.ECOSWITCH_THING_TYPE, device.getSerialNumber() );
 			break;
 		default:
 			break;
@@ -78,13 +79,13 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 		if(thingUID!=null) {
 			ThingUID bridgeUID = maxCubeBridgeHandler.getThing().getUID();
 			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-					.withProperty(MaxCubeConfiguration.SERIAL_NUMBER, device.getSerialNumber())
+					.withProperty(MaxCubeBinding.SERIAL_NUMBER, device.getSerialNumber())
 					.withBridge(bridgeUID)
 					.withLabel( device.getType() + ": " + device.getName() + " (" + device.getSerialNumber() +")")
 					.build();
 			thingDiscovered(discoveryResult);
 		} else {
-			logger.debug("Discovered Max!Cube item is unsupported: type '{}' with id '{}'", device.getType(), device.getSerialNumber());
+			logger.debug("Discovered MAX! device is unsupported: type '{}' with id '{}'", device.getType(), device.getSerialNumber());
 		}
 	}
 
@@ -99,7 +100,7 @@ public class MaxCubeDevicesDiscover  extends AbstractDiscoveryService implements
 	}
 
 	@Override
-	public void onDeviceRemoved(MaxCubeBridge bridge, Device device) {
+	public void onDeviceRemoved(MaxCube bridge, Device device) {
 		//this can be ignored here
 	}
 }

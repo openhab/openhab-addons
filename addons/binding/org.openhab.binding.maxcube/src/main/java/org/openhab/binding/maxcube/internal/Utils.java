@@ -12,10 +12,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 
-import org.openhab.binding.maxcube.MaxCubeBinding;
-
 /**
-* Utility class for common tasks within the MAX!Cube binding package. 
+* Utility class for common tasks within the MAX! binding package. 
 * 
 * @author Andreas Heil (info@aheil.de)
 * @author Marcel Verpaalen

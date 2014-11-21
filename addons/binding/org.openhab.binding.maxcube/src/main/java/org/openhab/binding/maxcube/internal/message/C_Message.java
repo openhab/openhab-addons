@@ -9,11 +9,15 @@
 package org.openhab.binding.maxcube.internal.message;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.maxcube.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * The C message contains configuration about a MAX! device.
@@ -43,8 +47,8 @@ public final class C_Message extends Message {
 	private String programData = null;
 	private String boostDuration = null;
 	private String boostValve = null;
-
-
+	private Map<String, Object> properties = new HashMap<>();
+	
 	public C_Message(String raw) {
 		super(raw);
 		logger.debug(" *** C-Message ***");
@@ -126,14 +130,10 @@ public final class C_Message extends Message {
 			tempEco = Float.toString( bytes[plusDataStart + 1]/2);
 			tempSetpointMax=  Float.toString( bytes[plusDataStart + 2]/2);
 			tempSetpointMin=  Float.toString( bytes[plusDataStart + 3]/2);
-
-			logger.debug("DeviceType:             {}", deviceType.toString());
-			logger.debug("RFAddress:              {}", rfAddress);
-			logger.debug("Temp Comfort:           {}", tempComfort);
-			logger.debug("TempEco:                {}", tempEco);
-			logger.debug("Temp Setpoint Max:      {}", tempSetpointMax);
-			logger.debug("Temp Setpoint Min:      {}", tempSetpointMin);			
-
+			properties.put("Temp Comfort",tempComfort);
+			properties.put("Temp Eco",tempEco);
+			properties.put("Temp Setpoint Max",tempSetpointMax);
+			properties.put("Temp Setpoint Min",tempSetpointMin);
 			if (bytes.length < 211) {
 				// Device is a WallMountedThermostat
 				programDataStart = 4;
@@ -151,14 +151,14 @@ public final class C_Message extends Message {
 				decalcification =  Float.toString( bytes[plusDataStart + 8]);
 				valveMaximum = Float.toString( bytes[plusDataStart + 9]&0xFF * 100 / 255);
 				valveOffset = Float.toString( bytes[plusDataStart+ 10]&0xFF * 100 / 255 );
-				logger.debug("Temp Offset:            {}", tempOffset);
-				logger.debug("Temp Open Window:       {}", tempOpenWindow );
-				logger.debug("Duration Open Window:   {}", durationOpenWindow);
-				logger.debug("Duration Boost:         {}", boostDuration);
-				logger.debug("Boost Valve Pos:        {}", boostValve);
-				logger.debug("Decalcification:        {}", decalcification);
-				logger.debug("ValveMaximum:           {}", valveMaximum);
-				logger.debug("ValveOffset:            {}", valveOffset);
+				properties.put("Temp Offset",tempOffset);
+				properties.put("Temp Open Window",tempOpenWindow);
+				properties.put("Duration Open Windoww",durationOpenWindow);
+				properties.put("Duration Boost",boostDuration);
+				properties.put("Duration Boost",boostValve);
+				properties.put("Decalcification",decalcification);
+				properties.put("ValveMaximum",valveMaximum);
+				properties.put("ValveOffset",valveOffset);
 			}
 			programData = "";
 			int ln = 13 * 6; //first day = Sat 
@@ -174,7 +174,7 @@ public final class C_Message extends Message {
 				char_idx++;
 				ln++;
 			}
-			logger.debug("ProgramData:          {}", programData);
+
 
 		}  catch (Exception e) {
 			logger.debug(e.getMessage());
@@ -203,9 +203,13 @@ public final class C_Message extends Message {
 	@Override
 	public void debug(Logger logger) {
 		logger.debug("=== C_Message === ");
-		logger.trace("\tRAW:        {}", this.getPayload());
-		logger.debug("DeviceType:   {}" , deviceType.toString());
-		logger.debug("SerialNumber: {}" , serialNumber);
-		logger.debug("RFAddress:    {}" , rfAddress);
+		logger.trace("\tRAW:                    {}", this.getPayload());
+		logger.debug("DeviceType:               {}" , deviceType.toString());
+		logger.debug("SerialNumber:             {}" , serialNumber);
+		logger.debug("RFAddress:                {}" , rfAddress);
+        for(String key: properties.keySet()){
+    		logger.debug("{}:{}{}", key , Strings.repeat(" ",25 - key.length() ), properties.get(key));
+        }
+        logger.trace("ProgramData:          {}", programData);
 	}
 }

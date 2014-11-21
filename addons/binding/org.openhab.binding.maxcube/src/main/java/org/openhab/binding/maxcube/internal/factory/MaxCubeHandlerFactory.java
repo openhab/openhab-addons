@@ -19,8 +19,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.maxcube.MaxCubeBinding;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
-import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
-import org.openhab.binding.maxcube.internal.discovery.MaxCubeDevicesDiscover;
+import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscoveryResult;
+import org.openhab.binding.maxcube.internal.discovery.MaxDeviceDiscoveryService;
 import org.openhab.binding.maxcube.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.maxcube.internal.handler.MaxCubeHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -48,16 +48,12 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 			ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
 			return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
 		}
-		if (MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE.equals(thingTypeUID)) {
-			ThingUID thermostatUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-			return super.createThing(thingTypeUID, configuration, thermostatUID , bridgeUID);
-		}
-		if (MaxCubeBinding.SWITCH_THING_TYPE.equals(thingTypeUID)) {
-			ThingUID thermostatUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-			return super.createThing(thingTypeUID, configuration, thermostatUID , bridgeUID);
+		if (supportsThingType(thingTypeUID)) {
+			ThingUID deviceUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+			return super.createThing(thingTypeUID, configuration, deviceUID , bridgeUID);
 		}
 		throw new IllegalArgumentException("The thing type " + thingTypeUID
-				+ " is not supported by the MaxCube binding.");
+				+ " is not supported by the binding.");
 	}
 
 	@Override
@@ -78,7 +74,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
 			Configuration configuration , ThingUID bridgeUID ) {
-		String SerialNumber = (String) configuration.get(MaxCubeConfiguration.SERIAL_NUMBER);
+		String SerialNumber = (String) configuration.get(MaxCubeBinding.SERIAL_NUMBER);
 
 		if (thingUID == null) {
 			thingUID = new ThingUID(thingTypeUID, "Device" + SerialNumber , bridgeUID.getId());
@@ -89,7 +85,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 
 	private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
-		MaxCubeDevicesDiscover discoveryService = new MaxCubeDevicesDiscover(maxCubeBridgeHandler);
+		MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
 		discoveryService.activate();
 		this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
 	}
@@ -97,7 +93,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 	@Override
 	protected void removeHandler(ThingHandler thingHandler) {
 		if(this.discoveryServiceReg!=null) {
-			MaxCubeDevicesDiscover service = (MaxCubeDevicesDiscover) bundleContext.getService(discoveryServiceReg.getReference());
+			MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext.getService(discoveryServiceReg.getReference());
 			service.deactivate();
 			discoveryServiceReg.unregister();
 			discoveryServiceReg = null;
@@ -110,12 +106,10 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 			MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
 			registerDeviceDiscoveryService(handler);
 			return handler;
-		} else if (thing.getThingTypeUID().equals(MaxCubeBinding.SWITCH_THING_TYPE)) {
+		} else if (supportsThingType(thing.getThingTypeUID())) {
 			return new MaxCubeHandler(thing);            
-		} else if (thing.getThingTypeUID().equals(MaxCubeBinding.HEATHINGTHERMOSTAT_THING_TYPE)) {
-			return new MaxCubeHandler(thing);
 		} else {
-			logger.debug("ThingHandler createHandler return null");
+			logger.debug("ThingHandler not found for {}" , thing.getThingTypeUID());
 			return null;
 		}
 	}

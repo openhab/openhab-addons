@@ -13,12 +13,16 @@ import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_MODE;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SETTEMP;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_VALVE;
 import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_SWITCH_STATE;
+import static org.openhab.binding.maxcube.MaxCubeBinding.CHANNEL_CONTACT_STATE;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,8 +32,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
-import org.openhab.binding.maxcube.internal.MaxCubeBridge;
+import org.openhab.binding.maxcube.MaxCubeBinding;
+import org.openhab.binding.maxcube.internal.MaxCube;
+import org.openhab.binding.maxcube.internal.discovery.MaxCubeBridgeDiscoveryResult;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.EcoSwitch;
 import org.openhab.binding.maxcube.internal.message.HeatingThermostat;
@@ -62,7 +67,10 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	 */
 	@Override
 	public void initialize() {
-		final String configDeviceId = getConfigAs(MaxCubeConfiguration.class).serialNumber;
+		
+		 Configuration config = getThing().getConfiguration();
+		 final String configDeviceId = (String) config.get(MaxCubeBinding.SERIAL_NUMBER);
+	        
 		if (configDeviceId != null) {
 			maxCubeDeviceSerial = configDeviceId;
 		}
@@ -81,7 +89,6 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 		logger.debug("Thing {} {} disposed.", getThing(), maxCubeDeviceSerial);
 		if(bridgeHandler!=null) bridgeHandler.clearDeviceList();
 		super.dispose();
@@ -118,17 +125,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		if(this.bridgeHandler==null) {
 			Bridge bridge = getBridge();
 			if (bridge == null) {
-				//no bridge is assigned to the device, will register it to the first found bridge 
-				ArrayList<Bridge> maxCubeBridges = new ArrayList<Bridge>();
-				Collection<Thing> allThings = thingRegistry.getAll();
-				for ( Thing br : allThings ){
-					if (br instanceof  Bridge){
-						if (br.getHandler() instanceof MaxCubeBridgeHandler) maxCubeBridges.add ((Bridge) br);
-					}
-				}
-				if (!(maxCubeBridges.isEmpty())) bridge = maxCubeBridges.get(0);
-				logger.debug("maxCube LAN gateway bridge not assigned. registering automatically to {}." , bridge.getUID() );
-				//TODO: Before assigning would be good to check if the item actually exists in the bridge.
+	            return null;
 			}
 			ThingHandler handler = bridge.getHandler();
 			if (handler instanceof MaxCubeBridgeHandler) {
@@ -181,11 +178,11 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 				updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE), (State) ( (HeatingThermostat) device).getValvePosition());
 				break;
 			case ShutterContact:
-				updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH_STATE), (State) ( (ShutterContact) device).getShutterState());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTACT_STATE), (State) ( (ShutterContact) device).getShutterState());
 				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (ShutterContact) device).getBatteryLow());
 				break;
 			case EcoSwitch:
-				updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH_STATE), (State) ( (EcoSwitch) device).getShutterState());
+				updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH_STATE), (State) ( (EcoSwitch) device).getEcoMode());
 				updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY), (State) ( (EcoSwitch) device).getBatteryLow());
 				break;
 			default:
@@ -197,12 +194,12 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	}
 
 	@Override
-	public void onDeviceRemoved(MaxCubeBridge bridge, Device device) {
+	public void onDeviceRemoved(MaxCube bridge, Device device) {
 		// not relevant here
 	}
 
 	@Override
-	public void onDeviceAdded(MaxCubeBridge bridge, Device device) {
+	public void onDeviceAdded(MaxCube bridge, Device device) {
 		// not relevant here
 
 	}

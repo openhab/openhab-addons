@@ -7,19 +7,20 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: com.google.common.collect,
- org.apache.commons.net.util;version="3.2.0",
+ org.apache.commons.net.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
  org.openhab.core.library.types,
  org.openhab.core.types,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*
-Export-Package: org.openhab.binding.maxcube,
- org.openhab.binding.maxcube.internal.handler
-Require-Bundle: org.eclipse.osgi.services
+Export-Package: org.openhab.binding.maxcube
+Require-Bundle: com.google.guava
+

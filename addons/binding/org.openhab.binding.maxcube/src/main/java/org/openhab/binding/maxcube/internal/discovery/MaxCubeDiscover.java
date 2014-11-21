@@ -19,13 +19,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
-import org.openhab.binding.maxcube.config.MaxCubeConfiguration;
 import org.openhab.binding.maxcube.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Automatic UDP discovery of a MAX!Cube Lan Gateway on the local network. 
+ * Automatic UDP discovery of a MAX! Cube Lan Gateway on the local network. 
  * 
  * @author Marcel Verpaalen, based on UDP client code of Michiel De Mey 
  * @author Marcel Verpaalen, major revision for OH2 allowing discovery of a specific Max!Cube based on serial 
@@ -39,27 +38,26 @@ public final class MaxCubeDiscover {
 	static boolean discoveryRunning = false;
 
 	/**
-	 * Automatic UDP discovery of a MAX!Cube
+	 * Automatic UDP discovery of a MAX! Cube
 	 * @param
 	 * @return if the cube is found, returns the IP address as a string. Otherwise returns null
 	 */
 	public final static String discoverIp () {
-		HashMap<String, String > discoverResults = new HashMap<String, String>(DiscoverCube(null));
-		if (discoverResults.containsKey(MaxCubeBridgeConfiguration.IP_ADDRESS)){
-			return discoverResults.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
+		MaxCubeBridgeDiscoveryResult discoverResults = DiscoverCube(null);
+		if (discoverResults.getIpAddress() != null){
+			return discoverResults.getIpAddress();
 		} else {
-			logger.debug( "No Max!Cube Lan Gateway discovery on the network.");
+			logger.debug( "No MAX! Cube Lan Gateway discovery on the network.");
 			return null;
 		}
 	}
 
 	/**
-	 * Automatic UDP discovery of a MAX!Cube
+	 * Automatic UDP discovery of a MAX! Cube
 	 * @return if the cube is found, returns the HashMap containing the details.
 	 */
-	public synchronized final static HashMap<String, String > DiscoverCube(final String cubeSerialNumber) {
+	public synchronized final static MaxCubeBridgeDiscoveryResult DiscoverCube(final String cubeSerialNumber) {
 		discoveryRunning = true;
-		HashMap<String, String > discoverResults = new HashMap<String, String>();
 		String maxCubeIP = null;
 		String maxCubeName = null;
 		String serialNumber = null;
@@ -127,11 +125,8 @@ public final class MaxCubeDiscover {
 			}
 		}
 		//TODO add this to a discoverResults array to deal with possible multiple Lan gateways on the network
-		discoverResults.put(MaxCubeBridgeConfiguration.IP_ADDRESS, maxCubeIP);
-		discoverResults.put(MaxCubeConfiguration.FRIENDLY_NAME, maxCubeName);
-		discoverResults.put(MaxCubeConfiguration.SERIAL_NUMBER, serialNumber);
-		discoverResults.put(RFADDRESS, serialNumber);
-		return discoverResults;
+		MaxCubeBridgeDiscoveryResult bridgeDiscovered = new MaxCubeBridgeDiscoveryResult ( maxCubeIP, serialNumber,  rfAddress, maxCubeName);
+		return bridgeDiscovered;
 	}
 
 	/**

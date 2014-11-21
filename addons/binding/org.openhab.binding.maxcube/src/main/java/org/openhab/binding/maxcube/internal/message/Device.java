@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.smarthome.core.library.items.SwitchItem;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.maxcube.internal.Utils;
@@ -162,12 +164,24 @@ public abstract class Device {
 					logger.debug ("Device {}: No temperature reading in {} mode",rfAddress, heatingThermostat.getMode()) ;
 				}
 			}
-			logger.debug ("Device {}: Actual Temperature : {}",rfAddress,  (double)actualTemp / 10);
+			logger.trace ("Device {}: Actual Temperature : {}",rfAddress,  (double)actualTemp / 10);
 			heatingThermostat.setTemperatureActual((double)actualTemp / 10);
 			break;
 		case EcoSwitch:
 			String eCoSwitchData = Utils.toHex(raw[3] & 0xFF, raw[4] & 0xFF, raw[5] & 0xFF);
-			logger.trace ("EcoSwitch Device {} status bytes : {}", rfAddress, eCoSwitchData);
+			logger.debug ("EcoSwitch Device {} status bytes : {}", rfAddress, eCoSwitchData);
+			EcoSwitch ecoswitch = (EcoSwitch) device;
+			// xxxx xx10 = shutter open, xxxx xx00 = shutter closed
+			if (bits2[1] == true && bits2[0] == false) {
+				ecoswitch.setEcoMode(OnOffType.ON);
+				logger.trace ("Device {} status: ON", rfAddress);
+			} else if (bits2[1] == false && bits2[0] == false) {
+				ecoswitch.setEcoMode(OnOffType.OFF);
+				logger.trace ("Device {} status: OFF", rfAddress);
+			} else {
+				logger.trace ("Device {} status switch status Unknown (true-true)", rfAddress);
+			}
+			break;
 		case ShutterContact:
 			ShutterContact shutterContact = (ShutterContact) device;
 			// xxxx xx10 = shutter open, xxxx xx00 = shutter closed
@@ -194,8 +208,12 @@ public abstract class Device {
 		this.batteryLow = batteryLow;
 	}
 
-	public final StringType getBatteryLow() {
+/*	public final StringType getBatteryLow() {
 		return new StringType(this.batteryLow ? "low" : "ok");
+	}
+*/	
+	public final OnOffType getBatteryLow() { 
+			return (this.batteryLow ?  OnOffType.ON : OnOffType.OFF);			
 	}
 
 	public final String getRFAddress() {

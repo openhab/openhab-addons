@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.maxcube.config.MaxCubeBridgeConfiguration;
-import org.openhab.binding.maxcube.internal.MaxCubeBridge;
+import org.openhab.binding.maxcube.internal.MaxCube;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
-	private MaxCubeBridge bridge = null;
+	private MaxCube bridge = null;
 
 	public MaxCubeBridgeHandler(Bridge br) {
 		super(br);
@@ -60,7 +60,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private Runnable pollingRunnable = new Runnable() {
 		@Override
 		public void run() {
-			Thread.currentThread().setName("maxcube-sendcommand");
 			refreshData();  }
 	};
 	private ScheduledFuture<?> sendCommandJob;
@@ -68,7 +67,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private Runnable sendCommandRunnable = new Runnable() {
 		@Override
 		public void run() {
-			Thread.currentThread().setName("maxcube-datarefresh");
 			sendCommands(); }
 	};
 	@Override
@@ -94,7 +92,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 
 	@Override
 	public void initialize() {
-		logger.debug("Initializing MaxCube bridge handler.");
+		logger.debug("Initializing MAX! Cube bridge handler.");
 
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 		if (configuration.refreshInterval != 0) {
@@ -107,7 +105,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 
 		if (bridge == null) {
-			bridge = new MaxCubeBridge (configuration.ipAddress);
+			bridge = new MaxCube (configuration.ipAddress);
 			if (configuration.port != 0) {
 				logger.trace("MaxCube Port {}.", configuration.port);
 				bridge.setPort ( configuration.port);
@@ -192,14 +190,14 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		return null;
 	}
 
-	public void onConnectionLost(MaxCubeBridge bridge) {
+	public void onConnectionLost(MaxCube bridge) {
 		logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
 		previousOnline = false;
 		this.bridge = null;
 		updateStatus(ThingStatus.OFFLINE);
 	}
 
-	public void onConnection(MaxCubeBridge bridge) {
+	public void onConnection(MaxCube bridge) {
 		logger.info("Bridge connected. Updating thing status to ONLINE.");
 		this.bridge = bridge;
 		updateStatus(ThingStatus.ONLINE);

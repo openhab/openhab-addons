@@ -1,4 +1,3 @@
-package org.openhab.binding.maxcube.config;
 /**
  * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
@@ -7,7 +6,7 @@ package org.openhab.binding.maxcube.config;
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-
+package org.openhab.binding.maxcube.config;
 
 /**
  * Configuration class for {@link MaxCubeBinding} bridge
@@ -28,7 +27,7 @@ public class MaxCubeBridgeConfiguration {
 	public String ipAddress;
     
     /**
-	 * The port of the MAX!Cube LAN gateway as provided at
+     * The port of the MAX! Cube LAN gateway as provided at
 	 * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
 	 */
 	public int port = (int) 62910;

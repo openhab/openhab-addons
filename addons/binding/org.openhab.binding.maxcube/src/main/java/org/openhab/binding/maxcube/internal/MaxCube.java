@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.maxcube.internal.discovery.MaxCubeDiscover;
 import org.openhab.binding.maxcube.internal.message.C_Message;
 import org.openhab.binding.maxcube.internal.message.Device;
 import org.openhab.binding.maxcube.internal.message.DeviceConfiguration;
@@ -39,29 +38,28 @@ import org.openhab.binding.maxcube.internal.message.MessageType;
 import org.openhab.binding.maxcube.internal.message.S_Command;
 import org.openhab.binding.maxcube.internal.message.SendCommand;
 import org.openhab.binding.maxcube.internal.message.ThermostatModeType;
-import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MaxCubeBridge} is responsible for connecting to the Max!Cube Lan gateway and read the data for  
+ * The {@link MaxCube} is responsible for connecting to the Max!Cube Lan gateway and read the data for  
  * each connected device.
  * @author Marcel Verpaalen - Initial contribution OH2 version
  * @author Andreas Heil (info@aheil.de) OH1 version
  */
 
-public class MaxCubeBridge {
+public class MaxCube {
 
-	/** MaxCube's default off temperature */
+	/** MAX! Termostat default off temperature */
 	private static final DecimalType DEFAULT_OFF_TEMPERATURE = new DecimalType(4.5);
 
-	/** MaxCubes default on temperature */
+	/** MAX! Termostat default on temperature */
 	private static final DecimalType DEFAULT_ON_TEMPERATURE = new DecimalType(30.5);
 
 	private ArrayList<DeviceConfiguration> configurations = new ArrayList<DeviceConfiguration>();
 	private ArrayList<Device> devices = new ArrayList<Device>();
 
-	private Logger logger = LoggerFactory.getLogger(MaxCubeBridge.class);
+	private Logger logger = LoggerFactory.getLogger(MaxCube.class);
 
 	/** maximum queue size that we're allowing */
 	private static final int MAX_COMMANDS = 50;
@@ -69,27 +67,22 @@ public class MaxCubeBridge {
 
 	private SendCommand lastCommandId = null;
 
-	/** The IP address of the MAX!Cube LAN gateway */
+	/** The IP address of the MAX! Cube LAN gateway */
 	private String ipAddress;
 
 	private boolean connectionEstablished = false;
 
 	/**
-	 * The port of the MAX!Cube LAN gateway as provided at
+	 * The port of the MAX! Cube LAN gateway as provided at
 	 * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
 	 */
 	private int port = 62910;
 
-	public MaxCubeBridge (String ipAddress){ 
+	public MaxCube (String ipAddress){ 
 		this.ipAddress = ipAddress;
 		if (ipAddress == null) {
-			try {
-				logger.info("Discover Max!Cube Lan interface.");
-				this.ipAddress = discoveryGatewayIp();
-			} catch (ConfigurationException e) {
-				logger.warn("Cannot discover to Max!Cube Lan interface. Configure IP address manually.");
+				logger.warn("IP Address missing. Configure IP address manually or re-run discovery.");
 			}
-		}
 		//TODO: optional configuration to get the actual temperature on a configured interval by changing the valve / temp setting
 	}
 
@@ -103,7 +96,7 @@ public class MaxCubeBridge {
 		for (String raw : getRawMessage()){
 
 			try {
-				logger.debug("message block: '{}'",raw);
+				logger.trace("message block: '{}'",raw);
 				message = processRawMessage(raw);
 				message.debug(logger);
 				processMessage (message);
@@ -136,7 +129,7 @@ public class MaxCubeBridge {
 	 * @return the raw message text as ArrayList of String 
 	 */
 	private ArrayList<String> getRawMessage() {
-		synchronized (MaxCubeBridge.class){
+		synchronized (MaxCube.class){
 			Socket socket = null;
 			BufferedReader reader = null;
 			ArrayList<String> rawMessage = new ArrayList<String> () ;
@@ -267,22 +260,6 @@ public class MaxCubeBridge {
 		return null;
 	}
 
-	/**
-	 * Discovers the MAX!CUbe LAN Gateway IP address.
-	 * 
-	 * @return the cube IP if available, a blank string otherwise.
-	 * @throws ConfigurationException
-	 */
-	private String discoveryGatewayIp() throws ConfigurationException {
-		String ip = MaxCubeDiscover.discoverIp();
-		if (ip == null) {
-			throw new ConfigurationException("maxcube:ip", "IP address for MAX!Cube must be set manually");
-		} else {
-			logger.info("Discovered MAX!Cube Lan Gateway at '{}'", ip);
-		}
-		return ip;
-	}
-
 	public String getIp() {
 		return ipAddress;
 	}
@@ -300,7 +277,7 @@ public class MaxCubeBridge {
 	}
 
 	/**
-	 * Returns the MaxCube Device decoded during the last refreshData
+	 * Returns the MAX!  Device decoded during the last refreshData
 	 * 
 	 * @param serialNumber
 	 *            the serial number of the device as String
@@ -313,7 +290,7 @@ public class MaxCubeBridge {
 	}
 
 	/**
-	 * Returns the MaxCube Devices Array decoded during the last refresh
+	 * Returns the MAX! Devices Array decoded during the last refresh
 	 * 
 	 * @return devices
 	 * 				the array of {@link Device} information decoded in the last refreshData
@@ -415,7 +392,7 @@ public class MaxCubeBridge {
 			}	
 		}
 		//Actual sending of the data to the Max!Cube Lan Gateway
-		synchronized (MaxCubeBridge.class){
+		synchronized (MaxCube.class){
 			if (commandString != null) {
 				Socket socket = null;
 				try {
@@ -427,13 +404,13 @@ public class MaxCubeBridge {
 					socket.close();
 
 				} catch (UnknownHostException e) {
-					logger.warn("Cannot establish connection with MAX!cube lan gateway while sending command to '{}'", ipAddress);
+					logger.warn("Cannot establish connection with MAX! Cube lan gateway while sending command to '{}'", ipAddress);
 					logger.debug(Utils.getStackTrace(e));
 				} catch (IOException e) {
-					logger.warn("Cannot write data from MAX!Cube lan gateway while connecting to '{}'", ipAddress);
+					logger.warn("Cannot write data from MAX! Cube lan gateway while connecting to '{}'", ipAddress);
 					logger.debug(Utils.getStackTrace(e));
 				}
-				logger.debug("Command {} ({}) sent to Max!Cube at IP: {}", sendCommand.getId(),sendCommand.getKey(),ipAddress);
+				logger.debug("Command {} ({}) sent to MAX! Cube at IP: {}", sendCommand.getId(),sendCommand.getKey(),ipAddress);
 			} else {
 				logger.debug("Null Command not sent to {}", ipAddress);
 			}
