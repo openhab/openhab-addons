@@ -132,9 +132,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	 * initiates send commands to the maxCube bridge
 	 */
 	private synchronized void sendCommands() {
-		if (bridge !=null)
-			bridge.sendCommands();
-	}
+		if (bridge==null) initializeBridge() ;
+		try {
+			if (bridge !=null) bridge.sendCommands();
+			} catch(Exception e) {
+				logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+			}
+		}
 	/**
 	 * initiates read data from the maxCube bridge
 	 */

@@ -51,7 +51,6 @@ public final class C_Message extends Message {
 	
 	public C_Message(String raw) {
 		super(raw);
-		logger.debug(" *** C-Message ***");
 		String[] tokens = this.getPayload().split(Message.DELIMETER);
 
 		rfAddress = tokens[0];

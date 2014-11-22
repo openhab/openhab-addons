@@ -50,6 +50,7 @@ public abstract class Device {
 	public Device(DeviceConfiguration c) {
 		this.serialNumber = c.getSerialNumber();
 		this.rfAddress = c.getRFAddress();
+		this.roomId= c.getRoomId();
 		this.config = c;
 	}
 
