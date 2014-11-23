@@ -31,6 +31,7 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Re
 
 	private Set<ProviderChangeListener<ItemChannelLink>> listeners = new HashSet<>();
 	private ThingRegistry thingRegistry;
+	private ThingItemUIProvider thingItemUIProvider;
 
 	@Override
 	public void addProviderChangeListener(
@@ -47,26 +48,30 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Re
 	@Override
 	public Set<ItemChannelLink> getAll() {
 		Set<ItemChannelLink> links = new HashSet<>();
-		for(Thing thing : thingRegistry.getAll()) {
-			links.addAll(getLinks(thing));
+		if(thingItemUIProvider.isEnabled()) {
+			for(Thing thing : thingRegistry.getAll()) {
+				links.addAll(getLinks(thing));
+			}
 		}
 		return links;
 	}
 
 	private Set<ItemChannelLink> getLinks(Thing element) {
 		Set<ItemChannelLink> links = new HashSet<>();
-		for(Channel channel : element.getChannels()) {
-			links.add(new ItemChannelLink(channel.getUID().toString().replace(":", "_"), channel.getUID()));
+		if(thingItemUIProvider.isEnabled()) {
+			for(Channel channel : element.getChannels()) {
+				links.add(new ItemChannelLink(channel.getUID().toString().replace(":", "_"), channel.getUID()));
+			}
 		}
 		return links;
 	}
 
 	protected void setThingItemUIProvider(ThingItemUIProvider thingItemUIProvider) {
-		// we actually only need this dependency to make sure that this service is active
-		// as we only want to provide links for items of that service
+		this.thingItemUIProvider = thingItemUIProvider;
 	}
 
 	protected void unsetThingItemUIProvider(ThingItemUIProvider thingItemUIProvider) {
+		this.thingItemUIProvider = null;
 	}
 
 	protected void setThingRegistry(ThingRegistry thingRegistry) {

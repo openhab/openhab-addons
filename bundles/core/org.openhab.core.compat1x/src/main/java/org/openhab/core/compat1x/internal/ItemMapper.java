@@ -36,7 +36,9 @@ public class ItemMapper {
 		
 		if(result instanceof org.openhab.core.items.GenericItem) {
 			org.openhab.core.items.GenericItem genericItem = (GenericItem) result;
-			genericItem.setState(TypeParser.parseState(genericItem.getAcceptedDataTypes(), item.getState().toString()));
+			if(item.getState()!=null) {
+				genericItem.setState(TypeParser.parseState(genericItem.getAcceptedDataTypes(), item.getState().toString()));
+			}
 		}
 		return result;
 	}

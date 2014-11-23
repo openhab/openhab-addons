@@ -267,6 +267,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 
 	@Override
 	public void added(Thing element) {
+		if(!enabled) return;
 		for(ProviderChangeListener<Item> listener : listeners) {
 			listener.removed(this, getRootItem());
 		}
@@ -287,6 +288,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 
 	@Override
 	public void removed(Thing element) {
+		if(!enabled) return;
 		for(ProviderChangeListener<Item> listener : listeners) {
 			listener.removed(this, getRootItem());
 			rootItem = null;
@@ -301,8 +303,13 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 
 	@Override
 	public void updated(Thing oldElement, Thing element) {
+		if(!enabled) return;
 		removed(oldElement);
 		added(element);
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 }
