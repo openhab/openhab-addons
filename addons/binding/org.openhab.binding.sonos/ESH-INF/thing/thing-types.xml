@@ -10,21 +10,20 @@
 		<description>The Zone Player represents a Sonos Zone Player like the ZP120, Connect:Amp, Play:1 etc</description>
 
 		<channels>
-			<channel id="add" typeId="add" />
-			<channel id="alarm" typeId="alarm" />
-			<channel id="alarmproperties" typeId="alarmproperties" />
-			<channel id="alarmrunning" typeId="alarmrunning" />
 			<channel id="currentalbum" typeId="currentalbum" />
 			<channel id="currentartist" typeId="currentartist" />
 			<channel id="currenttitle" typeId="currenttitle" />
 			<channel id="currenttrack" typeId="currenttrack" />
+			<channel id="play" typeId="play" />
+			<channel id="volume" typeId="volume" />
+
+<!-- deactivated for the alpha release
 			<channel id="led" typeId="led" />
 			<channel id="linein" typeId="linein" />
 			<channel id="localcoordinator" typeId="localcoordinator" />
 			<channel id="mute" typeId="mute" />
 			<channel id="next" typeId="next" />
 			<channel id="pause" typeId="pause" />
-			<channel id="play" typeId="play" />
 			<channel id="playlinein" typeId="playlinein" />
 			<channel id="playlist" typeId="playlist" />
 			<channel id="playuri" typeId="playuri" />
@@ -41,10 +40,10 @@
 			<channel id="state" typeId="state" />
 			<channel id="stateswitch" typeId="stateswitch" />
 			<channel id="stop" typeId="stop" />
-			<channel id="volume" typeId="volume" />
 			<channel id="zonegroup" typeId="zonegroup" />
 			<channel id="zonegroupid" typeId="zonegroupid" />
 			<channel id="zonename" typeId="zonename" />
+-->
 		</channels>
 
 		<config-description>

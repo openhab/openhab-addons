@@ -189,7 +189,7 @@ UpnpIOParticipant, DiscoveryListener {
 			this.setMute(command);
 			break;
 		case PLAY:
-			play();
+			if(command.equals(OnOffType.ON)) play(); else pause();
 			break;
 		case STOP:
 			stop();
