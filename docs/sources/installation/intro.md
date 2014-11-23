@@ -21,7 +21,9 @@ There are a few changes in openHAB 2 that should be highlighted though:
 The following restrictions are known (and need to be worked on):
   - there is no way yet to enable authentication on HTTP(S)
   - Startup rules are not necessarily fired at startup (bundle start order issue)
+  - the Eclipse SmartHome Designer marks all openHAB actions as errors (yet the runtime will correctly execute them)
   - GreenT does not work as the webapps folder does not exist anymore
   - CometVisu is not yet compatible
   - HABmin is not yet compatible
+  - my.openHAB is not yet compatible
  
