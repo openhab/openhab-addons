@@ -2,6 +2,8 @@
 
 Here you can find the compatibility matrices in order to find out, which version of the openHAB 2.0 (alpha or SNAPSHOT) runtime is compatible with which version of the openHAB 1.x addons (either 1.6.0 release or 1.7.0-SNAPSHOT).
 
+This page is a community effort - please help filling the gaps and analysing potential problems!
+
 ## Bindings
 
 | Binding | 2.0 alpha + 1.6.0 | 2.0 alpha + 1.7.0-SNAPSHOT | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
@@ -109,3 +111,17 @@ Here you can find the compatibility matrices in order to find out, which version
 | MQTT |  |  |  |  |  |
 | InfluxDB |  |  |  |  |  |
 
+## Actions
+
+| Action | 2.0 alpha + 1.6.0 | 2.0 alpha + 1.7.0-SNAPSHOT | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
+|-------|:------------------:|:---------------------------:|:----------------------:|:-------------------------------:|---|
+| Mail | X | X | X | X |  |
+| XMPP |  |  |  |  |  |
+| Prowl |  |  |  |  |  |
+| Twitter |  |  |  |  |  |
+| Cosm |  |  |  |  |  |
+| XBMC | X | X | X | X |  |
+| NotifyMyAndroid |  |  |  |  |  |
+| Squeezebox |  |  |  |  |  |
+| Pushover |  |  |  |  |  |
+| OpenWebIf |  |  |  |  |  |
