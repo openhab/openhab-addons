@@ -11,12 +11,9 @@
       <outputDirectory>/</outputDirectory>
       <directory>openhabhome</directory>
 	  <useDefaultExcludes>false</useDefaultExcludes>
-      <includes>
-      	<include>conf/services/runtime.cfg</include>
-      </includes>
 	  <excludes>
 		<exclude>**/demo*.*</exclude>
-		<exclude>conf/**/*.cfg</exclude>
+		<exclude>conf/services/logging.cfg</exclude>
 	  	<exclude>**/persistence/*.persist</exclude>
 	  </excludes>
     </fileSet>
