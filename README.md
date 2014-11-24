@@ -11,8 +11,11 @@ For further Information please refer to our homepage http://www.openhab.org.
 So far the "productive" openHAB code is at http://github.com/openhab/openhab.
 This project here is the home of the next-generation openHAB aka openHAB 2.
 A major focus of openHAB 2 is adding administration UIs to the system to make it more user-friendly for "regular" users (i.e. not the developer type). For this, openHAB 2 is now based on the [Eclipse SmartHome](http://www.eclipse.org/smarthome) project. You can find information about the relation of these projects in [this blogpost](http://kaikreuzer.blogspot.de/2014/06/openhab-20-and-eclipse-smarthome.html).
+There is a configuration UI prototype already available, called [Paper UI](https://www.youtube.com/watch?v=NolVoL8ewO0&feature=youtu.be).
 
-openHAB 2 is currently under heavy development and so far there is no end-user release available. Nonetheless we have snapshot builds [available at CloudBees](https://openhab.ci.cloudbees.com/job/openHAB2/) - they even include a 1.x compatibility bundle, so that a couple of openHAB 1.x addons can be used with it (we are working on further improving this compatibility layer).
+openHAB 2 is currently under heavy development and so far there is only an [alpha release available](https://github.com/openhab/openhab2/releases/tag/2.0.0-alpha1). Additionally, we have snapshot builds [available at CloudBees](https://openhab.ci.cloudbees.com/job/openHAB2/). openHAB 2.0 includes a [1.x compatibility layer](docs/sources/installation/compatibilitylayer.md), which allows using 1.x add-ons with the new runtime.
+
+If you want to learn more about openHAB 2.0, please also check out [this blog post](http://kaikreuzer.blogspot.de/2014/11/openhab-16-and-20-alpha-release.html).
 
 ## Community: How to get involved
 
@@ -20,9 +23,9 @@ As any good open source project, openHAB welcomes community participation in the
 
 If you are a developer and want to jump right into the sources and execute openHAB 2 from within Eclipse, please have a look at the [IDE setup](docs/sources/development/ide.md) procedures.
 
-If you are not afraid of work in progress, you can have a [sneak preview on how openHAB 2 bindings are developed](docs/sources/development/bindings.md). These concepts and the APIs are still in an early stage, so please do not expect much support from us on this and do not be surprised if these things change over time. If you prefer something stable, openHAB 1.x is definitely the place to be for the moment!
+If you are not afraid of work in progress, you can have a learn [how openHAB 2 bindings are developed](docs/sources/development/bindings.md). These concepts and the APIs are not yet finalized, so please do not expect much support from us on this and do not be surprised if these things change over time. If you prefer something stable, openHAB 1.x is definitely the place to be for the moment!
 
-In case of questions, please do NOT use the openHAB (1.x) mailing list, but refer to the [openHAB 2 issue tracker](https://github.com/openhab/openhab2/issues?labels=question&page=1&state=open) instead (using label "question").
+In case of problems or questions, please refer to the [openHAB 2 issue tracker](https://github.com/openhab/openhab2/issues?page=1&state=open).
 
 ## Trademark Disclaimer
 
