@@ -8,7 +8,6 @@
 package org.openhab.binding.sonos.handler;
 
 import static org.openhab.binding.sonos.SonosBindingConstants.*;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
@@ -32,9 +30,12 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -57,10 +58,7 @@ import org.openhab.binding.sonos.internal.SonosZoneGroup;
 import org.openhab.binding.sonos.internal.SonosZonePlayerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
-
-import static org.openhab.binding.sonos.config.ZonePlayerConfiguration.FRIENDLY_NAME;
 import static org.openhab.binding.sonos.config.ZonePlayerConfiguration.UDN;
 
 /**
@@ -188,20 +186,8 @@ UpnpIOParticipant, DiscoveryListener {
 		case MUTE:
 			this.setMute(command);
 			break;
-		case PLAY:
-			play();
-			break;
 		case STOP:
 			stop();
-			break;
-		case PAUSE:
-			pause();
-			break;
-		case NEXT:
-			next();
-			break;
-		case PREVIOUS:
-			previous();
 			break;
 		case VOLUME:
 			setVolume(command);
@@ -248,19 +234,29 @@ UpnpIOParticipant, DiscoveryListener {
 		case PLAYLINEIN:
 			playLineIn(command);
 			break;
-		case STATESWITCH:
-			if (command instanceof OnOffType) {
-				if (command == OnOffType.ON) {
+		case CONTROL:
+			if (command instanceof PlayPauseType) {
+				if (command == PlayPauseType.PLAY) {
 					play();
-				} else if (command == OnOffType.OFF) {
-					stop();
+				} else if (command == PlayPauseType.PAUSE) {
+					pause();
 				}
 			}
+			if (command instanceof NextPreviousType) {
+				if (command == NextPreviousType.NEXT) {
+					next();
+				} else if (command == NextPreviousType.PREVIOUS) {
+					previous();
+				}
+			}
+			if (command instanceof RewindFastforwardType) {
+				//Rewind and Fast Forward are currently not implemented by the binding
+			}
+			break;
 		default:
 			break;
 
 		}
-
 	}
 
 	private void restoreAllPlayerState() {
@@ -318,16 +314,16 @@ UpnpIOParticipant, DiscoveryListener {
 					(stateMap.get("TransportState") != null) ? new StringType(
 							stateMap.get("TransportState")) : UnDefType.UNDEF);
 			if (stateMap.get("TransportState").equals("PLAYING")) {
-				updateState(new ChannelUID(getThing().getUID(), STATESWITCH),
-						OnOffType.ON);
+				updateState(new ChannelUID(getThing().getUID(), CONTROL),
+						PlayPauseType.PLAY);
 			}
 			if (stateMap.get("TransportState").equals("STOPPED")) {
-				updateState(new ChannelUID(getThing().getUID(), STATESWITCH),
-						OnOffType.OFF);
+				updateState(new ChannelUID(getThing().getUID(), CONTROL),
+						PlayPauseType.PAUSE);				
 			}
 			if (stateMap.get("TransportState").equals("PAUSED_PLAYBACK")) {
-				updateState(new ChannelUID(getThing().getUID(), STATESWITCH),
-						OnOffType.OFF);
+				updateState(new ChannelUID(getThing().getUID(), CONTROL),
+						PlayPauseType.PAUSE);
 			}
 			break;
 		}

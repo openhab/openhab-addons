@@ -27,6 +27,7 @@ public class SonosBindingConstants {
     public final static String ALARM = "alarm";
     public final static String ALARMPROPERTIES = "alarmproperties";
     public final static String ALARMRUNNING = "alarmrunning";
+    public final static String CONTROL ="control";
     public final static String CURRENTALBUM = "currentalbum";
     public final static String CURRENTARTIST = "currentartist";
     public final static String CURRENTTITLE = "currenttitle";
@@ -35,13 +36,9 @@ public class SonosBindingConstants {
     public final static String LINEIN = "linein";
     public final static String LOCALCOORDINATOR = "localcoordinator";
     public final static String MUTE = "mute";
-    public final static String NEXT = "next";
-    public final static String PAUSE = "pause";
-    public final static String PLAY = "play";
     public final static String PLAYLINEIN = "playlinein";
     public final static String PLAYLIST = "playlist";
     public final static String PLAYURI = "playuri";
-    public final static String PREVIOUS = "previous";
     public final static String PUBLICADDRESS = "publicaddress";
     public final static String RADIO = "radio";
     public final static String REMOVE = "remove";
@@ -58,7 +55,5 @@ public class SonosBindingConstants {
     public final static String ZONEGROUPID = "zonegroupid";
     public final static String ZONENAME = "zonename";
     
-    public final static String PLAYCONTROL ="playcontrol";
-    public final static String STATESWITCH ="stateswitch";
 
 }

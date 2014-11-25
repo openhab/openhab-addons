@@ -14,6 +14,7 @@
 			<channel id="alarm" typeId="alarm" />
 			<channel id="alarmproperties" typeId="alarmproperties" />
 			<channel id="alarmrunning" typeId="alarmrunning" />
+			<channel id="control" typeId="control" />
 			<channel id="currentalbum" typeId="currentalbum" />
 			<channel id="currentartist" typeId="currentartist" />
 			<channel id="currenttitle" typeId="currenttitle" />
@@ -22,13 +23,9 @@
 			<channel id="linein" typeId="linein" />
 			<channel id="localcoordinator" typeId="localcoordinator" />
 			<channel id="mute" typeId="mute" />
-			<channel id="next" typeId="next" />
-			<channel id="pause" typeId="pause" />
-			<channel id="play" typeId="play" />
 			<channel id="playlinein" typeId="playlinein" />
 			<channel id="playlist" typeId="playlist" />
 			<channel id="playuri" typeId="playuri" />
-			<channel id="previous" typeId="previous" />
 			<channel id="publicaddress" typeId="publicaddress" />
 			<channel id="radio" typeId="radio" />
 			<channel id="remove" typeId="remove" />
@@ -39,7 +36,6 @@
 			<channel id="snooze" typeId="snooze" />
 			<channel id="standalone" typeId="standalone" />
 			<channel id="state" typeId="state" />
-			<channel id="stateswitch" typeId="stateswitch" />
 			<channel id="stop" typeId="stop" />
 			<channel id="volume" typeId="volume" />
 			<channel id="zonegroup" typeId="zonegroup" />
@@ -87,7 +83,13 @@
 		<description>Set to ON if the alarm was triggered</description>
 	</channel-type>
 
-	<channel-type id="currentalbum">
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Player Control</label>
+		<description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
+	</channel-type>
+	
+		<channel-type id="currentalbum">
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
@@ -135,24 +137,6 @@
 		<description>Set or get the mute state of the master volume of the Zone Player</description>
 	</channel-type>
 
-	<channel-type id="next">
-		<item-type>Switch</item-type>
-		<label>Next</label>
-		<description>Skip to the next track in the queue</description>
-	</channel-type>
-
-	<channel-type id="pause">
-		<item-type>Switch</item-type>
-		<label>Pause</label>
-		<description>Pause the Zone Player</description>
-	</channel-type>
-
-	<channel-type id="play">
-		<item-type>Switch</item-type>
-		<label>Play</label>
-		<description>Start the Zone Player</description>
-	</channel-type>
-
 	<channel-type id="playlinein">
 		<item-type>String</item-type>
 		<label>Play Line-in</label>
@@ -169,12 +153,6 @@
 		<item-type>String</item-type>
 		<label>Play URI</label>
 		<description>Play the given URI</description>
-	</channel-type>
-
-	<channel-type id="previous">
-		<item-type>Switch</item-type>
-		<label>Previous</label>
-		<description>Skip to the previous track</description>
 	</channel-type>
 
 	<channel-type id="publicaddress">
@@ -266,12 +244,6 @@
 		<item-type>String</item-type>
 		<label>Zone Name</label>
 		<description>Name of the Zone Group the Zone Player belongs to</description>
-	</channel-type>
-
-	<channel-type id="stateswitch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Play (ON) or Stop (OFF) the Zone Player</description>
 	</channel-type>
 
 </thing:thing-descriptions>
