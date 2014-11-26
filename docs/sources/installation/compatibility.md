@@ -44,7 +44,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Insteon PLM |  |  |  |  |  |
 | IRtrans |  |  |  |  |  |
 | jointSPACE-Binding
-| KNX |  |  |  |  |  |
+| KNX | X |  |  |  |Only tested the first combination. Works quite well.|
 | Koubachi |  |  |  |  |  |
 | Leviton/HAI Omnilink |  |  |  |  |  |
 | MAX!Cube |  |  |  |  |  |
