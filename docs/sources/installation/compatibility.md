@@ -34,7 +34,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Global Cache IR |  |  |  |  |  |
 | GPIO |  |  |  |  |  |
 | HAI/Leviton OmniLink |  |  |  |  |  |
-| HDAnywhere |  |  |  |  |  |
+| HDAnywhere |  |  |  |  | 2.0 version available |
 | Heatmiser |  |  |  |  |  |
 | Homematic / Homegear | X | X | X | X |  |
 | HTTP | X | X | X | X |  |
@@ -42,9 +42,9 @@ This page is a community effort - please help filling the gaps and analysing pot
 | IHC / ELKO |  |  |  |  |  |
 | Insteon Hub |  |  |  |  |  |
 | Insteon PLM |  |  |  |  |  |
-| IRtrans |  |  |  |  |  |
+| IRtrans |  |  |  |  | 2.0 version available |
 | jointSPACE-Binding
-| KNX | X |  |  |  |Only tested the first combination. Works quite well.|
+| KNX | X |  |  |  |Only tested the first combination. Works quite well. 2.0 version available |
 | Koubachi |  |  |  |  |  |
 | Leviton/HAI Omnilink |  |  |  |  |  |
 | MAX!Cube |  |  |  |  |  |
@@ -62,6 +62,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Nikobus |  |  |  |  |  |
 | Novelan/Luxtronic Heatpump |  |  |  |  |  |
 | NTP | X | X | X | X |  |
+| Oceanic |  |  |  |  | 2.0 version available |
 | One-Wire |  |  |  |  |  |
 | Onkyo AV Receiver |  |  |  |  |  |
 | Open Energy Monitor |  |  |  |  |  |
@@ -75,6 +76,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | PLCBus |  |  |  |  |  |
 | Pulseaudio |  |  |  |  |  |
 | RFXCOM |  |  |  |  |  |
+| RME |  |  |  |  | 2.0 version available |
 | Samsung TV |  |  |  |  |  |
 | Serial |  |  |  |  |  |
 | Snmp |  |  |  |  |  |
