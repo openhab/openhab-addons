@@ -85,7 +85,7 @@ public class ESHCallType implements ComplexType, Command, State {
 		return String.format(pattern, callDetails.values().toArray());
 	}
 	
-	public ESHCallType valueOf(String value) {
+	public static ESHCallType valueOf(String value) {
 		return new ESHCallType(value);
 	}
 	
