@@ -27,7 +27,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Epson Projector |  |  |  |  |  |
 | Exec |  |  |  |  |  |
 | Freebox |  |  |  |  |  |
-| Freeswitch | X |  |  |  | Seemingly works, but IllegalArgumentException thrown (state must not be null) by EventPublisherImpl.java:122. Further testing required  |
+| Freeswitch | X |  |  |  |  |
 | Fritz!Box |  |  |  |  |  |
 | Fritz AHA |  |  |  |  |  |
 | FS20 |  |  |  |  |  |
