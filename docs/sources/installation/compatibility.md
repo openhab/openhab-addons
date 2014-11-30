@@ -27,7 +27,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Epson Projector |  |  |  |  |  |
 | Exec |  |  |  |  |  |
 | Freebox |  |  |  |  |  |
-| Freeswitch | X | X | X | X |  |
+| Freeswitch | - | - | X | X |  |
 | Fritz!Box |  |  |  |  |  |
 | Fritz AHA |  |  |  |  |  |
 | FS20 |  |  |  |  |  |
