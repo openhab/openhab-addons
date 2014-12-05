@@ -64,13 +64,15 @@ public class OSGILogListener {
 	 * notified of a log entry, it forwards this entry to slf4j.
 	 * 
 	 * @author Kai Kreuzer
+	 * @author Jochen Hiller - Fix #068 NPE when getBundle() is null
 	 * @since 0.1.0
 	 *
 	 */
 	private static class NLogListener implements LogListener {
 	 	public void logged(LogEntry entry) {
 	 		Logger logger = LoggerFactory.getLogger("OSGi");
-	 		Marker marker = MarkerFactory.getMarker(entry.getBundle().getSymbolicName());
+	 		String markerName = entry.getBundle() == null ? "unknownBundle" : entry.getBundle().getSymbolicName();
+	 		Marker marker = MarkerFactory.getMarker(markerName);
 	 		switch(entry.getLevel()) {
 	 		case LogService.LOG_DEBUG:   logger.debug(marker, entry.getMessage(), entry.getException()); break;
 	 		case LogService.LOG_INFO:    logger.info(marker, entry.getMessage(), entry.getException()); break;
