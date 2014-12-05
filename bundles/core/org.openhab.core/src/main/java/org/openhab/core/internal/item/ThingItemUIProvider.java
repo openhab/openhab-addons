@@ -282,8 +282,12 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 			listener.added(this, getRootItem());
 
 		}
-		eventPublisher.postUpdate(group.getName(), UnDefType.UNDEF);
-		eventPublisher.postUpdate(rootItem.getName(), UnDefType.UNDEF);
+		if(group.getAcceptedDataTypes().contains(UnDefType.UNDEF)) {
+			eventPublisher.postUpdate(group.getName(), UnDefType.UNDEF);
+		}
+		if(rootItem.getAcceptedDataTypes().contains(UnDefType.UNDEF)) {
+			eventPublisher.postUpdate(rootItem.getName(), UnDefType.UNDEF);
+		}
 	}
 
 	@Override
