@@ -233,7 +233,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 				updateStatus(ThingStatus.ONLINE);
 				previousOnline = true;
 				for (Device di : devices){
-					if (lastActiveDevices.contains(di.getSerialNumber())) {
+					if (lastActiveDevices !=null && lastActiveDevices.contains(di.getSerialNumber())) {
 						for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
 							try {
 								deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
@@ -296,7 +296,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	}
 
 	public void clearDeviceList(){
-		lastActiveDevices=null;
+		lastActiveDevices=new HashSet<String>();
 	}
 
 	/**

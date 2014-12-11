@@ -83,13 +83,14 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	 */
 	@Override
 	public void dispose() {
-		logger.debug("Thing {} {} disposed.", getThing(), maxCubeDeviceSerial);
+		logger.debug("Thing {} {} disposed.", getThing().getUID(), maxCubeDeviceSerial);
 		if(bridgeHandler!=null) bridgeHandler.clearDeviceList();
 		if(refreshJob!=null && !refreshJob.isCancelled()) {
 			refreshJob.cancel(true);
 			refreshJob = null;
 		}
 		updateStatus(ThingStatus.OFFLINE);
+		if (bridgeHandler !=null) bridgeHandler.unregisterDeviceStatusListener(this);
 		super.dispose();
 	}
 
