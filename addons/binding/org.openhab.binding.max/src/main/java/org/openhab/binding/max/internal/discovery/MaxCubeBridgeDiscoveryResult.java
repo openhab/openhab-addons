@@ -9,7 +9,7 @@ package org.openhab.binding.max.internal.discovery;
 
 
 /**
- * Class for {@link MaxCubeBinding} MAX! Cube discoveries
+ * Class for {@link MaxBinding} MAX! Cube discoveries
  * 
  * @author Marcel Verpaalen - Initial contribution
  */

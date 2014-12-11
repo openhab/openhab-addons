@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>MAX! Binding</name>
-    <description>This is the binding for eQ-3 MAX! Home Solution controlled via the MAX! Cube Lan Gateway.</description>
+    <description>This is the binding for the eQ-3 MAX! Home Solution.</description>
     <author>Marcel Verpaalen</author>
 
 </binding:binding>

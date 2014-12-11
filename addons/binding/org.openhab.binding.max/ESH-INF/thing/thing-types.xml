@@ -9,8 +9,8 @@
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 	
-		<label>MAX! HeathingThermostat</label>
-		<description>This is a MAX! HeathingThermostat</description>
+		<label>MAX! HeatingThermostat</label>
+		<description>This is a MAX! HeatingThermostat</description>
 
 		<channels>
 			<channel id="valve" typeId="valve" />
@@ -34,8 +34,8 @@
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 	
-		<label>MAX! HeathingThermostat+</label>
-		<description>This is a MAX! HeathingThermostat+</description>
+		<label>MAX! HeatingThermostat+</label>
+		<description>This is a MAX! HeatingThermostat+</description>
 
 		<channels>
 			<channel id="valve" typeId="valve" />

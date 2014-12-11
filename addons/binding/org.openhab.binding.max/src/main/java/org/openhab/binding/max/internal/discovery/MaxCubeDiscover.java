@@ -16,9 +16,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.util.Enumeration;
-import java.util.HashMap;
 
-import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,19 +62,19 @@ public final class MaxCubeDiscover {
 		String rfAddress = null;
 
 		Thread thread = new Thread("Sendbroadcast"){
-			 public void run(){
-				 if (cubeSerialNumber !=null){
-				 sendBroadcastforDevice(cubeSerialNumber);
-				 } else {
-					 sendBroadcast();			
-				 }
-			try {
-				sleep(5000);
-			} catch (Exception e) {
+			public void run(){
+				if (cubeSerialNumber !=null){
+					sendBroadcastforDevice(cubeSerialNumber);
+				} else {
+					sendBroadcast();			
+				}
+				try {
+					sleep(5000);
+				} catch (Exception e) {
+				}
+				discoveryRunning = false;
+				logger.trace( "Done sending broadcast discovery messages.");
 			}
-			discoveryRunning = false;
-			logger.trace( "Done sending broadcast discovery messages.");
-			 }
 		};
 		thread.start();
 		DatagramSocket bcReceipt = null;
@@ -85,31 +83,31 @@ public final class MaxCubeDiscover {
 			bcReceipt = new DatagramSocket(23272);
 			bcReceipt.setReuseAddress(true);
 			bcReceipt.setSoTimeout(10000);
-		
+
 			while (discoveryRunning){
-			//Wait for a response
-			byte[] recvBuf = new byte[1500];
-			DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
-			bcReceipt.receive(receivePacket);
+				//Wait for a response
+				byte[] recvBuf = new byte[1500];
+				DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+				bcReceipt.receive(receivePacket);
 
-			//We have a response
-			String message = new String(receivePacket.getData()).trim();
-			logger.trace( "Broadcast response from {} : {} '{}'", receivePacket.getAddress(),message.length(),message);
+				//We have a response
+				String message = new String(receivePacket.getData()).trim();
+				logger.trace( "Broadcast response from {} : {} '{}'", receivePacket.getAddress(),message.length(),message);
 
-			//Check if the message is correct
-			if (message.startsWith("eQ3Max") &&  !message.equals(MAXCUBE_DISCOVER_STRING)) {
-				maxCubeIP=receivePacket.getAddress().getHostAddress();
-				maxCubeName=message.substring(0, 8);
-				serialNumber=message.substring(8, 18);
-				byte[] unknownData=message.substring(18,21).getBytes();
-				rfAddress=Utils.getHex(message.substring(21).getBytes()).replace(" ", "").toLowerCase();
-				logger.info("MAX! Cube found on network");
-				logger.debug("Found at  : {}", maxCubeIP);
-				logger.debug("Name      : {}", maxCubeName);
-				logger.debug("Serial    : {}", serialNumber);
-				logger.debug("RF Address: {}", rfAddress);
-				logger.trace("Unknown   : {}", Utils.getHex(unknownData));
-			}
+				//Check if the message is correct
+				if (message.startsWith("eQ3Max") &&  !message.equals(MAXCUBE_DISCOVER_STRING)) {
+					maxCubeIP=receivePacket.getAddress().getHostAddress();
+					maxCubeName=message.substring(0, 8);
+					serialNumber=message.substring(8, 18);
+					byte[] unknownData=message.substring(18,21).getBytes();
+					rfAddress=Utils.getHex(message.substring(21).getBytes()).replace(" ", "").toLowerCase();
+					logger.info("MAX! Cube found on network");
+					logger.debug("Found at  : {}", maxCubeIP);
+					logger.debug("Name      : {}", maxCubeName);
+					logger.debug("Serial    : {}", serialNumber);
+					logger.debug("RF Address: {}", rfAddress);
+					logger.trace("Unknown   : {}", Utils.getHex(unknownData));
+				}
 			}
 		} catch (SocketTimeoutException ex) {
 			logger.trace("No further response");
@@ -154,7 +152,7 @@ public final class MaxCubeDiscover {
 		try {
 			bcSend = new DatagramSocket();
 			bcSend.setBroadcast(true);
-			
+
 			byte[] sendData = discoverString.getBytes();
 
 			// Broadcast the message over all the network interfaces
@@ -174,20 +172,20 @@ public final class MaxCubeDiscover {
 
 					//ugly hack to workaround Java issue of wrong broadcast address for Wlan devices 
 					//http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7158636
-							byte[] networkIpAddress = interfaceAddress.getAddress().getAddress();
-							byte[] broadcastIpAddress = broadcast.getAddress();
-						
-							if (networkIpAddress[0] != broadcastIpAddress[0]){
-								broadcastIpAddress = networkIpAddress;
-								broadcastIpAddress[3]= (byte) 0xFF;
-								InetAddress newbroadcast =  InetAddress.getByAddress(broadcastIpAddress);
-								logger.debug( "Strange broadcast address '{}' for IP {}, replaced with '{}' Interface: '{}' '{}'", broadcast.getHostAddress(), interfaceAddress.getAddress(),newbroadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
-								broadcast = newbroadcast;
-							}
-							// Send the broadcast package!
-							try {
-								DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, 23272);
-								logger.trace( "Sending request packet sent to: {} Interface: '{}' '{}'", broadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
+					byte[] networkIpAddress = interfaceAddress.getAddress().getAddress();
+					byte[] broadcastIpAddress = broadcast.getAddress();
+
+					if (networkIpAddress[0] != broadcastIpAddress[0]){
+						broadcastIpAddress = networkIpAddress;
+						broadcastIpAddress[3]= (byte) 0xFF;
+						InetAddress newbroadcast =  InetAddress.getByAddress(broadcastIpAddress);
+						logger.debug( "Strange broadcast address '{}' for IP {}, replaced with '{}' Interface: '{}' '{}'", broadcast.getHostAddress(), interfaceAddress.getAddress(),newbroadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
+						broadcast = newbroadcast;
+					}
+					// Send the broadcast package!
+					try {
+						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, 23272);
+						logger.trace( "Sending request packet sent to: {} Interface: '{}' '{}'", broadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
 						bcSend.send(sendPacket);
 					} catch (Exception e) {
 						logger.debug( "Error while sending request packet sent to: {} Interface: '{}' '{}'", broadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
@@ -209,7 +207,7 @@ public final class MaxCubeDiscover {
 			}	catch (Exception e) {
 				logger.debug(e.toString());
 			}}
-		 
+
 	}
 }
 

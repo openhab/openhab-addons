@@ -11,7 +11,7 @@ package org.openhab.binding.max.internal.message;
 import java.util.ArrayList;
 
 import org.apache.commons.net.util.Base64;
-import org.openhab.binding.max.MaxCubeBinding;
+import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public final class M_Message extends Message {
 	public ArrayList<RoomInformation> rooms;
 	public ArrayList<DeviceInformation> devices;
 	private Boolean hasConfiguration ;
-	Logger logger = LoggerFactory.getLogger(MaxCubeBinding.class);
+	Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 	
 
 	public M_Message(String raw) {
@@ -113,22 +113,22 @@ public final class M_Message extends Message {
 
 	@Override
 	public void debug(Logger logger) {
-		logger.debug("=== M_Message === ");
+		logger.trace("=== M_Message === ");
 		if (hasConfiguration) {
 			logger.trace("\tRAW : {}", this.getPayload());
 			for(RoomInformation room: rooms){
-				logger.debug("\t=== Rooms ===");
-				logger.debug("\tRoom Pos   : {}", room.getPosition());
-				logger.debug("\tRoom Name  : {}", room.getName());
-				logger.debug("\tRoom RF Adr: {}",  room.getRFAddress());
+				logger.trace("\t=== Rooms ===");
+				logger.trace("\tRoom Pos   : {}", room.getPosition());
+				logger.trace("\tRoom Name  : {}", room.getName());
+				logger.trace("\tRoom RF Adr: {}",  room.getRFAddress());
 				for(DeviceInformation device: devices){
 					if (room.getPosition() == device.getRoomId()) {
-						logger.debug("\t=== Devices ===");
-						logger.debug("\tDevice Type    : {}", device.getDeviceType());
-						logger.debug("\tDevice Name    : {}", device.getName());
-						logger.debug("\tDevice Serialnr: {}", device.getSerialNumber());
-						logger.debug("\tDevice RF Adr  : {}", device.getRFAddress());
-						logger.debug("\tRoom Id        : {}", device.getRoomId());
+						logger.trace("\t=== Devices ===");
+						logger.trace("\tDevice Type    : {}", device.getDeviceType());
+						logger.trace("\tDevice Name    : {}", device.getName());
+						logger.trace("\tDevice Serialnr: {}", device.getSerialNumber());
+						logger.trace("\tDevice RF Adr  : {}", device.getRFAddress());
+						logger.trace("\tRoom Id        : {}", device.getRoomId());
 					}
 				}
 

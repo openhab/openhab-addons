@@ -16,12 +16,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 /**
- * The {@link MaxCubeBinding} class defines common constants, which are 
+ * The {@link MaxBinding} class defines common constants, which are 
  * used across the whole binding.
  * 
  * @author Marcel Verpaalen - Initial contribution
  */
-public class MaxCubeBinding {
+public class MaxBinding {
 
 	 public static final String BINDING_ID = "max";
 	public static final String SERIAL_NUMBER = "serialNumber";

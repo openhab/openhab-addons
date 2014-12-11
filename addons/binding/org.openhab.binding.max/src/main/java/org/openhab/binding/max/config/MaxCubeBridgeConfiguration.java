@@ -9,7 +9,7 @@
 package org.openhab.binding.max.config;
 
 /**
- * Configuration class for {@link MaxCubeBinding} bridge
+ * Configuration class for {@link MaxBinding} bridge
  * used to connect to the maxCube device.
  * 
  * @author Marcel Verpaalen - Initial contribution
@@ -52,5 +52,5 @@ public class MaxCubeBridgeConfiguration {
 	/**
 	 * in exclusive mode, how many requests are allowed until connection is closed and reopened
 	 */
-	public int maxRequestsPerConnection = 1000;
+	public int maxRequestsPerConnection = 1000 ;
 }

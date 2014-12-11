@@ -17,9 +17,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.max.MaxCubeBinding;
+import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
-import org.openhab.binding.max.internal.discovery.MaxCubeBridgeDiscoveryResult;
 import org.openhab.binding.max.internal.discovery.MaxDeviceDiscoveryService;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.max.internal.handler.MaxCubeHandler;
@@ -44,7 +43,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 	public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
 			ThingUID thingUID, ThingUID bridgeUID) {
 
-		if (MaxCubeBinding.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
+		if (MaxBinding.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
 			ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
 			return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
 		}
@@ -58,26 +57,25 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	@Override
 	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-		return MaxCubeBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+		return MaxBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
 	}
 
 
 	private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
 			Configuration configuration) {
 		if (thingUID == null) {
-			//TODO: Should this look at IP or at serial #
-			String ipAddress = (String) configuration.get(MaxCubeBridgeConfiguration.IP_ADDRESS);
-			thingUID = new ThingUID(thingTypeUID, ipAddress);
+			String SerialNumber = (String) configuration.get(MaxBinding.SERIAL_NUMBER);
+			thingUID = new ThingUID(thingTypeUID, SerialNumber);
 		}
 		return thingUID;
 	}
 
 	private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
 			Configuration configuration , ThingUID bridgeUID ) {
-		String SerialNumber = (String) configuration.get(MaxCubeBinding.SERIAL_NUMBER);
+		String SerialNumber = (String) configuration.get(MaxBinding.SERIAL_NUMBER);
 
 		if (thingUID == null) {
-			thingUID = new ThingUID(thingTypeUID, "Device" + SerialNumber , bridgeUID.getId());
+			thingUID = new ThingUID(thingTypeUID, SerialNumber, bridgeUID.getId());
 		}
 		return thingUID;
 	}
@@ -103,7 +101,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	@Override
 	protected ThingHandler createHandler(Thing thing) {
-		if (thing.getThingTypeUID().equals(MaxCubeBinding.CUBEBRIDGE_THING_TYPE)) {
+		if (thing.getThingTypeUID().equals(MaxBinding.CUBEBRIDGE_THING_TYPE)) {
 			MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
 			registerDeviceDiscoveryService(handler);
 			return handler;

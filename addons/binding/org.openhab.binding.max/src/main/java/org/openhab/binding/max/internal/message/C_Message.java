@@ -201,13 +201,13 @@ public final class C_Message extends Message {
 
 	@Override
 	public void debug(Logger logger) {
-		logger.debug("=== C_Message === ");
+		logger.trace("=== C_Message === ");
 		logger.trace("\tRAW:                    {}", this.getPayload());
-		logger.debug("DeviceType:               {}" , deviceType.toString());
-		logger.debug("SerialNumber:             {}" , serialNumber);
-		logger.debug("RFAddress:                {}" , rfAddress);
+		logger.trace("DeviceType:               {}" , deviceType.toString());
+		logger.trace("SerialNumber:             {}" , serialNumber);
+		logger.trace("RFAddress:                {}" , rfAddress);
         for(String key: properties.keySet()){
-    		logger.debug("{}:{}{}", key , Strings.repeat(" ",25 - key.length() ), properties.get(key));
+    		logger.trace("{}:{}{}", key , Strings.repeat(" ",25 - key.length() ), properties.get(key));
         }
         logger.trace("ProgramData:          {}", programData);
 	}

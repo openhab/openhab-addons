@@ -90,11 +90,11 @@ public final class H_Message extends Message {
 	
 	@Override
 	public void debug(Logger logger) {
-		logger.debug("=== H_Message === ");
+		logger.trace("=== H_Message === ");
 		logger.trace("\tRAW:            : {}", this.getPayload());
-		logger.debug("\tReading Time    : {}", cal.getTime());
+		logger.trace("\tReading Time    : {}", cal.getTime());
 		for(String key: properties.keySet()){
-    		logger.debug("\t{}:{}{}", key , Strings.repeat(" ",25 - key.length() ), properties.get(key));
+    		logger.trace("\t{}:{}{}", key , Strings.repeat(" ",25 - key.length() ), properties.get(key));
         }
 	}
 

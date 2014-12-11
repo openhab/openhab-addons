@@ -16,7 +16,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.max.MaxCubeBinding;
+import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +33,12 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 	private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
 	public MaxCubeBridgeDiscovery() {
-		super(MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15);
+		super(MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15);
 	}
 
 	@Override
 	public Set<ThingTypeUID> getSupportedThingTypes() {
-		return MaxCubeBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
+		return MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
 	}
 
 	private void discoverCube() {
@@ -51,8 +51,8 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService  {
 
 			Map<String, Object> properties = new HashMap<>(2);
 	        properties.put(MaxCubeBridgeConfiguration.IP_ADDRESS,discoverResults.getIpAddress());
-	        properties.put(MaxCubeBinding.SERIAL_NUMBER,cubeSerialNumber);
-			ThingUID uid = new ThingUID( MaxCubeBinding.CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
+	        properties.put(MaxBinding.SERIAL_NUMBER,cubeSerialNumber);
+			ThingUID uid = new ThingUID( MaxBinding.CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
 			if(uid!=null) {
 				DiscoveryResult result = DiscoveryResultBuilder.create(uid)
 						.withProperties(properties)

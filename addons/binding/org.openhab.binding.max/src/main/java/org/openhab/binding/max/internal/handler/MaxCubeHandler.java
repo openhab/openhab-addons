@@ -7,12 +7,12 @@
  */
 package org.openhab.binding.max.internal.handler;
 
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_ACTUALTEMP;
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_BATTERY;
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_CONTACT_STATE;
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_MODE;
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_SETTEMP;
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_VALVE;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_ACTUALTEMP;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_BATTERY;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_CONTACT_STATE;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_MODE;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_VALVE;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.max.MaxCubeBinding;
+import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.message.Device;
 import org.openhab.binding.max.internal.message.EcoSwitch;
 import org.openhab.binding.max.internal.message.HeatingThermostat;
@@ -63,7 +63,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	public void initialize() {
 
 		Configuration config = getThing().getConfiguration();
-		final String configDeviceId = (String) config.get(MaxCubeBinding.SERIAL_NUMBER);
+		final String configDeviceId = (String) config.get(MaxBinding.SERIAL_NUMBER);
 
 		if (configDeviceId != null) {
 			maxCubeDeviceSerial = configDeviceId;
@@ -85,6 +85,11 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	public void dispose() {
 		logger.debug("Thing {} {} disposed.", getThing(), maxCubeDeviceSerial);
 		if(bridgeHandler!=null) bridgeHandler.clearDeviceList();
+		if(refreshJob!=null && !refreshJob.isCancelled()) {
+			refreshJob.cancel(true);
+			refreshJob = null;
+		}
+		updateStatus(ThingStatus.OFFLINE);
 		super.dispose();
 	}
 
@@ -138,7 +143,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	 */
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-		//todo: handle refreshtype commands
+		//TODO: handle refreshtype commands
 		MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
 		if (maxCubeBridge == null) {
 			logger.warn("maxCube LAN gateway bridge handler not found. Cannot handle command without bridge.");

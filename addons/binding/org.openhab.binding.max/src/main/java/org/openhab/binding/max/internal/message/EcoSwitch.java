@@ -10,7 +10,6 @@
 package org.openhab.binding.max.internal.message;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
 
 /**
 *  MAX!Cube EcoSwitch. 

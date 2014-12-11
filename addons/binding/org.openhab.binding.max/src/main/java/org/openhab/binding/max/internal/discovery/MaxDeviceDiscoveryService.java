@@ -16,7 +16,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.max.MaxCubeBinding;
+import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.handler.DeviceStatusListener;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.max.internal.message.Device;
@@ -36,7 +36,7 @@ public class MaxDeviceDiscoveryService  extends AbstractDiscoveryService impleme
 	private MaxCubeBridgeHandler maxCubeBridgeHandler;
 
 	public MaxDeviceDiscoveryService( MaxCubeBridgeHandler maxCubeBridgeHandler) {
-		super(MaxCubeBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10,true);
+		super(MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10,true);
 		this.maxCubeBridgeHandler = maxCubeBridgeHandler;
 	}
 
@@ -50,7 +50,7 @@ public class MaxDeviceDiscoveryService  extends AbstractDiscoveryService impleme
 
 	@Override
 	public Set<ThingTypeUID> getSupportedThingTypes() {
-		return MaxCubeBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS;
+		return MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS;
 	}
 
 	@Override
@@ -59,26 +59,26 @@ public class MaxDeviceDiscoveryService  extends AbstractDiscoveryService impleme
 		ThingUID thingUID = null;
 		switch (device.getType()) {
 		case WallMountedThermostat:
-			thingUID = new ThingUID(MaxCubeBinding.WALLTHERMOSTAT_THING_TYPE,device.getSerialNumber());
+			thingUID = new ThingUID(MaxBinding.WALLTHERMOSTAT_THING_TYPE,bridge.getUID(),device.getSerialNumber());
 			break;
 		case HeatingThermostat:
-			thingUID = new ThingUID(MaxCubeBinding.HEATINGTHERMOSTAT_THING_TYPE,device.getSerialNumber());
+			thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTAT_THING_TYPE,bridge.getUID(),device.getSerialNumber());
 			break;
 		case HeatingThermostatPlus:
-			thingUID = new ThingUID(MaxCubeBinding.HEATINGTHERMOSTATPLUS_THING_TYPE,device.getSerialNumber());
+			thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTATPLUS_THING_TYPE,bridge.getUID(),device.getSerialNumber());
 			break;
 		case ShutterContact:
-			thingUID = new ThingUID(MaxCubeBinding.SHUTTERCONTACT_THING_TYPE, device.getSerialNumber() );
+			thingUID = new ThingUID(MaxBinding.SHUTTERCONTACT_THING_TYPE,bridge.getUID(), device.getSerialNumber() );
 			break;
 		case EcoSwitch:
-			thingUID = new ThingUID(MaxCubeBinding.ECOSWITCH_THING_TYPE, device.getSerialNumber() );
+			thingUID = new ThingUID(MaxBinding.ECOSWITCH_THING_TYPE,bridge.getUID(), device.getSerialNumber() );
 			break;
 		default:
 			break;
 		}
 		if(thingUID!=null) {
 			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-					.withProperty(MaxCubeBinding.SERIAL_NUMBER, device.getSerialNumber())
+					.withProperty(MaxBinding.SERIAL_NUMBER, device.getSerialNumber())
 					.withBridge(bridge.getUID())
 					.withLabel( device.getType() + ": " + device.getName() + " (" + device.getSerialNumber() +")")
 					.build();

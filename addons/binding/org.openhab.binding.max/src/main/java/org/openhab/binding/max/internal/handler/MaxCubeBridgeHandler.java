@@ -8,8 +8,8 @@
 package org.openhab.binding.max.internal.handler;
 
 
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_MODE;
-import static org.openhab.binding.max.MaxCubeBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_MODE;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -181,14 +181,16 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 			// ;
 		}
 
-
-		logger.debug("MaxCube refreshInterval {}.", configuration.refreshInterval);
 		port =configuration.port;
-		logger.trace("MaxCube Port {}.", configuration.port);
 		ipAddress = configuration.ipAddress;
 		refreshInterval =  configuration.refreshInterval;
 		exclusive = configuration.exclusive;
 		maxRequestsPerConnection = configuration.maxRequestsPerConnection;
+		logger.debug("Cube IP         {}.", ipAddress);
+		logger.debug("Port            {}.", port);
+		logger.debug("RefreshInterval {}.", refreshInterval);
+		logger.debug("Exclusive mode  {}.", exclusive);
+		logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
 		startAutomaticRefresh();
 	}
@@ -631,7 +633,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private void socketClose(){
 		try {
 			socket.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 		socket = null;
 	}
