@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="BluetoothLE"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="temperature">
+	  <item-type>Number</item-type>
+	  <label>Temperature</label>
+	  <description>Current temperature in degrees celsius (metric)</description>
+	</channel-type>
+
+	<channel-type id="battery">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<description>Current battery level as a percentage from 0% to 100%; 0% represents a battery that is fully discharged, 100% represents a battery that is fully charged.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

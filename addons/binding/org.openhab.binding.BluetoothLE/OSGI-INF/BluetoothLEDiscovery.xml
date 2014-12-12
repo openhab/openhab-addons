@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.BluetoothLE.discovery.BluetoothLEDiscoveryServiceImpl">
+  <implementation class="org.openhab.binding.BluetoothLE.discovery.BluetoothLEDiscoveryServiceImpl"/>
+
+  <service>
+    <provide interface="org.openhab.binding.BluetoothLE.discovery.BluetoothLEDiscoveryService"/>
+    <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+  </service>
+
+</scr:component>
