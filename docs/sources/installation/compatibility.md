@@ -47,13 +47,13 @@ This page is a community effort - please help filling the gaps and analysing pot
 | KNX | X | X | X | X | |
 | Koubachi |  |  |  |  |  |
 | Leviton/HAI Omnilink |  |  |  |  |  |
-| MAX!Cube |  |  |  |  |  |
+| MAX! Cube | X |X  |X  |X  | 2.0 PR available|
 | MAX! CUL |  |  |  |  |  |
 | MiLight |  |  |  |  |  |
 | Modbus TCP |  |  |  |  |  |
 | Westaflex Modbus
 | MPD |  |  |  |  |  |
-| MQTT |  |  |  |  |  |
+| MQTT | - | -  | -   | - |due to  io.transport.mqtt bundle move to ESH namespace  | 
 | MQTTitude |  |  |  |  |  |
 | Neohub |  |  |  |  |  |
 | Netatmo |  |  |  |  |  |
