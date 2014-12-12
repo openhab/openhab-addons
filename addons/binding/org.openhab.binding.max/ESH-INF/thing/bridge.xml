@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="max"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+<bridge-type id="bridge">
+		<label>MAX! Cube LAN gateway</label>
+		<description>This bridge represents the MAX!Cube LAN gateway.</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network_address</context>
+				<label>MAX! Cube LAN gateway IP</label>
+				<description>The IP address of the MAX! Cube LAN gateway</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="port" type="integer">
+				<context>port</context>
+				<label>MAX! Cube LAN gateway port</label>
+				<description>Port of the LAN gateway</description>
+				<default>62910</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in ms which is used to poll given MAX! Cube.</description>
+				<default>30000</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="serialNumber" type="text">
+                <label>Serial Number</label>
+                <description>The Serial Number identifies one specific device.</description>
+                <required>true</required>
+            </parameter>
+			<parameter name="exclusive" type="boolean">
+				<label>Exclusive Mode</label>
+				<description>If set to true, the binding will leave the connection to the Cube open.</description>
+				<default>false</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="maxRequestsPerConnection" type="integer">
+				<label>Max Requests per Connection</label>
+				<description>In exclusive mode, how many requests are allowed until connection is closed and reopened.</description>
+				<default>1000</default>
+				<required>false</required>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+	
+
+</thing:thing-descriptions>
