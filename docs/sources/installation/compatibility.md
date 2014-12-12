@@ -47,7 +47,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | KNX | X | X | X | X | |
 | Koubachi |  |  |  |  |  |
 | Leviton/HAI Omnilink |  |  |  |  |  |
-| MAX!Cube |  |  |  |  |  |
+| MAX!Cube |  |  |  |  | 2.0 version available |
 | MAX! CUL |  |  |  |  |  |
 | MiLight |  |  |  |  |  |
 | Modbus TCP |  |  |  |  |  |
