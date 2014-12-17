@@ -39,8 +39,8 @@ public class BluetoothLENonConnHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(BluetoothLENonConnHandler.class);
 
-    private static final int DEFAULT_ALLOWED_FRAME_TIMEOUT = (30 * 60) + 12; // in seconds
-    private static final int DEFAULT_REFRESH_INTERVAL = 1 * 60; // in seconds 
+    private static final int DEFAULT_ALLOWED_FRAME_TIMEOUT = (2 * 60) + 12; // in seconds
+    private static final int DEFAULT_REFRESH_INTERVAL      = (1 * 30); // in seconds 
 
     BluetoothLEDiscoveryService discoveryService;
     //DiscoveryServiceRegistry discoveryServiceRegistry;

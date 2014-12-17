@@ -19,7 +19,7 @@
  *
  *  Author: Patrick Ammann
  *
- *  03.12.2014	v1.00	Initial version
+ *  03.12.2014	v0.01	Initial version
  *
  */
 
@@ -84,18 +84,39 @@ public:
   int open() {
     int err;
 
+	  uint8_t scan_type = 0x01;
+	  uint16_t interval = htobs(0x0010);
+	  uint16_t window = htobs(0x0010);
+	  uint8_t own_type = 0x00;
+	  uint8_t filter_policy = 0x00;
+
+  	if (m_devID < 0) {
+  		m_devID = hci_get_route(NULL);
+    }
+    if (m_devID < 0) {
+      return -1;
+    }
+
     if (verbose) printf("Open HCI device: /dev/hci%d\n", m_devID);
 
     m_fd = hci_open_dev(m_devID);
 	  if (m_fd < 0) {
 		  if (verbose) printf("Error: Could not open device\n");
-      return m_fd;
+      return -1;
 	  }
 
     err = setnonblocking(m_fd);
 	  if (err < 0) {
 		  perror("Can not set non blocking");
+      close();
       return err;
+	  }
+
+    err = hci_le_set_scan_parameters(m_fd, scan_type, interval, window, own_type, filter_policy, 10000);
+	  if (err < 0) {
+		  perror("Set scan parameters failed");
+      close();
+		  return err;
 	  }
 
     return 0;
@@ -108,23 +129,10 @@ public:
   int startScan() {
 	  int err;
 
-	  uint8_t own_type = 0x00;
-	  uint8_t scan_type = 0x01;
-	  uint8_t filter_policy = 0x00;
-	  uint16_t interval = htobs(0x0010);
-	  uint16_t window = htobs(0x0010);
-
 	  struct hci_filter nf, of;
 	  socklen_t olen;
 
     if (verbose) { printf("startScan...\n"); fflush(0); }
-
-    // TODO: move to open?
-    err = hci_le_set_scan_parameters(m_fd, scan_type, interval, window, own_type, filter_policy, 10000);
-	  if (err < 0) {
-		  perror("Set scan parameters failed");
-		  exit(1);
-	  }
 
 	  err = hci_le_set_scan_enable(m_fd, 0x01, 0 /*duplicates need*/, 10000);
 	  if (err < 0) {
@@ -211,6 +219,7 @@ public:
     } else {
         // Some other error occurred during read.
         fprintf(stderr, "Read failed: %s\n", strerror(errno));
+        close();
     }
   }
 
@@ -224,7 +233,10 @@ public:
   }
 
   void close() {
-	  hci_close_dev(m_fd);
+	  if (m_fd > 0) {
+      hci_close_dev(m_fd);
+    }
+    m_fd = -1;
   }
 };
 
@@ -243,7 +255,7 @@ static const char *lescan_help =
   "\t--verbose            Verbose\n"
   "\t--port <port>        UDP port (default: 9998)\n"
   "\t--device <id>        Set device by id (default: 0 -> /dev/hci0)\n"
-  "\t--scanInterval <id>  Set scan interval time in minutes(default: 15 minutes)\n"
+  "\t--scanInterval <id>  Set scan interval time in seconds (default: 60s)\n"
 ;
 
 int main(int argc, char **argv)
@@ -265,12 +277,12 @@ int main(int argc, char **argv)
   ADV_SCAN_IND:    Scannable advertisement packets' time period ranges from 100 ms to 10.24s in steps of 0.625ms.
   -> scanWindow must be maximal 11s
 */
-  const time_t scanWindow =  11;  // in seconds
-  time_t scanInterval = 30 * 60;  // in seconds
+  const time_t scanWindow = 11;  // in seconds
+  time_t scanInterval = 1 * 60;  // in seconds
 
   int udp_fd = -1;
 
-  printf("BLEscan v0.1\n");
+  printf("BLEscan v0.2\n");
 
   while ((opt=getopt_long(argc, argv, "+", lescan_options, NULL)) != -1) {
     switch (opt) {
@@ -284,7 +296,7 @@ int main(int argc, char **argv)
           port = atoi(optarg);
           break;
         case 't':
-          scanInterval = atoi(optarg) * 60;
+          scanInterval = atoi(optarg);
           break;
 		  default:
 			  printf("%s", lescan_help);
@@ -292,18 +304,16 @@ int main(int argc, char **argv)
 		  }
 	}
 
-	if (dev_id < 0)
-		dev_id = hci_get_route(NULL);
-
   if (scanInterval < scanWindow) {
     fprintf(stderr, "Invalid scan interval\n");
     exit(1);
   }
 
   // print info
-  printf("HCI device   : /dev/hci%u\n", dev_id);
+  printf("HCI device   : /dev/hci%i\n", dev_id);
   printf("UDP dest     : adress=%s port=%u\n", address.c_str(), port);
-  printf("scan interval: %u min\n", (unsigned int)scanInterval/60);
+  printf("Scan window  : %us\n", (unsigned int)scanWindow);
+  printf("Scan interval: %us\n", (unsigned int)scanInterval);
 
   BluetoothLE* ble = new BluetoothLE(dev_id);
 
