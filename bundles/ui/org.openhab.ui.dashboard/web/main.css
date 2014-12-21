@@ -104,6 +104,10 @@ section {
     background-image: url('img/paperui.png');
 }
 
+.link.rest .body {
+    background-image: url('img/restapi.png');
+}
+
 .link .footer {
     height: 50px;
     background-color: #F60;

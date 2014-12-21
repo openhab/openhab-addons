@@ -74,6 +74,7 @@
       <plugin id="org.eclipse.smarthome.io.net" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.rest" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.rest.core" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.io.rest.sse" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.upnp" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.storage.mapdb" autoStart="true" startLevel="0" />
@@ -83,6 +84,7 @@
       <plugin id="org.openhab.core" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.ui.dashboard" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
+      <plugin id="org.openhab.io.rest.docs" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>

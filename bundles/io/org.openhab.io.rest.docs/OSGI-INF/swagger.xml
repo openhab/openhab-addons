@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="org.openhab.io.rest.docs">
+   <implementation class="org.openhab.io.rest.docs.swagger.SwaggerServlet"/>
+   <service>
+      <provide interface="org.osgi.service.cm.ManagedService"/>
+      <provide interface="javax.servlet.Servlet"/>
+   </service>
+   <property name="service.pid" type="String" value="org.openhab.io.rest.docs.swagger"/>
+   <property name="alias" type="String" value="/doc"/>
+   <reference bind="addService" cardinality="0..n" interface="org.eclipse.smarthome.io.rest.RESTResource" name="Service" policy="dynamic" unbind="removeService"/>
+   <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="dynamic" unbind="unsetHttpService"/>policy="dynamic" unbind="removeService"/>
+</scr:component>
