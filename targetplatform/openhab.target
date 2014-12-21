@@ -109,7 +109,7 @@
 <unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
+<repository location="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository/"/>
 </location>
 </locations>
 </target>
