@@ -60,7 +60,7 @@ public class ThingItemChannelLinkProvider implements ItemChannelLinkProvider, Re
 		Set<ItemChannelLink> links = new HashSet<>();
 		if(thingItemUIProvider.isEnabled()) {
 			for(Channel channel : element.getChannels()) {
-				links.add(new ItemChannelLink(channel.getUID().toString().replace(":", "_"), channel.getUID()));
+				links.add(new ItemChannelLink(channel.getUID().toString().replace(":", "_").replaceAll("#",  "_"), channel.getUID()));
 			}
 		}
 		return links;
