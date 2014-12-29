@@ -15,6 +15,8 @@ Make sure that you have the following things installed on your computer:
 
 ## Setup Instructions
 
+_Note:_ You can find a [screencast of the IDE setup on YouTube](https://www.youtube.com/watch?v=8XbQkKd9wkE).
+
 Here are step-by-step instructions:
 
 1. Create [your own fork of the openHAB2 repository](https://github.com/openhab/openhab2/fork) at Github
