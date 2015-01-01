@@ -27,4 +27,4 @@ If you want to use openHAB 1.x add-ons with openHAB 2, please refer to the [comp
 
 ## Starting the runtime
 
-Once you have configured your runtime, you can simply start openHAB by calling `start.sh` resp. `start.bat` on Windows. Point your browser to http://<hostname>:8080 and off you go!
+Once you have configured your runtime, you can simply start openHAB by calling `start.sh` resp. `start.bat` on Windows. Point your browser to ```http://<hostname>:8080``` and off you go!
