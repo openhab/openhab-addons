@@ -107,7 +107,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 				}
 			}
 			for(Channel channel : thing.getChannels()) {
-				if(channel.getUID().toString().replaceAll(":",  "_").equals(itemName)) {
+				if(channel.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_").equals(itemName)) {
 					String label = (String) StringUtils.capitalize(channel.getUID().getId());
 					ThingType thingType = thingTypeRegistry.getThingType(thing.getThingTypeUID());
 					if(thingType!=null) {
@@ -165,7 +165,7 @@ public class ThingItemUIProvider implements ItemUIProvider, ItemProvider, Regist
 	/*default*/ GroupItem createItemsForThing(Thing thing) {
 		GroupItem group = new GroupItem(thing.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_"));
 		for(Channel channel : thing.getChannels()) {
-			Item item = itemFactory.createItem(channel.getAcceptedItemType(), channel.getUID().toString().replaceAll(":",  "_"));
+			Item item = itemFactory.createItem(channel.getAcceptedItemType(), channel.getUID().toString().replaceAll(":",  "_").replaceAll("#",  "_"));
 			if(item!=null) {
 				if(group.getMembers().contains(item)) {
 					group.removeMember(item);
