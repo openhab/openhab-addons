@@ -170,19 +170,18 @@ public final class MaxCubeDiscover {
 						continue;
 					}
 
-					//ugly hack to workaround Java issue of wrong broadcast address for Wlan devices 
-					//http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7158636
-					byte[] networkIpAddress = interfaceAddress.getAddress().getAddress();
-					byte[] broadcastIpAddress = broadcast.getAddress();
+					//ugly hack to workaround Java issue of wrong broadcast address for Wlan devices
+                    //http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7158636
 
-					if (networkIpAddress[0] != broadcastIpAddress[0]){
-						broadcastIpAddress = networkIpAddress;
-						broadcastIpAddress[3]= (byte) 0xFF;
-						InetAddress newbroadcast =  InetAddress.getByAddress(broadcastIpAddress);
-						logger.debug( "Strange broadcast address '{}' for IP {}, replaced with '{}' Interface: '{}' '{}'", broadcast.getHostAddress(), interfaceAddress.getAddress(),newbroadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
-						broadcast = newbroadcast;
-					}
-					// Send the broadcast package!
+                    /** Fix for openhab2-Issue#94 ( binding.max: Discovery didn't find the Cube)
+                     * The original Max Local Application use 255.255.255.255 as broadcast address
+                     * ToDo ipV6 implementation
+                     * Changed by @steand  at Jan. 2, 2015
+                     */
+                    broadcast = InetAddress.getByName("255.255.255.255");
+                    logger.debug( "Sending broadcast address '{}' for IP {}, Interface: '{}' '{}'", broadcast.getHostAddress(), interfaceAddress.getAddress(), networkInterface.getDisplayName(),  networkInterface.getName());
+
+                    // Send the broadcast package!
 					try {
 						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, 23272);
 						logger.trace( "Sending request packet sent to: {} Interface: '{}' '{}'", broadcast.getHostAddress(),  networkInterface.getDisplayName(),  networkInterface.getName());
