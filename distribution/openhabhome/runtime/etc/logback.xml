@@ -2,7 +2,7 @@
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} %-5level %logger{40}[:%line] - %msg%n%ex{0}</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-30.30logger{36}] - %msg%n</pattern>			
 		</encoder>
 	</appender>
 
@@ -10,12 +10,12 @@
 		<file>${openhab.logdir:-userdata/logs}/openhab.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- weekly rollover and archiving -->
-			<fileNamePattern>${openhab.logdir:-logs}/openhab-%d{yyyy-ww}.log.zip</fileNamePattern>
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>30</maxHistory>
+			<fileNamePattern>${openhab.logdir:-userdata/logs}/openhab-%d{yyyy-ww}.log.zip</fileNamePattern>
+			<!-- maximum number of archive files to keep -->
+			<maxHistory>26</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} %-5level %logger{30}[:%line]- %msg%n%ex{5}</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-30.30logger{36}] - %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -24,8 +24,8 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- weekly rollover and archiving -->
 			<fileNamePattern>${openhab.logdir:-userdata/logs}/events-%d{yyyy-ww}.log.zip</fileNamePattern>
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>30</maxHistory>
+			<!-- maximum number of archive files to keep -->
+			<maxHistory>26</maxHistory>
 		</rollingPolicy>
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
