@@ -12,6 +12,7 @@ There are a few changes in openHAB 2 that should be highlighted though:
  - a new default sitemap provider is in place, which provides a dynamic sitemap with the name `default`, which lists all group items that are not contained within any other group.
  - the `configuration` folder has been renamed to `conf`
  - instead of the global `configuration/openhab.cfg` file, there is now an individual file per add-on in `conf/services`
+ - The OSGi console commands are now available as "smarthome", not as "openhab" anymore.
  - the REST API does NOT support XML nor JSON-P anymore. It is now fully realized using JSON.
  - the REST API does not support websocket access anymore - it actually completely drops "push" support and only has a simple long-polling implementation to provide a basic backward-compatibility for clients. 
  - the webapps folder has been discontinued, so there is no way to make files available this way through HTTP.
