@@ -1,7 +1,14 @@
 # This file lists all individuals having contributed content to the repository.
-# If you're submitting a patch, please add your name here in alphabetical order as part of the patch.
-#
-# For a list of active project maintainers, see the MAINTAINERS file.
-#
+# For how it is generated, see `project-orga/generate-authors.sh`.
+
+Dancho Penev <dpslavov@hotmail.com>
+Gerhard Riegler <gerhard.riegler@gmail.com>
+Gideon le Grange <gideon@legrange.me>
+Jochen Hiller <jo.hiller@googlemail.com>
 Kai Kreuzer <kai@openhab.org>
-Thomas Eichstädt-Engelen <thomas@openhab.org>
+kaikreuzer <kai@openhab.org>
+Karel Goderis <karel.goderis@me.com>
+kgoderis <karel.goderis@me.com>
+manroh <agenthanu@googlemail.com>
+Marcel Verpaalen <marcel@verpaalen.com>
+Oliver Libutzki <oliver@libutzki.de>
