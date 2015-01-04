@@ -19,10 +19,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.max.MaxBinding;
-import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.discovery.MaxDeviceDiscoveryService;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
-import org.openhab.binding.max.internal.handler.MaxCubeHandler;
+import org.openhab.binding.max.internal.handler.MaxDevicesHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 		if (thingUID == null) {
 			thingUID = new ThingUID(thingTypeUID, SerialNumber, bridgeUID.getId());
-		}
+ 		}
 		return thingUID;
 	}
 
@@ -107,7 +106,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 			registerDeviceDiscoveryService(handler);
 			return handler;
 		} else if (supportsThingType(thing.getThingTypeUID())) {
-			return new MaxCubeHandler(thing);            
+			return new MaxDevicesHandler(thing);            
 		} else {
 			logger.debug("ThingHandler not found for {}" , thing.getThingTypeUID());
 			return null;

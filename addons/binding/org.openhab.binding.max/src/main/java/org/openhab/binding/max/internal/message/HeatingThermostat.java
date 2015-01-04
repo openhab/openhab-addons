@@ -128,7 +128,7 @@ public class HeatingThermostat extends Device {
 	 * @param value the setpoint temperature raw value as provided by the L message
 	 */
 	public void setTemperatureSetpoint(int value) {
-		if(this.temperatureSetpoint != (value / 2.0) ) setUpdated (true);
+		if(Math.abs(this.temperatureSetpoint - (value / 2.0)) > 0.1 ) setUpdated (true);
 		this.temperatureSetpoint = value / 2.0;
 	}
 

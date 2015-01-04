@@ -15,6 +15,7 @@ import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -26,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.io.OutputStreamWriter;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -35,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.message.C_Message;
@@ -56,8 +59,8 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * {@link MaxCubeBridgeHandler} is the handler for a MaxCube Cube and connects it to
- * the framework. All {@link MaxCubeHandler}s use the {@link MaxCubeBridgeHandler}
+ * {@link MaxCubeBridgeHandler} is the handler for a MAX! Cube and connects it to
+ * the framework. All {@link MaxDevicesHandler}s use the {@link MaxCubeBridgeHandler}
  * to execute the actual commands.
  * 
  * @author Marcel Verpaalen - Initial contribution OH2 version
@@ -98,9 +101,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private SendCommand lastCommandId = null;
 
 	private String ipAddress;
-	private int port = 62910;
-	private boolean exclusive = false;
-	private int maxRequestsPerConnection = 1000;
+	private int port;
+	private boolean exclusive;
+	private long maxRequestsPerConnection;
 	private int requestCount = 0;
 
 	/**
@@ -130,7 +133,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	};
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-		logger.warn("No bridge commands defined.");
+		if (command instanceof RefreshType) {
+			logger.debug("Refresh command received.");
+			refreshData();
+		} else	logger.warn("No bridge commands defined.");
 	}
 
 	@Override
@@ -145,6 +151,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 			sendCommandJob = null;
 		}
 
+		clearDeviceList();
+		connectionEstablished =false;
+
 		socketClose(); 
 		super.dispose();
 	}
@@ -153,40 +162,42 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	public void initialize() {
 		logger.debug("Initializing MAX! Cube bridge handler.");
 
-		/*
+		/* MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 		 * As getConfigAs(MaxCubeBridgeConfiguration.class) does not get non-string values yet
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
 		 */
+
+		logger.debug("Retreive MAX! Cube configuation.");	
 		MaxCubeBridgeConfiguration configuration = new MaxCubeBridgeConfiguration();
 
 		Configuration config = getThing().getConfiguration();
 		configuration.ipAddress = (String) config.get("ipAddress");
 		try {
-			configuration.refreshInterval = Long.parseLong((String)config.get("refreshInterval"));
+			configuration.refreshInterval = new BigDecimal((String)config.get("refreshInterval"));
 		} catch (Exception e) {
-			//
+			configuration.refreshInterval = new BigDecimal("30000");
 		}
 		try {
-			configuration.port = Integer.parseInt((String)config.get("port"));
+			configuration.port = new BigDecimal((String)config.get("port"));
 		} catch (Exception e) {
-			// ;
+			configuration.port = new BigDecimal("62910");
 		}
 		try {
 			configuration.exclusive = Boolean.parseBoolean((String)config.get("exclusive"));
 		} catch (Exception e) {
-			// ;
+			//
 		}
 		try {
-			configuration.maxRequestsPerConnection = Integer.parseInt((String)config.get("maxRequestsPerConnection"));
+			configuration.maxRequestsPerConnection = new BigDecimal((String)config.get("maxRequestsPerConnection"));
 		} catch (Exception e) {
-			// ;
+			configuration.maxRequestsPerConnection = new BigDecimal("1000");
 		}
 
-		port =configuration.port;
+		port =configuration.port.intValue();
 		ipAddress = configuration.ipAddress;
-		refreshInterval =  configuration.refreshInterval;
+		refreshInterval =  configuration.refreshInterval.longValue();
 		exclusive = configuration.exclusive;
-		maxRequestsPerConnection = configuration.maxRequestsPerConnection;
+		maxRequestsPerConnection = configuration.maxRequestsPerConnection.longValue();
 		logger.debug("Cube IP         {}.", ipAddress);
 		logger.debug("Port            {}.", port);
 		logger.debug("RefreshInterval {}.", refreshInterval);
@@ -194,6 +205,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
 		startAutomaticRefresh();
+		
+		//workaround for issue #92: getHandler() returns NULL after configuration update. :
+		getThing().setHandler(this);
 	}
 
 	private synchronized void startAutomaticRefresh() {
@@ -202,7 +216,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 		}
 		if (sendCommandJob == null || sendCommandJob.isCancelled()) {
 			sendCommandJob = scheduler.scheduleAtFixedRate(sendCommandRunnable, 0, sendCommandInterval, TimeUnit.MILLISECONDS);
-
 		}
 	}
 
@@ -225,9 +238,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	 */
 	private synchronized void refreshData() {
 
-		if (!connectionEstablished){
-			initialize() ;
-		}
 		try {
 			refreshDeviceData();
 			if (connectionEstablished){
@@ -248,6 +258,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 						for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
 							try {
 								deviceStatusListener.onDeviceAdded(getThing(), di);
+								di.setUpdated(true);
+								deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
 							} catch (Exception e) {
 								logger.error(
 										"An exception occurred while calling the DeviceStatusListener", e);
@@ -316,7 +328,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	 * Connects to the Max!Cube Lan gateway, reads and decodes the message 
 	 * this updates device information for each connected Max!Cube device
 	 */
-	public void refreshDeviceData() {
+	private void refreshDeviceData() {
 		Message message;
 
 		for (String raw : getRawMessage()){
@@ -392,6 +404,14 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 				}
 			} catch (ConnectException  e) {
 				logger.debug("Connection timed out on {} port {}",ipAddress, port );
+				connectionEstablished = false;
+				socketClose(); //reconnect on next execution
+			} catch(UnknownHostException e) {
+				logger.debug("Host error occurred during execution: {}", e.getMessage());
+				connectionEstablished = false;
+				socketClose(); //reconnect on next execution
+			} catch(IOException e) {
+				logger.debug("IO error occurred during execution: {}", e.getMessage());
 				connectionEstablished = false;
 				socketClose(); //reconnect on next execution
 			} catch(Exception e) {
