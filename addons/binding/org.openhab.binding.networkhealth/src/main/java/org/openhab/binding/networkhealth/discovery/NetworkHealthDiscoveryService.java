@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
+	private final static int TASK_CREATING_TIME_IN_MS = 1;
 	private final static Object lockObject = new Object();
 
 	private ScheduledFuture<?> discoveryJob;
@@ -62,7 +63,7 @@ public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
 		logger.debug("Starting Device Discovery");
 		interfaceIPs = getInterfaceIPs();
 		networkIPs = getNetworkIPs(interfaceIPs);
-		startDisconvery(networkIPs);
+		startDiscovery(networkIPs);
 	}
 
 	/**
@@ -132,7 +133,7 @@ public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				discoverNetwork();
+				/* Devices are only discovered on users request */
 			}
 		}).start();
 	}
@@ -141,7 +142,7 @@ public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
 	 * Starts the DiscoveryThread for each IP on the Networks
 	 * @param allNetworkIPs
 	 */
-	private void startDisconvery(final Queue<String> networkIPs) {
+	private void startDiscovery(final Queue<String> networkIPs) {
 		
 		Runnable runnable = new Runnable() {
 			public void run() {
@@ -169,7 +170,7 @@ public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
 		
 		/* Every milisecond a new thread will be created. Due to the fact that the PING has a timeout of 1 sec,
 		 * only about 1000 Threads will be create at max */
-		discoveryJob = scheduler.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.MILLISECONDS);
+		discoveryJob = scheduler.scheduleAtFixedRate(runnable, 0, TASK_CREATING_TIME_IN_MS, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -192,7 +193,7 @@ public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
 			properties.put(PARAMETER_HOSTNAME ,ip);
 			DiscoveryResult result = DiscoveryResultBuilder.create(uid)
 					.withProperties(properties)
-					.withLabel("Device IP: " + ip).build();
+					.withLabel("Network Device (" + ip +")").build();
 			thingDiscovered(result); 
 		}
 		 
@@ -205,6 +206,8 @@ public class NetworkHealthDiscoveryService extends AbstractDiscoveryService {
  * @author Marc Mettke - Initial contribution
  */
 class DiscoveryThread extends Thread {
+	private final static int PING_TIMEOUT_IN_MS = 1000;
+	
 	private DiscoveryThreadResult discoveryResult;
 	private String ip;
 
@@ -216,7 +219,7 @@ class DiscoveryThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			if( Ping.checkVitality(this.ip, 0, 1000) ) {
+			if( Ping.checkVitality(this.ip, 0, PING_TIMEOUT_IN_MS) ) {
 				this.discoveryResult.newDevice(this.ip);
 			}
 		} 

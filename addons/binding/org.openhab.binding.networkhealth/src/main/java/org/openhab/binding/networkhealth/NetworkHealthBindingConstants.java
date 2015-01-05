@@ -23,16 +23,16 @@ public class NetworkHealthBindingConstants {
     public static final String BINDING_ID = "networkhealth";
     
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "DEVICE");
+    public final static ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
-    public final static String CHANNEL_ONLINE = "ONLINE";
+    public final static String CHANNEL_ONLINE = "online";
 
     // List of all Parameters
-    public final static String PARAMETER_HOSTNAME = "HOSTNAME";
-    public final static String PARAMETER_PORT = "PORT";
-    public final static String PARAMETER_TIMEOUT = "TIMEOUT";
-    public final static String PARAMETER_REFRESH_INTERVAL = "REFRESH_INTERVAL";
+    public final static String PARAMETER_HOSTNAME = "hostname";
+    public final static String PARAMETER_PORT = "port";
+    public final static String PARAMETER_TIMEOUT = "timeout";
+    public final static String PARAMETER_REFRESH_INTERVAL = "refresh_interval";
     
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
     
