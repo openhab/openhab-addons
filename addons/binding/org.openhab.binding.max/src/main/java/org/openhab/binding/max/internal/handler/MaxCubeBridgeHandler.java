@@ -15,7 +15,6 @@ import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -28,7 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.io.OutputStreamWriter;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -103,8 +101,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	private String ipAddress;
 	private int port;
 	private boolean exclusive;
-	private long maxRequestsPerConnection;
+	private int maxRequestsPerConnection;
 	private int requestCount = 0;
+
+	/**
+	 * Duty cycle of the cube
+	 */
+	private int dutyCycle = 0;
+
+	/**
+	 * The available memory slots of the cube
+	 */
+	private int freeMemorySlots;
+	
 
 	/**
 	 * connection socket and reader/writer for execute method
@@ -125,7 +134,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 			refreshData();  }
 	};
 	private ScheduledFuture<?> sendCommandJob;
-	private long sendCommandInterval = 10000;
+	private long sendCommandInterval = 5000;
 	private Runnable sendCommandRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -162,42 +171,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 	public void initialize() {
 		logger.debug("Initializing MAX! Cube bridge handler.");
 
-		/* MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
-		 * As getConfigAs(MaxCubeBridgeConfiguration.class) does not get non-string values yet
 		MaxCubeBridgeConfiguration configuration = getConfigAs(MaxCubeBridgeConfiguration.class);
-		 */
-
-		logger.debug("Retreive MAX! Cube configuation.");	
-		MaxCubeBridgeConfiguration configuration = new MaxCubeBridgeConfiguration();
-
-		Configuration config = getThing().getConfiguration();
-		configuration.ipAddress = (String) config.get("ipAddress");
-		try {
-			configuration.refreshInterval = new BigDecimal((String)config.get("refreshInterval"));
-		} catch (Exception e) {
-			configuration.refreshInterval = new BigDecimal("30000");
-		}
-		try {
-			configuration.port = new BigDecimal((String)config.get("port"));
-		} catch (Exception e) {
-			configuration.port = new BigDecimal("62910");
-		}
-		try {
-			configuration.exclusive = Boolean.parseBoolean((String)config.get("exclusive"));
-		} catch (Exception e) {
-			//
-		}
-		try {
-			configuration.maxRequestsPerConnection = new BigDecimal((String)config.get("maxRequestsPerConnection"));
-		} catch (Exception e) {
-			configuration.maxRequestsPerConnection = new BigDecimal("1000");
-		}
-
-		port =configuration.port.intValue();
+		port =configuration.port;
 		ipAddress = configuration.ipAddress;
-		refreshInterval =  configuration.refreshInterval.longValue();
+		refreshInterval =  configuration.refreshInterval;
 		exclusive = configuration.exclusive;
-		maxRequestsPerConnection = configuration.maxRequestsPerConnection.longValue();
+		maxRequestsPerConnection = configuration.maxRequestsPerConnection;
 		logger.debug("Cube IP         {}.", ipAddress);
 		logger.debug("Port            {}.", port);
 		logger.debug("RefreshInterval {}.", refreshInterval);
@@ -496,6 +475,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 			} else if (message.getType() == MessageType.L) {
 				((L_Message) message).updateDevices(devices, configurations);
 				logger.trace("{} devices found.", devices.size());
+			} else if (message.getType() == MessageType.S) {
+				dutyCycle = ((S_Message) message).getDutyCycle();
+				freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
+				if (((S_Message) message).isCommandDiscarded()) {
+					logger.info("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}",dutyCycle,freeMemorySlots);
+				} else
+					logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}",dutyCycle,freeMemorySlots);
 			}
 		}
 	}
@@ -622,6 +608,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler  {
 					}
 					writer.write(commandString);
 					writer.flush();
+					String raw = reader.readLine();
+					Message message = processRawMessage(raw);
+					if (message !=null) processMessage (message);
 					if(!exclusive) {
 						socketClose();
 					}
