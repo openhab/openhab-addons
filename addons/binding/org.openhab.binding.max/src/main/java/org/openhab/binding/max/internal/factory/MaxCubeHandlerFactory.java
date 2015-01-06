@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MaxCubeHandlerFactory} is responsible for creating things and thing 
- * handlers.
+ * The {@link MaxCubeHandlerFactory} is responsible for creating things and
+ * thing handlers.
  * 
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -38,10 +38,9 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 	private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
 	private ServiceRegistration<?> discoveryServiceReg;
 
-
 	@Override
-	public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
-			ThingUID thingUID, ThingUID bridgeUID) {
+	public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
+			ThingUID bridgeUID) {
 
 		if (MaxBinding.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
 			ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
@@ -49,10 +48,9 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 		}
 		if (supportsThingType(thingTypeUID)) {
 			ThingUID deviceUID = getMaxCubeDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-			return super.createThing(thingTypeUID, configuration, deviceUID , bridgeUID);
+			return super.createThing(thingTypeUID, configuration, deviceUID, bridgeUID);
 		}
-		throw new IllegalArgumentException("The thing type " + thingTypeUID
-				+ " is not supported by the binding.");
+		throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the binding.");
 	}
 
 	@Override
@@ -60,9 +58,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 		return MaxBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
 	}
 
-
-	private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
-			Configuration configuration) {
+	private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
 		if (thingUID == null) {
 			String SerialNumber = (String) configuration.get(MaxBinding.SERIAL_NUMBER);
 			thingUID = new ThingUID(thingTypeUID, SerialNumber);
@@ -70,28 +66,28 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 		return thingUID;
 	}
 
-	private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
-			Configuration configuration , ThingUID bridgeUID ) {
+	private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+			ThingUID bridgeUID) {
 		String SerialNumber = (String) configuration.get(MaxBinding.SERIAL_NUMBER);
 
 		if (thingUID == null) {
 			thingUID = new ThingUID(thingTypeUID, SerialNumber, bridgeUID.getId());
- 		}
+		}
 		return thingUID;
 	}
-
-
 
 	private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
 		MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
 		discoveryService.activate();
-		this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
+		this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+				new Hashtable<String, Object>());
 	}
 
 	@Override
 	protected void removeHandler(ThingHandler thingHandler) {
-		if(this.discoveryServiceReg!=null) {
-			MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext.getService(discoveryServiceReg.getReference());
+		if (this.discoveryServiceReg != null) {
+			MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext
+					.getService(discoveryServiceReg.getReference());
 			service.deactivate();
 			discoveryServiceReg.unregister();
 			discoveryServiceReg = null;
@@ -106,9 +102,9 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 			registerDeviceDiscoveryService(handler);
 			return handler;
 		} else if (supportsThingType(thing.getThingTypeUID())) {
-			return new MaxDevicesHandler(thing);            
+			return new MaxDevicesHandler(thing);
 		} else {
-			logger.debug("ThingHandler not found for {}" , thing.getThingTypeUID());
+			logger.debug("ThingHandler not found for {}", thing.getThingTypeUID());
 			return null;
 		}
 	}
