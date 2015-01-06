@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: KNX Binding
+Bundle-SymbolicName: org.openhab.binding.knx;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+/**
+ * Package gnu.io generate an error at installation time on fresh installation.
+ * It is necessary to install the serial transport feature before the knx module (feature:install openhab-transport-serial).
+ * Possible to install it automatically or workaround ?
+ */
+Import-Package: com.google.common.collect,
+ gnu.io,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.autoupdate,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.types,
+ org.openhab.core.items,
+ org.osgi.framework;version="1.8.0",
+ org.slf4j
+Service-Component: OSGI-INF/IPBridgeThingHandler.xml, OSGI-INF/KNXCoreTypeMapper.xml, OSGI-INF/KNXHandlerFactory.xml, OSGI-INF/SerialBridgeThingHandler.xml
+Export-Package: org.openhab.binding.knx,
+ org.openhab.binding.knx.handler,
+ org.openhab.binding.knx.internal.dpt
+Require-Bundle: org.apache.commons.lang
+Bundle-ClassPath: lib/calimero-rxtx-2.0a3.jar,
+ lib/calimero-core-2.3-beta.jar,
+ lib/calimero-device-2.3-beta.jar,
+ .

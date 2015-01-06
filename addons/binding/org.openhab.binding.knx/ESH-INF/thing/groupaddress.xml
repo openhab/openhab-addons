@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="knx"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- KNX Group Address -->
+	<thing-type id="ga">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>Group Address</label>
+		<description>This Thing defines KNX Group Addresses</description>
+
+		<channels>
+			<channel id="string" typeId="string" />			
+		</channels>
+
+		<config-description>
+			<parameter name="groupaddress" type="text">
+				<label>Group Address</label>
+				<description>The group address in x/y/z notation</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="dpt" type="text">
+				<label>DPT</label>
+				<description>DataPoint Type in x.y notation</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="read" type="boolean">
+				<label>Read</label>
+				<description>Flag to indicate if this group address should be read at startup</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="interval" type="integer">
+				<label>Interval</label>
+				<description>Interval between attempts to read the group address on the bus, in seconds</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="autoupdate" type="boolean">
+                <label>Auto Update</label>
+                <description>Flag to indicate whether the channel must updated after a state is updated or a command is posted </description>
+                <required>false</required>
+                <default>true</default>
+            </parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Input/Output Channel</label>
+		<description>The IO channel allows to read/write values from/to the group address</description>
+	</channel-type>
+	
+	<channel-type id="switch">
+        <item-type>Switch</item-type>
+        <label>Input/Output Channel</label>
+        <description>The IO channel allows to read/write values from/to the group address</description>
+    </channel-type>
+    
+    <channel-type id="number">
+        <item-type>Number</item-type>
+        <label>Input/Output Channel</label>
+        <description>The IO channel allows to read/write values from/to the group address</description>
+    </channel-type>
+    
+     <channel-type id="datetime">
+        <item-type>DateTime</item-type>
+        <label>Input/Output Channel</label>
+        <description>The IO channel allows to read/write values from/to the group address</description>
+    </channel-type>
+    
+    <channel-type id="contact">
+        <item-type>Contact</item-type>
+        <label>Input/Output Channel</label>
+        <description>The IO channel allows to read/write values from/to the group address</description>
+    </channel-type>
+    
+    <channel-type id="dimmer">
+        <item-type>Dimmer</item-type>
+        <label>Input/Output Channel</label>
+        <description>The IO channel allows to read/write values from/to the group address</description>
+    </channel-type>
+	
+</thing:thing-descriptions>

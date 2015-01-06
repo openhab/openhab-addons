@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="knx"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>Switch</label>
+		<description>This Thing defines a KNX thermostat actor</description>
+
+		<channels>
+			<channel id="setpoint" typeId="setpoint" />
+		</channels>
+
+		<config-description>
+		    <parameter name="address" type="text">
+                <label>Address</label>
+                <description>The individual address in area.line.device notation</description>
+                <required>false</required>
+            </parameter>
+			<parameter name="setpointGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to set the thermostat setpoint</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="statusGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to read the current thermostat setpoint</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="read" type="boolean">
+				<label>Read</label>
+				<description>Flag to indicate if the group addresses should be read at startup</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="interval" type="integer">
+				<label>Interval</label>
+				<description>Interval between attempts to read the group addresses on the bus, in seconds</description>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="setpoint">
+		<item-type>Number</item-type>
+		<label>Setpoint</label>
+		<description>The channel to set the thermostat setpoint</description>
+	</channel-type>
+	
+</thing:thing-descriptions>
