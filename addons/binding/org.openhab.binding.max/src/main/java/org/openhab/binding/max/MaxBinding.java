@@ -24,10 +24,10 @@ import com.google.common.collect.Lists;
  */
 public class MaxBinding {
 
-	 public static final String BINDING_ID = "max";
+	public static final String BINDING_ID = "max";
 	public static final String SERIAL_NUMBER = "serialNumber";
+	public static final String IP_ADDRESS = "ipAddress";
 
-	   
 	 // List of main device types 
 	   public static final String DEVICE_THERMOSTAT = "thermostat";
 	   public static final String DEVICE_THERMOSTATPLUS = "thermostatplus";

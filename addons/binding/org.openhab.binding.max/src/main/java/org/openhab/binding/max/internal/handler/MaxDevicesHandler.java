@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.message.Device;
@@ -38,22 +39,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MaxCubeHandler} is responsible for handling commands, which are
+ * The {@link MaxDevicesHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  * 
  * @author Marcel Verpaalen - Initial contribution
  */
-public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusListener {
+public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusListener {
 
-	private Logger logger = LoggerFactory.getLogger(MaxCubeHandler.class);
+	private Logger logger = LoggerFactory.getLogger(MaxDevicesHandler.class);
 	private int refresh = 60; // refresh every minute as default 
 	ScheduledFuture<?> refreshJob;
 	private MaxCubeBridgeHandler bridgeHandler;
 
 	private String maxCubeDeviceSerial;
-	private boolean newDevice = true;
+	private boolean forceRefresh = true;
 
-	public MaxCubeHandler(Thing thing) {
+	public MaxDevicesHandler(Thing thing) {
 		super(thing);
 	}
 
@@ -84,14 +85,15 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	 */
 	@Override
 	public void dispose() {
-		logger.debug("Thing {} {} disposed.", getThing().getUID(), maxCubeDeviceSerial);
-		if(bridgeHandler!=null) bridgeHandler.clearDeviceList();
 		if(refreshJob!=null && !refreshJob.isCancelled()) {
 			refreshJob.cancel(true);
 			refreshJob = null;
 		}
 		updateStatus(ThingStatus.OFFLINE);
+		if(bridgeHandler!=null) bridgeHandler.clearDeviceList();		
 		if (bridgeHandler !=null) bridgeHandler.unregisterDeviceStatusListener(this);
+		bridgeHandler =null;
+		logger.debug("Thing {} {} disposed.", getThing().getUID(), maxCubeDeviceSerial);
 		super.dispose();
 	}
 
@@ -103,6 +105,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 					if(bridgeHandler!=null) {
 						if ( bridgeHandler.getDevice(maxCubeDeviceSerial) == null) 	{
 							updateStatus(ThingStatus.OFFLINE);
+							bridgeHandler=null;
 						} else {
 							updateStatus(ThingStatus.ONLINE);
 						}
@@ -114,6 +117,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 
 				} catch(Exception e) {
 					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+					bridgeHandler = null;
 				}
 
 			}
@@ -128,6 +132,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 		if(this.bridgeHandler==null) {
 			Bridge bridge = getBridge();
 			if (bridge == null) {
+				logger.debug("Required bridge not defined for device {}.", maxCubeDeviceSerial);
 				return null;
 			}
 			ThingHandler handler = bridge.getHandler();
@@ -135,6 +140,7 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 				this.bridgeHandler = (MaxCubeBridgeHandler) handler;
 				this.bridgeHandler.registerDeviceStatusListener(this);
 			} else {
+				logger.debug("No available bridge handler found for {} bridge {} .", maxCubeDeviceSerial, bridge.getUID());
 				return null;
 			}
 		}
@@ -144,11 +150,15 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		//TODO: handle refreshtype commands
+	public void handleCommand(ChannelUID channelUID, Command command) {  
 		MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
 		if (maxCubeBridge == null) {
 			logger.warn("maxCube LAN gateway bridge handler not found. Cannot handle command without bridge.");
+			return;
+		}
+		if (command instanceof RefreshType) {
+			forceRefresh = true;
+			maxCubeBridge.handleCommand(channelUID, command);
 			return;
 		}
 		if (maxCubeDeviceSerial == null){
@@ -169,8 +179,8 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 	public void onDeviceStateChanged(ThingUID bridge, Device device) {
 		if (device.getSerialNumber().equals (maxCubeDeviceSerial) ){
 			updateStatus(ThingStatus.ONLINE);
-			if (device.isUpdated() || newDevice){
-				newDevice = false;
+			if (device.isUpdated() || forceRefresh){
+				forceRefresh = false;
 				logger.debug("Updating states of {} {} ({}) id: {}", device.getType(), device.getName(), device.getSerialNumber(), getThing().getUID()  );
 				switch (device.getType()) {
 				case WallMountedThermostat:
@@ -201,12 +211,17 @@ public class MaxCubeHandler extends BaseThingHandler implements DeviceStatusList
 
 	@Override
 	public void onDeviceRemoved(MaxCubeBridgeHandler bridge, Device device) {
-		newDevice = true;
+		if (device.getSerialNumber().equals (maxCubeDeviceSerial) ){
+			bridgeHandler.unregisterDeviceStatusListener(this);
+			bridgeHandler = null;
+			forceRefresh = true;
+			getThing().setStatus(ThingStatus.OFFLINE);
+		}
 	}
 
 	@Override
 	public void onDeviceAdded(Bridge bridge, Device device) {
-		newDevice = true;
+		forceRefresh = true;
 	}
 
 }

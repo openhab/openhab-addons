@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.max.config;
 
+import java.math.BigDecimal;
+
 /**
  * Configuration class for {@link MaxBinding} bridge
  * used to connect to the maxCube device.
@@ -16,13 +18,6 @@ package org.openhab.binding.max.config;
  */
 
 public class MaxCubeBridgeConfiguration {
-
-
-	public static final String IP_ADDRESS = "ipAddress";
-	public static final String PORT = "port";
-	public static final String REFRESH_INTERVAL = "refreshInterval";
-	public static final String EXCLUSIVE = "exclusive";
-	public static final String MAX_REQUESTS = "maxRequestsPerConnection";
 	
 
 	/** The IP address of the MAX!Cube LAN gateway */
@@ -32,10 +27,10 @@ public class MaxCubeBridgeConfiguration {
      * The port of the MAX! Cube LAN gateway as provided at
 	 * http://www.elv.de/controller.aspx?cid=824&detail=10&detail2=3484
 	 */
-	public int port =  62910 ;
+	public Integer port ;
 	
 	/** The refresh interval in ms which is used to poll given MAX! Cube */
-	public Long refreshInterval = (long) 30000;
+	public Integer refreshInterval;
 	
 	/** The unique serial number for a device */
 	public String serialNumber;
@@ -52,5 +47,5 @@ public class MaxCubeBridgeConfiguration {
 	/**
 	 * in exclusive mode, how many requests are allowed until connection is closed and reopened
 	 */
-	public int maxRequestsPerConnection = 1000 ;
+	public Integer maxRequestsPerConnection;
 }
