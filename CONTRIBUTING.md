@@ -102,7 +102,7 @@ in your changes being overwritten.
 
 ### Merge approval
 
-Docker maintainers use LGTM (Looks Good To Me) in comments on the code review
+openHAB maintainers use LGTM (Looks Good To Me) in comments on the code review
 to indicate acceptance.
 
 A change requires LGTMs from an absolute majority of the maintainers of each
