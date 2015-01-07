@@ -88,15 +88,17 @@
 <repository location="http://www.openhab.org/jupnp/update-site/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.0.0.201407131319"/>
-<unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.0.0.201407131319"/>
-<unit id="com.eclipsesource.jaxrs.provider.gson.feature.source.feature.group" version="2.0.0.201407131319"/>
-<unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="4.1.1.201407131319"/>
-<unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="4.1.1.201407131319"/>
-<unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="2.0.0.201407131319"/>
-<unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.0.0.201407131319"/>
 <unit id="com.eclipsesource.jaxrs.provider.security.feature.source.feature.group" version="2.0.0.201407131319"/>
-<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector"/>
+<unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="4.1.1.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="4.1.1.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.gson.feature.source.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.source.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.feature.group" version="2.0.0.201407131319"/>
+<unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.0.0.201407131319"/>
+<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/4.1.1"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.0.0"/>
