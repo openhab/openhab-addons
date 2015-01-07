@@ -10,6 +10,7 @@ package org.openhab.binding.max.internal.message;
 
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
+import org.openhab.binding.maxcube.internal.message.ThermostatModeType;
 
 /**
  * Command to be send via the MAX!Cube protocol.
@@ -54,6 +55,9 @@ public class S_Command {
 		// 10 = Temporarily
 		if ( mode.equals(ThermostatModeType.MANUAL)){
 			bits[7] = false;  // A (MSB)
+			bits[6] = true;   // B
+		} else if (mode.equals(ThermostatModeType.BOOST)){
+			bits[7] = true;   // A (MSB)
 			bits[6] = true;   // B
 		} else
 		{
