@@ -15,7 +15,7 @@ import org.openhab.binding.max.internal.Utils;
  * Command to be send via the MAX!Cube protocol.
  * 
  * @author Andreas Heil (info@aheil.de)
- * @author Marcel Verpaalen - OH2 update
+ * @author Marcel Verpaalen - OH2 update + simplification
  * @since 1.4.0
  */
 public class S_Command {
@@ -52,52 +52,27 @@ public class S_Command {
 		// AB => bit mapping
 		// 01 = Permanent
 		// 10 = Temporarily
-		if ( mode.equals(ThermostatModeType.MANUAL)){
-			bits[7] = false;  // A (MSB)
-			bits[6] = true;   // B
-		} else
-		{
-			bits[7] = false ;  // A (MSB)
-			bits[6] = false;   // B
-		}
-
-	}
-
-	/**
-	 * Creates a new instance of the MAX! protocol S command.
-	 * 
-	 * @param rfAddress
-	 *            the RF address the command is for
-	 * @param roomId
-	 * 			  the room ID the RF address is mapped to	       
-	 * @param mode
-	 *            the desired mode for the device.
-	 */
-	public S_Command(String rfAddress, int roomId, ThermostatModeType mode) {
-		this.rfAddress = rfAddress;
-		this.roomId = roomId;
-
-		// default to perm setting
-		// AB => bit mapping
-		// 01 = Permanent
-		// 10 = Temporarily
+		// 11 = Boost
 
 		switch (mode) {
-		case VACATION:
 		case MANUAL:
-			//not implemented needs temperature
+			bits[7] = false;  // A (MSB)
+			bits[6] = true;   // B
 			break;
 		case AUTOMATIC:
-			bits = Utils.getBits(0);
+			bits[7] = false;  // A (MSB)
+			bits[6] = false;   // B
 			break;
 		case BOOST:
-			bits = Utils.getBits(255);
+			bits[7] = true;  // A (MSB)
+			bits[6] = true;   // B
 			break;
+		case VACATION:
+			//not implemented needs time
 		default:
 			// no further modes supported
 		}
 	}
-
 
 	/**
 	 * Returns the Base64 encoded command string to be sent via the MAX!

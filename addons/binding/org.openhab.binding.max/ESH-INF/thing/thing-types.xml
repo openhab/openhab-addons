@@ -5,10 +5,10 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="thermostat">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
-	
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
 		<label>MAX! HeatingThermostat</label>
 		<description>This is a MAX! HeatingThermostat</description>
 
@@ -20,20 +20,19 @@
 			<channel id="set_temp" typeId="set_temp" />
 		</channels>
 
-        <config-description>
-            <parameter name="serialNumber" type="text">
-                <label>Serial Number</label>
-                <description>The Serial Number identifies one specific device.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="thermostatplus">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
-	
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
 		<label>MAX! HeatingThermostat+</label>
 		<description>This is a MAX! HeatingThermostat+</description>
 
@@ -45,20 +44,19 @@
 			<channel id="set_temp" typeId="set_temp" />
 		</channels>
 
-        <config-description>
-            <parameter name="serialNumber" type="text">
-                <label>Serial Number</label>
-                <description>The Serial Number identifies one specific device.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="wallthermostat">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
-	
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
 		<label>MAX! WallThermostat+</label>
 		<description>This is a MAX! WallThermostat+</description>
 
@@ -70,20 +68,19 @@
 			<channel id="set_temp" typeId="set_temp" />
 		</channels>
 
-        <config-description>
-            <parameter name="serialNumber" type="text">
-                <label>Serial Number</label>
-                <description>The Serial Number identifies one specific device.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="ecoswitch">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
-	
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
 		<label>MAX! Ecoswitch</label>
 		<description>This is a MAX! EcoSwitch</description>
 
@@ -91,20 +88,19 @@
 			<channel id="battery_low" typeId="battery" />
 		</channels>
 
-        <config-description>
-            <parameter name="serialNumber" type="text">
-                <label>Serial Number</label>
-                <description>The Serial Number identifies one specific device.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="shuttercontact">
-	    <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
-	
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
 		<label>MAX! Shutter Contact</label>
 		<description>This is a MAX! Shutter Contact</description>
 
@@ -113,55 +109,99 @@
 			<channel id="battery_low" typeId="battery" />
 		</channels>
 
-        <config-description>
-            <parameter name="serialNumber" type="text">
-                <label>Serial Number</label>
-                <description>The Serial Number identifies one specific device.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
-	
-	<channel-type id="valve">
+
+	<channel-type id="valve" advanced="true">
 		<item-type>Number</item-type>
 		<label>Valve Position</label>
 		<description>Thermostat Valve Position</description>
+		<category>Flow</category>
+		<tags>
+			<tag>max</tag>
+		</tags>
+		<state pattern="%d %" readOnly="true">
+		</state>
 	</channel-type>
 
 	<channel-type id="battery">
 		<item-type>Switch</item-type>
 		<label>Battery Level Low</label>
 		<description>Battery charge Level</description>
+		<category>Battery</category>
+		<tags>
+			<tag>max</tag>
+		</tags>
 	</channel-type>
-	
-		<channel-type id="mode">
+
+	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
-	</channel-type>
-	
-		<channel-type id="actual_temp">
-			<item-type>Number</item-type>
-		<label>Actual Temperature</label>
-		<description>Actual measured room temperature</description>
-	</channel-type>
-	
-		<channel-type id="set_temp">
-			<item-type>Number</item-type>
-		<label>Set Temperature</label>
-		<description>Thermostat temperature setpoint</description>
+		<tags>
+			<tag>max</tag>
+			<tag>heating</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="AUTOMATIC">AUTOMATIC</option>
+				<option value="MANUAL">MANUAL</option>
+				<option value="BOOST">BOOST</option>
+				<option value="VACATION">VACATION</option>
+			</options>
+		</state>
 	</channel-type>
 
-		<channel-type id="contact_state">
+	<channel-type id="actual_temp">
+		<item-type>Number</item-type>
+		<label>Actual Temperature</label>
+		<description>Actual measured room temperature</description>
+		<category>heating</category>
+		<tags>
+			<tag>max</tag>
+			<tag>thermostat</tag>
+		</tags>
+		<state pattern="%d °C" readOnly="true">
+		</state>
+
+	</channel-type>
+
+	<channel-type id="set_temp">
+		<item-type>Number</item-type>
+		<label>Set Temperature</label>
+		<description>Thermostat temperature setpoint</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>max</tag>
+			<tag>heating</tag>
+		</tags>
+		<state min="4.5" max="30" step="0.5" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+
+	<channel-type id="contact_state">
 		<item-type>Contact</item-type>
 		<label>Contact State</label>
 		<description>Contact state information</description>
+		<category>Contact</category>
+		<tags>
+			<tag>max</tag>
+		</tags>
 	</channel-type>
-	
-		<channel-type id="eco_mode">
+
+	<channel-type id="eco_mode">
 		<item-type>Switch</item-type>
 		<label>Eco Mode</label>
 		<description>Eco Mode Activated</description>
+		<category>Switch</category>
+		<tags>
+			<tag>max</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

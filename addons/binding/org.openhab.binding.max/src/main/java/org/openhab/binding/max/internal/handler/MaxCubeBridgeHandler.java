@@ -586,15 +586,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 				String commandContent = command.toString().trim().toUpperCase();
 				S_Command cmd = null;
 				ThermostatModeType commandThermoType = null;
+				Double setTemp = Double.parseDouble(device.getTemperatureSetpoint().toString());
 				if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
 					commandThermoType = ThermostatModeType.AUTOMATIC;
-					cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType);
+					cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, 0D);
 				} else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
 					commandThermoType = ThermostatModeType.BOOST;
-					cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType);
+					cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, setTemp);
 				} else if (commandContent.contentEquals(ThermostatModeType.MANUAL.toString())) {
 					commandThermoType = ThermostatModeType.MANUAL;
-					Double setTemp = Double.parseDouble(device.getTemperatureSetpoint().toString());
 					cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, setTemp);
 					logger.debug("updates to MANUAL mode with temperature '{}'", setTemp);
 				} else {
