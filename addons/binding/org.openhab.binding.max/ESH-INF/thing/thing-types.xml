@@ -122,9 +122,6 @@
 		<label>Valve Position</label>
 		<description>Thermostat Valve Position</description>
 		<category>Flow</category>
-		<tags>
-			<tag>max</tag>
-		</tags>
 		<state pattern="%d %" readOnly="true">
 		</state>
 	</channel-type>
@@ -134,9 +131,6 @@
 		<label>Battery Level Low</label>
 		<description>Battery charge Level</description>
 		<category>Battery</category>
-		<tags>
-			<tag>max</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="mode">
@@ -144,7 +138,6 @@
 		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
 		<tags>
-			<tag>max</tag>
 			<tag>heating</tag>
 		</tags>
 		<state readOnly="false">
@@ -161,10 +154,9 @@
 		<item-type>Number</item-type>
 		<label>Actual Temperature</label>
 		<description>Actual measured room temperature</description>
-		<category>heating</category>
+		<category>Temperature</category>
 		<tags>
-			<tag>max</tag>
-			<tag>thermostat</tag>
+			<tag>heating</tag>
 		</tags>
 		<state pattern="%d °C" readOnly="true">
 		</state>
@@ -177,7 +169,6 @@
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>max</tag>
 			<tag>heating</tag>
 		</tags>
 		<state min="4.5" max="30" step="0.5" pattern="%d °C" readOnly="false">
@@ -189,9 +180,6 @@
 		<label>Contact State</label>
 		<description>Contact state information</description>
 		<category>Contact</category>
-		<tags>
-			<tag>max</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="eco_mode">
@@ -199,9 +187,6 @@
 		<label>Eco Mode</label>
 		<description>Eco Mode Activated</description>
 		<category>Switch</category>
-		<tags>
-			<tag>max</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
