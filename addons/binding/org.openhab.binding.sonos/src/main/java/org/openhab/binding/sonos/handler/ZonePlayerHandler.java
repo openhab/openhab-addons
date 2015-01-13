@@ -1232,7 +1232,7 @@ UpnpIOParticipant, DiscoveryListener {
 
 			String remotePlayerName = command.toString();
 
-			Thing coordinatorThing = thingRegistry.getByUID(new ThingUID(
+			Thing coordinatorThing = thingRegistry.get(new ThingUID(
 					ZONEPLAYER_THING_TYPE_UID, getCoordinator()));
 			ZonePlayerHandler coordinatorHandler = (ZonePlayerHandler) coordinatorThing
 					.getHandler();
@@ -1256,7 +1256,7 @@ UpnpIOParticipant, DiscoveryListener {
 	protected ZonePlayerHandler getHandlerByName(String remotePlayerName) {
 
 		if(thingRegistry!=null) {
-			Thing thing = thingRegistry.getByUID(new ThingUID(
+			Thing thing = thingRegistry.get(new ThingUID(
 					ZONEPLAYER_THING_TYPE_UID, remotePlayerName));
 	
 			if (thing == null) {
