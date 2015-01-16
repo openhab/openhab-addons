@@ -100,6 +100,18 @@ name and email address match your git configuration. The AUTHORS file is
 regenerated occasionally from the git commit history, so a mismatch may result
 in your changes being overwritten.
 
+### Merge approval
+
+openHAB maintainers use LGTM (Looks Good To Me) in comments on the code review
+to indicate acceptance.
+
+A change requires LGTMs from an absolute majority of the maintainers of each
+component affected. For example, if a change affects `docs/` and `addons/`, it
+needs an absolute majority from the maintainers of `docs/` AND, separately, an
+absolute majority of the maintainers of `addons/`.
+
+For more details see [MAINTAINERS.md](project-orga/MAINTAINERS.md)
+
 ### Sign your work
 
 The sign-off is a simple line at the end of the explanation for the
@@ -177,3 +189,29 @@ There are several exceptions to the signing requirement. Currently these are:
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!
+
+## Community Guidelines
+
+We want to keep the openHAB community awesome, growing and collaborative. We
+need your help to keep it that way. To help with this we've come up with some
+general guidelines for the community as a whole:
+
+* Be nice: Be courteous, respectful and polite to fellow community members: no
+  regional, racial, gender, or other abuse will be tolerated. We like nice people
+  way better than mean ones!
+
+* Encourage diversity and participation: Make everyone in our community
+  feel welcome, regardless of their background and the extent of their
+  contributions, and do everything possible to encourage participation in
+  our community.
+
+* Keep it legal: Basically, don't get us in trouble. Share only content that
+  you own, do not share private or sensitive information, and don't break the
+  law.
+
+* Stay on topic: Make sure that you are posting to the correct channel
+  and avoid off-topic discussions. Remember when you update an issue or
+  respond to an email you are potentially sending to a large number of
+  people.  Please consider this before you update.  Also remember that
+  nobody likes spam.
+

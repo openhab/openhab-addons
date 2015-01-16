@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.max.internal.discovery;
 
-
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -25,19 +24,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MaxDeviceDiscoveryService} class is used to discover MAX! Cube devices that  
- * are connected to the Lan gateway. 
+ * The {@link MaxDeviceDiscoveryService} class is used to discover MAX! Cube
+ * devices that are connected to the Lan gateway.
  * 
  * @author Marcel Verpaalen - Initial contribution
  */
-public class MaxDeviceDiscoveryService  extends AbstractDiscoveryService implements DeviceStatusListener {
+public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
 	private final static Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
 
 	private MaxCubeBridgeHandler maxCubeBridgeHandler;
 
-	public MaxDeviceDiscoveryService( MaxCubeBridgeHandler maxCubeBridgeHandler) {
-		super(MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10,true);
+	public MaxDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
+		super(MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10, true);
 		this.maxCubeBridgeHandler = maxCubeBridgeHandler;
 	}
 
@@ -60,47 +59,48 @@ public class MaxDeviceDiscoveryService  extends AbstractDiscoveryService impleme
 		ThingUID thingUID = null;
 		switch (device.getType()) {
 		case WallMountedThermostat:
-			thingUID = new ThingUID(MaxBinding.WALLTHERMOSTAT_THING_TYPE,bridge.getUID(),device.getSerialNumber());
+			thingUID = new ThingUID(MaxBinding.WALLTHERMOSTAT_THING_TYPE, bridge.getUID(), device.getSerialNumber());
 			break;
 		case HeatingThermostat:
-			thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTAT_THING_TYPE,bridge.getUID(),device.getSerialNumber());
+			thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTAT_THING_TYPE, bridge.getUID(), device.getSerialNumber());
 			break;
 		case HeatingThermostatPlus:
-			thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTATPLUS_THING_TYPE,bridge.getUID(),device.getSerialNumber());
+			thingUID = new ThingUID(MaxBinding.HEATINGTHERMOSTATPLUS_THING_TYPE, bridge.getUID(),
+					device.getSerialNumber());
 			break;
 		case ShutterContact:
-			thingUID = new ThingUID(MaxBinding.SHUTTERCONTACT_THING_TYPE,bridge.getUID(), device.getSerialNumber() );
+			thingUID = new ThingUID(MaxBinding.SHUTTERCONTACT_THING_TYPE, bridge.getUID(), device.getSerialNumber());
 			break;
 		case EcoSwitch:
-			thingUID = new ThingUID(MaxBinding.ECOSWITCH_THING_TYPE,bridge.getUID(), device.getSerialNumber() );
+			thingUID = new ThingUID(MaxBinding.ECOSWITCH_THING_TYPE, bridge.getUID(), device.getSerialNumber());
 			break;
 		default:
 			break;
 		}
-		if(thingUID!=null) {
+		if (thingUID != null) {
 			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-					.withProperty(MaxBinding.SERIAL_NUMBER, device.getSerialNumber())
-					.withBridge(bridge.getUID())
-					.withLabel( device.getType() + ": " + device.getName() + " (" + device.getSerialNumber() +")")
+					.withProperty(MaxBinding.SERIAL_NUMBER, device.getSerialNumber()).withBridge(bridge.getUID())
+					.withLabel(device.getType() + ": " + device.getName())
 					.build();
 			thingDiscovered(discoveryResult);
 		} else {
-			logger.debug("Discovered MAX! device is unsupported: type '{}' with id '{}'", device.getType(), device.getSerialNumber());
+			logger.debug("Discovered MAX! device is unsupported: type '{}' with id '{}'", device.getType(),
+					device.getSerialNumber());
 		}
 	}
 
 	@Override
 	protected void startScan() {
-		//this can be ignored here as we discover via the bridge
+		// this can be ignored here as we discover via the bridge
 	}
 
 	@Override
 	public void onDeviceStateChanged(ThingUID bridge, Device device) {
-		//this can be ignored here
+		// this can be ignored here
 	}
 
 	@Override
 	public void onDeviceRemoved(MaxCubeBridgeHandler bridge, Device device) {
-		//this can be ignored here
+		// this can be ignored here
 	}
 }
