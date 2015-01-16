@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="astro"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- position -->
+	<channel-group-type id="position">
+		<label>Position</label>
+		<description>The position of the planet</description>
+		<channels>
+			<channel id="azimuth" typeId="azimuth" />
+			<channel id="elevation" typeId="elevation" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="azimuth">
+		<item-type>Number</item-type>
+		<label>Azimuth</label>
+		<description>The azimuth of the planet</description>
+		<state readOnly="true" pattern="%d °" />
+	</channel-type>
+
+	<channel-type id="elevation">
+		<item-type>Number</item-type>
+		<label>Elevation</label>
+		<description>The elevation of the planet</description>
+		<state readOnly="true" pattern="%d °" />
+	</channel-type>
+
+	<!-- sun range -->
+	<channel-group-type id="sunRange">
+		<label>Range</label>
+		<description>Range for a sun event</description>
+		<channels>
+			<channel id="start" typeId="start" />
+			<channel id="end" typeId="end" />
+			<channel id="duration" typeId="duration" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="moonRange">
+		<label>Range</label>
+		<description>Range for a moon event</description>
+		<channels>
+			<channel id="start" typeId="start" />
+			<channel id="end" typeId="end" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="start">
+		<item-type>DateTime</item-type>
+		<label>Start time</label>
+		<description>The start time of the event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="end">
+		<item-type>DateTime</item-type>
+		<label>End time</label>
+		<description>The end time of the event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number</item-type>
+		<label>Duration</label>
+		<description>The duration time in minutes of the event</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- sunZodiac -->
+	<channel-group-type id="sunZodiac">
+		<label>Zodiac</label>
+		<description>The Zodiac of the sun</description>
+		<channels>
+			<channel id="start" typeId="start" />
+			<channel id="end" typeId="end" />
+			<channel id="sign" typeId="sign" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sign">
+		<item-type>String</item-type>
+		<label>Sign</label>
+		<description>The sign of the zodiac</description>
+		<state readOnly="true">
+			<options>
+				<option value="ARIES">Aries</option>
+				<option value="TAURUS">Taurus</option>
+				<option value="GEMINI">Gemini</option>
+				<option value="CANCER">Cancer</option>
+				<option value="LEO">Leo</option>
+				<option value="VIRGO">Virgo</option>
+				<option value="LIBRA">Libra</option>
+				<option value="SCORPIO">Scorpio</option>
+				<option value="SAGITTARIUS">Sagittarius</option>
+				<option value="CAPRICORN">Capricorn</option>
+				<option value="AQUARIUS">Aquarius</option>
+				<option value="PISCES">Pisces</option>
+			</options>
+ 		</state>
+	</channel-type>
+
+	<!-- season -->
+	<channel-group-type id="season">
+		<label>Season</label>
+		<description>The seasons this year</description>
+		<channels>
+			<channel id="name" typeId="seasonName" />
+			<channel id="spring" typeId="spring" />
+			<channel id="summer" typeId="summer" />
+			<channel id="autumn" typeId="autumn" />
+			<channel id="winter" typeId="winter" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="seasonName">
+		<item-type>String</item-type>
+		<label>Season name</label>
+		<description>The name of the current season</description>
+		<state readOnly="true">
+			<options>
+				<option value="SPRING">Spring</option>
+				<option value="SUMMER">Summer</option>
+				<option value="AUTUMN">Autumn</option>
+				<option value="WINTER">Winter</option>
+        	</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="spring">
+		<item-type>DateTime</item-type>
+		<label>Spring</label>
+		<description>The beginning of spring</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="summer">
+		<item-type>DateTime</item-type>
+		<label>Summer</label>
+		<description>The beginning of summer</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="autumn">
+		<item-type>DateTime</item-type>
+		<label>Autumn</label>
+		<description>The beginning of autumn</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="winter">
+		<item-type>DateTime</item-type>
+		<label>Winter</label>
+		<description>The beginning of winter</description>
+		<state readOnly="true" />
+	</channel-type>
+
+
+	<!-- sun eclipse -->
+	<channel-group-type id="sunEclipse">
+		<label>Eclipses</label>
+		<description>The DateTime of the next sun eclipses</description>
+		<channels>
+			<channel id="total" typeId="total" />
+			<channel id="partial" typeId="partial" />
+			<channel id="ring" typeId="ring" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-type id="total">
+		<item-type>DateTime</item-type>
+		<label>Total eclipse</label>
+		<description>The DateTime of the next total eclipse</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="partial">
+		<item-type>DateTime</item-type>
+		<label>Partial eclipse</label>
+		<description>The DateTime of the next partial eclipse</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ring">
+		<item-type>DateTime</item-type>
+		<label>Ring eclipse</label>
+		<description>The DateTime of the next ring eclipse</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<!-- moonphase -->
+	<channel-group-type id="moonPhase">
+		<label>Moonphases</label>
+		<description>Moonphases</description>
+		<channels>
+			<channel id="firstQuarter" typeId="firstQuarter" />
+			<channel id="thirdQuarter" typeId="thirdQuarter" />
+			<channel id="full" typeId="fullMoon" />
+			<channel id="new" typeId="newMoon" />
+			<channel id="age" typeId="age" />
+			<channel id="illumination" typeId="illumination" />
+			<channel id="name" typeId="phaseName" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="firstQuarter">
+		<item-type>DateTime</item-type>
+		<label>First quarter</label>
+		<description>The DateTime the moon is in the first quarter</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thirdQuarter">
+		<item-type>DateTime</item-type>
+		<label>Third quarter</label>
+		<description>The DateTime the moon is in the third quarter</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="fullMoon">
+		<item-type>DateTime</item-type>
+		<label>New moon</label>
+		<description>The DateTime for full moon</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="newMoon">
+		<item-type>DateTime</item-type>
+		<label>New moon</label>
+		<description>The DateTime for new moon</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="age">
+		<item-type>Number</item-type>
+		<label>Moon age</label>
+		<description>The age of the moon in days</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="illumination">
+		<item-type>Number</item-type>
+		<label>Moon illumination</label>
+		<description>The illumination of the moon in %</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="phaseName">
+		<item-type>String</item-type>
+		<label>Moonphase name</label>
+		<description>The name of the current moon phase</description>
+		<state readOnly="true">
+			<options>
+				<option value="NEW">New moon</option>
+				<option value="WAXING_CRESCENT">Waxing crescent</option>
+				<option value="FIRST_QUARTER">First quarter</option>
+				<option value="WAXING_GIBBOUS">Waxing gibbous</option>
+				<option value="FULL">Full moon</option>
+				<option value="WANING_GIBBOUS">Wanning gibbous</option>
+				<option value="THIRD_QUARTER">Third quarter</option>
+				<option value="WANING_CRESCENT">Waning crescent</option>
+        	</options>
+ 		</state>
+	</channel-type>
+
+	<!-- moon eclipse -->
+	<channel-group-type id="moonEclipse">
+		<label>Eclipses</label>
+		<description>The DateTime of the next moon eclipses</description>
+		<channels>
+			<channel id="total" typeId="total" />
+			<channel id="partial" typeId="partial" />
+		</channels>
+	</channel-group-type>
+
+	<!-- distance -->
+	<channel-group-type id="distance">
+		<label>Distance</label>
+		<description>Distance data</description>
+		<channels>
+			<channel id="date" typeId="distanceDate" />
+			<channel id="miles" typeId="miles" />
+			<channel id="kilometer" typeId="kilometer" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="distanceDate">
+		<item-type>DateTime</item-type>
+		<label>Date</label>
+		<description>The DateTime when the distance is reached</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="miles">
+		<item-type>Number</item-type>
+		<label>Miles</label>
+		<description>The distance in miles</description>
+		<state readOnly="true" pattern="%d miles" />
+	</channel-type>
+
+	<channel-type id="kilometer">
+		<item-type>Number</item-type>
+		<label>Kilometer</label>
+		<description>The distance in kilometers</description>
+		<state readOnly="true" pattern="%d km"/>
+	</channel-type>
+
+	<!-- moonZodiac -->
+	<channel-group-type id="moonZodiac">
+		<label>Zodiac</label>
+		<description>The Zodiac of the moon</description>
+		<channels>
+			<channel id="sign" typeId="sign" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

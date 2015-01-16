@@ -95,6 +95,11 @@
             <artifactId>org.openhab.ui.paperui</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.astro</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 	<repositories>

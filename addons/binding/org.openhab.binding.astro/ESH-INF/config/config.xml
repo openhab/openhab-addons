@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+  <config-description uri="thing-type:astro:config">
+	<parameter name="geolocation" type="text" required="true">
+	    <label>GeoLocation</label>
+	    <description>The latitude and longitude separated with a comma (xx.xxxxxx,xx.xxxxxx)</description>
+	</parameter>
+	<parameter name="interval" type="integer" min="1" max="86400">
+	    <label>interval</label>
+	    <description>Refresh interval for positional data calculation in seconds.</description>
+	    <default>300</default>
+	</parameter>
+  </config-description>
+
+</config-description:config-descriptions>
