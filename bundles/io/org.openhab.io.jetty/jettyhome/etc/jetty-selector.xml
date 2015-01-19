@@ -22,7 +22,7 @@
               </Array>
              </Arg>
             <Set name="host"><Property name="jetty.host" /></Set>
-            <Set name="port"><Property name="jetty.port" default="8080"/></Set>
+            <Set name="port"><Property name="org.osgi.service.http.port" default="8080"/></Set>
             <Set name="idleTimeout">300000</Set>
           </New>
       </Arg>

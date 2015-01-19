@@ -39,7 +39,7 @@
             </Array>
           </Arg>
           <Set name="host"><Property name="jetty.host" /></Set>
-          <Set name="port"><Property name="https.port" default="8443" /></Set>
+          <Set name="port"><Property name="org.osgi.service.http.port.secure" default="8443" /></Set>
           <Set name="idleTimeout"><Property name="https.timeout" default="30000"/></Set>
           <Set name="soLingerTime"><Property name="https.soLingerTime" default="-1"/></Set>
         </New>
