@@ -48,14 +48,13 @@ public class DefaultSitemapProvider implements SitemapProvider {
 			sitemap.getChildren().add(frame);
 
 			for(Item item : itemRegistry.getAll()) {
-				if(item instanceof GroupItem && !item.getName().equals("Things") 
-						&& (item.getGroupNames().isEmpty() || item.getGroupNames().contains("Things"))) {
+				if(item instanceof GroupItem && !item.getTags().contains("home-group")) {
 					GroupImpl group = (GroupImpl) SitemapFactory.eINSTANCE.createGroup();
 					group.setItem(item.getName());
+					group.setLabel(item.getLabel());
 					frame.getChildren().add(group);
 				}
 			}
-						
 			return sitemap;
 		}
 		return null;

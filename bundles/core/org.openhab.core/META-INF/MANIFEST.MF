@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
-Service-Component: OSGI-INF/autoapprove.xml,OSGI-INF/thingitemprovider.xml,
- OSGI-INF/thinglinkprovider.xml,OSGI-INF/defaultsitemapprovider.xml
+Service-Component: OSGI-INF/*.xml
 Private-Package: org.openhab.core.internal,org.openhab.core.internal.e
  vents,org.openhab.core.internal.items
 Ignore-Package: org.openhab.core.internal.items,org.openhab.core.inter

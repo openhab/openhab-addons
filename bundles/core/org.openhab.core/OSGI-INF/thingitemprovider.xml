@@ -10,14 +10,10 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" deactivate="deactivate" immediate="false" name="org.openhab.thingitemprovider">
-   <implementation class="org.openhab.core.internal.item.ThingItemUIProvider"/>
-   <reference bind="setThingRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.ThingRegistry" name="ThingRegistry" policy="static" unbind="unsetThingRegistry"/>
-   <reference bind="setItemFactory" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemFactory" name="ItemFactory" policy="static" unbind="unsetItemFactory"/>
+   <implementation class="org.openhab.core.internal.item.ThingItemProvider"/>
    <service>
       <provide interface="org.eclipse.smarthome.core.items.ItemProvider"/>
-      <provide interface="org.eclipse.smarthome.ui.items.ItemUIProvider"/>
-      <provide interface="org.openhab.core.internal.item.ThingItemUIProvider"/>
    </service>
-   <reference bind="setThingTypeRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.thing.type.ThingTypeRegistry" name="ThingTypeRegistry" policy="static" unbind="unsetThingTypeRegistry"/>
+   <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static" unbind="unsetItemRegistry"/>
    <reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="dynamic" unbind="unsetEventPublisher"/>
 </scr:component>
