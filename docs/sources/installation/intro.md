@@ -8,7 +8,7 @@ The general [setup process](runtime.md) is fairly similar to openHAB 1, you will
 There are a few changes in openHAB 2 that should be highlighted though:
  - there is a new dashboard, which welcomes you at http://localhost:8080 (assuming openHAB is running on your local machine) and provides you links to the different UIs
  - there is an early prototype of a new HTML5-based UI that allows to configure and operate the system.
- - the Classic UI URL has changed from `/openhab.app` to `/classicui`.
+ - the Classic UI URL has changed from `/openhab.app` to `/classicui`, so you can access your sitemaps at `http://<server>:8080/classicui?sitemap=<yoursitemap>`
  - a new default sitemap provider is in place, which provides a dynamic sitemap with the name `default`, which lists all group items that are not contained within any other group.
  - the `configuration` folder has been renamed to `conf`
  - instead of the global `configuration/openhab.cfg` file, there is now an individual file per add-on in `conf/services`
