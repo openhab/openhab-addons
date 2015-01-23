@@ -18,6 +18,7 @@
   <modules>
 	<module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.max</module>
+    <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.networkhealth</module>
   </modules>
 
