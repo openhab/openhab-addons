@@ -94,7 +94,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Withings |  |  |  |  |  |
 | XBMC |  |  |  |  |  |
 | xPL |  |  |  |  |  |
-| Z-Wave |  |  |  |  |  |
+| Z-Wave | X  | X | X | X |  |
 
 ## Persistence Services
 
