@@ -19,7 +19,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | CUPS |  |  |  |  |  |
 | Davis |  |  |  |  |  |
 | digitalSTROM |  |  |  |  |  |
-| DSC Alarm |  |  |  |  |  |
+| DSC Alarm | X | X | X | X |  |
 | DMX512 |  |  |  |  |  |
 | EDS OWSever |  |  |  |  |  |
 | Energenie |  |  |  |  |  |
