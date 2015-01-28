@@ -5,7 +5,7 @@
 		 <groupId>org.openhab.binding</groupId>
 	<artifactId>org.openhab.binding.max.test</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
-	<name>openHAB MAX! Binding Tests</name>
+	<name>MAX! Binding Tests</name>
 
 	<parent>
 		 <groupId>org.openhab.binding</groupId>

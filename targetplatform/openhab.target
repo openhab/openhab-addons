@@ -88,7 +88,6 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.1.xx-201411061335-e44-RELEASE"/>
-<unit id="org.codehaus.groovy.eclipse.feature.feature.group" version="2.9.1.xx-201411061335-e44-RELEASE"/>
 <repository location="http://dist.springsource.org/release/GRECLIPSE/e4.4/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -136,17 +135,12 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
-<unit id="org.eclipse.jdt.feature.group" version="3.10.0.v20140606-1536"/>
 <repository location="http://download.eclipse.org/releases/luna/201406250900/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
 <unit id="org.eclipse.xtext.sdk.feature.group" version="2.6.2.v201407030533"/>
 <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201407030533"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.mwe2.runtime.sdk.feature.group" version="2.6.1.v201406110919"/>
-<repository location="http://download.eclipse.org/modeling/emft/mwe/updates/releases/R201406110919/mwe"/>
 </location>
 </locations>
 </target>
