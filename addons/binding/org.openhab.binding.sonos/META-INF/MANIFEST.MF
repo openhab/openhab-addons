@@ -22,7 +22,9 @@ Import-Package: com.google.common.collect,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.osgi.service.component,
- org.slf4j
+ org.slf4j,
+ org.xml.sax,
+ org.xml.sax.helpers
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.sonos,
  org.openhab.binding.sonos.handler
