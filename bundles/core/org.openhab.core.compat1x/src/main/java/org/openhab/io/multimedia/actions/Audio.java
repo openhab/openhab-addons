@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class Audio {
 
+	private static final String RUNTIME_DIR ="runtime";
 	private static final String SOUND_DIR = "sounds";
 	private static final Logger logger = LoggerFactory.getLogger(Audio.class);
 	
@@ -65,7 +66,7 @@ public class Audio {
 	static public void playSound(
 			@ParamDoc(name="filename", text="the filename with extension") String filename) {
 		try {
-			InputStream is = new FileInputStream(SOUND_DIR + File.separator + filename);
+			InputStream is = new FileInputStream(RUNTIME_DIR + File.separator + SOUND_DIR + File.separator + filename);
 			if (filename.toLowerCase().endsWith(".mp3")) {
 				Player player = new Player(is);
 				playInThread(player);
