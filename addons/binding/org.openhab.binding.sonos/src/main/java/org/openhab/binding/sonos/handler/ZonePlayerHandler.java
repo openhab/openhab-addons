@@ -142,7 +142,7 @@ UpnpIOParticipant, DiscoveryListener {
 			pollingJob.cancel(true);
 			pollingJob = null;
 		}
-		
+
 		if (getThing().getStatus() == ThingStatus.ONLINE) {
 			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
 					.getUID());
@@ -882,6 +882,9 @@ UpnpIOParticipant, DiscoveryListener {
 			savedState = new SonosZonePlayerState();
 			String currentURI = getCurrentURI();
 
+			savedState.transportState = getTransportState();
+			savedState.volume = getVolume();
+
 			if (currentURI != null) {
 
 				if (currentURI.contains("x-sonosapi-stream:")) {
@@ -971,8 +974,6 @@ UpnpIOParticipant, DiscoveryListener {
 					}
 				}
 
-				savedState.transportState = getTransportState();
-				savedState.volume = getVolume();
 				savedState.relTime = getPosition();
 			} else {
 				savedState.entry = null;
@@ -990,7 +991,9 @@ UpnpIOParticipant, DiscoveryListener {
 		synchronized (this) {
 			if (savedState != null) {
 				// put settings back
-				setVolume(DecimalType.valueOf(savedState.volume));
+				if(savedState.volume != null) {
+					setVolume(DecimalType.valueOf(savedState.volume));
+				}
 
 				if (isCoordinator()) {
 					if (savedState.entry != null) {
@@ -1013,7 +1016,9 @@ UpnpIOParticipant, DiscoveryListener {
 							setCurrentURI(savedState.entry);
 							setPosition(savedState.relTime);
 						}
+					}
 
+					if(savedState.transportState != null) {
 						if (savedState.transportState.equals("PLAYING")) {
 							play();
 						} else if (savedState.transportState.equals("STOPPED")) {
@@ -1263,7 +1268,7 @@ UpnpIOParticipant, DiscoveryListener {
 		if(thingRegistry!=null) {
 			Thing thing = thingRegistry.get(new ThingUID(
 					ZONEPLAYER_THING_TYPE_UID, remotePlayerName));
-	
+
 			if (thing == null) {
 				Collection<Thing> allThings = thingRegistry.getAll();
 				for (Thing aThing : allThings) {
