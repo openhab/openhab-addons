@@ -101,7 +101,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Persistence Service | 2.0 alpha + 1.6.0 | 2.0 alpha + 1.7.0-SNAPSHOT | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
 |-------|:------------------:|:---------------------------:|:----------------------:|:-------------------------------:|---|
 | db4o |  |  |  |  |  |
-| rrd4j | X | X | X | X | only persistence, no rrd4j charts supported |
+| rrd4j | - | X | X | X | only persistence, no rrd4j charts supported |
 | MySQL |  |  |  |  |  |
 | MongoDB |  |  |  |  |  |
 | Sen.Se |  |  |  |  |  |
