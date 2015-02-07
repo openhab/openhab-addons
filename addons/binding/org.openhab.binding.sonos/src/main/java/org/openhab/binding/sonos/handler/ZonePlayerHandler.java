@@ -1241,25 +1241,25 @@ UpnpIOParticipant, DiscoveryListener {
 		if (command != null && command instanceof StringType) {
 
 			String remotePlayerName = command.toString();
-
-			Thing coordinatorThing = thingRegistry.get(new ThingUID(
-					ZONEPLAYER_THING_TYPE_UID, getCoordinator()));
-			ZonePlayerHandler coordinatorHandler = (ZonePlayerHandler) coordinatorThing
-					.getHandler();
+			String coordinatorUDN = getCoordinator();
+			ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinatorUDN);
 			ZonePlayerHandler remoteHandler = getHandlerByName(remotePlayerName);
 
-			// stop whatever is currently playing
-			coordinatorHandler.stop();
+			if(coordinatorHandler!=null && remoteHandler!=null) {
 
-			// set the URI
-			coordinatorHandler.setCurrentURI("x-rincon-stream:"
-					+ remoteHandler.getConfig().get(UDN), "");
+				// stop whatever is currently playing
+				coordinatorHandler.stop();
 
-			// take the system off mute
-			coordinatorHandler.setMute(OnOffType.OFF);
+				// set the URI
+				coordinatorHandler.setCurrentURI("x-rincon-stream:"
+						+ remoteHandler.getConfig().get(UDN), "");
 
-			// start jammin'
-			coordinatorHandler.play();
+				// take the system off mute
+				coordinatorHandler.setMute(OnOffType.OFF);
+
+				// start jammin'
+				coordinatorHandler.play();
+			}
 		}
 	}
 
