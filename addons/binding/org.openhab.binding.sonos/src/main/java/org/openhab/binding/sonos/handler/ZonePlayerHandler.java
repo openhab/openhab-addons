@@ -1241,11 +1241,8 @@ UpnpIOParticipant, DiscoveryListener {
 		if (command != null && command instanceof StringType) {
 
 			String remotePlayerName = command.toString();
-
-			Thing coordinatorThing = thingRegistry.get(new ThingUID(
-					ZONEPLAYER_THING_TYPE_UID, getCoordinator()));
-			ZonePlayerHandler coordinatorHandler = (ZonePlayerHandler) coordinatorThing
-					.getHandler();
+			String coordinatorUDN = getCoordinator();
+			ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinatorUDN);
 			ZonePlayerHandler remoteHandler = getHandlerByName(remotePlayerName);
 
 			// stop whatever is currently playing
