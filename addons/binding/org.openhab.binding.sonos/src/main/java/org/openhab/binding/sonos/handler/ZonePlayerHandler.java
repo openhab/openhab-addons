@@ -1245,18 +1245,21 @@ UpnpIOParticipant, DiscoveryListener {
 			ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinatorUDN);
 			ZonePlayerHandler remoteHandler = getHandlerByName(remotePlayerName);
 
-			// stop whatever is currently playing
-			coordinatorHandler.stop();
+			if(coordinatorHandler!=null && remoteHandler!=null) {
 
-			// set the URI
-			coordinatorHandler.setCurrentURI("x-rincon-stream:"
-					+ remoteHandler.getConfig().get(UDN), "");
+				// stop whatever is currently playing
+				coordinatorHandler.stop();
 
-			// take the system off mute
-			coordinatorHandler.setMute(OnOffType.OFF);
+				// set the URI
+				coordinatorHandler.setCurrentURI("x-rincon-stream:"
+						+ remoteHandler.getConfig().get(UDN), "");
 
-			// start jammin'
-			coordinatorHandler.play();
+				// take the system off mute
+				coordinatorHandler.setMute(OnOffType.OFF);
+
+				// start jammin'
+				coordinatorHandler.play();
+			}
 		}
 	}
 
