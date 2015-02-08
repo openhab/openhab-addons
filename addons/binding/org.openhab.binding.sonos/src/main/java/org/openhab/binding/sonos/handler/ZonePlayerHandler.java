@@ -643,7 +643,7 @@ UpnpIOParticipant, DiscoveryListener {
 						List<String> fields = SonosXMLParser
 								.getRadioTimeFromXML(response);
 
-						if (fields != null) {
+						if (fields != null && fields.size() > 0) {
 
 							resultString = new String();
 							// radio name should be first field
