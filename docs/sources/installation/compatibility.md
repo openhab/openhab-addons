@@ -25,7 +25,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Energenie |  |  |  |  |  |
 | EnOcean |  |  |  |  |  |
 | Epson Projector |  |  |  |  |  |
-| Exec |  |  | X |  |  |
+| Exec | X | X | X | X |  |
 | Freebox |  |  |  |  |  |
 | Freeswitch | - | - | X | X |  |
 | Fritz!Box |  |  |  |  |  |
