@@ -20,7 +20,7 @@
    </description>
 
    <copyright>
-      Copyright (c) 2010-2014, openHAB.org &lt;admin@openhab.org&gt;
+      Copyright (c) 2010-2015, openHAB.org &lt;admin@openhab.org&gt;
    </copyright>
 
    <license url="%licenseURL">
@@ -526,7 +526,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.smarthome.io.mdns"
+         id="org.eclipse.smarthome.io.transport.mdns"
          download-size="0"
          install-size="0"
          version="0.0.0"
