@@ -600,7 +600,7 @@ UpnpIOParticipant, DiscoveryListener {
 
 		if (currentTrack != null) {
 
-			String artist = "";
+			String artist = null;
 			if (currentTrack.getAlbumArtist().equals("")) {
 				artist = currentTrack.getCreator();
 			} else {
@@ -608,7 +608,7 @@ UpnpIOParticipant, DiscoveryListener {
 			}
 
 			String album = currentTrack.getAlbum();
-			String title = "";
+			String title = null;
 			if(!currentTrack.getTitle().contains("x-sonosapi-stream")) {
 				title = currentTrack.getTitle();
 			}
@@ -616,8 +616,10 @@ UpnpIOParticipant, DiscoveryListener {
 			// update individual variables
 			this.onValueReceived("CurrentArtist", (artist != null) ? artist
 					: "", "AVTransport");
-			this.onValueReceived("CurrentTitle", (title != null) ? title : "",
-					"AVTransport");
+			if(title!=null) {
+				this.onValueReceived("CurrentTitle", (title != null) ? title : "",
+						"AVTransport");
+			}
 			this.onValueReceived("CurrentAlbum", (album != null) ? album : "",
 					"AVTransport");
 
@@ -635,7 +637,7 @@ UpnpIOParticipant, DiscoveryListener {
 		String coordinator = getCoordinator();
 		ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinator);
 
-		if (coordinatorHandler != null) {
+		if (coordinatorHandler != null && coordinatorHandler != this) {
 			if(getCurrentURI().contains("x-rincon")) {
 				coordinatorHandler.updateMediaInfo();
 			}
