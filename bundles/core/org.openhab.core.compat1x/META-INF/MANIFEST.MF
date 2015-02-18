@@ -9,6 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.google.common.base,
  javax.servlet,
  javax.servlet.http,
+ javax.sound.sampled,
  org.apache.commons.collections,
  org.apache.commons.exec;version="1.1.0",
  org.apache.commons.httpclient;version="3.1.0",
