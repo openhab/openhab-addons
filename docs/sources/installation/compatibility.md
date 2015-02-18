@@ -110,7 +110,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Exec |  |  |  |  |  |
 | MQTT |  |  |  |  |  |
 | InfluxDB |  |  |  |  |  |
-| JPA | X |  | X |  |  |
+| JPA | X | X | X | X |  |
 
 ## Actions
 
