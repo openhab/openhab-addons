@@ -9,7 +9,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" deactivate="deactivate" immediate="false" name="org.openhab.thingitemprovider">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" immediate="false" name="org.openhab.thingitemprovider">
    <implementation class="org.openhab.core.internal.item.ThingItemProvider"/>
    <service>
       <provide interface="org.eclipse.smarthome.core.items.ItemProvider"/>
