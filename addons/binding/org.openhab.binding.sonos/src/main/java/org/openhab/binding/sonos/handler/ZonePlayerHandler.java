@@ -236,6 +236,9 @@ UpnpIOParticipant, DiscoveryListener {
 		case PLAYQUEUE:
 			playQueue(command);
 			break;		
+		case PLAYTRACK:
+			playTrack(command);
+			break;	
 		case PLAYURI:
 			playURI(command);
 			break;
@@ -656,7 +659,7 @@ UpnpIOParticipant, DiscoveryListener {
 			//			currentURI = getCurrentURI();
 			currentTrack = getTrackMetadata();
 		}
-		
+
 		if (currentURI != null) {
 			String title = stateMap.get("CurrentTitle");
 			String resultString = stateMap.get("CurrentURIFormatted");
@@ -1207,6 +1210,10 @@ UpnpIOParticipant, DiscoveryListener {
 	public void setPositionTrack(long tracknr) {
 		seek("TRACK_NR", Long.toString(tracknr));
 	}
+	
+	public void setPositionTrack(String tracknr) {
+		seek("TRACK_NR", tracknr);		
+	}
 
 	protected void seek(String unit, String target) {
 		if (unit != null && target != null) {
@@ -1641,7 +1648,7 @@ UpnpIOParticipant, DiscoveryListener {
 		}
 
 	}
-	
+
 	public void playQueue(Command command) {
 		ZonePlayerHandler coordinator = getHandlerByName(getCoordinator());
 
@@ -1735,6 +1742,25 @@ UpnpIOParticipant, DiscoveryListener {
 				coordinator.setCurrentURI(theEntry);
 				coordinator.play();
 			}
+		}
+
+	}
+
+	public void playTrack(Command command) {
+
+		if(command != null && command instanceof DecimalType) {
+			ZonePlayerHandler coordinator = getHandlerByName(getCoordinator());
+
+			String trackNumber = command.toString();
+
+			// seek the track - warning, we do not check if the tracknumber falls in the boundary of the queue
+			setPositionTrack(trackNumber);
+
+			// take the system off mute
+			coordinator.setMute(OnOffType.OFF);
+
+			// start jammin'
+			coordinator.play();
 		}
 
 	}
