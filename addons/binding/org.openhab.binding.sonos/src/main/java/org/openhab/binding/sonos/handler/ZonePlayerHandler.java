@@ -456,7 +456,7 @@ UpnpIOParticipant, DiscoveryListener {
 			break;
 		}
 		case "CurrentURI": {
-			updateCurrentURIFormatted();
+			updateCurrentURIFormatted(value);
 			break;
 		}
 		}
@@ -596,7 +596,14 @@ UpnpIOParticipant, DiscoveryListener {
 
 	protected void updateTrackMetaData() {
 
+		String coordinator = getCoordinator();
+		ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinator);
 		SonosMetaData currentTrack = getTrackMetadata();
+
+		if (coordinatorHandler != null && coordinatorHandler != this) {
+			coordinatorHandler.updateMediaInfo();
+			currentTrack = coordinatorHandler.getTrackMetadata();
+		} 
 
 		if (currentTrack != null) {
 
@@ -623,38 +630,36 @@ UpnpIOParticipant, DiscoveryListener {
 			this.onValueReceived("CurrentAlbum", (album != null) ? album : "",
 					"AVTransport");
 
-			if(currentTrack.getTitle().contains("x-sonosapi-stream")) {
-				updateMediaInfo();
-			}
+			updateMediaInfo();
+
 		}
 
 	}
 
-	protected void updateCurrentURIFormatted() {
+	protected void updateCurrentURIFormatted(String URI) {
 
-		String currentURI = null;
+		String currentURI = URI;
 		SonosMetaData currentTrack = null;
 		String coordinator = getCoordinator();
 		ZonePlayerHandler coordinatorHandler = getHandlerByName(coordinator);
 
 		if (coordinatorHandler != null && coordinatorHandler != this) {
-			if(getCurrentURI().contains("x-rincon")) {
+			if(currentURI.contains("x-rincon-stream")) {
 				coordinatorHandler.updateMediaInfo();
 			}
 			currentURI = coordinatorHandler.getCurrentURI();
 			currentTrack = coordinatorHandler.getTrackMetadata();
 		} else {
-			currentURI = getCurrentURI();
+			//			currentURI = getCurrentURI();
 			currentTrack = getTrackMetadata();
 		}
-
+		
 		if (currentURI != null) {
 			String title = stateMap.get("CurrentTitle");
 			String resultString = stateMap.get("CurrentURIFormatted");
 			boolean needsUpdating = false;
 
 			if (opmlPartnerID != null && currentURI.contains("x-sonosapi-stream")) {
-
 				String stationID = StringUtils.substringBetween(currentURI,
 						":s", "?sid");
 				String previousStationID = stateMap.get("StationID");
@@ -706,9 +711,18 @@ UpnpIOParticipant, DiscoveryListener {
 						}
 					}
 				}
-			} else {
+			} 
 
-				if (currentTrack != null && !currentTrack.getTitle().contains("x-sonosapi-stream")) {
+			if(currentURI.contains("x-rincon-stream")) {
+				if(currentTrack != null) {
+					resultString = stateMap.get("CurrentTitle");
+					needsUpdating = true;
+				}
+			}
+
+
+			if (!currentURI.contains("x-rincon-mp3") && !currentURI.contains("x-rincon-stream") && !currentURI.contains("x-sonosapi")) {
+				if(currentTrack != null) {
 					if (currentTrack.getAlbumArtist().equals("")) {
 						resultString = currentTrack.getCreator() + " - "
 								+ currentTrack.getAlbum() + " - "
@@ -722,6 +736,7 @@ UpnpIOParticipant, DiscoveryListener {
 					needsUpdating = true;
 				}
 			}
+
 
 			if(needsUpdating) {
 				this.onValueReceived("CurrentURIFormatted", (resultString != null) ? resultString : "",
@@ -1776,7 +1791,7 @@ UpnpIOParticipant, DiscoveryListener {
 	}
 
 	public String getCurrentURIFormatted() {
-		updateCurrentURIFormatted();
+		updateCurrentURIFormatted(getCurrentURI());
 		return stateMap.get("CurrentURIFormatted");
 	}
 
