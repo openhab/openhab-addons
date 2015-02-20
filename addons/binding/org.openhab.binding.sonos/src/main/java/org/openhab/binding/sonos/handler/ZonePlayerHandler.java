@@ -233,6 +233,9 @@ UpnpIOParticipant, DiscoveryListener {
 		case PLAYLIST:
 			playPlayList(command);
 			break;
+		case PLAYQUEUE:
+			playQueue(command);
+			break;		
 		case PLAYURI:
 			playURI(command);
 			break;
@@ -1637,6 +1640,19 @@ UpnpIOParticipant, DiscoveryListener {
 			coordinator.play();
 		}
 
+	}
+	
+	public void playQueue(Command command) {
+		ZonePlayerHandler coordinator = getHandlerByName(getCoordinator());
+
+		// set the current playlist to our new queue
+		coordinator.setCurrentURI("x-rincon-queue:" + getUDN() + "#0", "");
+
+		// take the system off mute
+		coordinator.setMute(OnOffType.OFF);
+
+		// start jammin'
+		coordinator.play();
 	}
 
 	public void setLed(Command command) {
