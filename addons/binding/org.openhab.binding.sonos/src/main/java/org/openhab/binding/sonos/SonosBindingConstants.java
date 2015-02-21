@@ -39,6 +39,8 @@ public class SonosBindingConstants {
     public final static String MUTE = "mute";
     public final static String PLAYLINEIN = "playlinein";
     public final static String PLAYLIST = "playlist";
+    public final static String PLAYQUEUE = "playqueue";
+    public final static String PLAYTRACK = "playtrack";
     public final static String PLAYURI = "playuri";
     public final static String PUBLICADDRESS = "publicaddress";
     public final static String RADIO = "radio";

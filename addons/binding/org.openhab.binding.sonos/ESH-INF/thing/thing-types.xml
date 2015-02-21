@@ -25,6 +25,8 @@
 			<channel id="mute" typeId="mute" />
 			<channel id="playlinein" typeId="playlinein" />
 			<channel id="playlist" typeId="playlist" />
+			<channel id="playqueue" typeId="playqueue" />			
+			<channel id="playtrack" typeId="playtrack" />			
 			<channel id="playuri" typeId="playuri" />
 			<channel id="publicaddress" typeId="publicaddress" />
 			<channel id="radio" typeId="radio" />
@@ -150,6 +152,18 @@
 		<description>Play the given playlist. The playlist has to predefined in the Sonos Controller app</description>
 	</channel-type>
 
+	<channel-type id="playqueue" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Play Queue</label>
+		<description>Play the songs from the current queue</description>
+	</channel-type>
+
+	<channel-type id="playtrack" advanced="true">
+		<item-type>Number</item-type>
+		<label>Play Track</label>
+		<description>Play the given track number from the current queue</description>
+	</channel-type>	
+	
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>
