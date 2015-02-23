@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="blind1">
+        <label>RFXCOM Blind1 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="shutter" typeId="shutter-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="curtain1">
+        <label>RFXCOM Curtain1 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="shutter" typeId="shutter-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="energy">
+        <label>RFXCOM Energy thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="instanPower" typeId="instantpower-channel"/>
+            <channel id="totalUsage" typeId="totalusage-channel"/>
+            <channel id="instantAmp" typeId="instantamp-channel"/>
+            <channel id="totalAmpHours" typeId="totalamphours-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="humidity">
+        <label>RFXCOM Humidity thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="humidity" typeId="humidity-channel"/>
+            <channel id="humidityStatus" typeId="humiditystatus-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="lighting1">
+        <label>RFXCOM Lighting1 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="lighting2">
+        <label>RFXCOM Lighting2 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="dimmingLevel" typeId="dimminglevel-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="lighting4">
+        <label>RFXCOM Lighting4 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="lighting5">
+        <label>RFXCOM Lighting5 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="dimmingLevel" typeId="dimminglevel-channel"/>
+            <channel id="mood" typeId="mood-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="lighting6">
+        <label>RFXCOM Lighting5 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="rain">
+        <label>RFXCOM Rain thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="rainRate" typeId="rainrate-channel"/>
+            <channel id="rainTotal" typeId="raintotal-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="rfy">
+        <label>RFXCOM Rfy thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="command" typeId="command-channel"/>
+            <channel id="shutter" typeId="shutter-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="security1">
+        <label>RFXCOM Security1 thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="status" typeId="status-channel"/>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="motion" typeId="motion-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="temperaturehumidity">
+        <label>RFXCOM Temperature-Humidity thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature-channel"/>
+            <channel id="humidity" typeId="humidity-channel"/>
+            <channel id="humidityStatus" typeId="humiditystatus-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="temperature">
+        <label>RFXCOM Temperature thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="thermostat1">
+        <label>RFXCOM Temperature thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="setpoint" typeId="setpoint-channel"/>
+            <channel id="temperature" typeId="temperature-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="wind">
+        <label>RFXCOM Wind thing</label>
+        <description></description>
+
+        <channels>
+            <channel id="windSpeed" typeId="windspeed-channel"/>
+            <channel id="windDirection" typeId="winddirection-channel"/>
+            <channel id="signalLevel" typeId="signallevel-channel"/>
+            <channel id="batteryLevel" typeId="batterylevel-channel"/>
+        </channels>
+    </thing-type>
+
+    <channel-type id="command-channel">
+        <item-type>Switch</item-type>
+        <label>Command Channel</label>
+        <description></description>
+    </channel-type>
+
+    <channel-type id="contact-channel">
+        <item-type>Contact</item-type>
+        <label>Contact Channel</label>
+        <description></description>
+    </channel-type>
+
+    <channel-type id="dimminglevel-channel">
+        <item-type>Dimmer</item-type>
+        <label>Dimming Level Channel</label>
+        <description></description>
+        <state min="0" max="100" step="1" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="mood-channel">
+        <item-type>Number</item-type>
+        <label>Mood Channel</label>
+        <description></description>
+         <state min="1" max="5" step="1" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="status-channel">
+        <item-type>String</item-type>
+        <label>Status Channel</label>
+        <description></description>
+ 		<state readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="setpoint-channel">
+        <item-type>Number</item-type>
+        <label>Set-point Channel</label>
+        <description>Requested temperature</description>
+         <state min="0" max="255" step="1" pattern="%d °C" readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="motion-channel">
+        <item-type>Switch</item-type>
+        <label>Motion Channel</label>
+        <description>Motion detection sensor state</description>
+        <state readOnly="false"></state>
+    </channel-type>
+
+    <channel-type id="rainrate-channel">
+        <item-type>Number</item-type>
+        <label>Rain Rate Channel</label>
+        <description>Rain fall rate in millimeters per hour</description>
+        <state pattern="%d mm/h" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="raintotal-channel">
+        <item-type>Number</item-type>
+        <label>Rain Total Channel</label>
+        <description>Total rain in millimeters</description>
+        <state pattern="%d mm" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="shutter-channel">
+        <item-type>Rollershutter</item-type>
+        <label>Shutter Channel</label>
+        <description></description>
+    </channel-type>
+
+    <channel-type id="instantpower-channel">
+        <item-type>Number</item-type>
+        <label>Instant Power Channel</label>
+        <description>Instant power consumption in Watts</description>
+        <state pattern="%d W" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="totalusage-channel">
+        <item-type>Number</item-type>
+        <label>Total Usage Channel</label>
+        <description>Used energy in Watt hours</description>
+        <state pattern="%d Wh" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="instantamp-channel">
+        <item-type>Number</item-type>
+        <label>Instant Amp Channel</label>
+        <description>Instant current in Amperes</description>
+        <state pattern="%d A" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="totalamphours-channel">
+        <item-type>Number</item-type>
+        <label>Total Ampere-hours Channel</label>
+        <description>Used "energy" in ampere-hours</description>
+        <state pattern="%d Ah" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="temperature-channel">
+        <item-type>Number</item-type>
+        <label>Temperature Channel</label>
+        <description>Current temperature in degree Celsius</description>
+         <state pattern="%d °C" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="humidity-channel">
+        <item-type>Number</item-type>
+        <label>Humidity Channel</label>
+        <description>Relative humidity level in percentages</description>
+        <state min="0" max="100" step="1" pattern="%d %" readOnly="true"></state>
+    </channel-type>
+
+	<channel-type id="humiditystatus-channel">
+		<item-type>String</item-type>
+		<label>Humidity Status Channel</label>
+		<description>Current humidity status</description>
+		<state readOnly="true">
+			<options>
+				<option value="NORMAL">Normal humidity</option>
+				<option value="COMFORT">Comfort humidity</option>
+				<option value="DRY">Dry humidity</option>
+				<option value="WET">Wet humidity</option>
+			</options>
+		</state>
+	</channel-type>
+
+    <channel-type id="signallevel-channel">
+        <item-type>Number</item-type>
+        <label>Signal Level Channel</label>
+        <description>Received signal strength level</description>
+        <state min="0" max="15" step="1" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="batterylevel-channel">
+        <item-type>Number</item-type>
+        <label>Battery Level Channel</label>
+        <description>Battery level</description>
+        <state min="0" max="9" step="1" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="windspeed-channel">
+        <item-type>Number</item-type>
+        <label>Wind Speed Channel</label>
+        <description>Average wind speed in meters per second</description>
+        <state pattern="%d m/s" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="winddirection-channel">
+        <item-type>Number</item-type>
+        <label>Wind Direction Channel</label>
+        <description>Wind direction in degrees</description>
+        <state min="0" max="360" step="1" readOnly="true"></state>
+    </channel-type>
+
+</thing:thing-descriptions>
