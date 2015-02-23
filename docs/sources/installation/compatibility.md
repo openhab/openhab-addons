@@ -15,7 +15,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Bluetooth |  |  |  |  |  |
 | Comfo Air |  |  |  |  |  |
 | Config Admin |  |  |  |  |  |
-| CUL |  |  |  |  |  |
+| CUL |  |  | X |  |  |
 | CUPS |  |  |  |  |  |
 | Davis |  |  |  |  |  |
 | digitalSTROM |  |  |  |  |  |
@@ -30,7 +30,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Freeswitch | - | - | X | X |  |
 | Fritz!Box |  |  |  |  |  |
 | Fritz AHA |  |  |  |  |  |
-| FS20 |  |  |  |  |  |
+| FS20 |  |  | X |  |  |
 | Global Cache IR |  |  |  |  |  |
 | GPIO |  |  |  |  |  |
 | HAI/Leviton OmniLink |  |  |  |  |  |
