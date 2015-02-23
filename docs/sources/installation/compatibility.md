@@ -35,7 +35,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | GPIO |  |  |  |
 | HAI/Leviton OmniLink |  |  |  |
 | HDAnywhere |  |  |  |
-| Heatmiser |  |  |  |
+| Heatmiser |  | X |  |
 | Homematic / Homegear | X | X |  |
 | HTTP | X | X |  |
 | IEC 62056-21 |  |  |  |
@@ -68,6 +68,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | OpenPaths presence detection |  |  |  |
 | OpenSprinkler |  |  |  |
 | OSGi Configuration Admin |  |  |  |
+| OWServer |  | X |  |
 | Philips Hue |  |  | 2.0 version available |
 | Piface | |  |  |
 | Pioneer-AVR-Binding | |  |  |
@@ -77,7 +78,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | RFXCOM |  |  |  |
 | Samsung TV |  |  |  |
 | Serial |  |  |  | 
-| Snmp |  |  |  |
+| SNMP |  | X |  |
 | Squeezebox |  |  |  |
 | System Info |  |  |  |
 | Somfy URTSI II |  |  |  |
@@ -102,7 +103,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 |-------|:----------------------:|:-------------------------------:|---|
 | db4o |  |  |  |
 | rrd4j | X | X | only persistence, no rrd4j charts supported |
-| MySQL |  |  |  |
+| MySQL |  | X |  |
 | MongoDB |  |  |  |
 | Sen.Se |  |  |  |
 | Cosm |  |  |  |
