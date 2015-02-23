@@ -35,7 +35,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | GPIO |  |  |  |  |  |
 | HAI/Leviton OmniLink |  |  |  |  |  |
 | HDAnywhere |  |  |  |  |  |
-| Heatmiser |  |  |  |  |  |
+| Heatmiser |  |  |  | X |  |
 | Homematic / Homegear | X | X | X | X |  |
 | HTTP | X | X | X | X |  |
 | IEC 62056-21 |  |  |  |  |  |
@@ -63,6 +63,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Novelan/Luxtronic Heatpump |  |  |  |  |  |
 | NTP | X | X | X | X |  |
 | One-Wire |  |  |  |  |  |
+| OWServer |  |  |  | X |  |
 | Onkyo AV Receiver | X | X | X | X |  |
 | Open Energy Monitor |  |  |  |  |  |
 | OpenPaths presence detection |  |  |  |  |  |
@@ -77,7 +78,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | RFXCOM |  |  |  |  |  |
 | Samsung TV |  |  |  |  |  |
 | Serial |  |  |  |  |  |
-| Snmp |  |  |  |  |  |
+| SNMP |  |  |  | X |  |
 | Squeezebox |  |  |  |  |  |
 | System Info |  |  |  |  |  |
 | Somfy URTSI II |  |  |  |  |  |
@@ -102,7 +103,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 |-------|:------------------:|:---------------------------:|:----------------------:|:-------------------------------:|---|
 | db4o |  |  |  |  |  |
 | rrd4j | - | X | X | X | only persistence, no rrd4j charts supported |
-| MySQL |  |  |  |  |  |
+| MySQL |  |  |  | X |  |
 | MongoDB |  |  |  |  |  |
 | Sen.Se |  |  |  |  |  |
 | Cosm |  |  |  |  |  |
