@@ -71,7 +71,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | OWServer |  | X |  |
 | Philips Hue |  |  | 2.0 version available |
 | Piface | |  |  |
-| Pioneer-AVR-Binding | |  |  |
+| Pioneer-AVR-Binding | |  | 2.0 version available |
 | Plugwise |  |  |  | 
 | PLCBus |  |  |  | 
 | Pulseaudio |  |  | 2.0 version available |
