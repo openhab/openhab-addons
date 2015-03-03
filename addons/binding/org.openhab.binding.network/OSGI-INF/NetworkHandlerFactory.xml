@@ -8,9 +8,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.networkhealth.internal.NetworkHealthHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.network.internal.NetworkHandlerFactory">
 
-   <implementation class="org.openhab.binding.networkhealth.internal.NetworkHealthHandlerFactory"/>
+   <implementation class="org.openhab.binding.network.internal.NetworkHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
