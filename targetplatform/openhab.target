@@ -11,18 +11,18 @@
 <repository location="http://download.eclipse.org/modeling/emf/emf/updates/2.10/core/R201405190339"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.2.1.201406101620"/>
-<unit id="org.eclipse.jetty.bundles.f.source.feature.group" version="9.2.1.201406101620"/>
-<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.1.v20140609"/>
+<unit id="org.eclipse.jetty.bundles.f.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.jetty.bundles.f.source.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.9.v20150224"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
 <repository location="http://download.eclipse.org/releases/luna/201406250900/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="4.4.0.I20140606-1215"/>
-<unit id="org.eclipse.pde.feature.group" version="3.10.0.v20140606-1215"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4"/>
+<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+<unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="com.google.inject" version="3.0.0.v201312141243"/>
@@ -109,7 +109,7 @@
 <unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="0.0.0"/>
 <unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.feature.group" version="0.0.0"/>
 <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="0.0.0"/>
-<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/4.2.0"/>
+<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/4.2.2"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.0.0"/>
