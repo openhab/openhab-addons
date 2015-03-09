@@ -165,21 +165,25 @@ UpnpIOParticipant, DiscoveryListener {
 
 	@Override
 	public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-		if (getThing().getConfiguration().get(UDN)
-				.equals(result.getProperties().get(UDN))) {
-			logger.debug("Discovered UDN '{}' for thing '{}'", result
-					.getProperties().get(UDN), getThing().getUID());
-			getThing().setStatus(ThingStatus.ONLINE);
-			onSubscription();
-			onUpdate();
+		if(result.getThingUID().equals(this.getThing().getUID())) {
+			if (getThing().getConfiguration().get(UDN)
+					.equals(result.getProperties().get(UDN))) {
+				logger.debug("Discovered UDN '{}' for thing '{}'", result
+						.getProperties().get(UDN), getThing().getUID());
+				getThing().setStatus(ThingStatus.ONLINE);
+				onSubscription();
+				onUpdate();
+			}
 		}
 	}
 
 	@Override
 	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-		logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-				.getUID());
-		getThing().setStatus(ThingStatus.OFFLINE);
+		if(thingUID.equals(this.getThing().getUID())) {
+			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
+					.getUID());
+			getThing().setStatus(ThingStatus.OFFLINE);
+		}
 	}
 
 	@Override
@@ -1210,7 +1214,7 @@ UpnpIOParticipant, DiscoveryListener {
 	public void setPositionTrack(long tracknr) {
 		seek("TRACK_NR", Long.toString(tracknr));
 	}
-	
+
 	public void setPositionTrack(String tracknr) {
 		seek("TRACK_NR", tracknr);		
 	}
