@@ -50,9 +50,11 @@ public class Ping {
 			}
 			else {
 				SocketAddress socketAddress = new InetSocketAddress(host, port);
-				
-				Socket socket = new Socket();
-				socket.connect(socketAddress, timeout);
+
+                try (Socket socket = new Socket()) {
+                    socket.connect(socketAddress, timeout);
+                }
+
 				success = true;
 			}
 		}
