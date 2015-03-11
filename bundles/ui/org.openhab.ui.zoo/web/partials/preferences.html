@@ -1,0 +1,45 @@
+<section id="main" class="white-bg">
+	<div class="content">
+		<div class="header-toolbar">
+			<md-button class="md-icon-close" ng-click="navigateToRoot()"></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-button title="Save"
+						ng-click="save(getSelected('language'), getSelected('theme'))"
+						class="md-fab md-icon-check"></md-button>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+
+			<h3>User Interface</h3>
+			<p>Configure your UI preferences.</p>
+
+			<form class="form" role="form">
+				<div class="form-group">
+					<label class="control-label">Language</label> <select id="language"
+						class="form-control">
+						<option value="en" ng-selected="!language">System Default</option>
+						<option value="en" ng-selected="language=='en'">English</option>
+						<option value="de" ng-selected="language=='de'">German</option>
+					</select>
+					<p class="hint">
+						<small>Configure language for Binding texts (UI is not
+							localized yet)</small>
+					</p>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Theme</label> <select id="theme"
+						class="form-control">
+						<option value="white" ng-selected="theme=='white'">Eclipse
+							SmartHome</option>
+						<option value="openhab" ng-selected="theme=='openhab'">openHAB</option>
+					</select>
+				</div>
+				<hr />
+			</form>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,147 @@
+body.theme-openhab {
+
+}
+
+body.theme-openhab nav.menu {
+	
+}
+
+body.theme-openhab a, body.theme-openhab a:hover, body.theme-openhab a:focus {
+	color: #FF9800;
+}
+
+body.theme-openhab header {
+	background-color: #FF9800;
+	box-shadow: none;
+}
+
+body.theme-openhab paper-tabs {
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+
+body.theme-openhab header h1 {
+	color: #FFF;
+}
+
+/*
+body.theme-openhab nav.menu .top {
+	border-color: #333;
+	background-color: #555;
+}
+
+body.theme-openhab nav.menu .bottom {
+	border-color: #FF9800;
+}
+
+
+body.theme-openhab nav.menu ul a {
+	
+}
+*/ 
+
+body.theme-openhab nav.menu ul li a:hover, body.theme-openhab nav.menu ul li.active a {
+	color: #222;
+}
+
+
+body.theme-openhab .card {
+
+}
+
+/*
+body.theme-openhab .section-header {
+	background-color: #FF9800;
+	color: white;
+}
+
+body.theme-openhab .section-header .toolbar {
+	color: #2c3e50;
+}*/
+
+body.theme-openhab .section-header h3 {
+	color: #222;
+}
+
+body.theme-openhab hr {
+	
+}
+
+body.theme-openhab paper-tab {
+	background-color: #FF9800;
+	color: white;
+	text-transform: uppercase;
+}
+
+body.theme-openhab  h1, body.theme-openhab  h2, body.theme-openhab h3{
+	color: #FF9800;
+}
+
+body.theme-openhab paper-tab::shadow #ink {
+	color: #FFF;
+}
+
+body.theme-openhab paper-tabs::shadow #selectionBar {
+	background-color: #FFF;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+body.theme-openhab paper-slider::shadow #sliderBar::shadow #activeProgress {
+  background-color: #FF9800;
+}
+
+body.theme-openhab paper-slider::shadow #sliderKnobInner {
+  background-color: #FF9800
+}
+
+body.theme-openhab paper-slider::shadow #sliderKnobInner::before {
+  background-color: #FF9800;
+}
+
+body.theme-openhab paper-radio-button::shadow #onRadio {
+	background-color: #FF9800;
+}
+
+body.theme-openhab paper-input::shadow .focused-underline, body.theme-openhab .cursor {
+	background-color: #FF9800;
+}
+
+body.theme-openhab paper-button[raisedButton], body.theme-openhab .btn {
+	
+}
+
+body.theme-openhab header a.open-menu {
+	color: white;
+}
+
+body.theme-openhab paper-button.white {
+	background-color: white;
+}
+
+body.theme-openhab paper-button.green, body.theme-openhab paper-fab.green  {
+	background-color: green;
+	color: white;
+}
+
+body.theme-openhab paper-button.orange, body.theme-openhab paper-fab.orange {
+	background-color: orange;
+	color: white;
+}
+
+body.theme-openhab paper-button.red, body.theme-openhab paper-fab.red {
+	background-color: red;
+	color: white;
+}
+
+body.theme-openhab paper-button[autofocus] {
+	color: #01314D;
+}
+
+body.theme-openhab .fab-item paper-fab {
+	/*background-color: #FF9800;
+	color: #FFF;*/
+}
+
+body.theme-openhab .control .item h3 {
+	color: #2C3E50;
+}

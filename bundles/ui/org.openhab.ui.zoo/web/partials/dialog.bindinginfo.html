@@ -1,0 +1,21 @@
+<md-dialog aria-label="Binding Info" class="scan" style="max-width: 450px"> <md-content>
+<h1>{{binding.name}} <small>{{binding.id}}</small></h1>
+<p><strong>{{binding.author}}</strong></p>
+<p>{{binding.description}}</p>
+<hr />
+<h2>Supported Things</h2>
+<div class="thing-type list-item"
+	ng-repeat="thingType in binding.thingTypes"
+	ng-click="navigateTo('manual-setup/configure/' + thingType.UID)">
+	<h3>{{thingType.label}}</h3>
+	<p>{{thingType.UID}}</p>
+	<p>
+		<small>{{thingType.description}}</small>
+	</p>
+	<hr class="border-line" ng-show="!$last" />
+</div>
+</md-content>
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">OK</md-button>
+</div>
+</md-dialog>

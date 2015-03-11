@@ -1,0 +1,150 @@
+<div ng-switch on="item.type" class="icontrol" ng-controller="ItemController">
+	<div ng-switch-when="SwitchItem" ng-controller="SwitchItemController">
+		<div layout="row" layout-align="start center" class="dimmer-widget">
+			<div flex="40">
+				<p class="icon-switch">{{getLabel(item.category, item.label,
+					'Switch')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center"
+				class="dimmer-widget">
+				<md-switch ng-if="!isReadOnly(item)" ng-model="item.state"
+					ng-change="setOn(item.state)" ng-true-value="'ON'"
+					ng-false-value="'OFF'"></md-switch>
+				<h1 ng-if="isReadOnly(item)">{{item.state === 'ON' ? 'ON' :
+					'OFF'}}</h1>
+			</div>
+		</div>
+	</div>
+	<div ng-switch-when="DimmerItem" ng-controller="DimmerItemController">
+		<div layout="row" layout-align="start center" class="dimmer-widget">
+			<div flex="40">
+				<p ng-class="getIcon(item.category, 'icon-brightness-contrast')">{{getLabel(item.category,
+					item.label, 'Dimmer')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center"
+				class="dimmer-widget">
+				<h1>{{item.state}}%</h1>
+			</div>
+		</div>
+		<md-slider style="height: 40px;" flex min="0" max="100"
+			ng-model="item.state" ng-change="setBrightness(item.state)"></md-slider>
+		<div layout="row" layout-align="start center" class="dimmer-widget"
+			ng-if="!isHideSwitch(item.category)">
+			<div flex="40">
+				<p>{{getLabel(null, item.label, 'On/Off')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center"
+				class="dimmer-widget">
+				<md-switch ng-model="on" ng-change="setOn(on)" ng-true-value="'ON'"
+					ng-false-value="'OFF'"></md-switch>
+			</div>
+		</div>
+	</div>
+	<div ng-switch-when="ColorItem" ng-controller="ColorItemController">
+		<div layout="row" layout-align="start center" class="dimmer-widget">
+			<div flex="40">
+				<p class="md-icon-wb-incandescent">{{getLabel(item.category, null,
+					'Color')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center"
+				class="dimmer-widget">
+
+				<md-slider class="hue" flex min="0" max="360" ng-model="hue"
+					ng-change="setHue(hue)"></md-slider>
+			</div>
+		</div>
+		<div layout="row" layout-align="start center" class="dimmer-widget">
+			<div flex="40">
+				<p class="">Brightness</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center"
+				class="dimmer-widget">
+				<md-slider flex min="0" max="100" ng-model="brightness"
+					ng-change="setBrightness(brightness)"></md-slider>
+			</div>
+		</div>
+		<div layout="row" layout-align="start center" class="dimmer-widget">
+			<div flex="40">
+				<p class="">On/Off</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center"
+				class="dimmer-widget">
+				<md-switch ng-model="on" ng-change="setOn(on)" ng-true-value="'ON'"
+					ng-false-value="'OFF'"></md-switch>
+			</div>
+		</div>
+	</div>
+	<div ng-switch-when="NumberItem" ng-controller="NumberItemController">
+		<div layout="row" layout-align="start center">
+			<div flex="40" layout="row" layout-align="start center">
+				<p ng-class="getIcon(item.category, 'md-icon-trending-up')">{{getLabel(item.category,
+					item.label, 'Value')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center">
+				<h1 class="state" ng-if="isReadOnly(item)">{{getStateText(item)}}</h1>
+				<md-input-container> <input
+					ng-if="!isReadOnly(item) && !shouldRenderSlider(item)"
+					ng-model="item.state" ng-blur='sendCommand(item.state)'></input> <md-input-container>
+			</div>
+		</div>
+		<div ng-if="shouldRenderSlider(item)" layout="row"
+			layout-align="start center" class="number-control-widget">
+			<span flex="15" class="text-left" ng-if="getMinText(item)">{{getMinText(item)}}</span>
+			<md-slider flex="70" min="{{item.stateDescription.minimum}}"
+				max="{{item.stateDescription.maximum}}"
+				step="{{item.stateDescription.step}}" ng-model="item.state"
+				md-discrete="true" ng-if="getMinText(item) && getMaxText(item)"></md-slider>
+			<span flex="15" class="text-right" ng-if="getMaxText(item)">{{getMaxText(item)}}</span>
+		</div>
+	</div>
+	<div ng-switch-when="RollershutterItem"
+		ng-controller="RollershutterItemController">
+		<div layout="row" layout-align="start center">
+			<div flex="40" layout="row" layout-align="start center">
+				<p ng-class="getIcon(item.category, 'md-icon-format-align-justify')">{{getLabel(item.category,
+					item.label, 'Position')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center">
+				<h1>{{item.state}} %</h1>
+			</div>
+		</div>
+		<div layout="row" layout-align="end center">
+			<div flex="40" layout="row" layout-align="start center">
+				<p>Control</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center">
+				<button class="md-button md-icon-vertical-align-bottom" ng-click="sendCommand('DOWN')"></button>
+				<button class="md-button md-icon-stop"  ng-click="sendCommand('STOP')"></button>
+				<button class="md-button md-icon-vertical-align-top" ng-click="sendCommand('UP')"></button>
+			</div>
+		</div>
+	</div>
+	<div ng-switch-when="PlayerItem"
+		ng-controller="PlayerItemController">
+		<div layout="row" layout-align="end center">
+			<div flex="40" layout="row" layout-align="start center">
+				<p ng-class="getIcon(item.category, 'md-icon-play-arrow')">{{getLabel(null,
+					item.label, 'Control')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center">
+				<button class="md-button md-icon-skip-previous" ng-click="sendCommand('PREVIOUS')"></button>
+				<button ng-show="item.state !== 'PLAY'" class="md-button md-icon-play-arrow" ng-click="sendState('PLAY')"></button>
+				<button ng-show="item.state === 'PLAY'" class="md-button md-icon-pause"  ng-click="sendState('PAUSE')"></button>
+				<button class="md-button md-icon-skip-next" ng-click="sendCommand('NEXT')"></button>
+			</div>
+		</div>
+	</div>
+	<div ng-switch-default ng-controller="DefaultItemController">
+		<div layout="row" layout-align="start center">
+			<div flex="40" layout="row" layout-align="start center">
+				<p ng-class="getIcon(item.category)">{{getLabel(item.category,
+					item.label, 'Value')}}</p>
+			</div>
+			<div flex="60" layout="row" layout-align="end center">
+				<md-text-float ng-if="!item.stateDescription.readOnly"
+					ng-model="item.state" ng-blur='sendCommand(item.state)'></md-text-float>
+				<h1 ng-if="item.stateDescription.readOnly" class="state">{{getStateText(item)}}</h1>
+			</div>
+		</div>
+	</div>
+</div>

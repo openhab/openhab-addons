@@ -1,0 +1,368 @@
+/**
+ * Material Angular Overrides 
+ */
+
+/* Button */
+
+.md-button[class*="md-icon-"]:before {
+	font-size: 24px;	
+}
+
+.md-button span[class*="md-icon-"] {
+	margin-right: 5px;
+}
+
+.md-button.green {
+	background-color: green;
+	color: white;
+}
+
+.md-button.white {
+	background-color: white;	
+}
+
+.md-button:not([disabled]), .md-button.md-raised:not([disabled]) {
+	box-shadow: none;
+	-webkit-box-shadow: none;
+}
+
+.md-button:hover {
+	box-shadow: 0 0px 6px 0 rgba(0,0,0,.4);
+}
+
+.md-button:not([disabled]).md-fab:focus, .md-button:not([disabled]).md-fab:hover, .md-button:not([disabled]).md-raised:focus, .md-button:not([disabled]).md-raised:hover{
+	box-shadow: 0 0px 6px 0 rgba(0,0,0,.4);
+	transform: none;
+}
+
+.md-button.md-default-theme.md-fab:not([disabled]):focus, .md-button.md-default-theme.md-fab:not([disabled]):hover, .md-button.md-default-theme.md-raised:not([disabled]):focus, .md-button.md-default-theme.md-raised:not([disabled]):hover {
+	background-color: inherit;
+}
+
+.md-button.md-default-theme.md-primary {
+	color: #01324D;
+}
+
+/* Fab */
+
+.md-button.md-fab:not([disabled]) {
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+	-webkit-box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+}
+
+.md-fab {
+	font-size: 24px;
+}
+
+.md-fab, .md-fab:active, .md-fab:focus, .md-fab:hover {
+	background-color: #4CAF50 !important;
+	color: white !important;
+}
+
+
+/* Tabs */
+md-tabs {
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+md-tabs section {
+	padding: 0px;
+}
+
+md-tabs md-tab {
+	background-color: #01324D;
+}
+
+md-tabs.md-default-theme md-tabs-ink-bar {
+	color: #ffff85;
+	background: white;
+}
+
+md-tabs.md-default-theme md-tab {
+	color: #AAA;
+	outline: 0;
+}
+
+md-tabs.md-default-theme md-tab.active {
+	color: white;
+}
+
+md-tabs.md-default-theme md-tab[disabled] {
+	color: rgba(0, 0, 0, 0.12);
+}
+
+md-tabs.md-default-theme md-tab:focus {
+	border-color: transparent;
+}
+
+md-tabs.md-default-theme md-tab .md-ripple-container {
+	color: white;
+}
+
+md-tabs.md-default-theme .md-header {
+	background-color: #01324D;
+}
+
+/* Radio Button */
+md-radio-group.md-default-theme:focus {
+	border-color: transparent;	
+}
+
+md-radio-button.md-default-theme .md-off, md-switch.md-default .md-switch-thumb .md-off {
+	border-color: #CCC;
+}
+
+md-radio-button.md-default-theme .md-on, md-switch.md-default .md-switch-thumb .md-on{
+	background-color: #01324D;
+}
+
+md-radio-button.md-default-theme.md-checked .md-off, md-switch.md-default .md-switch-thumb.md-checked .md-off {
+	border-color: #CCC;
+}
+
+md-radio-button.md-default-theme.md-checked .md-ink-ripple, md-switch.md-default .md-switch-thumb.md-checked .md-ink-ripple {
+	color: #01324D;
+}
+
+/* Switch */
+
+md-switch.md-default-theme.md-checked .md-thumb {
+	background-color: #01324D;
+}
+
+md-switch.md-default-theme.md-checked .md-bar {
+	background-color: rgb(158,158,158);
+}
+
+/* Slider */
+
+md-slider.md-default-theme .md-track.md-track-fill {
+	background-color: #01324D;
+}
+
+md-slider.md-default-theme .md-thumb:after {
+	border-color: #01324D;
+	background-color: #01324D;
+}
+
+md-slider.md-default-theme .md-sign {
+	background-color: #01324D;
+}
+
+md-slider.md-default-theme .md-sign:after {
+	border-top-color: #01324D;
+}
+
+
+/* Color Slider */
+
+md-slider.md-default-theme.hue .md-track {
+	background: -webkit-linear-gradient(left, hsla(0, 100%, 50%, 1),
+		hsla(10, 100%, 50%, 1), hsla(20, 100%, 50%, 1), hsla(30, 100%, 50%, 1),
+		hsla(40, 100%, 50%, 1), hsla(50, 100%, 50%, 1), hsla(60, 100%, 50%, 1),
+		hsla(70, 100%, 50%, 1), hsla(80, 100%, 50%, 1), hsla(90, 100%, 50%, 1),
+		hsla(100, 100%, 50%, 1), hsla(110, 100%, 50%, 1),
+		hsla(120, 100%, 50%, 1), hsla(130, 100%, 50%, 1),
+		hsla(140, 100%, 50%, 1), hsla(150, 100%, 50%, 1),
+		hsla(160, 100%, 50%, 1), hsla(170, 100%, 50%, 1),
+		hsla(180, 100%, 50%, 1), hsla(190, 100%, 50%, 1),
+		hsla(200, 100%, 50%, 1), hsla(210, 100%, 50%, 1),
+		hsla(220, 100%, 50%, 1), hsla(230, 100%, 50%, 1),
+		hsla(240, 100%, 50%, 1), hsla(250, 100%, 50%, 1),
+		hsla(260, 100%, 50%, 1), hsla(270, 100%, 50%, 1),
+		hsla(280, 100%, 50%, 1), hsla(290, 100%, 50%, 1),
+		hsla(300, 100%, 50%, 1), hsla(310, 100%, 50%, 1),
+		hsla(320, 100%, 50%, 1), hsla(330, 100%, 50%, 1),
+		hsla(340, 100%, 50%, 1), hsla(350, 100%, 50%, 1),
+		hsla(360, 100%, 50%, 1));
+}
+
+md-slider.md-default-theme.hue .md-track-fill {
+	background: transparent;
+}
+
+md-slider.md-default-theme.hue .md-thumb {
+	/*border: 2px solid #01324D;*/
+}
+
+md-slider.md-default-theme.hue .md-thumb:after {
+	/* display: none; */
+	left: -1px;
+	top: -1px;
+	height: 40px;
+	width: 40px;
+	border-color: #01324D;
+	background: transparent;
+}
+
+/* Card */
+
+.card {
+	background: white;
+	position: relative;
+	border-radius: 2px;
+	margin-bottom: 10px;
+	box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.card .clabel {
+	padding: 10px;
+	text-align: center;
+}
+
+.card.text-left .clabel {
+	text-align: left;
+}
+
+.card .clabel h3 {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	line-height: 120%;
+}
+.card .cbody {
+	padding: 0px 10px 10px 10px;
+	text-align: center;
+	/*border-bottom: 3px solid #01314D;*/
+}
+
+.card.text-left .cbody {
+	text-align: left;
+}
+
+
+.card .cbody small {
+	color: #777;
+}
+
+/* Card Container (TODO: not used yet) */
+
+.card-container {
+	background: white;
+	position: relative;
+	border: 1px solid #DDD;
+	border-radius: 2px;
+	margin-bottom: 10px;
+	margin-top: -80px;
+}
+
+/* Fab Item / List Item */
+
+.fab-item, .list-item {
+	position: relative;	
+}
+
+.fab-item h3, .list-item h3 {
+	margin: 15px 0px 5px;	
+}
+
+.fab-item p, .list-item p {
+	margin-bottom: 5px;	
+}
+
+.fab-item hr, .list-item hr {
+	margin: 15px 0px;	
+}
+
+
+.fab-item button.md-fab {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+.fab-item .item-content {
+	margin-left: 75px;
+	min-height: 60px;
+}
+
+.fab-item .item-content .actions, .list-item .actions {
+	position: absolute;
+	top: 7px;
+	right: 0px;
+	background: white;
+}
+
+.fab-item .circle {
+	border-radius: 50%;
+	width: 56px;
+	height: 56px;
+	background-color: #CCC;
+	position: absolute;
+	text-align: center;
+	font-size: 30px;
+	line-height: 54px;
+}
+
+.fab-item .circle.small {
+	width: 28px;
+	height: 28px;
+	line-height: 28px;
+	font-size: 15px;
+}
+
+.fab-item hr.border-line {
+	margin: 10px 0px;
+}
+
+/* Input */
+
+md-input-group.md-default-theme input, md-input-group.md-default-theme textarea {
+	display: block;
+	width: 100%;
+	color: inherit;
+	font-size: 18px;
+	line-height: 40px;
+}
+
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused .md-input {
+	border-color: #01324D;
+}
+
+md-input-group.md-default-theme.md-input-focused input, md-input-group.md-default-theme.md-input-focused textarea {
+	border-color: #01324D;
+}
+
+.form-group p.hint {
+	margin-top: -10px;
+	color: #777;
+}
+
+.form-group label {
+	font-weight: normal;
+	font-size: 18px;
+	margin-bottom: 0px;
+	text-transform: uppercase;
+	color: #AAA;
+}
+
+.form-group label.control-label {
+	transform: translate3d(-6px,4px,0) scale(0.75);
+	color: #999;
+}
+
+.md-input-group label, md-input-group label {
+	-webkit-transform: translate3d(0,36px,0);
+	transform: translate3d(0,36px,0);
+}
+
+.form-group .md-input-focused label, .form-group .md-input-has-value label {
+	color: #999 !important;
+}
+
+select.form-control {
+	border-width: 1px;
+	border-radius: 0px;
+	-webkit-appearance: none;
+	margin: 5px 0px 10px;
+}
+
+/* Dialog */
+
+.md-dialog-container.md-active {
+	z-index: 21;
+}
+
+md-backdrop.md-opaque.md-default-theme {
+	z-index: 21;
+}

@@ -1,0 +1,33 @@
+{
+  "name": "org.openhab.ui.zoo",
+  "version": "2.0.0-alpha1",
+  "homepage": "https://github.com/innoq/openhab2",
+  "authors": [
+    "Sebastian Janzen <sebastian.janzen@innoq.com>"
+  ],
+  "description": "Zoo Automation UI",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web/js/lib/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "~0.7.1",
+    "angular-resource": "~1.3.12",
+    "angular-route": "~1.3.12",
+    "sprintf": "~1.0.2",
+    "underscore": "~1.7.0",
+    "jquery": "~2.1.3",
+    "bootstrap": "~3.3.2",
+    "tinycolor": "~1.1.2",
+    "masonry": "~3.2.2"
+  },
+  "resolutions": {
+    "angular": "1.3.13"
+  }
+}
