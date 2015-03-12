@@ -41,7 +41,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | IEC 62056-21 |  |  |  |
 | IHC / ELKO |  |  |  |
 | Insteon Hub |  |  |  |
-| Insteon PLM |  |  |  |
+| Insteon PLM |  | X |  |
 | IRtrans |  |  |  |
 | jointSPACE-Binding |  |  |  |
 | KNX | X | X | |
