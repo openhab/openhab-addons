@@ -1,13 +1,7 @@
 angular.module('Zoo', [
-	//'Zoo.controllers',
-	//'Zoo.controllers.control',
-	//'Zoo.controllers.setup',
-	//'Zoo.controllers.configuration',
-	//'Zoo.services',
-	//'Zoo.services.rest',
-	//'Zoo.services.repositories',
 	'ngRoute',
-	'ngResource'
+	'ngResource',
+	'SmartHome'
 ]).config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 
 	$locationProvider.html5Mode(false).hashPrefix('!');
@@ -37,19 +31,36 @@ angular.module('Zoo', [
 			templateUrl: 'partials/energy-center.html'
 		}).otherwise({redirectTo: '/login'});
 
-}]).run(['$location', '$rootScope', function ($location, $rootScope) {
+}]).run(['$location', '$rootScope', 'thingService', 'itemService', function ($location, $rootScope, thingService, itemService) {
 
-	$rootScope.isActiveSection = function (path) {
-		return $location.path().indexOf(path) > -1;
-	};
+	$rootScope.$on('$routeChangeSuccess', function () {
+		// Strip slash in front of current path:
+		$rootScope.activeSection = $location.path().substr(1);
+	});
 
 	$rootScope.leftSidebarOpen = false;
 	$rootScope.isBlackout = false;
 
 	$rootScope.toggleSidebar = function () {
-		//$(".left-sidebar").toggleClass("left-sidebar-active");
-		//$("body").toggleClass("blackout");
 		$rootScope.leftSidebarOpen = !$rootScope.leftSidebarOpen;
 		$rootScope.isBlackout = !$rootScope.isBlackout;
 	};
+
+	// TODO Move to directive
+	thingService.getByUid({thingUID:'yahooweather:weather:20066544'}, function (thing) {
+		$rootScope.weather = {locationLabel: thing.item.label, date: new Date()};
+		thing.item.members.forEach(function (item) {
+			if (item.category === 'Temperature') {
+				$rootScope.weather.temperature = item.state / 10;
+			}
+		});
+	});
+
+	itemService.getByName({itemName:'gRooms'}, function (rooms) {
+		$rootScope.smarthome = {rooms : angular.copy(rooms.members)};
+	});
+
+
+
+
 }]);

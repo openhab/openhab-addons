@@ -1,4 +1,8 @@
-angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', function($resource) {
+'use strict';
+
+var smartHomeModule = angular.module('SmartHome', []);
+
+smartHomeModule.factory('itemService', function($resource) {
     return $resource('/rest/items', {}, {
         getAll : {
             method : 'GET',
@@ -82,15 +86,19 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             url : '/rest/items/:itemName/tags/:tag'
         }
     });
-}).factory('bindingService', function($resource) {
+});
+
+smartHomeModule.factory('bindingService', function($resource) {
     return $resource('/rest/bindings', {}, {
         getAll : {
             method : 'GET',
             cache : true,
             isArray : true
-        },
+        }
     });
-}).factory('inboxService', function($resource) {
+});
+
+smartHomeModule.factory('inboxService', function($resource) {
     return $resource('/rest/inbox', {}, {
         getAll : {
             method : 'GET',
@@ -121,7 +129,9 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             url : '/rest/inbox/:thingUID'
         }
     })
-}).factory('discoveryService', function($resource) {
+});
+
+smartHomeModule.factory('discoveryService', function($resource) {
     return $resource('/rest/discovery', {}, {
         getAll : {
             method : 'GET',
@@ -135,7 +145,9 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             url : '/rest/discovery/scan/:bindingId'
         }
     });
-}).factory('thingTypeService', function($resource) {
+});
+
+smartHomeModule.factory('thingTypeService', function($resource) {
     return $resource('/rest/thing-types', {}, {
         getAll : {
             method : 'GET',
@@ -149,7 +161,9 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             url : '/rest/thing-types/:thingTypeUID'
         }
     });
-}).factory('linkService', function($resource) {
+});
+
+smartHomeModule.factory('linkService', function($resource) {
     return $resource('/rest/links', {}, {
         getAll : {
             method : 'GET',
@@ -172,7 +186,9 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             url : '/rest/links/:itemName/:channelUID'
         }
     });
-}).factory('thingService', function($resource) {
+});
+
+smartHomeModule.factory('thingService', function($resource) {
     return $resource('/rest/things', {}, {
         getAll : {
             method : 'GET',
@@ -226,10 +242,12 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 thingUID : '@thingUID',
                 channelId : '@channelId'    
             },
-            url : '/rest/things/:thingUID/channels/:channelId/link',
+            url : '/rest/things/:thingUID/channels/:channelId/link'
         }
     });
-}).factory('thingSetupService', function($resource) {
+});
+
+smartHomeModule.factory('thingSetupService', function($resource) {
     return $resource('/rest/setup/things', {}, {
         add : {
             method : 'POST',
@@ -267,9 +285,11 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 channelUID : '@channelUID'
             },
             url : '/rest/setup/things/channels/:channelUID'
-        },
+        }
     });
-}).factory('labelSetupService', function($resource) {
+});
+
+smartHomeModule.factory('labelSetupService', function($resource) {
     return $resource('/rest/setup/labels', {}, {
         setLabel : {
             method : 'PUT',
@@ -282,7 +302,9 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             }
         }
     });
-}).factory('groupSetupService', function($resource) {
+});
+
+smartHomeModule.factory('groupSetupService', function($resource) {
     return $resource('/rest/setup/groups', {}, {
     	add : {
             method : 'POST',
@@ -300,6 +322,6 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
         getAll: {
         	method : 'GET',
             isArray : true
-        },
+        }
     });
 });

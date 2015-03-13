@@ -22,7 +22,7 @@ angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider
     // TODO: seems not to work
     $httpProvider.interceptors.push(interceptor);
 }).factory('eventService', function($resource) {
-	var eventSrc = new EventSource('/rest/events');    
+	var eventSrc = new EventSource('/rest/events');
 	return new function() {
 		this.onEvent = function(topic, callback) {
 			var topicRegex = topic.replace('/', '\/').replace('*', '.*');
@@ -35,8 +35,8 @@ angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider
 		}
 	};
 }).factory('toastService', function($mdToast, $rootScope) {
-	var eventSrc = new EventSource('/rest/events');    
-	return new function() {
+	var eventSrc = new EventSource('/rest/events');
+	return function() {
 	    var self = this;
 		this.showToast = function(id, text, actionText, actionUrl) {
 	    	var toast = $mdToast.simple().content(text);

@@ -34,11 +34,12 @@
 
   <body ng-class="{'blackout':isBlackout}">
 
-    <header ng-show="!isActiveSection('login')" ng-include="'partials/header.html'"></header>
-    <div ng-show="!isActiveSection('login')" ng-include="'partials/notifications-popup.html'"></div>
-    <aside ng-show="!isActiveSection('login')" ng-include="'partials/left-sidebar.html'" class="left-sidebar" ng-class="{'left-sidebar-active':leftSidebarOpen}"></aside>
+    <header ng-show="activeSection!=='login'" ng-include="'partials/header.html'"></header>
+    <div ng-show="activeSection!=='login'" ng-include="'partials/notifications-popup.html'"></div>
+    <aside ng-show="activeSection!=='login'" ng-include="'partials/left-sidebar.html'"
+           class="left-sidebar" ng-class="{'left-sidebar-active':leftSidebarOpen}"></aside>
     <section class="page-content" ng-view></section>
-    <aside ng-show="!isActiveSection('login')" ng-include="'partials/right-sidebar.html'" class="right-sidebar">
+    <aside ng-show="activeSection!=='login'" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
 
 
     <!-- lib js files -->
@@ -69,6 +70,8 @@
     <script src="js/app.js"></script>
     <script src="js/controllers/login.js"></script>
     <script src="js/controllers/room.js"></script>
+    <script src="js/services/services.rest.js"></script>
+    <script src="js/services/services.js"></script>
     <!--<script src="js/services/services.js"></script>-->
     <!--<script src="js/services/services.rest.js"></script>-->
     <!--<script src="js/services/services.repositories.js"></script>-->
