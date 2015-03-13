@@ -1,0 +1,103 @@
+    	<div class="container">
+
+       		<h2 class="mobile-center">All the CCTVs in my house</h2>
+
+            <div id="full-screen" class="zoom-anim-dialog dialog mfp-hide full-screen">
+				<div style="height:500px;background:#000;"></div>
+			</div>
+
+
+            <div class="flexslider">
+
+              <a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+
+              <ul class="slides">
+                <li>
+                	<div class="screen-name">Room 1 CCTV camera Play</div>
+                </li>
+                <li>
+                	<div class="screen-name">Room 2 CCTV camera Play</div>
+                </li>
+                <li>
+                	<div class="screen-name">Room 3 CCTV camera Play</div>
+                </li>
+                <li>
+                	<div class="screen-name">Living room CCTV camera Play</div>
+                </li>
+                <li>
+                	<div class="screen-name">Dining room CCTV camera Play</div>
+                </li>
+                <li>
+                	<div class="screen-name">Kitchen CCTV camera Play</div>
+                </li>
+              </ul>
+            </div><!--flexslider-->
+
+            <div class="flexslider-controls">
+              <ul class="flex-control-nav thumbnails">
+                <li>
+                	<a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+                    <div class="thumbnail-content">
+                    	<span class="thumbnail-name">Room 1</span>
+                    </div>
+                </li>
+                <li>
+                	<a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+                    <div class="thumbnail-content">
+                    	<span class="thumbnail-name">Room 2</span>
+                    </div>
+                </li>
+                <li>
+                	<a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+                    <div class="thumbnail-content">
+                    	<span class="thumbnail-name">Room 3</span>
+                    </div>
+                </li>
+                <li>
+                	<a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+                    <div class="thumbnail-content">
+                    	<span class="thumbnail-name">Living room</span>
+                    </div>
+                </li>
+                <li>
+                	<a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+                    <div class="thumbnail-content">
+                    	<span class="thumbnail-name">Dining Room</span>
+                    </div>
+                </li>
+                <li>
+                	<a class="full-screen-btn popup-with-move-anim" href="#full-screen" title="Full Screen"><i class="icon icon-full-screen"></i></a>
+                    <div class="thumbnail-content">
+                    	<span class="thumbnail-name">Kitchen</span>
+                    </div>
+                </li>
+              </ul>
+            </div><!--flexslider-controls-->
+
+        <script>
+
+
+          $(window).load(function(){
+            $('.flexslider').flexslider({
+              animation: "slide",
+              slideshow: false,
+              directionNav: false,
+              manualControls: ".flex-control-nav li"
+            });
+          });
+
+          //popup
+          $('.popup-with-move-anim').magnificPopup({
+            type: 'inline',
+            fixedContentPos:true,
+            fixedBgPos: false,
+            closeBtnInside: true,
+            preloader: false,
+            midClick: true,
+            removalDelay: 300,
+            mainClass: 'my-mfp-slide-bottom'
+          });
+
+        </script>
+
+        </div>

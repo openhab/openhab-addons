@@ -1,0 +1,146 @@
+    	<div class="container">
+
+        	<h2>Energy center</h2>
+
+            <div class="row cols-margin">
+                <div class="col4">
+                	<div class="panel">
+                    	Today’s cost
+						<h2><strong class="blue">$214</strong></h2>
+                    </div>
+                </div><!--col4-->
+                <div class="col4">
+                	<div class="panel">
+                    	Projected cost
+						<h2><strong class="blue">$3529</strong></h2>
+                    </div>
+                </div><!--col4-->
+                <div class="col4">
+                	<div class="panel">
+                    	Total cost
+						<h2><strong class="blue">$8684</strong></h2>
+                    </div>
+                </div><!--col4-->
+            </div><!--row-->
+
+            <br>
+
+            <h2>Report</h2>
+
+            <div class="row cols-margin">
+                <div class="col6">
+                	<label>
+                    	From
+                        <input type="text" class="field" id="datepicker-from" value="Select a date">
+                    </label>
+                </div><!--col6-->
+                <div class="col6">
+                	<label>
+                    	To
+                        <input type="text" class="field" id="datepicker-to" value="Select a date">
+                    </label>
+                </div><!--col6-->
+            </div><!--row-->
+
+            <div class="row">
+                <div class="col6">
+                	<ul class="no-style-list">
+                    	<li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> <strong>All rooms</strong></label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Room 1</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Room 2</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Room 3</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Living room</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Dining room</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Kitchen</label></li>
+                    </ul>
+                </div><!--col6-->
+                <div class="col6">
+                	<ul class="no-style-list">
+                    	<li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> <strong>All power/appliances</strong></label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Fridge</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> TV</label></li>
+                        <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Computer</label></li>
+                    </ul>
+                </div><!--col6-->
+            </div><!--row-->
+
+            <br>
+
+            <h2>Kwh usage</h2>
+            <div class="canvas-wrap">
+            	<canvas id="chart" width="600" height="300"></canvas>
+            </div>
+
+            <br>
+
+            <h2>Acutal cost</h2>
+            <div class="canvas-wrap">
+            	<canvas id="chart2" width="600" height="300"></canvas>
+            </div>
+        <script>
+
+
+
+          //chart 1
+          var chartData = {
+            labels : ["JAN","FEB","MAR","APR","MAY","JUN"],
+            datasets : [
+              {
+                fillColor : "rgba(220,220,220,0)",
+                strokeColor : "rgba(79,167,226,.4)",
+                pointColor : "rgba(79,167,226,1)",
+                pointHighlightFill : "#fff",
+                pointHighlightStroke : "rgba(79,167,226,1)",
+                data : [7,12,11,22,13,17]
+              }
+            ]
+          }
+
+          var chart = document.getElementById('chart').getContext('2d');
+          new Chart(chart).Line(chartData, {
+            responsive: true
+          });
+
+          //chart 2
+          var chartData = {
+            labels : ["JAN","FEB","MAR","APR","MAY","JUN"],
+            datasets : [
+              {
+                fillColor : "rgba(220,220,220,0)",
+                strokeColor : "rgba(79,167,226,.4)",
+                pointColor : "rgba(79,167,226,1)",
+                pointHighlightFill : "#fff",
+                pointHighlightStroke : "rgba(79,167,226,1)",
+                data : [17,13,22,11,32,3]
+              }
+            ]
+          }
+
+          var chart = document.getElementById('chart2').getContext('2d');
+          new Chart(chart).Line(chartData, {
+            responsive: true
+          });
+
+          //datepicker
+          var picker = new Pikaday(
+                  {
+                    field: document.getElementById('datepicker-from'),
+                    firstDay: 1,
+                    minDate: new Date('2000-01-01'),
+                    maxDate: new Date('2020-12-31'),
+                    yearRange: [2000,2020]
+                  });
+
+          //datepicker
+          var picker = new Pikaday(
+                  {
+                    field: document.getElementById('datepicker-to'),
+                    firstDay: 1,
+                    minDate: new Date('2000-01-01'),
+                    maxDate: new Date('2020-12-31'),
+                    yearRange: [2000,2020]
+                  });
+
+        </script>
+
+        </div>

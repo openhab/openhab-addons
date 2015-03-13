@@ -1,0 +1,55 @@
+<div>
+
+  <!--mobile search bar-->
+  <form class="search-bar mobile-search-bar visible-mobile">
+    <input type="text" class="field" ng-model="search.query">
+  </form>
+
+  <!--mobile user info-->
+  <a href="#" class="user visible-mobile">
+    <div class="photo-wrap">
+      <img src="img/user.jpg" alt="Mr. Johnson">
+    </div>
+    <span class="welcome">Welcome back</span>
+    <strong class="user-name">Mr. Johnson</strong>
+  </a>
+
+  <ul class="nav">
+    <li ng-class="{'active':isActiveSection('room')}">
+      <a href="#!/room">
+        <i class="icon i-room"></i>
+        Rooms
+      </a>
+    </li>
+    <li ng-class="{'active':isActiveSection('energy-center')}">
+      <a href="#!/energy-center">
+        <i class="icon i-energy-center"></i>
+        Energy Center
+      </a>
+    </li>
+    <li ng-class="{'active':isActiveSection('access')}">
+      <a href="#!/access">
+        <i class="icon i-access"></i>
+        Access
+      </a>
+    </li>
+    <li ng-class="{'active':isActiveSection('cctv')}">
+      <a href="#!/cctv">
+        <i class="icon i-cctv"></i>
+        CCTV
+      </a>
+    </li>
+    <li ng-class="{'active':isActiveSection('cost-settings')}">
+      <a href="#!/cost-settings">
+        <i class="icon i-cost-settings"></i>
+        Cost Settings
+      </a>
+    </li>
+    <li ng-class="{'active':isActiveSection('alerts')}">
+      <a href="#!/alerts">
+        <i class="icon i-alert"></i>
+        Alerts
+      </a>
+    </li>
+  </ul>
+</div><!--left-sidebar-->
