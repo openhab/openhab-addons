@@ -102,7 +102,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Persistence Service | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
 |-------|:----------------------:|:-------------------------------:|---|
 | db4o |  |  |  |
-| rrd4j | X | X | only persistence, no rrd4j charts supported |
+| rrd4j | - | X | rrd4j chart provider is supported as well |
 | MySQL |  | X |  |
 | MongoDB |  |  |  |
 | Sen.Se |  |  |  |
