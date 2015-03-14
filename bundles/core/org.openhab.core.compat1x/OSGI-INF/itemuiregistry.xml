@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.core.compat1x.itemuiregistry">
+   <implementation class="org.openhab.core.items.internal.ItemUIRegistryDelegate"/>
+   <service>
+      <provide interface="org.openhab.core.items.ItemRegistry"/>
+      <provide interface="org.openhab.ui.items.ItemUIRegistry"/>
+   </service>
+   <reference bind="setItemUIRegistry" cardinality="1..1" interface="org.eclipse.smarthome.ui.items.ItemUIRegistry" name="ItemUIRegistry" policy="static" unbind="unsetItemUIRegistry"/>
+</scr:component>
