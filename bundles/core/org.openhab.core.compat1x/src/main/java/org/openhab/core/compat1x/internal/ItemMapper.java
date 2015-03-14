@@ -8,6 +8,7 @@
  */
 package org.openhab.core.compat1x.internal;
 
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ColorItem;
 import org.eclipse.smarthome.core.library.items.ContactItem;
@@ -34,7 +35,25 @@ public class ItemMapper {
 		if(item instanceof ColorItem) result = new org.openhab.core.library.items.ColorItem(item.getName());
 		if(item instanceof DateTimeItem) result = new org.openhab.core.library.items.DateTimeItem(item.getName());
 		if(item instanceof ESHCallItem) result = new org.openhab.library.tel.items.CallItem(item.getName());
-		
+
+	    if(item instanceof GroupItem) {
+            GroupItem gItem = (GroupItem) item;
+            org.openhab.core.items.Item baseItem = ItemMapper.mapToOpenHABItem(gItem.getBaseItem());
+            org.openhab.core.items.GroupItem ohgItem;
+            if(baseItem instanceof GenericItem) {
+                ohgItem = new org.openhab.core.items.GroupItem(item.getName(), (GenericItem) baseItem);
+            } else {
+                ohgItem = new org.openhab.core.items.GroupItem(item.getName());
+            }
+            for(Item member : gItem.getMembers()) {
+                org.openhab.core.items.Item ohMember = ItemMapper.mapToOpenHABItem(member);
+                if(ohMember != null) {
+                    ohgItem.addMember(ohMember);
+                }
+            }
+            result = ohgItem;
+	    }
+	    
 		if(result instanceof org.openhab.core.items.GenericItem) {
 			org.openhab.core.items.GenericItem genericItem = (GenericItem) result;
 			if(item.getState()!=null) {
