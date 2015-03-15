@@ -1,0 +1,9 @@
+Number Fridge_kWh 			(gRoom1,gZooPower)
+Number Fridge_kWh_day		(gZooPowerChart,gZooPowerDay)
+Number Fridge_kWh_week		(gZooPowerChart,gZooPowerWeek)
+Number Fridge_kWh_month		(gZooPowerChart,gZooPowerMonth)
+
+Number Computer_kWh 		(gRoom1,gZooPower)
+Number Computer_kWh_day 	(gZooPowerChart,gZooPowerDay)
+Number Computer_kWh_week 	(gZooPowerChart,gZooPowerWeek)
+Number Computer_kWh_month 	(gZooPowerChart,gZooPowerMonth)

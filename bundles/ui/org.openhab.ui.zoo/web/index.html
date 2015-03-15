@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html ng-app="Zoo">
+  <head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/zoo/index.html">
+    <title>Zoo Homeautomation</title>
+
+
+    <!-- lib css files -->
+
+    <!-- custom css files -->
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/magnific-popup.css" rel="stylesheet">
+    <link href="css/flexslider.css" rel="stylesheet">
+    <link href="css/tabs.css" rel="stylesheet">
+    <link href="css/pikaday.css" rel="stylesheet">
+    <link href="css/powerange.css" rel="stylesheet">
+    <!-- Fonts -->
+
+    <!--<link rel="shortcut icon" href="img/favicon.ico"/>-->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!--<link rel="apple-touch-icon" href="img/app-icon.png"/>-->
+    <!--<link rel="apple-touch-startup-image" href="img/splash-ipad-h.png"-->
+          <!--media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)"/>-->
+    <!--<link rel="apple-touch-startup-image" href="img/splash-ipad-v.png"-->
+          <!--media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)"/>-->
+    <!--<link rel="apple-touch-startup-image" href="img/splash-iphone.png"-->
+          <!--media="screen and (max-device-width: 320px)"/>-->
+
+  </head>
+
+  <body ng-class="{'blackout':isBlackout}">
+
+    <header ng-show="activeSection!=='login'" ng-include="'partials/header.html'"></header>
+    <div ng-show="activeSection!=='login'" ng-include="'partials/notifications-popup.html'"></div>
+    <aside ng-show="activeSection!=='login'" ng-include="'partials/left-sidebar.html'"
+           class="left-sidebar" ng-class="{'left-sidebar-active':leftSidebarOpen}"></aside>
+    <section class="page-content" ng-view></section>
+    <aside ng-show="activeSection!=='login'" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
+
+
+    <!-- lib js files -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <!--<script src="bower_components/angular-animate/angular-animate.min.js"></script>-->
+    <script src="bower_components/angular-aria/angular-aria.js"></script>
+
+    <script src="bower_components/magnific-popup/dist/jquery.magnific-popup.min.js"></script>
+    <script src="bower_components/flexslider/jquery.flexslider-min.js"></script>
+    <script src="bower_components/pikaday/pikaday.js"></script>
+    <script src="bower_components/Chart.js/Chart.min.js"></script>
+    <script src="bower_components/powerange/dist/powerange.min.js"></script>
+    <script src="bower_components/tinynav/tinynav.min.js"></script>
+
+    <!-- build:js(.) scripts/oldieshim.js -->
+    <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
+    <![endif]-->
+    <!-- endbuild -->
+
+    <!-- custom js files -->
+    <script src="js/tabs.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/controllers/login.js"></script>
+    <script src="js/controllers/room.js"></script>
+    <script src="js/services/services.rest.js"></script>
+    <script src="js/services/services.js"></script>
+    <!--<script src="js/services/services.js"></script>-->
+    <!--<script src="js/services/services.rest.js"></script>-->
+    <!--<script src="js/services/services.repositories.js"></script>-->
+    <!--<script src="js/controllers/controllers.js"></script>-->
+    <!--<script src="js/controllers/controllers.control.js"></script>-->
+    <!--<script src="js/controllers/controllers.setup.js"></script>-->
+    <!--<script src="js/controllers/controllers.configuration.js"></script>-->
+    <!--<script src="js/main.js"></script>-->
+  </body>
+</html>

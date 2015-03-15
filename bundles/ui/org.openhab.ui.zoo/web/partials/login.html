@@ -1,0 +1,24 @@
+<div class="login-form">
+  <p class="text-center"><i class="icon i-lock"></i></p>
+
+  <form novalidate name="loginForm" >
+
+    <div ng-show="loginForm.$submitted || loginForm.username.$touched">
+      <div ng-show="loginForm.username.$error.required">Please fill username.</div>
+      <div ng-show="loginForm.password.$error.required">Password is required.</div>
+    </div>
+
+    <div class="form-group">
+      <input type="text" class="field" placeholder="HOUSE ID" name="username" ng-model="user.username" required>
+    </div>
+    <div class="form-group">
+      <input type="password" class="field" placeholder="PASSWORD" name="password" ng-model="user.password" required>
+    </div>
+    <div class="form-group">
+      <input type="submit" class="btn btn-block" value="Sign in to your account" ng-click="login()" ng-disabled="loginForm.$invalid">
+    </div>
+  </form>
+  <br>
+
+  <p class="text-center no-margin"><a href="#" class="white-link">Forgot password?</a></p>
+</div>

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Private-Package: org.openhab.ui.zoo.internal
+Ignore-Package: org.openhab.ui.zoo.internal
+Bundle-Name: openHAB ZOO UI
+Bundle-Vendor: http://www.zooautomation.com/
+Bundle-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-License: http://www.eclipse.org/legal/epl-v10.html
+Import-Package: org.osgi.service.component,
+ org.osgi.service.http,
+ org.slf4j
+Bundle-SymbolicName: org.openhab.ui.zoo;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Service-Component: OSGI-INF/*
+Require-Bundle: javax.servlet

@@ -1,0 +1,11 @@
+Group gZooPower
+Group gZooPowerChart
+Group gZooPowerDay
+Group gZooPowerWeek
+Group gZooPowerMonth
+
+Group gRooms
+
+DateTime billPeriod_start
+DateTime billPeriod_end
+

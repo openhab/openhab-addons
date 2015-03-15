@@ -1,0 +1,35 @@
+
+rule "Fridge Power sum"
+	when
+		Item Fridge_kWh changed
+	then
+		//var Number prev = previousState as DecimalType
+		//var Number curr = Fridge_kWh.state as DecimalType
+		//var Number delta = curr - previousState
+		
+		logInfo("Fridge kWh increased by " + Fridge_kWh.state)
+end
+
+
+rule "Initialize all kWh"
+	when 
+		System started
+	then
+		gZooPower?.members.forEach(consumer|
+			postUpdate(consumer, 1.0 + ((Math::random * 50.0).intValue) )
+		)
+		gZooPowerChart?.members.forEach(consumer|
+			postUpdate(consumer, 1.0 + ((Math::random * 50.0).intValue) )
+		)
+end
+
+rule "Increase value .1 per minute"
+	when 
+		Time cron "0 * * * * ?"
+		//System started
+	then
+		gZooPower?.members.forEach(consumer|
+			postUpdate(consumer, 0.1 + (consumer.state as DecimalType))
+		}
+end
+
