@@ -22,7 +22,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | DSC Alarm |  |  |  |
 | DMX512 |  |  |  |
 | EDS OWSever |  |  |  |
-| Energenie |  | |  |
+| Energenie | X | X |  |
 | EnOcean | X | X |  |
 | Epson Projector |  |  |  |
 | Exec | X | X |   |
@@ -49,7 +49,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Leviton/HAI Omnilink |  |  |  |
 | MAX!Cube |  |  | 2.0 version available |
 | MAX! CUL |  |  |  |
-| MiLight |  |  |  |
+| MiLight | X | X |  |
 | Modbus TCP |  |  |  |
 | Westaflex Modbus |  |  |  |
 | MPD |  |  |  |
