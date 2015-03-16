@@ -26,6 +26,12 @@
 	  		<groupId>com.github.eirslett</groupId>
 	        <artifactId>frontend-maven-plugin</artifactId>
 	        <version>0.0.22</version>
+
+            <configuration>
+                <gruntExecutable>node_modules/grunt-cli/bin/grunt</gruntExecutable>
+                <runGruntWithNode>true</runGruntWithNode>
+            </configuration>
+
 	        <executions>
 	        	<execution>
 	        		<id>Install node and npm</id>
