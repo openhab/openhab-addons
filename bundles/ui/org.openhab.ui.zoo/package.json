@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "openHAB 2 Zoo Automation UI",
   "private": true,
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
+    "bower": "^1.3.12",
     "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-jshint": "^0.11.0",
-    "grunt-contrib-uglify": "^0.7.0",
-    "bower": "^1.3.12"
+    "grunt-contrib-uglify": "^0.7.0"
   },
   "scripts": {
     "test": "echo \"No test infrastructure implemented at the moment.\" && exit 1"
