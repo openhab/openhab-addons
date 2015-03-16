@@ -42,6 +42,17 @@
 				        <!-- <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot> -->
 				    </configuration>
 	        	</execution>
+
+                <execution>
+                    <id>npm install</id>
+                    <goals>
+                        <goal>npm</goal>
+                    </goals>
+                    <!-- Optional configuration which provides for running any npm command -->
+                    <configuration>
+                        <arguments>install</arguments>
+                    </configuration>
+                </execution>
 	        	
 	        	<execution>
 				    <id>bower install</id>
