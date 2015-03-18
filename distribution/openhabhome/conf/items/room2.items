@@ -1,5 +1,0 @@
-Number TV_kWh 				(gRoom2,gZooPower)
-Number TV_kWh_day 			(gZooPowerChart,gZooPowerDay)
-Number TV_kWh_week 			(gZooPowerChart,gZooPowerWeek)
-Number TV_kWh_month			(gZooPowerChart,gZooPowerMonth)
-
