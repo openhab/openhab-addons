@@ -10,7 +10,7 @@
   </parent>
 
   <properties>
-    <bundle.symbolicName>org.openhab.ui.zoo</bundle.symbolicName>
+    <bundle.symbolicName>org.openhab.ui</bundle.symbolicName>
     <bundle.namespace>org.openhab.ui.zoo</bundle.namespace>
   </properties>
 
@@ -18,7 +18,7 @@
   <artifactId>org.openhab.ui.zoo</artifactId>
 
   <name>openHAB Zoo Automation UI</name>
-  <packaging>pom</packaging>
+  <packaging>eclipse-plugin</packaging>
   
   <build>
   	<plugins>
