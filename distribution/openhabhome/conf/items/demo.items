@@ -1,11 +1,11 @@
-Group All
-Group gGF 		(All)
-Group gFF 		(All)
-Group gC 		(All)
-Group Outdoor 	(All)
-Group Shutters 	(All)
-Group Weather 	(All)
-Group Status 	(All)
+Group gFF 			"First Floor" 	<firstfloor>	[ "home-group" ]
+Group gGF 			"Ground Floor"	<groundfloor>	[ "home-group" ]
+Group gC 			"Cellar"		<cellar>		[ "home-group" ]
+Group Garden 						<garden>		[ "home-group" ]
+Group Weather 						<sun>			[ "home-group" ]
+
+Group Status 
+Group Shutters
 
 Group GF_Living 	"Living Room" 	<video> 	(gGF)
 Group GF_Kitchen 	"Kitchen" 		<kitchen> 	(gGF)
@@ -45,12 +45,11 @@ Switch Light_C_Staircase 			"Staircase" 	(gC, Lights)
 Switch Light_C_Washing_Ceiling 		"Washing" 		(gC, Lights)
 Switch Light_C_Workshop 			"Workshop" 		(gC, Lights)
 
-Switch Light_Outdoor_Garage 		"Garage" 		(Outdoor, Lights)
-Switch Light_Outdoor_Terrace 		"Terrace" 		(Outdoor, Lights)
-Switch Light_Outdoor_Frontdoor 		"Frontdoor"		(Outdoor, Lights)
+Switch Light_Garden_Garage 			"Garage" 		(Garden, Lights)
+Switch Light_Garden_Terrace 		"Terrace" 		(Garden, Lights)
 
 /* Heating */
-Switch Heating_GF_Corridor 	"GF Corridor" 	<heating>	(GF_Corridor, Heating)
+Switch Heating_GF_Corridor 	"Corridor" 		<heating>	(GF_Corridor, Heating)
 Switch Heating_GF_Toilet 	"Toilet"	 	<heating>	(GF_Toilet, Heating)
 Switch Heating_GF_Living 	"Livingroom" 	<heating>	(GF_Living, Heating)
 Switch Heating_GF_Kitchen 	"Kitchen" 		<heating>	(GF_Kitchen, Heating)
@@ -61,8 +60,6 @@ Switch Heating_FF_Child 	"Child's Room" 	<heating>	(FF_Child, Heating)
 Switch Heating_FF_Bed 		"Bedroom" 		<heating>	(FF_Bed, Heating)
 
 /* Rollershutters */
-Switch Shutter_all (Shutters)
-
 Rollershutter Shutter_GF_Toilet 		"Toilet"		(GF_Toilet, Shutters)
 Rollershutter Shutter_GF_Kitchen 		"Kitchen"		(GF_Kitchen, Shutters)
 Rollershutter Shutter_GF_Living 		"Livingroom"	(GF_Living, Shutters)
@@ -71,6 +68,8 @@ Rollershutter Shutter_FF_Bed 			"Bedroom"		(FF_Bed, Shutters)
 Rollershutter Shutter_FF_Bath 			"Bath"			(FF_Bath, Shutters)
 Rollershutter Shutter_FF_Office_Window	"Office Window"	(FF_Office, Shutters)
 Rollershutter Shutter_FF_Office_Door 	"Office Door"	(FF_Office, Shutters)
+
+Switch Shutter_all
 
 /* Indoor Temperatures */
 Number Temperature_GF_Corridor 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Corridor)
@@ -93,12 +92,12 @@ Contact Window_FF_Bed 			"Bedroom [MAP(en.map):%s]"			(FF_Bed, Windows)
 Contact Window_FF_Office_Window "Office Window [MAP(en.map):%s]"	(FF_Office, Windows)
 Contact Window_FF_Office_Door 	"Balcony Door [MAP(en.map):%s]"		(FF_Office, Windows)
 
-Contact Garage_Door 			"Garage Door [MAP(en.map):%s]"		(Outdoor, Windows)
+Contact Garage_Door 			"Garage Door [MAP(en.map):%s]"		(Garden, Windows)
 
-Group Weather_Chart													(Weather)
-Number Weather_Temperature 		"Outside Temperature [%.1f °C]"	<temperature> (Weather_Chart) { channel="yahooweather:weather:berlin:temperature" }
-Number Weather_Temp_Max 		"Todays Maximum [%.1f °C]"	<temperature> (Weather_Chart)
-Number Weather_Temp_Min 		"Todays Minimum [%.1f °C]"	<temperature> (Weather_Chart)
+Group Weather_Chart
+Number Weather_Temperature 		"Outside Temperature [%.1f °C]"	<temperature> (Weather, Weather_Chart) { channel="yahooweather:weather:berlin:temperature" }
+Number Weather_Temp_Max 		"Todays Maximum [%.1f °C]"		<temperature> (Weather, Weather_Chart)
+Number Weather_Temp_Min 		"Todays Minimum [%.1f °C]"		<temperature> (Weather, Weather_Chart)
 Number Weather_Chart_Period		"Chart Period"
 DateTime Weather_LastUpdate		"Last Update [%1$ta %1$tR]"	<clock>
 
