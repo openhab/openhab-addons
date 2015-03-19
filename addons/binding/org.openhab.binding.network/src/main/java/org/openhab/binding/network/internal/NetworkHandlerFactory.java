@@ -5,24 +5,23 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.networkhealth.internal;
+package org.openhab.binding.network.internal;
 
-import static org.openhab.binding.networkhealth.NetworkHealthBindingConstants.*;
+import static org.openhab.binding.network.NetworkBindingConstants.*;
 
-import org.openhab.binding.networkhealth.handler.NetworkHealthHandler;
-
+import org.openhab.binding.network.handler.NetworkHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 
 /**
- * The {@link NetworkHealthHandlerFactory} is responsible for creating things and thing 
+ * The {@link NetworkHandlerFactory} is responsible for creating things and thing 
  * handlers.
  * 
  * @author Marc Mettke
  */
-public class NetworkHealthHandlerFactory extends BaseThingHandlerFactory {
+public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -35,10 +34,9 @@ public class NetworkHealthHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
-            return new NetworkHealthHandler(thing);
+            return new NetworkHandler(thing);
         }
 
         return null;
     }
 }
-
