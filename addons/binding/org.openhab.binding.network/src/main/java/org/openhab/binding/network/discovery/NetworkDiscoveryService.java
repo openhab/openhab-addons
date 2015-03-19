@@ -33,21 +33,11 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService {
 	private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
 
 	public NetworkDiscoveryService() {
-		super(SUPPORTED_THING_TYPES_UIDS, 300);
+		super(SUPPORTED_THING_TYPES_UIDS, 300, false);
 	}
 
 	public Set<ThingTypeUID> getSupportedThingTypes() {
 		return SUPPORTED_THING_TYPES_UIDS;
-	}
-
-	@Override
-	protected void startBackgroundDiscovery() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				/* Devices are only discovered on users request */
-			}
-		}).start();
 	}
 
 	@Override
