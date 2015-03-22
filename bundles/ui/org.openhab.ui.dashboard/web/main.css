@@ -104,6 +104,10 @@ section {
     background-image: url('img/paperui.png');
 }
 
+.link.ui-habmin .body {
+    background-image: url('img/habmin.png');
+}
+
 .link.rest .body {
     background-image: url('img/restapi.png');
 }
