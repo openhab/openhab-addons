@@ -54,12 +54,6 @@ public class BindingConfigReaderDelegate implements BindingConfigReader {
 		
 	}
 
-	@Override
-	public void removeConfigurations(String context) {
-		reader.removeConfigurations(context);
-		
-	}
-
 	private org.openhab.core.items.Item getOpenHABItem(String itemType) throws BindingConfigParseException {
 		return getOpenHABItem(itemType, "itemName");
 	}
@@ -80,5 +74,14 @@ public class BindingConfigReaderDelegate implements BindingConfigReader {
 		}
 		throw new BindingConfigParseException("cannot process unknown item type " + itemType);
 	}
+
+    @Override
+    public void startConfigurationUpdate(String context) {
+        reader.removeConfigurations(context);        
+    }
+
+    @Override
+    public void stopConfigurationUpdate(String context) {
+    }
 
 }

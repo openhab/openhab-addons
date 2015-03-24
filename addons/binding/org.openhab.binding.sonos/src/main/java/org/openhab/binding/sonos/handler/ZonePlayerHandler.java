@@ -1841,4 +1841,10 @@ UpnpIOParticipant, DiscoveryListener {
 		return stateMap.get("CurrentURIFormatted");
 	}
 
+    @Override
+    public void onStatusChanged(boolean status) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
