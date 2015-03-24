@@ -1,6 +1,6 @@
 'use strict';
 
-var smartHomeModule = angular.module('SmartHome', []);
+var smartHomeModule = angular.module('SmartHome.rest', []);
 
 smartHomeModule.factory('itemService', function($resource) {
     return $resource('/rest/items', {}, {

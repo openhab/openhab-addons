@@ -1,10 +1,16 @@
 angular.module('Zoo', [
 	'ngRoute',
 	'ngResource',
-	'SmartHome'
-]).config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+	'angularSpinner',
+	'SmartHome.rest',
+	'SmartHome.repositories',
+	'SmartHome.services',
+	'SmartHome.datacache'
+]).config(['$routeProvider', '$locationProvider', 'usSpinnerConfigProvider', function ($routeProvider, $locationProvider, usSpinnerConfigProvider) {
 
 	$locationProvider.html5Mode(false).hashPrefix('!');
+
+	usSpinnerConfigProvider.setDefaults({color: 'blue'});
 
 	$routeProvider.
 		when('/login', {
@@ -31,7 +37,7 @@ angular.module('Zoo', [
 			templateUrl: 'partials/energy-center.html'
 		}).otherwise({redirectTo: '/login'});
 
-}]).run(['$location', '$rootScope', 'thingService', 'itemService', function ($location, $rootScope, thingService, itemService) {
+}]).run(['$location', '$rootScope', '$log', 'itemService', function ($location, $rootScope, $log, itemService) {
 
 	$rootScope.$on('$routeChangeSuccess', function () {
 		// Strip slash in front of current path:
@@ -46,18 +52,21 @@ angular.module('Zoo', [
 		$rootScope.isBlackout = !$rootScope.isBlackout;
 	};
 
-	// TODO Move to directive
-	thingService.getByUid({thingUID:'yahooweather:weather:20066544'}, function (thing) {
-		$rootScope.weather = {locationLabel: thing.item.label, date: new Date()};
-		thing.item.members.forEach(function (item) {
-			if (item.category === 'Temperature') {
-				$rootScope.weather.temperature = item.state / 10;
-			}
-		});
+	itemService.getByName({itemName:'gRooms'}, function (rooms) {
+		$rootScope.smarthome = {rooms : rooms.members};
 	});
 
-	itemService.getByName({itemName:'gRooms'}, function (rooms) {
-		$rootScope.smarthome = {rooms : angular.copy(rooms.members)};
+	// TODO Move to directive
+	itemService.getByName({itemName:'gWeather'}, function(weatherItems) {
+		console.log(weatherItems);
+		weatherItems.members.forEach(function (item) {
+			if (item.type === 'GroupItem') return;
+			$rootScope.weather = {
+				locationLabel: item.label,
+				date: new Date(),
+				temperature: item.state
+			};
+		});
 	});
 
 
