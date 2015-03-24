@@ -122,22 +122,12 @@
   -moz-animation: cd-fade-in 0.5s;
   animation: cd-fade-in 0.5s;
 }
-.cd-tabs-content li p {
-  font-size: 14px;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  margin-bottom: 2em;
-}
 @media only screen and (min-width: 960px) {
   .cd-tabs-content {
     min-height: 0;
   }
   .cd-tabs-content li {
     padding: 0;
-  }
-  .cd-tabs-content li p {
-    font-size: 16px;
-    font-size: 1rem;
   }
 }
 

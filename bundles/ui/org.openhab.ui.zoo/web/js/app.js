@@ -1,4 +1,5 @@
 angular.module('Zoo', [
+	'Zoo.controllers',
 	'ngRoute',
 	'ngResource',
 	'SmartHome'
@@ -10,26 +11,48 @@ angular.module('Zoo', [
 		when('/login', {
 			templateUrl: 'partials/login.html',
 			controller: 'LoginController'
-		}).
-		when('/room', {
-			templateUrl: 'partials/room.html',
-			controller: 'RoomController'
-		}).
-		when('/access', {
+		})
+		.when('/room', {
+			templateUrl: 'partials/room.html'
+			//controller: 'RoomController'
+		})
+		.when('/access', {
 			templateUrl: 'partials/access.html'
-		}).
-		when('/alerts', {
+		})
+		.when('/alerts', {
 			templateUrl: 'partials/alerts.html'
-		}).
-		when('/cctv', {
+		})
+		.when('/cctv', {
 			templateUrl: 'partials/cctv.html'
-		}).
-		when('/cost-settings', {
+		})
+		.when('/cost-settings', {
 			templateUrl: 'partials/cost-settings.html'
-		}).
-		when('/energy-center', {
+		})
+		.when('/energy-center', {
 			templateUrl: 'partials/energy-center.html'
-		}).otherwise({redirectTo: '/login'});
+		})
+		.when('/profile', {
+			templateUrl: 'partials/profile.html'
+		})
+		.when('/alarm', {
+			templateUrl: 'partials/alarm.html'
+		})
+		.when('/profile', {
+			templateUrl: 'partials/profile.html'
+		})
+		.when('/intercom', {
+			templateUrl: 'partials/intercom.html'
+		})
+		.when('/discover', {
+			templateUrl: 'partials/discover.html'
+		})
+		.when('/manual-setup', {
+			templateUrl: 'partials/manual-setup.html'
+		})
+		.when('/groups', {
+			templateUrl: 'partials/groups.html'
+		})
+		.otherwise({redirectTo: '/login'});
 
 }]).run(['$location', '$rootScope', 'thingService', 'itemService', function ($location, $rootScope, thingService, itemService) {
 

@@ -1,0 +1,91 @@
+<div class="container">
+
+  <h2>Settings</h2>
+
+  <nav>
+    <ul class="cd-tabs-navigation">
+      <li><a href="discover.html">Discover</a></li>
+      <li><a href="manual-setup.html">Manual setup</a></li>
+      <li><a class="selected" href="groups.html">Groups</a></li>
+    </ul>
+  </nav>
+
+  <ul class="breadcrumbs">
+    <li><a href="groups.html">Groups</a></li>
+    <li><a href="groups-inner.html">Living room</a></li>
+  </ul>
+
+  <table class="main-table">
+    <tr>
+      <td><a href="group-inner.html">On/off</a></td>
+      <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim" href="#confirmation">delete</a>
+      </td>
+    </tr>
+    <tr>
+      <td><a href="group-inner.html">Dimmer</a></td>
+      <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim" href="#confirmation">delete</a>
+      </td>
+    </tr>
+    <tr>
+      <td><a href="group-inner.html">Rem</a></td>
+      <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim" href="#confirmation">delete</a>
+      </td>
+    </tr>
+  </table>
+
+  <div id="dialog" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+
+    <div class="dialog-header">
+      <h3>Group</h3>
+    </div>
+    <!--dialog-header-->
+
+    <div class="dialog-content">
+      <div class="group">
+        <p class="small-margin"><strong>Group name</strong></p>
+        <input type="text" class="field">
+      </div>
+    </div>
+    <!--dialog-content-->
+
+    <div class="dialog-footer">
+      <div class="row fixed-row">
+        <div class="col6">
+          <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+        </div>
+        <div class="col6 text-right">
+          <a class="popup-modal-dismiss btn" href="#">Save</a>
+        </div>
+      </div>
+      <!--row-->
+    </div>
+    <!--dialog-footer-->
+
+  </div>
+  <!--dialog-->
+
+  <div id="confirmation" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+    <div class="dialog-header">
+      <h3>Delete?</h3>
+    </div>
+    <!--popup-header-->
+    <div class="dialog-content">
+      Are you sure you want to delete?
+    </div>
+    <!--popup-content-->
+    <div class="dialog-footer">
+      <div class="row fixed-row">
+        <div class="col6">
+          <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+        </div>
+        <div class="col6 text-right">
+          <a class="popup-modal-dismiss btn" href="#">Yes</a>
+        </div>
+      </div>
+      <!--row-->
+    </div>
+    <!--dialog-footer-->
+  </div>
+  <!--confirmation-->
+
+</div>
