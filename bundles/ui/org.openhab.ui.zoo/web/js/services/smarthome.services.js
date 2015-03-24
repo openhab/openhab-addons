@@ -1,14 +1,14 @@
 'use strict';
 
 angular.module('SmartHome.services', [])
-	.config(function ($httpProvider, $log) {
-		//var language = localStorage.getItem('language');
+	.config(function ($httpProvider) {
+		var language = null;//localStorage.getItem('language');
 		if (language) {
 			$httpProvider.defaults.headers.common['Accept-Language'] = language;
 		}
 		var interceptor = function ($q) {
 			function error(response) {
-				$log.error('An error occured: ' + response.status + ' (' + response.statusText + ')');
+				//$log.error('An error occured: ' + response.status + ' (' + response.statusText + ')');
 				return $q.reject(response);
 			}
 

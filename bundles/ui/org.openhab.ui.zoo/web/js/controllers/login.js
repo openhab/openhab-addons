@@ -1,4 +1,4 @@
-angular.module('Zoo').controller('LoginController', function ($rootScope, $scope, $location, $log) {
+angular.module('Zoo.controllers', []).controller('LoginController', function ($rootScope, $scope, $location, $log) {
 
 	$rootScope.user = {};
 	$scope.user = {};

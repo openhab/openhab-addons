@@ -1,0 +1,53 @@
+.ui.accordion .title {
+	cursor:pointer;
+	position:relative;
+	-webkit-transition:all ease .3s;
+	-moz-transition:all ease .3s;
+	transition:all ease .3s;
+	padding:10px 20px 10px 0;
+	color:#4a9dd4;
+	border-top:1px solid #ddd;
+	}
+
+.ui.accordion .title:first-child {
+	border-top:none;
+	}
+	
+.ui.accordion .title:before {
+	content:'+';
+	position:absolute;
+	top:10px;
+	right:0;
+	font-weight:900;
+	width:20px;
+	text-align:center;
+	}
+
+.ui.accordion .active.title:before {
+	content:'-';
+	}
+	
+.ui.accordion > .content,
+.ui.accordion .content > .content,
+.ui.accordion .accordion .content {
+  display: none;
+}
+
+.ui.accordion.menu .content {
+  display: none;
+}
+
+.ui.accordion .active.content,
+.ui.accordion .accordion .active.content {
+  display: block;
+}
+
+.ui.fluid.accordion,
+.ui.fluid.accordion .accordion {
+  width: 100%;
+}
+
+.ui.accordion .content {	
+	padding:10px 0;
+	}
+
