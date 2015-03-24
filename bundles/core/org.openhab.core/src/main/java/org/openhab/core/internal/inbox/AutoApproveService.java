@@ -16,7 +16,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultFlag;
 import org.eclipse.smarthome.config.discovery.inbox.Inbox;
 import org.eclipse.smarthome.config.discovery.inbox.InboxListener;
-import org.eclipse.smarthome.core.thing.ManagedThingProvider;
+import org.eclipse.smarthome.core.thing.setup.ThingSetupManager;
 import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,35 +33,41 @@ public class AutoApproveService implements InboxListener {
 
 	final static private Logger logger = LoggerFactory.getLogger(AutoApproveService.class);
 	
-	private ManagedThingProvider managedThingProvider;
+	private ThingSetupManager thingSetupManager;
 
 	private Inbox inbox;
 	
     protected void activate(Map<String, Object> configProps) throws ConfigurationException {
 		String enabled = (String) configProps.get("enabled");
-		if("true".equalsIgnoreCase(enabled)) {
-	    	inbox.addInboxListener(this);
-	    	for(DiscoveryResult result : inbox.getAll()) {
-	    		if(result.getFlag().equals(DiscoveryResultFlag.NEW)) {
-	    			thingAdded(inbox, result);
-	    		}
-	    	}
-		} else {
-	    	this.inbox.removeInboxListener(this);
-		}
+		enable(enabled);
+    }
+
+    protected void modified(Map<String, Object> configProps) throws ConfigurationException {
+        String enabled = (String) configProps.get("enabled");
+        enable(enabled);
     }
     
-	@Override
+	private void enable(String enabled) {
+        if("true".equalsIgnoreCase(enabled)) {
+        	inbox.addInboxListener(this);
+        	for(DiscoveryResult result : inbox.getAll()) {
+        		if(result.getFlag().equals(DiscoveryResultFlag.NEW)) {
+        			thingAdded(inbox, result);
+        		}
+        	}
+    	} else {
+        	this.inbox.removeInboxListener(this);
+    	}
+    }
+
+    @Override
 	public void thingAdded(Inbox source, DiscoveryResult result) {
 		logger.debug("Approving inbox entry '{}'", result.toString());
 		Map<String, Object> props = new HashMap<>(result.getProperties());
 
-		// TODO: this is a hack as long as we do not have a possibility to store localized labels for things
-		props.put("label", result.getLabel());
-
 		Configuration conf = new Configuration(props);
 		
-    	managedThingProvider.createThing(result.getThingTypeUID(), result.getThingUID(), result.getBridgeUID(), conf);
+    	thingSetupManager.addThing(result.getThingUID(), conf, result.getBridgeUID(), result.getLabel());
 	}
 
 	@Override
@@ -82,12 +88,12 @@ public class AutoApproveService implements InboxListener {
     }
 
 
-    protected void setManagedThingProvider(ManagedThingProvider managedThingProvider) {
-        this.managedThingProvider = managedThingProvider;
+    protected void setThingSetupManager(ThingSetupManager thingSetupManager) {
+        this.thingSetupManager = thingSetupManager;
     }
 
-    protected void unsetManagedThingProvider(ManagedThingProvider managedThingProvider) {
-        this.managedThingProvider = null;
+    protected void unsetThingSetupManager(ThingSetupManager thingSetupManager) {
+        this.thingSetupManager = null;
     }
 
 }

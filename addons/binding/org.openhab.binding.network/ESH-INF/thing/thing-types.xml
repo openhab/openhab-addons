@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="network"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Network Binding-->
+    <thing-type id="device">
+        <label>Network Device</label>
+        <description>Device which must be connected to the same Network as OpenHAB</description>
+
+        <channels>
+            <channel id="online" typeId="online"></channel>
+        </channels>
+        <config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname or IP</label>
+				<description>Hostname or IP of the Device</description>
+			</parameter>
+
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>The Port on which the Device can be accessed</description>
+				<default>0</default>
+			</parameter>
+
+			<parameter name="retry" type="integer">
+				<label>Retry</label>
+				<description>Defines how many times a ping shall occur, before the device is stated as offline</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="timeout" type="integer">
+				<label>Timeout</label>
+				<description>States how long to wait (in ms), if a connection can not be established. If system ping is used, only full seconds are valid.</description>
+				<default>5000</default>
+			</parameter>
+
+			<parameter name="refresh_interval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how often a refresh shall occur (in ms)</description>
+				<default>60000</default>
+			</parameter>	
+			
+			<parameter name="use_system_ping" type="boolean">
+				<label>Use System Ping</label>
+				<description>Uses the Ping Program from the System</description>
+				<default>false</default>
+			</parameter>		
+
+		</config-description>
+    </thing-type>
+    <channel-type id="online">
+        <item-type>Switch</item-type>
+        <label>Online</label>
+        <description>States whether a device is online or not</description>
+        <category>Switch</category>
+	    <tags>
+	      <tag>Network Device</tag>
+	    </tags>
+	    <state readOnly="true"></state>
+    </channel-type>
+
+</thing:thing-descriptions>
