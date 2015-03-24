@@ -13,3 +13,4 @@ Bundle-SymbolicName: org.openhab.ui.zoo;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/*
 Require-Bundle: javax.servlet
+Bundle-ClassPath: .
