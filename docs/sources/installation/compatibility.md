@@ -127,3 +127,13 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Squeezebox |  |  |  |
 | Pushover |  |  |  |
 | OpenWebIf |  |  |  |
+
+## Text-to-speech engines
+
+| Binding | 2.0-SNAPSHOT + 1.6.0 | 2.0-SNAPSHOT + 1.7.0-SNAPSHOT | Remarks |
+|-------|:----------------------:|:-------------------------------:|---|
+| Macintalk |  |  | 2.0 version available |
+| FreeTTS |  |  |  |
+| GoogleTTS |  |  |  |
+| MaryTTS | X | X |  |
+| Speechdispatcher |  |  |  |
