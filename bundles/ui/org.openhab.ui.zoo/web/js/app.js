@@ -50,6 +50,7 @@ angular.module('Zoo', [
 			templateUrl: 'partials/intercom.html'
 		})
 		.when('/discover', {
+			controller: 'DiscoverController',
 			templateUrl: 'partials/discover.html'
 		})
 		.when('/manual-setup', {
@@ -61,6 +62,9 @@ angular.module('Zoo', [
 		.otherwise({redirectTo: '/login'});
 
 }]).run(['$location', '$rootScope', '$log', 'itemService', function ($location, $rootScope, $log, itemService) {
+
+	// TODO Get rid of this
+	$rootScope.data = {};
 
 	$rootScope.$on('$routeChangeSuccess', function () {
 		// Strip slash in front of current path:

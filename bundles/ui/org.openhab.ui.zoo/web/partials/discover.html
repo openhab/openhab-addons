@@ -12,135 +12,45 @@
 
   <div class="group">
     <h2>List of items found</h2>
-
-    <p>Press to scan</p>
+    <button ng-click="scan()">Press to scan</button>
   </div>
 
   <div class="ui accordion">
 
-    <div class="title">
-      Max
-    </div>
-    <!--title-->
-    <div class="content">
-      <p class="no-margin"><strong>IP: 192.01.01.01</strong></p>
-
-      <div class="row cols-margin">
-        <div class="col4">
-          Nickname
-          <input type="text" class="field" value="Device">
-        </div>
-        <div class="col4">
-          Group
-          <select class="field">
-            <option>Living room</option>
-            <option>TV room</option>
-            <option>Main room</option>
-          </select>
-        </div>
-        <div class="col4">
-          <br>
-          <input type="submit" value="Save" class="btn btn-block">
+    <form ng-repeat="binding in discoverableBindings">
+      <div class="title">
+        {{binding}}
+      </div>
+      <div class="content">
+        <!--<p class="no-margin"><strong>UID: {{thing.thingUID}}</strong></p>-->
+        <div ng-repeat="thing in scanResults | filter:binding" class="row cols-margin">
+          <p class="no-margin"><strong>UID: {{thing.thingUID}}</strong></p>
+          <div class="col4">
+            Name
+            <input type="text" class="field" required="required"
+                   name="label" ng-model="approveData[thing.thingUID].label">
+          </div>
+          <div class="col4">
+            Group
+            <select class="field" name="group" ng-model="approveData[thing.thingUID].group">
+              <option>Living room</option>
+              <option>TV room</option>
+              <option>Main room</option>
+            </select>
+          </div>
+          <div class="col4">
+            <br>
+            <input type="submit" value="Add" class="btn btn-block" ng-click="approve(thing.thingUID)">
+          </div>
         </div>
       </div>
-      <!--row-->
-    </div>
-    <!--content-->
+    </form>
 
-    <div class="title">
-      Wheather
-    </div>
-    <!--title-->
-    <div class="content">
-      <p class="no-margin"><strong>IP: 192.01.01.01</strong></p>
-
-      <div class="row cols-margin">
-        <div class="col4">
-          Nickname
-          <input type="text" class="field" value="Device">
-        </div>
-        <div class="col4">
-          Group
-          <select class="field">
-            <option>Living room</option>
-            <option>TV room</option>
-            <option>Main room</option>
-          </select>
-        </div>
-        <div class="col4">
-          <br>
-          <input type="submit" value="Save" class="btn btn-block">
-        </div>
-      </div>
-      <!--row-->
-    </div>
-    <!--content-->
-
-    <div class="title">
-      HUE
-    </div>
-    <!--title-->
-    <div class="content">
-      <p class="no-margin"><strong>IP: 192.01.01.01</strong></p>
-
-      <div class="row cols-margin">
-        <div class="col4">
-          Nickname
-          <input type="text" class="field" value="Device">
-        </div>
-        <div class="col4">
-          Group
-          <select class="field">
-            <option>Living room</option>
-            <option>TV room</option>
-            <option>Main room</option>
-          </select>
-        </div>
-        <div class="col4">
-          <br>
-          <input type="submit" value="Save" class="btn btn-block">
-        </div>
-      </div>
-      <!--row-->
-    </div>
-    <!--content-->
-
-    <div class="title">
-      Sonos
-    </div>
-    <!--title-->
-    <div class="content">
-      <p class="no-margin"><strong>IP: 192.01.01.01</strong></p>
-
-      <div class="row cols-margin">
-        <div class="col4">
-          Nickname
-          <input type="text" class="field" value="Device">
-        </div>
-        <div class="col4">
-          Group
-          <select class="field">
-            <option>Living room</option>
-            <option>TV room</option>
-            <option>Main room</option>
-          </select>
-        </div>
-        <div class="col4">
-          <br>
-          <input type="submit" value="Save" class="btn btn-block">
-        </div>
-      </div>
-      <!--row-->
-
-    </div>
-    <!--container-->
   </div>
 
   <script>
-
-    //accordion
+    // TODO Angularify me
     $('.ui.accordion').accordion();
-
   </script>
 
 </div>

@@ -11,7 +11,7 @@ angular.module('SmartHome.repositories', ['SmartHome.datacache', 'SmartHome.serv
 	})
 	.factory('discoveryResultRepository', function (DataCache, $rootScope, inboxService, eventService) {
 		$rootScope.data.discoveryResults = [];
-		DataCache.init($rootScope.data.discoveryResults, eventService);
+		DataCache.init($rootScope.data.discoveryResults, inboxService);
 
 		eventService.onEvent('smarthome/inbox/added/*', function (topic, discoveryResult) {
 			DataCache.add(discoveryResult);

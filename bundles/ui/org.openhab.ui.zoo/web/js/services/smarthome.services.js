@@ -16,21 +16,21 @@ angular.module('SmartHome.services', [])
 		};
 		$httpProvider.interceptors.push(interceptor);
 
-	})
-	.factory('eventService', function ($resource) {
-		var eventSrc = new EventSource('/rest/events');
-		return function () {
-			this.onEvent = function (topic, callback) {
-				var topicRegex = topic.replace('/', '\/').replace('*', '.*');
-				eventSrc.addEventListener('message', function (event) {
-					var data = JSON.parse(event.data);
-					if (data.topic.match(topicRegex)) {
-						callback(data.topic, data.object);
-					}
-				});
-			}
-		};
 	});
+	//.factory('eventService', function ($resource) {
+	//	var eventSrc = new EventSource('/rest/events');
+	//	return function () {
+	//		this.onEvent = function (topic, callback) {
+	//			var topicRegex = topic.replace('/', '\/').replace('*', '.*');
+	//			eventSrc.addEventListener('message', function (event) {
+	//				var data = JSON.parse(event.data);
+	//				if (data.topic.match(topicRegex)) {
+	//					callback(data.topic, data.object);
+	//				}
+	//			});
+	//		}
+	//	};
+	//});
 //.factory('toastService', function ($mdToast, $rootScope) {
 //	var eventSrc = new EventSource('/rest/events');
 //	return function () {
