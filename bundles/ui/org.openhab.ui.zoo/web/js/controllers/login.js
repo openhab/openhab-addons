@@ -8,6 +8,7 @@ angular.module('ZooLib.controllers.login', []).controller('LoginController', fun
   this.user = {};
   this.login = function(user) {
     $log.info("User logged in: ", user);
+    user.isAuthenticated = true;
     $rootScope.user = user;
     return $location.path('room');
   };

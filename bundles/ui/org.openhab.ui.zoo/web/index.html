@@ -41,19 +41,19 @@
 
   <body ng-class="{'blackout':isBlackout}">
 
-    <header ng-show="activeSection!=='login'" ng-include="'partials/header.html'"></header>
-    <div ng-show="activeSection!=='login'" ng-include="'partials/notifications-popup.html'"></div>
-    <aside ng-show="activeSection!=='login'" ng-include="'partials/left-sidebar.html'"
+    <header ng-show="user.isAuthenticated" ng-include="'partials/header.html'"></header>
+    <div ng-show="user.isAuthenticated" ng-include="'partials/notifications-popup.html'"></div>
+    <aside ng-show="user.isAuthenticated" ng-include="'partials/left-sidebar.html'"
            class="left-sidebar" ng-class="{'left-sidebar-active':leftSidebarOpen}"></aside>
     <section class="page-content" ui-view></section>
-    <aside ng-show="activeSection!=='login'" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
+    <aside ng-show="user.isAuthenticated" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
 
 
     <!-- lib js files -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <!--<script src="bower_components/angular-route/angular-route.js"></script>-->
-    <script src="bower_components/angular-ui-router/angular-ui-router.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <!--<script src="bower_components/angular-animate/angular-animate.min.js"></script>-->
     <!--<script src="bower_components/angular-aria/angular-aria.js"></script>-->

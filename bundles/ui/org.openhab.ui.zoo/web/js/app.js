@@ -1,5 +1,5 @@
 angular.module('ZooApp', [
-	'ngRoute',
+	'ui.router',
 	'ngResource',
 	'angularSpinner',
 	'SmartHome.services',
@@ -11,66 +11,67 @@ angular.module('ZooApp', [
 
 	usSpinnerConfigProvider.setDefaults({color: 'blue'});
 
-	$routeProvider.
-		when('/login', {
+	$stateProvider
+		.state('login', {
+			url:'/login',
 			templateUrl: 'partials/login.html',
-			controller: 'LoginController',
-			controllerAs: 'ctrl'
+			controller: 'LoginController as ctrl'
 		})
-		.when('/room', {
+		.state('room', {
+			url:'/room',
 			templateUrl: 'partials/room.html',
-			controller: 'RoomController',
-			controllerAs: 'ctrl'
+			controller: 'RoomController as ctrl'
 		})
-		.when('/access', {
+		.state('access', {
+			url:'/access',
 			templateUrl: 'partials/access.html'
 		})
-		.when('/alerts', {
+		.state('alerts', {
+			url:'/alerts',
 			templateUrl: 'partials/alerts.html'
 		})
-		.when('/cctv', {
+		.state('cctv', {
+			url:'/cctv',
 			templateUrl: 'partials/cctv.html'
 		})
-		.when('/cost-settings', {
+		.state('cost-settings', {
+			url:'/cost-settings',
 			templateUrl: 'partials/cost-settings.html'
 		})
-		.when('/energy-center', {
-			templateUrl: 'partials/energy-center.html'
+		.state('energy-center', {
+			url:'/energy-center',
+			templateUrl: 'partials/cost-settings.html'
 		})
-		.when('/profile', {
+		.state('profile', {
+			url:'profile',
 			templateUrl: 'partials/profile.html'
 		})
-		.when('/alarm', {
+		.state('alarm', {
+			url:'/alarm',
 			templateUrl: 'partials/alarm.html'
 		})
-		.when('/profile', {
-			templateUrl: 'partials/profile.html'
+		.state('intercom', {
+			url:'/alarm',
+			templateUrl: 'partials/alarm.html'
 		})
-		.when('/intercom', {
-			templateUrl: 'partials/intercom.html'
+		.state('settings', {
+			templateUrl: 'partials/settings.html'
 		})
-		.when('/discover', {
-			controller: 'DiscoverController',
-			templateUrl: 'partials/discover.html'
+		.state('settings.discover', {
+			templateUrl: 'partials/settings.discover.html'
 		})
-		.when('/manual-setup', {
-			templateUrl: 'partials/manual-setup.html'
+		.state('settings.manual', {
+			templateUrl: 'partials/settings.manual.html'
 		})
-		.when('/groups', {
-			templateUrl: 'partials/groups.html'
+		.state('settings.groups', {
+			templateUrl: 'partials/settings.groups.html'
 		})
-		.otherwise({redirectTo: '/login'});
 
 }).run(['$location', '$rootScope', '$log', 'itemService', function ($location, $rootScope, $log, itemService) {
 
 	// TODO Get rid of this
 	$rootScope.data = {};
-
-	$rootScope.$on('$routeChangeSuccess', function () {
-		// Strip slash in front of current path:
-		$rootScope.activeSection = $location.path().substr(1);
-	});
-
+	
 	$rootScope.leftSidebarOpen = false;
 	$rootScope.isBlackout = false;
 
@@ -95,8 +96,9 @@ angular.module('ZooApp', [
 	//		};
 	//	});
 	//});
-
-
-
-
 }]);
+
+angular.module("ZooApp").run(function ($rootScope, $state, $stateParams) {
+	$rootScope.$state = $state;
+	$rootScope.$stateParams = $stateParams;
+});

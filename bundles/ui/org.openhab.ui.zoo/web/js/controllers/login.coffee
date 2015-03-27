@@ -6,6 +6,7 @@ angular.module('ZooLib.controllers.login', []).controller 'LoginController', ($r
 	@login = (user) ->
 		$log.info "User logged in: ", user
 		# TODO Auth stuff
+		user.isAuthenticated = yes
 		$rootScope.user = user
 		$location.path 'room'
 

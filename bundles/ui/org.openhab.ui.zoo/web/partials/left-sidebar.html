@@ -6,7 +6,7 @@
   </form>
 
   <!--mobile user info-->
-  <a href="#!/profile" class="user visible-mobile">
+  <a ui-sref="profile" class="user visible-mobile">
     <div class="photo-wrap">
       <img src="img/user.jpg" alt="{{user.name}}">
     </div>
@@ -15,56 +15,56 @@
   </a>
 
   <ul class="nav">
-    <li ng-class="{'active':activeSection==='room'}">
-      <a href="#!/room">
+    <li ui-sref-active="active">
+      <a ui-sref="room">
         <i class="nav-icon i-room"></i>
         Rooms
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='energy-center'}">
-      <a href="#!/energy-center">
+    <li ui-sref-active="active">
+      <a ui-sref="energy-center">
         <i class="nav-icon i-energy-center"></i>
         Energy Center
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='access'}">
-      <a href="#!/access">
+    <li ui-sref-active="active">
+      <a ui-sref="access">
         <i class="nav-icon i-access"></i>
         Access
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='cctv'}">
-      <a href="#!/cctv">
+    <li ui-sref-active="active">
+      <a ui-sref="cctv">
         <i class="nav-icon i-cctv"></i>
         CCTV
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='cost-settings'}">
-      <a href="#!/cost-settings">
+    <li ui-sref-active="active">
+      <a ui-sref="cost-settings">
         <i class="nav-icon i-cost-settings"></i>
         Cost Settings
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='alerts'}">
-      <a href="#!/alerts">
+    <li ui-sref-active="active">
+      <a ui-sref="alerts">
         <i class="nav-icon i-alert"></i>
         Alerts
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='alarm'}">
-      <a href="#!/alarm">
+    <li ui-sref-active="active">
+      <a ui-sref="alarm">
         <i class="nav-icon i-alarm"></i>
         Alarm
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='intercom'}">
-      <a href="#!/intercom">
+    <li ui-sref-active="active">
+      <a ui-sref="intercom">
         <i class="nav-icon i-intercom"></i>
         intercom
       </a>
     </li>
-    <li ng-class="{'active':activeSection==='discover'}">
-      <a href="#!/discover">
+    <li ui-sref-active="active">
+      <a ui-sref="discover">
         <i class="nav-icon i-settings"></i>
         Settings
       </a>
