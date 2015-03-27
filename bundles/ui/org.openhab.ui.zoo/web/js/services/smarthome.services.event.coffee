@@ -1,4 +1,4 @@
-angular.module('SmartHome.services', []).factory 'eventService', [->
+angular.module('SmartHome.services.event', []).factory 'eventService', [->
 
 	eventSrc = new EventSource '/rest/events'
 

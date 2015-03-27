@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('SmartHome.repositories', ['SmartHome.datacache', 'SmartHome.services'])
+angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache'])
 	.factory('bindingRepository', function (DataCache, $rootScope, bindingService) {
 		$rootScope.data.bindings = [];
 		return DataCache.init($rootScope.data.bindings, bindingService);

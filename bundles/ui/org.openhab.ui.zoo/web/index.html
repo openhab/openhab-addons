@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html ng-app="Zoo">
+<html ng-app="ZooApp">
   <head>
 
     <meta charset="utf-8"/>
@@ -45,14 +45,15 @@
     <div ng-show="activeSection!=='login'" ng-include="'partials/notifications-popup.html'"></div>
     <aside ng-show="activeSection!=='login'" ng-include="'partials/left-sidebar.html'"
            class="left-sidebar" ng-class="{'left-sidebar-active':leftSidebarOpen}"></aside>
-    <section class="page-content" ng-view></section>
+    <section class="page-content" ui-view></section>
     <aside ng-show="activeSection!=='login'" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
 
 
     <!-- lib js files -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
+    <!--<script src="bower_components/angular-route/angular-route.js"></script>-->
+    <script src="bower_components/angular-ui-router/angular-ui-router.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <!--<script src="bower_components/angular-animate/angular-animate.min.js"></script>-->
     <!--<script src="bower_components/angular-aria/angular-aria.js"></script>-->
@@ -67,14 +68,17 @@
     <script src="bower_components/tinynav/tinynav.min.js"></script>
 
     <!-- custom js files -->
-    <script src="js/tabs.js"></script>
+    <!--<script src="js/tabs.js"></script>-->
     <script src="js/accordion.min.js"></script>
 
-    <script src="js/services/smarthome.datacache.js"></script>
-    <script src="js/services/smarthome.rest.js"></script>
-    <script src="js/services/smarthome.services.js"></script>
-    <script src="js/services/smarthome.repositories.js"></script>
-    <script src="js/services/event.js"></script>
+    <script src="js/services/services.js"></script>
+    <script src="js/services/smarthome.services.datacache.js"></script>
+    <script src="js/services/smarthome.services.rest.js"></script>
+    <script src="js/services/smarthome.services.config.js"></script>
+    <script src="js/services/smarthome.services.repositories.js"></script>
+    <script src="js/services/smarthome.services.event.js"></script>
+
+    <script src="js/controllers/controllers.js"></script>
     <script src="js/controllers/room.js"></script>
     <script src="js/controllers/login.js"></script>
     <script src="js/controllers/discover.js"></script>

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('SmartHome.services', [])
+angular.module('SmartHome.services.config', [])
 	.config(function ($httpProvider) {
 		var language = null;//localStorage.getItem('language');
 		if (language) {

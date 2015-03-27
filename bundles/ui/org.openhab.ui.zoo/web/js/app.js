@@ -1,26 +1,26 @@
-angular.module('Zoo', [
-	'Zoo.controllers',
+angular.module('ZooApp', [
 	'ngRoute',
 	'ngResource',
 	'angularSpinner',
-	'SmartHome.rest',
-	'SmartHome.repositories',
 	'SmartHome.services',
-	'SmartHome.datacache'
-]).config(['$routeProvider', '$locationProvider', 'usSpinnerConfigProvider', function ($routeProvider, $locationProvider, usSpinnerConfigProvider) {
+	'ZooLib.controllers'
+]).config(function ($stateProvider, $urlRouterProvider, usSpinnerConfigProvider) {
 
-	$locationProvider.html5Mode(false).hashPrefix('!');
+	//$locationProvider.html5Mode(false).hashPrefix('!');
+	$urlRouterProvider.otherwise("/login");
 
 	usSpinnerConfigProvider.setDefaults({color: 'blue'});
 
 	$routeProvider.
 		when('/login', {
 			templateUrl: 'partials/login.html',
-			controller: 'LoginController'
+			controller: 'LoginController',
+			controllerAs: 'ctrl'
 		})
 		.when('/room', {
-			templateUrl: 'partials/room.html'
-			//controller: 'RoomController'
+			templateUrl: 'partials/room.html',
+			controller: 'RoomController',
+			controllerAs: 'ctrl'
 		})
 		.when('/access', {
 			templateUrl: 'partials/access.html'
@@ -61,7 +61,7 @@ angular.module('Zoo', [
 		})
 		.otherwise({redirectTo: '/login'});
 
-}]).run(['$location', '$rootScope', '$log', 'itemService', function ($location, $rootScope, $log, itemService) {
+}).run(['$location', '$rootScope', '$log', 'itemService', function ($location, $rootScope, $log, itemService) {
 
 	// TODO Get rid of this
 	$rootScope.data = {};
@@ -84,17 +84,17 @@ angular.module('Zoo', [
 	});
 
 	// TODO Move to directive
-	itemService.getByName({itemName:'gWeather'}, function(weatherItems) {
-		console.log(weatherItems);
-		weatherItems.members.forEach(function (item) {
-			if (item.type === 'GroupItem') return;
-			$rootScope.weather = {
-				locationLabel: item.label,
-				date: new Date(),
-				temperature: item.state
-			};
-		});
-	});
+	//itemService.getByName({itemName:'gWeather'}, function(weatherItems) {
+	//	console.log(weatherItems);
+	//	weatherItems.members.forEach(function (item) {
+	//		if (item.type === 'GroupItem') return;
+	//		$rootScope.weather = {
+	//			locationLabel: item.label,
+	//			date: new Date(),
+	//			temperature: item.state
+	//		};
+	//	});
+	//});
 
 
 

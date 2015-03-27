@@ -1,4 +1,4 @@
-angular.module('SmartHome.datacache',  []).factory 'DataCache', ['$q', ($q) ->
+angular.module('SmartHome.services.datacache',  []).factory 'DataCache', ['$q', ($q) ->
 
 	new class DataCache
 		@cacheEnabled = no

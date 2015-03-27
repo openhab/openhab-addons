@@ -1,37 +1,38 @@
-angular.module('Zoo.controllers', []).controller('DiscoverController', ($scope, $log, discoveryService, discoveryResultRepository, inboxService) ->
+angular.module('ZooLib.controllers.discover', []).controller 'DiscoverController', ($scope, $log, discoveryService, discoveryResultRepository, inboxService) ->
 
-	$scope.scanResults = []
-	$scope.approveData = []
-	$scope.discoverableBindings = []
+	@scanResults = []
+	@approveData = []
+	@discoverableBindings = []
 
-	$scope.scan = ->
+	@scan = ->
 		inboxService.scan()
 
-	$scope.approve = (thingUID) ->
-		label = $scope.approveData[thingUID].label;
+	@approve = (thingUID) ->
+		label = @approveData[thingUID].label;
 		inboxService.approve {thingUID}, label, (arg) ->
 			$log.info "Approved #{thingUID}", arg
-			$scope.updateScanResults()
+			@updateScanResults()
 
 
-	$scope.ignore = (thing) ->
-		$log.warn 'Not implemented, should ignore ', thing, $scope.thingToApprove
+	@ignore = (thing) ->
+		$log.warn 'Not implemented, should ignore ', thing, @thingToApprove
 
 
-	$scope.updateScanResults = ->
+	@updateScanResults = ->
 		discoveryResultRepository.getAll (data) ->
 			$log.info data
-			$scope.scanResults = data
-			$scope.approveData = []
+			@scanResults = data
+			@approveData = []
 			for thing in data
-				$scope.approveData[thing.thingUID] = angular.copy thing
+				@approveData[thing.thingUID] = angular.copy thing
 		, (err) ->
 			$log.error 'Error on fetching inbox', err
 
-	$scope.updateDiscoverableBindings = ->
+	@updateDiscoverableBindings = ->
 		discoveryService.getAll (bindings) ->
-			$scope.discoverableBindings = bindings
+			@discoverableBindings = bindings
 
-	$scope.updateDiscoverableBindings()
-	$scope.updateScanResults()
-)
+	@updateDiscoverableBindings()
+	@updateScanResults()
+
+	return;
