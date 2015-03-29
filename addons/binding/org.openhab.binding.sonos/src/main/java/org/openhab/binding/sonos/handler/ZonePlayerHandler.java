@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -53,7 +54,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.sonos.config.ZonePlayerConfiguration;
 import org.openhab.binding.sonos.internal.SonosAlarm;
 import org.openhab.binding.sonos.internal.SonosEntry;
 import org.openhab.binding.sonos.internal.SonosMetaData;
@@ -1845,6 +1845,13 @@ UpnpIOParticipant, DiscoveryListener {
     public void onStatusChanged(boolean status) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            Collection<ThingTypeUID> thingTypeUIDs) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
