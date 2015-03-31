@@ -62,7 +62,7 @@ var BROADCAST_CODES = {
 };
 
 var GATEWAY_IP = '192.168.0.253';
-var GATEWAY_PORT = '6670';
+var GATEWAY_PORT = 6670;
 
 var dgram = require('dgram');
 
@@ -238,7 +238,7 @@ function sendBusCommand(id, cmd, value) {
 	var cmdCodes = CMD_CODES[cmd];
 	value = parseInt(value, 10);
 	var message = new Buffer([
-		0x2, // priority
+		0x3, // priority
 		Math.floor(oid/512),
 		Math.floor(oid/256),
 		oid%256,
@@ -251,8 +251,10 @@ function sendBusCommand(id, cmd, value) {
 		value
 	]);
 	var client = dgram.createSocket('udp4');
+	client.bind(6666);
 	client.send(message, 0, message.length, GATEWAY_PORT, GATEWAY_IP, function(err) {
 		if (err) console.error('Error sending command', err);
 		client.close();
 	});
+	console.log("Sent message:", message);
 }

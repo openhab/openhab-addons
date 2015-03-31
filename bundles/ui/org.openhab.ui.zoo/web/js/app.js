@@ -1,75 +1,88 @@
-angular.module('Zoo', [
-	'Zoo.controllers',
-	'ngRoute',
+angular.module('ZooApp', [
+	'ui.router',
 	'ngResource',
 	'angularSpinner',
-	'SmartHome.rest',
-	'SmartHome.repositories',
 	'SmartHome.services',
-	'SmartHome.datacache'
-]).config(['$routeProvider', '$locationProvider', 'usSpinnerConfigProvider', function ($routeProvider, $locationProvider, usSpinnerConfigProvider) {
+	'SmartHome.filters',
+	'ZooLib.controllers',
+	'ZooLib.directives'
+]).config(function ($stateProvider, $urlRouterProvider, usSpinnerConfigProvider) {
 
-	$locationProvider.html5Mode(false).hashPrefix('!');
+	//$locationProvider.html5Mode(false).hashPrefix('!');
+	$urlRouterProvider.otherwise("/login");
+	$urlRouterProvider.when('/rooms', '/rooms/');
 
 	usSpinnerConfigProvider.setDefaults({color: 'blue'});
 
-	$routeProvider.
-		when('/login', {
+	$stateProvider
+		.state('login', {
+			url: '/login',
 			templateUrl: 'partials/login.html',
-			controller: 'LoginController'
+			controller: 'LoginController as ctrl'
 		})
-		.when('/room', {
-			templateUrl: 'partials/room.html'
-			//controller: 'RoomController'
+		.state('rooms', {
+			abstract: true,
+			url: '/rooms',
+			templateUrl: 'partials/rooms.html',
+			controller: 'RoomController as ctrl'
 		})
-		.when('/access', {
+		.state('rooms.room', {
+			url: '/:room',
+			templateUrl: 'partials/rooms.devices.html'
+		})
+		.state('access', {
+			url:'/access',
 			templateUrl: 'partials/access.html'
 		})
-		.when('/alerts', {
+		.state('alerts', {
+			url:'/alerts',
 			templateUrl: 'partials/alerts.html'
 		})
-		.when('/cctv', {
+		.state('cctv', {
+			url:'/cctv',
 			templateUrl: 'partials/cctv.html'
 		})
-		.when('/cost-settings', {
+		.state('cost-settings', {
+			url:'/cost-settings',
 			templateUrl: 'partials/cost-settings.html'
 		})
-		.when('/energy-center', {
-			templateUrl: 'partials/energy-center.html'
+		.state('energy-center', {
+			url:'/energy-center',
+			templateUrl: 'partials/cost-settings.html'
 		})
-		.when('/profile', {
+		.state('profile', {
+			url:'profile',
 			templateUrl: 'partials/profile.html'
 		})
-		.when('/alarm', {
+		.state('alarm', {
+			url:'/alarm',
 			templateUrl: 'partials/alarm.html'
 		})
-		.when('/profile', {
-			templateUrl: 'partials/profile.html'
+		.state('intercom', {
+			url:'/alarm',
+			templateUrl: 'partials/alarm.html'
 		})
-		.when('/intercom', {
-			templateUrl: 'partials/intercom.html'
+		.state('settings', {
+			templateUrl: 'partials/settings.html',
+			controller: 'DiscoverController as ctrl'
 		})
-		.when('/discover', {
-			controller: 'DiscoverController',
-			templateUrl: 'partials/discover.html'
+		.state('settings.discover', {
+			url: '/settings/discover',
+			templateUrl: 'partials/settings.discover.html'
 		})
-		.when('/manual-setup', {
-			templateUrl: 'partials/manual-setup.html'
+		.state('settings.manual', {
+			url: '/settings/manual',
+			templateUrl: 'partials/settings.manual.html'
 		})
-		.when('/groups', {
-			templateUrl: 'partials/groups.html'
+		.state('settings.groups', {
+			url: '/settings/groups',
+			templateUrl: 'partials/settings.groups.html'
 		})
-		.otherwise({redirectTo: '/login'});
 
-}]).run(['$location', '$rootScope', '$log', 'itemService', function ($location, $rootScope, $log, itemService) {
+}).run(['$location', '$rootScope', '$log', 'itemService', function ($rootScope) {
 
 	// TODO Get rid of this
 	$rootScope.data = {};
-
-	$rootScope.$on('$routeChangeSuccess', function () {
-		// Strip slash in front of current path:
-		$rootScope.activeSection = $location.path().substr(1);
-	});
 
 	$rootScope.leftSidebarOpen = false;
 	$rootScope.isBlackout = false;
@@ -79,24 +92,37 @@ angular.module('Zoo', [
 		$rootScope.isBlackout = !$rootScope.isBlackout;
 	};
 
-	itemService.getByName({itemName:'gRooms'}, function (rooms) {
-		$rootScope.smarthome = {rooms : rooms.members};
-	});
+	//itemService.getByName({itemName:'gRooms'}, function (rooms) {
+	//	$rootScope.smarthome = {rooms : rooms.members};
+	//});
 
 	// TODO Move to directive
-	itemService.getByName({itemName:'gWeather'}, function(weatherItems) {
-		console.log(weatherItems);
-		weatherItems.members.forEach(function (item) {
-			if (item.type === 'GroupItem') return;
-			$rootScope.weather = {
-				locationLabel: item.label,
-				date: new Date(),
-				temperature: item.state
-			};
-		});
-	});
-
-
-
-
+	//itemService.getByName({itemName:'gWeather'}, function(weatherItems) {
+	//	console.log(weatherItems);
+	//	weatherItems.members.forEach(function (item) {
+	//		if (item.type === 'GroupItem') return;
+	//		$rootScope.weather = {
+	//			locationLabel: item.label,
+	//			date: new Date(),
+	//			temperature: item.state
+	//		};
+	//	});
+	//});
 }]);
+
+angular.module("ZooApp").run(function ($rootScope, $state, $stateParams) {
+	$rootScope.$state = $state;
+	$rootScope.$stateParams = $stateParams;
+});
+
+// TODO Remove this, only for dev purposes
+angular.module("ZooApp").run(function ($rootScope) {
+	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+		console.log('state changed: from "%s" to "%s"', fromState.name, toState.name);
+		if (toState.name === 'login') {
+			$rootScope.user = {};
+		} else {
+			$rootScope.user = {name: 'Mr. Johnson', houseId: 1, isAuthenticated: true};
+		}
+	})
+});

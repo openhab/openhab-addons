@@ -1,0 +1,24 @@
+<div>
+  <div class="radio-block-wrap">
+    <i class="icon-appliance {{options.cssIconClass}} powerranger" ng-style="{opacity:options.opacity}"></i>
+    <h4 class="up-case no-margin">{{item.label}}<br><small>{{item.state}}</small></h4>
+    <a ng-show="options.cctv" class="popup-with-move-anim" href="#dialog{{item.name}}">View CCTV</a>
+
+    <div ng-if="options.cctv" id="dialog{{item.name}}" class="zoom-anim-dialog dialog mfp-hide">
+      <div class="dialog-header">
+        <h3>Front door cctv</h3>
+      </div><!--popup-header-->
+      <div class="dialog-content">
+        <div style="height:500px;background:#000;"></div>
+      </div><!--popup-content-->
+    </div>
+    <label class="master-switch switch-small">
+      <input type="checkbox" checked ng-model="onoff">
+      <span class="switch"></span>
+    </label>
+  </div>
+
+  <div ng-show="item.type === 'DimmerItem'" class="slider">
+    <input type="text" class="js-opacity" ng-model="dim" />
+  </div>
+</div>

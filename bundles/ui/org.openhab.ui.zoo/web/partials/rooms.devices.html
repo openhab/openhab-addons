@@ -1,0 +1,24 @@
+<div class="cd-tabs">
+  <nav>
+    <ul class="cd-tabs-navigation">
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room,active:true})">Active <small>({{ctrl.items[$stateParams.room+'Active'].length}})</small></a></li>
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room})">All power/appliances <small>({{ctrl.items[$stateParams.room].length}})</small></a></li>
+    </ul>
+  </nav>
+
+  <ul class="cd-tabs-content">
+    <li class="selected">
+
+      <div class="large-margin">
+        <h3>Master switch</h3>
+        <master-switch value="ctrl.rooms[$stateParams.room].state"></master-switch>
+      </div>
+
+      <ul class="line-list">
+        <li ng-repeat="item in ctrl.items[$stateParams.room + $stateParams.active]" ng-init="item.dim=30">
+          <dimmer-item item="item" onoff="1" dim="item.dim" ></dimmer-item>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
