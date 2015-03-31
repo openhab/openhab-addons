@@ -1,5 +1,4 @@
 <div>
-
   <!--mobile search bar-->
   <form class="search-bar mobile-search-bar visible-mobile">
     <input type="text" class="field" ng-model="search.query">
@@ -15,59 +14,14 @@
   </a>
 
   <ul class="nav">
-    <li ui-sref-active="active">
-      <a ui-sref="rooms">
-        <i class="nav-icon i-room"></i>
-        Rooms
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="energy-center">
-        <i class="nav-icon i-energy-center"></i>
-        Energy Center
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="access">
-        <i class="nav-icon i-access"></i>
-        Access
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="cctv">
-        <i class="nav-icon i-cctv"></i>
-        CCTV
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="cost-settings">
-        <i class="nav-icon i-cost-settings"></i>
-        Cost Settings
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="alerts">
-        <i class="nav-icon i-alert"></i>
-        Alerts
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="alarm">
-        <i class="nav-icon i-alarm"></i>
-        Alarm
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="intercom">
-        <i class="nav-icon i-intercom"></i>
-        intercom
-      </a>
-    </li>
-    <li ui-sref-active="active">
-      <a ui-sref="settings.discover">
-        <i class="nav-icon i-settings"></i>
-        Settings
-      </a>
-    </li>
+    <nav-state name="rooms"         title="Rooms" icon="room"></nav-state>
+    <nav-state name="energy-center" title="Energy Center"></nav-state>
+    <nav-state name="access"        title="Access"></nav-state>
+    <nav-state name="cctv"          title="CCTV"></nav-state>
+    <nav-state name="cost-settings" title="Cost Settings"></nav-state>
+    <nav-state name="alerts"        title="Alerts" icon="alert"></nav-state>
+    <nav-state name="alarm"         title="Alarm"></nav-state>
+    <nav-state name="intercom"      title="Intercom"></nav-state>
+    <nav-state name="settings"      title="Settings" state="settings.discover"></nav-state>
   </ul>
 </div>

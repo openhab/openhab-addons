@@ -11,6 +11,7 @@ angular.module('ZooApp', [
 	//$locationProvider.html5Mode(false).hashPrefix('!');
 	$urlRouterProvider.otherwise("/login");
 	$urlRouterProvider.when('/rooms', '/rooms/');
+	$urlRouterProvider.when('/settings', '/settings/');
 
 	usSpinnerConfigProvider.setDefaults({color: 'blue'});
 
@@ -63,19 +64,21 @@ angular.module('ZooApp', [
 			templateUrl: 'partials/alarm.html'
 		})
 		.state('settings', {
+			abstract: true,
+			url: '/settings',
 			templateUrl: 'partials/settings.html',
-			controller: 'DiscoverController as ctrl'
+			controller: 'SettingsController as ctrl'
 		})
 		.state('settings.discover', {
-			url: '/settings/discover',
+			url: '/discover',
 			templateUrl: 'partials/settings.discover.html'
 		})
 		.state('settings.manual', {
-			url: '/settings/manual',
+			url: '/manual',
 			templateUrl: 'partials/settings.manual.html'
 		})
 		.state('settings.groups', {
-			url: '/settings/groups',
+			url: '/groups',
 			templateUrl: 'partials/settings.groups.html'
 		})
 

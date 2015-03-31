@@ -1,4 +1,4 @@
-angular.module('ZooLib.controllers.discover', []).controller 'DiscoverController', ($scope, $log, discoveryService, discoveryResultRepository, inboxService) ->
+angular.module('ZooLib.controllers.settings', []).controller 'SettingsController', ($scope, $log, discoveryService, discoveryResultRepository, inboxService, $stateParams) ->
 
 	@scanResults = []
 	@approveData = []

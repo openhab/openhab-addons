@@ -1,4 +1,4 @@
-angular.module('ZooLib.directives.MasterSwitch', []).directive 'masterSwitch', ->
+angular.module('ZooLib.directives.masterSwitch', []).directive 'masterSwitch', ->
 
 	restrict: 'E'
 	replace: yes

@@ -1,4 +1,4 @@
-angular.module('ZooLib.directives.DimmerItem', []).directive 'dimmerItem', ->
+angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ->
 
 	restrict: 'E'
 	replace: yes
