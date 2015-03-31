@@ -1,24 +1,30 @@
 angular.module('SmartHome.services.datacache',  []).factory 'DataCache', ['$q', ($q) ->
 
+	cache = {}
+
 	new class DataCache
 		@cacheEnabled = no
 		@dirty = no
 
-		init: (@data, @remoteService) ->
+		init: (@remoteService) ->
 			return @
 
-		getAll: (callback, refresh) ->
+		getAll: (refresh) ->
 			deferred = $q.defer()
-			@remoteService.getAll (data) ->
-				if !@cacheEnabled or data.length isnt @data?.length or @dirty or refresh
-					@data = data
+			if @dirty or !@cacheEnabled  or refresh or data.length isnt cache?.length
+				@remoteService.getAll (data) ->
+					cache = angular.copy data
 					deferred.resolve data
-				else
-					deferred.resolve 'No Update'
-			successFn = (res) -> if res isnt 'No update' then callback?(res)
-			notifyCallback = (res) -> callback?(res) or null
-			deferred.promise.then successFn, null, notifyCallback
-			if @cacheEnabled then deferred.notify @data
+			else
+					deferred.resolve(cache) # 'No Update'
+			#successFn = null
+			#notifyFn = null
+			#if angular.isFunction callback
+			#	successFn = (res) -> if not res then callback res
+			#	notifyFn = (res) -> callback(res) or null
+			#	deferred.promise.then successFn, null, notifyFn
+			#if @cacheEnabled then deferred.notify cache
+			return deferred.promise
 
 		getOne: (condition, callback, refresh) ->
 			element = @find condition
@@ -30,15 +36,15 @@ angular.module('SmartHome.services.datacache',  []).factory 'DataCache', ['$q', 
 				@getAll(null, true).then onSuccess , onError
 
 		find: (condition) ->
-			for element in @data when condition(element)
+			for element in cache when condition(element)
 				return element
 
 		add: (element) ->
-			@data.push element
+			cache.push element
 
 		remove: (element) ->
-			for element, idx in @data when condition(element)
-				delete @data[idx]
+			for element, idx in cache when condition(element)
+				delete cache[idx]
 
 		setDirty: (@dirty) ->
 

@@ -1,6 +1,6 @@
-angular.module('ZooLib.controllers.login', []).controller 'LoginController', ($rootScope, $scope, $location, $log) ->
+angular.module('ZooLib.controllers.login', []).controller 'LoginController', ($rootScope, $scope, $state, $log) ->
 
-	defaultUser = name: 'Mr. Johnson', houseId: 1
+	defaultUser = name: 'Mr. Johnson', houseId: 1, isAuthenticated: yes
 	@user = {}
 
 	@login = (user) ->
@@ -8,7 +8,10 @@ angular.module('ZooLib.controllers.login', []).controller 'LoginController', ($r
 		# TODO Auth stuff
 		user.isAuthenticated = yes
 		$rootScope.user = user
-		$location.path 'room'
+		#$location.path 'rooms'
+		$state.go 'rooms.room'
+
+
 
 	@reset = ->
 		@user = angular.copy defaultUser

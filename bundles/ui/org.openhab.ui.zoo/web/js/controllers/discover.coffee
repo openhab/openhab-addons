@@ -35,4 +35,4 @@ angular.module('ZooLib.controllers.discover', []).controller 'DiscoverController
 	@updateDiscoverableBindings()
 	@updateScanResults()
 
-	return;
+	return
