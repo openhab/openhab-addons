@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnetvdes"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Colour video camera Entrance Panel Thing Type -->
+    <thing-type id="videoCameraEntrancePanel">
+    	<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+    	
+        <label>Video camera Entrance Panel</label>
+        <description>Video camera Entrance Panel</description>
+
+        <channels>
+            <channel id="switchOnCamera" typeId="switchOnCamera"/>
+            <!-- channel id="switchOffCamera" typeId="switchOffCamera"/-->
+        </channels>
+        
+        <config-description>
+			<parameter name="whereAddress" type="integer" required="true">
+				<label>OWN WHERE #</label>
+				<description>The camera address (0-95).</description>
+			</parameter>
+		</config-description>
+    </thing-type>
+
+    <!-- Indoor video camera Thing Type -->
+    <thing-type id="indoorCamera">
+        <label>Indoor camera</label>
+        <description>Indoor camera</description>
+
+        <channels>
+            <channel id="switchOnCamera" typeId="switchOnCamera"/>
+            <!-- channel id="switchOffCamera" typeId="switchOffCamera"/-->
+        </channels>
+        
+        <config-description>
+			<parameter name="whereAddress" type="integer" required="true">
+				<label>OWN WHERE #</label>
+				<description>The camera address (0-95).</description>
+			</parameter>
+		</config-description>
+    </thing-type>
+
+	<!-- Colour video camera Entrance Panel Thing Type -->
+    <thing-type id="doorlockActuator">
+        <label>doorlockActuator</label>
+        <description>Door lock Actuator</description>
+
+        <channels>
+            <channel id="openLock" typeId="openLock"/>            
+        </channels>
+        
+        <config-description>
+			<parameter name="whereAddress" type="integer" required="true">
+				<label>OWN WHERE #</label>
+				<description>External unit's lock address to open (0-95).</description>
+			</parameter>
+		</config-description>
+    </thing-type>
+
+    <channel-type id="switchOnOffCamera">
+    	<item-type>Switch</item-type>
+        <label>Switch ON/OFF CAMERA</label>
+        <description>Switch ON/OFF CAMERA</description>
+        <category>Switch</category>
+    </channel-type>
+    	    
+    <channel-type id="openLock">
+    	<item-type>Switch</item-type>
+        <label>Open Lock</label>
+        <description>Open Lock</description>
+        <category>Switch</category>
+    </channel-type>	
+</thing:thing-descriptions>
