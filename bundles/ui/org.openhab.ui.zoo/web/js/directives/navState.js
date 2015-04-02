@@ -10,17 +10,20 @@ angular.module('ZooLib.directives.navState', ['ui.router']).directive('navState'
     if (scope.state == null) {
       scope.state = scope.name;
     }
-    return clearWatch = scope.$watch('state', function(val) {
+    clearWatch = scope.$watch('state', function(val) {
       if (val) {
         scope.linkToState = $state.href(val);
       }
       return clearWatch();
     });
+    return scope.$on('$stateChangeSuccess', function() {
+      return scope.isActive = $state.$current.name.indexOf(scope.name) === 0;
+    });
   };
   return {
     restrict: 'E',
     replace: true,
-    template: '<li ui-sref-active="active"><a href="{{linkToState}}"><i class="nav-icon i-{{icon}}"></i>{{title}}</a></li>',
+    template: '<li ng-class="{active:isActive}"><a href="{{linkToState}}"><i class="nav-icon i-{{icon}}"></i>{{title}}</a></li>',
     scope: {
       name: '@',
       title: '@',

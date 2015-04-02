@@ -11,13 +11,15 @@ angular.module('ZooLib.directives.navState', ['ui.router']).directive 'navState'
 			if val then scope.linkToState = $state.href(val)
 			clearWatch()
 
+		scope.$on '$stateChangeSuccess', ->
+			scope.isActive = $state.$current.name.indexOf(scope.name) is 0
+
 	restrict: 'E'
 	replace: yes
-	template: '<li ui-sref-active="active"><a href="{{linkToState}}"><i class="nav-icon i-{{icon}}"></i>{{title}}</a></li>'
+	template: '<li ng-class="{active:isActive}"><a href="{{linkToState}}"><i class="nav-icon i-{{icon}}"></i>{{title}}</a></li>'
 	scope:
 		name: '@'
 		title: '@'
 		icon: '@'
 		state: '@'
 	link: link
-
