@@ -8,16 +8,13 @@
     <base href="/zoo/index.html">
     <title>Zoo Homeautomation</title>
 
-    <!-- build:js(.) scripts/oldieshim.js -->
-    <!--[if lt IE 9]>
+    <!-- build:js js/shims.js -->
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.js"></script>
-    <![endif]-->
+    <script src="js/es6shims.js"></script>
     <!-- endbuild -->
 
-    <!-- lib css files -->
-
-    <!-- custom css files -->
+    <!-- build:css css/app.css -->
     <link href="css/main.css" rel="stylesheet">
     <link href="css/magnific-popup.css" rel="stylesheet">
     <link href="css/flexslider.css" rel="stylesheet">
@@ -25,9 +22,11 @@
     <link href="css/pikaday.css" rel="stylesheet">
     <link href="css/powerange.css" rel="stylesheet">
     <link href="css/accordion.css" rel="stylesheet">
+    <!-- endbuild -->
+
     <!-- Fonts -->
 
-    <!--<link rel="shortcut icon" href="img/favicon.ico"/>-->
+    <link rel="shortcut icon" href="img/favicon.ico"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <!--<link rel="apple-touch-icon" href="img/app-icon.png"/>-->
     <!--<link rel="apple-touch-startup-image" href="img/splash-ipad-h.png"-->
@@ -49,26 +48,27 @@
     <aside ng-show="user.isAuthenticated" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
 
 
-    <!-- lib js files -->
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/angular/angular.min.js"></script>
-    <!--<script src="bower_components/angular-route/angular-route.js"></script>-->
-    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-    <!--<script src="bower_components/angular-animate/angular-animate.min.js"></script>-->
-    <!--<script src="bower_components/angular-aria/angular-aria.js"></script>-->
 
+    <!-- build:libs2min js/dependencies.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/Chart.js/Chart.js"></script>
+    <script src="bower_components/magnific-popup/dist/jquery.magnific-popup.js"></script>
+    <script src="bower_components/pikaday/pikaday.js"></script>
+    <script src="bower_components/powerange/dist/powerange.js"></script>
+    <script src="bower_components/tinynav/tinynav.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/spin.js/spin.js"></script>
     <script src="bower_components/angular-spinner/angular-spinner.js"></script>
-    <script src="bower_components/magnific-popup/dist/jquery.magnific-popup.min.js"></script>
-    <script src="bower_components/flexslider/jquery.flexslider-min.js"></script>
-    <script src="bower_components/pikaday/pikaday.js"></script>
-    <script src="bower_components/Chart.js/Chart.min.js"></script>
-    <script src="bower_components/powerange/dist/powerange.min.js"></script>
-    <script src="bower_components/tinynav/tinynav.min.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/angular-ui-router-tabs/src/ui-router-tabs.js"></script>
+    <script src="bower_components/pikaday-angular/pikaday-angular.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
 
-    <!-- custom js files -->
-    <!--<script src="js/tabs.js"></script>-->
+    <!-- build:js(.tmp/) js/app.js -->
     <script src="js/accordion.min.js"></script>
 
     <script src="js/services/services.js"></script>
@@ -90,6 +90,6 @@
     <script src="js/controllers/login.js"></script>
     <script src="js/controllers/settings.js"></script>
     <script src="js/app.js"></script>
-    <!--<script src="js/main.js"></script>-->
+    <!-- endbuild -->
   </body>
 </html>

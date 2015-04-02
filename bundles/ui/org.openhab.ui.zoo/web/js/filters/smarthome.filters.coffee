@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('SmartHome.filters', []).filter 'activeItems', ->
 	return (items) ->
 		return null unless angular.isArray items

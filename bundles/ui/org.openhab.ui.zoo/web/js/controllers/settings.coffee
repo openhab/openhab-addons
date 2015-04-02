@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('ZooLib.controllers.settings', []).controller 'SettingsController', ($scope, $log, discoveryService, discoveryResultRepository, inboxService, $stateParams) ->
 
 	@scanResults = []

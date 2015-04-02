@@ -1,7 +1,10 @@
+'use strict';
+
 angular.module('ZooApp', [
 	'ui.router',
 	'ngResource',
 	'angularSpinner',
+	'pikaday',
 	'SmartHome.services',
 	'SmartHome.filters',
 	'ZooLib.controllers',

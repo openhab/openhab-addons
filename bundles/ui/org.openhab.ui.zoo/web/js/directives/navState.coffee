@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('ZooLib.directives.navState', ['ui.router']).directive 'navState', ($state) ->
 
 	clearWatch = null

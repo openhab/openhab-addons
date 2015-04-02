@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('SmartHome.services.event', []).factory 'eventService', [->
 
 	eventSrc = new EventSource '/rest/events'

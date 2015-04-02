@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('ZooLib.controllers', [
 	'ZooLib.controllers.settings'
 	'ZooLib.controllers.login'

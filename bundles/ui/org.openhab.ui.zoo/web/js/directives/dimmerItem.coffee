@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ->
 
 	restrict: 'E'
