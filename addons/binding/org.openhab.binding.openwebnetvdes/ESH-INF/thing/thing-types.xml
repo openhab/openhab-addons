@@ -5,49 +5,57 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Colour video camera Entrance Panel Thing Type -->
-    <thing-type id="videoCameraEntrancePanel">
+    <thing-type id="VideoCameraEntrancePanel">
     	<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="Ip2WIREInterface" />
 		</supported-bridge-type-refs>
     	
         <label>Video camera Entrance Panel</label>
         <description>Video camera Entrance Panel</description>
 
         <channels>
-            <channel id="switchOnCamera" typeId="switchOnCamera"/>
+            <channel id="switchOnOffCamera" typeId="switchOnOffCamera"/>
             <!-- channel id="switchOffCamera" typeId="switchOffCamera"/-->
         </channels>
         
         <config-description>
 			<parameter name="whereAddress" type="integer" required="true">
 				<label>OWN WHERE #</label>
-				<description>The camera address (0-95).</description>
+				<description>The camera address (4000-4095).</description>
 			</parameter>
 		</config-description>
     </thing-type>
 
     <!-- Indoor video camera Thing Type -->
-    <thing-type id="indoorCamera">
+    <thing-type id="IndoorCamera">
+    	<supported-bridge-type-refs>
+			<bridge-type-ref id="Ip2WIREInterface" />
+		</supported-bridge-type-refs>
+    	
         <label>Indoor camera</label>
         <description>Indoor camera</description>
 
         <channels>
-            <channel id="switchOnCamera" typeId="switchOnCamera"/>
+            <channel id="switchOnOffCamera" typeId="switchOnOffCamera"/>
             <!-- channel id="switchOffCamera" typeId="switchOffCamera"/-->
         </channels>
         
         <config-description>
 			<parameter name="whereAddress" type="integer" required="true">
 				<label>OWN WHERE #</label>
-				<description>The camera address (0-95).</description>
+				<description>The camera address (4000-4095).</description>
 			</parameter>
 		</config-description>
     </thing-type>
 
 	<!-- Colour video camera Entrance Panel Thing Type -->
-    <thing-type id="doorlockActuator">
+    <thing-type id="DoorlockActuator">
+    	<supported-bridge-type-refs>
+			<bridge-type-ref id="Ip2WIREInterface" />
+		</supported-bridge-type-refs>
+    	
         <label>doorlockActuator</label>
-        <description>Door lock Actuator</description>
+        <description>Door lock Actuator (a inner door)</description>
 
         <channels>
             <channel id="openLock" typeId="openLock"/>            
@@ -56,7 +64,7 @@
         <config-description>
 			<parameter name="whereAddress" type="integer" required="true">
 				<label>OWN WHERE #</label>
-				<description>External unit's lock address to open (0-95).</description>
+				<description>External unit's lock address to open (4000-4095).</description>
 			</parameter>
 		</config-description>
     </thing-type>

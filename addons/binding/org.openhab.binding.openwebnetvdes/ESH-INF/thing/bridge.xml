@@ -13,15 +13,14 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>Legrand 5740 39 gateway IP</label>
-				<description>The IP address of the Legrand 5740 39 gateway
-				</description>
+				<description>The IP address of the Legrand 5740 39 gateway</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1"
 				max="65335">
 				<context>network-address</context>
 				<label>Legrand 5740 39 gateway port</label>
 				<description>Port of the LAN gateway</description>
-				<default>62910</default>
+				<default>20000</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
@@ -35,13 +34,13 @@
 				<description>The Serial Number identifies one specific device.
 				</description>
 			</parameter-->
-			<!-- parameter name="exclusive" type="boolean" required="false">
+			<parameter name="exclusive" type="boolean" required="false">
 				<label>Exclusive Mode</label>
 				<description>If set to true, the binding will leave the connection
-					to the Cube open.
+					to the bridge open.
 				</description>
 				<default>false</default>
-			</parameter-->
+			</parameter>
 			<!-- parameter name="maxRequestsPerConnection" type="integer"
 				required="false">
 				<label>Max Requests per Connection</label>

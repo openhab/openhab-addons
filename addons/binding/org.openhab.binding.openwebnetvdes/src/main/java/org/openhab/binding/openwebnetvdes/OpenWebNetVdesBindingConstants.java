@@ -26,12 +26,12 @@ public class OpenWebNetVdesBindingConstants {
     public static final String BINDING_ID = "openwebnetvdes";
     public static final String SERIAL_NUMBER = "serialNumber";
 	public static final String IP_ADDRESS = "ipAddress";
-	public static final String OWN_WHERE_ADDRESS = "ownWhereAddress";
+	public static final String OWN_WHERE_ADDRESS = "whereAddress";
     
     // List of main device types 
-    public static final String DEVICE_VIDEO_CAMERA_ENTRANCE_PANEL = "videoCameraEntrancePanel";
-    public static final String DEVICE_APARTMENT_CAMERA = "apartmentCamera";
-    public static final String DEVICE_DOOR_LOCK_ACTUATOR = "doorlockActuator";
+    public static final String DEVICE_VIDEO_CAMERA_ENTRANCE_PANEL = "VideoCameraEntrancePanel";
+    public static final String DEVICE_APARTMENT_CAMERA = "IndoorCamera";
+    public static final String DEVICE_DOOR_LOCK_ACTUATOR = "DoorlockActuator";
     public static final String BRIDGE_IP_2WIRE_INTERFACE = "Ip2WIREInterface";
     
  // List of all Thing Type UIDs

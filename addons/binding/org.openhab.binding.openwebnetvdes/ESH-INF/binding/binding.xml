@@ -4,8 +4,8 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>OpenWebNetVdes Binding</name>
-    <description>This is the binding for OpenWebNetVdes.</description>
+    <name>Bticino OpenWebNet Video Door Entry System Binding</name>
+    <description>The Bticino binding for OpenWebNet Video Door Entry System.</description>
     <author>DmytroKulyanda</author>
 
 </binding:binding>

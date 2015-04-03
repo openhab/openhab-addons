@@ -49,10 +49,12 @@ public class OpenWebNetVdesHandlerFactory extends BaseThingHandlerFactory {
 
 		if (IP_2WIRE_INTERFACE_THING_TYPE.equals(thingTypeUID)) {
 			ThingUID bticinoBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
+			logger.debug("createThing: {}", bticinoBridgeUID);
 			return super.createThing(thingTypeUID, configuration, bticinoBridgeUID, null);
 		}
 		else if (supportsThingType(thingTypeUID)) {
 			ThingUID deviceUID = getBtcinoDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+			logger.debug("createThing: {}", deviceUID);
 			return super.createThing(thingTypeUID, configuration, deviceUID, bridgeUID);
 		}
 		throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the binding.");
@@ -60,19 +62,21 @@ public class OpenWebNetVdesHandlerFactory extends BaseThingHandlerFactory {
 	
 	private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
 		if (thingUID == null) {
-			String SerialNumber = (String) configuration.get(SERIAL_NUMBER);
+			String SerialNumber = (String) configuration.get(IP_ADDRESS);
 			thingUID = new ThingUID(thingTypeUID, SerialNumber);
 		}
+		logger.debug("getBridgeThingUID : {}", thingUID);
 		return thingUID;
 	}
 
 	private ThingUID getBtcinoDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
 			ThingUID bridgeUID) {
-		String SerialNumber = (String) configuration.get(SERIAL_NUMBER);
+		String SerialNumber = (String) configuration.get(OWN_WHERE_ADDRESS);
 
 		if (thingUID == null) {
 			thingUID = new ThingUID(thingTypeUID, SerialNumber, bridgeUID.getId());
 		}
+		logger.debug("getBtcinoDeviceUID : {}", thingUID);
 		return thingUID;
 	}
 

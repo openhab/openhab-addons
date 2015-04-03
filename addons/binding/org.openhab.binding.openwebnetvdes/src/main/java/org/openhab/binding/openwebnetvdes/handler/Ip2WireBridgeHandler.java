@@ -130,7 +130,7 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 		ipAddress = configuration.ipAddress;
 		refreshInterval = configuration.refreshInterval;
 		exclusive = configuration.exclusive;
-		maxRequestsPerConnection = configuration.maxRequestsPerConnection;
+		//maxRequestsPerConnection = configuration.maxRequestsPerConnection;
 		logger.debug("Bridge IP       {}.", ipAddress);
 		logger.debug("Port            {}.", port);
 		logger.debug("RefreshInterval {}.", refreshInterval);

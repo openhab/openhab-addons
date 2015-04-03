@@ -46,7 +46,7 @@ public class BticinoDeviceConfiguration {
 		return rfAddress;
 	}*/
 
-	public VdesDeviceType getDeviceType() {
+	/*public VdesDeviceType getDeviceType() {
 		return deviceType;
 	}
 
@@ -64,6 +64,15 @@ public class BticinoDeviceConfiguration {
 	
 	public void setRoomId(int roomId) {
 		this.roomId = roomId;
-	}	
+	}*/
+
+	public int getWhereAddress() {
+		return whereAddress;
+	}
+
+	public void setWhereAddress(int whereAddress) {
+		this.whereAddress = whereAddress;
+	}		
+	
 }
 

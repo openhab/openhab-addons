@@ -56,7 +56,8 @@ public class OpenWebNetVdesHandler extends BaseThingHandler implements DeviceSta
 	public void initialize() {
 
 		Configuration config = getThing().getConfiguration();
-		final Integer configDeviceId = (Integer) config.get(OpenWebNetVdesBindingConstants.OWN_WHERE_ADDRESS);
+		final Integer configDeviceId = Integer.valueOf((String) 
+				config.get(OpenWebNetVdesBindingConstants.OWN_WHERE_ADDRESS), 10);
 
 		if (configDeviceId != null) {
 			deviceWhereAddress = configDeviceId;
@@ -106,7 +107,7 @@ public class OpenWebNetVdesHandler extends BaseThingHandler implements DeviceSta
 						}
 
 					} else {
-						logger.debug("Bridge for maxcube device {} not found.", deviceWhereAddress);
+						logger.debug("Bridge for Bticino device {} not found.", deviceWhereAddress);
 						updateStatus(ThingStatus.OFFLINE);
 					}
 
@@ -150,7 +151,7 @@ public class OpenWebNetVdesHandler extends BaseThingHandler implements DeviceSta
 
 		Ip2WireBridgeHandler bridgeHandler = getBridgeHandler();
 		if (bridgeHandler == null) {
-			logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle command without bridge.");
+			logger.warn("LAN gateway bridge handler not found. Cannot handle command without bridge.");
 			return;
 		}
 		if (command instanceof RefreshType) {

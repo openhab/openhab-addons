@@ -14,7 +14,7 @@ public class Ip2WireBridgeConfiguration {
 	public Integer refreshInterval;
 
 	/** The unique serial number for a device */
-	public String serialNumber;
+	//public String serialNumber;
 
 	/**
 	 * If set to true, the binding will leave the connection to the cube open
