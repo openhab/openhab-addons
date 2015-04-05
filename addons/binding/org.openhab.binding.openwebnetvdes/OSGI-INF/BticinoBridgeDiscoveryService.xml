@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.openwebnetvdes.internal.discovery">
+
+   <implementation class="org.openhab.binding.openwebnetvdes.internal.discovery.BticinoBridgeDiscoveryService"/>
+
+   <service>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+   </service>
+
+</scr:component>
