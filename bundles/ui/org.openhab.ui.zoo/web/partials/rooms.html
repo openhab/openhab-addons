@@ -7,13 +7,13 @@
     <div class="col4">
       <p class="small-margin visible-mobile">Select a room</p>
       <ul id="side-nav" class="line-list line-nav">
-        <li ui-sref-active="selected" ng-repeat="room in ctrl.rooms">
+        <li ui-sref-active="selected" ng-repeat="room in ctrl.rooms | orderBy:'label'">
           <a ui-sref="rooms.room({room:room.name})">{{room.label}}</a>
         </li>
       </ul>
     </div>
 
-    <div class="col8" ui-view></div>
+    <div class="col8 is-ended" ui-view></div>
 
   </div>
 

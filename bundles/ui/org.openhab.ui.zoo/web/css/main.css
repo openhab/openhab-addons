@@ -1275,11 +1275,11 @@ header {
 	margin:0 0 10px;
 	}
 
-.line-list li{
+.line-list li {
 	border-bottom:1px solid #dfe2e6;
 	padding:15px 0;
 	display:list-item !important;
-	}
+}
 
 #side-nav a {
 	display:block;
