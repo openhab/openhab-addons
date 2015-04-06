@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnetvdes"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<bridge-type id="Ip2WIREInterface">
+		<label>Legrand 5740 39 LAN-2WIRE gateway</label>
+		<description>This bridge represents the Legrand 5740 39 LAN-2WIRE gateway.
+		</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Legrand 5740 39 gateway IP</label>
+				<description>The IP address of the Legrand 5740 39 gateway</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="1"
+				max="65335">
+				<context>network-address</context>
+				<label>Legrand 5740 39 gateway port</label>
+				<description>Port of the LAN gateway</description>
+				<default>20000</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in ms which is used to poll given
+					Legrand 5740 39.
+				</description>
+				<default>30000</default>
+			</parameter>
+			<!-- parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.
+				</description>
+			</parameter-->
+			<parameter name="exclusive" type="boolean" required="false">
+				<label>Exclusive Mode</label>
+				<description>If set to true, the binding will leave the connection
+					to the bridge open.
+				</description>
+				<default>false</default>
+			</parameter>
+			<!-- parameter name="maxRequestsPerConnection" type="integer"
+				required="false">
+				<label>Max Requests per Connection</label>
+				<description>In exclusive mode, how many requests are allowed until
+					connection is closed and reopened.
+				</description>
+				<default>1000</default>
+			</parameter-->
+		</config-description>
+
+	</bridge-type>
+</thing:thing-descriptions>

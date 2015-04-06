@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenWebNetVdes Binding
+Bundle-SymbolicName: org.openhab.binding.openwebnetvdes;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: com.google.common.collect,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.types,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*,OSGI-INF/component.xml,
+ OSGI-INF/BticinoBridgeDiscoveryService.xml
+Export-Package: org.openhab.binding.openwebnetvdes,
+ org.openhab.binding.openwebnetvdes.handler
