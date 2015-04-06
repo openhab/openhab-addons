@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('ZooLib.controllers.login', []).controller 'LoginController', ($rootScope, $scope, $state, $log) ->
 
 	defaultUser = name: 'Mr. Johnson', houseId: 1, isAuthenticated: yes

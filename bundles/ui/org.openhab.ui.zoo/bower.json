@@ -22,16 +22,15 @@
     "flexslider": "*",
     "magnific-popup": "~1.0.0",
     "pikaday": "~1.3.2",
-    "powerange": "~0.0.2",
+    "powerange": "zefei/powerange#6539b16031149bba91f11f1cf80aebbcfb3c869a",
     "tinynav": "*",
-    "angular": "~1.3.14",
+    "angular": "~1.3.15",
     "angular-resource": "~1.3.14",
-    "angular-route": "~1.3.14",
-    "angular-aria": "~1.3.14",
     "es5-shim": "~4.1.0",
     "json3": "~3.3.2",
     "angular-spinner": "~0.6.1",
     "angular-ui-router": "~0.2.13",
-    "angular-ui-router-tabs": "~1.4.0"
+    "angular-ui-router-tabs": "~1.4.0",
+    "pikaday-angular": "~2.0.0"
   }
 }

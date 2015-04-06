@@ -22,6 +22,7 @@
     <module>org.openhab.binding.network</module>
 	<module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.openwebnetvdes</module>
+    <module>org.openhab.binding.pulseaudio</module>
   </modules>
 
 </project>
