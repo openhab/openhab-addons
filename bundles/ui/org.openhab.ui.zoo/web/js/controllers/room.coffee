@@ -9,15 +9,12 @@ angular.module('ZooLib.controllers.room', []).controller 'RoomController', (item
 	@refreshItems = (force) ->
 		itemRepository.getRooms(force).then (rooms) =>
 			$log.debug "loaded rooms", rooms
-			@rooms = rooms
+			@rooms = $filter('orderBy')(rooms, 'label')
 
-	@refreshItems()
-
-	$scope.$watch 'rooms', (rooms) ->
-		return unless rooms?
-		if not $stateParams.room and rooms.length > 0
-			$log.debug "Initial redirect to room #{@rooms[0].name}"
-			$state.go "rooms.room", active:true, room:@rooms[0].name
-	, true
+	@refreshItems().then =>
+		if not $stateParams.room and @rooms?
+			firstRoom = Object.keys(@rooms).sort()[0]
+			$log.debug "Initial redirect to room #{firstRoom}"
+			$state.go "rooms.room", active:true, room:firstRoom
 
 	return

@@ -8,21 +8,21 @@ angular.module('ZooLib.controllers.room', []).controller('RoomController', funct
     return itemRepository.getRooms(force).then((function(_this) {
       return function(rooms) {
         $log.debug("loaded rooms", rooms);
-        return _this.rooms = rooms;
+        return _this.rooms = $filter('orderBy')(rooms, 'label');
       };
     })(this));
   };
-  this.refreshItems();
-  $scope.$watch('rooms', function(rooms) {
-    if (rooms == null) {
-      return;
-    }
-    if (!$stateParams.room && rooms.length > 0) {
-      $log.debug("Initial redirect to room " + this.rooms[0].name);
-      return $state.go("rooms.room", {
-        active: true,
-        room: this.rooms[0].name
-      });
-    }
-  }, true);
+  this.refreshItems().then((function(_this) {
+    return function() {
+      var firstRoom;
+      if (!$stateParams.room && (_this.rooms != null)) {
+        firstRoom = Object.keys(_this.rooms).sort()[0];
+        $log.debug("Initial redirect to room " + firstRoom);
+        return $state.go("rooms.room", {
+          active: true,
+          room: firstRoom
+        });
+      }
+    };
+  })(this));
 });
