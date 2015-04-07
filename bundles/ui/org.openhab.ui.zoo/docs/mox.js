@@ -79,6 +79,24 @@ if (process.argv.length === 5) {
 	process.exit(1);
 }
 
+readFromFile('./moxDiscoveryData');
+process.exit(0);
+
+function readFromFile(file) {
+	var conv = require(file)
+	console.log('>>>>>>> Host 0:');
+	for(var i=0; i<conv.host0.length; i++ ) {
+		var buf = new Buffer(conv.host0[i]);
+		console.log(bufToObject(buf).int_string);
+	}
+	console.log('>>>>>>> Host 1:');
+	for(var i=0; i<conv.host1.length; i++ ) {
+		var buf = new Buffer(conv.host0[i]);
+		console.log(bufToObject(buf).int_string);
+	}
+}
+
+
 var current_states = { /*"OID:SUBOID:VALUE_TYPE":{values}*/ };
 
 var socket = dgram.createSocket('udp4');
@@ -117,16 +135,19 @@ function bufToObject(buf) {
 	
 	var result = {
 		hex_string: 	formatHex(buf.toString('hex')),
+		int_string: 	formatInt(buf.toString('hex')),
 		priority: 		buf.readUInt8(0),
 		oid: 			(buf.readUInt8(1) << 16) + buf.readUInt16BE(2),
 		suboid: 		buf.readUInt8(4),
 		sub_fn: 		buf.readUInt8(5),
 		zero_padding: 	buf.readUInt16BE(6), // should always be 0x0
-		fn_code:		buf.readUInt16BE(8)
+		fn_code:		buf.readUInt16BE(8),
+		errors: 		[]
 	};
 
 	if (result.zero_padding > 0) {
-		console.error(">>>>>> Unexpected data: %s sould be 0!\n%s", zeros, result);
+		result.errors.push(">>>>>> Unexpected data: sould be 0, was " + result.zero_padding);
+		//console.error(">>>>>> Unexpected data: sould be 0, was %s!", result.zero_padding);
 	} else {
 		delete result.zero_padding;
 	}
@@ -207,17 +228,21 @@ function bufToObject(buf) {
 	}
 
 	if (!SUB_OIDS[result.suboid]) {
-		console.error('Unknown SUBOID 0x%s', result.suboid);
+		result.errors.push('Unknown SUBOID 0x' + result.suboid);
+		//console.error('Unknown SUBOID 0x%s', result.suboid);
 	} else {
 		result.channel = (result.suboid - 0x11) + 1;
 		result.channel_name = SUB_OIDS[result.suboid];
 	}
 
 	if (!codeFound) {
-		console.error('>>>>>>>>> Could not decode package with subfn=0x%s and code=0x%s !!\n', 
+		result.errors.push('Could not decode package with subfn=0x'+
+			result.sub_fn.toString(16) + ' and code=0x' + 
+			result.fn_code.toString(16));
+		/*console.error('>>>>>>>>> Could not decode package with subfn=0x%s and code=0x%s !!\n', 
 			result.sub_fn.toString(16),
 			result.fn_code.toString(16),
-			result);
+			result);*/
 	}
 
 	return result;
@@ -229,6 +254,13 @@ function formatHex(str) {
 	for (i=0;i<str.length; i+=2) 
 		result += str.slice(i,i+2) + ' '
 	return result;
+}
+
+// Add space every byte for readability
+function formatInt(str) {
+	return formatHex(str).split(' ').map( function(code){
+		return parseInt(code,16);
+	}).join('\t');
 }
 
 function sendBusCommand(id, cmd, value) {

@@ -1,22 +1,30 @@
 <div class="cd-tabs">
   <nav>
     <ul class="cd-tabs-navigation">
-      <li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room,active:true})">Active <small>({{ctrl.items[$stateParams.room+'Active'].length}})</small></a></li>
-      <li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room})">All power/appliances <small>({{ctrl.items[$stateParams.room].length}})</small></a></li>
+      <!-- All of the selected room (default) -->
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room})">Active <small>({{ctrl.rooms[$stateParams.room].members.length-1}})</small></a></li>
+
+      <!-- Scenes in that room -->
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({scenes: true})">Scenes <small>({{ctrl.scenes[$stateParams.room].length}})</small></a></li>
+
+      <!-- All 'on'-devices, regardeless of the room: -->
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({active: true})">All on <small>({{ctrl.itemsActive.length}})</small></a></li>
     </ul>
   </nav>
 
-  <ul class="cd-tabs-content">
+  <ul class="cd-tabs-content" style="height: auto">
     <li class="selected">
 
       <div class="large-margin">
         <h3>Master switch</h3>
-        <master-switch value="ctrl.rooms[$stateParams.room].state"></master-switch>
+        <master-switch item="ctrl.rooms[$stateParams.room].members | masterSwitch"></master-switch>
       </div>
 
       <ul class="line-list">
-        <li ng-repeat="item in ctrl.items[$stateParams.room + $stateParams.active]" ng-init="item.dim=30">
-          <dimmer-item item="item" onoff="1" dim="item.dim" ></dimmer-item>
+        <li ng-repeat="item in ctrl.rooms[$stateParams.room].members" ng-switch="item.type">
+          <dimmer-item ng-switch-when="DimmerItem" item="item"></dimmer-item>
+          <switch-item ng-switch-when="SwitchItem" item="item"></switch-item>
+          <div ng-switch-default><script>console.warn('Unsupported item type in list!')</script></div>
         </li>
       </ul>
     </li>

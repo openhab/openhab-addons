@@ -1,0 +1,10 @@
+<div class="radio-block-wrap">
+  <i class="icon-appliance {{options.cssIconClass}}"></i>
+  <h4 class="up-case no-margin">{{item.label}}<br>
+    <small ng-class="{muted:item.state!=='ON'}">{{item.state}}</small>
+  </h4>
+  <label class="master-switch switch-small" for="switch-item-{{item.name}}">
+    <input id="switch-item-{{item.name}}" type="checkbox" ng-model="item.state" ng-true-value="'ON'", ng-false-value="'OFF'">
+    <span class="switch"></span>
+  </label>
+</div>

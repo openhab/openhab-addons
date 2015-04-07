@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('SmartHome.services.datacache',  []).factory 'DataCache', ['$q', ($q) ->
 
 	cache = {}

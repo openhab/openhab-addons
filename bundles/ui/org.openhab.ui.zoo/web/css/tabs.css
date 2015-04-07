@@ -72,12 +72,12 @@
 }
 .no-touch .cd-tabs-navigation a:hover {
 }
+
 .cd-tabs-navigation a.selected {
   opacity:1;
 }
 
 
-}
 @media only screen and (min-width: 768px) {
   .cd-tabs-navigation {
     /* move the nav to the left on medium sized devices */

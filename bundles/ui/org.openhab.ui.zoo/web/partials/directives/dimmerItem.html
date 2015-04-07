@@ -1,7 +1,7 @@
 <div>
   <div class="radio-block-wrap">
-    <i class="icon-appliance {{options.cssIconClass}} powerranger" ng-style="{opacity:options.opacity}"></i>
-    <h4 class="up-case no-margin">{{item.label}}<br><small>{{item.state}}</small></h4>
+    <i class="icon-appliance {{options.cssIconClass}} powerranger" ng-style="{opacity:local.opacity}"></i>
+    <h4 class="up-case no-margin">{{item.label}}<br><small>{{local.stateOnOff}}</small></h4>
     <a ng-show="options.cctv" class="popup-with-move-anim" href="#dialog{{item.name}}">View CCTV</a>
 
     <div ng-if="options.cctv" id="dialog{{item.name}}" class="zoom-anim-dialog dialog mfp-hide">
@@ -12,13 +12,13 @@
         <div style="height:500px;background:#000;"></div>
       </div><!--popup-content-->
     </div>
-    <label class="master-switch switch-small">
-      <input type="checkbox" checked ng-model="onoff">
+    <label class="master-switch switch-small" for="switch-item-{{item.name}}">
+      <input id="switch-item-{{item.name}}" type="checkbox" ng-model="local.stateOnOff" ng-true-value="'ON'", ng-false-value="'OFF'">
       <span class="switch"></span>
     </label>
   </div>
 
-  <div ng-show="item.type === 'DimmerItem'" class="slider">
-    <input type="text" class="js-opacity" ng-model="dim" />
+  <div class="slider">
+    <input type="text" class="js-opacity" ng-model="local.dimValue" />
   </div>
 </div>

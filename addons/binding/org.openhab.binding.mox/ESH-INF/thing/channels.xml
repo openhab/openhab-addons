@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="mox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="state">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turns the power on or off</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="activePower">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The active power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.1f W" />
+	</channel-type>
+
+	<channel-type id="reactivePower">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The reactive power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.1f W" />
+	</channel-type>
+
+	<channel-type id="apparentPower">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The apparent power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.1f W" />
+	</channel-type>
+
+	<channel-type id="activeEnergy">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The active Energy</description>
+		<category>Energy</category>
+		<state pattern="%.1f W" />
+	</channel-type>
+	
+	<channel-type id="powerFactor">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The power factor</description>
+		<category>Energy</category>
+		<state pattern="%.1f W" />
+	</channel-type>
+	
+</thing:thing-descriptions>

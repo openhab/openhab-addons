@@ -1,4 +1,10 @@
+'use strict'
+
 angular.module('ZooLib.directives', [
-	'ZooLib.directives.MasterSwitch'
-	'ZooLib.directives.DimmerItem'
+	'ZooLib.directives.masterSwitch'
+	'ZooLib.directives.dimmerItem'
+	'ZooLib.directives.switchItem'
+	'ZooLib.directives.navState'
+	'ZooLib.directives.weatherWidget'
+	'ZooLib.directives.usageTable'
 ])

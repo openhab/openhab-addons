@@ -1,7 +1,10 @@
+'use strict';
+
 angular.module('ZooApp', [
 	'ui.router',
 	'ngResource',
 	'angularSpinner',
+	'pikaday',
 	'SmartHome.services',
 	'SmartHome.filters',
 	'ZooLib.controllers',
@@ -11,6 +14,7 @@ angular.module('ZooApp', [
 	//$locationProvider.html5Mode(false).hashPrefix('!');
 	$urlRouterProvider.otherwise("/login");
 	$urlRouterProvider.when('/rooms', '/rooms/');
+	$urlRouterProvider.when('/settings', '/settings/');
 
 	usSpinnerConfigProvider.setDefaults({color: 'blue'});
 
@@ -63,26 +67,28 @@ angular.module('ZooApp', [
 			templateUrl: 'partials/alarm.html'
 		})
 		.state('settings', {
+			abstract: true,
+			url: '/settings',
 			templateUrl: 'partials/settings.html',
-			controller: 'DiscoverController as ctrl'
+			controller: 'SettingsController as ctrl'
 		})
 		.state('settings.discover', {
-			url: '/settings/discover',
+			url: '/discover',
 			templateUrl: 'partials/settings.discover.html'
 		})
 		.state('settings.manual', {
-			url: '/settings/manual',
+			url: '/manual',
 			templateUrl: 'partials/settings.manual.html'
 		})
 		.state('settings.groups', {
-			url: '/settings/groups',
+			url: '/groups',
 			templateUrl: 'partials/settings.groups.html'
 		})
 
 }).run(['$location', '$rootScope', '$log', 'itemService', function ($rootScope) {
 
 	// TODO Get rid of this
-	$rootScope.data = {};
+	//$rootScope.data = {};
 
 	$rootScope.leftSidebarOpen = false;
 	$rootScope.isBlackout = false;
@@ -113,6 +119,13 @@ angular.module('ZooApp', [
 angular.module("ZooApp").run(function ($rootScope, $state, $stateParams) {
 	$rootScope.$state = $state;
 	$rootScope.$stateParams = $stateParams;
+});
+
+angular.module("ZooApp").run(function ($rootScope, eventService, $log) {
+	eventService.onEvent('smarthome/*', function(topic, newState) {
+		$log.debug('Received Event', topic, newState);
+		$rootScope.$broadcast(topic, newState);
+	});
 });
 
 // TODO Remove this, only for dev purposes

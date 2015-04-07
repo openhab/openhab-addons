@@ -9,7 +9,6 @@ package org.openhab.ui.zoo.internal.servlet;
 
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,18 +19,39 @@ import org.slf4j.LoggerFactory;
  */
 public class ZooUIApp {
 
-    public static final String WEBAPP_ALIAS = "/zoo";
     private static final Logger logger = LoggerFactory.getLogger(ZooUIApp.class);
+    public static final String WEBAPP_ALIAS = "/zoo";
+    public static final String WEB_DIST_FOLDER = "web_dist";
+    public static final String WEB_FOLDER = "web";
+    public static final String DEBUG_PARAMETER_NAME = "webDebug";
 
     protected HttpService httpService;
 
     protected void activate(ComponentContext componentContext) {
         try {
-            httpService.registerResources(WEBAPP_ALIAS, "web", null);
-            logger.info("Started Zoo UI at " + WEBAPP_ALIAS);
-        } catch (NamespaceException e) {
+            boolean debugMode = isDebugModeEnabled();
+            String serveFolder = debugMode ? WEB_FOLDER : WEB_DIST_FOLDER;
+            httpService.registerResources(WEBAPP_ALIAS, serveFolder, null);
+            logger.info("Started Zoo UI at {} with debug mode = {}.", WEBAPP_ALIAS, debugMode);
+        } catch (Exception e) {
             logger.error("Error during servlet startup", e);
         }
+    }
+
+    private boolean isDebugModeEnabled() {
+        //            Bundle bundle = componentContext.getBundleContext().getBundle();
+        //            Path webDistPath = new Path("/web_dist");
+        //            FileLocator.openStream(bundle, webDistPath, false);
+        boolean distFolderExists = this.getClass().getResource("/" + WEB_DIST_FOLDER) != null;
+        boolean debugParameterSet = Boolean.parseBoolean(System.getProperty(DEBUG_PARAMETER_NAME));
+        if (!distFolderExists) {
+            logger.debug("Zoo UI has no /{} folder, falling back to debug mode.", WEB_DIST_FOLDER);
+        } else if (debugParameterSet) {
+            logger.debug("Zoo UI found a /{} folder, but forced to use /{} because of system parameter '{}'.",
+                         WEB_DIST_FOLDER, WEB_FOLDER, DEBUG_PARAMETER_NAME);
+        }
+
+        return debugParameterSet || !distFolderExists;
     }
 
     protected void deactivate(ComponentContext componentContext) {

@@ -74,7 +74,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Pioneer-AVR-Binding | |  |  |
 | Plugwise |  |  |  | 
 | PLCBus |  |  |  | 
-| Pulseaudio |  |  |  |
+| Pulseaudio |  |  | 2.0 version available |
 | RFXCOM |  |  |  |
 | Samsung TV |  |  |  |
 | Serial |  |  |  | 

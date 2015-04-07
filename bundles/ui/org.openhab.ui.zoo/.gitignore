@@ -1,3 +1,5 @@
 /web/bower-components/
 /node_modules/
 node/
+.tmp/
+web_dist/

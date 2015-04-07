@@ -1,3 +1,5 @@
+'use strict'
+
 angular.module('SmartHome.services', [
 	'SmartHome.services.datacache',
 	'SmartHome.services.config',
