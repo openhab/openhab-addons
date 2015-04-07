@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="mox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="1-gang-on-off">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway" />
+		</supported-bridge-type-refs>
+
+		<label>1-Gang Dimmer Module</label>
+		<description>This is a 1-Gang Dimmer Module</description>
+
+		<channels>
+			<channel id="state" typeId="state" />
+			
+			<channel id="activePower" typeId="activePower" />
+			<channel id="reactivePower" typeId="reactivePower" />
+			<channel id="apparentPower" typeId="apparentPower" />
+			<channel id="activeEnergy" typeId="activeEnergy" />
+			<channel id="powerFactor" typeId="powerFactor" />
+		</channels>
+
+		<config-description>
+			<parameter name="oid" type="text">
+				<label>OID</label>
+				<description>The OID of the MOX bla</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+</thing:thing-descriptions>
