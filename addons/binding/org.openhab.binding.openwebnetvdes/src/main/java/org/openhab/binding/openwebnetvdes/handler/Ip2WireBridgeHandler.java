@@ -20,10 +20,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -81,7 +79,7 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 	private Runnable pollingRunnable = new Runnable() {
 		@Override
 		public void run() {
-			//refreshData(); //TODO
+			refreshData(); //TODO
 		}
 	};
 	private ScheduledFuture<?> sendCommandJob;
@@ -97,7 +95,7 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 	public void handleCommand(ChannelUID channelUID, Command command) {
 		if (command instanceof RefreshType) {
 			logger.debug("Refresh command received.");
-			//refreshData(); TODO
+			refreshData();
 		} else
 			logger.warn("No bridge commands defined.");
 	}
@@ -166,6 +164,48 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 			executeCommand(sendCommand);
 		}
 	}
+	
+	/**
+	 * initiates read data from the Bticino bridge
+	 */
+	private synchronized void refreshData() {
+
+		try {
+			refreshBridgeInformation();
+			if (connectionEstablished) {
+				updateStatus(ThingStatus.ONLINE);
+				previousOnline = true;
+				for (BticinoDevice di : devices) {
+					if (lastActiveDevices != null && lastActiveDevices.contains(di.getWhereAddress())) {
+						for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+							try {
+								deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
+							} catch (Exception e) {
+								logger.error("An exception occurred while calling the DeviceStatusListener", e);
+							}
+						}
+					}
+					// New device, not seen before, pass to Discovery
+					else {
+						for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+							try {
+								deviceStatusListener.onDeviceAdded(getThing(), di);
+								di.setUpdated(true);
+								deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
+							} catch (Exception e) {
+								logger.error("An exception occurred while calling the DeviceStatusListener", e);
+							}
+							lastActiveDevices.add(di.getWhereAddress());
+						}
+					}
+				}
+			} else if (previousOnline)
+				onConnectionLost();
+
+		} catch (Exception e) {
+			logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+		}
+	}
 
 	public void onConnectionLost() {
 		logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
@@ -199,6 +239,44 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 
 	public void clearDeviceList() {
 		lastActiveDevices = new HashSet<Integer>();
+	}
+	
+	private void refreshBridgeInformation () {
+		
+		String commandString = OPEN_MSG_MAC_ADDRESS_RESPONSE;
+		synchronized (Ip2WireBridgeHandler.class) {
+			if (socketConnectOrReconnect()) {
+				try {
+			        byte[] writeBuffer = commandString.getBytes();
+			        OutputStream out = socket.getOutputStream();
+			        out.write(writeBuffer, 0, writeBuffer.length);
+			        out.flush();
+
+			        byte readBuffer[] = new byte[1024];
+			        int readBytes = socket.getInputStream().read(readBuffer);
+			        String response = new String(readBuffer, 0, readBytes);
+					logger.info("Bridge MAC address : {}", response);
+					//int askOrNask = processRawMessage(response);
+					requestCount++;
+					connectionEstablished = true;
+					if (!exclusive) {
+						socketClose();
+					}
+				
+				} catch (IOException e) {
+					logger.warn("Cannot write data from Btcino lan gateway while connecting to '{}'", ipAddress);
+					logger.debug(Utils.getStackTrace(e));
+					connectionEstablished = false;
+					socketClose(); // reconnect on next execution
+				}
+				logger.debug("Command ({}) sent to the Bticino Bridge at IP: {}", commandString,
+						ipAddress);
+				logger.trace("Command, content: '{}'", commandString);
+			} else {
+				logger.debug("Command ({}) isn't sent to the Bticino Bridge at IP: {}", commandString,
+						ipAddress);
+			}
+		}
 	}
 
 	/**
@@ -272,15 +350,15 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 	}
 
 	/**
-	 * Processes device command and sends it to the MAX!Cube Lan Gateway.
+	 * Processes device command and sends it to the Bticino Lan Gateway.
 	 * 
-	 * @param SendCommand
+	 * @param OwnRequest
 	 *            the SendCommand containing the serial number of the device as
 	 *            String the channelUID used to send the command and the the
 	 *            command data
 	 */
-	public void executeCommand(OwnRequest sendCommand) {
-
+	public int executeCommand(OwnRequest sendCommand) {
+		int askOrNask = -1;
 		int whereAddress = sendCommand.getWhereAddress();
 		ChannelUID channelUID = sendCommand.getChannelUID();
 		Command command = sendCommand.getCommand();
@@ -289,7 +367,7 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 
 		if (device == null) {
 			logger.debug("Cannot send command to device with Where Address {}, device not listed.", whereAddress);
-			return;
+			return askOrNask;
 		}
 		
 		String commandString = null;
@@ -323,53 +401,97 @@ public class Ip2WireBridgeHandler extends BaseBridgeHandler {
 				}				
 			}
 		}
-		// Actual sending of the data to the Max!Cube Lan Gateway
+		// Actual sending of the data to the Bticino Lan Gateway
 		if (commandString != null) {
 			commandString = prepareOwnFrame(commandString, whereAddress);
-			synchronized (Ip2WireBridgeHandler.class) {				
-				try {
-					if (socket == null) {
-						this.socketConnect();
-					}
-			        byte[] writeBuffer = commandString.getBytes();
-			        OutputStream out = socket.getOutputStream();
-			        out.write(writeBuffer, 0, writeBuffer.length);
-			        out.flush();
-
-			        byte readBuffer[] = new byte[1024];
-			        int readBytes = socket.getInputStream().read(readBuffer);
-			        String response = new String(readBuffer, 0, readBytes);
+			synchronized (Ip2WireBridgeHandler.class) {
+				if (socketConnectOrReconnect()) {
+					try {
+				        byte[] writeBuffer = commandString.getBytes();
+				        OutputStream out = socket.getOutputStream();
+				        out.write(writeBuffer, 0, writeBuffer.length);
+				        out.flush();
+	
+				        byte readBuffer[] = new byte[1024];
+				        int readBytes = socket.getInputStream().read(readBuffer);
+				        String response = new String(readBuffer, 0, readBytes);
+						
+						askOrNask = processRawMessage(response);
+						requestCount++;
+						if (!exclusive) {
+							socketClose();
+						}
 					
-					int askOrNask = processRawMessage(response);
-
-					if (!exclusive) {
-						socketClose();
+					} catch (IOException e) {
+						logger.warn("Cannot write data from Btcino lan gateway while connecting to '{}'", ipAddress);
+						logger.debug(Utils.getStackTrace(e));
+						socketClose(); // reconnect on next execution
 					}
-
-				} catch (UnknownHostException e) {
-					logger.warn("Cannot establish connection with Btcino lan gateway while sending command to '{}'",
+					logger.debug("Command {} ({}) sent to the Bticino Bridge at IP: {}", sendCommand.getId(), sendCommand.getKey(),
 							ipAddress);
-					logger.debug(Utils.getStackTrace(e));
-					socketClose(); // reconnect on next execution
-				} catch (IOException e) {
-					logger.warn("Cannot write data from Btcino lan gateway while connecting to '{}'", ipAddress);
-					logger.debug(Utils.getStackTrace(e));
-					socketClose(); // reconnect on next execution
+					logger.trace("Command {} content: '{}'", sendCommand.getId(), commandString);
+				} else {
+					logger.debug("Command {} ({}) isn't sent to the Bticino Bridge at IP: {}", sendCommand.getId(), sendCommand.getKey(),
+							ipAddress);
 				}
-				logger.debug("Command {} ({}) sent to the Bticino Bridge at IP: {}", sendCommand.getId(), sendCommand.getKey(),
-						ipAddress);
-				logger.trace("Command {} content: '{}'", sendCommand.getId(), commandString);
 			} 
 		} else {
 			logger.debug("Null Command not sent to {} (there is nothing to send)", ipAddress);
 		}
+		return askOrNask;
 	}
 
+	private boolean socketConnectOrReconnect() {
+		boolean connected = true;
+		try {
+			if (socket == null) {
+				connected = this.socketConnect();
+				requestCount = 0;
+			} else {
+				if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
+					logger.debug("maxRequestsPerConnection reached, reconnecting.");
+					socket.close();
+					connected = this.socketConnect();
+					requestCount = 0;
+				}
+			}
+		} catch (UnknownHostException e) {
+			logger.warn("Cannot establish connection with Btcino lan gateway while sending command to '{}'",
+					ipAddress);
+			logger.debug(Utils.getStackTrace(e));
+			socketClose(); // reconnect on next execution
+			connected = false;
+		} catch (IOException e) {
+			logger.warn("Cannot write data from Btcino lan gateway while connecting to '{}'", ipAddress);
+			logger.debug(Utils.getStackTrace(e));
+			socketClose(); // reconnect on next execution
+			connected = false;
+		}
+		return connected;
+	}
+	
 	private boolean socketConnect() throws UnknownHostException, IOException {
 		socket = new Socket(ipAddress, port);
 		logger.debug("Open new connection... to {} port {}", ipAddress, port);
 		//reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		//writer = new OutputStreamWriter(socket.getOutputStream());
+		
+		byte readBuffer[] = new byte[1024];
+        int readBytes = socket.getInputStream().read(readBuffer);
+        String response = new String(readBuffer, 0, readBytes);
+		
+		int askOrNask = processRawMessage(response);
+		if (!(askOrNask == OWN_RESPONSE_ACK)) {
+			logger.debug("Acknowledgment message isn't received");
+			socketClose();
+			return false;
+		}
+			
+		byte[] writeBuffer = OPEN_MSG_99_0.getBytes();
+        OutputStream out = socket.getOutputStream();
+        out.write(writeBuffer, 0, writeBuffer.length);
+        out.flush();
+       	
 		return true;
 	}
 

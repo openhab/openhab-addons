@@ -63,4 +63,7 @@ public class OpenWebNetVdesBindingConstants {
     public static final String OWN_RESPONSE_MESSAGE_NACK = "*#*0##";
     public static final int OWN_RESPONSE_ACK = 1;
     public static final int OWN_RESPONSE_NACK = 0;
+    
+    public static final String OPEN_MSG_99_0 = "*99*0##";
+    public static final String OPEN_MSG_MAC_ADDRESS_RESPONSE = "*#13**12##";
 }

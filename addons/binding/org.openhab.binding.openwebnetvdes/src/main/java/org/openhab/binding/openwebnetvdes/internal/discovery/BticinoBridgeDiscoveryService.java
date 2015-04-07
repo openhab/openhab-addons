@@ -35,7 +35,7 @@ public class BticinoBridgeDiscoveryService extends AbstractDiscoveryService {
 		ThingUID uid = new ThingUID(OpenWebNetVdesBindingConstants.IP_2WIRE_INTERFACE_THING_TYPE, ipAddress);
 		if (uid != null) {
 			DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-					.withLabel("MAX! Cube LAN Gateway").build();
+					.withLabel("Bticino LAN Gateway").build();
 			thingDiscovered(result);
 		}
 
