@@ -162,8 +162,8 @@ public class MoxMessage {
 					break;
 			}
 			
-			if (value != null && value instanceof BigDecimal) {
-				value.setScale(MAX_SCALE, RoundingMode.HALF_UP);
+			if (value != null) {
+				value = value.setScale(MAX_SCALE, RoundingMode.HALF_UP);
 			}
 
 			if (commandCode != null) {
