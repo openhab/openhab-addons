@@ -8,6 +8,7 @@
 package org.openhab.binding.mox.handler;
 
 import static org.openhab.binding.mox.MoxBindingConstants.STATE;
+import static org.openhab.binding.mox.MoxBindingConstants.OID;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -34,6 +35,7 @@ public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageList
 
     private Logger logger = LoggerFactory.getLogger(MoxDeviceHandler.class);
     
+    private int oid;
     private MoxGatewayHandler gatewayHandler;
     
 
@@ -45,30 +47,23 @@ public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageList
     @Override
     public void initialize() {
         logger.debug("Initializing Mox Device handler.");
-//        final String configLightId = (String) getConfig().get(LIGHT_ID);
-//        if (configLightId != null) {
-//            lightId = configLightId;
+        final Integer configOid = (Integer) getConfig().get(OID);
+        if (configOid != null) {
+            this.oid = configOid;
             // note: this call implicitly registers our handler as a listener on the bridge
             if (getGatewayHandler() != null) {
                 getThing().setStatus(getBridge().getStatus());
-//                FullLight fullLight = getLight();
-//                if (fullLight != null) {
-//                    updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, fullLight.getSoftwareVersion());
-//                }
             }
-//        }
+        }
     }
     
     @Override
     public void dispose() {
         logger.debug("Handler disposes. Unregistering listener.");
-//        if (lightId != null) {
-            MoxGatewayHandler gatewayHandler = getGatewayHandler();
-            if (gatewayHandler != null) {
-            	getGatewayHandler().unregisterLightStatusListener(this);
-            }
-//            lightId = null;
-//        }
+        MoxGatewayHandler gatewayHandler = getGatewayHandler();
+        if (gatewayHandler != null) {
+        	getGatewayHandler().unregisterLightStatusListener(this);
+        }
     }
 
     private synchronized MoxGatewayHandler getGatewayHandler() {
@@ -99,25 +94,27 @@ public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageList
 	@Override
 	public void onMessage(MoxMessage message) {
 		if (message != null && message.getCommandCode() != null) {
-			final DecimalType state = new DecimalType(message.getValue());
-			final ThingUID uid = getThing().getUID();
-			switch (message.getCommandCode()) {
-				case POWER_ACTIVE:
-					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_POWER), state);
-					break;
-				case POWER_REACTIVE:
-					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_REACTIVE_POWER), state);
-					break;
-				case POWER_APPARENT:
-					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_APPARENT_POWER), state);
-					break;
-				case POWER_ACTIVE_ENERGY:
-					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_ENERGY), state);
-					break;
-				case POWER_FACTOR:
-					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_POWER_FACTOR), state);
-					break;
-				default:
+			if (oid == message.getOid()) {
+				final ThingUID uid = getThing().getUID();
+				final DecimalType state = new DecimalType(message.getValue());
+				switch (message.getCommandCode()) {
+					case POWER_ACTIVE:
+						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_POWER), state);
+						break;
+					case POWER_REACTIVE:
+						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_REACTIVE_POWER), state);
+						break;
+					case POWER_APPARENT:
+						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_APPARENT_POWER), state);
+						break;
+					case POWER_ACTIVE_ENERGY:
+						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_ENERGY), state);
+						break;
+					case POWER_FACTOR:
+						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_POWER_FACTOR), state);
+						break;
+					default:
+				}
 			}
 		}
 	}

@@ -107,6 +107,10 @@ public class MoxMessage {
 		parseRawdata(rawdata);
 	}
 
+	public int getOid() {
+		return oid;
+	}
+	
 	public BigDecimal getValue() {
 		return value;
 	}
