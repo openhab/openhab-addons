@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pacomnvr"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="camera">
+		<label>PacomNVR Binding Thing</label>
+		<description>Sample thing for PacomNVR Binding</description>
+
+		<channels>
+			<channel id="cameraChannel" typeId="cameraChannel" />
+		</channels>
+
+		<config-description>
+			<parameter name="camera" type="integer" required="true">
+				<label>Camera</label>
+				<description>Specifies the number of camera to stream video from.</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="cameraChannel">
+		<!-- <item-type>pacomnvrItem</item-type> -->
+		<item-type>Switch</item-type>
+		<label>PacomNVR Binding Channel</label>
+		<description>Sample channel for PacomNVR Binding</description>
+	</channel-type>
+
+</thing:thing-descriptions>
