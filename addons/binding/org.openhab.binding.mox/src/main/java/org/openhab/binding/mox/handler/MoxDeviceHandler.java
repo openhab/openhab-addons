@@ -7,9 +7,11 @@
  */
 package org.openhab.binding.mox.handler;
 
-import static org.openhab.binding.mox.MoxBindingConstants.STATE;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.openhab.binding.mox.MoxBindingConstants.OID;
+import static org.openhab.binding.mox.MoxBindingConstants.STATE;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -47,9 +49,9 @@ public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageList
     @Override
     public void initialize() {
         logger.debug("Initializing Mox Device handler.");
-        final Integer configOid = Integer.valueOf((String) getConfig().get(OID));
-        if (configOid != null) {
-            this.oid = configOid;
+        final String configOid = (String) getConfig().get(OID);
+        if (isNotBlank(configOid)) {
+            this.oid = Integer.valueOf(configOid);
             // note: this call implicitly registers our handler as a listener on the bridge
             if (getGatewayHandler() != null) {
                 getThing().setStatus(getBridge().getStatus());
