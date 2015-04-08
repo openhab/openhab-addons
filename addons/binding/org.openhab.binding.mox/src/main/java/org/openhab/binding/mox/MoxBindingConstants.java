@@ -22,10 +22,10 @@ public class MoxBindingConstants {
     
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
-    public final static ThingTypeUID THING_TYPE_1G_ONOFF = new ThingTypeUID(BINDING_ID, "1-gang-on-off");
-    public final static ThingTypeUID THING_TYPE_1G_DIMMER = new ThingTypeUID(BINDING_ID, "1-gang-dimmer");
-    public final static ThingTypeUID THING_TYPE_1G_FAN = new ThingTypeUID(BINDING_ID, "1-gang-fan");
-    public final static ThingTypeUID THING_TYPE_1G_CURTAIN = new ThingTypeUID(BINDING_ID, "1-gang-curtain");
+    public final static ThingTypeUID THING_TYPE_1G_ONOFF = new ThingTypeUID(BINDING_ID, "1_gang_onoff");
+    public final static ThingTypeUID THING_TYPE_1G_DIMMER = new ThingTypeUID(BINDING_ID, "1_gang_dimmer");
+    public final static ThingTypeUID THING_TYPE_1G_FAN = new ThingTypeUID(BINDING_ID, "1_gang_fan");
+    public final static ThingTypeUID THING_TYPE_1G_CURTAIN = new ThingTypeUID(BINDING_ID, "1_gang_curtain");
 
     // List of all Channel ids
     public final static String STATE = "state";
@@ -40,4 +40,7 @@ public class MoxBindingConstants {
     public final static String UDP_HOST = "udpHost";
     public final static String UDP_PORT = "udpPort";
     
+    // Device config properties
+    public final static String OID = "oid";
+
 }

@@ -5,7 +5,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="1-gang-on-off">
+	<thing-type id="1_gang_dimmer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway" />
 		</supported-bridge-type-refs>
