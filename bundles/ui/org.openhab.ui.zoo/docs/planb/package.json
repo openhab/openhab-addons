@@ -1,0 +1,16 @@
+{
+  "name": "planb",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Zoo Plan B",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sebastian Janzen",
+  "license": "ISC",
+  "dependencies": {
+    "eventsource": "^0.1.6",
+    "request": "^2.55.0"
+  }
+}

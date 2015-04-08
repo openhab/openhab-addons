@@ -79,8 +79,8 @@ if (process.argv.length === 5) {
 	process.exit(1);
 }
 
-//readFromFile('./moxDiscoveryData');
-//process.exit(0);
+readFromFile('./moxDiscoveryData');
+process.exit(0);
 
 function readFromFile(file) {
 	var conv = require(file)
@@ -106,7 +106,7 @@ socket.on('message', function(buf, rinfo) {
 	var msg = bufToObject(buf);
 
 	if (!msg.oid) {return;}
-	
+
 	var id = msg.oid + ':' + msg.suboid;
 	if (msg.value_type) id += ':' + msg.value_type;
 
@@ -115,7 +115,7 @@ socket.on('message', function(buf, rinfo) {
 	}
 
 	if (msg.value && !msg.eventName && current_states[id].value != msg.value) {
-		console.log('Item with ID %s\t has changed from %s \tto \t%s \t\t%s', 
+		console.log('Item with ID %s\t has changed from %s \tto \t%s \t\t%s',
 			id + (id.length <= 16 ? '\t' : ''),
 			current_states[id].value,
 			msg.value,
@@ -126,13 +126,13 @@ socket.on('message', function(buf, rinfo) {
 	if (msg.eventName) {
 		console.log('\tEvent %s with value %s fired to ID %s', msg.eventName, msg.value, id);
 	}
-	
+
 });
 
 
 function bufToObject(buf) {
 	if (!buf) return {};
-	
+
 	var result = {
 		hex_string: 	formatHex(buf.toString('hex')),
 		int_string: 	formatInt(buf.toString('hex')),
@@ -237,9 +237,9 @@ function bufToObject(buf) {
 
 	if (!codeFound) {
 		result.errors.push('Could not decode package with subfn=0x'+
-			result.sub_fn.toString(16) + ' and code=0x' + 
+			result.sub_fn.toString(16) + ' and code=0x' +
 			result.fn_code.toString(16));
-		/*console.error('>>>>>>>>> Could not decode package with subfn=0x%s and code=0x%s !!\n', 
+		/*console.error('>>>>>>>>> Could not decode package with subfn=0x%s and code=0x%s !!\n',
 			result.sub_fn.toString(16),
 			result.fn_code.toString(16),
 			result);*/
@@ -251,7 +251,7 @@ function bufToObject(buf) {
 // Add space every byte for readability
 function formatHex(str) {
 	var result = '', i;
-	for (i=0;i<str.length; i+=2) 
+	for (i=0;i<str.length; i+=2)
 		result += str.slice(i,i+2) + ' '
 	return result;
 }
