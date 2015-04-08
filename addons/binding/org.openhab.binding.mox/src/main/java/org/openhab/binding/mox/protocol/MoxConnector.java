@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,17 +91,19 @@ public class MoxConnector extends Thread {
 	
 	@Override
 	public void run() {
-		try {
-			byte[] buffer = new byte[14];
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-			while (!interrupted) {
+		byte[] buffer = new byte[14];
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+		while (!interrupted) {
+			try {
 				socket.receive(packet);
 				MoxMessage moxMessage = new MoxMessage(packet.getData());
 				logger.trace("Received MOX Message [{}]", moxMessage);
 				messageListener.onMessage(moxMessage);
+			} catch (SocketTimeoutException e) {
+				logger.trace("Socket listening timeout reached, will retry? {}!", !interrupted);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
