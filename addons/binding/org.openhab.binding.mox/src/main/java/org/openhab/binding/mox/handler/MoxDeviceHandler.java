@@ -47,7 +47,7 @@ public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageList
     @Override
     public void initialize() {
         logger.debug("Initializing Mox Device handler.");
-        final Integer configOid = (Integer) getConfig().get(OID);
+        final Integer configOid = Integer.valueOf((String) getConfig().get(OID));
         if (configOid != null) {
             this.oid = configOid;
             // note: this call implicitly registers our handler as a listener on the bridge
