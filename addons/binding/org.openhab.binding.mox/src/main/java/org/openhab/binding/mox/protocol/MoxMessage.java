@@ -8,6 +8,7 @@
 package org.openhab.binding.mox.protocol;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +64,7 @@ enum BroadcastCode {
  */
 public class MoxMessage {
 	
+	private static final int MAX_SCALE = 8;
 	private byte[] rawdata;
 	private String hexString;
 	
@@ -158,6 +160,10 @@ public class MoxMessage {
 					eventName = code.name();
 					value = new BigDecimal(readBytes(rawdata, 10, 1, false));
 					break;
+			}
+			
+			if (value != null && value instanceof BigDecimal) {
+				value.setScale(MAX_SCALE, RoundingMode.HALF_UP);
 			}
 
 			if (commandCode != null) {

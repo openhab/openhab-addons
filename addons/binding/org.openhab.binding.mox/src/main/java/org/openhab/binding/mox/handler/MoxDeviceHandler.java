@@ -99,21 +99,23 @@ public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageList
 	@Override
 	public void onMessage(MoxMessage message) {
 		if (message != null && message.getCommandCode() != null) {
+			final DecimalType state = new DecimalType(message.getValue());
+			final ThingUID uid = getThing().getUID();
 			switch (message.getCommandCode()) {
 				case POWER_ACTIVE:
-					updateState(new ChannelUID(getThing().getUID(), MoxBindingConstants.CHANNEL_ACTIVE_POWER), new DecimalType(message.getValue()));
+					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_POWER), state);
 					break;
 				case POWER_REACTIVE:
-					updateState(new ChannelUID(getThing().getUID(), MoxBindingConstants.CHANNEL_REACTIVE_POWER), new DecimalType(message.getValue()));
+					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_REACTIVE_POWER), state);
 					break;
 				case POWER_APPARENT:
-					updateState(new ChannelUID(getThing().getUID(), MoxBindingConstants.CHANNEL_APPARENT_POWER), new DecimalType(message.getValue()));
+					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_APPARENT_POWER), state);
 					break;
 				case POWER_ACTIVE_ENERGY:
-					updateState(new ChannelUID(getThing().getUID(), MoxBindingConstants.CHANNEL_ACTIVE_ENERGY), new DecimalType(message.getValue()));
+					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_ENERGY), state);
 					break;
 				case POWER_FACTOR:
-					updateState(new ChannelUID(getThing().getUID(), MoxBindingConstants.CHANNEL_POWER_FACTOR), new DecimalType(message.getValue()));
+					updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_POWER_FACTOR), state);
 					break;
 				default:
 			}
