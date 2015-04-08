@@ -13,9 +13,10 @@ angular.module('SmartHome.filters', []).filter('activeItems', function() {
     });
   };
 }).filter('masterSwitch', function() {
-  var filterFn;
+  var TAG_MASTER, filterFn;
+  TAG_MASTER = 'master-switch';
   filterFn = function(item) {
-    return item.tags.indexOf('master') >= 0;
+    return item.tags.indexOf(TAG_MASTER) >= 0;
   };
   return function(items) {
     var groupItems, ref;

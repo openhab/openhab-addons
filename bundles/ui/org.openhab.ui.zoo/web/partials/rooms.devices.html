@@ -17,14 +17,14 @@
 
       <div class="large-margin">
         <h3>Master switch</h3>
-        <master-switch item="ctrl.rooms[$stateParams.room].members | masterSwitch"></master-switch>
+        <master-switch item="ctrl.rooms[$stateParams.room]"></master-switch>
       </div>
 
       <ul class="line-list">
         <li ng-repeat="item in ctrl.rooms[$stateParams.room].members" ng-switch="item.type">
           <dimmer-item ng-switch-when="DimmerItem" item="item"></dimmer-item>
           <switch-item ng-switch-when="SwitchItem" item="item"></switch-item>
-          <div ng-switch-default><script>console.warn('Unsupported item type in list!')</script></div>
+          <div ng-switch-default><!-- Unsupported type {{item.type}}: {{item.name}} --></div>
         </li>
       </ul>
     </li>

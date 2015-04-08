@@ -1,6 +1,21 @@
 'use strict'
 
-angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log, $timeout, itemService) ->
+angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log, $timeout, itemService, $rootScope) ->
+
+	translateState = (state) ->
+		return state if angular.isNumber(state)
+		if angular.isString state
+			switch state
+				when 'ON' then 100
+				when 'OFF' then 0
+				else parseInt state, 10
+		else 0
+
+	translateStateOnOff = (state) ->
+		return state if state is 'ON' or state is 'OFF'
+		stateNum = parseInt(state, 10)
+		if stateNum > 0 then 'ON' else 'OFF'
+
 
 	restrict: 'E'
 	replace: yes
@@ -12,38 +27,40 @@ angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log
 		eventBuffer = null
 
 		scope.local =
-			stateOnOff: if scope.item.state > 0 then 'ON' else 'OFF'
-			dimValue: parseInt(scope.item.state, 10) or 0
-			opacity: parseInt(scope.item.state, 10) / 100
+			stateOnOff: translateStateOnOff(scope.item.state)
+			dimValue: translateState(scope.item.state)
+			opacity: .5
 
 		scope.options =
 			cctv: attrs.cctv?
 
-		# TODO Make service!
-		for tag in scope.item.tags
-			scope.options.cssIconClass = switch tag
-				when 'power' then 'i-power'
-				when 'light' then 'i-light-on-small'
+		getIconClassByTags = (item) ->
+			return unless item.tags?
+			if item.tags.indexOf('power') >= 0 then return 'i-power'
+			if item.tags.indexOf('light') >= 0 then return 'i-light-on-small'
+			if item.tags.indexOf('fan') >= 0 then return 'i-fan'
 
 		updateItem = (newState) ->
-			scope.item.state = parseInt(newState, 10)
-			scope.$apply()
+			scope.local.dimValue = translateState(newState)
+			scope.local.stateOnOff = translateStateOnOff(newState)
+			updateOpacity()
+			ranger.setStart scope.local.dimValue
+			scope.options.cssIconClass = getIconClassByTags scope.item
 
-		setOpacity = ->
+		updateOpacity = ->
 			newOpacity = scope.local.dimValue / 100
 			if newOpacity < .1 then newOpacity = .1
 			if newOpacity > .9 then newOpacity = .9
 			scope.local.opacity = newOpacity
 
 		options =
-			callback: setOpacity
+#			callback: updateOpacity
 			decimal: no
 			min: 0
 			max: 100
 			start: scope.local.dimValue
 
 		ranger = new Powerange $('.js-opacity', elem)[0], options
-
 
 
 		# TODO Transclude this
@@ -58,27 +75,32 @@ angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log
 				removalDelay: 300
 				mainClass: 'my-mfp-slide-bottom'
 
-		scope.$watch 'local.stateOnOff', (state, oldState) ->
-			return unless state isnt oldState
-			itemService.sendCommand itemName: scope.item.name, state
-			#$log.debug "Changed state of #{scope.item.label} from #{oldState} to #{state}"
+		# Send command from UI to backend
+		# Will receive update via broadcast which will fire updateItem()
+		scope.handleChangeSwitch = ->
+			$log.debug "Dimmer: Switching #{scope.item.name} to #{scope.local.stateOnOff}"
+			itemService.sendCommand itemName: scope.item.name, scope.local.stateOnOff
 
-		scope.$watch 'local.dimValue', (state, oldState) ->
-			return unless state isnt oldState
+		# Send command from UI to backend
+		# Will receive update via broadcast which will fire updateItem()
+		scope.handleChangeSlider = ->
 			$timeout.cancel eventBuffer
 			eventBuffer = $timeout ->
-				itemService.sendCommand itemName: scope.item.name, state
-				#$log.debug "Changed state of #{scope.item.label} from #{oldState} to #{state}"
+				$log.debug "Dimmer: Change #{scope.item.name} to #{scope.local.dimValue}"
+				itemService.sendCommand itemName: scope.item.name, scope.local.dimValue
 			, 100, false
 
-		scope.$watch 'item.state', (state, oldState) ->
-			return unless state isnt oldState
-			ranger.setStart state
-			$log.debug "Changed state form #{scope.item.label} from #{oldState} to #{state}"
-
-		scope.$watch 'item', (item) ->
+		# If item's state is changed, either by filling this isol. scope
+		# or by reload, re-initialize all values.
+		scope.$watch 'item', (item, oldItem) ->
 			return unless item?
+			updateItem item.state
 			scope.$on "smarthome/command/#{item.name}", (event, newState) ->
+				$log.debug "Dimmer: Event #{scope.item.name} to #{newState}"
+				scope.item.state = newState
 				updateItem newState
+
+				# Workaround until Group events are broadcastet
+				$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
 
 		return

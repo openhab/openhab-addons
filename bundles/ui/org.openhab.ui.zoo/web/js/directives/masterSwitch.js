@@ -9,26 +9,38 @@ angular.module('ZooLib.directives.masterSwitch', []).directive('masterSwitch', f
       item: '='
     },
     link: function(scope) {
-      var updateItem;
-      updateItem = function(newState) {
-        scope.item.state = newState;
-        return scope.$apply();
+      var updateItemState;
+      scope.local = {
+        state: null
       };
-      scope.$watch('item.state', function(state, oldState) {
-        if (state === oldState) {
+      updateItemState = function(newState) {
+        return scope.local.state = newState;
+      };
+      scope.handleChange = function() {
+        $log.log("MasterSwitch: Fire event " + scope.item.name + " to " + scope.local.state);
+        return itemService.sendCommand({
+          itemName: scope.item.name
+        }, scope.local.state);
+      };
+      scope.$watch('item', function(item, oldItem) {
+        if (item === oldItem) {
           return;
         }
-        itemService.sendCommand({
-          itemName: scope.item.name
-        }, state);
-        return $log.log("Changed state of " + scope.item.label + " from " + oldState + " to " + state);
-      });
-      scope.$watch('item', function(item) {
         if (item == null) {
           return;
         }
-        return scope.$on("smarthome/command/" + item.name, function(event, newState) {
-          return updateItem(newState);
+        updateItemState(item.state);
+        scope.$on("smarthome/command/" + item.name, function(event, newState) {
+          scope.item.state = newState;
+          return updateItemState(newState);
+        });
+        return scope.$on("updateMasterSwitch/" + item.name, function() {
+          return itemService.getByName({
+            itemName: scope.item.name
+          }, function(item) {
+            $log.info("Reloaded new masterSwitch state " + item.name, item);
+            return updateItemState(item.state);
+          });
         });
       });
     }

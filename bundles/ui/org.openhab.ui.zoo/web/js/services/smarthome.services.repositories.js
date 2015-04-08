@@ -17,7 +17,7 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
 }).factory('itemRepository', function(DataCache, itemService, $log, $q) {
   var GROUP_ROOMS, ItemRepository, TAG_MASTER, TAG_ROOM;
   TAG_ROOM = 'room';
-  TAG_MASTER = 'master';
+  TAG_MASTER = 'master-switch';
   GROUP_ROOMS = 'gRooms';
   return new (ItemRepository = (function() {
     function ItemRepository() {
@@ -49,6 +49,15 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
           });
           return defered.resolve(_this.rooms);
         };
+      })(this));
+      return defered.promise;
+    };
+
+    ItemRepository.prototype.getConsumptions = function(force) {
+      var defered;
+      defered = $q.defer();
+      DataCache.getAll(force).then((function(_this) {
+        return function(data) {};
       })(this));
       return defered.promise;
     };

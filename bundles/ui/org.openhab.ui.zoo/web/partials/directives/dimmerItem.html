@@ -13,12 +13,12 @@
       </div><!--popup-content-->
     </div>
     <label class="master-switch switch-small" for="switch-item-{{item.name}}">
-      <input id="switch-item-{{item.name}}" type="checkbox" ng-model="local.stateOnOff" ng-true-value="'ON'", ng-false-value="'OFF'">
+      <input id="switch-item-{{item.name}}" type="checkbox" ng-model="local.stateOnOff" ng-true-value="'ON'" ng-false-value="'OFF'" ng-change="handleChangeSwitch()">
       <span class="switch"></span>
     </label>
   </div>
 
   <div class="slider">
-    <input type="text" class="js-opacity" ng-model="local.dimValue" />
+    <input type="text" class="js-opacity" ng-model="local.dimValue" ng-change="handleChangeSlider()">
   </div>
 </div>

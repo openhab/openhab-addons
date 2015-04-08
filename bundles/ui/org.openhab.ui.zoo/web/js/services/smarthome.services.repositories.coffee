@@ -29,7 +29,7 @@ angular.module('SmartHome.services.repositories', [ 'SmartHome.services.datacach
 .factory 'itemRepository', (DataCache, itemService, $log, $q) ->
 
 	TAG_ROOM = 'room'
-	TAG_MASTER = 'master'
+	TAG_MASTER = 'master-switch'
 	GROUP_ROOMS = 'gRooms'
 
 	new class ItemRepository
@@ -50,10 +50,16 @@ angular.module('SmartHome.services.repositories', [ 'SmartHome.services.datacach
 			DataCache.getAll(force).then (data) =>
 				@itemsActive = []
 				data.forEach (item) =>
-					if item.type is 'GroupItem' and @hasGroup item, GROUP_ROOMS
+					if item.type is 'GroupItem' and @hasGroup(item, GROUP_ROOMS)
 						# This group represents a Zoo Group
 						@rooms[item.name] = angular.copy item
 				defered.resolve @rooms
+
+			defered.promise
+
+		getConsumptions: (force) ->
+			defered = $q.defer()
+			DataCache.getAll(force).then (data) =>
 
 			defered.promise
 

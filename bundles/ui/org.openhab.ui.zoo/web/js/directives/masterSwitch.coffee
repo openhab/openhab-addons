@@ -9,18 +9,28 @@ angular.module('ZooLib.directives.masterSwitch', []).directive 'masterSwitch', (
 		item: '='
 	link: (scope) ->
 
-		updateItem = (newState) ->
-			scope.item.state = newState
-			scope.$apply()
+		scope.local =
+			state: null
 
-		scope.$watch 'item.state', (state, oldState) ->
-			return unless state isnt oldState
-			itemService.sendCommand itemName: scope.item.name, state
-			$log.log "Changed state of #{scope.item.label} from #{oldState} to #{state}"
+		updateItemState = (newState) ->
+			scope.local.state = newState
 
-		scope.$watch 'item', (item) ->
+		scope.handleChange = ->
+			$log.log "MasterSwitch: Fire event #{scope.item.name} to #{scope.local.state}"
+			itemService.sendCommand itemName: scope.item.name, scope.local.state
+
+		scope.$watch 'item', (item, oldItem) ->
+			return if item is oldItem
 			return unless item?
+			updateItemState item.state
+
 			scope.$on "smarthome/command/#{item.name}", (event, newState) ->
-				updateItem newState
+				scope.item.state = newState
+				updateItemState newState
+
+			scope.$on "updateMasterSwitch/#{item.name}", ->
+				itemService.getByName (itemName: scope.item.name), (item) ->
+					$log.info "Reloaded new masterSwitch state #{item.name}", item
+					updateItemState item.state
 
 		return

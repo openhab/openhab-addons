@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log, itemService) ->
+angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log, itemService, $rootScope) ->
 
 	restrict: 'E'
 	replace: yes
@@ -9,26 +9,35 @@ angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log
 		item: '='
 	link: (scope) ->
 
-		scope.options = {}
+		scope.local =
+			state: null
+
+		scope.options =
+			cssIconClass: ''
 
 		updateItem = (newState) ->
-			scope.item.state = newState
-			scope.$apply()
+			scope.options.cssIconClass = getIconClassByTags(scope.item)
+			scope.local.state = newState
 
 		# TODO Make service!
-		for tag in scope.item.tags
-			scope.options.cssIconClass = switch tag
-				when 'power' then 'i-power'
-				when 'light' then 'i-light-on-small'
+		getIconClassByTags = (item) ->
+			return unless item.tags?
+			if item.tags.indexOf('power') >= 0 then return 'i-power'
+			if item.tags.indexOf('light') >= 0 then return 'i-light-on-small'
+			if item.tags.indexOf('fan') >= 0 then return 'i-fan'
 
-		scope.$watch 'item.state', (state, oldState) ->
-			return unless state isnt oldState
-			itemService.sendCommand itemName: scope.item.name, state
-			$log.debug "Model change: #{scope.item.label} from #{oldState} to #{state}"
+		scope.handleChange = ->
+			$log.debug "Switch Item #{scope.item.name} changed to #{scope.local.state}"
+			itemService.sendCommand itemName: scope.item.name, scope.local.state
 
 		scope.$watch 'item', (item) ->
 			return unless item?
+			updateItem item.state
 			scope.$on "smarthome/command/#{item.name}", (event, newState) ->
+				scope.item.state = newState
 				updateItem newState
+
+				# Workaround until Group events are broadcastet
+				$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
 
 		return

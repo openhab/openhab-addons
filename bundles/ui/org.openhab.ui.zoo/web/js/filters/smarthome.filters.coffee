@@ -11,8 +11,10 @@ angular.module('SmartHome.filters', [])
 
 .filter 'masterSwitch', ->
 
+	TAG_MASTER = 'master-switch'
+
 	filterFn = (item) ->
-		item.tags.indexOf('master') >= 0
+		item.tags.indexOf(TAG_MASTER) >= 0
 
 	return (items) ->
 		return unless items
