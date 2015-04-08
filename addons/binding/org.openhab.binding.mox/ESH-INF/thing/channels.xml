@@ -11,13 +11,16 @@
 		<description>Turns the power on or off</description>
 		<category>Switch</category>
 	</channel-type>
-
+	
 	<channel-type id="activePower">
 		<item-type>Number</item-type>
-		<label>Power</label>
+		<label>Active Power</label>
 		<description>The active power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<tags>
+			<tag>active-power</tag>
+		</tags>
+		<state pattern="%.3f W" readOnly="true" min="0" />
 	</channel-type>
 
 	<channel-type id="reactivePower">
@@ -25,7 +28,10 @@
 		<label>Power</label>
 		<description>The reactive power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<tags>
+			<tag>reactive-power</tag>
+		</tags>
+		<state pattern="%.3f var" readOnly="true" min="0" />
 	</channel-type>
 
 	<channel-type id="apparentPower">
@@ -33,23 +39,29 @@
 		<label>Power</label>
 		<description>The apparent power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<tags>
+			<tag>apparent-power</tag>
+		</tags>
+		<state pattern="%.3f VA" readOnly="true" min="0" />
 	</channel-type>
 
 	<channel-type id="activeEnergy">
 		<item-type>Number</item-type>
-		<label>Power</label>
-		<description>The active Energy</description>
+		<label>Active Energy</label>
+		<description>The sum of energy consumed</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<tags>
+			<tag>active-energy</tag>
+		</tags>
+		<state pattern="%.6f kWh" readOnly="true" min="0" />
 	</channel-type>
 	
 	<channel-type id="powerFactor">
 		<item-type>Number</item-type>
-		<label>Power</label>
+		<label>Power Factor</label>
 		<description>The power factor</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<state pattern="%.3f" readOnly="true" min="0" max="1" />
 	</channel-type>
 	
 </thing:thing-descriptions>
