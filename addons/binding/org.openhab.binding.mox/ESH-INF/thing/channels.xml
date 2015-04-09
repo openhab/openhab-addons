@@ -5,7 +5,14 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="state">
+	<channel-type id="switchState">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turns the power on or off</description>
+		<category>Switch</category>
+	</channel-type>
+	
+	<channel-type id="dimmerState">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Turns the power on or off</description>

@@ -14,7 +14,7 @@
 		<description>This is a 1-Gang Dimmer Module</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
+			<channel id="state" typeId="dimmerState" />
 			
 			<channel id="activePower" typeId="activePower" />
 			<channel id="reactivePower" typeId="reactivePower" />
