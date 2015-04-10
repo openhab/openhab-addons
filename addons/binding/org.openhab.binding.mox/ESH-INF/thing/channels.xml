@@ -13,9 +13,10 @@
 	</channel-type>
 	
 	<channel-type id="dimmerState">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Turns the power on or off</description>
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>The dimmer channel allows to control the brightness of a light.
+            It is also possible to switch the light on and off.Turns the power on or off</description>
 		<category>Switch</category>
 	</channel-type>
 	
