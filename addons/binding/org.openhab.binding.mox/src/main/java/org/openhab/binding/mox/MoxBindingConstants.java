@@ -14,7 +14,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  * 
  * @author Thomas Eichstaedt-Engelen (innoQ) - Initial contribution
- * @since 0.8.0
+ * @since 2.0.0
  */
 public class MoxBindingConstants {
 

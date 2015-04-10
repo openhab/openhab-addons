@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  * 
  * @author Thomas Eichstaedt-Engelen (innoQ) - Initial contribution
- * @since 0.8.0
+ * @since 2.0.0
  */
 public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageListener {
 

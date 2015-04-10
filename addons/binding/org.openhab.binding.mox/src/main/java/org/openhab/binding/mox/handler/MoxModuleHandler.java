@@ -11,7 +11,6 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.openhab.binding.mox.MoxBindingConstants.OID;
 import static org.openhab.binding.mox.MoxBindingConstants.STATE;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -27,21 +26,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MoxDeviceHandler} is responsible for handling commands, which are
+ * The {@link MoxModuleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  * 
  * @author Thomas Eichstaedt-Engelen (innoQ) - Initial contribution
- * @since 0.8.0
+ * @since 2.0.0
  */
-public class MoxDeviceHandler extends BaseThingHandler implements MoxMessageListener {
+public class MoxModuleHandler extends BaseThingHandler implements MoxMessageListener {
 
-    private Logger logger = LoggerFactory.getLogger(MoxDeviceHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MoxModuleHandler.class);
     
     private int oid;
     private MoxGatewayHandler gatewayHandler;
     
 
-	public MoxDeviceHandler(Thing thing) {
+	public MoxModuleHandler(Thing thing) {
 		super(thing);
 		thing.setBridgeUID(new ThingUID("mox:gateway:221"));
 	}

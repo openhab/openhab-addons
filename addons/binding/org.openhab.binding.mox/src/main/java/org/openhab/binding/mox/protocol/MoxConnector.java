@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Thomas Eichstaedt-Engelen (innoQ)
- * @since 0.8.0
+ * @since 2.0.0
  */
 public class MoxConnector extends Thread {
 

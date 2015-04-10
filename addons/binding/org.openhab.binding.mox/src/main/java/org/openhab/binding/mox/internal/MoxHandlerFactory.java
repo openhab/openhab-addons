@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.mox.handler.MoxGatewayHandler;
-import org.openhab.binding.mox.handler.MoxDeviceHandler;
+import org.openhab.binding.mox.handler.MoxModuleHandler;
 
 import com.google.common.collect.Sets;
 
@@ -29,7 +29,7 @@ import com.google.common.collect.Sets;
  * handlers.
  * 
  * @author Thomas Eichstaedt-Engelen (innoQ) - Initial contribution
- * @since 0.8.0
+ * @since 2.0.0
  */
 public class MoxHandlerFactory extends BaseThingHandlerFactory {
     
@@ -47,13 +47,13 @@ public class MoxHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
             return new MoxGatewayHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_1G_ONOFF)) {
-            return new MoxDeviceHandler(thing);
+            return new MoxModuleHandler(thing);
 	    } else if (thingTypeUID.equals(THING_TYPE_1G_DIMMER)) {
-	        return new MoxDeviceHandler(thing);
+	        return new MoxModuleHandler(thing);
 	    } else if (thingTypeUID.equals(THING_TYPE_1G_FAN)) {
-	        return new MoxDeviceHandler(thing);
+	        return new MoxModuleHandler(thing);
 	    } else if (thingTypeUID.equals(THING_TYPE_1G_CURTAIN)) {
-	        return new MoxDeviceHandler(thing);
+	        return new MoxModuleHandler(thing);
 	    }
 
         return null;
