@@ -13,10 +13,10 @@
 	</channel-type>
 	
 	<channel-type id="dimmerState">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Turns the power on or off</description>
-		<category>Switch</category>
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Dim and on or off</description>
+		<category>Dimmer</category>
 	</channel-type>
 	
 	<channel-type id="activePower">
