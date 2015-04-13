@@ -104,7 +104,7 @@
         </dependency>
 		
         <dependency>
-            <groupId>org.openhab.bundles.ui</groupId>
+            <groupId>org.openhab.ui</groupId>
             <artifactId>org.openhab.ui.paperui</artifactId>
             <version>${project.version}</version>
         </dependency>
