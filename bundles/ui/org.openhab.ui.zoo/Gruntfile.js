@@ -234,7 +234,8 @@ module.exports = function(grunt) {
 
     // Optimize images
     // >>> Images now in dest
-    'imagemin',
+    //'imagemin',
+    'copy:devImg',
 
     // Minification-safe angular DI
     // >>> JS now in .tmp/js/
