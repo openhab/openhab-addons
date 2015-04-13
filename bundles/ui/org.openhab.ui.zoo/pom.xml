@@ -10,11 +10,11 @@
   </parent>
 
   <properties>
-    <bundle.symbolicName>org.openhab.ui</bundle.symbolicName>
+    <bundle.symbolicName>org.openhab.ui.zoo</bundle.symbolicName>
     <bundle.namespace>org.openhab.ui.zoo</bundle.namespace>
   </properties>
 
-  <groupId>org.openhab.ui</groupId>
+  <groupId>org.openhab.bundles.ui</groupId>
   <artifactId>org.openhab.ui.zoo</artifactId>
 
   <name>openHAB Zoo Automation UI</name>

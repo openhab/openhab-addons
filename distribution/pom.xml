@@ -60,16 +60,7 @@
             <type>zip</type>
             <classifier>win32.win32.x86</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.sonos</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.max</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        
         <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.yahooweather</artifactId>
@@ -90,6 +81,7 @@
             <artifactId>org.eclipse.smarthome.binding.lifx</artifactId>
             <version>${esh.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.sonos</artifactId>
@@ -105,15 +97,20 @@
             <artifactId>org.openhab.binding.mox</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.astro</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		
         <dependency>
-            <groupId>org.openhab.ui</groupId>
+            <groupId>org.openhab.bundles.ui</groupId>
             <artifactId>org.openhab.ui.paperui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.astro</artifactId>
+            <groupId>org.openhab.bundles.ui</groupId>
+            <artifactId>org.openhab.ui.zoo</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
