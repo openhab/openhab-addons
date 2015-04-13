@@ -31,6 +31,7 @@ angular.module('SmartHome.services.repositories', [ 'SmartHome.services.datacach
 	TAG_ROOM = 'room'
 	TAG_MASTER = 'master-switch'
 	GROUP_ROOMS = 'gRooms'
+	TAG_CONSUMPTION = 'consumption'
 
 	new class ItemRepository
 
@@ -50,17 +51,10 @@ angular.module('SmartHome.services.repositories', [ 'SmartHome.services.datacach
 			DataCache.getAll(force).then (data) =>
 				@itemsActive = []
 				data.forEach (item) =>
-					if item.type is 'GroupItem' and @hasGroup(item, GROUP_ROOMS)
+					if item.type is 'GroupItem' and @hasGroup(item, GROUP_ROOMS) and not @hasTag(item, TAG_CONSUMPTION)
 						# This group represents a Zoo Group
 						@rooms[item.name] = angular.copy item
 				defered.resolve @rooms
-
-			defered.promise
-
-		getConsumptions: (force) ->
-			defered = $q.defer()
-			DataCache.getAll(force).then (data) =>
-
 			defered.promise
 
 		getMasterSwitchFromGroup: (group) ->

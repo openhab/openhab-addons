@@ -26,4 +26,24 @@ angular.module('SmartHome.filters', []).filter('activeItems', function() {
     groupItems = items.members != null ? items.members : items;
     return (ref = groupItems.filter(filterFn)) != null ? ref[0] : void 0;
   };
+}).filter('consumption', function() {
+  var UNINITIALIZED, UNITS;
+  UNITS = ['kW'];
+  UNINITIALIZED = 'Uninitialized';
+  return function(value, precision, uninitVal) {
+    var valueNum;
+    if (uninitVal == null) {
+      uninitVal = '-';
+    }
+    if (!value) {
+      return;
+    }
+    if (value === UNINITIALIZED) {
+      return uninitVal;
+    }
+    valueNum = parseInt(value, 10);
+    if (valueNum >= 0) {
+      return valueNum + " " + UNITS[0];
+    }
+  };
 });

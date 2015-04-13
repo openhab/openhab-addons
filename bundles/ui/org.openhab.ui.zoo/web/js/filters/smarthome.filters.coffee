@@ -23,3 +23,15 @@ angular.module('SmartHome.filters', [])
 		groupItems = if items.members? then items.members else items
 
 		groupItems.filter(filterFn)?[0]
+
+.filter 'consumption', ->
+
+	UNITS = ['kW']
+	UNINITIALIZED = 'Uninitialized'
+
+	return (value, precision, uninitVal='-') ->
+		return unless value
+		return uninitVal if value is UNINITIALIZED
+		valueNum = parseInt value, 10
+		if valueNum >= 0
+			"#{valueNum} #{UNITS[0]}"

@@ -15,10 +15,11 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
 }).factory('homeGroupRepository', function(DataCache, groupSetupService) {
   return DataCache.init(groupSetupService);
 }).factory('itemRepository', function(DataCache, itemService, $log, $q) {
-  var GROUP_ROOMS, ItemRepository, TAG_MASTER, TAG_ROOM;
+  var GROUP_ROOMS, ItemRepository, TAG_CONSUMPTION, TAG_MASTER, TAG_ROOM;
   TAG_ROOM = 'room';
   TAG_MASTER = 'master-switch';
   GROUP_ROOMS = 'gRooms';
+  TAG_CONSUMPTION = 'consumption';
   return new (ItemRepository = (function() {
     function ItemRepository() {
       DataCache.init(itemService);
@@ -43,21 +44,12 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
         return function(data) {
           _this.itemsActive = [];
           data.forEach(function(item) {
-            if (item.type === 'GroupItem' && _this.hasGroup(item, GROUP_ROOMS)) {
+            if (item.type === 'GroupItem' && _this.hasGroup(item, GROUP_ROOMS) && !_this.hasTag(item, TAG_CONSUMPTION)) {
               return _this.rooms[item.name] = angular.copy(item);
             }
           });
           return defered.resolve(_this.rooms);
         };
-      })(this));
-      return defered.promise;
-    };
-
-    ItemRepository.prototype.getConsumptions = function(force) {
-      var defered;
-      defered = $q.defer();
-      DataCache.getAll(force).then((function(_this) {
-        return function(data) {};
       })(this));
       return defered.promise;
     };
