@@ -113,6 +113,10 @@ public class MoxMessage {
 	public void setValue(BigDecimal value) {
 		this.value = value;
 	}
+
+	public void setValue(Integer value) {
+		this.setValue(new BigDecimal(value));
+	}
 	
 	public int getDimmerTime() {
 		return dimmerTime;
@@ -148,4 +152,5 @@ public class MoxMessage {
 				'}';
 	}
 	
+
 }

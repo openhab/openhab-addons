@@ -59,7 +59,7 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 			final Integer configPort = ((BigDecimal) getConfig().get(UDP_PORT)).intValueExact();
 
 			if (isNotBlank(configHost) && configPort != null && configPort > 0) {
-				logger.info("Listening for MOX datagrams on {}:{}", configHost, configPort);
+				logger.info("Listen for MOX datagrams on port {} on all interfaces.", configPort);
 				connector = new MoxConnector(configHost, configPort);
 			}
 

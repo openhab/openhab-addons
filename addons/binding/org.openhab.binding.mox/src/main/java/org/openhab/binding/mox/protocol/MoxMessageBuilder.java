@@ -96,6 +96,18 @@ public class MoxMessageBuilder {
 	    return value;
 	}
 	
+	public int[] getUnsignedIntArray(byte[] bytes) {
+		if (bytes == null)
+	        return null;
+
+		int[] res = new int[bytes.length];
+
+	    for (int i = 0; i < bytes.length; i++) {
+		res[i] = bytes[i] & 0xff;
+	    }
+	    return res;
+	}
+
     public MoxMessage build() {
         return this.message;
     }

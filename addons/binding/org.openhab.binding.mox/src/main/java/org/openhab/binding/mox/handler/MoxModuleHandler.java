@@ -7,23 +7,25 @@
  */
 package org.openhab.binding.mox.handler;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.openhab.binding.mox.MoxBindingConstants.OID;
-import static org.openhab.binding.mox.MoxBindingConstants.STATE;
-
+import com.google.common.collect.Sets;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.mox.MoxBindingConstants;
+import org.openhab.binding.mox.protocol.MoxCommandCode;
 import org.openhab.binding.mox.protocol.MoxMessage;
 import org.openhab.binding.mox.protocol.MoxMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.openhab.binding.mox.MoxBindingConstants.*;
 
 /**
  * The {@link MoxModuleHandler} is responsible for handling commands, which are
@@ -38,7 +40,9 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
     
     private int oid;
     private MoxGatewayHandler gatewayHandler;
-    
+
+	private final static Set<ThingTypeUID> SUPPORTS_DECIMAL_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_CURTAIN);
+	private final static Set<ThingTypeUID> SUPPORTS_ONOFF_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_ONOFF);
 
 	public MoxModuleHandler(Thing thing) {
 		super(thing);
@@ -87,35 +91,68 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
+		logger.debug("Received command for {} : {}", channelUID, command);
         if(channelUID.getId().equals(STATE)) {
-            // TODO: handle command
+
+			checkValidInputType(channelUID.getThingTypeUID(), command);
+
+			if (command instanceof OnOffType) {
+				setSwitchValue(channelUID, command);
+			} else if (command instanceof DecimalType ||
+					command instanceof IncreaseDecreaseType) {
+				setDimmerValue(channelUID, command);
+			} else {
+				throw new IllegalArgumentException("This type of command is not supported by the binding.");
+			}
+
         }
-	}	
+	}
+
+	private void checkValidInputType(ThingTypeUID thingTypeUID, Command command) {
+		String errorMessage = null;
+		if (command instanceof OnOffType && !SUPPORTS_ONOFF_INPUT.contains(thingTypeUID)) {
+			errorMessage = "This thing cannot handle ON/OFF";
+		} else if (command instanceof DecimalType && !SUPPORTS_DECIMAL_INPUT.contains(thingTypeUID)) {
+			errorMessage = "This thing cannot handle decimal state.";
+		}
+		if (errorMessage != null) {
+			throw new IllegalArgumentException(errorMessage);
+		}
+	}
 	
-	private void sendCommand(int oid) {
-		
-		/*
-		function sendBusCommand(id, cmd, value) {
-			var idParts = id.split(':');
-			var oid = idParts[0];
-			var suboid = idParts[1];
-			var cmdCodes = CMD_CODES[cmd];
-			value = parseInt(value, 10);
-			var message = new Buffer([
-				0x3, // priority
-				Math.floor(oid/512),
-				Math.floor(oid/256),
-				oid%256,
-				suboid,
-				cmdCodes[0],
-				0x0,
-				0x0,
-				Math.floor(cmdCodes[1]/256),
-				cmdCodes[1]%256,
-				value
-			]);			
-		}*/
-		
+	private void setSwitchValue(ChannelUID channelUID, Command command) {
+		if (command == null) return;
+		int oid = Integer.parseInt(channelUID.getThingId());
+
+		MoxMessage message = new MoxMessage();
+		message.setPriority(0x4);
+		message.setOid(oid);
+		message.setSuboid(0x11); // TODO make this configurable in thing definition
+
+		message.setCommandCode(MoxCommandCode.ONOFF);
+		message.setValue(command==OnOffType.ON ? 1 : 0);
+
+	}
+
+	private void setDimmerValue(ChannelUID channelUID, Command command) {
+		if (command == null) return;
+
+		int oid = Integer.parseInt(channelUID.getThingId());
+
+		MoxMessage message = new MoxMessage();
+		message.setPriority(0x4);
+		message.setOid(oid);
+		message.setSuboid(0x11); // TODO make this configurable in thing definition
+
+		if (command instanceof DecimalType) {
+			message.setCommandCode(MoxCommandCode.LUMINOUS_SET);
+			message.setValue(Integer.parseInt(command.toString()));
+		} else if (command instanceof IncreaseDecreaseType) {
+			message.setCommandCode(
+					command == IncreaseDecreaseType.INCREASE ? MoxCommandCode.INCREASE : MoxCommandCode.DECREASE);
+		}
+
+
 	}
 	
 	@Override

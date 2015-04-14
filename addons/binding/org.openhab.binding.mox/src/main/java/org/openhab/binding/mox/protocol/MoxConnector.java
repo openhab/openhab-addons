@@ -7,7 +7,8 @@
  */
 package org.openhab.binding.mox.protocol;
 
-import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,8 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
 
 /**
  * @author Thomas Eichstaedt-Engelen (innoQ)
@@ -63,6 +63,12 @@ public class MoxConnector extends Thread {
 		subOids.put(49, "REM Data");  // 0x31
 	}
 
+	/**
+	 * The hostname is used to send UDP datagrams to - not the listening interface address!
+	 * The Port will be used for listening for incoming datagrams.
+	 * @param hostname IP or hostname of the MOX Gateway
+	 * @param port Port to listen
+	 */
 	public MoxConnector(String hostname, int port) {
 		super("MOX Communication Thread");
 		this.setDaemon(true);
