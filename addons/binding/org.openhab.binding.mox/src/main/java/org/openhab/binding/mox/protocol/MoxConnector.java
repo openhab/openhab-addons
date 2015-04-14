@@ -7,8 +7,7 @@
  */
 package org.openhab.binding.mox.protocol;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,8 +15,12 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Thomas Eichstaedt-Engelen (innoQ)
@@ -97,7 +100,8 @@ public class MoxConnector extends Thread {
 			do {
 				try {
 					socket.receive(packet);
-					MoxMessage moxMessage = new MoxMessage(packet.getData());
+					MoxMessage moxMessage = messageBuilder(
+							new MoxMessage()).parseFrom(packet.getData()).build();
 
 					if (logger.isTraceEnabled()) {
 						logger.trace("Received MOX Message [{}]", moxMessage.toStringForTrace());
@@ -108,6 +112,8 @@ public class MoxConnector extends Thread {
 					messageListener.onMessage(moxMessage);
 				} catch (SocketTimeoutException e) {
 					logger.trace("Socket listening timeout reached, will retry? {}!", !interrupted);
+				} catch (IllegalArgumentException iae) {
+					logger.warn("Parsing message '{}' failed because: {}", Arrays.toString(packet.getData()), iae.getLocalizedMessage());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

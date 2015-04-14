@@ -92,6 +92,32 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
         }
 	}	
 	
+	private void sendCommand(int oid) {
+		
+		/*
+		function sendBusCommand(id, cmd, value) {
+			var idParts = id.split(':');
+			var oid = idParts[0];
+			var suboid = idParts[1];
+			var cmdCodes = CMD_CODES[cmd];
+			value = parseInt(value, 10);
+			var message = new Buffer([
+				0x3, // priority
+				Math.floor(oid/512),
+				Math.floor(oid/256),
+				oid%256,
+				suboid,
+				cmdCodes[0],
+				0x0,
+				0x0,
+				Math.floor(cmdCodes[1]/256),
+				cmdCodes[1]%256,
+				value
+			]);			
+		}*/
+		
+	}
+	
 	@Override
 	public void onMessage(MoxMessage message) {
 		if (message != null && message.getCommandCode() != null) {
