@@ -15,12 +15,14 @@
                 <label>Hostname</label>
                 <description>Hostname of the MOX Gateway.</description>
                 <required>true</required>
+                <default>localhost</default>
             </parameter>
-            <parameter name="udpPort" type="text">
+            <parameter name="udpPort" type="integer" min="1" max="65535">
                 <context>network_address</context>
                 <label>Port</label>
                 <description>Port of the MOX Gateway.</description>
                 <required>true</required>
+                <default>6666</default>
             </parameter>
         </config-description>
     </bridge-type>
