@@ -11,24 +11,25 @@ package org.openhab.binding.max.internal.message;
 import org.slf4j.Logger;
 
 /**
-* Base message received by the MAX!Cube protocol. 
-* 
-* @author Andreas Heil (info@aheil.de)
-* @since 1.4.0
-*/
+ * Base message received by the MAX!Cube protocol.
+ * 
+ * @author Andreas Heil (info@aheil.de)
+ * @since 1.4.0
+ */
 public abstract class Message {
 
 	public static final String DELIMETER = ",";
-	
+
 	private String raw = null;
-	
+
 	public Message(String raw) {
 		this.raw = raw;
 	}
-	
+
 	public abstract void debug(Logger logger);
+
 	public abstract MessageType getType();
-	
+
 	protected final String getPayload() {
 		return raw.substring(2, raw.length());
 	}
