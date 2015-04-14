@@ -76,7 +76,6 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 	
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
         if (connector != null) {
             try {
 				connector.disconnect();
@@ -84,6 +83,9 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 			} catch (IOException e) {
 				logger.error("Error stop listening socket.", e);
 			}
+            logger.debug("Handler disposed.");
+        } else {
+        	logger.debug("Handler was not connected.");
         }
     }
 
