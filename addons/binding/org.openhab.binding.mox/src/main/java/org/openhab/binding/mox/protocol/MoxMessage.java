@@ -7,13 +7,13 @@
  */
 package org.openhab.binding.mox.protocol;
 
+import org.apache.commons.codec.binary.Hex;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.codec.binary.Hex;
 
 
 enum VariableCode {
@@ -188,8 +188,7 @@ public class MoxMessage {
 	}
 	
 	
-	@Override
-	public String toString() {
+	public String toStringForTrace() {
 		return "MoxMessage [rawdata=" + Arrays.toString(rawdata)
 				+ ", hexString=" + hexString + ", priority=" + priority
 				+ ", oid=" + oid + ", suboid=" + suboid + ", subFunction="
@@ -199,5 +198,15 @@ public class MoxMessage {
 				+ ", unit=" + unit + ", dimmerTime=" + dimmerTime
 				+ ", eventName=" + eventName + "]";
 	}
-	
+
+	@Override
+	public String toString() {
+		return "MoxMessage{" +
+				"eventName='" + eventName + '\'' +
+				", oid=" + oid +
+				", subFunction=" + subFunction +
+				", suboid=" + suboid +
+				", value=" + value +
+				'}';
+	}
 }

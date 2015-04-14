@@ -7,6 +7,9 @@
  */
 package org.openhab.binding.mox.protocol;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,9 +18,6 @@ import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Thomas Eichstaedt-Engelen (innoQ)
@@ -93,17 +93,25 @@ public class MoxConnector extends Thread {
 	public void run() {
 		byte[] buffer = new byte[14];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-		while (!interrupted) {
-			try {
-				socket.receive(packet);
-				MoxMessage moxMessage = new MoxMessage(packet.getData());
-				logger.trace("Received MOX Message [{}]", moxMessage);
-				messageListener.onMessage(moxMessage);
-			} catch (SocketTimeoutException e) {
-				logger.trace("Socket listening timeout reached, will retry? {}!", !interrupted);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		if (!interrupted) {
+			do {
+				try {
+					socket.receive(packet);
+					MoxMessage moxMessage = new MoxMessage(packet.getData());
+
+					if (logger.isTraceEnabled()) {
+						logger.trace("Received MOX Message [{}]", moxMessage.toStringForTrace());
+					} else if(logger.isDebugEnabled()) {
+						logger.debug("Received MOX Message [{}]", moxMessage);
+					}
+
+					messageListener.onMessage(moxMessage);
+				} catch (SocketTimeoutException e) {
+					logger.trace("Socket listening timeout reached, will retry? {}!", !interrupted);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} while (!interrupted);
 		}
 	}
 
