@@ -213,19 +213,22 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	}
 	
     private void sendMoxMessage(byte[] messageBytes) {
+		DatagramSocket datagramSocket = null;
         try {
             String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
-            InetAddress address = null;
-
-            address = InetAddress.getByName(targetHost);
+            InetAddress address = InetAddress.getByName(targetHost);
 
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, address, 6670);
-            DatagramSocket datagramSocket = new DatagramSocket();
+			datagramSocket = new DatagramSocket();
             datagramSocket.send(packet);
         } catch (Exception e) {
             logger.error("Error sending UDP datagram: {}", e.getLocalizedMessage(), e);
-        }
-    }
+        } finally {
+			if (datagramSocket != null) {
+				datagramSocket.close();
+			}
+		}
+	}
 
     
 	@Override
