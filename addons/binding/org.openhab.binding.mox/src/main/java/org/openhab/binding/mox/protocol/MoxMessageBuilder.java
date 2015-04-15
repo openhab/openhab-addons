@@ -7,11 +7,11 @@
  */
 package org.openhab.binding.mox.protocol;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
 
 
 /**
@@ -41,7 +41,28 @@ public class MoxMessageBuilder {
 		message.setOid(oid);
 		return this;
 	}
+	
+	public MoxMessageBuilder withSuboid(int suboid) {
+		message.setSuboid(suboid);
+		return this;
+	}
 
+	public MoxMessageBuilder withPriority(int priority) {
+		message.setPriority(priority);
+		return this;
+	}
+
+	public MoxMessageBuilder withCommandCode(MoxCommandCode commandCode) {
+		message.setCommandCode(commandCode);
+		return this;
+	}
+
+	public MoxMessageBuilder withValue(BigDecimal value) {
+		message.setValue(value);
+		return this;
+	}
+	
+	
 	public MoxMessageBuilder parseFrom(byte[] rawdata) {
 		message.setHexString(new String(Hex.encodeHex(rawdata)));
 		
@@ -127,5 +148,5 @@ public class MoxMessageBuilder {
     public MoxMessage build() {
         return this.message;
     }
-
+    
 }

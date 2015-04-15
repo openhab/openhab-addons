@@ -7,23 +7,16 @@
  */
 package org.openhab.binding.mox.handler;
 
-import com.google.common.collect.Sets;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.mox.MoxBindingConstants;
-import org.openhab.binding.mox.config.MoxModuleConfig;
-import org.openhab.binding.mox.protocol.MoxCommandCode;
-import org.openhab.binding.mox.protocol.MoxMessage;
-import org.openhab.binding.mox.protocol.MoxMessageBuilder;
-import org.openhab.binding.mox.protocol.MoxMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.openhab.binding.mox.MoxBindingConstants.STATE;
+import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_CURTAIN;
+import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_DIMMER;
+import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_FAN;
+import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_ONOFF;
+import static org.openhab.binding.mox.MoxBindingConstants.UDP_HOST;
+import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
 
+import java.math.BigDecimal;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -31,8 +24,27 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.openhab.binding.mox.MoxBindingConstants.*;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.mox.MoxBindingConstants;
+import org.openhab.binding.mox.config.MoxModuleConfig;
+import org.openhab.binding.mox.protocol.MoxCommandCode;
+import org.openhab.binding.mox.protocol.MoxMessage;
+import org.openhab.binding.mox.protocol.MoxMessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link MoxModuleHandler} is responsible for handling commands, which are
@@ -166,23 +178,41 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		if (command == null) return;
 		int oid = Integer.parseInt(channelUID.getThingId());
 
-		MoxMessage message = new MoxMessage();
-		message.setPriority(0x4);
-		message.setOid(oid);
-		message.setSuboid(0x11); // TODO make this configurable in thing definition
-
-		message.setCommandCode(MoxCommandCode.ONOFF);
-		message.setValue(command==OnOffType.ON ? 1 : 0);
-
-		sendMoxMessage(message);
-
-
+		// TODO make Suboid configurable in thing definition
+        byte[] messageAsByteArray = messageBuilder(new MoxMessage())
+        		.withOid(oid).withSuboid(0x11).withPriority(0x4)
+        		.withCommandCode(MoxCommandCode.ONOFF)
+        		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
+		sendMoxMessage(messageAsByteArray);
 	}
 
-    private void sendMoxMessage(MoxMessage message) {
-        MoxMessageBuilder messageBuilder = MoxMessageBuilder.messageBuilder(message);
-        byte[] messageBytes = messageBuilder.toBytes();
+	private void setDimmerValue(ChannelUID channelUID, Command command) {
+		if (command == null) return;
 
+		int oid = Integer.parseInt(channelUID.getThingId());
+
+        byte[] messageAsByteArray = null;
+
+		if (command instanceof DecimalType) {
+			// TODO make Suboid configurable in thing definition
+			messageBuilder(new MoxMessage())
+	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
+	    		.withCommandCode(MoxCommandCode.LUMINOUS_SET)
+	    		.withValue(new BigDecimal(command.toString())).toBytes();
+		} else if (command instanceof IncreaseDecreaseType) {
+			MoxCommandCode moxCommand = 
+				(command == IncreaseDecreaseType.INCREASE) ? MoxCommandCode.INCREASE : MoxCommandCode.DECREASE;
+			// TODO make Suboid configurable in thing definition
+			messageBuilder(new MoxMessage())
+	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
+	    		.withCommandCode(moxCommand)
+	    		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
+		}
+		
+		sendMoxMessage(messageAsByteArray);
+	}
+	
+    private void sendMoxMessage(byte[] messageBytes) {
         try {
             String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
             InetAddress address = null;
@@ -197,28 +227,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
         }
     }
 
-	private void setDimmerValue(ChannelUID channelUID, Command command) {
-		if (command == null) return;
-
-		int oid = Integer.parseInt(channelUID.getThingId());
-
-		MoxMessage message = new MoxMessage();
-		message.setPriority(0x4);
-		message.setOid(oid);
-		message.setSuboid(0x11); // TODO make this configurable in thing definition
-
-		if (command instanceof DecimalType) {
-			message.setCommandCode(MoxCommandCode.LUMINOUS_SET);
-			message.setValue(Integer.parseInt(command.toString()));
-		} else if (command instanceof IncreaseDecreaseType) {
-			message.setCommandCode(
-					command == IncreaseDecreaseType.INCREASE ? MoxCommandCode.INCREASE : MoxCommandCode.DECREASE);
-		}
-
-		sendMoxMessage(message);
-
-	}
-
+    
 	@Override
 	public void onMessage(MoxMessage message) {
 		if (message != null && message.getCommandCode() != null) {
