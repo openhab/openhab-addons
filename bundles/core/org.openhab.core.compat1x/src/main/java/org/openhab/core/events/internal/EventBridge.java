@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.events.EventConstants;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.types.TypeParser;
 import org.openhab.core.compat1x.internal.ItemMapper;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
