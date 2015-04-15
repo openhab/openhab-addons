@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,6 @@ import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -25,6 +24,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.io.OutputStreamWriter;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -41,6 +41,7 @@ import org.openhab.binding.max.internal.message.C_Message;
 import org.openhab.binding.max.internal.message.Device;
 import org.openhab.binding.max.internal.message.DeviceConfiguration;
 import org.openhab.binding.max.internal.message.DeviceInformation;
+import org.openhab.binding.max.internal.message.H_Message;
 import org.openhab.binding.max.internal.message.HeatingThermostat;
 import org.openhab.binding.max.internal.message.L_Message;
 import org.openhab.binding.max.internal.message.M_Message;
