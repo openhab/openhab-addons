@@ -7,11 +7,11 @@
  */
 package org.openhab.binding.mox.protocol;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
 
 
 /**
@@ -86,6 +86,14 @@ public class MoxMessageBuilder {
 	
 		return this;
 	}
+
+	public byte[] toBytes(MoxMessage message) {
+		byte[] bytes = new byte[10];
+		setBytes(bytes, 0, message.getPriority());		// Prio
+		setBytes(bytes, 1, 0, 0, 210); 					// OID
+		// ... TODO
+		return bytes;
+	}
 	
 	private static int readBytes(byte[] rawdata, int offset, int length, boolean le) {
 	    int value = 0;
@@ -94,6 +102,14 @@ public class MoxMessageBuilder {
 	        value += (rawdata[i + offset] & 0x000000FF) << shift;
 	    }
 	    return value;
+	}
+
+	private static byte[] setBytes(byte[] rawdata, int offset, int... values) {
+		for (int i=0; i<values.length; i++) {
+			byte currVal = (byte) (((byte) values[i]) & 0xff);
+			rawdata[offset + i] = currVal;
+		}
+		return rawdata;
 	}
 	
 	public int[] getUnsignedIntArray(byte[] bytes) {

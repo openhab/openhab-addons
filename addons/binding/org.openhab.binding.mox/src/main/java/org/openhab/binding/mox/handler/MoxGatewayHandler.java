@@ -11,6 +11,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.mox.config.MoxGatewayConfig;
 import org.openhab.binding.mox.protocol.MoxConnector;
 import org.openhab.binding.mox.protocol.MoxMessage;
 import org.openhab.binding.mox.protocol.MoxMessageListener;
@@ -18,14 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.openhab.binding.mox.MoxBindingConstants.STATE;
-import static org.openhab.binding.mox.MoxBindingConstants.UDP_HOST;
-import static org.openhab.binding.mox.MoxBindingConstants.UDP_PORT;
 
 /**
  * The {@link MoxGatewayHandler} is responsible for handling commands, which are
@@ -55,12 +53,11 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 		logger.debug("Initializing Mox Gateway handler.");
 
 		try {
-			final String configHost = (String) getConfig().get(UDP_HOST);
-			final Integer configPort = ((BigDecimal) getConfig().get(UDP_PORT)).intValueExact();
+			MoxGatewayConfig config = getConfigAs(MoxGatewayConfig.class);
 
-			if (isNotBlank(configHost) && configPort != null && configPort > 0) {
-				logger.info("Listen for MOX datagrams on port {} on all interfaces.", configPort);
-				connector = new MoxConnector(configHost, configPort);
+			if (isNotBlank(config.udpHost) && config.udpPort != null) {
+				logger.info("Listen for MOX datagrams on port {} on all interfaces.", config.udpPort);
+				connector = new MoxConnector(config.udpHost, config.udpPort);
 			}
 
 			connector.setMessageHandler(this);

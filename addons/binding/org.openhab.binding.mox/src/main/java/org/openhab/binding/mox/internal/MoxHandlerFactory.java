@@ -7,22 +7,21 @@
  */
 package org.openhab.binding.mox.internal;
 
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_GATEWAY;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_ONOFF;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_DIMMER;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_FAN;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_CURTAIN;
-
-import java.util.Set;
-
+import com.google.common.collect.Sets;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.mox.handler.MoxGatewayHandler;
 import org.openhab.binding.mox.handler.MoxModuleHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
+import java.util.Set;
+
+import static org.openhab.binding.mox.MoxBindingConstants.*;
 
 /**
  * The {@link MoxHandlerFactory} is responsible for creating things and thing 
@@ -32,7 +31,9 @@ import com.google.common.collect.Sets;
  * @since 2.0.0
  */
 public class MoxHandlerFactory extends BaseThingHandlerFactory {
-    
+
+    private Logger logger = LoggerFactory.getLogger(MoxHandlerFactory.class);
+
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_GATEWAY, THING_TYPE_1G_ONOFF, THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_CURTAIN);
     
     @Override
@@ -46,17 +47,33 @@ public class MoxHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
             return new MoxGatewayHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_1G_ONOFF)) {
+        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new MoxModuleHandler(thing);
-	    } else if (thingTypeUID.equals(THING_TYPE_1G_DIMMER)) {
-	        return new MoxModuleHandler(thing);
-	    } else if (thingTypeUID.equals(THING_TYPE_1G_FAN)) {
-	        return new MoxModuleHandler(thing);
-	    } else if (thingTypeUID.equals(THING_TYPE_1G_CURTAIN)) {
-	        return new MoxModuleHandler(thing);
-	    }
+	    } else {
+            logger.warn("Thing handler not found for {}.", thingTypeUID);
+        }
 
         return null;
     }
-    
+
+    @Override
+    public Thing createThing(ThingTypeUID thingTypeUID,
+                             Configuration configuration,
+                             ThingUID thingUID,
+                             ThingUID bridgeUID) {
+        Thing thing = null;
+        if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
+            logger.debug("Create Bridge {}:{}", thingTypeUID, thingUID);
+            thing = super.createThing(thingTypeUID, configuration, thingUID, null);
+        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            if (bridgeUID==null) {
+                bridgeUID = new ThingUID(THING_TYPE_GATEWAY, "221");
+            }
+            logger.debug("Create thing with {} with bridge {}", thingTypeUID, bridgeUID);
+            thing = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        }
+        return thing;
+    }
+
+
 }
