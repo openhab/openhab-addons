@@ -87,7 +87,7 @@ public class MoxMessageBuilder {
 		return this;
 	}
 
-	public byte[] toBytes(MoxMessage message) {
+	public byte[] toBytes() {
 		byte[] bytes = new byte[10];
 		setBytes(bytes, 0, message.getPriority());		// Prio
 		setBytes(bytes, 1, 0, 0, 210); 					// OID

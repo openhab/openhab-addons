@@ -24,11 +24,9 @@ import org.openhab.binding.mox.protocol.MoxMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -182,8 +180,8 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	}
 
     private void sendMoxMessage(MoxMessage message) {
-        MoxMessageBuilder messageBuilder = new MoxMessageBuilder();
-        byte[] messageBytes = messageBuilder.toBytes(message);
+        MoxMessageBuilder messageBuilder = MoxMessageBuilder.messageBuilder(message);
+        byte[] messageBytes = messageBuilder.toBytes();
 
         try {
             String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
