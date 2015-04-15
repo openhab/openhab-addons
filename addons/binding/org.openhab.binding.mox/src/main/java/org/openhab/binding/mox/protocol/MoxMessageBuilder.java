@@ -7,11 +7,11 @@
  */
 package org.openhab.binding.mox.protocol;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
 
 
 /**
@@ -74,7 +74,8 @@ public class MoxMessageBuilder {
 		
 		MoxCommandCode code = 
 			MoxCommandCode.valueOf(message.getSubFunctionCode(), message.getFunctionCode());
-		
+		message.setEventName(code.name());
+
 		switch(code) {
 			case POWER_ACTIVE:
 			case POWER_REACTIVE:
@@ -100,7 +101,6 @@ public class MoxMessageBuilder {
 			case DECREASE:
 			case STATUS:
 			case ONOFF:
-				message.setEventName(code.name());
 				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
 				break;
 		}
@@ -109,10 +109,32 @@ public class MoxMessageBuilder {
 	}
 
 	public byte[] toBytes() {
-		byte[] bytes = new byte[10];
-		setBytes(bytes, 0, message.getPriority());		// Prio
-		setBytes(bytes, 1, 0, 0, 210); 					// OID
-		// ... TODO
+		byte[] bytes;
+		final MoxCommandCode commandCode = message.getCommandCode();
+		int oid = message.getOid();
+
+		switch (commandCode) {
+			case LUMINOUS_SET:
+				bytes = new byte[14];
+				setBytes(bytes, 10, message.getValue().intValue());
+				setBytes(bytes, 11, 0);
+				setBytes(bytes, 12, 0x20, 0x3); // LSB 300ms = 0x320
+				break;
+			case ONOFF:
+				bytes = new byte[11];
+				setBytes(bytes, 10, message.getValue().intValue());
+				break;
+			default:
+				bytes = new byte[15];
+		}
+
+		setBytes(bytes, 0, message.getPriority());
+		setBytes(bytes, 1, oid/512, oid/256, oid%256);
+		setBytes(bytes, 4, 0x11); // TODO suboid
+		setBytes(bytes, 5, commandCode.getLow());
+		setBytes(bytes, 6, 0, 0);
+		setBytes(bytes, 8, commandCode.getHigh()/256);
+		setBytes(bytes, 9, commandCode.getHigh() % 256);
 		return bytes;
 	}
 	
@@ -133,7 +155,7 @@ public class MoxMessageBuilder {
 		return rawdata;
 	}
 	
-	public int[] getUnsignedIntArray(byte[] bytes) {
+	public static int[] getUnsignedIntArray(byte[] bytes) {
 		if (bytes == null)
 	        return null;
 

@@ -8,9 +8,11 @@
 package org.openhab.binding.mox.handler;
 
 import com.google.common.collect.Sets;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -19,6 +21,7 @@ import org.openhab.binding.mox.MoxBindingConstants;
 import org.openhab.binding.mox.config.MoxModuleConfig;
 import org.openhab.binding.mox.protocol.MoxCommandCode;
 import org.openhab.binding.mox.protocol.MoxMessage;
+import org.openhab.binding.mox.protocol.MoxMessageBuilder;
 import org.openhab.binding.mox.protocol.MoxMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			errorMessage = "This thing cannot handle decimal state.";
 		}
 		if (errorMessage != null) {
+			logger.error(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
 	}
@@ -183,9 +187,9 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 
         byte[] messageAsByteArray = null;
 
-		if (command instanceof DecimalType) {
+		if (command instanceof PercentType || command instanceof DecimalType) {
 			// TODO make Suboid configurable in thing definition
-			messageBuilder(new MoxMessage())
+			messageAsByteArray = messageBuilder(new MoxMessage())
 	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
 	    		.withCommandCode(MoxCommandCode.LUMINOUS_SET)
 	    		.withValue(new BigDecimal(command.toString())).toBytes();
@@ -193,7 +197,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			MoxCommandCode moxCommand = 
 				(command == IncreaseDecreaseType.INCREASE) ? MoxCommandCode.INCREASE : MoxCommandCode.DECREASE;
 			// TODO make Suboid configurable in thing definition
-			messageBuilder(new MoxMessage())
+			messageAsByteArray = messageBuilder(new MoxMessage())
 	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
 	    		.withCommandCode(moxCommand)
 	    		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
@@ -203,10 +207,15 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	}
 	
     private void sendMoxMessage(byte[] messageBytes) {
+    	if (messageBytes == null) throw new IllegalArgumentException("Bytes to send ware null.");
 		DatagramSocket datagramSocket = null;
         try {
             String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
             InetAddress address = InetAddress.getByName(targetHost);
+
+			if (logger.isTraceEnabled()) {
+				logger.trace("Sending bytes to host {} : {}",address, MoxMessageBuilder.getUnsignedIntArray(messageBytes));
+			}
 
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, address, TARGET_PORT);
 			datagramSocket = new DatagramSocket();
@@ -227,24 +236,47 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			if (oid == message.getOid()) {
 				final ThingUID uid = getThing().getUID();
 				final DecimalType state = new DecimalType(message.getValue());
+				String channelName = null;
 				switch (message.getCommandCode()) {
 					case POWER_ACTIVE:
-						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_POWER), state);
+						channelName = MoxBindingConstants.CHANNEL_ACTIVE_POWER;
 						break;
 					case POWER_REACTIVE:
-						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_REACTIVE_POWER), state);
+						channelName = MoxBindingConstants.CHANNEL_REACTIVE_POWER;
 						break;
 					case POWER_APPARENT:
-						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_APPARENT_POWER), state);
+						channelName = MoxBindingConstants.CHANNEL_APPARENT_POWER;
 						break;
 					case POWER_ACTIVE_ENERGY:
-						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_ACTIVE_ENERGY), state);
+						channelName = MoxBindingConstants.CHANNEL_ACTIVE_ENERGY;
 						break;
 					case POWER_FACTOR:
-						updateState(new ChannelUID(uid, MoxBindingConstants.CHANNEL_POWER_FACTOR), state);
+						channelName = MoxBindingConstants.CHANNEL_POWER_FACTOR;
 						break;
 					default:
+
 				}
+
+				if (channelName != null) {
+					updateState(new ChannelUID(uid, channelName), state);
+					/*
+					Set<Item> items = getThing().getChannel(channelName).getLinkedItems();
+					boolean stateChanged = false;
+
+					for (Item item : items) {
+						stateChanged = !item.getState().equals(state);
+						if (stateChanged) break;
+					}
+
+					if (stateChanged) {
+						updateState(new ChannelUID(uid, channelName), state);
+					}
+		 			*/
+				}
+				
+				
+
+
 			}
 		}
 	}

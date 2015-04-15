@@ -111,8 +111,6 @@ public class MoxConnector extends Thread {
 
 					if (logger.isTraceEnabled()) {
 						logger.trace("Received MOX Message [{}]", moxMessage.toStringForTrace());
-					} else if(logger.isDebugEnabled()) {
-						logger.debug("Received MOX Message [{}]", moxMessage);
 					}
 
 					messageListener.onMessage(moxMessage);
