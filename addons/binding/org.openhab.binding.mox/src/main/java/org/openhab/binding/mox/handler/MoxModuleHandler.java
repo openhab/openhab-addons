@@ -7,32 +7,11 @@
  */
 package org.openhab.binding.mox.handler;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.openhab.binding.mox.MoxBindingConstants.STATE;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_CURTAIN;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_DIMMER;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_FAN;
-import static org.openhab.binding.mox.MoxBindingConstants.THING_TYPE_1G_ONOFF;
-import static org.openhab.binding.mox.MoxBindingConstants.UDP_HOST;
-import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
-
-import java.math.BigDecimal;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.Sets;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -44,7 +23,17 @@ import org.openhab.binding.mox.protocol.MoxMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
+import java.math.BigDecimal;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.openhab.binding.mox.MoxBindingConstants.*;
+import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
 
 /**
  * The {@link MoxModuleHandler} is responsible for handling commands, which are
@@ -55,7 +44,8 @@ import com.google.common.collect.Sets;
  */
 public class MoxModuleHandler extends BaseThingHandler implements MoxMessageListener {
 
-    private Logger logger = LoggerFactory.getLogger(MoxModuleHandler.class);
+	public static final int TARGET_PORT = 6670;
+	private Logger logger = LoggerFactory.getLogger(MoxModuleHandler.class);
 
     private int oid;
     private MoxGatewayHandler gatewayHandler;
@@ -218,7 +208,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
             String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
             InetAddress address = InetAddress.getByName(targetHost);
 
-            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, address, 6670);
+            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, address, TARGET_PORT);
 			datagramSocket = new DatagramSocket();
             datagramSocket.send(packet);
         } catch (Exception e) {
