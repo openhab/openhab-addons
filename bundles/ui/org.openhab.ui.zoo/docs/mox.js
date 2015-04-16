@@ -71,8 +71,11 @@ if (process.argv.length === 5) {
 	var cmd = process.argv[3];
 	var value = process.argv[4];
 	console.log('Sending to OID:SUBOID %s value %s', id, cmd, value);
-	sendBusCommand(id, cmd, value);
-	process.exit(0);
+	sendBusCommand(id, cmd, value, function (err, msg) {
+		if (err) console.error('Error sending command', err);
+		console.log('Sent message:', msg);
+		process.exit(0);
+	});
 } else if (process.argv.length !== 2) {
 	console.error('Usage: "%s %s" To print the broadcasts or', process.argv[0], process.argv[1]);
 	console.error('Usage: "%s %s <OID>:<SUBOID> <CMD> <VALUE>" to send a command to a device.', process.argv[0], process.argv[1]);
@@ -80,7 +83,7 @@ if (process.argv.length === 5) {
 }
 
 //readFromFile('./moxDiscoveryData');
-//process.exit(0);
+return;
 
 function readFromFile(file) {
 	var conv = require(file)
@@ -100,7 +103,7 @@ function readFromFile(file) {
 var current_states = { /*"OID:SUBOID:VALUE_TYPE":{values}*/ };
 
 var socket = dgram.createSocket('udp4');
-socket.bind(6667);
+socket.bind(6666);
 
 socket.on('message', function(buf, rinfo) {
 	var msg = bufToObject(buf);
@@ -112,6 +115,12 @@ socket.on('message', function(buf, rinfo) {
 
 	if (!current_states[id]) {
 		current_states[id] = {};
+	}
+
+	if (msg.oid != 210) return;
+
+	if (msg.value_type && msg.value_type!=='POWER_ACTIVE') {
+		return;
 	}
 
 	if (msg.value && !msg.eventName && current_states[id].value != msg.value) {
@@ -263,13 +272,13 @@ function formatInt(str) {
 	}).join('\t');
 }
 
-function sendBusCommand(id, cmd, value) {
+function sendBusCommand(id, cmd, value, cb) {
 	var idParts = id.split(':');
 	var oid = idParts[0];
 	var suboid = idParts[1];
 	var cmdCodes = CMD_CODES[cmd];
 	value = parseInt(value, 10);
-	var message = new Buffer([
+	var messa = new Buffer([
 		0x3, // priority
 		Math.floor(oid/512),
 		Math.floor(oid/256),
@@ -282,11 +291,47 @@ function sendBusCommand(id, cmd, value) {
 		cmdCodes[1]%256,
 		value
 	]);
-	var client = dgram.createSocket('udp4');
-	client.bind(6666);
-	client.send(message, 0, message.length, GATEWAY_PORT, GATEWAY_IP, function(err) {
-		if (err) console.error('Error sending command', err);
-		client.close();
-	});
-	console.log("Sent message:", message);
+
+	var message = new Buffer([ // dim to 100%
+		0x3, // priority
+		0x0,
+		0x0,
+		206,
+		0x11,
+		0x02,
+		0x0,
+		0x0,
+		0x02,
+		0x06,
+		100,
+		0,
+		0, 0
+	]);
+
+	var me22ssage = new Buffer([ // switch dimmer on
+		0x3, // priority
+		0x0,
+		0x0,
+		206,
+		0x11,
+		0x01,
+		0x0,
+		0x0,
+		0x02,
+		0x03,
+		0
+	]);
+
+	try {
+		var client = dgram.createSocket('udp4');
+		client.on('error', function (err) {console.error("Error!!", err);});
+		client.send(message, 0, message.length, GATEWAY_PORT, GATEWAY_IP, function(err) {
+			cb.call(client, err, message);
+			client.close();
+		});
+	} catch(e) {
+		console.error("Fatal error: ", e);
+		if (client && client.close) client.close();
+	}
+
 }

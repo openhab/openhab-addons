@@ -63,6 +63,7 @@ var BROADCAST_CODES = {
 
 var GATEWAY_IP = '192.168.0.253';
 var GATEWAY_PORT = 6670;
+var LISTENING_PORT = 6667;
 
 var dgram = require('dgram');
 
@@ -79,7 +80,7 @@ if (process.argv.length === 5) {
 	process.exit(1);
 }
 
-readFromFile('./moxDiscoveryData');
+/*readFromFile('./moxDiscoveryData');
 process.exit(0);
 
 function readFromFile(file) {
@@ -94,13 +95,13 @@ function readFromFile(file) {
 		var buf = new Buffer(conv.host0[i]);
 		console.log(bufToObject(buf).int_string);
 	}
-}
+}*/
 
 
 var current_states = { /*"OID:SUBOID:VALUE_TYPE":{values}*/ };
 
 var socket = dgram.createSocket('udp4');
-socket.bind(6667);
+socket.bind(LISTENING_PORT);
 
 socket.on('message', function(buf, rinfo) {
 	var msg = bufToObject(buf);
@@ -112,6 +113,10 @@ socket.on('message', function(buf, rinfo) {
 
 	if (!current_states[id]) {
 		current_states[id] = {};
+	}
+
+	if (msg.value_type && msg.value_type!=='POWER_ACTIVE') {
+		return;
 	}
 
 	if (msg.value && !msg.eventName && current_states[id].value != msg.value) {
