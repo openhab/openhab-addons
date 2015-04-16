@@ -8,6 +8,7 @@
 package org.openhab.binding.mox.internal;
 
 import com.google.common.collect.Sets;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -49,11 +50,8 @@ public class MoxHandlerFactory extends BaseThingHandlerFactory {
             return new MoxGatewayHandler(thing);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new MoxModuleHandler(thing);
-	    } else {
-            logger.warn("Thing handler not found for {}.", thingTypeUID);
-        }
-
-        return null;
+	    } 
+        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the binding.");
     }
 
     @Override
@@ -61,18 +59,17 @@ public class MoxHandlerFactory extends BaseThingHandlerFactory {
                              Configuration configuration,
                              ThingUID thingUID,
                              ThingUID bridgeUID) {
-        Thing thing = null;
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             logger.debug("Create Bridge {}:{}", thingTypeUID, thingUID);
-            thing = super.createThing(thingTypeUID, configuration, thingUID, null);
+            return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             if (bridgeUID==null) {
                 bridgeUID = new ThingUID(THING_TYPE_GATEWAY, "221");
             }
             logger.debug("Create thing with {} with bridge {}", thingTypeUID, bridgeUID);
-            thing = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-        return thing;
+        return null;
     }
 
 

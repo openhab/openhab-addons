@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.mox.MoxBindingConstants;
 import org.openhab.binding.mox.config.MoxModuleConfig;
 import org.openhab.binding.mox.protocol.MoxCommandCode;
@@ -56,8 +57,8 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	private int refresh = 60; // refresh every minute as default
 	ScheduledFuture<?> refreshJob;
 
-	private final static Set<ThingTypeUID> SUPPORTS_DECIMAL_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_CURTAIN);
-	private final static Set<ThingTypeUID> SUPPORTS_ONOFF_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_ONOFF);
+	//private final static Set<ThingTypeUID> SUPPORTS_DECIMAL_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_CURTAIN);
+	//private final static Set<ThingTypeUID> SUPPORTS_ONOFF_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_ONOFF);
 
 	public MoxModuleHandler(Thing thing) {
 		super(thing);
@@ -76,8 +77,8 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
                 getThing().setStatus(getBridge().getStatus());
             }
         }
-		updateStatus(ThingStatus.OFFLINE);
-		deviceOnlineWatchdog();
+		updateStatus(ThingStatus.ONLINE);
+		//deviceOnlineWatchdog();
     }
 
 	private void deviceOnlineWatchdog() {
@@ -134,6 +135,11 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
         }
         return this.gatewayHandler;
     }
+    
+    @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+    	logger.debug("Received update for {} with new state {}", channelUID, newState);
+    }
 
 
 	@Override
@@ -141,12 +147,12 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		logger.debug("Received command for {} : {}", channelUID, command);
         if(channelUID.getId().equals(STATE)) {
 
-			checkValidInputType(channelUID.getThingTypeUID(), command);
+			//checkValidInputType(channelUID.getThingTypeUID(), command);
 
 			if (command instanceof OnOffType) {
 				setSwitchValue(channelUID, command);
 			} else if (command instanceof DecimalType ||
-					command instanceof IncreaseDecreaseType) {
+					command instanceof PercentType) {
 				setDimmerValue(channelUID, command);
 			} else {
 				throw new IllegalArgumentException("This type of command is not supported by the binding.");
@@ -155,7 +161,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
         }
 	}
 
-	private void checkValidInputType(ThingTypeUID thingTypeUID, Command command) {
+	/*private void checkValidInputType(ThingTypeUID thingTypeUID, Command command) {
 		String errorMessage = null;
 		if (command instanceof OnOffType && !SUPPORTS_ONOFF_INPUT.contains(thingTypeUID)) {
 			errorMessage = "This thing cannot handle ON/OFF";
@@ -166,7 +172,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			logger.error(errorMessage);
 			throw new IllegalArgumentException(errorMessage);
 		}
-	}
+	}*/
 
 	private void setSwitchValue(ChannelUID channelUID, Command command) {
 		if (command == null) return;
@@ -207,7 +213,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	}
 	
     private void sendMoxMessage(byte[] messageBytes) {
-    	if (messageBytes == null) throw new IllegalArgumentException("Bytes to send ware null.");
+    	if (messageBytes == null) throw new IllegalArgumentException("Bytes to send were null.");
 		DatagramSocket datagramSocket = null;
         try {
             String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
@@ -253,12 +259,16 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 					case POWER_FACTOR:
 						channelName = MoxBindingConstants.CHANNEL_POWER_FACTOR;
 						break;
+					case STATUS:
+						channelName = MoxBindingConstants.STATE;
 					default:
 
 				}
-
+				
+				updateState(new ChannelUID(uid, channelName), state);
+				
 				if (channelName != null) {
-					updateState(new ChannelUID(uid, channelName), state);
+					//updateState(new ChannelUID(uid, channelName), state);
 					/*
 					Set<Item> items = getThing().getChannel(channelName).getLinkedItems();
 					boolean stateChanged = false;

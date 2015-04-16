@@ -7,6 +7,7 @@
  */
 package org.openhab.binding.mox.handler;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -91,26 +92,18 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 		if (messageListener == null) {
 			throw new NullPointerException("It's not allowed to pass a null MessageListener.");
 		}
-		boolean result = messageListeners.add(messageListener);
-		if (result) {
-		}
-		return result;
+		return messageListeners.add(messageListener);
 	}
 
 	public boolean unregisterLightStatusListener(
 			MoxMessageListener messageListener) {
-		boolean result = messageListeners.remove(messageListener);
-		if (result) {
-		}
-		return result;
+		return messageListeners.remove(messageListener);
 	}
 	
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-		if (channelUID.getId().equals(STATE)) {
-			// TODO: handle command
-		}
+		throw new NotImplementedException("Gateway received command: " + command);
 	}
 	
 	@Override

@@ -136,9 +136,9 @@ public class MoxMessage {
 	
 	
 	public String toStringForTrace() {
-		return "MoxMessage [hexString=" + hexString + ", priority=" + priority
+		return "MoxMessage [hexString=" + hexString + "\t, priority=" + priority
 				+ ", oid=" + oid + ", suboid=" + suboid + ", subFunctionCode="
-				+ subFunctionCode + ", functionCode=" + functionCode + ", id=" + getId();
+				+ subFunctionCode + ", functionCode=" + functionCode + ", value=" + value.setScale(4, BigDecimal.ROUND_HALF_UP);
 	}
 	
 	@Override
