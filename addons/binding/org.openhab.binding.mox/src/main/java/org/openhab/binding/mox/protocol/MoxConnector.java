@@ -93,6 +93,7 @@ public class MoxConnector extends Thread {
 	 */
 	public boolean connect() throws IOException {
 		socket = new DatagramSocket(port);
+		socket.setReuseAddress(true);
 		socket.setSoTimeout(10000);
 		logger.debug("Connection to MOX Gateway established on {}:{}", hostname, port);
 		return true;
