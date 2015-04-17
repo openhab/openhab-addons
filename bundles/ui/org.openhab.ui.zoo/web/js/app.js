@@ -63,8 +63,8 @@ angular.module('ZooApp', [
 			templateUrl: 'partials/alarm.html'
 		})
 		.state('intercom', {
-			url:'/alarm',
-			templateUrl: 'partials/alarm.html'
+			url:'/intercom',
+			templateUrl: 'partials/intercom.html'
 		})
 		.state('settings', {
 			abstract: true,
