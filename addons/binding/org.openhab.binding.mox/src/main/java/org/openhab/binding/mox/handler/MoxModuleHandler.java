@@ -59,6 +59,12 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	private int refresh = 60; // refresh every minute as default
 	ScheduledFuture<?> refreshJob;
 
+	private int refreshRemInterval = 60 * 10; // 10 min
+	ScheduledFuture<?> refreshRemValuesJob;
+
+	boolean initialStateFetched = false;
+	boolean fetchRemValues = true;
+
 	public MoxModuleHandler(Thing thing) {
 		super(thing);
 		thing.setBridgeUID(new ThingUID("mox:gateway:221"));
@@ -81,7 +87,8 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	
 	@Override
 	public void onStartListening() {
-		queryInitialState();
+		if (!initialStateFetched) queryInitialState();
+		initialStateFetched = true;
 	}
 
 	private void queryInitialState() {
@@ -96,9 +103,21 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		} else {
 			msg.withCommandCode(MoxCommandCode.GET_ONOFF);
 		}
-				
+
 		logger.info("Query last state of item with OID {}.", config.oid);
 		sendMoxMessage(msg.toBytes());
+
+		refreshRemValues();
+	}
+
+	private void refreshRemValues() {
+		if (fetchRemValues) {
+			MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(config.oid)
+					.withSuboid(0x11).withPriority(0x3);
+			sendMoxMessage(msg.withCommandCode(MoxCommandCode.GET_POWER_ACTIVE).toBytes());
+			sendMoxMessage(msg.withCommandCode(MoxCommandCode.GET_POWER_ACTIVE_ENERGY).toBytes());
+			addRemRefreshJob();
+		}
 	}
 
 
@@ -129,6 +148,22 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		};
 
 		refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
+	}
+
+	private void addRemRefreshJob() {
+		Runnable runnable = new Runnable() {
+			public void run() {
+				try {
+					if (getThing().getStatus() == ThingStatus.ONLINE) {
+						refreshRemValues();
+					}
+				} catch (Exception e) {
+					logger.debug("Exception occurred during fetch REM values: {}", e.getMessage(), e);
+				}
+			}
+		};
+
+		refreshRemValuesJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshRemInterval, TimeUnit.SECONDS);
 	}
 
     @Override

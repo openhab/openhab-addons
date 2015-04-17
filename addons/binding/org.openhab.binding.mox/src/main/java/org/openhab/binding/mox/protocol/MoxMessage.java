@@ -40,6 +40,10 @@ public class MoxMessage {
 	
 
 	public MoxMessage() {
+		// Set defaults
+		priority = 0x2;
+		suboid = MoxSuboid.CHANNEL1.getSuboid();
+		dimmerTime = 300;
 	}
 
 	

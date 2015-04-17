@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
 
@@ -49,20 +46,6 @@ public class MoxConnector extends Thread {
 	
 	private MoxMessageListener messageListener;
 	
-	private static Map<Integer, String> subOids = new HashMap<Integer, String>();
-
-	static {
-		subOids.put(17, "Channel 1"); // 0x11
-		subOids.put(18, "Channel 2"); // 0x12
-		subOids.put(19, "Channel 3"); // 0x13
-		subOids.put(20, "Channel 4"); // 0x14
-		subOids.put(21, "Channel 5"); // 0,15
-		subOids.put(22, "Channel 6"); // 0x16
-		subOids.put(23, "Channel 7"); // 0x17
-		subOids.put(24, "Channel 8"); // 0x18
-		subOids.put(49, "REM Data");  // 0x31
-	}
-
 	/**
 	 * The hostname is used to send UDP datagrams to - not the listening interface address!
 	 * The Port will be used for listening for incoming datagrams.

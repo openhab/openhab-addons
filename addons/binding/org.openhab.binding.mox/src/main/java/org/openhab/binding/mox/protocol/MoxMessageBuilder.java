@@ -198,6 +198,14 @@ public class MoxMessageBuilder {
 				int amount = Math.min(message.getValue().intValue(), 100);
 				setBytes(bytes, 10, amount, 0, 0xc8, 0);
 				break;
+			case GET_POWER_ACTIVE:
+			case GET_POWER_ACTIVE_ENERGY:
+			case GET_POWER_APARENT:
+			case GET_POWER_FACTOR:
+			case GET_POWER_REACTIVE:
+				message.setSuboid(MoxSuboid.REM_DATA.getSuboid());
+				bytes = new byte[10];
+				break;
 			default:
 				throw new NotImplementedException("This package cannot be created, yet");
 		}
@@ -213,7 +221,7 @@ public class MoxMessageBuilder {
 		int oid = message.getOid();
 		setBytes(bytes, 0, message.getPriority());
 		setBytes(bytes, 1, oid/512, oid/256, oid%256);
-		setBytes(bytes, 4, 0x11); // TODO suboid
+		setBytes(bytes, 4, message.getSuboid()); // TODO suboid
 		setBytes(bytes, 5, code.getLow());
 		setBytes(bytes, 6, 0, 0);
 		setBytes(bytes, 8, code.getHigh()/256);
