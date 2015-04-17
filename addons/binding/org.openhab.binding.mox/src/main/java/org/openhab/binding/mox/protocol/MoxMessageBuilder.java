@@ -118,11 +118,16 @@ public class MoxMessageBuilder {
 				bytes = new byte[14];
 				setBytes(bytes, 10, message.getValue().intValue());
 				setBytes(bytes, 11, 0);
-				setBytes(bytes, 12, 0x20, 0x3); // LSB 300ms = 0x320
+				setBytes(bytes, 12, 0x20, 0x3); // LSB 300ms = 0x320 TODO make dim speed configurable
 				break;
 			case ONOFF:
 				bytes = new byte[11];
 				setBytes(bytes, 10, message.getValue().intValue());
+				break;
+			case INCREASE:
+			case DECREASE:
+				bytes = new byte[14];
+				setBytes(bytes, 10, 0x5, 0, 0xc8, 0); // TODO step = 5%, make this configurable
 				break;
 			default:
 				bytes = new byte[15];

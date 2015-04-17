@@ -259,17 +259,16 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 					case POWER_FACTOR:
 						channelName = MoxBindingConstants.CHANNEL_POWER_FACTOR;
 						break;
-					case STATUS:
-						channelName = MoxBindingConstants.STATE;
 					default:
-
+						channelName = MoxBindingConstants.STATE;
 				}
 				
 				updateState(new ChannelUID(uid, channelName), state);
 				
-				if (channelName != null) {
+				/*if (channelName != null) {
+				
 					//updateState(new ChannelUID(uid, channelName), state);
-					/*
+					
 					Set<Item> items = getThing().getChannel(channelName).getLinkedItems();
 					boolean stateChanged = false;
 
@@ -281,8 +280,8 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 					if (stateChanged) {
 						updateState(new ChannelUID(uid, channelName), state);
 					}
-		 			*/
-				}
+		 			
+				}*/
 				
 				
 
