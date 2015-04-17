@@ -278,7 +278,7 @@ function sendBusCommand(id, cmd, value, cb) {
 	var suboid = idParts[1];
 	var cmdCodes = CMD_CODES[cmd];
 	value = parseInt(value, 10);
-	var messa = new Buffer([
+	var message = new Buffer([
 		0x3, // priority
 		Math.floor(oid/512),
 		Math.floor(oid/256),
@@ -292,41 +292,11 @@ function sendBusCommand(id, cmd, value, cb) {
 		value
 	]);
 
-	var message = new Buffer([ // dim to 100%
-		0x3, // priority
-		0x0,
-		0x0,
-		206,
-		0x11,
-		0x02,
-		0x0,
-		0x0,
-		0x02,
-		0x06,
-		100,
-		0,
-		0, 0
-	]);
-
-	var me22ssage = new Buffer([ // switch dimmer on
-		0x3, // priority
-		0x0,
-		0x0,
-		206,
-		0x11,
-		0x01,
-		0x0,
-		0x0,
-		0x02,
-		0x03,
-		0
-	]);
-
 	try {
 		var client = dgram.createSocket('udp4');
 		client.on('error', function (err) {console.error("Error!!", err);});
 		client.send(message, 0, message.length, GATEWAY_PORT, GATEWAY_IP, function(err) {
-			cb.call(client, err, message);
+			if (cb) cb.call(client, err, message);
 			client.close();
 		});
 	} catch(e) {

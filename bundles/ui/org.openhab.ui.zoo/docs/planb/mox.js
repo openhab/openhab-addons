@@ -132,6 +132,7 @@ socket.on('message', function(buf, rinfo) {
 		current_states[id].value = msg.value;*/
 			// clear console
 		process.stdout.write('\033c');
+		console.log("Last Event Received: " + new Date());
 		var found = false;
 		table.forEach(function(row, idx) {
 			if(row[0] === id) {
