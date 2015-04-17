@@ -85,7 +85,8 @@ public class MoxMessageBuilder {
 		MoxCommandCode commandCode = MoxCommandCode.valueOf(subFnCode, fnCode);
 		
 		if (logger.isWarnEnabled() && commandCode!=null && MoxStatusCode.valueOf(subFnCode, fnCode) != null) {
-			logger.warn("There seem to be a package combination which match on command and status codes. By default this is interpreted as commandCode.");
+			logger.warn("There seem to be a package combination which match on command and status codes. "
+					+ "By default this is interpreted as commandCode. subFnCode={} fnCode={}", subFnCode, fnCode);
 		}
 		
 		if (commandCode != null) {
@@ -125,7 +126,7 @@ public class MoxMessageBuilder {
 			// Percent and dim time
 			case LUMINOUS:
 				message.setDimmerTime(readBytes(rawdata, 12, 2, true));
-			case STATUS:
+			case ONOFF:
 				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
 				break;
 				
@@ -146,7 +147,7 @@ public class MoxMessageBuilder {
 	
 			case INCREASE:
 			case DECREASE:
-			case GET_STATUS:
+			case GET_ONOFF:
 			case SET_ONOFF:
 				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
 				break;
@@ -182,7 +183,7 @@ public class MoxMessageBuilder {
 				setBytes(bytes, 10, message.getValue().intValue());
 				break;
 			case GET_LUMINOUS:
-			case GET_STATUS:
+			case GET_ONOFF:
 				bytes = new byte[10];
 				break;
 			case INCREASE:

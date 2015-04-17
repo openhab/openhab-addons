@@ -21,8 +21,8 @@ public enum MoxCommandCode implements MoxCode {
 		GET_POWER_ACTIVE_ENERGY(0x6, 0x102),
 
 		// Actor
-		GET_STATUS(0x1, 0x102),
-		GET_LUMINOUS(0x3, 0x304), // Docs fail: says 0x102
+		GET_ONOFF(0x1, 0x102),
+		GET_LUMINOUS(0x3, 0x102),
 
 		// Modify status
 		SET_ONOFF(0x1, 0x203),

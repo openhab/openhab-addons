@@ -22,6 +22,7 @@ import org.openhab.binding.mox.protocol.MoxCommandCode;
 import org.openhab.binding.mox.protocol.MoxMessage;
 import org.openhab.binding.mox.protocol.MoxMessageBuilder;
 import org.openhab.binding.mox.protocol.MoxMessageListener;
+import org.openhab.binding.mox.protocol.MoxStatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,8 @@ import java.math.RoundingMode;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +54,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 
     private MoxModuleConfig config;
     private MoxGatewayHandler gatewayHandler;
-    private State lastState;
+    private Map<MoxStatusCode,State> lastStates = new HashMap<MoxStatusCode, State>(MoxStatusCode.values().length);
 
 	private int refresh = 60; // refresh every minute as default
 	ScheduledFuture<?> refreshJob;
@@ -86,7 +89,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		if (getThing().getThingTypeUID().equals(THING_TYPE_1G_DIMMER)) {
 			msg.withCommandCode(MoxCommandCode.GET_LUMINOUS);
 		} else {
-			msg.withCommandCode(MoxCommandCode.GET_STATUS);
+			msg.withCommandCode(MoxCommandCode.GET_ONOFF);
 		}
 				
 		logger.info("Query last state of item with OID {}.", oid);
@@ -125,12 +128,17 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposes. Unregistering listener.");
-        refreshJob.cancel(true);
-        MoxGatewayHandler gatewayHandler = getGatewayHandler();
-        if (gatewayHandler != null) {
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+			refreshJob.cancel(true);
+			refreshJob = null;
+		}
+		updateStatus(ThingStatus.OFFLINE);
+		if (gatewayHandler != null) {
         	getGatewayHandler().unregisterLightStatusListener(this);
         }
+        gatewayHandler = null;
+		logger.debug("Thing {} disposed.", getThing().getUID());
+		super.dispose();
     }
 
     private synchronized MoxGatewayHandler getGatewayHandler() {
@@ -226,12 +234,13 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
     
 	@Override
 	public void onMessage(MoxMessage message) {
-		if (message != null && message.getCommandCode() != null) {
-			if (config.oid == message.getOid() && message.getStatusCode() != null) {
+		if (message != null && message.getStatusCode() != null) {
+			MoxStatusCode statusCode = message.getStatusCode();
+			if (config.oid == message.getOid() && statusCode != null) {
 				final ThingUID uid = getThing().getUID();
 				State state = null;
 				String channelName = null;
-				switch (message.getStatusCode()) {
+				switch (statusCode) {
 					case POWER_ACTIVE:
 						channelName = MoxBindingConstants.CHANNEL_ACTIVE_POWER;
 						state = new DecimalType(message.getValue());
@@ -258,18 +267,18 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 						state = new PercentType(message.getValue().setScale(0, RoundingMode.HALF_UP));
 						break;
 						
-					case STATUS:
+					case ONOFF:
 						channelName = MoxBindingConstants.STATE;
 						state = message.getValue().intValue() >= 1 ? OnOffType.ON : OnOffType.OFF;
 						break;
 						
 					default:
-						logger.trace("No handling Gateway message with status code {}", message.getStatusCode());
+						logger.trace("No handling Gateway message with status code {}", statusCode);
 				}
 				
-				if (channelName != null && state != lastState) {
+				if (channelName != null && state!= null && !state.equals( lastStates.get(statusCode))) {
 					updateState(new ChannelUID(uid, channelName), state);
-					lastState = state;
+					lastStates.put(statusCode, state);
 				}				
 
 			}
