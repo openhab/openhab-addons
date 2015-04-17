@@ -63,7 +63,7 @@ var BROADCAST_CODES = {
 
 var GATEWAY_IP = '192.168.0.253';
 var GATEWAY_PORT = 6670;
-var LISTENING_PORT = 6667;
+var LISTENING_PORT = 6666;
 
 var dgram = require('dgram');
 
@@ -97,6 +97,11 @@ function readFromFile(file) {
 	}
 }*/
 
+var Table = require('cli-table');
+var table = new Table({
+    head: ['id', 'before', 'current', 'hex']
+  , colWidths: [30, 12, 12, 50]
+});
 
 var current_states = { /*"OID:SUBOID:VALUE_TYPE":{values}*/ };
 
@@ -104,9 +109,10 @@ var socket = dgram.createSocket('udp4');
 socket.bind(LISTENING_PORT);
 
 socket.on('message', function(buf, rinfo) {
+	
 	var msg = bufToObject(buf);
 
-	if (!msg.oid) {return;}
+	if (!msg.oid) {console.log(">>>> package without oid!", msg);}
 
 	var id = msg.oid + ':' + msg.suboid;
 	if (msg.value_type) id += ':' + msg.value_type;
@@ -115,22 +121,34 @@ socket.on('message', function(buf, rinfo) {
 		current_states[id] = {};
 	}
 
-	if (msg.value_type && msg.value_type!=='POWER_ACTIVE') {
-		return;
-	}
+	//if (msg.value_type && msg.value_type!=='POWER_ACTIVE') {return;}
 
 	if (msg.value && !msg.eventName && current_states[id].value != msg.value) {
-		console.log('Item with ID %s\t has changed from %s \tto \t%s \t\t%s',
+		/*console.log('Item with ID %s\t has changed from %s \tto \t%s \t\t%s',
 			id + (id.length <= 16 ? '\t' : ''),
 			current_states[id].value,
 			msg.value,
 			msg.hex_string);
-		current_states[id].value = msg.value;
+		current_states[id].value = msg.value;*/
+			// clear console
+		process.stdout.write('\033c');
+		var found = false;
+		table.forEach(function(row, idx) {
+			if(row[0] === id) {
+				found = true;
+				var valBefore = row[2];
+				table[idx] = [id, valBefore, msg.value, msg.hex_string];
+			}
+		});
+		if (!found) { table.push([id, '-', msg.value, msg.hex_string]); }
+		console.log(table.toString());
 	}
 
 	if (msg.eventName) {
 		console.log('\tEvent %s with value %s fired to ID %s', msg.eventName, msg.value, id);
 	}
+
+
 
 });
 

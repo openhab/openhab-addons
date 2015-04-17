@@ -10,6 +10,7 @@
   "author": "Sebastian Janzen",
   "license": "ISC",
   "dependencies": {
+    "cli-table": "^0.3.1",
     "eventsource": "^0.1.6",
     "request": "^2.55.0"
   }
