@@ -8,10 +8,12 @@
 package org.openhab.binding.mox.protocol;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 
 /**
@@ -56,6 +58,11 @@ public class MoxMessageBuilder {
 		message.setCommandCode(commandCode);
 		return this;
 	}
+	
+	public MoxMessageBuilder withStatusCode(MoxStatusCode code) {
+		message.setStatusCode(code);
+		return this;
+	}
 
 	public MoxMessageBuilder withValue(BigDecimal value) {
 		message.setValue(value);
@@ -72,57 +79,111 @@ public class MoxMessageBuilder {
 		message.setSubFunctionCode(readBytes(rawdata, 5, 1, false));
 		message.setFunctionCode(readBytes(rawdata, 8, 2, false));
 		
-		MoxCommandCode code = 
-			MoxCommandCode.valueOf(message.getSubFunctionCode(), message.getFunctionCode());
-		message.setEventName(code.name());
-
-		switch(code) {
-			case POWER_ACTIVE:
-			case POWER_REACTIVE:
-			case POWER_APPARENT:
-				message.setCommandCode(code);
-				message.setValue(new BigDecimal(readBytes(rawdata, 10, 4, true) / 1000.0));
-				break;
-	
-			case POWER_FACTOR:
-			case POWER_ACTIVE_ENERGY:
-				message.setCommandCode(code);
-				message.setValue(new BigDecimal(readBytes(rawdata, 10, 4, true) / 1000.0));
-				break;
-	
-			case LUMINOUS_GET:
-				message.setCommandCode(code);
-				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
-				break;
-	
-			case LUMINOUS_SET:
-				message.setDimmerTime(readBytes(rawdata, 12, 2, true));
-			case INCREASE:
-			case DECREASE:
-			case STATUS:
-			case ONOFF:
-				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
-				break;
+		int subFnCode = message.getSubFunctionCode();
+		int fnCode = message.getFunctionCode();
+		
+		MoxCommandCode commandCode = MoxCommandCode.valueOf(subFnCode, fnCode);
+		
+		if (logger.isWarnEnabled() && commandCode!=null && MoxStatusCode.valueOf(subFnCode, fnCode) != null) {
+			logger.warn("There seem to be a package combination which match on command and status codes. By default this is interpreted as commandCode.");
 		}
+		
+		if (commandCode != null) {
+			setCommandCodeValues(message, commandCode, rawdata);
+		} else {
+			MoxStatusCode statusCode = MoxStatusCode.valueOf(subFnCode, fnCode);	
+			setStatusCodeValues(message, statusCode, rawdata);
+			if (statusCode == null) {
+				final String msg = "There is no CommandCode or StatusCode for low=" + subFnCode + ", high=" + fnCode;
+				logger.error(msg);
+				throw new IllegalArgumentException(msg);
+			}
+		} 
 	
 		return this;
 	}
-
-	public byte[] toBytes() {
-		byte[] bytes;
-		final MoxCommandCode commandCode = message.getCommandCode();
-		int oid = message.getOid();
-
-		switch (commandCode) {
-			case LUMINOUS_SET:
-				bytes = new byte[14];
-				setBytes(bytes, 10, message.getValue().intValue());
-				setBytes(bytes, 11, 0);
-				setBytes(bytes, 12, 0x20, 0x3); // LSB 300ms = 0x320 TODO make dim speed configurable
+	
+	private void setStatusCodeValues(MoxMessage message,
+			MoxStatusCode code, byte[] rawdata) {
+		message.setEventName(code.name());
+		message.setStatusCode(code);
+		switch(code) {
+			// kWh values
+			case POWER_ACTIVE:
+			case POWER_REACTIVE:
+			case POWER_APPARENT:
+				message.setValue(new BigDecimal(readBytes(rawdata, 10, 4, true) / 1000.0));
+				message.setValue(new BigDecimal(readBytes(rawdata, 10, 4, true) / 1000.0));
 				break;
-			case ONOFF:
+				
+			// Watts and cos phi
+			case POWER_ACTIVE_ENERGY:
+			case POWER_FACTOR:
+				message.setValue(new BigDecimal(readBytes(rawdata, 10, 4, true) / 1000.0));
+				break;
+			
+			// Percent and dim time
+			case LUMINOUS:
+				message.setDimmerTime(readBytes(rawdata, 12, 2, true));
+			case STATUS:
+				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
+				break;
+				
+			default:
+				throw new IllegalArgumentException("Unhandled status value " + code.name());
+		}
+	}
+
+	private void setCommandCodeValues(MoxMessage message,
+			MoxCommandCode code, byte[] rawdata) {
+		
+		message.setEventName(code.name());
+		message.setCommandCode(code);
+		
+		switch(code) {
+			case SET_LUMINOUS:
+				message.setDimmerTime(readBytes(rawdata, 12, 2, true));
+	
+			case INCREASE:
+			case DECREASE:
+			case GET_STATUS:
+			case SET_ONOFF:
+				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
+				break;
+				
+			default:
+				throw new IllegalArgumentException("Unhandled command value " + code.name());
+		}
+		
+	}
+	
+	public byte[] toBytes() {
+		if (message.getCommandCode() != null) {
+			return toCommandBytes(message.getCommandCode());
+		} else if (message.getStatusCode() != null) {
+			return toStatusBytes(message.getStatusCode());
+		}
+		throw new IllegalStateException("Could not convert MoxMessage to bytes with unknown variant. At least a status or a command code has to be set.");
+	}
+
+	protected byte[] toCommandBytes(final MoxCommandCode code) {
+		byte[] bytes;
+		switch (code) {
+			case SET_LUMINOUS:
+				bytes = new byte[14];
+				int value = message.getValue().setScale(0, RoundingMode.HALF_UP).intValue();
+				int dimSpeed = Math.max(300, 0xffff); // TODO 300ms make dim speed configurable
+				setBytes(bytes, 10, value);
+				setBytes(bytes, 11, 0);
+				setBytes(bytes, 12, dimSpeed%256, dimSpeed/256); 
+				break;
+			case SET_ONOFF:
 				bytes = new byte[11];
 				setBytes(bytes, 10, message.getValue().intValue());
+				break;
+			case GET_LUMINOUS:
+			case GET_STATUS:
+				bytes = new byte[10];
 				break;
 			case INCREASE:
 			case DECREASE:
@@ -130,16 +191,25 @@ public class MoxMessageBuilder {
 				setBytes(bytes, 10, 0x5, 0, 0xc8, 0); // TODO step = 5%, make this configurable
 				break;
 			default:
-				bytes = new byte[15];
+				throw new NotImplementedException("This package cannot be created, yet");
 		}
 
+		return setDefaultBytes(bytes, code);
+	}
+	
+	protected byte[] toStatusBytes(final MoxStatusCode code) {
+		throw new NotImplementedException("This package cannot be created, yet");
+	}
+	
+	protected byte[] setDefaultBytes(byte[] bytes, final MoxCode code) {
+		int oid = message.getOid();
 		setBytes(bytes, 0, message.getPriority());
 		setBytes(bytes, 1, oid/512, oid/256, oid%256);
 		setBytes(bytes, 4, 0x11); // TODO suboid
-		setBytes(bytes, 5, commandCode.getLow());
+		setBytes(bytes, 5, code.getLow());
 		setBytes(bytes, 6, 0, 0);
-		setBytes(bytes, 8, commandCode.getHigh()/256);
-		setBytes(bytes, 9, commandCode.getHigh() % 256);
+		setBytes(bytes, 8, code.getHigh()/256);
+		setBytes(bytes, 9, code.getHigh() % 256);
 		return bytes;
 	}
 	

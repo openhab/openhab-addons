@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -181,7 +182,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		// TODO make Suboid configurable in thing definition
         byte[] messageAsByteArray = messageBuilder(new MoxMessage())
         		.withOid(oid).withSuboid(0x11).withPriority(0x4)
-        		.withCommandCode(MoxCommandCode.ONOFF)
+        		.withCommandCode(MoxCommandCode.SET_ONOFF)
         		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
 		sendMoxMessage(messageAsByteArray);
 	}
@@ -197,7 +198,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			// TODO make Suboid configurable in thing definition
 			messageAsByteArray = messageBuilder(new MoxMessage())
 	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
-	    		.withCommandCode(MoxCommandCode.LUMINOUS_SET)
+	    		.withCommandCode(MoxCommandCode.SET_LUMINOUS)
 	    		.withValue(new BigDecimal(command.toString())).toBytes();
 		} else if (command instanceof IncreaseDecreaseType) {
 			MoxCommandCode moxCommand = 
@@ -241,29 +242,47 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		if (message != null && message.getCommandCode() != null) {
 			if (oid == message.getOid()) {
 				final ThingUID uid = getThing().getUID();
-				final DecimalType state = new DecimalType(message.getValue());
+				State state = null;
 				String channelName = null;
-				switch (message.getCommandCode()) {
+				switch (message.getStatusCode()) {
 					case POWER_ACTIVE:
 						channelName = MoxBindingConstants.CHANNEL_ACTIVE_POWER;
+						state = new DecimalType(message.getValue());
 						break;
 					case POWER_REACTIVE:
 						channelName = MoxBindingConstants.CHANNEL_REACTIVE_POWER;
+						state = new DecimalType(message.getValue());
 						break;
 					case POWER_APPARENT:
 						channelName = MoxBindingConstants.CHANNEL_APPARENT_POWER;
+						state = new DecimalType(message.getValue());
 						break;
 					case POWER_ACTIVE_ENERGY:
 						channelName = MoxBindingConstants.CHANNEL_ACTIVE_ENERGY;
+						state = new DecimalType(message.getValue());
 						break;
 					case POWER_FACTOR:
 						channelName = MoxBindingConstants.CHANNEL_POWER_FACTOR;
+						state = new DecimalType(message.getValue());
 						break;
-					default:
+						
+					case LUMINOUS:
 						channelName = MoxBindingConstants.STATE;
+						state = new PercentType(message.getValue().setScale(0, RoundingMode.HALF_UP));
+						break;
+						
+					case STATUS:
+						channelName = MoxBindingConstants.STATE;
+						state = message.getValue().intValue() >= 1 ? OnOffType.ON : OnOffType.OFF;
+						break;
+						
+					default:
+						logger.trace("No handling Gateway message with status code {}", message.getStatusCode());
 				}
 				
-				updateState(new ChannelUID(uid, channelName), state);
+				if (channelName != null) {
+					updateState(new ChannelUID(uid, channelName), state);
+				}
 				
 				/*if (channelName != null) {
 				

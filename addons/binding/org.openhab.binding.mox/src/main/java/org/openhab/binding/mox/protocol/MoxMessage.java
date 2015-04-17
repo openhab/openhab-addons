@@ -29,6 +29,7 @@ public class MoxMessage {
 	private int functionCode;
 	private int subFunctionCode;
 	
+	private MoxStatusCode statusCode;
 	private MoxCommandCode commandCode;
 	private BigDecimal value;
 	
@@ -105,6 +106,14 @@ public class MoxMessage {
 	public void setCommandCode(MoxCommandCode commandCode) {
 		this.commandCode = commandCode;
 	}
+	
+	public MoxStatusCode getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(MoxStatusCode statusCode) {
+		this.statusCode = statusCode;
+	}
 
 	public BigDecimal getValue() {
 		return value.setScale(MAX_SCALE, RoundingMode.HALF_UP);
@@ -136,7 +145,8 @@ public class MoxMessage {
 	
 	
 	public String toStringForTrace() {
-		return "MoxMessage [hexString=" + hexString + "\t, priority=" + priority
+		String type = statusCode!=null ? "status" : commandCode!=null ? "command" : "UNKNOWN!";
+		return "MoxMessage [type=" + type + ", hexString=" + hexString + "\t, priority=" + priority
 				+ ", oid=" + oid + ", suboid=" + suboid + ", subFunctionCode="
 				+ subFunctionCode + ", functionCode=" + functionCode + ", value=" + value.setScale(4, BigDecimal.ROUND_HALF_UP);
 	}

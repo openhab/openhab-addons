@@ -9,31 +9,24 @@ package org.openhab.binding.mox.protocol;
 
 /**
  * @author Thomas Eichstaedt-Engelen (innoQ) - Initial contribution
+ * @author Sebastian Janzen (innoQ)
  * @since 2.0.0
  */
-public enum MoxCommandCode implements MoxCode {
+public enum MoxStatusCode implements MoxCode {
 
-		// REM
-		GET_POWER_ACTIVE(0x2, 0x102),
-		GET_POWER_REACTIVE(0x3, 0x102),
-		GET_POWER_APARENT(0x4, 0x102),
-		GET_POWER_FACTOR(0x5, 0x102),
-		GET_POWER_ACTIVE_ENERGY(0x6, 0x102),
+		POWER_ACTIVE(0x2, 0x306),
+		POWER_REACTIVE(0x3, 0x306),
+		POWER_APPARENT(0x4, 0x306),
+		POWER_FACTOR(0x5, 0x306),
+		POWER_ACTIVE_ENERGY(0x6, 0x306),
 
-		// Actor
-		GET_STATUS(0x1, 0x102),
-		GET_LUMINOUS(0x3, 0x304), // Docs fail: says 0x102
+		LUMINOUS(0x3, 0x304), // Docs fail: says 0x102
+		STATUS(0x1, 0x303);
 
-		// Modify status
-		SET_ONOFF(0x1, 0x203),
-		SET_LUMINOUS(0x2, 0x206),
-		INCREASE(0x1, 0x406),
-		DECREASE(0x2, 0x406);
-		
 		private int low;
 		private int high;
 		
-		MoxCommandCode(int low, int high) {
+		MoxStatusCode(int low, int high) {
 			this.low = low;
 			this.high = high;
 		}
@@ -54,12 +47,13 @@ public enum MoxCommandCode implements MoxCode {
 			return high;
 		}
 		
-		public static MoxCommandCode valueOf(int low, int high) {
-			for (MoxCommandCode code : MoxCommandCode.values()) {
+		public static MoxStatusCode valueOf(int low, int high) {
+			for (MoxStatusCode code : MoxStatusCode.values()) {
 				if (code.getLow() == low && code.getHigh() == high) {
 					return code;
 				}
 			}
+			//throw new IllegalArgumentException("There is no StatusCode for low=" + low + ", high=" + high);
 			return null;
 		}
 		
