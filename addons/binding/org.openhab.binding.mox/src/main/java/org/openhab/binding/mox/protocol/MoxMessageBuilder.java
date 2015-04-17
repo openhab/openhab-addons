@@ -93,12 +93,12 @@ public class MoxMessageBuilder {
 			setCommandCodeValues(message, commandCode, rawdata);
 		} else {
 			MoxStatusCode statusCode = MoxStatusCode.valueOf(subFnCode, fnCode);	
-			setStatusCodeValues(message, statusCode, rawdata);
 			if (statusCode == null) {
 				final String msg = "There is no CommandCode or StatusCode for low=" + subFnCode + ", high=" + fnCode;
 				logger.error(msg);
 				throw new IllegalArgumentException(msg);
 			}
+			setStatusCodeValues(message, statusCode, rawdata);
 		} 
 	
 		return this;
@@ -124,9 +124,15 @@ public class MoxMessageBuilder {
 				break;
 			
 			// Percent and dim time
+			case ONOFF_OR_LUMINOUS:
+				if (rawdata.length >= 10) { // seems to be binary
+					message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));	
+				} else {
+					message.setDimmerTime(readBytes(rawdata, 12, 2, true));	
+				}
+				break;
+				
 			case LUMINOUS:
-				message.setDimmerTime(readBytes(rawdata, 12, 2, true));
-			case ONOFF:
 				message.setValue(new BigDecimal(readBytes(rawdata, 10, 1, false)));
 				break;
 				

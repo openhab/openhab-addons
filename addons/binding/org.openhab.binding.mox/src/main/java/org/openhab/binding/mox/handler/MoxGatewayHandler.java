@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.openhab.binding.mox.MoxBindingConstants.STATE;
 
 /**
  * The {@link MoxGatewayHandler} is responsible for handling commands, which are
@@ -38,6 +37,8 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 	private Logger logger = LoggerFactory.getLogger(MoxGatewayHandler.class);
 
 	private MoxConnector connector;
+	
+	private boolean isListening = false;
 
 	private List<MoxMessageListener> messageListeners = new CopyOnWriteArrayList<>();
 	
@@ -65,6 +66,9 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 
 			connector.connect();
 			connector.start();
+			
+			isListening = true;
+			
 		} catch (IOException e) {
 			logger.error("Error creating listening socket.", e);
 		} catch (ArithmeticException e) {
@@ -92,7 +96,9 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 		if (messageListener == null) {
 			throw new NullPointerException("It's not allowed to pass a null MessageListener.");
 		}
-		return messageListeners.add(messageListener);
+		boolean result = messageListeners.add(messageListener);
+		if (isListening) messageListener.onStartListening();
+		return result;
 	}
 
 	public boolean unregisterLightStatusListener(
@@ -111,6 +117,12 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 		for (MoxMessageListener listener : messageListeners) {
 			listener.onMessage(message);
 		}
+	}
+
+
+	@Override
+	public void onStartListening() {
+		logger.debug("Started listening on gateway events");
 	}
 
 }

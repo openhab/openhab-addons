@@ -118,7 +118,7 @@ public class MoxConnector extends Thread {
 				} catch (SocketTimeoutException e) {
 					logger.trace("Socket listening timeout reached, will retry? {}!", !interrupted);
 				} catch (IllegalArgumentException iae) {
-					logger.warn("Parsing message '{}' failed because: {}", Arrays.toString(packet.getData()), iae.getLocalizedMessage());
+					logger.warn("Parsing message '{}' failed because: {}", MoxMessageBuilder.getUnsignedIntArray(packet.getData()), iae.getLocalizedMessage());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

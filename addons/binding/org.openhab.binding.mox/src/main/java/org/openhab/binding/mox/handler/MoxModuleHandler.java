@@ -73,17 +73,22 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
             // note: this call implicitly registers our handler as a listener on the bridge
             if (getGatewayHandler() != null) {
                 getThing().setStatus(getBridge().getStatus());
-                queryInitialState(config.oid);
             }
         }
 		updateStatus(ThingStatus.OFFLINE);
 		deviceOnlineWatchdog();
     }
+	
+	@Override
+	public void onStartListening() {
+		queryInitialState();
+	}
 
-	private void queryInitialState(int oid) {
-		if (!isLinked(STATE)) return;
+	private void queryInitialState() {
+		//if (!isLinked(STATE)) return;
+		if (config == null) return;
 		
-		MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(oid)
+		MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(config.oid)
 				.withSuboid(0x11).withPriority(0x3);
 		
 		if (getThing().getThingTypeUID().equals(THING_TYPE_1G_DIMMER)) {
@@ -92,7 +97,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			msg.withCommandCode(MoxCommandCode.GET_ONOFF);
 		}
 				
-		logger.info("Query last state of item with OID {}.", oid);
+		logger.info("Query last state of item with OID {}.", config.oid);
 		sendMoxMessage(msg.toBytes());
 	}
 
@@ -262,15 +267,21 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 						state = new DecimalType(message.getValue());
 						break;
 						
+					case ONOFF_OR_LUMINOUS:
+						channelName = MoxBindingConstants.STATE;
+						int value = message.getValue().setScale(0, RoundingMode.HALF_UP).intValue();
+						if (value == 1 || value == 0) {
+							state = value==1 ? OnOffType.ON : OnOffType.OFF;	
+						} else {
+							state = new PercentType(value);	
+						}
+						break;
+						
 					case LUMINOUS:
 						channelName = MoxBindingConstants.STATE;
 						state = new PercentType(message.getValue().setScale(0, RoundingMode.HALF_UP));
 						break;
-						
-					case ONOFF:
-						channelName = MoxBindingConstants.STATE;
-						state = message.getValue().intValue() >= 1 ? OnOffType.ON : OnOffType.OFF;
-						break;
+
 						
 					default:
 						logger.trace("No handling Gateway message with status code {}", statusCode);

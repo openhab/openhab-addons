@@ -20,8 +20,9 @@ public enum MoxStatusCode implements MoxCode {
 		POWER_FACTOR(0x5, 0x306),
 		POWER_ACTIVE_ENERGY(0x6, 0x306),
 
-		LUMINOUS(0x1, 0x303),
-		ONOFF(0x1, 0x303);
+		//LUMINOUS(0x1, 0x303),
+		ONOFF_OR_LUMINOUS(0x1, 0x303),
+		LUMINOUS(0x3, 0x304);
 		
 
 		private int low;
