@@ -23,6 +23,7 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.pulseaudio</module>
 	<module>org.openhab.binding.sonos</module>
+  <module>org.openhab.binding.BluetoothLE</module>
   </modules>
 
 </project>

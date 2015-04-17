@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="BluetoothLE"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="TemperatureSensor">
+		<label>Bluetooth low energy temperature sensor</label>
+		<description>Bluetooth low energy support for non connecting temperature sensor like the "FreeTec Bluetooth 4.0-Thermometer"</description>
+		
+		<channels>
+		<channel id="temperature" typeId="temperature" />
+		<channel id="battery" typeId="battery" />
+		</channels>
+		
+		<config-description>
+			<parameter name="device_address" type="text">
+				<label>Device address</label>
+				<description>Bluetooth low energy device address. Syntax is XX:XX:XX:XX:XX:XX.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
