@@ -16,7 +16,7 @@
           <p class="no-margin"><strong>UID: {{thing.thingUID}}</strong></p>
           <div class="col4">
             Name
-            <input type="text" class="field" required="required"
+            <input type="text" class="field" required
                    name="label" ng-model="approveData[thing.thingUID].label">
           </div>
           <div class="col4">
@@ -29,7 +29,49 @@
           </div>
           <div class="col4">
             <br>
-            <input type="submit" value="Add" class="btn btn-block" ng-click="approve(thing.thingUID)">
+            
+            <!--<input type="submit" value="Add" class="btn btn-block" ng-click="approve(thing.thingUID)">-->
+            <a class="popup-with-move-anim btn btn-block" href="#dialog">Save</a>
+             
+            <!--dialog-start-->
+			<div id="dialog" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+                        
+				<div class="dialog-header">
+					<h3>Characteristics of the item</h3>
+				</div><!--dialog-header-->
+                             
+				<div class="dialog-content">    
+					<p><strong>If it doesn't apply to your item doesn't tick any boxes</strong></p>
+					<ul class="no-style-list">
+						<li>
+							<label class="checkbox-wrap">
+								<input type="checkbox">
+								<span class="checkbox"></span>
+                                Always on <small>(incase of freezers, refrigerators)</small>
+                            </label> 
+                        </li>
+                       	<li>
+							<label class="checkbox-wrap">
+                        		<input type="checkbox">
+                                <span class="checkbox"></span>
+                                Keep locked <small>(incase of power outage do not open doors)</small>
+                            </label> 
+                       	</li>
+					</ul>                        
+				</div><!--dialog-content-->
+                             
+				<div class="dialog-footer">
+					<div class="row fixed-row">
+						<div class="col6">
+                        	<a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+                        </div>
+                        <div class="col6 text-right">
+							<a class="popup-modal-dismiss btn" href="#">Confirm</a>
+						</div>
+					</div><!--row-->
+				</div><!--dialog-footer-->
+			</div><!--dialog-->
+    
           </div>
         </div>
       </div>
