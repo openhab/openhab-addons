@@ -24,10 +24,26 @@
 		</channels>
 
 		<config-description>
-			<parameter name="oid" type="text">
+			<parameter name="oid" type="decimal" min="1" max="16777215">
 				<label>OID</label>
 				<description>The OID identifier of a certain MOX Module</description>
 				<required>true</required>
+			</parameter>
+			<parameter name="suboid" type="decimal">
+				<label>OID</label>
+				<description>The OID identifier of a certain MOX Module</description>
+				<required>true</required>
+				<default>17</default>
+				<options>
+					<option value="17">Channel 1</option>
+					<option value="18">Channel 2</option>
+					<option value="19">Channel 3</option>
+					<option value="20">Channel 4</option>
+					<option value="21">Channel 5</option>
+					<option value="22">Channel 6</option>
+					<option value="23">Channel 7</option>
+					<option value="24">Channel 8</option>
+				</options>
 			</parameter>
 		</config-description>
 	</thing-type>

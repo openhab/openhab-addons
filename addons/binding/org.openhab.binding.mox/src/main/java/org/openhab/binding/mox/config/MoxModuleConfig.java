@@ -5,6 +5,7 @@ package org.openhab.binding.mox.config;
  */
 public class MoxModuleConfig {
 
-    public String oid;
+    public int oid;
+    public int suboid;
 
 }

@@ -7,8 +7,6 @@
  */
 package org.openhab.binding.mox.handler;
 
-import com.google.common.collect.Sets;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -32,11 +30,9 @@ import java.math.RoundingMode;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.openhab.binding.mox.MoxBindingConstants.*;
 import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
 
@@ -49,17 +45,16 @@ import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
  */
 public class MoxModuleHandler extends BaseThingHandler implements MoxMessageListener {
 
+	protected static final int DEFAULT_PRIORITY = 0x4;
 	public static final int TARGET_PORT = 6670;
 	private Logger logger = LoggerFactory.getLogger(MoxModuleHandler.class);
 
-    private int oid;
+    private MoxModuleConfig config;
     private MoxGatewayHandler gatewayHandler;
+    private State lastState;
 
 	private int refresh = 60; // refresh every minute as default
 	ScheduledFuture<?> refreshJob;
-
-	//private final static Set<ThingTypeUID> SUPPORTS_DECIMAL_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_CURTAIN);
-	//private final static Set<ThingTypeUID> SUPPORTS_ONOFF_INPUT = Sets.newHashSet(THING_TYPE_1G_DIMMER, THING_TYPE_1G_FAN, THING_TYPE_1G_ONOFF);
 
 	public MoxModuleHandler(Thing thing) {
 		super(thing);
@@ -70,17 +65,34 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	@Override
     public void initialize() {
         logger.debug("Initializing Mox Device handler.");
-		MoxModuleConfig config = getConfigAs(MoxModuleConfig.class);
-        if (isNotBlank(config.oid)) {
-            this.oid = Integer.valueOf(config.oid);
+		config = getConfigAs(MoxModuleConfig.class);
+        if (config.oid > 0 && config.oid < 0xffffff) {
             // note: this call implicitly registers our handler as a listener on the bridge
             if (getGatewayHandler() != null) {
                 getThing().setStatus(getBridge().getStatus());
+                queryInitialState(config.oid);
             }
         }
-		updateStatus(ThingStatus.ONLINE);
-		//deviceOnlineWatchdog();
+		updateStatus(ThingStatus.OFFLINE);
+		deviceOnlineWatchdog();
     }
+
+	private void queryInitialState(int oid) {
+		if (!isLinked(STATE)) return;
+		
+		MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(oid)
+				.withSuboid(0x11).withPriority(0x3);
+		
+		if (getThing().getThingTypeUID().equals(THING_TYPE_1G_DIMMER)) {
+			msg.withCommandCode(MoxCommandCode.GET_LUMINOUS);
+		} else {
+			msg.withCommandCode(MoxCommandCode.GET_STATUS);
+		}
+				
+		logger.info("Query last state of item with OID {}.", oid);
+		sendMoxMessage(msg.toBytes());
+	}
+
 
 	private void deviceOnlineWatchdog() {
 		Runnable runnable = new Runnable() {
@@ -114,6 +126,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
     @Override
     public void dispose() {
         logger.debug("Handler disposes. Unregistering listener.");
+        refreshJob.cancel(true);
         MoxGatewayHandler gatewayHandler = getGatewayHandler();
         if (gatewayHandler != null) {
         	getGatewayHandler().unregisterLightStatusListener(this);
@@ -148,8 +161,6 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		logger.debug("Received command for {} : {}", channelUID, command);
         if(channelUID.getId().equals(STATE)) {
 
-			//checkValidInputType(channelUID.getThingTypeUID(), command);
-
 			if (command instanceof OnOffType) {
 				setSwitchValue(channelUID, command);
 			} else if (command instanceof DecimalType ||
@@ -162,26 +173,11 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
         }
 	}
 
-	/*private void checkValidInputType(ThingTypeUID thingTypeUID, Command command) {
-		String errorMessage = null;
-		if (command instanceof OnOffType && !SUPPORTS_ONOFF_INPUT.contains(thingTypeUID)) {
-			errorMessage = "This thing cannot handle ON/OFF";
-		} else if (command instanceof DecimalType && !SUPPORTS_DECIMAL_INPUT.contains(thingTypeUID)) {
-			errorMessage = "This thing cannot handle decimal state.";
-		}
-		if (errorMessage != null) {
-			logger.error(errorMessage);
-			throw new IllegalArgumentException(errorMessage);
-		}
-	}*/
-
 	private void setSwitchValue(ChannelUID channelUID, Command command) {
 		if (command == null) return;
-		int oid = Integer.parseInt(channelUID.getThingId());
 
-		// TODO make Suboid configurable in thing definition
         byte[] messageAsByteArray = messageBuilder(new MoxMessage())
-        		.withOid(oid).withSuboid(0x11).withPriority(0x4)
+        		.withOid(config.oid).withSuboid(config.suboid).withPriority(DEFAULT_PRIORITY)
         		.withCommandCode(MoxCommandCode.SET_ONOFF)
         		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
 		sendMoxMessage(messageAsByteArray);
@@ -190,27 +186,18 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	private void setDimmerValue(ChannelUID channelUID, Command command) {
 		if (command == null) return;
 
-		int oid = Integer.parseInt(channelUID.getThingId());
-
-        byte[] messageAsByteArray = null;
+        MoxMessageBuilder message = messageBuilder(new MoxMessage())
+	    		.withOid(config.oid).withSuboid(config.suboid).withPriority(DEFAULT_PRIORITY);
 
 		if (command instanceof PercentType || command instanceof DecimalType) {
-			// TODO make Suboid configurable in thing definition
-			messageAsByteArray = messageBuilder(new MoxMessage())
-	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
-	    		.withCommandCode(MoxCommandCode.SET_LUMINOUS)
-	    		.withValue(new BigDecimal(command.toString())).toBytes();
+			message.withCommandCode(MoxCommandCode.SET_LUMINOUS).withValue(new BigDecimal(command.toString())).toBytes();
 		} else if (command instanceof IncreaseDecreaseType) {
 			MoxCommandCode moxCommand = 
 				(command == IncreaseDecreaseType.INCREASE) ? MoxCommandCode.INCREASE : MoxCommandCode.DECREASE;
-			// TODO make Suboid configurable in thing definition
-			messageAsByteArray = messageBuilder(new MoxMessage())
-	    		.withOid(oid).withSuboid(0x11).withPriority(0x4)
-	    		.withCommandCode(moxCommand)
-	    		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
+			message.withCommandCode(moxCommand).withValue(new BigDecimal(5)); // TODO make amount of increase/decrease configurable
 		}
 		
-		sendMoxMessage(messageAsByteArray);
+		sendMoxMessage(message.toBytes());
 	}
 	
     private void sendMoxMessage(byte[] messageBytes) {
@@ -221,7 +208,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
             InetAddress address = InetAddress.getByName(targetHost);
 
 			if (logger.isTraceEnabled()) {
-				logger.trace("Sending bytes to host {} : {}",address, MoxMessageBuilder.getUnsignedIntArray(messageBytes));
+				logger.trace("Sending bytes to host {} : {}", address, MoxMessageBuilder.getUnsignedIntArray(messageBytes));
 			}
 
             DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, address, TARGET_PORT);
@@ -240,7 +227,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	@Override
 	public void onMessage(MoxMessage message) {
 		if (message != null && message.getCommandCode() != null) {
-			if (oid == message.getOid()) {
+			if (config.oid == message.getOid() && message.getStatusCode() != null) {
 				final ThingUID uid = getThing().getUID();
 				State state = null;
 				String channelName = null;
@@ -280,30 +267,10 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 						logger.trace("No handling Gateway message with status code {}", message.getStatusCode());
 				}
 				
-				if (channelName != null) {
+				if (channelName != null && state != lastState) {
 					updateState(new ChannelUID(uid, channelName), state);
-				}
-				
-				/*if (channelName != null) {
-				
-					//updateState(new ChannelUID(uid, channelName), state);
-					
-					Set<Item> items = getThing().getChannel(channelName).getLinkedItems();
-					boolean stateChanged = false;
-
-					for (Item item : items) {
-						stateChanged = !item.getState().equals(state);
-						if (stateChanged) break;
-					}
-
-					if (stateChanged) {
-						updateState(new ChannelUID(uid, channelName), state);
-					}
-		 			
-				}*/
-				
-				
-
+					lastState = state;
+				}				
 
 			}
 		}

@@ -172,7 +172,7 @@ public class MoxMessageBuilder {
 			case SET_LUMINOUS:
 				bytes = new byte[14];
 				int value = message.getValue().setScale(0, RoundingMode.HALF_UP).intValue();
-				int dimSpeed = Math.max(300, 0xffff); // TODO 300ms make dim speed configurable
+				int dimSpeed = Math.min(300, 0xffff); // TODO 300ms make dim speed configurable
 				setBytes(bytes, 10, value);
 				setBytes(bytes, 11, 0);
 				setBytes(bytes, 12, dimSpeed%256, dimSpeed/256); 
@@ -188,7 +188,8 @@ public class MoxMessageBuilder {
 			case INCREASE:
 			case DECREASE:
 				bytes = new byte[14];
-				setBytes(bytes, 10, 0x5, 0, 0xc8, 0); // TODO step = 5%, make this configurable
+				int amount = Math.min(message.getValue().intValue(), 100);
+				setBytes(bytes, 10, amount, 0, 0xc8, 0);
 				break;
 			default:
 				throw new NotImplementedException("This package cannot be created, yet");
