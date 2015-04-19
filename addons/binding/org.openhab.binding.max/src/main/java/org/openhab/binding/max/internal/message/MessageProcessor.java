@@ -182,6 +182,13 @@ public class MessageProcessor {
 
         return result;
     }
+    
+    /**
+     * @return true if there is a message waiting to be pulled
+     */
+    public boolean isMessageAvailable() {
+        return this.currentMessage != null;
+    }
 
     /**
      * Pulls the message from the stack when there is one available. This needs

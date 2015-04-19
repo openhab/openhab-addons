@@ -35,6 +35,7 @@ public class MessageProcessorTest {
     private void commonMessageTest(String line, Message expectedMessage) {
         try {
             Assert.assertTrue(this.processor.addReceivedLine(line));
+            Assert.assertTrue(this.processor.isMessageAvailable());
             Message message = this.processor.pull();
             Assert.assertNotNull(message);
             Assert.assertEquals(message.getClass().getName(), expectedMessage.getClass().getName());

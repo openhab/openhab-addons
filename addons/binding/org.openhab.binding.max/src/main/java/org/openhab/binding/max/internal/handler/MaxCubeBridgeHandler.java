@@ -312,8 +312,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         for (String raw : getRawMessage()) {
             try {
                 logger.trace("message block: '{}'", raw);
-
-                if (this.messageProcessor.addReceivedLine(raw)) {
+                
+                this.messageProcessor.addReceivedLine(raw);
+                if (this.messageProcessor.isMessageAvailable()) {
                     message = this.messageProcessor.pull();
                     message.debug(logger);
                     processMessage(message);
@@ -591,10 +592,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     writer.write(commandString);
                     writer.flush();
                     String raw = reader.readLine();
-
                     try {
-                        while (!this.messageProcessor.addReceivedLine(raw)) {
+                        this.messageProcessor.addReceivedLine(raw);
+                        while (!this.messageProcessor.isMessageAvailable()) {
                             raw = reader.readLine();
+                            this.messageProcessor.addReceivedLine(raw);
                         }
 
                         Message message = this.messageProcessor.pull();
