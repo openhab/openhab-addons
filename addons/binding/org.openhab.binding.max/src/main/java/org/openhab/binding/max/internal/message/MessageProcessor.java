@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 public class MessageProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
+    
+    public static final String SEPARATOR = ":";
 
     /**
      * The message that was created from last line received. (Null if no message
@@ -206,16 +208,16 @@ public class MessageProcessor {
 
     /**
      * Processes the raw TCP data read from the MAX protocol, returning the
-     * corresponding Message.
+     * corresponding MessageType.
      * 
      * @param line
      *            the raw data provided read from the MAX protocol
      * @return MessageType of the line added
      */
-    public static MessageType getMessageType(String line) {
+    private static MessageType getMessageType(String line) {
 
         for (MessageType msgType : MessageType.values()) {
-            if (line.startsWith(msgType.getMessageIndicator())) {
+            if (line.startsWith(msgType.name() + SEPARATOR)) {
                 return msgType;
             }
         }

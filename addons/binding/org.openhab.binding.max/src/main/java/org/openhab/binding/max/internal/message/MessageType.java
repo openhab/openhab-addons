@@ -15,19 +15,9 @@ package org.openhab.binding.max.internal.message;
  * @since 1.4.0
  */
 public enum MessageType {
-    H("H:"),
-    M("M:"),
-    C("C:"),
-    L("L:"),
-    S("S:");
-
-    private String messageIndicator;
-
-    MessageType(String messageIndicator) {
-        this.messageIndicator = messageIndicator;
-    }
-
-    public String getMessageIndicator() {
-        return this.messageIndicator;
-    }
+    H,
+    M,
+    C,
+    L,
+    S;
 }
