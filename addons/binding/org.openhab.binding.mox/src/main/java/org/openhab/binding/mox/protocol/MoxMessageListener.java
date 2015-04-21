@@ -15,6 +15,4 @@ public interface MoxMessageListener {
 	
 	void onMessage(MoxMessage message);
 	
-	void onStartListening();
-
 }

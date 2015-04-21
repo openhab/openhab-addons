@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -48,13 +45,12 @@ import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
  */
 public class MoxModuleHandler extends BaseThingHandler implements MoxMessageListener {
 
-	protected static final int DEFAULT_PRIORITY = 0x4;
-	public static final int TARGET_PORT = 6670;
 	private Logger logger = LoggerFactory.getLogger(MoxModuleHandler.class);
 
     private MoxModuleConfig config;
     private MoxGatewayHandler gatewayHandler;
     private Map<MoxStatusCode,State> lastStates = new HashMap<MoxStatusCode, State>(MoxStatusCode.values().length);
+    private MoxGatewaySendHandler sender;
 
 	private int refresh = 60; // refresh every minute as default
 	ScheduledFuture<?> refreshJob;
@@ -80,20 +76,18 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
             if (getGatewayHandler() != null) {
                 getThing().setStatus(getBridge().getStatus());
             }
+            sender = MoxGatewaySendHandler.getInstance(getBridge());
         }
 		updateStatus(ThingStatus.OFFLINE);
 		deviceOnlineWatchdog();
     }
 	
-	@Override
-	public void onStartListening() {
-		if (!initialStateFetched) queryInitialState();
-		initialStateFetched = true;
-	}
-
-	private void queryInitialState() {
+	private void queryInitialState(boolean force) {
 		//if (!isLinked(STATE)) return;
 		if (config == null) return;
+		if (getThing().getStatus() == ThingStatus.OFFLINE) return;
+		if (initialStateFetched && !force) return;
+		initialStateFetched = true;
 		
 		MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(config.oid)
 				.withSuboid(0x11).withPriority(0x3);
@@ -105,17 +99,17 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		}
 
 		logger.info("Query last state of item with OID {}.", config.oid);
-		sendMoxMessage(msg.toBytes());
+		sender.sendMoxMessage(msg.toBytes());
 
 		refreshRemValues();
 	}
 
 	private void refreshRemValues() {
 		if (fetchRemValues) {
-			MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(config.oid)
-					.withSuboid(0x11).withPriority(0x3);
-			sendMoxMessage(msg.withCommandCode(MoxCommandCode.GET_POWER_ACTIVE).toBytes());
-			sendMoxMessage(msg.withCommandCode(MoxCommandCode.GET_POWER_ACTIVE_ENERGY).toBytes());
+			MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage())
+					.withOid(config.oid).withSuboid(0x11);
+			sender.sendMoxMessage(msg.withCommandCode(MoxCommandCode.GET_POWER_ACTIVE).toBytes());
+			sender.sendMoxMessage(msg.withCommandCode(MoxCommandCode.GET_POWER_ACTIVE_ENERGY).toBytes());
 			addRemRefreshJob();
 		}
 	}
@@ -130,8 +124,9 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 						if (bridgeHandler.getThing() != null) {
 							updateStatus(bridgeHandler.getThing().getStatus());
 							gatewayHandler = null;
+							queryInitialState(false);
 						} else {
-							updateStatus(ThingStatus.ONLINE);
+							updateStatus(ThingStatus.OFFLINE);
 						}
 
 					} else {
@@ -163,7 +158,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			}
 		};
 
-		refreshRemValuesJob = scheduler.scheduleAtFixedRate(runnable, 0, refreshRemInterval, TimeUnit.SECONDS);
+		refreshRemValuesJob = scheduler.scheduleAtFixedRate(runnable, refreshRemInterval, refreshRemInterval, TimeUnit.MINUTES);
 	}
 
     @Override
@@ -225,17 +220,17 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 		if (command == null) return;
 
         byte[] messageAsByteArray = messageBuilder(new MoxMessage())
-        		.withOid(config.oid).withSuboid(config.suboid).withPriority(DEFAULT_PRIORITY)
+        		.withOid(config.oid).withSuboid(config.suboid)
         		.withCommandCode(MoxCommandCode.SET_ONOFF)
         		.withValue(new BigDecimal(command==OnOffType.ON ? 1 : 0)).toBytes();
-		sendMoxMessage(messageAsByteArray);
+		sender.sendMoxMessage(messageAsByteArray);
 	}
 
 	private void setDimmerValue(ChannelUID channelUID, Command command) {
 		if (command == null) return;
 
         MoxMessageBuilder message = messageBuilder(new MoxMessage())
-	    		.withOid(config.oid).withSuboid(config.suboid).withPriority(DEFAULT_PRIORITY);
+	    		.withOid(config.oid).withSuboid(config.suboid);
 
 		if (command instanceof PercentType || command instanceof DecimalType) {
 			message.withCommandCode(MoxCommandCode.SET_LUMINOUS).withValue(new BigDecimal(command.toString())).toBytes();
@@ -245,32 +240,9 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 			message.withCommandCode(moxCommand).withValue(new BigDecimal(5)); // TODO make amount of increase/decrease configurable
 		}
 		
-		sendMoxMessage(message.toBytes());
+		sender.sendMoxMessage(message.toBytes());
 	}
 	
-    private void sendMoxMessage(byte[] messageBytes) {
-    	if (messageBytes == null) throw new IllegalArgumentException("Bytes to send were null.");
-		DatagramSocket datagramSocket = null;
-        try {
-            String targetHost = (String) getBridge().getConfiguration().get(UDP_HOST);
-            InetAddress address = InetAddress.getByName(targetHost);
-
-			if (logger.isTraceEnabled()) {
-				logger.trace("Sending bytes to host {} : {}", address, MoxMessageBuilder.getUnsignedIntArray(messageBytes));
-			}
-
-            DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length, address, TARGET_PORT);
-			datagramSocket = new DatagramSocket();
-            datagramSocket.send(packet);
-        } catch (Exception e) {
-            logger.error("Error sending UDP datagram: {}", e.getLocalizedMessage(), e);
-        } finally {
-			if (datagramSocket != null) {
-				datagramSocket.close();
-			}
-		}
-	}
-
     
 	@Override
 	public void onMessage(MoxMessage message) {

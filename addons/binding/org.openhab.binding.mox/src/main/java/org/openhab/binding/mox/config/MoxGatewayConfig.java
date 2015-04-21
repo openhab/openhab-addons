@@ -6,6 +6,7 @@ package org.openhab.binding.mox.config;
 public class MoxGatewayConfig {
 
     public String udpHost;
-    public Integer udpPort;
+    public Integer udpPort; // TODO Rename: listenUdpPort
+    public Integer targetUdpPort = 6670; // TODO Make this configurable
 
 }

@@ -10,6 +10,7 @@ package org.openhab.binding.mox.handler;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.mox.config.MoxGatewayConfig;
@@ -38,8 +39,6 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 
 	private MoxConnector connector;
 	
-	private boolean isListening = false;
-
 	private List<MoxMessageListener> messageListeners = new CopyOnWriteArrayList<>();
 	
 	
@@ -50,10 +49,8 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 	
 	@Override
 	public void initialize() {
-		super.initialize();
-
 		logger.debug("Initializing Mox Gateway handler.");
-
+		
 		try {
 			MoxGatewayConfig config = getConfigAs(MoxGatewayConfig.class);
 
@@ -67,16 +64,18 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 			connector.connect();
 			connector.start();
 			
-			isListening = true;
+			updateStatus(ThingStatus.ONLINE);
 			
 		} catch (IOException e) {
 			logger.error("Error creating listening socket.", e);
+			updateStatus(ThingStatus.OFFLINE);
 		} catch (ArithmeticException e) {
 			logger.error("Cannot read config valuem. Maybe the port number was wrong.", e);
+			updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 	
-    @Override
+	@Override
     public void dispose() {
         if (connector != null) {
             try {
@@ -97,7 +96,6 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 			throw new NullPointerException("It's not allowed to pass a null MessageListener.");
 		}
 		boolean result = messageListeners.add(messageListener);
-		if (isListening) messageListener.onStartListening();
 		return result;
 	}
 
@@ -117,12 +115,6 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 		for (MoxMessageListener listener : messageListeners) {
 			listener.onMessage(message);
 		}
-	}
-
-
-	@Override
-	public void onStartListening() {
-		logger.debug("Started listening on gateway events");
 	}
 
 }
