@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -193,14 +194,17 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 				case HeatingThermostatPlus:
 					updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP),
 							(State) ((HeatingThermostat) device).getTemperatureSetpoint());
-					updateState(new ChannelUID(getThing().getUID(), CHANNEL_ACTUALTEMP),
-							(State) ((HeatingThermostat) device).getTemperatureActual());
 					updateState(new ChannelUID(getThing().getUID(), CHANNEL_MODE),
 							(State) ((HeatingThermostat) device).getModeString());
 					updateState(new ChannelUID(getThing().getUID(), CHANNEL_BATTERY),
 							(State) ((HeatingThermostat) device).getBatteryLow());
 					updateState(new ChannelUID(getThing().getUID(), CHANNEL_VALVE),
 							(State) ((HeatingThermostat) device).getValvePosition());
+					State actualTemp =  ((HeatingThermostat) device).getTemperatureActual();
+					if ( actualTemp != DecimalType.ZERO) {
+						updateState(new ChannelUID(getThing().getUID(), CHANNEL_ACTUALTEMP),
+								actualTemp);
+					} 
 					break;
 				case ShutterContact:
 					updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTACT_STATE),
