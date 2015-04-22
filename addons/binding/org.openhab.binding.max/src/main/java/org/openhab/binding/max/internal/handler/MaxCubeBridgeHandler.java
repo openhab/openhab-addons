@@ -10,6 +10,8 @@ package org.openhab.binding.max.internal.handler;
 
 import static org.openhab.binding.max.MaxBinding.CHANNEL_MODE;
 import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_DUTY_CYCLE;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_FREE_MEMORY;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -35,6 +38,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.message.C_Message;
@@ -398,7 +402,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 				connectionEstablished = false;
 				socketClose(); // reconnect on next execution
 			}
-
 			return rawMessage;
 		}
 	}
@@ -439,6 +442,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 		if (message != null) {
 			message.debug(logger);
+			if (message.getType() == MessageType.H) {
+				int freeMemorySlotsMsg = ((H_Message) message).getFreeMemorySlots() ;
+			    int dutyCycleMsg = ((H_Message) message).getDutyCycle();
+			    if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle){
+			    	freeMemorySlots = freeMemorySlotsMsg;
+			    	 dutyCycle = dutyCycleMsg;
+			    	 updateCubeState();
+			    }
+			}
 			if (message.getType() == MessageType.M) {
 				M_Message msg = (M_Message) message;
 				for (DeviceInformation di : msg.devices) {
@@ -479,6 +491,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 			} else if (message.getType() == MessageType.S) {
 				dutyCycle = ((S_Message) message).getDutyCycle();
 				freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
+				updateCubeState();
 				if (((S_Message) message).isCommandDiscarded()) {
 					logger.info("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
 							freeMemorySlots);
@@ -657,4 +670,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		socket = null;
 	}
 
+	private void updateCubeState () {
+		updateState(new ChannelUID(getThing().getUID(), CHANNEL_FREE_MEMORY),
+				(State) new DecimalType(freeMemorySlots) );
+		updateState(new ChannelUID(getThing().getUID(), CHANNEL_DUTY_CYCLE),
+				(State) new DecimalType(dutyCycle) );
+	}
 }

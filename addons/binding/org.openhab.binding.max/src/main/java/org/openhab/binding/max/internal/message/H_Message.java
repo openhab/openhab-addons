@@ -28,7 +28,7 @@ import com.google.common.base.Strings;
 public final class H_Message extends Message {
 	
 	private Calendar cal = Calendar.getInstance();
-	private Map<String, Object> properties = new HashMap<>();
+	public Map<String, Object> properties = new HashMap<>();
 
 	
 	private String rawSerialNumber = null;
@@ -75,6 +75,71 @@ public final class H_Message extends Message {
 		properties.put("CubeTimeState", rawCubeTimeState);
 		properties.put("NTPCounter", rawNTPCounter);
 	}
+
+	
+	/**
+	 * @return the Serial Number
+	 */
+	public String getSerialNumber() {
+		return rawSerialNumber;
+	}
+
+
+	/**
+	 * @return the RfHex Address
+	 */
+	public String getRfHexAddress() {
+		return rawRfHexAddress;
+	}
+
+
+	/**
+	 * @return the Firmware Version
+	 */
+	public String getFirmwareVersion() {
+		return rawFirmwareVersion;
+	}
+
+
+	/**
+	 * @return the ConnectionId
+	 */
+	public String getConnectionId() {
+		return rawConnectionId;
+	}
+
+
+	/**
+	 * @return the DutyCycle
+	 */
+	public int getDutyCycle() {
+		return  Integer.parseInt(rawDutyCycle);
+	}
+
+
+	/**
+	 * @return the FreeMemorySlots
+	 */
+	public int getFreeMemorySlots() {
+		return  Integer.parseInt(rawFreeMemorySlots);
+	}
+
+
+	/**
+	 * @return the CubeTimeState
+	 */
+	public String getCubeTimeState() {
+		return rawCubeTimeState;
+	}
+
+
+	/**
+	 * @return the NTPCounter
+	 */
+	public String getNTPCounter() {
+		return rawNTPCounter;
+	}
+
 
 	private final void setDateTime(String hexDate, String hexTime) {
 		
