@@ -229,7 +229,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 			bridgeHandler.unregisterDeviceStatusListener(this);
 			bridgeHandler = null;
 			forceRefresh = true;
-			getThing().setStatus(ThingStatus.OFFLINE);
+			updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 

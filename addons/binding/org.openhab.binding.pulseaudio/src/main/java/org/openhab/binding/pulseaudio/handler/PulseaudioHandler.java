@@ -282,7 +282,7 @@ public class PulseaudioHandler extends BaseThingHandler implements
 		if (device.getPaName().equals(name)) {
 			bridgeHandler.unregisterDeviceStatusListener(this);
 			bridgeHandler = null;
-			getThing().setStatus(ThingStatus.OFFLINE);
+			updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 
