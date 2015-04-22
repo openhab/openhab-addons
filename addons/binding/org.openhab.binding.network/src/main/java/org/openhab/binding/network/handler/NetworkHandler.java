@@ -56,7 +56,7 @@ public class NetworkHandler extends BaseThingHandler {
 					State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
 					updateState(CHANNEL_ONLINE, state);					
 				} catch( InvalidConfigurationException invalidConfigurationException) {
-					getThing().setStatus(ThingStatus.OFFLINE);
+				    updateStatus(ThingStatus.OFFLINE);
 				}
             	break;
             default:
@@ -108,7 +108,7 @@ public class NetworkHandler extends BaseThingHandler {
 					State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
 					updateState(CHANNEL_ONLINE, state);					
 				} catch( InvalidConfigurationException invalidConfigurationException) {
-					getThing().setStatus(ThingStatus.OFFLINE);
+				    updateStatus(ThingStatus.OFFLINE);
 				}
 			}
 		};
