@@ -145,7 +145,7 @@ UpnpIOParticipant, DiscoveryListener {
 		if (getThing().getStatus() == ThingStatus.ONLINE) {
 			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
 					.getUID());
-			getThing().setStatus(ThingStatus.OFFLINE);
+			updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 
@@ -170,7 +170,7 @@ UpnpIOParticipant, DiscoveryListener {
 					.equals(result.getProperties().get(UDN))) {
 				logger.debug("Discovered UDN '{}' for thing '{}'", result
 						.getProperties().get(UDN), getThing().getUID());
-				getThing().setStatus(ThingStatus.ONLINE);
+				updateStatus(ThingStatus.ONLINE);
 				onSubscription();
 				onUpdate();
 			}
@@ -182,7 +182,7 @@ UpnpIOParticipant, DiscoveryListener {
 		if(thingUID.equals(this.getThing().getUID())) {
 			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
 					.getUID());
-			getThing().setStatus(ThingStatus.OFFLINE);
+			updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 
