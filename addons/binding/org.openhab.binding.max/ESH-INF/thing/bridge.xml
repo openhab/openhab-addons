@@ -6,8 +6,13 @@
 
 	<bridge-type id="bridge">
 		<label>MAX! Cube LAN gateway</label>
-		<description>This bridge represents the MAX!Cube LAN gateway.
+		<description>This bridge represents the MAX! Cube LAN gateway.
 		</description>
+
+		<channels>
+			<channel id="free_mem" typeId="free_mem" />
+			<channel id="duty_cycle" typeId="duty_cycle" />
+		</channels>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -52,5 +57,37 @@
 			</parameter>
 		</config-description>
 
+<!-- 
+		<properties>
+			<property name="RfHexAddress">RF address (HEX)</property>
+			<property name="FirmwareVersion">Firmware version</property>
+			<property name="ConnectionId">Connection ID</property>
+			<property name="CubeTimeState">CubeTimeState</property>
+			<property name="NTPCounter">NTPCounter</property>
+		</properties>
+ -->
+ 
 	</bridge-type>
+
+<!-- Note these 2 channels should be defined as advanced="true" but for now false due issue #207 --> 
+	<channel-type id="free_mem" advanced="false">
+		<item-type>Number</item-type>
+		<label>Free Memory Slots</label>
+		<description>Free memory slots to store commands send to the devices
+		</description>
+		<category>FreeMemory</category>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="duty_cycle" advanced="false">
+		<item-type>Number</item-type>
+		<label>Duty Cycle</label>
+		<description>Duty Cycle for sending commands to the devices
+		</description>
+		<category>DutyCycle</category>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
