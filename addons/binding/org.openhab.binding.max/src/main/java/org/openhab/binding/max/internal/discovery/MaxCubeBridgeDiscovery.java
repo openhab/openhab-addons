@@ -19,6 +19,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -44,9 +46,18 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 	private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
 	static boolean discoveryRunning = false;
-
+	
+	/** The refresh interval for discovery of MAX! Cubes */
+	private long refreshInterval = 600;
+	private ScheduledFuture<?> cubeDiscoveryJob;
+	private Runnable cubeDiscoveryRunnable = new Runnable() {
+		@Override
+		public void run() {
+			discoverCube();		}
+	};
+	
 	public MaxCubeBridgeDiscovery() {
-		super(MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15);
+		super(MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
 	}
 
 	@Override
@@ -56,41 +67,39 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
 	@Override
 	public void startScan() {
-		discoverCube();
+		logger.debug("Start MAX! Cube discovery");
+		scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#
-	 * startBackgroundDiscovery()
+	/* (non-Javadoc)
+	 * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#stopBackgroundDiscovery()
 	 */
+	@Override
+	protected void stopBackgroundDiscovery() {
+		logger.debug("Stop MAX! Cube background discovery");
+		if (cubeDiscoveryJob != null && !cubeDiscoveryJob.isCancelled()) {
+			cubeDiscoveryJob.cancel(true);
+			cubeDiscoveryJob = null;
+		}
+	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
+	 */
 	@Override
 	protected void startBackgroundDiscovery() {
-		discoverCube();
-	}
-
-	@Override
-	public boolean isBackgroundDiscoveryEnabled() {
-		return true;
+		logger.debug("Start MAX! Cube background discovery");
+		if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
+			cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+		}
 	}
 
 	private synchronized void discoverCube() {
-		discoveryRunning = true;
-		Thread thread = new Thread("Sendbroadcast") {
-			public void run() {
-				sendDiscoveryMessage(MAXCUBE_DISCOVER_STRING);
-				try {
-					sleep(5000);
-				} catch (Exception e) {
-				}
-				discoveryRunning = false;
-				logger.trace("Done sending broadcast discovery messages.");
-			}
-		};
-		thread.start();
+		logger.debug("Run MAX! Cube discovery");
+		sendDiscoveryMessage(MAXCUBE_DISCOVER_STRING);
+		logger.trace("Done sending broadcast discovery messages.");
 		receiveDiscoveryMessage();
+		logger.debug("Done receiving discovery messages.");
 	}
 
 	private void receiveDiscoveryMessage() {
@@ -101,9 +110,10 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 		DatagramSocket bcReceipt = null;
 
 		try {
+			discoveryRunning = true;
 			bcReceipt = new DatagramSocket(23272);
 			bcReceipt.setReuseAddress(true);
-			bcReceipt.setSoTimeout(10000);
+			bcReceipt.setSoTimeout(5000);
 
 			while (discoveryRunning) {
 				// Wait for a response
@@ -134,8 +144,10 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 			}
 		} catch (SocketTimeoutException e) {
 			logger.trace("No further response");
+			discoveryRunning = false;
 		} catch (IOException e) {
 			logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
+			discoveryRunning = false;
 		} finally {
 			// Close the port!
 			try {
