@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="124">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="125">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
@@ -109,7 +109,7 @@
 <unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="0.0.0"/>
 <unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.feature.group" version="0.0.0"/>
 <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="0.0.0"/>
-<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/4.2.2"/>
+<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/4.3.0"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.0.0"/>
