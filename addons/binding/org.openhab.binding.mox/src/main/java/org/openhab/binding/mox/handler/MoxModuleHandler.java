@@ -246,10 +246,14 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
     
 	@Override
 	public void onMessage(MoxMessage message) {
+		final ThingUID uid = getThing().getUID();
+		if (getThing().getStatus() == ThingStatus.OFFLINE) {
+			logger.debug("Not handline MoxGatewayMessage becuase thing {} is offline.", uid);
+			return;
+		}
 		if (message != null && message.getStatusCode() != null) {
-			MoxStatusCode statusCode = message.getStatusCode();
+			final MoxStatusCode statusCode = message.getStatusCode();
 			if (config.oid == message.getOid() && statusCode != null) {
-				final ThingUID uid = getThing().getUID();
 				State state = null;
 				String channelName = null;
 				switch (statusCode) {
