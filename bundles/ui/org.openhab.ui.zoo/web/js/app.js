@@ -7,6 +7,7 @@ angular.module('ZooApp', [
 	'pikaday',
 	'SmartHome.services',
 	'SmartHome.filters',
+	'ZooLib.services',
 	'ZooLib.controllers',
 	'ZooLib.directives'
 ]).config(function ($stateProvider, $urlRouterProvider, usSpinnerConfigProvider) {

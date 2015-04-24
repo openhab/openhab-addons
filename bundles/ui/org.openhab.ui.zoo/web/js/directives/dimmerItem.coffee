@@ -90,17 +90,18 @@ angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log
 				itemService.sendCommand itemName: scope.item.name, scope.local.dimValue
 			, 100, false
 
+		handleBroadcast = (event, newState) ->
+			$log.debug "Dimmer: Command #{scope.item.name} to #{newState}"
+			scope.item.state = newState
+			updateItem newState
+			$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
+
 		# If item's state is changed, either by filling this isol. scope
 		# or by reload, re-initialize all values.
-		scope.$watch 'item', (item, oldItem) ->
+		scope.$watch 'item', (item) ->
 			return unless item?
 			updateItem item.state
-			scope.$on "smarthome/command/#{item.name}", (event, newState) ->
-				$log.debug "Dimmer: Event #{scope.item.name} to #{newState}"
-				scope.item.state = newState
-				updateItem newState
-
-				# Workaround until Group events are broadcastet
-				$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
+			scope.$on "smarthome/command/#{item.name}", handleBroadcast
+			scope.$on "smarthome/update/#{item.name}", handleBroadcast
 
 		return

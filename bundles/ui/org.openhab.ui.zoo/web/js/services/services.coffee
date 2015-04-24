@@ -8,6 +8,6 @@ angular.module('SmartHome.services', [
 	'SmartHome.services.event'
 ])
 
-#angular.module('ZooLibs.services', [
-#	''
-#])
+angular.module('ZooLib.services', [
+	'ZooLib.services.influxDb'
+])

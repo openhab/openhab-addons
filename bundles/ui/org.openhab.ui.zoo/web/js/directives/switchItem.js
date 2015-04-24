@@ -9,7 +9,7 @@ angular.module('ZooLib.directives.switchItem', []).directive('switchItem', funct
       item: '='
     },
     link: function(scope) {
-      var getIconClassByTags, updateItem;
+      var getIconClassByTags, handleBroadcast, updateItem;
       scope.local = {
         state: null
       };
@@ -40,16 +40,18 @@ angular.module('ZooLib.directives.switchItem', []).directive('switchItem', funct
           itemName: scope.item.name
         }, scope.local.state);
       };
+      handleBroadcast = function(event, newState) {
+        scope.item.state = newState;
+        updateItem(newState);
+        return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
+      };
       scope.$watch('item', function(item) {
         if (item == null) {
           return;
         }
         updateItem(item.state);
-        return scope.$on("smarthome/command/" + item.name, function(event, newState) {
-          scope.item.state = newState;
-          updateItem(newState);
-          return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
-        });
+        scope.$on("smarthome/command/" + item.name, handleBroadcast);
+        return scope.$on("smarthome/update/" + item.name, handleBroadcast);
       });
     }
   };

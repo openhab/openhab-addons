@@ -18,6 +18,7 @@
     <tbody>
     <tr ng-repeat="room in data.rooms">
       <th>{{room.label}}</th>
+      <td><span class="white">{{room.state | consumption:1}}</span></td>
       <td><span class="green">{{room.state | consumption:0}}</span></td>
       <td><span class="orange">{{room.consumptionWeek | consumption:0}}</span></td>
       <td><span class="red">{{room.consumptionMonth | consumption:0}}</span></td>

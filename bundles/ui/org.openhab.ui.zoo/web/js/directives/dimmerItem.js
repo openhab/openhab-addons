@@ -39,7 +39,7 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
       item: '='
     },
     link: function(scope, elem, attrs) {
-      var eventBuffer, getIconClassByTags, options, ranger, updateItem, updateOpacity;
+      var eventBuffer, getIconClassByTags, handleBroadcast, options, ranger, updateItem, updateOpacity;
       eventBuffer = null;
       scope.local = {
         stateOnOff: translateStateOnOff(scope.item.state),
@@ -115,17 +115,19 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
           }, scope.local.dimValue);
         }, 100, false);
       };
-      scope.$watch('item', function(item, oldItem) {
+      handleBroadcast = function(event, newState) {
+        $log.debug("Dimmer: Command " + scope.item.name + " to " + newState);
+        scope.item.state = newState;
+        updateItem(newState);
+        return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
+      };
+      scope.$watch('item', function(item) {
         if (item == null) {
           return;
         }
         updateItem(item.state);
-        return scope.$on("smarthome/command/" + item.name, function(event, newState) {
-          $log.debug("Dimmer: Event " + scope.item.name + " to " + newState);
-          scope.item.state = newState;
-          updateItem(newState);
-          return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
-        });
+        scope.$on("smarthome/command/" + item.name, handleBroadcast);
+        return scope.$on("smarthome/update/" + item.name, handleBroadcast);
       });
     }
   };

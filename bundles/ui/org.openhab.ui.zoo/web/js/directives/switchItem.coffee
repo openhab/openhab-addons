@@ -30,14 +30,15 @@ angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log
 			$log.debug "Switch Item #{scope.item.name} changed to #{scope.local.state}"
 			itemService.sendCommand itemName: scope.item.name, scope.local.state
 
+		handleBroadcast = (event, newState) ->
+			scope.item.state = newState
+			updateItem newState
+			$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
+
 		scope.$watch 'item', (item) ->
 			return unless item?
 			updateItem item.state
-			scope.$on "smarthome/command/#{item.name}", (event, newState) ->
-				scope.item.state = newState
-				updateItem newState
-
-				# Workaround until Group events are broadcastet
-				$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
+			scope.$on "smarthome/command/#{item.name}", handleBroadcast
+			scope.$on "smarthome/update/#{item.name}", handleBroadcast
 
 		return

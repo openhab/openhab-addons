@@ -8,13 +8,6 @@
     <base href="/zoo/index.html">
     <title>Zoo Homeautomation</title>
 
-    <!-- build:js js/shims.js -->
-    <script src="bower_components/es5-shim/es5-shim.js"></script>
-    <script src="bower_components/json3/lib/json3.js"></script>
-    <script src="js/es6shims.js"></script>
-    <script src="js/eventsource-shim.js"></script>
-    <!-- endbuild -->
-
     <!-- build:css css/app.css -->
     <link href="css/main.css" rel="stylesheet">
     <link href="css/magnific-popup.css" rel="stylesheet">
@@ -24,6 +17,13 @@
     <link href="css/powerange.css" rel="stylesheet">
     <link href="css/accordion.css" rel="stylesheet">
     <link href="bower_components/fontawesome/css/font-awesome.css" rel="stylesheet">
+    <!-- endbuild -->
+
+    <!-- build:js js/shims.js -->
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
+    <script src="js/es6shims.js"></script>
+    <script src="js/eventsource-shim.js"></script>
     <!-- endbuild -->
 
     <!-- Fonts -->
@@ -74,6 +74,7 @@
     <script src="js/accordion.min.js"></script>
 
     <script src="js/services/services.js"></script>
+    <script src="js/services/influxdb.js"></script>
     <script src="js/services/smarthome.services.datacache.js"></script>
     <script src="js/services/smarthome.services.rest.js"></script>
     <script src="js/services/smarthome.services.config.js"></script>

@@ -26,6 +26,18 @@ angular.module('SmartHome.filters', [])
 
 .filter 'consumption', ->
 
+	UNITS = ['kWh']
+	UNINITIALIZED = 'Uninitialized'
+
+	return (value, precision, uninitVal='-') ->
+		return unless value
+		return uninitVal if value is UNINITIALIZED
+		valueNum = parseInt value, 10
+		if valueNum >= 0
+			"#{valueNum} #{UNITS[0]}"
+
+.filter 'power', ->
+
 	UNITS = ['kW']
 	UNINITIALIZED = 'Uninitialized'
 
