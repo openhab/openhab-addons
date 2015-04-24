@@ -74,20 +74,20 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
         if (config.oid > 0 && config.oid < 0xffffff) {
             // note: this call implicitly registers our handler as a listener on the bridge
             if (getGatewayHandler() != null) {
-                getThing().setStatus(getBridge().getStatus());
+                updateStatus(getBridge().getStatus());
             }
             sender = MoxGatewaySendHandler.getInstance(getBridge());
         }
-		updateStatus(ThingStatus.OFFLINE);
+		updateStatus(ThingStatus.INITIALIZING);
 		deviceOnlineWatchdog();
     }
 	
 	private void queryInitialState(boolean force) {
 		//if (!isLinked(STATE)) return;
 		if (config == null) return;
-		if (getThing().getStatus() == ThingStatus.OFFLINE) return;
-		if (initialStateFetched && !force) return;
-		initialStateFetched = true;
+		final ThingStatus status = getThing().getStatus();
+		if (status == ThingStatus.OFFLINE) return;
+		if (!(force || status == ThingStatus.INITIALIZING)) return;
 		
 		MoxMessageBuilder msg = MoxMessageBuilder.messageBuilder(new MoxMessage()).withOid(config.oid)
 				.withSuboid(0x11).withPriority(0x3);
@@ -247,7 +247,12 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 	@Override
 	public void onMessage(MoxMessage message) {
 		final ThingUID uid = getThing().getUID();
-		if (getThing().getStatus() == ThingStatus.OFFLINE) {
+		final ThingStatus status = getThing().getStatus();
+		if (status == ThingStatus.INITIALIZING) {
+			// Received message from this module, so it has to be online
+			updateStatus(ThingStatus.ONLINE);
+		}
+		if (status == ThingStatus.OFFLINE) {
 			logger.debug("Not handline MoxGatewayMessage becuase thing {} is offline.", uid);
 			return;
 		}
@@ -301,7 +306,7 @@ public class MoxModuleHandler extends BaseThingHandler implements MoxMessageList
 				if (channelName != null && state!= null && !state.equals( lastStates.get(statusCode))) {
 					updateState(new ChannelUID(uid, channelName), state);
 					lastStates.put(statusCode, state);
-				}				
+				}
 
 			}
 		}

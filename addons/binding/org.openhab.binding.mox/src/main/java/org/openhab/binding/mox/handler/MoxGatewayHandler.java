@@ -50,6 +50,7 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 	@Override
 	public void initialize() {
 		logger.debug("Initializing Mox Gateway handler.");
+		updateStatus(ThingStatus.INITIALIZING);
 		
 		try {
 			MoxGatewayConfig config = getConfigAs(MoxGatewayConfig.class);
