@@ -90,7 +90,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 	protected void startBackgroundDiscovery() {
 		logger.debug("Start MAX! Cube background discovery");
 		if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
-			cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+			cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 10, refreshInterval, TimeUnit.SECONDS);
 		}
 	}
 
@@ -103,10 +103,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 	}
 
 	private void receiveDiscoveryMessage() {
-		String maxCubeIP = null;
-		String maxCubeName = null;
-		String serialNumber = null;
-		String rfAddress = null;
+
 		DatagramSocket bcReceipt = null;
 
 		try {
@@ -122,23 +119,32 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 				bcReceipt.receive(receivePacket);
 
 				// We have a response
-				String message = new String(receivePacket.getData()).trim();
+				String message = new String(receivePacket.getData(), receivePacket.getOffset(),
+						receivePacket.getLength());
 				logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
 						message);
 
 				// Check if the message is correct
 				if (message.startsWith("eQ3Max") && !message.equals(MAXCUBE_DISCOVER_STRING)) {
-					maxCubeIP = receivePacket.getAddress().getHostAddress();
-					maxCubeName = message.substring(0, 8);
-					serialNumber = message.substring(8, 18);
-					byte[] unknownData = message.substring(18, 21).getBytes();
-					rfAddress = Utils.getHex(message.substring(21).getBytes()).replace(" ", "").toLowerCase();
+					String maxCubeIP = receivePacket.getAddress().getHostAddress();
+					String maxCubeState = message.substring(0, 8);
+					String serialNumber = message.substring(8, 18);
+					String msgValidid = message.substring(18, 19);
+					String requestType = message.substring(19, 20);
 					logger.debug("MAX! Cube found on network");
 					logger.debug("Found at  : {}", maxCubeIP);
-					logger.debug("Name      : {}", maxCubeName);
+					logger.debug("Cube State: {}", maxCubeState);
 					logger.debug("Serial    : {}", serialNumber);
-					logger.debug("RF Address: {}", rfAddress);
-					logger.trace("Unknown   : {}", Utils.getHex(unknownData));
+					logger.trace("Msg Valid : {}", msgValidid);
+					logger.trace("Msg Type  : {}", requestType);
+
+					if (requestType.equals( "I")) {
+						String rfAddress = Utils.getHex(message.substring(21, 24).getBytes()).replace(" ", "")
+								.toLowerCase();
+						String firmwareVersion = Utils.getHex(message.substring(24, 26).getBytes()).replace(" ", ".");
+						logger.debug("RF Address: {}", rfAddress);
+						logger.debug("Firmware  : {}", firmwareVersion);
+					}
 					discoveryResultSubmission(maxCubeIP, serialNumber);
 				}
 			}
