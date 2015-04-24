@@ -25,6 +25,8 @@ import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
  */
 public class MoxConnector extends Thread {
 
+	private static final int SOCKET_TIMEOUT = 20000;
+
 	private static final Logger logger = LoggerFactory.getLogger(MoxConnector.class);
 	
 	private static boolean interrupted = false;
@@ -77,7 +79,7 @@ public class MoxConnector extends Thread {
 	public boolean connect() throws IOException {
 		socket = new DatagramSocket(port);
 		socket.setReuseAddress(true);
-		socket.setSoTimeout(10000);
+		socket.setSoTimeout(SOCKET_TIMEOUT);
 		logger.debug("Connection to MOX Gateway established on {}:{}", hostname, port);
 		return true;
 	}
@@ -99,7 +101,7 @@ public class MoxConnector extends Thread {
 
 					messageListener.onMessage(moxMessage);
 				} catch (SocketTimeoutException e) {
-					logger.trace("Socket listening timeout reached, will retry? {}!", !interrupted);
+					logger.trace("Socket listening timeout of {}ms reached, will retry? {}!", SOCKET_TIMEOUT, !interrupted);
 				} catch (IllegalArgumentException iae) {
 					logger.warn("Parsing message '{}' failed because: {}", MoxMessageBuilder.getUnsignedIntArray(packet.getData()), iae.getLocalizedMessage());
 				} catch (IOException e) {
