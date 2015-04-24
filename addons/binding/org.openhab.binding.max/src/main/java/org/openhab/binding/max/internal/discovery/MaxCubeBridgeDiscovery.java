@@ -90,7 +90,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 	protected void startBackgroundDiscovery() {
 		logger.debug("Start MAX! Cube background discovery");
 		if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
-			cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+			cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 10, refreshInterval, TimeUnit.SECONDS);
 		}
 	}
 
