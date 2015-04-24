@@ -197,10 +197,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 	private synchronized void startAutomaticRefresh() {
 		if (pollingJob == null || pollingJob.isCancelled()) {
-			pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+			pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
 		}
 		if (sendCommandJob == null || sendCommandJob.isCancelled()) {
-			sendCommandJob = scheduler.scheduleAtFixedRate(sendCommandRunnable, 0, sendCommandInterval,
+			sendCommandJob = scheduler.scheduleWithFixedDelay(sendCommandRunnable, 0, sendCommandInterval,
 					TimeUnit.MILLISECONDS);
 		}
 	}
@@ -214,10 +214,18 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 		SendCommand sendCommand = commandQueue.poll();
 		if (sendCommand != null) {
-			executeCommand(sendCommand);
+			String commandString = getCommandString(sendCommand);
+			// Actual sending of the data to the Max!Cube Lan Gateway
+			if (sendCubeCommand(commandString)) {
+				logger.debug("Command {} ({}) sent to MAX! Cube at IP: {}", sendCommand.getId(), sendCommand.getKey(),
+						ipAddress);
+			} else
+				logger.warn("Error sending command {} ({}) to MAX! Cube at IP: {}", sendCommand.getId(),
+						sendCommand.getKey(), ipAddress);
+
 		}
 	}
-
+	
 	/**
 	 * initiates read data from the maxCube bridge
 	 */
@@ -561,7 +569,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	 *            String the channelUID used to send the command and the the
 	 *            command data
 	 */
-	public void executeCommand(SendCommand sendCommand) {
+	private String getCommandString(SendCommand sendCommand) {
 
 		String serialNumber = sendCommand.getDeviceSerial();
 		ChannelUID channelUID = sendCommand.getChannelUID();
@@ -572,7 +580,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 		if (device == null) {
 			logger.debug("Cannot send command to device with serial number {}, device not listed.", serialNumber);
-			return;
+			return null;
 		}
 
 		String rfAddress = device.getRFAddress();
@@ -613,12 +621,21 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 				} else {
 					logger.debug("Only updates to AUTOMATIC & BOOST & MANUAL supported, received value :'{}'",
 							commandContent);
-					return;
+					return null;
 				}
 				commandString = cmd.getCommandString();
 			}
 		}
-		// Actual sending of the data to the Max!Cube Lan Gateway
+		return commandString;
+	}
+
+	/**
+	 * Send a command string to Cube
+	 * 
+	 * @param commandString
+	 */
+	private boolean sendCubeCommand(String commandString) {
+		boolean sendSuccess = false;
 		synchronized (MaxCubeBridgeHandler.class) {
 			if (commandString != null) {
 				try {
@@ -627,14 +644,17 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					}
 					writer.write(commandString);
 					writer.flush();
+
 					String raw = reader.readLine();
-					Message message = processRawMessage(raw);
-					if (message != null)
-						processMessage(message);
+					if (raw != null) {
+						Message message = processRawMessage(raw);
+						if (message != null)
+							processMessage(message);
+					}
 					if (!exclusive) {
 						socketClose();
 					}
-
+					sendSuccess = true;
 				} catch (UnknownHostException e) {
 					logger.warn("Cannot establish connection with MAX! Cube lan gateway while sending command to '{}'",
 							ipAddress);
@@ -645,17 +665,17 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					logger.debug(Utils.getStackTrace(e));
 					socketClose(); // reconnect on next execution
 				}
-				logger.debug("Command {} ({}) sent to MAX! Cube at IP: {}", sendCommand.getId(), sendCommand.getKey(),
-						ipAddress);
-				logger.trace("Command {} content: '{}'", sendCommand.getId(), commandString);
+				logger.trace("Command content: '{}'", commandString);
 			} else {
 				logger.debug("Null Command not sent to {}", ipAddress);
 			}
 		}
+		return sendSuccess;
 	}
 
 	private boolean socketConnect() throws UnknownHostException, IOException {
 		socket = new Socket(ipAddress, port);
+		socket.setSoTimeout((int) (2000));
 		logger.debug("Open new connection... to {} port {}", ipAddress, port);
 		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		writer = new OutputStreamWriter(socket.getOutputStream());
