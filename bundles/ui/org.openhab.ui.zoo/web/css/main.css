@@ -216,224 +216,6 @@ header:after,
 	height:25px;
 	width:25px;
 	}
-
-.nav-icon.i-rooms { background-position:0 0; }
-.active .nav-icon.i-rooms { background-position:0 -25px; }
-
-.nav-icon.i-energy-center { background-position:0 -50px; }
-.active .nav-icon.i-energy-center { background-position:0 -75px; }
-
-.nav-icon.i-access { background-position:0 -100px; }
-.active .nav-icon.i-access { background-position:0 -125px; }
-
-.nav-icon.i-cctv { background-position:0 -150px; }
-.active .nav-icon.i-cctv { background-position:0 -175px; }
-
-.nav-icon.i-cost-settings { background-position:0 -200px; }
-.active .nav-icon.i-cost-settings { background-position:0 -225px; }
-
-.nav-icon.i-cost-settings { background-position:0 -200px; }
-.active .nav-icon.i-cost-settings { background-position:0 -225px; }
-
-.nav-icon.i-alert { background-position:0 -250px; }
-.active .nav-icon.i-alert { background-position:0 -275px; }
-
-.nav-icon.i-alarm { background-position:0 -300px; }
-.active .nav-icon.i-alarm { background-position:0 -325px; }
-
-.nav-icon.i-intercom { background-position:0 -350px; }
-.active .nav-icon.i-intercom { background-position:0 -375px; }
-
-.nav-icon.i-settings { background-position:0 -400px; }
-.active .nav-icon.i-settings { background-position:0 -425px; }
-
-
-.icon {
-	background-image:url(../img/sprite.png);
-	background-repeat:no-repeat;
-	display:inline-block;
-	position:relative;
-	}
-
-.i-lock {
-	background-position:0 0;
-	width:36px;
-	height:48px;
-	}
-
-.i-notification {
-	background-position:0 -53px;
-	width:24px;
-	height:25px;
-	}
-
-.i-logout {
-	background-position:0 -83px;
-	width:24px;
-	height:25px;
-	}
-
-
-.i-cloudy {
-	background-position:0 -113px;
-	width:40px;
-	height:40px;
-	}
-
-.i-rainy {
-	background-position:0 -158px;
-	width:40px;
-	height:40px;
-	}
-
-.i-storm {
-	background-position:0 -203px;
-	width:40px;
-	height:40px;
-	}
-
-.i-sunny {
-	background-position:0 -248px;
-	width:40px;
-	height:40px;
-	}
-	
-.i-door {
-	background-position:0 -973px;
-	width:45px;
-	height:63px;
-	z-index:2;
-	}
-	
-.control-box input:checked+.i-door {
-	background-position:0 -905px;
-	}
-
-.i-light {
-	background-position:0 -743px;
-	width:42px;
-	height:44px;
-	z-index:2;
-	margin:10px 0;
-	}
-
-.i-light-on {
-	background-position:center -792px;
-	width:50px;
-	height:44px;
-	z-index:2;
-	}
-
-.control-box input:checked+.i-light {
-	background-position:0 -792px;
-	}
-
-.icon-appliance {
-	display:inline-block;
-	background-image:url(../img/sprite-appliances.png);
-	background-repeat:no-repeat;
-	height:40px;
-	width:40px;
-	}
-
-.icon-light-on-small {
-	background-position:center 0;
-	}
-
-.i-tv {
-	background-position:center -42px;
-	}
-
-.i-power {
-	background-position:center -84px;
-	}
-
-.i-cctv-small {
-	background-position:center -126px;
-	}
-
-.i-blinds {
-	background-position:center -168px;
-	}
-
-.i-fan {
-	background-position:center -210px;
-	}
-
-.i-door-small {
-	background-position:center -252px;
-	}
-
-.i-microwave {
-	background-position:center -294px;
-	}
-
-.i-sound-system {
-	background-position:center -336px;
-	}
-
-.i-sensor {
-	background-position:center -378px;
-	}
-
-.i-fridge {
-	background-position:center -420px;
-	}
-
-.i-scene {
-	background-position:center -462px;
-	}
-
-.icon-weather-large {
-	display:inline-block;
-	height:80px;
-	width:80px;
-	background-image:url(../img/weather-sprite-large.png);
-	background-repeat:no-repeat;
-	}
-
-.icon-weather-large.i-sunny-large {
-	background-position:0 0;
-	}
-
-.icon-weather-large.i-cloudy-large {
-	background-position:0 -85px;
-	}
-
-.icon-weather-large.i-rainy-large {
-	background-position:0 -170px;
-	}
-
-.icon-weather-large.i-storm-large {
-	background-position:0 -255px;
-	}
-
-.icon-full-screen {
-	background-position: 0 -1131px;
-	width:16px;
-	height:16px;
-	}
-
-.power-status {
-	width:45px;
-	height:63px;
-	text-align:center;
-	z-index:2;
-	display:inline-block;
-	position:relative;
-	padding:40px 0 0;
-	}
-
-.power-status:before {
-	content:'OFF';
-	color:#ccc;
-	}
-
-.control-box input:checked+.power-status:before {
-	content:'ON';
-	font-family: 'vw_headline_otblack', sans-serif;
-	color:inherit;
-	}
 	
 .login-form {
 	width:460px;
@@ -578,14 +360,12 @@ header {
 	position:relative;
 	}
 
-.search-bar:before {
-	content:'';
-	background:url(../img/sprite.png) no-repeat 0 -293px;
-	width:20px;
-	height:20px;
+.search-bar .fa-search {
 	position:absolute;
-	top:10px;
+	top:12px;
 	left:17px;
+	font-size:1.2em;
+	color:#fff;
 	}
 
 .search-bar input {
@@ -603,14 +383,6 @@ header {
 	padding-left:35px;
 	background:#eee;
 	color:#2b2c2e;
-	}
-
-.mobile-search-bar:before {
-	background:url(../img/sprite.png) no-repeat -27px -293px;
-	width:15px;
-	height:15px;
-	top:14px;
-	left:12px;
 	}
 
 .user-area {
@@ -900,12 +672,23 @@ header {
 	border-left:5px solid #4fa7e2;
 	}
 
+.nav li {
+	border-top:1px solid #e5e5e5;
+	}
+
 .nav li:last-child {
 	border-bottom:1px solid #e5e5e5;
 	}
 
-.nav li {
-	border-top:1px solid #e5e5e5;
+.nav li .fa {
+	height:50px;
+	line-height:50px;
+	position:absolute;
+	top:0;
+	left:0;
+	width:50px;
+	text-align:center;
+	font-size:1.5em;
 	}
 
 .nav li a {
@@ -914,7 +697,7 @@ header {
     font-family: 'vw_headline_otblack', sans-serif;;
 	text-decoration:none;
 	line-height:1;
-	padding:20px 10px 20px 50px; 
+	padding:18px 10px 18px 50px; 
 	display:block;
 	position:relative;
 	}
@@ -1275,11 +1058,11 @@ header {
 	margin:0 0 10px;
 	}
 
-.line-list li {
+.line-list li{
 	border-bottom:1px solid #dfe2e6;
 	padding:15px 0;
 	display:list-item !important;
-}
+	}
 
 #side-nav a {
 	display:block;
@@ -1322,6 +1105,13 @@ header {
 	top:0;
 	left:0;
 	}
+
+.radio-block-wrap .fa,
+.radio-block-wrap .electronic {
+	position:absolute;
+	top:0;
+	left:0;
+	}
 	
 .radio-block-wrap .switch-small {
 	width:60px;
@@ -1357,7 +1147,8 @@ label {
 	top:10px;
 	right:10px;
 	z-index:9;
-	opacity:.3;
+	color:#000;
+	opacity:.4;
 	}
 
 .full-screen-btn:hover {
@@ -1406,6 +1197,15 @@ label {
 
 .breadcrumbs li:last-child a:hover {
 	text-decoration:none;
+	}
+
+.white {
+	color:#fff;
+	}
+
+.i-padding {
+	padding:5px;
+	margin-left:10px;
 	}
 
 @media(min-width:768px){
@@ -1536,19 +1336,10 @@ label {
 		}
 	
 	.user-area .notifications, .user-area .logout {
-		padding:13px 0 0;
+		padding:15px 0 0;
 		width:50px;
 		}
-
-	.i-notification,
-	.i-logout {
-		-moz-transform: scale(.6);
-		-webkit-transform: scale(.6);
-		-o-transform: scale(.6);
-		-ms-transform: scale(.6);
-		transform: scale(.6);	
-		}
-	
+		
 	.user-area .notifications .unread {
 		top:5px;
 		right:5px;
@@ -1668,6 +1459,15 @@ label {
 	
 	.main-table {
 		font-size:.85em;
+		}
+	
+	.search-bar .fa-search {
+		color:#999;
+		left:10px;
+		}
+	
+	.user-area .fa {
+		font-size:1.5em;
 		}
 	
 	}

@@ -36,7 +36,8 @@ angular.module('ZooApp', [
 		})
 		.state('access', {
 			url:'/access',
-			templateUrl: 'partials/access.html'
+			templateUrl: 'partials/access.html',
+			controller: 'AccessController as ctrl'
 		})
 		.state('alerts', {
 			url:'/alerts',
@@ -86,9 +87,6 @@ angular.module('ZooApp', [
 		})
 
 }).run(['$location', '$rootScope', '$log', 'itemService', function ($rootScope) {
-
-	// TODO Get rid of this
-	//$rootScope.data = {};
 
 	$rootScope.leftSidebarOpen = false;
 	$rootScope.isBlackout = false;

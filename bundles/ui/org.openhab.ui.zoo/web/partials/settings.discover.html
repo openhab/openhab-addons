@@ -16,16 +16,11 @@
           <p class="no-margin"><strong>UID: {{thing.thingUID}}</strong></p>
           <div class="col4">
             Name
-            <input type="text" class="field" required
-                   name="label" ng-model="approveData[thing.thingUID].label">
+            <input type="text" class="field" required name="label" ng-model="approveData[thing.thingUID].label">
           </div>
           <div class="col4">
             Group
-            <select class="field" name="group" ng-model="approveData[thing.thingUID].group">
-              <option>Living room</option>
-              <option>TV room</option>
-              <option>Main room</option>
-            </select>
+            <select class="field" name="group" ng-model="approveData[thing.thingUID].group"></select>
           </div>
           <div class="col4">
             <br>
@@ -41,11 +36,11 @@
 				</div><!--dialog-header-->
                              
 				<div class="dialog-content">    
-					<p><strong>If it doesn't apply to your item doesn't tick any boxes</strong></p>
+					<p><strong>If it doesn't apply to your item, do not tick any boxes</strong></p>
 					<ul class="no-style-list">
 						<li>
 							<label class="checkbox-wrap">
-								<input type="checkbox">
+								<input type="checkbox" ng-model="approveData[thing.thingUID]">
 								<span class="checkbox"></span>
                                 Always on <small>(incase of freezers, refrigerators)</small>
                             </label> 
@@ -66,7 +61,7 @@
                         	<a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
                         </div>
                         <div class="col6 text-right">
-							<a class="popup-modal-dismiss btn" href="#">Confirm</a>
+							<a class="popup-modal-dismiss btn" href="#" ng-click="approve(thing.thingUID)">Confirm</a>
 						</div>
 					</div><!--row-->
 				</div><!--dialog-footer-->

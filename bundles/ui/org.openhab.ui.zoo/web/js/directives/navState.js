@@ -23,7 +23,7 @@ angular.module('ZooLib.directives.navState', ['ui.router']).directive('navState'
   return {
     restrict: 'E',
     replace: true,
-    template: '<li ng-class="{active:isActive}"><a href="{{linkToState}}"><i class="nav-icon i-{{icon}}"></i>{{title}}</a></li>',
+    template: '<li ng-class="{active:isActive}"><a href="{{linkToState}}"><i class="fa fa-{{icon}}"></i>{{title}}</a></li>',
     scope: {
       name: '@',
       title: '@',

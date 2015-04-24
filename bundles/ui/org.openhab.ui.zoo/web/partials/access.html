@@ -3,50 +3,14 @@
   <h2>All the doors in my house</h2>
 
   <ul class="line-list">
-    <li>
+    <li ng-repeat="door in ctrl.doors">
       <div class="radio-block-wrap">
-        <i class="icon-appliance i-door-small"></i>
-        <h4 class="up-case no-margin">Front door<br>
-          <small>on</small>
+        <i class="fa fa-3x fa-sign-in"></i>
+        <h4 class="up-case no-margin">{{door.name}}<br>
+          <small>{{door.state}}</small>
         </h4>
         <label class="master-switch switch-small">
-          <input type="checkbox" checked>
-          <span class="switch"></span>
-        </label>
-      </div>
-    </li>
-    <li>
-      <div class="radio-block-wrap">
-        <i class="icon-appliance i-door-small"></i>
-        <h4 class="up-case no-margin">Living room door<br>
-          <small>on</small>
-        </h4>
-        <label class="master-switch switch-small">
-          <input type="checkbox" checked>
-          <span class="switch"></span>
-        </label>
-      </div>
-    </li>
-    <li>
-      <div class="radio-block-wrap">
-        <i class="icon-appliance i-door-small"></i>
-        <h4 class="up-case no-margin">Front door<br>
-          <small>on</small>
-        </h4>
-        <label class="master-switch switch-small">
-          <input type="checkbox" checked>
-          <span class="switch"></span>
-        </label>
-      </div>
-    </li>
-    <li>
-      <div class="radio-block-wrap">
-        <i class="icon-appliance i-door-small"></i>
-        <h4 class="up-case no-margin">Living room door<br>
-          <small>on</small>
-        </h4>
-        <label class="master-switch switch-small">
-          <input type="checkbox" checked>
+          <input type="checkbox" ng-model="door.state" ng-true-value="'open'" ng-false-value="'closed'">
           <span class="switch"></span>
         </label>
       </div>
@@ -61,7 +25,7 @@
       <label class="master-switch">
         <span class="left">On</span>
         <span class="right">Off</span>
-        <input type="checkbox" checked>
+        <input type="checkbox" ng-model="ctrl.allOpen">
         <span class="switch"></span>
       </label>
     </div>

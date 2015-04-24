@@ -6,15 +6,18 @@
     <span>automation</span>
   </div>
   <div class="container">
-    <form class="search-bar hidden-mobile">
-      <input type="text" class="field">
+    <form class="search-bar hidden-mobile" ng-submit="search()">
+      <label>
+        <i class="fa fa-search"></i>
+        <input type="text" class="field" ng-model="search">
+      </label>
     </form>
   </div>
   <ul class="user-area">
     <li>
         <span class="notifications wrap">
-            <i class="icon i-notification"></i>
-              <span class="unread">8</span>
+          <i class="fa fa-2x fa-bell-o white"></i>
+          <span class="unread">8</span>
         </span>
     </li>
     <li class="hidden-mobile">
@@ -28,7 +31,7 @@
     </li>
     <li>
       <a href="login.html" class="wrap logout">
-        <i class="icon i-logout"></i>
+        <i class="fa fa-2x fa-power-off white"></i>
       </a>
     </li>
   </ul>
