@@ -69,8 +69,7 @@
  
 	</bridge-type>
 
-<!-- Note these 2 channels should be defined as advanced="true" but for now false due issue #207 --> 
-	<channel-type id="free_mem" advanced="false">
+	<channel-type id="free_mem" advanced="true">
 		<item-type>Number</item-type>
 		<label>Free Memory Slots</label>
 		<description>Free memory slots to store commands send to the devices
@@ -80,7 +79,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="duty_cycle" advanced="false">
+	<channel-type id="duty_cycle" advanced="true">
 		<item-type>Number</item-type>
 		<label>Duty Cycle</label>
 		<description>Duty Cycle for sending commands to the devices
