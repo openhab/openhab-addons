@@ -52,6 +52,9 @@ public class MaxBinding {
 	    public final static String CHANNEL_SETTEMP = "set_temp";
 	    public final static String CHANNEL_SWITCH_STATE = "eco_mode";
 	    public final static String CHANNEL_CONTACT_STATE = "contact_state";
+	    public final static String CHANNEL_FREE_MEMORY = "free_mem";
+	    public final static String CHANNEL_DUTY_CYCLE = "duty_cycle";
+
 	    
 	    public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
 	    		HEATINGTHERMOSTAT_THING_TYPE, HEATINGTHERMOSTATPLUS_THING_TYPE, WALLTHERMOSTAT_THING_TYPE, 
