@@ -30,8 +30,8 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="suboid" type="decimal">
-				<label>OID</label>
-				<description>The OID identifier of a certain MOX Module</description>
+				<label>Sub OID</label>
+				<description>The Sub OID identifies a function on a multi channel device. Normally it is 17.</description>
 				<required>true</required>
 				<default>17</default>
 				<options>
