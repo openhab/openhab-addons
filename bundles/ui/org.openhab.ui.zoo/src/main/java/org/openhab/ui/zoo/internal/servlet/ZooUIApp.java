@@ -12,6 +12,8 @@ import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Hashtable;
+
 /**
  * This component registers the Zoo UI Webapp.
  * 
@@ -24,6 +26,9 @@ public class ZooUIApp {
     public static final String WEB_DIST_FOLDER = "web_dist";
     public static final String WEB_FOLDER = "web";
     public static final String DEBUG_PARAMETER_NAME = "webDebug";
+    private static final String prefix = "reference:file:";
+    private static final String DEFAULT_INFLUX_URI = "http://localhost:8086";
+    public static final String INFLUX_URI_PARAMETER_NAME = "influxDbUri";
 
     protected HttpService httpService;
 
@@ -31,17 +36,38 @@ public class ZooUIApp {
         try {
             boolean debugMode = isDebugModeEnabled();
             String serveFolder = debugMode ? WEB_FOLDER : WEB_DIST_FOLDER;
-            httpService.registerResources(WEBAPP_ALIAS, serveFolder, null);
+            
+            //httpService.registerResources(WEBAPP_ALIAS, serveFolder, null);
+            Hashtable<String, String> initParams = new Hashtable<>();
+            initParams.put("basePath", getAbsolutePath(componentContext) + "/" + serveFolder);
+            
+            httpService.registerServlet(WEBAPP_ALIAS, new FileServlet(), initParams, null);
             logger.info("Started Zoo UI at {} with debug mode = {}.", WEBAPP_ALIAS, debugMode);
+            
+            Hashtable<String, String> initParamsProxy = new Hashtable<>();
+            initParamsProxy.put("targetUri", getInfluxUri());
+            initParamsProxy.put("log","true");
+            httpService.registerServlet("/zoo/influxproxy", new ProxyServlet(), initParamsProxy, null);
+            
         } catch (Exception e) {
             logger.error("Error during servlet startup", e);
         }
     }
 
-    private boolean isDebugModeEnabled() {
-        //            Bundle bundle = componentContext.getBundleContext().getBundle();
-        //            Path webDistPath = new Path("/web_dist");
-        //            FileLocator.openStream(bundle, webDistPath, false);
+    private String getAbsolutePath(ComponentContext componentContext) {
+    	final String location = componentContext.getBundleContext().getBundle().getLocation();
+    	if (location.length() > prefix.length()) {
+    		return location.substring(prefix.length());
+    	}
+		return null;
+	}
+    
+    private String getInfluxUri() {
+    	String influxUriSystemProperty = System.getProperty(INFLUX_URI_PARAMETER_NAME);
+    	return influxUriSystemProperty == null ? DEFAULT_INFLUX_URI : influxUriSystemProperty;
+    }
+
+	private boolean isDebugModeEnabled() {
         boolean distFolderExists = this.getClass().getResource("/" + WEB_DIST_FOLDER) != null;
         boolean debugParameterSet = Boolean.parseBoolean(System.getProperty(DEBUG_PARAMETER_NAME));
         if (!distFolderExists) {
@@ -56,6 +82,7 @@ public class ZooUIApp {
 
     protected void deactivate(ComponentContext componentContext) {
         httpService.unregister(WEBAPP_ALIAS);
+        httpService.unregister("/zoo/influxproxy");
         logger.info("Stopped Zoo UI");
     }
 

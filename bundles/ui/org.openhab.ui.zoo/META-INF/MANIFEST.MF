@@ -6,7 +6,19 @@ Bundle-Vendor: http://www.zooautomation.com/
 Bundle-Version: 2.0.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-License: http://www.eclipse.org/legal/epl-v10.html
-Import-Package: org.osgi.service.component,
+Import-Package: org.apache.commons.httpclient;version="3.1.0",
+ org.apache.http;version="4.2.5",
+ org.apache.http.client;version="4.2.6",
+ org.apache.http.client.methods;version="4.2.6",
+ org.apache.http.client.params;version="4.2.6",
+ org.apache.http.client.utils;version="4.2.6",
+ org.apache.http.entity;version="4.2.5",
+ org.apache.http.impl.client;version="4.2.6",
+ org.apache.http.message;version="4.2.5",
+ org.apache.http.params;version="4.2.5",
+ org.apache.http.util;version="4.2.5",
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.component,
  org.osgi.service.http,
  org.slf4j
 Bundle-SymbolicName: org.openhab.ui.zoo;singleton:=true
