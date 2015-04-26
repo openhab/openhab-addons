@@ -49,6 +49,7 @@ import org.openhab.binding.max.internal.message.HeatingThermostat;
 import org.openhab.binding.max.internal.message.L_Message;
 import org.openhab.binding.max.internal.message.M_Message;
 import org.openhab.binding.max.internal.message.Message;
+import org.openhab.binding.max.internal.message.MessageProcessor;
 import org.openhab.binding.max.internal.message.MessageType;
 import org.openhab.binding.max.internal.message.S_Command;
 import org.openhab.binding.max.internal.message.S_Message;
@@ -105,6 +106,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	private boolean exclusive;
 	private int maxRequestsPerConnection;
 	private int requestCount = 0;
+
+    MessageProcessor messageProcessor = new MessageProcessor();
 
 	/**
 	 * Duty cycle of the cube
@@ -320,17 +323,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		Message message;
 
 		for (String raw : getRawMessage()) {
-
-			try {
-				logger.trace("message block: '{}'", raw);
-				message = processRawMessage(raw);
-				if (message != null) {
-					message.debug(logger);
-					processMessage(message);
-				}
-			} catch (Exception e) {
-				logger.info("Failed to process message received by MAX! protocol.");
-				logger.debug(Utils.getStackTrace(e));
+            try {
+                logger.trace("message block: '{}'", raw);
+                
+                this.messageProcessor.addReceivedLine(raw);
+                if (this.messageProcessor.isMessageAvailable()) {
+                    message = this.messageProcessor.pull();
+                    message.debug(logger);
+                    processMessage(message);
+                }
+            } catch (Exception e) {
+                logger.info("Failed to process message received by MAX! protocol.");
+                logger.debug(Utils.getStackTrace(e));
+                this.messageProcessor.reset();
 			}
 		}
 
@@ -411,32 +416,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 			}
 			return rawMessage;
 		}
-	}
-
-	/**
-	 * Processes the raw TCP data read from the MAX protocol, returning the
-	 * corresponding Message.
-	 * 
-	 * @param raw
-	 *            the raw data line read from the MAX protocol
-	 * @return message the @Message for the given raw data
-	 */
-	private Message processRawMessage(String raw) {
-
-		if (raw.startsWith("H:")) {
-			return new H_Message(raw);
-		} else if (raw.startsWith("M:")) {
-			return new M_Message(raw);
-		} else if (raw.startsWith("C:")) {
-			return new C_Message(raw);
-		} else if (raw.startsWith("L:")) {
-			return new L_Message(raw);
-		} else if (raw.startsWith("S:")) {
-			return new S_Message(raw);
-		} else {
-			logger.debug("Unknown message block: '{}'", raw);
-		}
-		return null;
 	}
 
 	/**
@@ -643,13 +622,28 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					}
 					writer.write(commandString);
 					writer.flush();
-
 					String raw = reader.readLine();
 					if (raw != null) {
 						Message message = processRawMessage(raw);
 						if (message != null)
 							processMessage(message);
 					}
+                    try {
+                        this.messageProcessor.addReceivedLine(raw);
+                        while (!this.messageProcessor.isMessageAvailable()) {
+                            raw = reader.readLine();
+                            this.messageProcessor.addReceivedLine(raw);
+                        }
+
+                        Message message = this.messageProcessor.pull();
+                        message.debug(logger);
+                        processMessage(message);
+                    } catch (Exception e) {
+                        logger.info("Error while handling response from MAX! Cube lan gateway!");
+                        logger.debug(Utils.getStackTrace(e));
+                        this.messageProcessor.reset();
+                    }
+
 					if (!exclusive) {
 						socketClose();
 					}
