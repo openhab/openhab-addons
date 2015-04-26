@@ -10,6 +10,8 @@ package org.openhab.binding.max.internal.handler;
 
 import static org.openhab.binding.max.MaxBinding.CHANNEL_MODE;
 import static org.openhab.binding.max.MaxBinding.CHANNEL_SETTEMP;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_DUTY_CYCLE;
+import static org.openhab.binding.max.MaxBinding.CHANNEL_FREE_MEMORY;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -35,6 +38,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.message.C_Message;
@@ -46,6 +50,7 @@ import org.openhab.binding.max.internal.message.HeatingThermostat;
 import org.openhab.binding.max.internal.message.L_Message;
 import org.openhab.binding.max.internal.message.M_Message;
 import org.openhab.binding.max.internal.message.Message;
+import org.openhab.binding.max.internal.message.MessageProcessor;
 import org.openhab.binding.max.internal.message.MessageType;
 import org.openhab.binding.max.internal.message.S_Command;
 import org.openhab.binding.max.internal.message.S_Message;
@@ -102,6 +107,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	private boolean exclusive;
 	private int maxRequestsPerConnection;
 	private int requestCount = 0;
+
+    MessageProcessor messageProcessor = new MessageProcessor();
 
 	/**
 	 * Duty cycle of the cube
@@ -309,17 +316,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		Message message;
 
 		for (String raw : getRawMessage()) {
-
-			try {
-				logger.trace("message block: '{}'", raw);
-				message = processRawMessage(raw);
-				if (message != null) {
-					message.debug(logger);
-					processMessage(message);
-				}
-			} catch (Exception e) {
-				logger.info("Failed to process message received by MAX! protocol.");
-				logger.debug(Utils.getStackTrace(e));
+            try {
+                logger.trace("message block: '{}'", raw);
+                
+                this.messageProcessor.addReceivedLine(raw);
+                if (this.messageProcessor.isMessageAvailable()) {
+                    message = this.messageProcessor.pull();
+                    message.debug(logger);
+                    processMessage(message);
+                }
+            } catch (Exception e) {
+                logger.info("Failed to process message received by MAX! protocol.");
+                logger.debug(Utils.getStackTrace(e));
+                this.messageProcessor.reset();
 			}
 		}
 
@@ -398,35 +407,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 				connectionEstablished = false;
 				socketClose(); // reconnect on next execution
 			}
-
 			return rawMessage;
 		}
-	}
-
-	/**
-	 * Processes the raw TCP data read from the MAX protocol, returning the
-	 * corresponding Message.
-	 * 
-	 * @param raw
-	 *            the raw data line read from the MAX protocol
-	 * @return message the @Message for the given raw data
-	 */
-	private Message processRawMessage(String raw) {
-
-		if (raw.startsWith("H:")) {
-			return new H_Message(raw);
-		} else if (raw.startsWith("M:")) {
-			return new M_Message(raw);
-		} else if (raw.startsWith("C:")) {
-			return new C_Message(raw);
-		} else if (raw.startsWith("L:")) {
-			return new L_Message(raw);
-		} else if (raw.startsWith("S:")) {
-			return new S_Message(raw);
-		} else {
-			logger.debug("Unknown message block: '{}'", raw);
-		}
-		return null;
 	}
 
 	/**
@@ -439,6 +421,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 		if (message != null) {
 			message.debug(logger);
+			if (message.getType() == MessageType.H) {
+				int freeMemorySlotsMsg = ((H_Message) message).getFreeMemorySlots() ;
+			    int dutyCycleMsg = ((H_Message) message).getDutyCycle();
+			    if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle){
+			    	freeMemorySlots = freeMemorySlotsMsg;
+			    	 dutyCycle = dutyCycleMsg;
+			    	 updateCubeState();
+			    }
+			}
 			if (message.getType() == MessageType.M) {
 				M_Message msg = (M_Message) message;
 				for (DeviceInformation di : msg.devices) {
@@ -479,6 +470,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 			} else if (message.getType() == MessageType.S) {
 				dutyCycle = ((S_Message) message).getDutyCycle();
 				freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
+				updateCubeState();
 				if (((S_Message) message).isCommandDiscarded()) {
 					logger.info("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
 							freeMemorySlots);
@@ -615,9 +607,22 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					writer.write(commandString);
 					writer.flush();
 					String raw = reader.readLine();
-					Message message = processRawMessage(raw);
-					if (message != null)
-						processMessage(message);
+                    try {
+                        this.messageProcessor.addReceivedLine(raw);
+                        while (!this.messageProcessor.isMessageAvailable()) {
+                            raw = reader.readLine();
+                            this.messageProcessor.addReceivedLine(raw);
+                        }
+
+                        Message message = this.messageProcessor.pull();
+                        message.debug(logger);
+                        processMessage(message);
+                    } catch (Exception e) {
+                        logger.info("Error while handling response from MAX! Cube lan gateway!");
+                        logger.debug(Utils.getStackTrace(e));
+                        this.messageProcessor.reset();
+                    }
+
 					if (!exclusive) {
 						socketClose();
 					}
@@ -657,4 +662,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		socket = null;
 	}
 
+	private void updateCubeState () {
+		updateState(new ChannelUID(getThing().getUID(), CHANNEL_FREE_MEMORY),
+				(State) new DecimalType(freeMemorySlots) );
+		updateState(new ChannelUID(getThing().getUID(), CHANNEL_DUTY_CYCLE),
+				(State) new DecimalType(dutyCycle) );
+	}
 }
