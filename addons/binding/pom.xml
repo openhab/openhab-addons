@@ -24,6 +24,7 @@
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.autelis</module>
+	<module>org.openhab.binding.ipp</module>
   </modules>
 
 </project>
