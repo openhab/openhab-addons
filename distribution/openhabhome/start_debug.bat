@@ -1,7 +1,7 @@
 @echo off
 
 :: set path to eclipse folder. If local folder, use '.'; otherwise, use c:\path\to\eclipse
-set ECLIPSEHOME=server
+set ECLIPSEHOME="runtime/server"
 
 :: set ports for HTTP(S) server
 set HTTP_PORT=8080
