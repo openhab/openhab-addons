@@ -91,9 +91,9 @@
             <version>${esh.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.openhab.ui</groupId>
-            <artifactId>org.openhab.ui.paperui</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.eclipse.smarthome.ui</groupId>
+            <artifactId>org.eclipse.smarthome.ui.paperui</artifactId>
+            <version>${esh.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
