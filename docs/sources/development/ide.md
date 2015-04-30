@@ -36,8 +36,6 @@ To run a single test you have to use following command: `mvn -o org.eclipse.tych
 
 ### Paper UI
 
-Note that the Paper UI is not yet contained in the official repository and is thus missing in your workspace at this point. You can manually add it by [downloading the binary](https://raw.githubusercontent.com/openhab/openhab.repo/master/org/openhab/ui/org.openhab.ui.paperui/2.0.0-SNAPSHOT/org.openhab.ui.paperui-2.0.0-SNAPSHOT.jar) and then import it into your workspace by selecting `File->Import->Plug-in Development->Plug-ins and Fragments' from the menu, choosing `Import from->Directory` your download folder and adding the Paper UI bundle on the next page.
+Note that the Paper UI is not yet contained in the official repository and is thus missing in your workspace at this point. You can manually add it by [downloading the binary](https://raw.githubusercontent.com/openhab/openhab.repo/master/org/eclipse/smarthome/ui/org.eclipse.smarthome.ui.paperui/0.8.0-SNAPSHOT/org.eclipse.smarthome.ui.paperui-0.8.0-SNAPSHOT.jar) and then import it into your workspace by selecting `File->Import->Plug-in Development->Plug-ins and Fragments' from the menu, choosing `Import from->Directory` your download folder and adding the Paper UI bundle on the next page.
 
-_Note:_ Here you can find a brief [screencast that shows the steps](http://youtu.be/ewmEqa2m6J4).
-
-
+_Note:_ Here you can find a brief [screencast that shows the steps](http://youtu.be/ewmEqa2m6J4) (note that this still uses an old version of the PaperUI in the org.openhab namespace).
