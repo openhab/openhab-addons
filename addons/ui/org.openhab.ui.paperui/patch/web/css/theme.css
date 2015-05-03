@@ -1,0 +1,165 @@
+/**
+ * openHAB Paper UI Theme
+ */
+
+/* Layout */
+
+header {
+	background-color: #ff6600;
+}
+
+.section-header {
+	background-color: #ff6600;
+}
+
+nav.menu .top #logo {
+	width: 145px;
+	display: block;
+	left: 15px;
+	right: 15px;
+	top: 20px;
+	margin: 0 auto;
+	position: absolute;
+}
+
+@media only screen and (max-width: 1120px) {
+	nav.menu .top #logo {
+		top: 10px;
+	}
+}
+
+nav.menu .top .title {
+  display: none;
+}
+
+/* Tabs */
+
+md-tabs md-tab {
+	background-color: #ff6600;
+}
+
+md-tabs.md-default-theme .md-header {
+	background-color: #ff6600;
+}
+
+md-tabs.md-default-theme md-tab {
+  color: #DDD;
+}
+
+/* Fab */
+
+.section-header .toolbar .md-fab {
+	background-color: #4c9ffb !important;
+}
+
+.md-fab, .md-fab:active, .md-fab:focus, .md-fab:hover {
+	background-color: #4c9ffb !important;
+}
+
+/* Radio Button */
+
+md-radio-button.md-default-theme .md-on, md-switch.md-default .md-switch-thumb .md-on{
+	background-color: #ff6600;
+}
+
+md-radio-button.md-default-theme.md-checked .md-off, md-switch.md-default .md-switch-thumb.md-checked .md-off {
+	border-color: #CCC;
+}
+
+md-radio-button.md-default-theme.md-checked .md-ink-ripple, md-switch.md-default .md-switch-thumb.md-checked .md-ink-ripple {
+	color: #ff6600;
+}
+
+/* Button */
+
+.md-button.md-default-theme.md-primary {
+  color: #ff6600;
+}
+
+/* Checkbox */
+
+md-checkbox.md-default-theme.md-checked .md-icon {
+	background-color: #4c9ffb;
+}
+
+/* Switch */
+
+md-switch.md-default-theme.md-checked .md-thumb {
+	background-color: #4c9ffb;
+}
+
+
+/* Slider */
+
+md-slider.md-default-theme .md-track.md-track-fill {
+	background-color: #4c9ffb;
+}
+
+md-slider.md-default-theme .md-thumb:after {
+	border-color: #4c9ffb;
+	background-color: #4c9ffb;
+}
+
+md-slider.md-default-theme .md-sign {
+	background-color: #4c9ffb;
+}
+
+md-slider.md-default-theme .md-sign:after {
+	border-top-color: #4c9ffb;
+}
+
+
+/* Color Slider */
+
+md-slider.md-default-theme.hue .md-track-fill {
+	background: transparent;
+}
+
+md-slider.md-default-theme.hue .md-thumb:after {
+	border-color: #4c9ffb;
+}
+
+/* Progress Indicator */
+
+md-progress-circular.md-default-theme .md-inner .md-right .md-half-circle {
+	border-right-color: #4c9ffb;
+}
+
+md-progress-circular.md-default-theme .md-inner .md-left .md-half-circle, 
+md-progress-circular.md-default-theme .md-inner .md-right .md-half-circle {
+	border-top-color: #4c9ffb;
+}
+
+md-progress-circular.md-default-theme .md-inner .md-left .md-half-circle {
+	border-left-color: #4c9ffb;
+}
+
+/* Input */
+
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused .md-input {
+	border-color: #4c9ffb;
+}
+
+md-input-group.md-default-theme.md-input-focused input, md-input-group.md-default-theme.md-input-focused textarea {
+	border-color: #4c9ffb;
+}
+
+md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused label {
+	color: #4c9ffb;
+}
+
+md-select.md-default-theme:not([disabled]):focus .md-select-label {
+  border-bottom-color: #4c9ffb;
+}
+
+
+/* Item Icons */
+
+.items .item p[class^="icon-"]:before, 
+.items .item p[class*=" icon-"]:before, 
+.items .item p[class^="md-icon-"]:before, 
+.items .item p[class*=" md-icon-"]:before, 
+.items .item p[class^="home-icon-"]:before, 
+.items .item p[class*=" home-icon-"]:before {
+	background-color: #ff6600;
+}
