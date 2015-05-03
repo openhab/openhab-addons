@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Paper UI Theme Fragment
+Bundle-SymbolicName: org.openhab.ui.paperui
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Fragment-Host: org.eclipse.smarthome.ui.paperui
+Bundle-ClassPath: patch/
