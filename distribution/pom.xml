@@ -70,6 +70,13 @@
             <artifactId>org.openhab.binding.max</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.openhab.ui</groupId>
+            <artifactId>org.openhab.ui.paperui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.yahooweather</artifactId>
@@ -102,15 +109,4 @@
         </dependency>
     </dependencies>
 
-	<repositories>
-		<repository>
-		      <id>addons</id>
-      			<name>openHAB Addons Repository</name>
-      			<layout>default</layout>
-      			<url>https://raw.githubusercontent.com/openhab/openhab.repo/master/</url>
-      			<snapshots>
-        			<enabled>true</enabled>
-      			</snapshots>
-		</repository>
-	</repositories>	
 </project>

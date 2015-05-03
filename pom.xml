@@ -37,6 +37,7 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
     
     <properties>
+        <esh.version>0.8.0-SNAPSHOT</esh.version>
         <tycho-version>0.22.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -264,6 +265,16 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+		      <id>addons</id>
+      			<name>openHAB Addons Repository</name>
+      			<layout>default</layout>
+      			<url>https://raw.githubusercontent.com/openhab/openhab.repo/master/</url>
+      			<snapshots>
+        			<enabled>true</enabled>
+      			</snapshots>
+		</repository>
+
 	</repositories>
     
 </project>
