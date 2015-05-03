@@ -74,6 +74,7 @@
       <unpack>false</unpack>
       <includes>
       	<include>org.eclipse.smarthome.ui:org.eclipse.smarthome.ui.paperui:jar:*</include>
+      	<include>org.openhab.ui:org.openhab.ui.paperui:jar:*</include>
       	<include>org.openhab.binding:*:jar:*</include>
       	<include>org.eclipse.smarthome.binding:*:jar:*</include>
       </includes>
