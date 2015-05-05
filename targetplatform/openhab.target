@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="126">
+<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="127">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
@@ -126,7 +126,7 @@
 <unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.smarthome.feature.test.source.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
+<repository location="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.codehaus.groovy23.feature.feature.group" version="0.0.0"/>
