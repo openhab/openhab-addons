@@ -107,7 +107,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	private int maxRequestsPerConnection;
 	private int requestCount = 0;
 
-    MessageProcessor messageProcessor = new MessageProcessor();
+	MessageProcessor messageProcessor = new MessageProcessor();
 
 	/**
 	 * Duty cycle of the cube
@@ -227,7 +227,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 		}
 	}
-	
+
 	/**
 	 * initiates read data from the maxCube bridge
 	 */
@@ -323,19 +323,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		Message message;
 
 		for (String raw : getRawMessage()) {
-            try {
-                logger.trace("message block: '{}'", raw);
-                
-                this.messageProcessor.addReceivedLine(raw);
-                if (this.messageProcessor.isMessageAvailable()) {
-                    message = this.messageProcessor.pull();
-                    message.debug(logger);
-                    processMessage(message);
-                }
-            } catch (Exception e) {
-                logger.info("Failed to process message received by MAX! protocol.");
-                logger.debug(Utils.getStackTrace(e));
-                this.messageProcessor.reset();
+			try {
+				logger.trace("message block: '{}'", raw);
+
+				this.messageProcessor.addReceivedLine(raw);
+				if (this.messageProcessor.isMessageAvailable()) {
+					message = this.messageProcessor.pull();
+					message.debug(logger);
+					processMessage(message);
+				}
+			} catch (Exception e) {
+				logger.info("Failed to process message received by MAX! protocol.");
+				logger.debug(Utils.getStackTrace(e));
+				this.messageProcessor.reset();
 			}
 		}
 
@@ -430,12 +430,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 			message.debug(logger);
 			if (message.getType() == MessageType.H) {
 				int freeMemorySlotsMsg = ((H_Message) message).getFreeMemorySlots() ;
-			    int dutyCycleMsg = ((H_Message) message).getDutyCycle();
-			    if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle){
-			    	freeMemorySlots = freeMemorySlotsMsg;
-			    	 dutyCycle = dutyCycleMsg;
-			    	 updateCubeState();
-			    }
+				int dutyCycleMsg = ((H_Message) message).getDutyCycle();
+				if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle){
+					freeMemorySlots = freeMemorySlotsMsg;
+					dutyCycle = dutyCycleMsg;
+					updateCubeState();
+				}
 			}
 			if (message.getType() == MessageType.M) {
 				M_Message msg = (M_Message) message;
@@ -624,26 +624,22 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					writer.flush();
 					String raw = reader.readLine();
 					if (raw != null) {
-						Message message = processRawMessage(raw);
-						if (message != null)
+						try {
+							this.messageProcessor.addReceivedLine(raw);
+							while (!this.messageProcessor.isMessageAvailable()) {
+								raw = reader.readLine();
+								this.messageProcessor.addReceivedLine(raw);
+							}
+
+							Message message = this.messageProcessor.pull();
+							message.debug(logger);
 							processMessage(message);
+						} catch (Exception e) {
+							logger.info("Error while handling response from MAX! Cube lan gateway!");
+							logger.debug(Utils.getStackTrace(e));
+							this.messageProcessor.reset();
+						}
 					}
-                    try {
-                        this.messageProcessor.addReceivedLine(raw);
-                        while (!this.messageProcessor.isMessageAvailable()) {
-                            raw = reader.readLine();
-                            this.messageProcessor.addReceivedLine(raw);
-                        }
-
-                        Message message = this.messageProcessor.pull();
-                        message.debug(logger);
-                        processMessage(message);
-                    } catch (Exception e) {
-                        logger.info("Error while handling response from MAX! Cube lan gateway!");
-                        logger.debug(Utils.getStackTrace(e));
-                        this.messageProcessor.reset();
-                    }
-
 					if (!exclusive) {
 						socketClose();
 					}
