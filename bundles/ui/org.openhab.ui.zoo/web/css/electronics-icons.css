@@ -1,541 +1,689 @@
 @charset "UTF-8";
 
 @font-face {
-  font-family: "electronics";
-  src:url("../fonts/electronics/electronics.eot");
-  src:url("../fonts/electronics/electronics.eot?#iefix") format("embedded-opentype"),
+    font-family: "electronics";
+    src: url("../fonts/electronics/electronics.eot");
+    src: url("../fonts/electronics/electronics.eot?#iefix") format("embedded-opentype"),
     url("../fonts/electronics/electronics.woff") format("woff"),
     url("../fonts/electronics/electronics.ttf") format("truetype"),
     url("../fonts/electronics/electronics.svg#electronics") format("svg");
-  font-weight: normal;
-  font-style: normal;
+    font-weight: normal;
+    font-style: normal;
 
 }
 
 [data-icon]:before {
-  font-family: "electronics" !important;
-  content: attr(data-icon);
-  font-style: normal !important;
-  font-weight: normal !important;
-  font-variant: normal !important;
-  text-transform: none !important;
-  speak: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: "electronics" !important;
+    content: attr(data-icon);
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 [class^="icon-"]:before,
 [class*=" icon-"]:before {
-  font-family: "electronics" !important;
-  font-style: normal !important;
-  font-weight: normal !important;
-  font-variant: normal !important;
-  text-transform: none !important;
-  speak: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: "electronics" !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .electronic {
-	font-size:2.5em;
-	line-height:1;
-	}
+    font-size: 2.5em;
+    line-height: 1;
+}
 
 .icon-001:before {
-  content: "a";
+    content: "a";
 }
+
 .icon-014:before {
-  content: "b";
+    content: "b";
 }
+
 .icon-027:before {
-  content: "c";
+    content: "c";
 }
+
 .icon-040:before {
-  content: "d";
+    content: "d";
 }
+
 .icon-053:before {
-  content: "e";
+    content: "e";
 }
+
 .icon-066:before {
-  content: "f";
+    content: "f";
 }
+
 .icon-079:before {
-  content: "g";
+    content: "g";
 }
+
 .icon-092:before {
-  content: "h";
+    content: "h";
 }
+
 .icon-093:before {
-  content: "i";
+    content: "i";
 }
+
 .icon-080:before {
-  content: "j";
+    content: "j";
 }
+
 .icon-067:before {
-  content: "k";
+    content: "k";
 }
 
 .icon-054:before, .icon-sensor:before {
-  content: "l";
+    content: "l";
 }
+
 .icon-041:before {
-  content: "m";
+    content: "m";
 }
+
 .icon-028:before {
-  content: "n";
+    content: "n";
 }
+
 .icon-015:before {
-  content: "o";
+    content: "o";
 }
+
 .icon-002:before {
-  content: "p";
+    content: "p";
 }
 
 .icon-003:before,
 .icon-tv:before {
-  content: "q";
+    content: "q";
 }
 
 .icon-016:before,
 .icon-light-on-small:before {
-  content: "r";
+    content: "r";
 }
+
 .icon-029:before {
-  content: "s";
+    content: "s";
 }
+
 .icon-042:before {
-  content: "t";
+    content: "t";
 }
+
 .icon-055:before {
-  content: "u";
+    content: "u";
 }
+
 .icon-068:before {
-  content: "v";
+    content: "v";
 }
+
 .icon-081:before {
-  content: "w";
+    content: "w";
 }
+
 .icon-094:before {
-  content: "x";
+    content: "x";
 }
+
 .icon-095:before {
-  content: "y";
+    content: "y";
 }
+
 .icon-082:before {
-  content: "z";
+    content: "z";
 }
+
 .icon-069:before {
-  content: "A";
+    content: "A";
 }
+
 .icon-056:before {
-  content: "B";
+    content: "B";
 }
+
 .icon-043:before {
-  content: "C";
+    content: "C";
 }
+
 .icon-030:before {
-  content: "D";
+    content: "D";
 }
+
 .icon-017:before {
-  content: "E";
+    content: "E";
 }
 
 .icon-004:before,
 .icon-fridge:before {
-  content: "F";
+    content: "F";
 }
+
 .icon-005:before {
-  content: "G";
+    content: "G";
 }
+
 .icon-018:before {
-  content: "H";
+    content: "H";
 }
+
 .icon-031:before {
-  content: "I";
+    content: "I";
 }
+
 .icon-044:before {
-  content: "J";
+    content: "J";
 }
+
 .icon-057:before {
-  content: "K";
+    content: "K";
 }
+
 .icon-070:before {
-  content: "L";
+    content: "L";
 }
+
 .icon-083:before {
-  content: "M";
+    content: "M";
 }
+
 .icon-096:before {
-  content: "N";
+    content: "N";
 }
+
 .icon-097:before {
-  content: "O";
+    content: "O";
 }
+
 .icon-084:before {
-  content: "P";
+    content: "P";
 }
+
 .icon-071:before {
-  content: "Q";
+    content: "Q";
 }
+
 .icon-058:before {
-  content: "R";
+    content: "R";
 }
+
 .icon-045:before {
-  content: "S";
+    content: "S";
 }
+
 .icon-032:before {
-  content: "T";
+    content: "T";
 }
+
 .icon-019:before {
-  content: "U";
+    content: "U";
 }
+
 .icon-006:before {
-  content: "V";
+    content: "V";
 }
 
 .icon-007:before,
 .icon-door-small:before {
-  content: "W";
+    content: "W";
 }
+
 .icon-020:before {
-  content: "X";
+    content: "X";
 }
+
 .icon-033:before {
-  content: "Y";
+    content: "Y";
 }
+
 .icon-046:before {
-  content: "Z";
+    content: "Z";
 }
+
 .icon-059:before {
-  content: "0";
+    content: "0";
 }
+
 .icon-072:before {
-  content: "1";
+    content: "1";
 }
+
 .icon-085:before {
-  content: "2";
+    content: "2";
 }
 
 .icon-098:before, .icon-cctv-small:before {
-  content: "3";
+    content: "3";
 }
+
 .icon-099:before {
-  content: "4";
+    content: "4";
 }
+
 .icon-086:before {
-  content: "5";
+    content: "5";
 }
+
 .icon-073:before {
-  content: "6";
+    content: "6";
 }
+
 .icon-060:before {
-  content: "7";
+    content: "7";
 }
+
 .icon-047:before {
-  content: "8";
+    content: "8";
 }
+
 .icon-034:before {
-  content: "9";
+    content: "9";
 }
+
 .icon-021:before {
-  content: "!";
+    content: "!";
 }
+
 .icon-008:before {
-  content: "\"";
+    content: "\"";
 }
+
 .icon-009:before {
-  content: "#";
+    content: "#";
 }
+
 .icon-022:before {
-  content: "$";
+    content: "$";
 }
+
 .icon-035:before {
-  content: "%";
+    content: "%";
 }
+
 .icon-048:before {
-  content: "&";
+    content: "&";
 }
+
 .icon-049:before {
-  content: "'";
+    content: "'";
 }
 
 .icon-036:before,
 .icon-microwave:before {
-  content: "(";
+    content: "(";
 }
+
 .icon-023:before {
-  content: ")";
+    content: ")";
 }
 
 .icon-010:before, .icon-power:before {
-  content: "*";
+    content: "*";
 }
+
 .icon-011:before {
-  content: "+";
+    content: "+";
 }
+
 .icon-024:before {
-  content: ",";
+    content: ",";
 }
 
 .icon-025:before, .icon-fan:before {
-  content: "-";
+    content: "-";
 }
+
 .icon-012:before {
-  content: ".";
+    content: ".";
 }
+
 .icon-013:before {
-  content: "/";
+    content: "/";
 }
 
 .icon-026:before, .icon-sound-system:before {
-  content: ":";
+    content: ":";
 }
+
 .icon-039:before {
-  content: ";";
+    content: ";";
 }
+
 .icon-052:before {
-  content: "<";
+    content: "<";
 }
+
 .icon-065:before {
-  content: "=";
+    content: "=";
 }
+
 .icon-078:before {
-  content: ">";
+    content: ">";
 }
+
 .icon-091:before {
-  content: "?";
+    content: "?";
 }
+
 .icon-104:before {
-  content: "@";
+    content: "@";
 }
+
 .icon-103:before {
-  content: "[";
+    content: "[";
 }
+
 .icon-090:before {
-  content: "]";
+    content: "]";
 }
+
 .icon-064:before {
-  content: "^";
+    content: "^";
 }
+
 .icon-051:before {
-  content: "_";
+    content: "_";
 }
+
 .icon-038:before {
-  content: "`";
+    content: "`";
 }
+
 .icon-037:before {
-  content: "{";
+    content: "{";
 }
+
 .icon-050:before {
-  content: "|";
+    content: "|";
 }
+
 .icon-063:before {
-  content: "}";
+    content: "}";
 }
+
 .icon-076:before {
-  content: "~";
+    content: "~";
 }
+
 .icon-077:before {
-  content: "\\";
+    content: "\\";
 }
+
 .icon-062:before {
-  content: "\e000";
+    content: "\e000";
 }
+
 .icon-061:before {
-  content: "\e001";
+    content: "\e001";
 }
+
 .icon-074:before {
-  content: "\e002";
+    content: "\e002";
 }
+
 .icon-075:before {
-  content: "\e003";
+    content: "\e003";
 }
+
 .icon-088:before {
-  content: "\e004";
+    content: "\e004";
 }
+
 .icon-087:before {
-  content: "\e005";
+    content: "\e005";
 }
+
 .icon-089:before {
-  content: "\e006";
+    content: "\e006";
 }
+
 .icon-102:before {
-  content: "\e007";
+    content: "\e007";
 }
+
 .icon-101:before {
-  content: "\e008";
+    content: "\e008";
 }
+
 .icon-100:before {
-  content: "\e009";
+    content: "\e009";
 }
+
 .icon-105:before {
-  content: "\e00a";
+    content: "\e00a";
 }
+
 .icon-118:before {
-  content: "\e00b";
+    content: "\e00b";
 }
+
 .icon-131:before {
-  content: "\e00c";
+    content: "\e00c";
 }
+
 .icon-144:before {
-  content: "\e00d";
+    content: "\e00d";
 }
+
 .icon-157:before {
-  content: "\e00e";
+    content: "\e00e";
 }
+
 .icon-158:before {
-  content: "\e00f";
+    content: "\e00f";
 }
+
 .icon-145:before {
-  content: "\e010";
+    content: "\e010";
 }
+
 .icon-132:before {
-  content: "\e011";
+    content: "\e011";
 }
+
 .icon-119:before {
-  content: "\e012";
+    content: "\e012";
 }
+
 .icon-106:before {
-  content: "\e013";
+    content: "\e013";
 }
+
 .icon-107:before {
-  content: "\e014";
+    content: "\e014";
 }
+
 .icon-120:before {
-  content: "\e015";
+    content: "\e015";
 }
+
 .icon-133:before {
-  content: "\e016";
+    content: "\e016";
 }
+
 .icon-146:before {
-  content: "\e017";
+    content: "\e017";
 }
+
 .icon-159:before {
-  content: "\e018";
+    content: "\e018";
 }
+
 .icon-160:before {
-  content: "\e019";
+    content: "\e019";
 }
+
 .icon-147:before {
-  content: "\e01a";
+    content: "\e01a";
 }
+
 .icon-134:before {
-  content: "\e01b";
+    content: "\e01b";
 }
+
 .icon-121:before {
-  content: "\e01c";
+    content: "\e01c";
 }
+
 .icon-108:before {
-  content: "\e01d";
+    content: "\e01d";
 }
+
 .icon-109:before {
-  content: "\e01e";
+    content: "\e01e";
 }
+
 .icon-122:before {
-  content: "\e01f";
+    content: "\e01f";
 }
+
 .icon-135:before {
-  content: "\e020";
+    content: "\e020";
 }
+
 .icon-148:before {
-  content: "\e021";
+    content: "\e021";
 }
+
 .icon-149:before {
-  content: "\e022";
+    content: "\e022";
 }
+
 .icon-136:before {
-  content: "\e023";
+    content: "\e023";
 }
+
 .icon-123:before {
-  content: "\e024";
+    content: "\e024";
 }
+
 .icon-110:before {
-  content: "\e025";
+    content: "\e025";
 }
+
 .icon-111:before {
-  content: "\e026";
+    content: "\e026";
 }
+
 .icon-124:before {
-  content: "\e027";
+    content: "\e027";
 }
+
 .icon-137:before {
-  content: "\e028";
+    content: "\e028";
 }
+
 .icon-150:before {
-  content: "\e029";
+    content: "\e029";
 }
+
 .icon-151:before {
-  content: "\e02a";
+    content: "\e02a";
 }
+
 .icon-138:before {
-  content: "\e02b";
+    content: "\e02b";
 }
 
 .icon-125:before, .icon-blinds:before {
-  content: "\e02c";
+    content: "\e02c";
 }
+
 .icon-112:before {
-  content: "\e02d";
+    content: "\e02d";
 }
+
 .icon-113:before {
-  content: "\e02e";
+    content: "\e02e";
 }
+
 .icon-126:before {
-  content: "\e02f";
+    content: "\e02f";
 }
+
 .icon-139:before {
-  content: "\e030";
+    content: "\e030";
 }
+
 .icon-152:before {
-  content: "\e031";
+    content: "\e031";
 }
+
 .icon-153:before {
-  content: "\e032";
+    content: "\e032";
 }
+
 .icon-140:before {
-  content: "\e033";
+    content: "\e033";
 }
+
 .icon-127:before {
-  content: "\e034";
+    content: "\e034";
 }
+
 .icon-114:before {
-  content: "\e035";
+    content: "\e035";
 }
+
 .icon-115:before {
-  content: "\e036";
+    content: "\e036";
 }
+
 .icon-128:before {
-  content: "\e037";
+    content: "\e037";
 }
+
 .icon-141:before {
-  content: "\e038";
+    content: "\e038";
 }
+
 .icon-154:before {
-  content: "\e039";
+    content: "\e039";
 }
+
 .icon-155:before {
-  content: "\e03a";
+    content: "\e03a";
 }
+
 .icon-142:before {
-  content: "\e03b";
+    content: "\e03b";
 }
+
 .icon-129:before {
-  content: "\e03c";
+    content: "\e03c";
 }
+
 .icon-116:before {
-  content: "\e03d";
+    content: "\e03d";
 }
+
 .icon-117:before {
-  content: "\e03e";
+    content: "\e03e";
 }
+
 .icon-130:before {
-  content: "\e03f";
+    content: "\e03f";
 }
+
 .icon-143:before {
-  content: "\e040";
+    content: "\e040";
 }
+
 .icon-156:before {
-  content: "\e041";
+    content: "\e041";
 }
