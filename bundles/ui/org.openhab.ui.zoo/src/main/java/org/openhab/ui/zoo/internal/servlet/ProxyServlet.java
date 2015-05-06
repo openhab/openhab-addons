@@ -75,8 +75,6 @@ import java.util.List;
  */
 public class ProxyServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	
 	/* INIT PARAMETER NAME CONSTANTS */
 
 	/**
@@ -182,14 +180,15 @@ public class ProxyServlet extends HttpServlet {
 	 * SystemDefaultHttpClient uses PoolingClientConnectionManager. In any case,
 	 * it should be thread-safe.
 	 */
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	protected HttpClient createHttpClient(HttpParams hcParams) {
 		try {
 			// as of HttpComponents v4.2, this class is better since it uses
 			// System
 			// Properties:
-			Class<?> clientClazz = Class
+			Class clientClazz = Class
 					.forName("org.apache.http.impl.client.SystemDefaultHttpClient");
-			Constructor<?> constructor = clientClazz
+			Constructor constructor = clientClazz
 					.getConstructor(HttpParams.class);
 			return (HttpClient) constructor.newInstance(hcParams);
 		}/* catch (ClassNotFoundException e) {
@@ -217,7 +216,7 @@ public class ProxyServlet extends HttpServlet {
 	 */
 	@SuppressWarnings("unchecked")
 	protected void readConfigParam(HttpParams hcParams, String hcParamName,
-			@SuppressWarnings("rawtypes") Class type) {
+			Class type) {
 		String val_str = getConfigParam(hcParamName);
 		if (val_str == null)
 			return;
@@ -253,7 +252,6 @@ public class ProxyServlet extends HttpServlet {
 		super.destroy();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void service(HttpServletRequest servletRequest,
 			HttpServletResponse servletResponse) throws ServletException,
@@ -431,7 +429,7 @@ public class ProxyServlet extends HttpServlet {
 	protected void copyRequestHeaders(HttpServletRequest servletRequest,
 			HttpRequest proxyRequest) {
 		// Get an Enumeration of all of the header names sent by the client
-		Enumeration<String> enumerationOfHeaderNames = servletRequest.getHeaderNames();
+		Enumeration enumerationOfHeaderNames = servletRequest.getHeaderNames();
 		while (enumerationOfHeaderNames.hasMoreElements()) {
 			String headerName = (String) enumerationOfHeaderNames.nextElement();
 			// Instead the content-length is effectively set via
@@ -441,7 +439,7 @@ public class ProxyServlet extends HttpServlet {
 			if (hopByHopHeaders.containsHeader(headerName))
 				continue;
 
-			Enumeration<String> headers = servletRequest.getHeaders(headerName);
+			Enumeration headers = servletRequest.getHeaders(headerName);
 			while (headers.hasMoreElements()) {// sometimes more than one value
 				String headerValue = (String) headers.nextElement();
 				// In case the proxy host is running multiple virtual servers,
@@ -679,7 +677,6 @@ public class ProxyServlet extends HttpServlet {
 				}
 				// leading %, 0 padded, width 2, capital hex
 				formatter.format("%%%02X", (int) c);// TODO
-				formatter.close();
 			}
 		}
 		return outBuf != null ? outBuf : in;
