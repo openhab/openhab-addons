@@ -76,7 +76,8 @@
 .icon-067:before {
   content: "k";
 }
-.icon-054:before {
+
+.icon-054:before, .icon-sensor:before {
   content: "l";
 }
 .icon-041:before {
@@ -91,10 +92,14 @@
 .icon-002:before {
   content: "p";
 }
-.icon-003:before {
+
+.icon-003:before,
+.icon-tv:before {
   content: "q";
 }
-.icon-016:before {
+
+.icon-016:before,
+.icon-light-on-small:before {
   content: "r";
 }
 .icon-029:before {
@@ -136,7 +141,9 @@
 .icon-017:before {
   content: "E";
 }
-.icon-004:before {
+
+.icon-004:before,
+.icon-fridge:before {
   content: "F";
 }
 .icon-005:before {
@@ -187,7 +194,9 @@
 .icon-006:before {
   content: "V";
 }
-.icon-007:before {
+
+.icon-007:before,
+.icon-door-small:before {
   content: "W";
 }
 .icon-020:before {
@@ -208,7 +217,8 @@
 .icon-085:before {
   content: "2";
 }
-.icon-098:before {
+
+.icon-098:before, .icon-cctv-small:before {
   content: "3";
 }
 .icon-099:before {
@@ -250,13 +260,16 @@
 .icon-049:before {
   content: "'";
 }
-.icon-036:before {
+
+.icon-036:before,
+.icon-microwave:before {
   content: "(";
 }
 .icon-023:before {
   content: ")";
 }
-.icon-010:before {
+
+.icon-010:before, .icon-power:before {
   content: "*";
 }
 .icon-011:before {
@@ -265,7 +278,8 @@
 .icon-024:before {
   content: ",";
 }
-.icon-025:before {
+
+.icon-025:before, .icon-fan:before {
   content: "-";
 }
 .icon-012:before {
@@ -274,7 +288,8 @@
 .icon-013:before {
   content: "/";
 }
-.icon-026:before {
+
+.icon-026:before, .icon-sound-system:before {
   content: ":";
 }
 .icon-039:before {
@@ -457,7 +472,8 @@
 .icon-138:before {
   content: "\e02b";
 }
-.icon-125:before {
+
+.icon-125:before, .icon-blinds:before {
   content: "\e02c";
 }
 .icon-112:before {

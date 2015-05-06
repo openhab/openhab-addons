@@ -9,5 +9,6 @@ angular.module('SmartHome.services', [
 ])
 
 angular.module('ZooLib.services', [
-	'ZooLib.services.influxDb'
+	'ZooLib.services.influxDb',
+	'ZooLib.services.iconResolver'
 ])

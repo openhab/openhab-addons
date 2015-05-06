@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log, itemService, $rootScope) ->
+angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log, itemService, $rootScope, iconResolver) ->
 
 	restrict: 'E'
 	replace: yes
@@ -16,15 +16,8 @@ angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log
 			cssIconClass: ''
 
 		updateItem = (newState) ->
-			scope.options.cssIconClass = getIconClassByTags(scope.item)
+			scope.options.cssIconClass = iconResolver(scope.item)
 			scope.local.state = newState
-
-		# TODO Make service!
-		getIconClassByTags = (item) ->
-			return unless item.tags?
-			if item.tags.indexOf('power') >= 0 then return 'i-power'
-			if item.tags.indexOf('light') >= 0 then return 'i-light-on-small'
-			if item.tags.indexOf('fan') >= 0 then return 'i-fan'
 
 		scope.handleChange = ->
 			$log.debug "Switch Item #{scope.item.name} changed to #{scope.local.state}"

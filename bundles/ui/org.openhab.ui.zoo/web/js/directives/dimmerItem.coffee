@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log, $timeout, itemService, $rootScope) ->
+angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log, $timeout, itemService, $rootScope, iconResolver) ->
 
 	translateState = (state) ->
 		return state if angular.isNumber(state)
@@ -34,18 +34,12 @@ angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log
 		scope.options =
 			cctv: attrs.cctv?
 
-		getIconClassByTags = (item) ->
-			return unless item.tags?
-			if item.tags.indexOf('power') >= 0 then return 'i-power'
-			if item.tags.indexOf('light') >= 0 then return 'i-light-on-small'
-			if item.tags.indexOf('fan') >= 0 then return 'i-fan'
-
 		updateItem = (newState) ->
 			scope.local.dimValue = translateState(newState)
 			scope.local.stateOnOff = translateStateOnOff(newState)
 			updateOpacity()
 			ranger.setStart scope.local.dimValue
-			scope.options.cssIconClass = getIconClassByTags scope.item
+			scope.options.cssIconClass = iconResolver scope.item
 
 		updateOpacity = ->
 			newOpacity = scope.local.dimValue / 100
