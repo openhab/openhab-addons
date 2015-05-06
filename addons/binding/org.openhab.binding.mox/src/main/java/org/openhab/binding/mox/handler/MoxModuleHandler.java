@@ -136,7 +136,10 @@ public class MoxModuleHandler extends BaseThingHandler implements
 					MoxGatewayHandler bridgeHandler = getGatewayHandler();
 					if (bridgeHandler != null) {
 						if (bridgeHandler.getThing() != null) {
-							updateStatus(bridgeHandler.getThing().getStatus());
+							// Prevent unneccessary updates:
+							if (bridgeHandler.getThing().getStatus() != getThing().getStatus()) {
+								updateStatus(bridgeHandler.getThing().getStatus());
+							}
 							gatewayHandler = null;
 							queryInitialState(false);
 						} else {
