@@ -26,6 +26,7 @@ public class ZooUIApp {
     public static final String WEB_DIST_FOLDER = "web_dist";
     public static final String WEB_FOLDER = "web";
     public static final String DEBUG_PARAMETER_NAME = "webDebug";
+    private static final String prefix = "reference:file:";
     private static final String DEFAULT_INFLUX_URI = "http://localhost:8086";
     public static final String INFLUX_URI_PARAMETER_NAME = "influxDbUri";
 
@@ -38,11 +39,7 @@ public class ZooUIApp {
             
             //httpService.registerResources(WEBAPP_ALIAS, serveFolder, null);
             Hashtable<String, String> initParams = new Hashtable<>();
-            final String absolutePath = getAbsolutePath(componentContext);
-            if (absolutePath == null) {
-            	logger.error("Could not determine absolute path of the bundle folder.");
-            }
-            initParams.put("basePath", absolutePath + "/" + serveFolder);
+            initParams.put("basePath", getAbsolutePath(componentContext) + "/" + serveFolder);
             
             httpService.registerServlet(WEBAPP_ALIAS, new FileServlet(), initParams, null);
             logger.info("Started Zoo UI at {} with debug mode = {}.", WEBAPP_ALIAS, debugMode);
@@ -59,8 +56,8 @@ public class ZooUIApp {
 
     private String getAbsolutePath(ComponentContext componentContext) {
     	final String location = componentContext.getBundleContext().getBundle().getLocation();
-    	if (location.indexOf("/") >= 0) {
-    		return location.substring(location.indexOf("/"));
+    	if (location.length() > prefix.length()) {
+    		return location.substring(prefix.length());
     	}
 		return null;
 	}
