@@ -38,11 +38,12 @@ public class ZooUIApp {
             
             //httpService.registerResources(WEBAPP_ALIAS, serveFolder, null);
             Hashtable<String, String> initParams = new Hashtable<>();
-            final String absolutePath = getAbsolutePath(componentContext);
+            /*final String absolutePath = getAbsolutePath(componentContext);
             if (absolutePath == null) {
             	logger.error("Could not determine absolute path of the bundle folder.");
-            }
-            initParams.put("basePath", absolutePath + "/" + serveFolder);
+            }*/
+            final String location = componentContext.getBundleContext().getBundle().getLocation().replaceFirst("^reference:", "");
+            initParams.put("basePath", location + serveFolder);
             
             httpService.registerServlet(WEBAPP_ALIAS, new FileServlet(), initParams, null);
             logger.info("Started Zoo UI at {} with debug mode = {}.", WEBAPP_ALIAS, debugMode);
@@ -50,21 +51,15 @@ public class ZooUIApp {
             Hashtable<String, String> initParamsProxy = new Hashtable<>();
             initParamsProxy.put("targetUri", getInfluxUri());
             initParamsProxy.put("log","true");
-            httpService.registerServlet("/zoo/influxproxy", new ProxyServlet(), initParamsProxy, null);
+            initParamsProxy.put("influxUser","openhab");
+            initParamsProxy.put("influxPassword","openhab");
+            httpService.registerServlet("/zoo/influxproxy", new InfluxProxyServlet(), initParamsProxy, null);
             
         } catch (Exception e) {
             logger.error("Error during servlet startup", e);
         }
     }
 
-    private String getAbsolutePath(ComponentContext componentContext) {
-    	final String location = componentContext.getBundleContext().getBundle().getLocation();
-    	if (location.indexOf("/") >= 0) {
-    		return location.substring(location.indexOf("/"));
-    	}
-		return null;
-	}
-    
     private String getInfluxUri() {
     	String influxUriSystemProperty = System.getProperty(INFLUX_URI_PARAMETER_NAME);
     	return influxUriSystemProperty == null ? DEFAULT_INFLUX_URI : influxUriSystemProperty;

@@ -22,7 +22,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,9 +69,16 @@ public class FileServlet extends HttpServlet {
         if (this.basePath == null) {
             throw new ServletException("FileServlet init param 'basePath' is required.");
         } else {
+
             File path = new File(this.basePath);
+
             if (!path.exists()) {
-                throw new ServletException("FileServlet init param 'basePath' value '"
+		path = createFileFormURIString(this.basePath);
+		if (path != null) this.basePath = path.getPath();
+            }
+
+            if (path == null || !path.exists()) {
+			throw new ServletException("FileServlet init param 'basePath' value '"
                     + this.basePath + "' does actually not exist in file system.");
             } else if (!path.isDirectory()) {
                 throw new ServletException("FileServlet init param 'basePath' value '"
@@ -80,7 +90,16 @@ public class FileServlet extends HttpServlet {
         }
     }
 
-    protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
+    private File createFileFormURIString(String basePath) {
+	try {
+			URI basePathUri = new URI(this.basePath);
+			return new File(basePathUri);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
         response.setStatus(204);
     }
 

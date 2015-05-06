@@ -3,9 +3,7 @@
 angular.module('ZooLib.services.influxDb', []).factory('influxDb', function($resource) {
   var host;
   host = '/zoo/influxproxy';
-  return $resource(host + '/db/:dbName/series?q=:query&u=:user&p=:password', {
-    dbName: 'openhab',
-    user: 'openhab',
-    password: 'openhab'
+  return $resource(host + '/db/:dbName/series?q=:query', {
+    dbName: 'openhab'
   });
 });

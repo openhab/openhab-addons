@@ -74,6 +74,7 @@ import java.util.List;
  * @author David Smiley dsmiley@mitre.org
  */
 public class ProxyServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
 	/* INIT PARAMETER NAME CONSTANTS */
 
@@ -288,6 +289,8 @@ public class ProxyServlet extends HttpServlet {
 
 		copyRequestHeaders(servletRequest, proxyRequest);
 
+		addAdditionalHeaders(servletRequest, proxyRequest);
+
 		setXForwardedForHeader(servletRequest, proxyRequest);
 
 		HttpResponse proxyResponse = null;
@@ -347,6 +350,11 @@ public class ProxyServlet extends HttpServlet {
 			// Note: Don't need to close servlet outputStream:
 			// http://stackoverflow.com/questions/1159168/should-one-call-close-on-httpservletresponse-getoutputstream-getwriter
 		}
+	}
+
+	protected void addAdditionalHeaders(HttpServletRequest servletRequest,
+			HttpRequest proxyRequest) {
+		// Do nothing, can be overridden by extended classes
 	}
 
 	protected boolean doResponseRedirectOrNotModifiedLogic(
