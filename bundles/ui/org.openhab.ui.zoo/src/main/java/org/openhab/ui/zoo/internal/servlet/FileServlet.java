@@ -23,9 +23,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.osgi.service.http.HttpContext;
+
+import com.google.common.io.ByteStreams;
+
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,58 +51,38 @@ public class FileServlet extends HttpServlet {
     // Constants ----------------------------------------------------------------------------------
 
 	private static final long serialVersionUID = 1L;
-	private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
+	private static final int DEFAULT_BUFFER_SIZE = 0x1000; // 4K
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     // Properties ---------------------------------------------------------------------------------
 
     private String basePath;
+    private HttpContext httpContext;
+    
+    
 
     // Actions ------------------------------------------------------------------------------------
 
-    /**
+   
+	public FileServlet(String basePath, HttpContext httpContext) {
+		this.basePath = basePath;
+		this.httpContext = httpContext;
+		if (httpContext == null) this.httpContext = (HttpContext) getServletContext();
+	}
+
+	/**
      * Initialize the servlet.
      * @see HttpServlet#init().
      */
     public void init() throws ServletException {
 
-        // Get base path (path to get all resources from) as init parameter.
-        this.basePath = getInitParameter("basePath");
-
         // Validate base path.
         if (this.basePath == null) {
             throw new ServletException("FileServlet init param 'basePath' is required.");
-        } else {
-
-            File path = new File(this.basePath);
-
-            if (!path.exists()) {
-		path = createFileFormURIString(this.basePath);
-		if (path != null) this.basePath = path.getPath();
-            }
-
-            if (path == null || !path.exists()) {
-			throw new ServletException("FileServlet init param 'basePath' value '"
-                    + this.basePath + "' does actually not exist in file system.");
-            } else if (!path.isDirectory()) {
-                throw new ServletException("FileServlet init param 'basePath' value '"
-                    + this.basePath + "' is actually not a directory in file system.");
-            } else if (!path.canRead()) {
-                throw new ServletException("FileServlet init param 'basePath' value '"
-                    + this.basePath + "' is actually not readable in file system.");
-            }
-        }
+        } 
+        
     }
-
-    private File createFileFormURIString(String basePath) {
-	try {
-			URI basePathUri = new URI(this.basePath);
-			return new File(basePathUri);
-		} catch (Exception e) {
-			return null;
-		}
-	}
 
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
         response.setStatus(204);
@@ -148,22 +133,23 @@ public class FileServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
-        // URL-decode the file name (might contain spaces and on) and prepare file object.
-        File file = new File(basePath, URLDecoder.decode(requestedFile, "UTF-8"));
-
-        // Check if file actually exists in filesystem.
-        if (!file.exists()) {
-            // Do your thing if the file appears to be non-existing.
-            // Throw an exception, or send 404, or show default/warning page, or just ignore it.
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        
+        requestedFile = URLDecoder.decode(requestedFile, "UTF-8");
+        
+        URL resourceUrl = httpContext.getResource(basePath + requestedFile);
+        
+        if (resourceUrl == null) {
+        	response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
+        
+        URLConnection resource = resourceUrl.openConnection();
+        
         // Prepare some variables. The ETag is an unique identifier of the file.
-        String fileName = file.getName();
-        long length = file.length();
-        long lastModified = file.lastModified();
+        
+        String fileName = requestedFile;
+        long length = resource.getContentLength();
+        long lastModified = resource.getLastModified();
         String eTag = fileName + "_" + length + "_" + lastModified;
         long expires = System.currentTimeMillis() + DEFAULT_EXPIRE_TIME;
 
@@ -301,9 +287,9 @@ public class FileServlet extends HttpServlet {
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
         
         // sja CORS
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
-        response.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST");
+        //response.setHeader("Access-Control-Allow-Origin", "*");
+        //response.setHeader("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With");
+        //response.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST");
         
         response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
         response.setHeader("Accept-Ranges", "bytes");
@@ -315,12 +301,12 @@ public class FileServlet extends HttpServlet {
         // Send requested file (part(s)) to client ------------------------------------------------
 
         // Prepare streams.
-        RandomAccessFile input = null;
+        InputStream input = null;
         OutputStream output = null;
 
         try {
             // Open streams.
-            input = new RandomAccessFile(file, "r");
+            input = resource.getInputStream();
             output = response.getOutputStream();
 
             if (ranges.isEmpty() || ranges.get(0) == full) {
@@ -388,8 +374,8 @@ public class FileServlet extends HttpServlet {
             }
         } finally {
             // Gently close streams.
-            close(output);
-            close(input);
+        	IOUtils.closeQuietly(output);
+        	IOUtils.closeQuietly(input);
         }
     }
 
@@ -443,47 +429,16 @@ public class FileServlet extends HttpServlet {
      * @param length Length of the byte range.
      * @throws IOException If something fails at I/O level.
      */
-    private static void copy(RandomAccessFile input, OutputStream output, long start, long length)
-        throws IOException
-    {
-        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-        int read;
-
-        if (input.length() == length) {
-            // Write full range.
-            while ((read = input.read(buffer)) > 0) {
-                output.write(buffer, 0, read);
-            }
-        } else {
-            // Write partial range.
-            input.seek(start);
-            long toRead = length;
-
-            while ((read = input.read(buffer)) > 0) {
-                if ((toRead -= read) > 0) {
-                    output.write(buffer, 0, read);
-                } else {
-                    output.write(buffer, 0, (int) toRead + read);
-                    break;
-                }
-            }
+    private static void copy(InputStream input, OutputStream output, long start, long length)
+        throws IOException {
+        
+        if (start != 0) {
+        	ByteStreams.skipFully(input, start);	
         }
-    }
+        
+        ByteStreams.copy(input, output);
+      }
 
-    /**
-     * Close the given resource.
-     * @param resource The resource to be closed.
-     */
-    private static void close(Closeable resource) {
-        if (resource != null) {
-            try {
-                resource.close();
-            } catch (IOException ignore) {
-                // Ignore IOException. If you want to handle this anyway, it might be useful to know
-                // that this will generally only be thrown when the client aborted the request.
-            }
-        }
-    }
 
     // Inner classes ------------------------------------------------------------------------------
 

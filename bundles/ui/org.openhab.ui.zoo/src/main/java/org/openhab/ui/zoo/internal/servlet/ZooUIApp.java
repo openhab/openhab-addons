@@ -8,10 +8,12 @@
 package org.openhab.ui.zoo.internal.servlet;
 
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.http.HttpContext;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.util.Hashtable;
 
 /**
@@ -36,16 +38,8 @@ public class ZooUIApp {
             boolean debugMode = isDebugModeEnabled();
             String serveFolder = debugMode ? WEB_FOLDER : WEB_DIST_FOLDER;
             
-            //httpService.registerResources(WEBAPP_ALIAS, serveFolder, null);
-            Hashtable<String, String> initParams = new Hashtable<>();
-            /*final String absolutePath = getAbsolutePath(componentContext);
-            if (absolutePath == null) {
-            	logger.error("Could not determine absolute path of the bundle folder.");
-            }*/
-            final String location = componentContext.getBundleContext().getBundle().getLocation().replaceFirst("^reference:", "");
-            initParams.put("basePath", location + serveFolder);
-            
-            httpService.registerServlet(WEBAPP_ALIAS, new FileServlet(), initParams, null);
+            HttpContext ctx = httpService.createDefaultHttpContext();
+            httpService.registerServlet(WEBAPP_ALIAS, new FileServlet(serveFolder, ctx), null, null);
             logger.info("Started Zoo UI at {} with debug mode = {}.", WEBAPP_ALIAS, debugMode);
             
             Hashtable<String, String> initParamsProxy = new Hashtable<>();
