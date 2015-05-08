@@ -22,28 +22,33 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.io.OutputStreamWriter;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.message.C_Message;
 import org.openhab.binding.max.internal.message.Device;
 import org.openhab.binding.max.internal.message.DeviceConfiguration;
 import org.openhab.binding.max.internal.message.DeviceInformation;
+import org.openhab.binding.max.internal.message.DeviceType;
 import org.openhab.binding.max.internal.message.H_Message;
 import org.openhab.binding.max.internal.message.HeatingThermostat;
 import org.openhab.binding.max.internal.message.L_Message;
@@ -51,6 +56,7 @@ import org.openhab.binding.max.internal.message.M_Message;
 import org.openhab.binding.max.internal.message.Message;
 import org.openhab.binding.max.internal.message.MessageProcessor;
 import org.openhab.binding.max.internal.message.MessageType;
+import org.openhab.binding.max.internal.message.RoomInformation;
 import org.openhab.binding.max.internal.message.S_Command;
 import org.openhab.binding.max.internal.message.S_Message;
 import org.openhab.binding.max.internal.message.SendCommand;
@@ -79,7 +85,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	private Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
 
 	/** The refresh interval which is used to poll given MAX!Cube */
-	private long refreshInterval = 10000;
+	private long refreshInterval = 30;
 	ScheduledFuture<?> refreshJob;
 
 	private ArrayList<Device> devices = new ArrayList<Device>();
@@ -106,6 +112,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	private boolean exclusive;
 	private int maxRequestsPerConnection;
 	private int requestCount = 0;
+	private boolean propertiesSet = false;
 
 	MessageProcessor messageProcessor = new MessageProcessor();
 
@@ -138,7 +145,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		}
 	};
 	private ScheduledFuture<?> sendCommandJob;
-	private long sendCommandInterval = 5000;
+	private long sendCommandInterval = 5;
 	private Runnable sendCommandRunnable = new Runnable() {
 		@Override
 		public void run() {
@@ -199,11 +206,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 	private synchronized void startAutomaticRefresh() {
 		if (pollingJob == null || pollingJob.isCancelled()) {
-			pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+			pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
 		}
 		if (sendCommandJob == null || sendCommandJob.isCancelled()) {
 			sendCommandJob = scheduler.scheduleWithFixedDelay(sendCommandRunnable, 0, sendCommandInterval,
-					TimeUnit.MILLISECONDS);
+					TimeUnit.SECONDS);
 		}
 	}
 
@@ -333,8 +340,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					processMessage(message);
 				}
 			} catch (Exception e) {
-				logger.info("Failed to process message received by MAX! protocol.");
-				logger.debug(Utils.getStackTrace(e));
+				logger.info("Failed to process message received by MAX! protocol: {}", e.getMessage(), e);
 				this.messageProcessor.reset();
 			}
 		}
@@ -436,6 +442,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					dutyCycle = dutyCycleMsg;
 					updateCubeState();
 				}
+			    if (!propertiesSet) setProperties((H_Message) message);
+			    
 			}
 			if (message.getType() == MessageType.M) {
 				M_Message msg = (M_Message) message;
@@ -454,8 +462,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
 					c = DeviceConfiguration.create(di);
 					configurations.add(c);
-
 					c.setRoomId(di.getRoomId());
+					String roomName = "";
+					for (RoomInformation room : msg.rooms ) {
+						if (room.getPosition() == di.getRoomId()) roomName = room.getName();
+					}
+					c.setRoomName(roomName);
 				}
 			} else if (message.getType() == MessageType.C) {
 				DeviceConfiguration c = null;
@@ -485,6 +497,34 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle, freeMemorySlots);
 			}
 		}
+	}
+
+	/**
+	 * Set the properties for this device
+	 * @param H_Message
+	 */
+	private void setProperties(H_Message message) {
+		try {
+			logger.debug ("MAX! Cube properties update");
+			Map<String, String> properties = editProperties();
+			properties.put(Thing.PROPERTY_MODEL_ID, DeviceType.Cube.toString());
+			properties.put(Thing.PROPERTY_FIRMWARE_VERSION, message.getFirmwareVersion());
+			properties.put(Thing.PROPERTY_SERIAL_NUMBER,message.getSerialNumber());
+			properties.put(Thing.PROPERTY_VENDOR, MaxBinding.PROPERTY_VENDOR_NAME);
+			updateProperties(properties);
+			//TODO: Remove this once UI is displaying this info
+			for (Map.Entry<String, String> entry : properties.entrySet()){
+				 logger.debug ("key: {}  : {}", entry.getKey(), entry.getValue());
+			}
+			Configuration configuration = editConfiguration();
+			configuration.put(MaxBinding.PROPERTY_RFADDRESS,message.getRFAddress());
+			configuration.put(MaxBinding.PROPERTY_SERIAL_NUMBER,message.getSerialNumber());
+			updateConfiguration(configuration);			
+			logger.debug ("properties updated");
+			propertiesSet = true;
+		} catch (Exception e) {
+			logger.debug("Exception occurred during property update: {}", e.getMessage(), e);
+		}	
 	}
 
 	private Device getDevice(String serialNumber, ArrayList<Device> devices) {
@@ -635,8 +675,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 							message.debug(logger);
 							processMessage(message);
 						} catch (Exception e) {
-							logger.info("Error while handling response from MAX! Cube lan gateway!");
-							logger.debug(Utils.getStackTrace(e));
+							logger.info("Error while handling response from MAX! Cube lan gateway: {}", e.getMessage(), e);
 							this.messageProcessor.reset();
 						}
 					}
@@ -646,12 +685,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					sendSuccess = true;
 				} catch (UnknownHostException e) {
 					logger.warn("Cannot establish connection with MAX! Cube lan gateway while sending command to '{}'",
-							ipAddress);
-					logger.debug(Utils.getStackTrace(e));
+							ipAddress,e.getMessage(), e);
 					socketClose(); // reconnect on next execution
 				} catch (IOException e) {
-					logger.warn("Cannot write data from MAX! Cube lan gateway while connecting to '{}'", ipAddress);
-					logger.debug(Utils.getStackTrace(e));
+					logger.warn("Cannot write data from MAX! Cube lan gateway while connecting to '{}'", ipAddress,e.getMessage(), e);
 					socketClose(); // reconnect on next execution
 				}
 				logger.trace("Command content: '{}'", commandString);

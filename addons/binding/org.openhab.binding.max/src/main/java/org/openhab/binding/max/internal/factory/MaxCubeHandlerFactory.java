@@ -60,7 +60,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
 		if (thingUID == null) {
-			String SerialNumber = (String) configuration.get(MaxBinding.SERIAL_NUMBER);
+			String SerialNumber = (String) configuration.get(MaxBinding.PROPERTY_SERIAL_NUMBER);
 			thingUID = new ThingUID(thingTypeUID, SerialNumber);
 		}
 		return thingUID;
@@ -68,7 +68,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
 			ThingUID bridgeUID) {
-		String SerialNumber = (String) configuration.get(MaxBinding.SERIAL_NUMBER);
+		String SerialNumber = (String) configuration.get(MaxBinding.PROPERTY_SERIAL_NUMBER);
 
 		if (thingUID == null) {
 			thingUID = new ThingUID(thingTypeUID, SerialNumber, bridgeUID.getId());

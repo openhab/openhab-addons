@@ -22,6 +22,7 @@ public final class DeviceConfiguration {
 	private String serialNumber = null;
 	private String name = null;
 	private int roomId = -1;
+	private String roomName = null;
 	
 	private DeviceConfiguration() {
 	}
@@ -78,4 +79,12 @@ public final class DeviceConfiguration {
 	public void setRoomId(int roomId) {
 		this.roomId = roomId;
 	}	
+
+	public String getRoomName() {
+		return roomName;
+	}
+	
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
+	}
 }

@@ -98,9 +98,7 @@ public final class M_Message extends Message {
 				devices.add(new DeviceInformation(deviceType, serialNumber, rfAddress, deviceName, roomId));	
 			}
 		}  catch (Exception e) {
-			logger.info("Unknown error parsing the M Message");
-			logger.info(e.getMessage());
-			logger.debug(Utils.getStackTrace(e));
+			logger.info("Unknown error parsing the M Message: {}", e.getMessage(), e);
 			logger.debug("\tRAW : {}", this.getPayload());
 		}
 		else {

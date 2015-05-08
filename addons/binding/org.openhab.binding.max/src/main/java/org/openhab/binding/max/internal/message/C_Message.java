@@ -113,8 +113,7 @@ public final class C_Message extends Message {
 			}
 
 		}  catch (Exception e) {
-			logger.debug(e.getMessage());
-			logger.debug(Utils.getStackTrace(e));
+			logger.debug("Exception occurred during parsing: {}", e.getMessage(), e);
 		}
 
 		return "";
@@ -176,8 +175,7 @@ public final class C_Message extends Message {
 
 
 		}  catch (Exception e) {
-			logger.debug(e.getMessage());
-			logger.debug(Utils.getStackTrace(e));
+			logger.debug("Exception occurred during heater data: {}", e.getMessage(), e);
 		}
 		return ;
 	}
