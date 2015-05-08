@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for devices provided by the MAX!Cube protocol.
+ * Base class for devices provided by the MAX! protocol.
  * 
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 update
@@ -234,6 +234,10 @@ public abstract class Device {
 
 	public final void setRoomId(int roomId) {
 		this.roomId = roomId;
+	}
+
+	public final String getRoomName() {
+		return config.getRoomName();
 	}
 
 	private void setLinkStatusError(boolean linkStatusError) {
