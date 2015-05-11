@@ -40,6 +40,11 @@
 				<description>The Serial Number identifies one specific device.
 				</description>
 			</parameter>
+			<parameter name="rfAddress" type="text" required="false">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.
+				</description>
+			</parameter>
 			<parameter name="exclusive" type="boolean" required="false">
 				<label>Exclusive Mode</label>
 				<description>If set to true, the binding will leave the connection
