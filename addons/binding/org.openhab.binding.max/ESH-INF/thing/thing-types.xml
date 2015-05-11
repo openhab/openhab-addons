@@ -21,9 +21,22 @@
 		</channels>
 
 		<config-description>
+			<parameter name="room" type="text" required="false">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>Thermostat Name</label>
+				<description>The Thermostat description.</description>
+			</parameter>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -45,9 +58,22 @@
 		</channels>
 
 		<config-description>
+			<parameter name="room" type="text" required="false">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>Thermostat Name</label>
+				<description>The Thermostat description.</description>
+			</parameter>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -69,9 +95,22 @@
 		</channels>
 
 		<config-description>
+			<parameter name="room" type="text" required="false">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>Thermostat Name</label>
+				<description>The Thermostat description.</description>
+			</parameter>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -89,9 +128,22 @@
 		</channels>
 
 		<config-description>
+			<parameter name="room" type="text" required="false">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>Thermostat Name</label>
+				<description>The Ecoswitch description.</description>
+			</parameter>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -110,9 +162,22 @@
 		</channels>
 
 		<config-description>
+			<parameter name="room" type="text" required="false">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false">
+				<label>Thermostat Name</label>
+				<description>The description.</description>
+			</parameter>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
