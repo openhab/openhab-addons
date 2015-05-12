@@ -43,7 +43,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
-import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.message.C_Message;
 import org.openhab.binding.max.internal.message.Device;
 import org.openhab.binding.max.internal.message.DeviceConfiguration;
@@ -75,8 +74,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler {
-	// TODO: optional configuration to get the actual temperature on a
-	// configured interval by changing the valve / temp setting
 
 	public MaxCubeBridgeHandler(Bridge br) {
 		super(br);
@@ -198,10 +195,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
 		startAutomaticRefresh();
-
-		// workaround for issue #92: getHandler() returns NULL after
-		// configuration update. :
-		getThing().setHandler(this);
 	}
 
 	private synchronized void startAutomaticRefresh() {
