@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="avmfritz"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Supported Fritz! devices and features -->
+    <thing-type id="FRITZ_DECT_200">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+		</supported-bridge-type-refs>
+
+        <label>FRITZ!DECT 200</label>
+        <description>FRITZ!DECT200 switchable outlet</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
+
+		<config-description>
+			<parameter name="ain" type="text" required="true">
+				<label>AIN</label>
+				<description>The AHA id (AIN) that identifies one specific device.</description>
+			</parameter>
+		</config-description>
+    </thing-type>
+
+    <thing-type id="FRITZ_Powerline_546E">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+		</supported-bridge-type-refs>
+
+        <label>FRITZ!Powerline 546E</label>
+        <description>FRITZ!Powerline 546E with switchable outlet</description>
+
+		<channels>
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
+
+		<config-description>
+			<parameter name="ain" type="text" required="true">
+				<label>AIN</label>
+				<description>The AHA id (AIN) that identifies one specific device.</description>
+			</parameter>
+		</config-description>
+    </thing-type>
+
+    <thing-type id="FRITZ_Powerline_546E_Solo">
+        <label>FRITZ!Powerline 546E</label>
+        <description>FRITZ!Powerline 546E with switchable outlet</description>
+
+		<channels>
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The local IP address or hostname of the FRITZ!Box
+				</description>
+				<default>fritz.powerline</default>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="0"
+				max="65335">
+				<label>Port</label>
+				<description>Port of the FRITZ!Box</description>
+			</parameter>
+			<parameter name="protocol" type="text" required="false">
+				<label>Protocol</label>
+				<description>Protocol to connect to the FRITZ!Box (http or https)</description>
+				<default>http</default>
+				<options>
+					<option value="http">HTTP</option>
+					<option value="https">HTTPS</option>
+				</options>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the FRITZ!Box device.
+				</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false" min="5" max="60">
+				<label>Polling Interval</label>
+				<description>Interval polling the FRITZ!Box.
+				</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="asyncTimeout" type="integer" required="false" min="1000" max="60000">
+				<label>Async Timeout</label>
+				<description>Timeout for asynchronous connections.
+				</description>
+				<default>10000</default>
+			</parameter>
+			<parameter name="syncTimeout" type="integer" required="false" min="500" max="15000">
+				<label>Sync Timeout</label>
+				<description>Timeout for synchronous connections.
+				</description>
+				<default>2000</default>
+			</parameter>
+		</config-description>
+    </thing-type>
+
+	<!-- Channel definitions of fritz devices -->
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Actual Temperature</label>
+		<description>Actual measured temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy">
+		<item-type>Number</item-type>
+		<label>Energy Consumption</label>
+		<description>Accumulated energy consumption</description>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Current power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+    <channel-type id="outlet">
+        <item-type>Switch</item-type>
+        <label>Outlet</label>
+        <description>Switched outlet</description>
+        <category>PowerOutlet</category>
+		<state readOnly="false"/>
+    </channel-type>
+
+</thing:thing-descriptions>
