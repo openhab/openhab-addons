@@ -6,7 +6,7 @@ angular.module('ZooLib.directives.usageTable', []).directive('usageTable', funct
     replace: true,
     templateUrl: 'partials/directives/usageTable.html',
     link: function(scope, elem, attr) {
-      var activePowerItems, addZ, consumptionItems, queries, queryDiff, rearrangeConsumptionData;
+      var activePowerItems, addZ, consumptionItems, getMonday, queries, queryDiff, rearrangeConsumptionData;
       consumptionItems = $q.defer();
       itemService.getByName({
         itemName: 'gConsumptions'
@@ -32,31 +32,41 @@ angular.module('ZooLib.directives.usageTable', []).directive('usageTable', funct
           return '' + n;
         }
       };
-      queryDiff = function(minusDay, minusMonth) {
-        var d, date, m, y;
-        if (minusDay == null) {
-          minusDay = 0;
+      getMonday = function(date) {
+        var day;
+        day = date.getDay() || 7;
+        if (day !== 1) {
+          date.setHours(-24 * (day - 1));
         }
-        if (minusMonth == null) {
-          minusMonth = 0;
+        return date;
+      };
+      queryDiff = function(mode) {
+        var d, date, m, y;
+        if (mode == null) {
+          mode = 'd';
         }
         date = new Date();
         date.setHours(0, 0, 0, 0);
-        date.setDate(date.getDate() - minusDay);
-        date.setMonth(date.getMonth() - minusMonth);
+        switch (mode) {
+          case 'w':
+            getMonday(date);
+            break;
+          case 'm':
+            date.setDate(1);
+        }
         y = date.getFullYear();
         m = addZ(date.getMonth() + 1);
         d = addZ(date.getDate());
         return influxDb.query({
           query: "select difference(value) as diff from /^consum/i where time > '" + y + "-" + m + "-" + d + "'"
         }, function(data) {
-          return console.log("Influx response to time " + date + " arrived. " + (data != null ? data.length : void 0) + " rows.");
+          return console.log("Influx response to time " + mode + " " + date + " arrived. " + (data != null ? data.length : void 0) + " rows.");
         });
       };
       queries = $q.all({
-        day: queryDiff(0).$promise,
-        week: queryDiff(7).$promise,
-        month: queryDiff(0, 1).$promise,
+        day: queryDiff('d').$promise,
+        week: queryDiff('w').$promise,
+        month: queryDiff('m').$promise,
         items: consumptionItems.promise,
         power: activePowerItems.promise
       });
@@ -70,10 +80,14 @@ angular.module('ZooLib.directives.usageTable', []).directive('usageTable', funct
           room.currentPower = 0;
           room.consumptionDay = room.consumptionWeek = room.consumptionMonth = 0;
           return (ref = room.members) != null ? ref.forEach(function(roomMember) {
-            room.consumptionDay += Math.abs(lut.day[roomMember.name]);
-            room.consumptionWeek += Math.abs(lut.week[roomMember.name] + room.consumptionDay);
-            room.consumptionMonth += Math.abs(lut.month[roomMember.name] + room.consumptionWeek);
-            return room.cost = room.consumptionMonth * .3;
+            var d, m, w;
+            d = Math.abs(lut.day[roomMember.name] || 0);
+            w = Math.abs(lut.week[roomMember.name] || 0);
+            m = Math.abs(lut.month[roomMember.name] || 0);
+            room.consumptionDay += d;
+            room.consumptionWeek += w;
+            room.consumptionMonth += m;
+            room.cost = room.consumptionMonth * .3;
           }) : void 0;
         });
       });
