@@ -29,6 +29,7 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
 //import org.apache.http.impl.client.DefaultHttpClient;
 //import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicHeader;
@@ -48,7 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.BitSet;
@@ -181,25 +181,8 @@ public class ProxyServlet extends HttpServlet {
 	 * SystemDefaultHttpClient uses PoolingClientConnectionManager. In any case,
 	 * it should be thread-safe.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected HttpClient createHttpClient(HttpParams hcParams) {
-		try {
-			// as of HttpComponents v4.2, this class is better since it uses
-			// System
-			// Properties:
-			Class clientClazz = Class
-					.forName("org.apache.http.impl.client.SystemDefaultHttpClient");
-			Constructor constructor = clientClazz
-					.getConstructor(HttpParams.class);
-			return (HttpClient) constructor.newInstance(hcParams);
-		}/* catch (ClassNotFoundException e) {
-			// no problem; use v4.1 below
-		}*/ catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-		// Fallback on using older client:
-		//return new DefaultHttpClient(new ThreadSafeClientConnManager(),				hcParams);
+	protected SystemDefaultHttpClient createHttpClient(HttpParams hcParams) {
+		return new SystemDefaultHttpClient(hcParams);
 	}
 
 	/**

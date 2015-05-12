@@ -9,6 +9,7 @@
     <thead>
     <tr>
       <th></th>
+      <th>Current</th>
       <th>Today</th>
       <th>Weekly</th>
       <th>Monthly</th>
@@ -18,8 +19,8 @@
     <tbody>
     <tr ng-repeat="room in data.rooms">
       <th>{{room.label}}</th>
-      <td><span class="white">{{room.state | consumption:1}}</span></td>
-      <td><span class="green">{{room.state | consumption:0}}</span></td>
+      <td><span class="white">{{room.currentPower | consumption:1}}</span></td>
+      <td><span class="green">{{room.consumptionDay | consumption:0}}</span></td>
       <td><span class="orange">{{room.consumptionWeek | consumption:0}}</span></td>
       <td><span class="red">{{room.consumptionMonth | consumption:0}}</span></td>
       <td>{{room.cost | currency:'$':0}}</td>
