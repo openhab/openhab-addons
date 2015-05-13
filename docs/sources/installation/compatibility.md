@@ -16,7 +16,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Comfo Air |  |  |  |
 | Config Admin |  |  |  |
 | CUL | X | X |  |
-| CUPS |  |  |  |
+| CUPS |  |  | 2.0 version available (renamed to IPP) |
 | Davis |  |  |  |
 | digitalSTROM |  |  |  |
 | DSC Alarm |  |  |  |

@@ -111,3 +111,4 @@ Number Scene_General			"Scene"					<sofa>
 Number Radio_Station			"Radio"					<network>
 Dimmer Volume 					"Volume [%.1f %%]"
 Number Temperature_Setpoint		"Temperature [%.1f °C]" <temperature>
+Location DemoLocation			"Brandenburg Gate Berlin"

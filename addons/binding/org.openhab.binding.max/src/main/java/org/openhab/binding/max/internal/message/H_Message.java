@@ -21,18 +21,18 @@ import com.google.common.base.Strings;
 /**
 * The H message contains information about the MAX!Cube. 
 * 
-* @author Andreas Heil (info@aheil.de)
-* @author Marcel Verpaalen - Details parsing
+* @author Andreas Heil (info@aheil.de) - Initial version
+* @author Marcel Verpaalen - Details parsing, OH2 version
 * @since 1.4.0
 */
 public final class H_Message extends Message {
 	
 	private Calendar cal = Calendar.getInstance();
-	private Map<String, Object> properties = new HashMap<>();
+	public Map<String, Object> properties = new HashMap<>();
 
 	
 	private String rawSerialNumber = null;
-	private String rawRfHexAddress = null;
+	private String rawRFAddress = null;
 	private String rawFirmwareVersion = null;
 	private String rawConnectionId = null;
 	private String rawDutyCycle = null;
@@ -54,8 +54,8 @@ public final class H_Message extends Message {
 		}
 		
 		rawSerialNumber = tokens[0];
-		rawRfHexAddress = tokens[1];
-		rawFirmwareVersion = tokens[2];
+		rawRFAddress = tokens[1];
+		rawFirmwareVersion = tokens[2].substring(0, 2) + "." + tokens[2].substring(2,4);
 		rawUnknownfield4 = tokens[3];
 		rawConnectionId = tokens[4];
 		rawDutyCycle =  Integer.toString(Utils.fromHex(tokens[5]));
@@ -66,7 +66,7 @@ public final class H_Message extends Message {
 		rawCubeTimeState  = tokens[9];
 		rawNTPCounter  = Integer.toString(Utils.fromHex(tokens[10]) ) ;
 		properties.put("Serial number", rawSerialNumber);
-		properties.put("RF address (HEX)", rawRfHexAddress);
+		properties.put("RF address (HEX)", rawRFAddress);
 		properties.put("Firmware version", rawFirmwareVersion);
 		properties.put("Connection ID", rawConnectionId);
 		properties.put("Unknown", rawUnknownfield4);
@@ -75,6 +75,71 @@ public final class H_Message extends Message {
 		properties.put("CubeTimeState", rawCubeTimeState);
 		properties.put("NTPCounter", rawNTPCounter);
 	}
+
+	
+	/**
+	 * @return the Serial Number
+	 */
+	public String getSerialNumber() {
+		return rawSerialNumber;
+	}
+
+
+	/**
+	 * @return the Rf Address
+	 */
+	public String getRFAddress() {
+		return rawRFAddress;
+	}
+
+
+	/**
+	 * @return the Firmware Version
+	 */
+	public String getFirmwareVersion() {
+		return rawFirmwareVersion;
+	}
+
+
+	/**
+	 * @return the ConnectionId
+	 */
+	public String getConnectionId() {
+		return rawConnectionId;
+	}
+
+
+	/**
+	 * @return the DutyCycle
+	 */
+	public int getDutyCycle() {
+		return  Integer.parseInt(rawDutyCycle);
+	}
+
+
+	/**
+	 * @return the FreeMemorySlots
+	 */
+	public int getFreeMemorySlots() {
+		return  Integer.parseInt(rawFreeMemorySlots);
+	}
+
+
+	/**
+	 * @return the CubeTimeState
+	 */
+	public String getCubeTimeState() {
+		return rawCubeTimeState;
+	}
+
+
+	/**
+	 * @return the NTPCounter
+	 */
+	public String getNTPCounter() {
+		return rawNTPCounter;
+	}
+
 
 	private final void setDateTime(String hexDate, String hexTime) {
 		
