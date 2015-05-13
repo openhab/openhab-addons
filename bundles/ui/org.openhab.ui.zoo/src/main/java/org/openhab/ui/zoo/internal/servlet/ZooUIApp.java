@@ -29,7 +29,7 @@ public class ZooUIApp {
 	public static final String WEB_DIST_FOLDER = "web_dist";
 	public static final String WEB_FOLDER = "web";
 	public static final String DEBUG_PARAMETER_NAME = "webDebug";
-	private static final String DEFAULT_INFLUX_URI = "http://openhab:openhab@127.0.0.1:8083";
+	private static final String DEFAULT_INFLUX_URI = "http://openhab:openhab@127.0.0.1:8086";
 	public static final String INFLUX_URI_PARAMETER_NAME = "influxDbUri";
 
 	protected HttpService httpService;
