@@ -215,6 +215,11 @@ module.exports = function(grunt) {
           src: 'fonts/{,*/}*.*'
         }, {
           '<%= config.dist %>/favicon.ico' : '<%= config.app %>/img/favicon.ico'
+        }, {
+          expand: true,
+          cwd: '<%= config.app %>/bower_components/fontawesome/fonts',
+          dest:'<%= config.dist %>/fonts/',
+          src: '*'
         }]
       }
     }
