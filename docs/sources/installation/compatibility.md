@@ -86,7 +86,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Swegon ventilation | X | X |  |
 | TCP/UDP |  |  |  |
 | Tellstick |  |  |  |
-| TinkerForge |  |  |  |
+| TinkerForge | X | X  | 2.0 version planned |
 | VDR |  |  |  |
 | Velleman-K8055 |  |  |  |
 | Wake-on-LAN |  |  |  |
