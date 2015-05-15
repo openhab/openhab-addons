@@ -96,7 +96,7 @@
 		<state min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
-	<channel-type id="volumeChannelDb">
+	<channel-type id="volumeChannelDb" advanced="true">
 		<item-type>Number</item-type>
 		<label>Volume</label>
 		<description>Set the volume level (dB)</description>
