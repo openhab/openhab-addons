@@ -25,7 +25,7 @@ import static org.openhab.binding.mox.protocol.MoxMessageBuilder.messageBuilder;
  */
 public class MoxConnector extends Thread {
 
-	private static final int RECEIVE_BUFFER_LENGTH = 1024;
+	private static final int RECEIVE_BUFFER_LENGTH = 32;
 
 	private static final int SOCKET_TIMEOUT = 20000;
 

@@ -32,7 +32,7 @@ public class MoxGatewaySendHandler {
 		this.bridge = bridge;
 		this.config = bridge.getConfiguration().as(MoxGatewayConfig.class);
 		logger.debug("Created new instance of MoxGatewaySendHandler which sends to {}:{}", config.udpHost,
-					 config.udpPort);
+					 config.targetUdpPort);
 	}
 
 	/**

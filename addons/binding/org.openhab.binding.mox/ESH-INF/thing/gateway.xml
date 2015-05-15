@@ -17,10 +17,17 @@
                 <required>true</required>
                 <default>localhost</default>
             </parameter>
-            <parameter name="udpPort" type="integer" min="1" max="65535">
+            <parameter name="targetUdpPort" type="integer" min="1" max="65535">
                 <context>network_address</context>
                 <label>Port</label>
                 <description>Port of the MOX Gateway.</description>
+                <required>true</required>
+                <default>6670</default>
+            </parameter>
+            <parameter name="listenUdpPort" type="integer" min="1024" max="65535">
+                <context>network_address</context>
+                <label>Port</label>
+                <description>Port the MOX Gateway sends to.</description>
                 <required>true</required>
                 <default>6666</default>
             </parameter>

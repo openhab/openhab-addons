@@ -55,9 +55,9 @@ public class MoxGatewayHandler extends BaseThingHandler implements MoxMessageLis
 		try {
 			MoxGatewayConfig config = getConfigAs(MoxGatewayConfig.class);
 
-			if (isNotBlank(config.udpHost) && config.udpPort != null) {
-				logger.info("Listen for MOX datagrams on port {} on all interfaces.", config.udpPort);
-				connector = new MoxConnector(config.udpHost, config.udpPort);
+			if (isNotBlank(config.udpHost) && config.listenUdpPort != null) {
+				logger.info("Listen for MOX datagrams on port {} on all interfaces.", config.listenUdpPort);
+				connector = new MoxConnector(config.udpHost, config.listenUdpPort);
 			}
 
 			connector.setMessageHandler(this);
