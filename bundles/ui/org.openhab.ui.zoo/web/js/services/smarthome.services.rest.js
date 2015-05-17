@@ -30,7 +30,7 @@ smartHomeModule.factory('itemService', function($resource) {
             },
             url : '/rest/items/:itemName',
             headers : {
-                'Content-Type' : 'text/plain'
+                'Content-Type' : 'application/json'
             }
         },
         updateState : {

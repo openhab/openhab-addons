@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('ZooLib.directives.usageTable', []).directive 'usageTable', (itemService, influxDb, $q) ->
+angular.module('ZooLib.directives.usageTable', []).directive 'usageTable', (itemService, influxDb, $q, $log) ->
 	restrict: 'E'
 	replace: yes
 	templateUrl: 'partials/directives/usageTable.html'
@@ -39,7 +39,7 @@ angular.module('ZooLib.directives.usageTable', []).directive 'usageTable', (item
 			m = addZ (date.getMonth() + 1)
 			d = addZ date.getDate()
 			influxDb.query query:"select difference(value) as diff from /^consum/i where time > '#{y}-#{m}-#{d}'", (data) ->
-				console.log "Influx response to time #{mode} #{date} arrived. #{data?.length} rows."
+				#$log.debug "Influx response to time #{mode} #{date} arrived. #{data?.length} rows."
 
 		queries = $q.all
 			day: queryDiff('d').$promise
@@ -49,7 +49,7 @@ angular.module('ZooLib.directives.usageTable', []).directive 'usageTable', (item
 			power: activePowerItems.promise
 
 		queries.then (data) ->
-			console.log data
+			#$log.debug data
 			scope.data = data.items
 
 			lut = rearrangeConsumptionData data

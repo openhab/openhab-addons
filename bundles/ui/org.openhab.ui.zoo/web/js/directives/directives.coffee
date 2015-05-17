@@ -7,4 +7,5 @@ angular.module('ZooLib.directives', [
 	'ZooLib.directives.navState'
 	'ZooLib.directives.weatherWidget'
 	'ZooLib.directives.usageTable'
+	'ZooLib.directives.magnificPopup'
 ])

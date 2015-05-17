@@ -5,10 +5,10 @@
       <li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room})">Active <small>({{ctrl.rooms[$stateParams.room].members.length-1}})</small></a></li>
 
       <!-- Scenes in that room -->
-      <li><a ui-sref-active="selected" ui-sref="rooms.room({scenes: true})">Scenes <small>({{ctrl.scenes[$stateParams.room].length}})</small></a></li>
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({scenes: true})">Scenes <small>({{ctrl.scenes.length}})</small></a></li>
 
       <!-- All devices, regardeless of the room: -->
-      <li><a ui-sref-active="selected" ui-sref="rooms.room({active: true})">All on <small>({{ctrl.itemsActive.length}})</small></a></li>
+      <li><a ui-sref-active="selected" ui-sref="rooms.room({all: true})">All <small>({{ctrl.items.length}})</small></a></li>
     </ul>
   </nav>
 
@@ -27,6 +27,34 @@
           <div ng-switch-default><!-- Unsupported type {{item.type}}: {{item.name}} --></div>
         </li>
       </ul>
+      <a href="#dialogSaveScene" magnific-popup class="btn btn-block popup-with-move-anim">Save Scene</a>
+
+      <div id="dialogSaveScene" class="zoom-anim-dialog dialog dialog-small mfp-hide">
+        <div class="dialog-header">
+          <h3>New scene</h3>
+        </div>
+
+        <form name="ctrl.newSceneForm">
+        <div class="dialog-content">
+          <label>
+            <p class="small-margin"><strong>Scene name</strong></p>
+            <input type="text" class="field" name="name" ng-model="ctrl.newScene.name" required>
+          </label>
+        </div>
+        </form>
+
+        <div class="dialog-footer">
+          <div class="row fixed-row">
+            <div class="col6">
+              <a class="popup-modal-dismiss cancel" href ng-click="closePopup()"><strong>CANCEL</strong></a>
+            </div>
+            <div class="col6 text-right">
+              <a class="popup-modal-dismiss btn" href ng-click="ctrl.saveNewScene(closePopup)">Save</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </li>
   </ul>
 </div>

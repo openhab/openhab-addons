@@ -15,14 +15,11 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
 }).factory('homeGroupRepository', function(DataCache, groupSetupService) {
   return DataCache.init(groupSetupService);
 }).factory('itemRepository', function(DataCache, itemService, $log, $q) {
-  var GROUP_ROOMS, ItemRepository, TAG_CONSUMPTION, TAG_MASTER, TAG_ROOM;
-  TAG_ROOM = 'room';
-  TAG_MASTER = 'master-switch';
+  var GROUP_ROOMS, GROUP_SCENES, ItemRepository;
   GROUP_ROOMS = 'gRooms';
-  TAG_CONSUMPTION = 'consumption';
+  GROUP_SCENES = 'gScenes';
   return new (ItemRepository = (function() {
     function ItemRepository() {
-      DataCache.init(itemService);
       this.rooms = {};
       this.itemsActive = [];
     }
@@ -37,38 +34,89 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
       return ((ref = item.groupNames) != null ? ref.indexOf(group) : void 0) >= 0;
     };
 
-    ItemRepository.prototype.getRooms = function(force) {
+    ItemRepository.prototype.getRooms = function() {
       var defered;
       defered = $q.defer();
-      DataCache.getAll(force).then((function(_this) {
+      itemService.getByName({
+        itemName: GROUP_ROOMS
+      }, (function(_this) {
         return function(data) {
-          _this.itemsActive = [];
-          data.forEach(function(item) {
-            if (item.type === 'GroupItem' && _this.hasGroup(item, GROUP_ROOMS) && !_this.hasTag(item, TAG_CONSUMPTION)) {
-              return _this.rooms[item.name] = angular.copy(item);
-            }
+          var result;
+          result = {};
+          data.members.forEach(function(member) {
+            return result[member.name] = member;
           });
-          return defered.resolve(_this.rooms);
+          return defered.resolve(result);
         };
       })(this));
       return defered.promise;
     };
 
-    ItemRepository.prototype.getMasterSwitchFromGroup = function(group) {
-      var members;
-      if (!group) {
-        return null;
-      }
-      members = group.map(function(member) {
-        if (this.hasTag(member, TAG_MASTER)) {
-          return member;
+    ItemRepository.prototype.getScenes = function() {
+      var defered;
+      defered = $q.defer();
+      itemService.getByName({
+        itemName: GROUP_SCENES
+      }, function(data) {
+        var scenes;
+        scenes = data.members.map(function(scene) {
+          var sceneData;
+          sceneData = scene.state === 'Uninitialized' ? {} : JSON.parse(scene.state);
+          return {
+            name: scene.name,
+            data: sceneData
+          };
+        });
+        return defered.resolve(scenes);
+      }, function(err) {
+        if (err.status === 404) {
+          $log.debug("Group for Scenes " + GROUP_SCENES + " did not exist, creating it");
+          itemService.create({
+            itemName: GROUP_SCENES,
+            type: 'GroupItem',
+            category: 'scenes',
+            groupNames: [],
+            tags: []
+          }, null, (function(err) {
+            return $log.error("Error creating group " + GROUP_SCENES, err);
+          }));
+          return defered.resolve({
+            members: []
+          });
+        } else {
+          $log.error("Error on loading group " + GROUP_SCENES);
+          return $log.debug(err);
         }
       });
-      if (members.length !== 1) {
-        return $log.error("Group " + group.name + " has more than one member tagged as master!");
-      } else {
-        return members[0];
-      }
+      return defered.promise;
+    };
+
+    ItemRepository.prototype.createNewScene = function(name, items) {
+      var defered, fnError, fnSuccessItemCreate, sceneData;
+      defered = $q.defer();
+      sceneData = items.map(function(item) {
+        return {
+          name: item.name,
+          state: item.state
+        };
+      });
+      fnError = function(err) {
+        return defered.reject(err);
+      };
+      fnSuccessItemCreate = function() {
+        return itemService.updateState({
+          itemName: name,
+          state: JSON.stringify(sceneData)
+        }, defered.resolve, fnError);
+      };
+      itemService.create({
+        itemName: name,
+        type: 'StringItem',
+        category: 'scenes',
+        tags: [],
+        groupNames: [GROUP_SCENES]
+      }, fnSuccessItemCreate, fnError);
+      return defered.promise;
     };
 
     return ItemRepository;
