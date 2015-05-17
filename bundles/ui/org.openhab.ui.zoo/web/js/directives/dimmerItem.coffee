@@ -40,6 +40,7 @@ angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log
 			updateOpacity()
 			ranger.setStart scope.local.dimValue
 			scope.options.cssIconClass = iconResolver scope.item
+			$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
 
 		updateOpacity = ->
 			newOpacity = scope.local.dimValue / 100
@@ -88,7 +89,6 @@ angular.module('ZooLib.directives.dimmerItem', []).directive 'dimmerItem', ($log
 			$log.debug "Dimmer: Command #{scope.item.name} to #{newState}"
 			scope.item.state = newState
 			updateItem newState
-			$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
 
 		# If item's state is changed, either by filling this isol. scope
 		# or by reload, re-initialize all values.

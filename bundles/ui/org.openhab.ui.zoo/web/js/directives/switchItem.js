@@ -18,7 +18,8 @@ angular.module('ZooLib.directives.switchItem', []).directive('switchItem', funct
       };
       updateItem = function(newState) {
         scope.options.cssIconClass = iconResolver(scope.item);
-        return scope.local.state = newState;
+        scope.local.state = newState;
+        return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
       };
       scope.handleChange = function() {
         $log.debug("Switch Item " + scope.item.name + " changed to " + scope.local.state);
@@ -28,8 +29,7 @@ angular.module('ZooLib.directives.switchItem', []).directive('switchItem', funct
       };
       handleBroadcast = function(event, newState) {
         scope.item.state = newState;
-        updateItem(newState);
-        return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
+        return updateItem(newState);
       };
       scope.$watch('item', function(item) {
         if (item == null) {

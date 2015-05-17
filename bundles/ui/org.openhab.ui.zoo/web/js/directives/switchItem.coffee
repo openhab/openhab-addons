@@ -18,6 +18,7 @@ angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log
 		updateItem = (newState) ->
 			scope.options.cssIconClass = iconResolver(scope.item)
 			scope.local.state = newState
+			$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
 
 		scope.handleChange = ->
 			$log.debug "Switch Item #{scope.item.name} changed to #{scope.local.state}"
@@ -26,7 +27,6 @@ angular.module('ZooLib.directives.switchItem', []).directive 'switchItem', ($log
 		handleBroadcast = (event, newState) ->
 			scope.item.state = newState
 			updateItem newState
-			$rootScope.$broadcast "updateMasterSwitch/#{scope.item.groupNames[0]}"
 
 		scope.$watch 'item', (item) ->
 			return unless item?

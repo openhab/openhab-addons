@@ -54,7 +54,8 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
         scope.local.stateOnOff = translateStateOnOff(newState);
         updateOpacity();
         ranger.setStart(scope.local.dimValue);
-        return scope.options.cssIconClass = iconResolver(scope.item);
+        scope.options.cssIconClass = iconResolver(scope.item);
+        return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
       };
       updateOpacity = function() {
         var newOpacity;
@@ -104,8 +105,7 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
       handleBroadcast = function(event, newState) {
         $log.debug("Dimmer: Command " + scope.item.name + " to " + newState);
         scope.item.state = newState;
-        updateItem(newState);
-        return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
+        return updateItem(newState);
       };
       scope.$watch('item', function(item) {
         if (item == null) {
