@@ -35,7 +35,7 @@
 							  <Arg>
 							    <New class="org.eclipse.jetty.rewrite.handler.RedirectRegexRule">
 							      <Set name="regex">/$</Set>
-							      <Set name="replacement">/start/index.html</Set>
+							      <Set name="replacement">/start/index</Set>
 							    </New>
 							  </Arg>
 							</Call>

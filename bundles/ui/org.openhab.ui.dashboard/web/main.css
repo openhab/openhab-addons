@@ -108,7 +108,7 @@ section {
     background-image: url('img/habmin.png');
 }
 
-.link.rest .body {
+.link.ui-restapi .body {
     background-image: url('img/restapi.png');
 }
 

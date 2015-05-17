@@ -16,6 +16,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>org.openhab.ui.classicui</module>
     <module>org.openhab.ui.paperui</module>
   </modules>
 
