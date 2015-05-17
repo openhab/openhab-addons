@@ -39,6 +39,10 @@ public class MoxMessageBuilder {
 		return instance;
 	}
 	
+	public synchronized static MoxMessageBuilder messageBuilder() {
+		return messageBuilder(new MoxMessage());
+	}
+	
 	public MoxMessageBuilder withOid(int oid) {
 		message.setOid(oid);
 		return this;
@@ -81,12 +85,17 @@ public class MoxMessageBuilder {
 		
 		int subFnCode = message.getSubFunctionCode();
 		int fnCode = message.getFunctionCode();
+		int suboid = message.getSuboid();
 		
-		MoxCommandCode commandCode = MoxCommandCode.valueOf(subFnCode, fnCode);
+		MoxCommandCode commandCode = MoxCommandCode.valueOf(subFnCode, fnCode, suboid);
 		
-		if (logger.isWarnEnabled() && commandCode!=null && MoxStatusCode.valueOf(subFnCode, fnCode) != null) {
+		if (logger.isWarnEnabled() && commandCode!=null && MoxStatusCode.valueOf(subFnCode, fnCode) != null && MoxSuboid.isChannelSuboid(suboid)) {
 			logger.warn("There seem to be a package combination which match on command and status codes. "
 					+ "By default this is interpreted as commandCode. subFnCode={} fnCode={}", subFnCode, fnCode);
+		}
+		
+		if (isSystemMessage(message.getPriority(), message.getOid(), suboid)) {
+			logger.info("This was a system setup/discovery message, which is unimplemented right now.");
 		}
 		
 		if (commandCode != null) {
@@ -104,6 +113,10 @@ public class MoxMessageBuilder {
 		return this;
 	}
 	
+	private boolean isSystemMessage(int priority, int oid, int suboid) {
+		return priority == 0 && oid == 0x3ffff && suboid == 0;
+	}
+
 	private void setStatusCodeValues(MoxMessage message,
 			MoxStatusCode code, byte[] rawdata) {
 		message.setEventName(code.name());
@@ -203,7 +216,7 @@ public class MoxMessageBuilder {
 			case GET_POWER_APARENT:
 			case GET_POWER_FACTOR:
 			case GET_POWER_REACTIVE:
-				message.setSuboid(MoxSuboid.REM_DATA.getSuboid());
+				message.setSuboid(code.getSuboid());
 				bytes = new byte[10];
 				break;
 			default:

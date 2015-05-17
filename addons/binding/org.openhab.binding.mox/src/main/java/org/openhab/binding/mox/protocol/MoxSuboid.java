@@ -34,4 +34,8 @@ public enum MoxSuboid {
 	public int getSuboid() {
 		return suboid;
 	}
+	
+	public static boolean isChannelSuboid(int suboid) {
+		return suboid >= CHANNEL1.getSuboid() && suboid <= CHANNEL8.getSuboid();
+	}
 }

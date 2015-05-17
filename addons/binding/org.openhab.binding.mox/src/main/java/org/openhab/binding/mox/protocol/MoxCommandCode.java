@@ -14,28 +14,30 @@ package org.openhab.binding.mox.protocol;
 public enum MoxCommandCode implements MoxCode {
 
 		// REM
-		GET_POWER_ACTIVE(0x2, 0x102),
-		GET_POWER_REACTIVE(0x3, 0x102),
-		GET_POWER_APARENT(0x4, 0x102),
-		GET_POWER_FACTOR(0x5, 0x102),
-		GET_POWER_ACTIVE_ENERGY(0x6, 0x102),
+		GET_POWER_ACTIVE(0x2, 0x102, MoxSuboid.REM_DATA),
+		GET_POWER_REACTIVE(0x3, 0x102, MoxSuboid.REM_DATA),
+		GET_POWER_APARENT(0x4, 0x102, MoxSuboid.REM_DATA),
+		GET_POWER_FACTOR(0x5, 0x102, MoxSuboid.REM_DATA),
+		GET_POWER_ACTIVE_ENERGY(0x6, 0x102, MoxSuboid.REM_DATA),
 
 		// Actor
-		GET_ONOFF(0x1, 0x102),
-		GET_LUMINOUS(0x3, 0x102),
+		GET_ONOFF(0x1, 0x102, MoxSuboid.CHANNEL1),
+		GET_LUMINOUS(0x3, 0x102, MoxSuboid.CHANNEL1),
 
 		// Modify status
-		SET_ONOFF(0x1, 0x203),
-		SET_LUMINOUS(0x2, 0x206),
-		INCREASE(0x1, 0x406),
-		DECREASE(0x2, 0x406);
+		SET_ONOFF(0x1, 0x203, MoxSuboid.CHANNEL1),
+		SET_LUMINOUS(0x2, 0x206, MoxSuboid.CHANNEL1),
+		INCREASE(0x1, 0x406, MoxSuboid.CHANNEL1),
+		DECREASE(0x2, 0x406, MoxSuboid.CHANNEL1);
 		
 		private int low;
 		private int high;
+		private MoxSuboid suboid;
 		
-		MoxCommandCode(int low, int high) {
+		MoxCommandCode(int low, int high, MoxSuboid suboid) {
 			this.low = low;
 			this.high = high;
+			this.suboid = suboid;
 		}
 		
 		/* (non-Javadoc)
@@ -54,9 +56,13 @@ public enum MoxCommandCode implements MoxCode {
 			return high;
 		}
 		
-		public static MoxCommandCode valueOf(int low, int high) {
+		public int getSuboid() {
+			return suboid.getSuboid();
+		}
+		
+		public static MoxCommandCode valueOf(int low, int high, int suboid) {
 			for (MoxCommandCode code : MoxCommandCode.values()) {
-				if (code.getLow() == low && code.getHigh() == high) {
+				if (code.getLow() == low && code.getHigh() == high && code.getSuboid() == suboid) {
 					return code;
 				}
 			}

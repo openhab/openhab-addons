@@ -90,14 +90,14 @@ public class MoxConnector extends Thread {
 	public void run() {
 		byte[] buffer;
 		DatagramPacket packet = null;
+		MoxMessage moxMessage;
 		if (!interrupted) {
 			do {
 				try {
 					buffer = new byte[RECEIVE_BUFFER_LENGTH];
 					packet = new DatagramPacket(buffer, buffer.length);
 					socket.receive(packet);
-					MoxMessage moxMessage = messageBuilder(
-							new MoxMessage()).parseFrom(packet.getData()).build();
+					moxMessage = messageBuilder().parseFrom(packet.getData()).build();
 
 					if (logger.isTraceEnabled()) {
 						logger.trace("Received MOX Message [{}]", moxMessage.toStringForTrace());
