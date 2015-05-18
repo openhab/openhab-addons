@@ -48,7 +48,7 @@ public class DashboardServlet extends HttpServlet {
             String entry = entryTemplate.replace("<!--name-->", tile.getName());
             entry = entry.replace("<!--url-->", tile.getUrl());
             entry = entry.replace("<!--overlay-->", tile.getOverlay());
-            entry = entry.replace("<!--icon-->", tile.getName().toLowerCase().replaceAll(" ", ""));
+            entry = entry.replace("<!--icon-->", tile.getImageUrl());
             entries.append(entry);
         }
         resp.setContentType("text/html;charset=UTF-8");
