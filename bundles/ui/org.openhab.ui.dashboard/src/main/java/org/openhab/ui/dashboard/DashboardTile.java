@@ -31,6 +31,13 @@ public interface DashboardTile {
     String getUrl();
     
     /**
+     * The url to point to for the dashboard tile.
+     * (if it is a local UI, it should be a relative path starting with "../")
+     * @return the tile url
+     */
+    String getImageUrl();
+
+    /**
      * An HTML5 overlay icon to use for the tile, e.g. "html5", "android" or "apple".
      * 
      * @return the overlay to use

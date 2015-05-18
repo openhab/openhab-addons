@@ -33,4 +33,9 @@ public class RESTDashboardTile implements DashboardTile {
         return "html5";
     }
 
+    @Override
+    public String getImageUrl() {
+        return "../doc/images/dashboardtile.png";
+    }
+
 }
