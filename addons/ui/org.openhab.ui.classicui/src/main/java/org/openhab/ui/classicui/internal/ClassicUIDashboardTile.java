@@ -32,4 +32,9 @@ public class ClassicUIDashboardTile implements DashboardTile {
     public String getOverlay() {
         return "html5";
     }
+
+    @Override
+    public String getImageUrl() {
+        return "img/classicui.png";
+    }
 }
