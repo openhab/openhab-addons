@@ -15,6 +15,7 @@
 		<exclude>**/demo*.*</exclude>
 		<exclude>conf/services/logging.cfg</exclude>
 	  	<exclude>**/persistence/*.persist</exclude>
+	  	<exclude>userdata/**</exclude>
 	  </excludes>
     </fileSet>
   </fileSets>
@@ -75,8 +76,6 @@
       <includes>
       	<include>org.eclipse.smarthome.ui:org.eclipse.smarthome.ui.paperui:jar:*</include>
       	<include>org.openhab.ui:org.openhab.ui.paperui:jar:*</include>
-      	<include>org.openhab.binding:*:jar:*</include>
-      	<include>org.eclipse.smarthome.binding:*:jar:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

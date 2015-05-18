@@ -8,24 +8,77 @@
   </formats>
   
   <includeBaseDirectory>false</includeBaseDirectory>
-  
   <fileSets>
     <fileSet>
       <outputDirectory>/</outputDirectory>
       <directory>openhabhome</directory>
 	  <useDefaultExcludes>false</useDefaultExcludes>
-	  <includes>
-	  	<include>conf/**</include>
-	  </includes>
+	  <excludes>
+	  	<exclude>userdata/**</exclude>
+	  </excludes>
     </fileSet>
   </fileSets>
- 
- <files>
+  <files>
+    <file>
+      <outputDirectory>/</outputDirectory>
+      <source>openhabhome/start.sh</source>
+      <fileMode>755</fileMode>
+    </file>
     <file>
       <outputDirectory>/</outputDirectory>
       <source>src/assemble/resources/README_demo.TXT</source>
       <destName>README.TXT</destName>
     </file>
+    <file>
+      <outputDirectory>/</outputDirectory>
+      <source>openhabhome/start_debug.sh</source>
+      <fileMode>755</fileMode>
+    </file>
   </files>
+
+  <dependencySets>
+    <dependencySet>
+    	<useStrictFiltering>true</useStrictFiltering>
+    	<useProjectArtifact>false</useProjectArtifact>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>runtime/server</outputDirectory>
+      <unpack>true</unpack>
+      <unpackOptions>
+				<!-- we need to manually exclude bundles that tycho adds to the product build
+				     (possibly because it includes optional dependencies). As these things are
+				     not needed for the runtime, we can decrease the zip size enormously.
+				-->
+				<excludes>
+					<exclude>**/com.ibm.icu_*.jar</exclude>
+					<exclude>**/org.eclipse.ui*.jar</exclude>
+					<exclude>**/org.eclipse.jface*.jar</exclude>
+					<exclude>**/org.eclipse.team*.jar</exclude>
+					<exclude>**/org.eclipse.debug*.jar</exclude>
+					<exclude>**/org.eclipse.jdt*</exclude>
+					<exclude>**/org.eclipse.compare*.jar</exclude>
+					<exclude>**/org.eclipse.search*.jar</exclude>
+					<exclude>**/org.eclipse.help*.jar</exclude>
+					<exclude>**/org.eclipse.equinox.launcher.win32*</exclude>
+					<exclude>**/org.eclipse.equinox.launcher.win32*</exclude>
+				</excludes>
+      </unpackOptions>      
+      <includes>
+      	<include>*:org.openhab.runtime.product:zip:*</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+    	<useStrictFiltering>true</useStrictFiltering>
+    	<useProjectArtifact>false</useProjectArtifact>
+		<useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>addons</outputDirectory>
+      <unpack>false</unpack>
+      <includes>
+      	<include>org.eclipse.smarthome.ui:org.eclipse.smarthome.ui.paperui:jar:*</include>
+      	<include>org.openhab.ui:org.openhab.ui.paperui:jar:*</include>
+      	<include>org.openhab.persistence:org.openhab.persistence.rrd4j:jar:*</include>
+      	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
   
 </assembly>
