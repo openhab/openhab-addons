@@ -32,4 +32,9 @@ public class PaperUIDashboardTile implements DashboardTile {
     public String getOverlay() {
         return "html5";
     }
+
+    @Override
+    public String getImageUrl() {
+        return "../ui/img/dashboardtile.png";
+    }
 }
