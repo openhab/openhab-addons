@@ -25,9 +25,10 @@
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.sonos</module>
-    <module>org.openhab.binding.pioneeravr</module>
+    <module>org.openhab.binding.tesla</module>
   </modules>
 
 </project>
