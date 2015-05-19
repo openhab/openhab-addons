@@ -91,6 +91,7 @@ This page is a community effort - please help filling the gaps and analysing pot
 | Velleman-K8055 |  |  |  |
 | Wake-on-LAN |  |  |  |
 | Waterkotte EcoTouch Heatpump |  |  |  |
+| Weather | - | X |  |
 | Wemo |  |  | 2.0 version available |
 | Withings |  |  |  |
 | XBMC |  |  |  |
