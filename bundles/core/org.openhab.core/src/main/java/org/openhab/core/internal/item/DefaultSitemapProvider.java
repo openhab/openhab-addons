@@ -40,7 +40,7 @@ public class DefaultSitemapProvider implements SitemapProvider {
 
 	@Override
 	public Sitemap getSitemap(String sitemapName) {
-		if(sitemapName.equals("default")) {
+		if(sitemapName.equals("_default")) {
 			SitemapImpl sitemap = (SitemapImpl) SitemapFactory.eINSTANCE.createSitemap();
 			FrameImpl mainFrame = (FrameImpl) SitemapFactory.eINSTANCE.createFrame();
 
@@ -48,7 +48,7 @@ public class DefaultSitemapProvider implements SitemapProvider {
 	        thingFrame.setLabel("Things");
 
 			sitemap.setLabel("Home");
-			sitemap.setName("default");
+			sitemap.setName("_default");
 
 			for(Item item : itemRegistry.getAll()) {
 				if(item instanceof GroupItem && (item.getTags().contains(ThingSetupManager.TAG_HOME_GROUP) || item.getTags().contains(ThingSetupManager.TAG_THING))) {
