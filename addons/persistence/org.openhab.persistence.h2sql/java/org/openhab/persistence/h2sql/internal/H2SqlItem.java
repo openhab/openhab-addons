@@ -18,8 +18,7 @@ import org.eclipse.smarthome.core.types.State;
 /**
  * This is a Java bean used to return historic items from a SQL database.
  * 
- * @author Chris Jackson
- * @since 1.8.0
+ * @author Chris Jackson - Initial contribution
  *
  */
 public class H2SqlItem implements HistoricItem {

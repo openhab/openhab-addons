@@ -17,8 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Extension of the default OSGi bundle activator
  * 
- * @author Chris Jackson
- * @since 1.8.0
+ * @author Chris Jackson - Initial contribution
  */
 public class H2SqlPersistenceServiceActivator implements BundleActivator {
 
