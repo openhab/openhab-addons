@@ -45,7 +45,7 @@ public class SwaggerParameter {
         this.format = type.dataFormat;
         this.defaultValue = defaultValue;
         this.enumValues = null;
-        this.required = (defaultValue == null);
+        this.required = false;
     }
 
     public SwaggerParameter(String paramType, String name, String description, SwaggerDataType type, String defaultValue, List<String> enumValues) {
@@ -56,6 +56,6 @@ public class SwaggerParameter {
         this.format = type.dataFormat;
         this.enumValues = enumValues;
         this.defaultValue = defaultValue;
-        this.required = (defaultValue == null);
+        this.required = false;
    }
 }
