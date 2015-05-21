@@ -128,7 +128,6 @@ UpnpIOParticipant, DiscoveryListener {
 		}
 		if (discoveryServiceRegistry != null) {
 			this.discoveryServiceRegistry = discoveryServiceRegistry;
-			this.discoveryServiceRegistry.addDiscoveryListener(this);
 		}
 
 	}
@@ -141,12 +140,6 @@ UpnpIOParticipant, DiscoveryListener {
 			pollingJob.cancel(true);
 			pollingJob = null;
 		}
-
-		if (getThing().getStatus() == ThingStatus.ONLINE) {
-			logger.debug("Setting status for thing '{}' to OFFLINE", getThing()
-					.getUID());
-			updateStatus(ThingStatus.OFFLINE);
-		}
 	}
 
 	@Override
@@ -155,6 +148,7 @@ UpnpIOParticipant, DiscoveryListener {
 		Configuration configuration = getConfig();
 
 		if (configuration.get("udn") != null) {
+			this.discoveryServiceRegistry.addDiscoveryListener(this);
 			onSubscription();
 			onUpdate();
 			super.initialize();
