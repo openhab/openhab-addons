@@ -26,7 +26,6 @@ import static org.openhab.io.rest.docs.swagger.SwaggerUtil.documentOperations;
 import static org.openhab.io.rest.docs.swagger.SwaggerUtil.getDescription;
 import static org.openhab.io.rest.docs.swagger.SwaggerUtil.getPath;
 
-import java.awt.Component;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
@@ -175,14 +174,6 @@ public class SwaggerServlet extends HttpServlet implements ManagedService {
             rs.add(new SwaggerResource(rootPath.concat(path), doc));
         }
         return new SwaggerResources(baseURL, rs);
-    }
-
-    /**
-     * Called by Felix DM when stopping this component.
-     */
-    protected final void dmStop(Component comp) {
-        // Avoid unwanted leakage of resources...
-        m_restServices.clear();
     }
 
     @Override
