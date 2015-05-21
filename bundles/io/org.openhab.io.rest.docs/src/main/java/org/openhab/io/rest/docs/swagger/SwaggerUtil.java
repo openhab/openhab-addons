@@ -155,7 +155,14 @@ final class SwaggerUtil {
         if (ann == null) {
             return "";
         }
-        String value = ann.value();
+        return getPath(ann.value());
+    }
+
+    public static String getPath(String path) {
+        if (path == null) {
+            return "";
+        }
+        String value = path.trim();
         if (!value.startsWith("/") && value.length() > 1) {
             return "/".concat(value);
         }
