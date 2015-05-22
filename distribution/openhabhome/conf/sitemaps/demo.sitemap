@@ -7,7 +7,8 @@ sitemap demo label="Main Menu"
 		Group item=Garden icon="garden" 
 	}
 	Frame label="Weather" {
-		Text item=Weather_Temperature valuecolor=[Weather_LastUpdate=="Uninitialized"="lightgray",Weather_LastUpdate>90="lightgray",>25="orange",>15="green",>5="orange",<=5="blue"] {
+		Text item=Sun_Elevation
+		Text item=Weather_Temperature valuecolor=[Weather_LastUpdate=="NULL"="lightgray",Weather_LastUpdate>90="lightgray",>25="orange",>15="green",>5="orange",<=5="blue"] {
 			Frame {
 				Text item=Weather_Temp_Max valuecolor=[>25="orange",>15="green",>5="orange",<=5="blue"]
 				Text item=Weather_Temp_Min valuecolor=[>25="orange",>15="green",>5="orange",<=5="blue"]
@@ -15,13 +16,14 @@ sitemap demo label="Main Menu"
 			}
 			Frame {
 				Switch item=Weather_Chart_Period label="Chart Period" mappings=[0="Hour", 1="Day", 2="Week"]
-				Chart item=Weather_Chart period=h refresh=600 visibility=[Weather_Chart_Period==0, Weather_Chart_Period=="Uninitialized"]
+				Chart item=Weather_Chart period=h refresh=600 visibility=[Weather_Chart_Period==0, Weather_Chart_Period=="NULL"]
 				Chart item=Weather_Chart period=D refresh=3600 visibility=[Weather_Chart_Period==1]
 				Chart item=Weather_Chart period=W refresh=3600 visibility=[Weather_Chart_Period==2]
 			}
 		}
 	}
 	Frame label="Demo" {
+		Text item=CurrentDate
 		Text label="Group Demo" icon="firstfloor" {
 			Switch item=Lights mappings=[OFF="All Off"]
 			Group item=Heating
