@@ -58,10 +58,9 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
 
 	public IppPrinterHandler(Thing thing, DiscoveryServiceRegistry discoveryServiceRegistry) {
 		super(thing);
-		if (discoveryServiceRegistry != null) {
-			this.discoveryServiceRegistry = discoveryServiceRegistry;
-			this.discoveryServiceRegistry.addDiscoveryListener(this);
-		}
+        if (discoveryServiceRegistry != null) {
+            this.discoveryServiceRegistry = discoveryServiceRegistry;
+        }
 	}
 
 	/**
@@ -88,6 +87,9 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
 		// until we get an update put the Thing offline
 		updateStatus(ThingStatus.OFFLINE);
 		deviceOnlineWatchdog();
+		if (this.discoveryServiceRegistry != null) {
+            this.discoveryServiceRegistry.addDiscoveryListener(this);
+        }
 	}
 
 	/*
