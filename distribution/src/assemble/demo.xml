@@ -73,8 +73,6 @@
       <outputDirectory>addons</outputDirectory>
       <unpack>false</unpack>
       <includes>
-      	<include>org.eclipse.smarthome.ui:org.eclipse.smarthome.ui.paperui:jar:*</include>
-      	<include>org.openhab.ui:org.openhab.ui.paperui:jar:*</include>
 		<!-- 2.0 addons -->
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.wemo:jar:*</include>
