@@ -67,16 +67,5 @@
       	<include>*:org.openhab.runtime.product:zip:*</include>
       </includes>
     </dependencySet>
-    <dependencySet>
-    	<useStrictFiltering>true</useStrictFiltering>
-    	<useProjectArtifact>false</useProjectArtifact>
-		<useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>addons</outputDirectory>
-      <unpack>false</unpack>
-      <includes>
-      	<include>org.eclipse.smarthome.ui:org.eclipse.smarthome.ui.paperui:jar:*</include>
-      	<include>org.openhab.ui:org.openhab.ui.paperui:jar:*</include>
-      </includes>
-    </dependencySet>
   </dependencySets>
 </assembly>
