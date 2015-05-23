@@ -9,7 +9,7 @@ Service-Component: OSGI-INF/dashboardservice.xml
 Import-Package: javax.servlet;version="3.1.0",
  javax.servlet.http,
  org.apache.commons.io;version="2.2.0",
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.http,
  org.slf4j
