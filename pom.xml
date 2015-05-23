@@ -265,16 +265,6 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<repository>
-		      <id>addons</id>
-      			<name>openHAB Addons Repository</name>
-      			<layout>default</layout>
-      			<url>https://raw.githubusercontent.com/openhab/openhab.repo/master/</url>
-      			<snapshots>
-        			<enabled>true</enabled>
-      			</snapshots>
-		</repository>
-
 	</repositories>
     
 </project>

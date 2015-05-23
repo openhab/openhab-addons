@@ -22,11 +22,4 @@
 	<name>openHAB Paper UI Theme Fragment</name>
 	<packaging>eclipse-plugin</packaging>
 
-	<dependencies>
-		<dependency>
-                	<groupId>org.eclipse.smarthome.ui</groupId>
-           	     	<artifactId>org.eclipse.smarthome.ui.paperui</artifactId>
-               		<version>${esh.version}</version>
-		</dependency>
-        </dependencies>
 </project>
