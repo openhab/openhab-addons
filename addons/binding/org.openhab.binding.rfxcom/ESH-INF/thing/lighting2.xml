@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lighting2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Lighting2 Actuator</label>
+		<description>A Lighting2 device.</description>
+
+		<channels>
+			<channel id="command" typeId="command" />
+			<channel id="contact" typeId="contact" />
+			<channel id="dimmingLevel" typeId="dimminglevel" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Device Id. Id + unit code, separated by dot. Example 8773718.10</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="AC">AC</option>
+					<option value="HomeEasy EU">HomeEasy EU</option>
+					<option value="ANSLUT">ANSLUT</option>
+					<option value="Kambrook RF3672">Kambrook RF3672</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
