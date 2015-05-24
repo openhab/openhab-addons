@@ -28,10 +28,11 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -107,8 +108,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements
 
 	@Override
 	public void initialize() {
-		mac = getThing().getConfiguration().as(SqueezeBoxPlayerConfig.class).mac;
+		mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
 		timeCounter();
+		updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
 	};
 	
 	@Override
@@ -120,8 +122,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements
 	}
 	
 	@Override
-	protected void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge){
+	protected void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
 		this.squeezeBoxServerHandler = null;
+		updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
 	}
 
 	@Override
