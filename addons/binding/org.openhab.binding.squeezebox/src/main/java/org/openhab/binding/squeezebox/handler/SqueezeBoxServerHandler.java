@@ -24,11 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -298,11 +297,14 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 		this.cliport = config.cliport;
 		this.webport = config.webport;
 
+		if (StringUtils.isEmpty(this.host)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
+            return;
+		}
 		try {
-			clientSocket = new Socket(host, cliport);
+			clientSocket = new Socket(host, cliport);			
 		} catch (IOException e) {
-			logger.error("Failed to connect to the Squeeze Server at "
-					+ config.ipAddress + ":" + config.cliport, e);
+			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
 			return;
 		}
 
@@ -347,12 +349,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
 		@Override
 		public void run() {
-			updateStatus(ThingStatus.ONLINE);
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new InputStreamReader(
 						clientSocket.getInputStream()));
-
+	            updateStatus(ThingStatus.ONLINE);
 				requestPlayers();
 				sendCommand("listen 1");
 
