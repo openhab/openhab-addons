@@ -125,6 +125,11 @@
             <artifactId>org.openhab.binding.tesla</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.vitotronic</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>

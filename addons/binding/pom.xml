@@ -30,6 +30,7 @@
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.vitotronic</module>
   </modules>
 
 </project>
