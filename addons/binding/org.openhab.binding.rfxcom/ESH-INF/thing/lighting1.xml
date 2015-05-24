@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lighting1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="RFXtrx315" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Lighting1 Actuator</label>
+		<description>A Lighting1 device.</description>
+
+		<channels>
+			<channel id="command" typeId="command" />
+			<channel id="contact" typeId="contact" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Device Id. House code + unit code, separated by dot. Example A.1</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="X10">X10 lighting</option>
+					<option value="ARC">ARC</option>
+					<option value="AB400D">ELRO AB400D (Flamingo)</option>
+					<option value="WAVEMAN">Waveman</option>
+					<option value="EMW200">Chacon EMW200</option>
+					<option value="IMPULS">IMPULS</option>
+					<option value="RISINGSUN">RisingSun</option>
+					<option value="PHILIPS">Philips SBC</option>
+					<option value="ENERGENIE">Energenie ENER010</option>
+					<option value="ENERGENIE_5">Energenie 5-gang</option>
+					<option value="COCO">COCO GDR2-2000R</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
