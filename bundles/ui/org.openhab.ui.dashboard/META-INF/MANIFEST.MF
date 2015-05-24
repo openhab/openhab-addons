@@ -6,9 +6,9 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: openHAB.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/dashboardservice.xml
-Import-Package: javax.servlet;version="3.1.0",
+Import-Package: javax.servlet,
  javax.servlet.http,
- org.apache.commons.io;version="2.2.0",
+ org.apache.commons.io,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.http,
