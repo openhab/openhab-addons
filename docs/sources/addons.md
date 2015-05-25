@@ -54,9 +54,6 @@ All optional add-ons for openHAB 2 are available in a separate download. This fi
 | Tinkerforge | Binding |
 | Weather | Binding |
 | ZWave | Binding |
-| SystemInfo | Binding |
-| SystemInfo | Binding |
-| SystemInfo | Binding |
 | rrd4j | Persistence |
 | MySQL | Persistence |
 | Logging | Persistence |
