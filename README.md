@@ -15,7 +15,7 @@ There is a configuration UI prototype already available, called [Paper UI](https
 
 openHAB 2 is currently under development and so far there is only an [alpha release available](https://github.com/openhab/openhab2/releases/tag/2.0.0-alpha1). Additionally, we have snapshot builds [available at CloudBees](https://openhab.ci.cloudbees.com/job/openHAB2/). openHAB 2.0 includes a [1.x compatibility layer](docs/sources/installation/compatibilitylayer.md), which allows using 1.x add-ons with the new runtime.
 
-If you want to start playing openHAB 2.0, please [read here about the runtime and its changes to version 1.x](docs/sources/intro.md). For some background information, you can also check out [this blog post](http://kaikreuzer.blogspot.de/2014/11/openhab-16-and-20-alpha-release.html) and [this one](http://kaikreuzer.blogspot.de/2014/11/openhab-17-and-20-alpha-2-release.html).
+If you want to start playing openHAB 2.0, please [read here about the runtime and its changes to version 1.x](docs/sources/intro.md). For some background information, you can also check out [this blog post](http://kaikreuzer.blogspot.de/2014/11/openhab-16-and-20-alpha-release.html) and [this one](http://kaikreuzer.blogspot.de/2015/05/openhab-17-and-20-alpha-2-release.html).
 
 ## Community: How to get involved
 
