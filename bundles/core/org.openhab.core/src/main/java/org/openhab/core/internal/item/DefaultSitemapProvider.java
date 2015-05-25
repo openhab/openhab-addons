@@ -8,6 +8,9 @@
  */
 package org.openhab.core.internal.item;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -28,7 +31,9 @@ import org.eclipse.smarthome.model.sitemap.impl.SitemapImpl;
  */
 public class DefaultSitemapProvider implements SitemapProvider {
 
-	private ItemRegistry itemRegistry;
+	private static final String SITEMAP_NAME = "_default";
+	
+    private ItemRegistry itemRegistry;
 
 	protected void setItemRegistry(ItemRegistry itemRegistry) {
 		this.itemRegistry = itemRegistry;
@@ -40,7 +45,7 @@ public class DefaultSitemapProvider implements SitemapProvider {
 
 	@Override
 	public Sitemap getSitemap(String sitemapName) {
-		if(sitemapName.equals("_default")) {
+		if(sitemapName.equals(SITEMAP_NAME)) {
 			SitemapImpl sitemap = (SitemapImpl) SitemapFactory.eINSTANCE.createSitemap();
 			FrameImpl mainFrame = (FrameImpl) SitemapFactory.eINSTANCE.createFrame();
 
@@ -48,7 +53,7 @@ public class DefaultSitemapProvider implements SitemapProvider {
 	        thingFrame.setLabel("Things");
 
 			sitemap.setLabel("Home");
-			sitemap.setName("_default");
+			sitemap.setName(SITEMAP_NAME);
 
 			for(Item item : itemRegistry.getAll()) {
 				if(item instanceof GroupItem && (item.getTags().contains(ThingSetupManager.TAG_HOME_GROUP) || item.getTags().contains(ThingSetupManager.TAG_THING))) {
@@ -78,5 +83,10 @@ public class DefaultSitemapProvider implements SitemapProvider {
 		}
 		return null;
 	}
+
+    @Override
+    public Set<String> getSitemapNames() {
+        return Collections.singleton(SITEMAP_NAME);
+    }
 
 }
