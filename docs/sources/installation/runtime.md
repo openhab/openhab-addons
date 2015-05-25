@@ -1,6 +1,6 @@
 # Installation of openHAB 2
 
-openHAB comes as a platform independent zip file, which you only need to extract to some folder (please note that the folder must not contain any spaces).
+openHAB comes as a [platform independent zip file](https://bintray.com/artifact/download/openhab/bin/openhab-2.0.0.alpha2-runtime.zip), which you only need to extract to some folder (please note that the folder must not contain any spaces).
 
 You will find the following folders:
  - `conf`: This contains all your user specific configuration files.
