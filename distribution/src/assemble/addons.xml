@@ -20,7 +20,7 @@
     	<useStrictFiltering>true</useStrictFiltering>
     	<useProjectArtifact>false</useProjectArtifact>
 		<useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>addons</outputDirectory>
       <unpack>false</unpack>
       <includes>
       	<include>org.openhab.action:*:jar:*</include>
