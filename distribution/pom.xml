@@ -17,7 +17,7 @@
 
     <properties>
 		<esh.version>0.8.0-SNAPSHOT</esh.version>
-		<oh1.version>1.7.0.RC-1</oh1.version>
+		<oh1.version>1.7.0-SNAPSHOT</oh1.version>
     </properties>
 
     <build>
@@ -321,10 +321,10 @@
     <repositories>
         <repository>
             <id>openhab.repository.snapshot</id>
-            <name>openHAB Bintray Repository</name>
-            <url>http://dl.bintray.com/openhab/mvn</url>
+            <name>openHAB 1.x Snapshots</name>
+            <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
