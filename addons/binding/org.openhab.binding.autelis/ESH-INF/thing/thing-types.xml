@@ -360,7 +360,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="temp-spaht">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>The current spa/lo-temp heater settings</label>
 		<description>Spa Heat</description>
 		<category>Temperature</category>
