@@ -7,14 +7,14 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Binding | Description |
 |-------|----------------------|
 | [Astro Binding](../../addons/binding/org.openhab.binding.astro/README.md) | Astronomical calculations for sun and moon positions |
-| [Autelis Binding](../../addons/binding/org.openhab.binding.autelis/) | Pool controller |
+| [Autelis Binding](../../addons/binding/org.openhab.binding.autelis/README.md) | Pool controller |
 | [AVM Fritz!Box Binding](../../addons/binding/org.openhab.binding.avmfritz/README.md) | currently only supports FRITZ AHA devices |
 | [Freebox Binding](../../addons/binding/org.openhab.binding.freebox/README.md) | the french [Freebox Revolution](http://www.free.fr/adsl/freebox-revolution.html) server |
 | [HDanywhere Binding](../../addons/binding/org.openhab.binding.hdanywhere/) | HDMI matrix |
 | [IPP Binding](../../addons/binding/org.openhab.binding.ipp/README.md) | Internet Printing Protocol (replaces 1.x CUPS Binding) |
 | [KEBA Binding](../../addons/binding/org.openhab.binding.keba/README.md) | Electric vehicle charging station |
 | [LIFX Binding](https://github.com/eclipse/smarthome/blob/20150525/addons/binding/org.eclipse.smarthome.binding.lifx/README.md) | Wifi-enabled LED bulbs |
-| [MAX! Binding](../../addons/binding/org.openhab.binding.max/) | Heater control solution by eQ-3 |
+| [MAX! Binding](../../addons/binding/org.openhab.binding.max/README.md) | Heater control solution by eQ-3 |
 | [Network Binding](../../addons/binding/org.openhab.binding.network/) | Scans local network (replaces 1.x networkhealth Binding) |
 | [PioneerAVR Binding](../../addons/binding/org.openhab.binding.pioneeravr/README.md) | AV receivers by Pioneer |
 | [Philips Hue Binding](https://github.com/eclipse/smarthome/blob/20150525/addons/binding/org.eclipse.smarthome.binding.hue/README.md) | LED lighting system |
