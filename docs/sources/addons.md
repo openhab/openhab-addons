@@ -52,6 +52,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | SwegonVentilation | Binding |
 | SystemInfo | Binding |
 | Tinkerforge | Binding |
+| Tellstick | Binding |
 | Weather | Binding |
 | ZWave | Binding |
 | rrd4j | Persistence |

@@ -17,7 +17,7 @@
 
     <properties>
 		<esh.version>0.8.0-SNAPSHOT</esh.version>
-		<oh1.version>1.7.0-SNAPSHOT</oh1.version>
+		<oh1.version>1.8.0-SNAPSHOT</oh1.version>
     </properties>
 
     <build>
@@ -276,6 +276,11 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.zwave</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.tellstick</artifactId>
             <version>${oh1.version}</version>
         </dependency>    	
 
