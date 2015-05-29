@@ -28,24 +28,25 @@ public class ItemMapper {
 
 	public static org.openhab.core.items.Item mapToOpenHABItem(Item item) {
 		org.openhab.core.items.Item result = null;
-
-		if (item instanceof StringItem)
+		Class<? extends Item> itemClass = item.getClass();
+		
+		if (itemClass.equals(StringItem.class))
 			result = new org.openhab.core.library.items.StringItem(item.getName());
-		else if (item instanceof SwitchItem)
+		else if (itemClass.equals(SwitchItem.class))
 			result = new org.openhab.core.library.items.SwitchItem(item.getName());
-		else if (item instanceof ContactItem)
+		else if (itemClass.equals(ContactItem.class))
 			result = new org.openhab.core.library.items.ContactItem(item.getName());
-		else if (item instanceof NumberItem)
+		else if (itemClass.equals(NumberItem.class))
 			result = new org.openhab.core.library.items.NumberItem(item.getName());
-		else if (item instanceof RollershutterItem)
+		else if (itemClass.equals(RollershutterItem.class))
 			result = new org.openhab.core.library.items.RollershutterItem(item.getName());
-		else if (item instanceof DimmerItem)
+		else if (itemClass.equals(DimmerItem.class))
 			result = new org.openhab.core.library.items.DimmerItem(item.getName());
-		else if (item instanceof ColorItem)
+		else if (itemClass.equals(ColorItem.class))
 			result = new org.openhab.core.library.items.ColorItem(item.getName());
-		else if (item instanceof DateTimeItem)
+		else if (itemClass.equals(DateTimeItem.class))
 			result = new org.openhab.core.library.items.DateTimeItem(item.getName());
-		else if (item instanceof ESHCallItem)
+		else if (itemClass.equals(ESHCallItem.class))
 			result = new org.openhab.library.tel.items.CallItem(item.getName());
 
 		if (item instanceof GroupItem) {
