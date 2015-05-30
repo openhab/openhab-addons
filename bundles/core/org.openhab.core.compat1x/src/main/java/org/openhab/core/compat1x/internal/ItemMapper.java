@@ -27,7 +27,11 @@ import org.openhab.library.tel.items.ESHCallItem;
 public class ItemMapper {
 
 	public static org.openhab.core.items.Item mapToOpenHABItem(Item item) {
-		org.openhab.core.items.Item result = null;
+		if (item==null) {
+		    return null;
+		}
+	    
+	    org.openhab.core.items.Item result = null;
 		Class<? extends Item> itemClass = item.getClass();
 		
 		if (itemClass.equals(StringItem.class))
