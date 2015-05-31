@@ -292,177 +292,197 @@ UpnpIOParticipant, DiscoveryListener {
 
 	public void onValueReceived(String variable, String value, String service) {
 
-		logger.trace("Received pair '{}':'{}' (service '{}') for thing '{}'", new Object[] {
-				variable, value, service, this.getThing().getUID() });
+		if (getThing().getStatus() == ThingStatus.ONLINE) {
 
-		this.stateMap.put(variable, value);
+			logger.trace(
+					"Received pair '{}':'{}' (service '{}') for thing '{}'",
+					new Object[] { variable, value, service,
+							this.getThing().getUID() });
 
-		// pre-process some variables, eg XML processing
-		if (service.equals("AVTransport") && variable.equals("LastChange")) {
-			Map<String, String> parsedValues = SonosXMLParser
-					.getAVTransportFromXML(value);
-			for (String parsedValue : parsedValues.keySet()) {
-				onValueReceived(parsedValue, parsedValues.get(parsedValue),
-						"AVTransport");
-			}
-		}
+			this.stateMap.put(variable, value);
 
-		if (service.equals("RenderingControl") && variable.equals("LastChange")) {
-			Map<String, String> parsedValues = SonosXMLParser
-					.getRenderingControlFromXML(value);
-			for (String parsedValue : parsedValues.keySet()) {
-				onValueReceived(parsedValue, parsedValues.get(parsedValue),
-						"RenderingControl");
+			// pre-process some variables, eg XML processing
+			if (service.equals("AVTransport") && variable.equals("LastChange")) {
+				Map<String, String> parsedValues = SonosXMLParser
+						.getAVTransportFromXML(value);
+				for (String parsedValue : parsedValues.keySet()) {
+					onValueReceived(parsedValue, parsedValues.get(parsedValue),
+							"AVTransport");
+				}
 			}
-		}
 
-		// update the appropriate channel
-		switch (variable) {
-		case "TransportState": {
-			updateState(new ChannelUID(getThing().getUID(), STATE),
-					(stateMap.get("TransportState") != null) ? new StringType(
-							stateMap.get("TransportState")) : UnDefType.UNDEF);
-			if (stateMap.get("TransportState").equals("PLAYING")) {
-				updateState(new ChannelUID(getThing().getUID(), CONTROL),
-						PlayPauseType.PLAY);
-			}
-			if (stateMap.get("TransportState").equals("STOPPED")) {
-				updateState(new ChannelUID(getThing().getUID(), CONTROL),
-						PlayPauseType.PAUSE);				
-			}
-			if (stateMap.get("TransportState").equals("PAUSED_PLAYBACK")) {
-				updateState(new ChannelUID(getThing().getUID(), CONTROL),
-						PlayPauseType.PAUSE);
-			}
-			break;
-		}
-		case "CurrentLEDState": {
-			State newState = UnDefType.UNDEF;
-			if (stateMap.get("CurrentLEDState") != null) {
-				if (stateMap.get("CurrentLEDState").equals("On")) {
-					newState = OnOffType.ON;
-				} else {
-					newState = OnOffType.OFF;
+			if (service.equals("RenderingControl")
+					&& variable.equals("LastChange")) {
+				Map<String, String> parsedValues = SonosXMLParser
+						.getRenderingControlFromXML(value);
+				for (String parsedValue : parsedValues.keySet()) {
+					onValueReceived(parsedValue, parsedValues.get(parsedValue),
+							"RenderingControl");
 				}
 			}
-			updateState(new ChannelUID(getThing().getUID(), LED), newState);
-			break;
-		}
-		case "CurrentZoneName": {
-			updateState(new ChannelUID(getThing().getUID(), ZONENAME),
-					(stateMap.get("CurrentZoneName") != null) ? new StringType(
-							stateMap.get("CurrentZoneName")) : UnDefType.UNDEF);
-		}
-		case "ZoneGroupState": {
-			updateState(new ChannelUID(getThing().getUID(), ZONEGROUP),
-					(stateMap.get("ZoneGroupState") != null) ? new StringType(
-							stateMap.get("ZoneGroupState")) : UnDefType.UNDEF);
-			break;
-		}
-		case "LocalGroupUUID": {
-			updateState(new ChannelUID(getThing().getUID(), ZONEGROUPID),
-					(stateMap.get("LocalGroupUUID") != null) ? new StringType(
-							stateMap.get("LocalGroupUUID")) : UnDefType.UNDEF);
-			break;
-		}
-		case "GroupCoordinatorIsLocal": {
-			State newState = UnDefType.UNDEF;
-			if (stateMap.get("GroupCoordinatorIsLocal") != null) {
-				if (stateMap.get("GroupCoordinatorIsLocal").equals("On")) {
-					newState = OnOffType.ON;
-				} else {
-					newState = OnOffType.OFF;
+
+			// update the appropriate channel
+			switch (variable) {
+			case "TransportState": {
+				updateState(
+						new ChannelUID(getThing().getUID(), STATE),
+						(stateMap.get("TransportState") != null) ? new StringType(
+								stateMap.get("TransportState"))
+								: UnDefType.UNDEF);
+				if (stateMap.get("TransportState").equals("PLAYING")) {
+					updateState(new ChannelUID(getThing().getUID(), CONTROL),
+							PlayPauseType.PLAY);
 				}
-			}
-			updateState(new ChannelUID(getThing().getUID(), LOCALCOORDINATOR),
-					newState);
-			break;
-		}
-		case "VolumeMaster": {
-			updateState(new ChannelUID(getThing().getUID(), VOLUME),
-					(stateMap.get("VolumeMaster") != null) ? new PercentType(
-							stateMap.get("VolumeMaster")) : UnDefType.UNDEF);
-			break;
-		}
-		case "MuteMaster": {
-			State newState = UnDefType.UNDEF;
-			if (stateMap.get("MuteMaster") != null) {
-				if (stateMap.get("MuteMaster").equals("On")) {
-					newState = OnOffType.ON;
-				} else {
-					newState = OnOffType.OFF;
+				if (stateMap.get("TransportState").equals("STOPPED")) {
+					updateState(new ChannelUID(getThing().getUID(), CONTROL),
+							PlayPauseType.PAUSE);
 				}
-			}
-			updateState(new ChannelUID(getThing().getUID(), MUTE), newState);
-			break;
-		}
-		case "LineInConnected": {
-			State newState = UnDefType.UNDEF;
-			if (stateMap.get("LineInConnected") != null) {
-				if (stateMap.get("LineInConnected").equals("On")) {
-					newState = OnOffType.ON;
-				} else {
-					newState = OnOffType.OFF;
+				if (stateMap.get("TransportState").equals("PAUSED_PLAYBACK")) {
+					updateState(new ChannelUID(getThing().getUID(), CONTROL),
+							PlayPauseType.PAUSE);
 				}
+				break;
 			}
-			updateState(new ChannelUID(getThing().getUID(), LINEIN), newState);
-			break;
-		}
-		case "AlarmRunning": {
-			State newState = UnDefType.UNDEF;
-			if (stateMap.get("AlarmRunning") != null) {
-				if (stateMap.get("AlarmRunning").equals("On")) {
-					newState = OnOffType.ON;
-				} else {
-					newState = OnOffType.OFF;
+			case "CurrentLEDState": {
+				State newState = UnDefType.UNDEF;
+				if (stateMap.get("CurrentLEDState") != null) {
+					if (stateMap.get("CurrentLEDState").equals("On")) {
+						newState = OnOffType.ON;
+					} else {
+						newState = OnOffType.OFF;
+					}
 				}
+				updateState(new ChannelUID(getThing().getUID(), LED), newState);
+				break;
 			}
-			updateState(new ChannelUID(getThing().getUID(), ALARMRUNNING),
-					newState);
-			break;
-		}
-		case "RunningAlarmProperties": {
-			updateState(
-					new ChannelUID(getThing().getUID(), ALARMPROPERTIES),
-					(stateMap.get("RunningAlarmProperties") != null) ? new StringType(
-							stateMap.get("RunningAlarmProperties"))
-					: UnDefType.UNDEF);
-			break;
-		}
-		case "CurrentURIFormatted": {
-			updateState(
-					new ChannelUID(getThing().getUID(), CURRENTTRACK),
-					(stateMap.get("CurrentURIFormatted") != null) ? new StringType(
-							stateMap.get("CurrentURIFormatted"))
-					: UnDefType.UNDEF);
-			break;
-		}
-		case "CurrentTitle": {
-			updateState(new ChannelUID(getThing().getUID(), CURRENTTITLE),
-					(stateMap.get("CurrentTitle") != null) ? new StringType(
-							stateMap.get("CurrentTitle")) : UnDefType.UNDEF);
-			break;
-		}
-		case "CurrentArtist": {
-			updateState(new ChannelUID(getThing().getUID(), CURRENTARTIST),
-					(stateMap.get("CurrentArtist") != null) ? new StringType(
-							stateMap.get("CurrentArtist")) : UnDefType.UNDEF);
-			break;
-		}
-		case "CurrentAlbum": {
-			updateState(new ChannelUID(getThing().getUID(), CURRENTALBUM),
-					(stateMap.get("CurrentAlbum") != null) ? new StringType(
-							stateMap.get("CurrentAlbum")) : UnDefType.UNDEF);
-			break;
-		}
-		case "CurrentTrackMetaData": {
-			updateTrackMetaData();
-			break;
-		}
-		case "CurrentURI": {
-			updateCurrentURIFormatted(value);
-			break;
-		}
+			case "CurrentZoneName": {
+				updateState(
+						new ChannelUID(getThing().getUID(), ZONENAME),
+						(stateMap.get("CurrentZoneName") != null) ? new StringType(
+								stateMap.get("CurrentZoneName"))
+								: UnDefType.UNDEF);
+			}
+			case "ZoneGroupState": {
+				updateState(
+						new ChannelUID(getThing().getUID(), ZONEGROUP),
+						(stateMap.get("ZoneGroupState") != null) ? new StringType(
+								stateMap.get("ZoneGroupState"))
+								: UnDefType.UNDEF);
+				break;
+			}
+			case "LocalGroupUUID": {
+				updateState(
+						new ChannelUID(getThing().getUID(), ZONEGROUPID),
+						(stateMap.get("LocalGroupUUID") != null) ? new StringType(
+								stateMap.get("LocalGroupUUID"))
+								: UnDefType.UNDEF);
+				break;
+			}
+			case "GroupCoordinatorIsLocal": {
+				State newState = UnDefType.UNDEF;
+				if (stateMap.get("GroupCoordinatorIsLocal") != null) {
+					if (stateMap.get("GroupCoordinatorIsLocal").equals("On")) {
+						newState = OnOffType.ON;
+					} else {
+						newState = OnOffType.OFF;
+					}
+				}
+				updateState(new ChannelUID(getThing().getUID(),
+						LOCALCOORDINATOR), newState);
+				break;
+			}
+			case "VolumeMaster": {
+				updateState(
+						new ChannelUID(getThing().getUID(), VOLUME),
+						(stateMap.get("VolumeMaster") != null) ? new PercentType(
+								stateMap.get("VolumeMaster")) : UnDefType.UNDEF);
+				break;
+			}
+			case "MuteMaster": {
+				State newState = UnDefType.UNDEF;
+				if (stateMap.get("MuteMaster") != null) {
+					if (stateMap.get("MuteMaster").equals("On")) {
+						newState = OnOffType.ON;
+					} else {
+						newState = OnOffType.OFF;
+					}
+				}
+				updateState(new ChannelUID(getThing().getUID(), MUTE), newState);
+				break;
+			}
+			case "LineInConnected": {
+				State newState = UnDefType.UNDEF;
+				if (stateMap.get("LineInConnected") != null) {
+					if (stateMap.get("LineInConnected").equals("On")) {
+						newState = OnOffType.ON;
+					} else {
+						newState = OnOffType.OFF;
+					}
+				}
+				updateState(new ChannelUID(getThing().getUID(), LINEIN),
+						newState);
+				break;
+			}
+			case "AlarmRunning": {
+				State newState = UnDefType.UNDEF;
+				if (stateMap.get("AlarmRunning") != null) {
+					if (stateMap.get("AlarmRunning").equals("On")) {
+						newState = OnOffType.ON;
+					} else {
+						newState = OnOffType.OFF;
+					}
+				}
+				updateState(new ChannelUID(getThing().getUID(), ALARMRUNNING),
+						newState);
+				break;
+			}
+			case "RunningAlarmProperties": {
+				updateState(
+						new ChannelUID(getThing().getUID(), ALARMPROPERTIES),
+						(stateMap.get("RunningAlarmProperties") != null) ? new StringType(
+								stateMap.get("RunningAlarmProperties"))
+								: UnDefType.UNDEF);
+				break;
+			}
+			case "CurrentURIFormatted": {
+				updateState(
+						new ChannelUID(getThing().getUID(), CURRENTTRACK),
+						(stateMap.get("CurrentURIFormatted") != null) ? new StringType(
+								stateMap.get("CurrentURIFormatted"))
+								: UnDefType.UNDEF);
+				break;
+			}
+			case "CurrentTitle": {
+				updateState(
+						new ChannelUID(getThing().getUID(), CURRENTTITLE),
+						(stateMap.get("CurrentTitle") != null) ? new StringType(
+								stateMap.get("CurrentTitle")) : UnDefType.UNDEF);
+				break;
+			}
+			case "CurrentArtist": {
+				updateState(
+						new ChannelUID(getThing().getUID(), CURRENTARTIST),
+						(stateMap.get("CurrentArtist") != null) ? new StringType(
+								stateMap.get("CurrentArtist"))
+								: UnDefType.UNDEF);
+				break;
+			}
+			case "CurrentAlbum": {
+				updateState(
+						new ChannelUID(getThing().getUID(), CURRENTALBUM),
+						(stateMap.get("CurrentAlbum") != null) ? new StringType(
+								stateMap.get("CurrentAlbum")) : UnDefType.UNDEF);
+				break;
+			}
+			case "CurrentTrackMetaData": {
+				updateTrackMetaData();
+				break;
+			}
+			case "CurrentURI": {
+				updateCurrentURIFormatted(value);
+				break;
+			}
+			}
 		}
 
 	}
