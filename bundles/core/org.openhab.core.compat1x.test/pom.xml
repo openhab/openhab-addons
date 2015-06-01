@@ -20,4 +20,30 @@
   <name>openHAB Core 1.x Compatibility Layer Tests</name>
   <packaging>eclipse-test-plugin</packaging>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <dependencies>
+            <dependency>
+              <type>eclipse-plugin</type>
+              <artifactId>org.eclipse.equinox.ds</artifactId>
+              <version>0.0.0</version>
+            </dependency>
+          </dependencies>
+          <bundleStartLevel>
+            <bundle>
+              <id>org.eclipse.equinox.ds</id>
+              <level>1</level>
+              <autoStart>true</autoStart>
+            </bundle>
+          </bundleStartLevel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
 </project>

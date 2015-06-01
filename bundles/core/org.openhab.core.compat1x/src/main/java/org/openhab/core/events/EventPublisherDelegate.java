@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class EventPublisherDelegate implements org.openhab.core.events.EventPubl
 	public void postUpdate(String itemName, State newState) {
 		try {
 			Item item = itemRegistry.getItem(itemName);
-			org.eclipse.smarthome.core.types.State eshState = TypeParser.parseState(item.getAcceptedDataTypes(), newState.toString());
+			org.eclipse.smarthome.core.types.State eshState = mapState(item, newState);
 			if(eshState!=null) {
 			    eventPublisher.postUpdate(itemName, eshState);
 			} else {
@@ -86,4 +87,15 @@ public class EventPublisherDelegate implements org.openhab.core.events.EventPubl
 		}
 	}
 
+	protected org.eclipse.smarthome.core.types.State mapState(Item item, State state) {
+	    org.eclipse.smarthome.core.types.State eshState = null;
+	    if(state == UnDefType.NULL) {
+	        eshState = org.eclipse.smarthome.core.types.UnDefType.NULL;
+	    } else if ( state == UnDefType.UNDEF) {
+	        eshState = org.eclipse.smarthome.core.types.UnDefType.UNDEF;
+	    } else {
+	        eshState = TypeParser.parseState(item.getAcceptedDataTypes(), state.toString());
+	    }
+	    return eshState;
+	}
 }
