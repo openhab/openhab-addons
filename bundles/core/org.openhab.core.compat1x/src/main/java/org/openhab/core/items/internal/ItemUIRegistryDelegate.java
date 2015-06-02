@@ -41,7 +41,12 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
 
     @Override
     public Item getItem(String name) throws ItemNotFoundException {
-        org.eclipse.smarthome.core.items.Item eshItem = itemUIRegistry.get(name);
+        org.eclipse.smarthome.core.items.Item eshItem;
+        try {
+            eshItem = itemUIRegistry.getItem(name);
+        } catch (org.eclipse.smarthome.core.items.ItemNotFoundException e) {
+            throw new ItemNotFoundException(name);
+        }
         return ItemMapper.mapToOpenHABItem(eshItem);
     }
 
