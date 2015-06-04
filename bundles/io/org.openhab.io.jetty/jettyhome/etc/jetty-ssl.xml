@@ -23,7 +23,18 @@
       <Item>SSL_RSA_EXPORT_WITH_RC4_40_MD5</Item>
       <Item>SSL_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
       <Item>SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA</Item>
-      <Item>SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA</Item>
+      <!-- Disable cipher suites with Diffie-Hellman key exchange to prevent Logjam attack 
+      and avoid the ssl_error_weak_server_ephemeral_dh_key error in recent browsers -->
+      <Item>SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA</Item>
+      <Item>SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA</Item>
+      <Item>TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</Item>
+      <Item>TLS_DHE_DSS_WITH_AES_256_CBC_SHA256</Item>
+      <Item>TLS_DHE_RSA_WITH_AES_256_CBC_SHA</Item>
+      <Item>TLS_DHE_DSS_WITH_AES_256_CBC_SHA</Item>
+      <Item>TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</Item>
+      <Item>TLS_DHE_DSS_WITH_AES_128_CBC_SHA256</Item>
+      <Item>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</Item>
+      <Item>TLS_DHE_DSS_WITH_AES_128_CBC_SHA</Item>
     </Array>
   </Set>
   <!-- setting required for preventing Poodle attack, see http://stackoverflow.com/questions/26382540/how-to-disable-the-sslv3-protocol-in-jetty-to-prevent-poodle-attack/26388531#26388531 -->
