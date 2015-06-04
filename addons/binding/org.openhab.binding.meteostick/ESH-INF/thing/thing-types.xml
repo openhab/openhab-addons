@@ -5,9 +5,9 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>MeteoStick USB Receiver</label>
-        <description>USB Receiver for Davis and Fine Offset weather stations</description>
+    <thing-type id="meteostick_fineoffset">
+        <label>Fine Offset Weather Station</label>
+        <description>MeteoStick USB Receiver for Fine Offset weather stations</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
@@ -20,13 +20,64 @@
                 <label>Port</label>
                 <description>USB port that the MeteoStick is plugged in to</description>
             </parameter>
+            <parameter name="mode" type="text" required="true">
+                <label>Frequency Band</label>
+                <description>Specifies the frequency band MeteoStick shall listen to</description>
+                <options>
+                	<option value="3">North America (915MHz)</option>
+                	<option value="4">Europe (868MHz)</option>
+                </options>
+                <default>4</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="meteostick_davis">
+        <label>Davis Weather Station</label>
+        <description>MeteoStick USB Receiver for Fine Offset weather stations</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="pressure" typeId="pressure" />
+		</channels>
+
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Port</label>
+                <description>USB port that the MeteoStick is plugged in to</description>
+            </parameter>
+            <parameter name="mode" type="text" required="true">
+                <label>Transmitters</label>
+                <description>Specifies the transmitters MeteoStick shall listen to</description>
+                <options>
+                	<option value="1">TX1</option>
+                	<option value="2">TX2</option>
+                	<option value="4">TX3</option>
+                	<option value="8">TX4</option>
+                	<option value="16">TX5</option>
+                	<option value="32">TX6</option>
+                	<option value="64">TX7</option>
+                	<option value="128">TX8</option>
+                </options>
+                </parameter>
+            <parameter name="frequency" type="text" required="true">
+                <label>Frequency Band</label>
+                <description>Specifies the frequency band MeteoStick shall listen to</description>
+                <options>
+                	<option value="0">North America (915MHz)</option>
+                	<option value="1">Europe (868MHz)</option>
+                	<option value="2">Australia (915MHz)</option>
+                	<option value="3">North America (915MHz)</option>
+                </options>
+            </parameter>
         </config-description>
     </thing-type>
 
     <channel-type id="temperature">
         <item-type>Number</item-type>
         <label>Indoor Temperature</label>
-        <description>Current outdoor temperature in degrees celsius</description>
+        <description>Current temperature in degrees celsius</description>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C">
         </state>
@@ -35,7 +86,7 @@
     <channel-type id="humidity">
         <item-type>Number</item-type>
         <label>Outdoor Humidity</label>
-        <description>Current outdoor humidity in %</description>
+        <description>Current humidity in %</description>
         <category>Humidity</category>
         <state readOnly="true" pattern="%d %%">
         </state>

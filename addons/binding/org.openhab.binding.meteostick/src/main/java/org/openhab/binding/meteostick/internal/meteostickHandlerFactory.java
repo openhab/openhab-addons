@@ -7,11 +7,6 @@
  */
 package org.openhab.binding.meteostick.internal;
 
-import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
-
-import java.util.Collections;
-import java.util.Set;
-
 import org.openhab.binding.meteostick.handler.meteostickHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -26,11 +21,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class meteostickHandlerFactory extends BaseThingHandlerFactory {
     
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
-    
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return meteostickHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
@@ -38,7 +31,7 @@ public class meteostickHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (meteostickHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new meteostickHandler(thing);
         }
 

@@ -20,9 +20,12 @@ public class meteostickBindingConstants {
     public static final String BINDING_ID = "meteostick";
     
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_TYPE_FINEOFFSET = new ThingTypeUID(BINDING_ID, "meteostick_fineoffset");
+    public final static ThingTypeUID THING_TYPE_DAVIS = new ThingTypeUID(BINDING_ID, "meteostick_davis");
 
     // List of all Channel ids
-    public final static String CHANNEL_1 = "channel1";
+    public final static String CHANNEL_TEMPERATURE = "temperature";
+    public final static String CHANNEL_HUMIDITY = "humidity";
+    public final static String CHANNEL_PRESSURE = "pressure";
 
 }
