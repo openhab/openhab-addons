@@ -28,7 +28,7 @@ public class MaxCubeBridgeConfiguration {
 	 */
 	public Integer port;
 
-	/** The refresh interval in ms which is used to poll given MAX! Cube */
+	/** The refresh interval in seconds which is used to poll given MAX! Cube */
 	public Integer refreshInterval;
 
 	/** The unique serial number for a device */

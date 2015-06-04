@@ -10,8 +10,10 @@ Import-Package: com.google.gson,
  javax.ws.rs,
  javax.ws.rs.core,
  org.eclipse.smarthome.io.rest,
+ org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.http,
  org.slf4j;version="1.7.2"
-Service-Component: OSGI-INF/swagger.xml
+Service-Component: OSGI-INF/swagger.xml,
+ OSGI-INF/dashboardtile.xml

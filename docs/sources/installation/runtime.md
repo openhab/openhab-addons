@@ -1,12 +1,12 @@
 # Installation of openHAB 2
 
-openHAB comes as a platform independent zip file, which you only need to extract to some folder.
+openHAB comes as a [platform independent zip file](https://bintray.com/artifact/download/openhab/bin/openhab-2.0.0.alpha2-runtime.zip), which you only need to extract to some folder (please note that the folder must not contain any spaces).
 
 You will find the following folders:
  - `conf`: This contains all your user specific configuration files.
  - `runtime`: This contains the openHAB binaries, there should normally be no need to touch anything in here.
  - `userdata`: Here you will find all the data that is generated during runtime: log files, database files, etc. In theory this should be the only folder where openHAB needs write permission on.
- - `addons`: Here you can drop all add-ons that you want to use with openHAB. This can be addons from openHAB 1.x and 2.x likewise.
+ - `addons`: Here you can drop all add-ons that you want to use with openHAB. This can be addons from openHAB 1.x and 2.x likewise. All compatible add-ons can be found in the addons zip file, which is available as a separate download.
  
 ## Using Add-ons
  
@@ -22,8 +22,7 @@ host=192.168.0.2
 ```
 in the `acme.cfg` file.
 
-Currently, all openHAB 2 add-ons are packaged within the runtime distribution in the `addons` folder. In future they will be taken out and an installation mechanism will be provided.
-If you want to use openHAB 1.x add-ons with openHAB 2, please refer to the [compatibility matrix](compatibility.md).
+All openHAB 2 add-ons are made available as a separate download, which also contains all compatible 1.x add-ons for convenience.
 
 ## Starting the runtime
 

@@ -19,6 +19,7 @@
     <module>org.openhab.core</module>
     <module>org.openhab.core.init</module>
     <module>org.openhab.core.compat1x</module>
+    <module>org.openhab.core.compat1x.test</module>
   </modules>
 
 </project>

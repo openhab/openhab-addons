@@ -88,30 +88,6 @@ section {
     background: linear-gradient(135deg, rgba(255,102,0,1) 0%,rgba(255,102,0,0.5) 50%,rgba(30,87,153,0) 100%);
 }
 
-.link.ui-ios .body {
-    background-image: url('img/ios.png');
-}
-
-.link.ui-android .body {
-    background-image: url('img/android.png');
-}
-
-.link.ui-classicui .body {
-    background-image: url('img/classicui.png');
-}
-
-.link.ui-paperui .body {
-    background-image: url('img/paperui.png');
-}
-
-.link.ui-habmin .body {
-    background-image: url('img/habmin.png');
-}
-
-.link.rest .body {
-    background-image: url('img/restapi.png');
-}
-
 .link .footer {
     height: 50px;
     background-color: #F60;

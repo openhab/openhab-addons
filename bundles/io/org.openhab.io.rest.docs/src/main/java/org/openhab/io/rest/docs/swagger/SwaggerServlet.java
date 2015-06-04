@@ -21,7 +21,7 @@
  */
 package org.openhab.io.rest.docs.swagger;
 
-import static org.openhab.io.rest.docs.swagger.Constants.*;
+import static org.openhab.io.rest.docs.swagger.Constants.HEADER_X_FORWARDED_PROTO;
 import static org.openhab.io.rest.docs.swagger.SwaggerUtil.documentOperations;
 import static org.openhab.io.rest.docs.swagger.SwaggerUtil.getDescription;
 import static org.openhab.io.rest.docs.swagger.SwaggerUtil.getPath;
@@ -35,6 +35,10 @@ import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.ServletException;
@@ -129,9 +133,7 @@ public class SwaggerServlet extends HttpServlet implements ManagedService {
         }
     }
 
-    protected SwaggerAPI createDocumentationFor(String baseURL, Object instance) {
-        Class<?> clazz = instance.getClass();
-
+    protected SwaggerAPI createDocumentationFor(String baseURL, Class<?> clazz) {
         String rootPath = getPath(clazz.getAnnotation(Path.class));
 
         // See section 3.3.1 of the JAX-RS specification v1.1...
@@ -162,47 +164,35 @@ public class SwaggerServlet extends HttpServlet implements ManagedService {
         return new SwaggerAPI(baseURL.concat(m_restEndpoint), rootPath, apis, models);
     }
 
-    protected SwaggerResources createResourceListingFor(String baseURL, String rootPath, Object[] instances) {
+    protected SwaggerResources createResourceListingFor(String baseURL, String rootPath, Map<String, Class<?>> services) {
         List<SwaggerResource> rs = new ArrayList<SwaggerResource>();
-        for (Object instance : instances) {
-            Class<?> clazz = instance.getClass();
-
-            String path = getPath(clazz.getAnnotation(Path.class));
-            String doc = getDescription(clazz.getAnnotation(Description.class));
+        for (Entry<String, Class<?>> entry : services.entrySet()) {
+            Class<?> serviceType = entry.getValue();
+            String path = getPath(entry.getKey());
+            String doc = getDescription(serviceType.getAnnotation(Description.class));
 
             rs.add(new SwaggerResource(rootPath.concat(path), doc));
         }
-
         return new SwaggerResources(baseURL, rs);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String baseURL = getBaseURL(req);
-        String requestPath = req.getPathInfo();
+        String requestPath = getPath(req.getPathInfo());
 
-        Object[] services = m_restServices.toArray();
-
-        if (requestPath == null || "".equals(requestPath) || "/".equals(requestPath)) {
+        SortedMap<String, Class<?>> services = getServices();
+        if ("".equals(requestPath) || "/".equals(requestPath)) {
             SwaggerResources resources = createResourceListingFor(baseURL, req.getServletPath(), services);
 
             writeAsJSON(resp, resources);
         } else {
-            boolean responseWritten = false;
-            for (Object s : services) {
-                Class<?> clazz = s.getClass();
+            Class<?> serviceType = services.get(requestPath);
+            if (serviceType != null) {
+                SwaggerAPI apiDocs = createDocumentationFor(baseURL, serviceType);
 
-                String rootPathValue = getPath(clazz.getAnnotation(Path.class));
-                if (requestPath.startsWith(rootPathValue)) {
-                    SwaggerAPI apiDocs = createDocumentationFor(baseURL, s);
-
-                    writeAsJSON(resp, apiDocs);
-
-                    responseWritten = true;
-                }
-            }
-
-            if (!responseWritten) {
+                writeAsJSON(resp, apiDocs);
+            } else {
                 // Swagger-UI b0rks when returning anything other than a valid JSON response,
                 // so in case we didn't write anything, simply return an empty JSON string...
                 writeAsJSON(resp, "");
@@ -223,6 +213,17 @@ public class SwaggerServlet extends HttpServlet implements ManagedService {
         }
 
         return protocol + "://" + request.getServerName() + ":" + port;
+    }
+
+    private SortedMap<String, Class<?>> getServices() {
+        SortedMap<String, Class<?>> result = new TreeMap<>();
+        for (Object service : m_restServices) {
+            Class<?> serviceType = service.getClass();
+            String path = getPath(serviceType.getAnnotation(Path.class));
+
+            result.put(path, serviceType);
+        }
+        return result;
     }
 
     private void writeAsJSON(HttpServletResponse resp, Object object) throws IOException {

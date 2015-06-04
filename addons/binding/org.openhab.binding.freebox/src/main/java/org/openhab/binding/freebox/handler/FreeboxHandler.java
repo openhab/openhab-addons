@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -142,7 +143,7 @@ public class FreeboxHandler extends BaseThingHandler {
 	@Override
 	public void initialize() {
 		if (authorize()) {
-			getThing().setStatus(ThingStatus.ONLINE);
+			updateStatus(ThingStatus.ONLINE);
 		    	
 			if (globalJob == null || globalJob.isCancelled()) {
 				long polling_interval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
@@ -154,7 +155,7 @@ public class FreeboxHandler extends BaseThingHandler {
 				phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, polling_interval, TimeUnit.SECONDS);
 			} 
 		} else {
-			getThing().setStatus(ThingStatus.OFFLINE);
+		    updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 	
@@ -170,7 +171,7 @@ public class FreeboxHandler extends BaseThingHandler {
 							phoneStatus.get(0).getIs_ringing() ? OnOffType.ON : OnOffType.OFF);
 				} catch (FreeboxException e) {
 					logger.error(e.getMessage());
-					getThing().setStatus(ThingStatus.OFFLINE);
+					updateStatus(ThingStatus.OFFLINE);
 				}
 				
 			}
@@ -190,7 +191,7 @@ public class FreeboxHandler extends BaseThingHandler {
 					
 				} catch (FreeboxException e) {
 					logger.error(e.getMessage());
-					getThing().setStatus(ThingStatus.OFFLINE);
+					updateStatus(ThingStatus.OFFLINE);
 				}
 				
 			}
@@ -207,7 +208,7 @@ public class FreeboxHandler extends BaseThingHandler {
 			phoneJob.cancel(true);
 			phoneJob = null;
 		}
-		getThing().setStatus(ThingStatus.OFFLINE);
+		updateStatus(ThingStatus.OFFLINE);
 	}
 	
 	private void fetchNewCalls() throws FreeboxException {

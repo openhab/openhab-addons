@@ -33,11 +33,3 @@ Here are step-by-step instructions:
 To produce a binary zip of the runtime yourself, you can simply call `mvn clean package` from the repository root and you will find the result in the folder distribution/target.
 
 To run a single test you have to use following command: `mvn -o org.eclipse.tycho:tycho-surefire-plugin:0.20.0:test` which activates the tycho-surefire-specific goal for OSGI unit test using the fragment bundle xxxx.test on xxxx bundle. The maven -o (offline) option accelerates the project dependency resolution by 10-20x since it lets maven search its local repository. Normally, snapshot-enabled projects are using external repositories to find latest built packages.
-
-### Paper UI
-
-Note that the Paper UI is not yet contained in the official repository and is thus missing in your workspace at this point. You can manually add it by [downloading the binary](https://raw.githubusercontent.com/openhab/openhab.repo/master/org/openhab/ui/org.openhab.ui.paperui/2.0.0-SNAPSHOT/org.openhab.ui.paperui-2.0.0-SNAPSHOT.jar) and then import it into your workspace by selecting `File->Import->Plug-in Development->Plug-ins and Fragments' from the menu, choosing `Import from->Directory` your download folder and adding the Paper UI bundle on the next page.
-
-_Note:_ Here you can find a brief [screencast that shows the steps](http://youtu.be/ewmEqa2m6J4).
-
-

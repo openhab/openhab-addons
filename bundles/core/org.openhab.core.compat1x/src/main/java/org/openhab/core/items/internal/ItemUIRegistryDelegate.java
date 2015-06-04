@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.core.items.internal;
 
 import java.util.Collection;
@@ -33,7 +41,12 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
 
     @Override
     public Item getItem(String name) throws ItemNotFoundException {
-        org.eclipse.smarthome.core.items.Item eshItem = itemUIRegistry.get(name);
+        org.eclipse.smarthome.core.items.Item eshItem;
+        try {
+            eshItem = itemUIRegistry.getItem(name);
+        } catch (org.eclipse.smarthome.core.items.ItemNotFoundException e) {
+            throw new ItemNotFoundException(name);
+        }
         return ItemMapper.mapToOpenHABItem(eshItem);
     }
 

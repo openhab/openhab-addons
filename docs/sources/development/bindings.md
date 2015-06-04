@@ -4,6 +4,8 @@ This page describes the necessary steps in order to implement a new binding for 
 
 _Note:_ Please note that in contrast to openHAB 1.x, openHAB 2 is based on the [Eclipse SmartHome](http://eclipse.org/smarthome/) project. So the APIs and concepts have changed, so please read this documentation carefully, if you are coming from openHAB 1.x development.
 
+For information about code style and naming conventions, please see the [guidelines of Eclipse SmartHome](https://github.com/eclipse/smarthome/blob/master/docs/sources/development/guidelines.md).
+
 ## Choosing a namespace
 
 As a first step, you need to decide in which namespace you want to develop your binding - assuming that you want to contribute it back to the community, you have two options:
@@ -25,21 +27,19 @@ This should give you an easy starting point for your developments. To learn abou
 
 ## Setup and Run the Binding
 
-To setup the binding you need to configure at least one *Thing* and link an *Item* to it. Inside the `openhabhome/conf/things` folder of the distribution project you can define and configure *Things* in file with a `*.things` extensions. The following file defines two things for the Yahoo Weather binding:
+To setup the binding you need to configure at least one *Thing* and link an *Item* to it. Inside the `openhabhome/conf/things` folder of the distribution project you can define and configure *Things* in file with a `*.things` extensions. The following file defines a thing for the Yahoo Weather binding:
 
 ```
 yahooweather:weather:berlin     [ location="638242" ]
-yahooweather:weather:losangeles [ location="2442047", unit="us" ]
 ```
 
-In this example two *Things* of the *ThingType* `yahooweather:weather` are defined with a configuration for the location and for the second definition a unit.
+In this example a *Thing* of the *ThingType* `yahooweather:weather` is defined with a configuration for the location.
 
 Next you need to create *Items* and link them to the *Channel* of your binding. Here is the example of the Yahoo Weather binding:
 
 ```
 Number Berlin_Temperature       "Temperature in Berlin [%.1f °C]"   { channel="yahooweather:weather:berlin:temperature" }
 Number Berlin_Humidity          "Humidity in Berlin [%d %%]"        { channel="yahooweather:weather:berlin:humidity" }
-Number Los_Angeles_Temperature  "Temperature in LA [%.1f °F]"       { channel="yahooweather:weather:losangeles:temperature" }
 ```
 
 The syntax for a channel link is `{ channel = "<binding-id>:<thing-type-id>:<thing-id>:<channel-id>" }`.

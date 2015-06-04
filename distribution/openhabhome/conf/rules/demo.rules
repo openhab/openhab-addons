@@ -50,6 +50,13 @@ rule "Initialize contact states"
 		)
 end
 
+rule "Initialize Location"
+	when 
+		System started
+	then
+		DemoLocation.postUpdate(new PointType("52.5200066,13.4049540"))
+end
+
 rule "Set random room temperatures"
 	when 
 		System started or
@@ -68,7 +75,6 @@ when
 then	
 	postUpdate(Weather_Temp_Max, Weather_Temperature.maximumSince(now.toDateMidnight).state)
 	postUpdate(Weather_Temp_Min, Weather_Temperature.minimumSince(now.toDateMidnight).state)
-	logInfo("Weather","Temperature evolved of " + Weather_Temperature.deltaSince(now.minusMinutes(2)).toString + " degrees.")
 end
 
 // Creates an item that stores the last update time of this item

@@ -79,7 +79,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
 		}
 		if (thingUID != null) {
 			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-					.withProperty(MaxBinding.SERIAL_NUMBER, device.getSerialNumber()).withBridge(bridge.getUID())
+					.withProperty(MaxBinding.PROPERTY_SERIAL_NUMBER, device.getSerialNumber()).withBridge(bridge.getUID())
 					.withLabel(device.getType() + ": " + device.getName())
 					.build();
 			thingDiscovered(discoveryResult);

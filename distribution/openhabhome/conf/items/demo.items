@@ -1,8 +1,8 @@
 Group gFF 			"First Floor" 	<firstfloor>	[ "home-group" ]
 Group gGF 			"Ground Floor"	<groundfloor>	[ "home-group" ]
 Group gC 			"Cellar"		<cellar>		[ "home-group" ]
-Group Garden 						<garden>		[ "home-group" ]
-Group Weather 						<sun>			[ "home-group" ]
+Group Garden 		"Garden"		<garden>		[ "home-group" ]
+Group Weather 		"Weather"		<sun>			[ "home-group" ]
 
 Group Status 
 Group Shutters
@@ -100,8 +100,10 @@ Number Weather_Temp_Max 		"Todays Maximum [%.1f °C]"		<temperature> (Weather, W
 Number Weather_Temp_Min 		"Todays Minimum [%.1f °C]"		<temperature> (Weather, Weather_Chart)
 Number Weather_Chart_Period		"Chart Period"
 DateTime Weather_LastUpdate		"Last Update [%1$ta %1$tR]"	<clock>
+Number  Sun_Elevation           "Sun Elevation"             <sun>        (Weather)   { channel="astro:sun:home:position#elevation" }
 
 /* Demo items */
+DateTime CurrentDate			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
 Switch DemoSwitch				"Switch"
 Dimmer DimmedLight				"Dimmer [%d %%]"		<slider>
 Color  RGBLight					"RGB Light"				<slider>
@@ -111,3 +113,4 @@ Number Scene_General			"Scene"					<sofa>
 Number Radio_Station			"Radio"					<network>
 Dimmer Volume 					"Volume [%.1f %%]"
 Number Temperature_Setpoint		"Temperature [%.1f °C]" <temperature>
+Location DemoLocation			"Brandenburg Gate Berlin"
