@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meteostick"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="sample">
+        <label>MeteoStick USB Receiver</label>
+        <description>USB Receiver for Davis and Fine Offset weather stations</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="pressure" typeId="pressure" />
+		</channels>
+
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Port</label>
+                <description>USB port that the MeteoStick is plugged in to</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Indoor Temperature</label>
+        <description>Current outdoor temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Outdoor Humidity</label>
+        <description>Current outdoor humidity in %</description>
+        <category>Humidity</category>
+        <state readOnly="true" pattern="%d %%">
+        </state>
+    </channel-type>
+
+    <channel-type id="pressure">
+        <item-type>Number</item-type>
+        <label>Pressure</label>
+        <description>Current pressure in millibar</description>
+        <category>Pressure</category>
+        <state readOnly="true" pattern="%.1f hPa">
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>
