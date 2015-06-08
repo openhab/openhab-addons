@@ -14,7 +14,9 @@
 	  <excludes>
 		<exclude>**/demo*.*</exclude>
 		<exclude>conf/services/logging.cfg</exclude>
+		<exclude>conf/services/classicui.cfg</exclude>
 	  	<exclude>**/persistence/*.persist</exclude>
+	  	<exclude>userdata/**</exclude>
 	  </excludes>
     </fileSet>
   </fileSets>

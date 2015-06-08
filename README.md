@@ -4,7 +4,7 @@ The open Home Automation Bus (openHAB) project aims at providing a universal int
 
 It is designed to be absolutely vendor-neutral as well as hardware/protocol-agnostic. openHAB brings together different bus systems, hardware devices and interface protocols by dedicated bindings. These bindings send and receive commands and status updates on the openHAB event bus. This concept allows designing user interfaces with a unique look&feel, but with the possibility to operate devices based on a big number of different technologies. Besides the user interfaces, it also brings the power of automation logics across different system boundaries.
 
-For further Information please refer to our homepage http://www.openhab.org. 
+For further Information please refer to our homepage [http://www.openhab.org](http://www.openhab.org). 
 
 ## openHAB 1 vs. openHAB 2
 
@@ -13,11 +13,9 @@ This project here is the home of the next-generation openHAB aka openHAB 2.
 A major focus of openHAB 2 is adding administration UIs to the system to make it more user-friendly for "regular" users (i.e. not the developer type). For this, openHAB 2 is now based on the [Eclipse SmartHome](http://www.eclipse.org/smarthome) project. You can find information about the relation of these projects in [this blogpost](http://kaikreuzer.blogspot.de/2014/06/openhab-20-and-eclipse-smarthome.html).
 There is a configuration UI prototype already available, called [Paper UI](https://www.youtube.com/watch?v=NolVoL8ewO0&feature=youtu.be).
 
-openHAB 2 is currently under development and so far there is only an [alpha release available](https://github.com/openhab/openhab2/releases/tag/2.0.0-alpha1). Additionally, we have snapshot builds [available at CloudBees](https://openhab.ci.cloudbees.com/job/openHAB2/). openHAB 2.0 includes a [1.x compatibility layer](docs/sources/installation/compatibilitylayer.md), which allows using 1.x add-ons with the new runtime.
+openHAB 2 is currently under development and so far there is only an [alpha release available](https://github.com/openhab/openhab2/releases/tag/2.0.0-alpha2). Additionally, we have snapshot builds [available at CloudBees](https://openhab.ci.cloudbees.com/job/openHAB2/). openHAB 2.0 includes a [1.x compatibility layer](docs/sources/installation/compatibilitylayer.md), which allows using 1.x add-ons with the new runtime.
 
-*Please read about [important changes and known limitations](docs/sources/installation/intro.md) before trying out the binary builds yourself.*
-
-If you want to learn more about openHAB 2.0, please also check out [this blog post](http://kaikreuzer.blogspot.de/2014/11/openhab-16-and-20-alpha-release.html).
+If you want to start playing openHAB 2.0, please [read here about the runtime and its changes to version 1.x](docs/sources/intro.md). For some background information, you can also check out [this blog post](http://kaikreuzer.blogspot.de/2014/11/openhab-16-and-20-alpha-release.html) and [this one](http://kaikreuzer.blogspot.de/2015/05/openhab-17-and-20-alpha-2-release.html).
 
 ## Community: How to get involved
 

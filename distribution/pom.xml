@@ -17,6 +17,7 @@
 
     <properties>
 		<esh.version>0.8.0-SNAPSHOT</esh.version>
+		<oh1.version>1.8.0-SNAPSHOT</oh1.version>
     </properties>
 
     <build>
@@ -34,8 +35,7 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>src/assemble/runtime.xml</descriptor>
-                                <descriptor>src/assemble/runtime-minimal.xml</descriptor>
-<!--                                 <descriptor>src/assemble/addons.xml</descriptor> -->
+                                <descriptor>src/assemble/addons.xml</descriptor>
                                 <descriptor>src/assemble/demo.xml</descriptor>
                             </descriptors>
                         </configuration>
@@ -70,10 +70,69 @@
             <artifactId>org.openhab.binding.max</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.openhab.ui</groupId>
-            <artifactId>org.openhab.ui.paperui</artifactId>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.astro</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.autelis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.avmfritz</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.freebox</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.hdanywhere</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.ipp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.keba</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.network</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.pulseaudio</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.pioneeravr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.squeezebox</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.tesla</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.vitotronic</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -109,16 +168,181 @@
             <version>${project.version}</version>
         </dependency>
 
+		<!-- openHAB 1 add-ons to include -->
         <dependency>
-            <groupId>org.eclipse.smarthome.ui</groupId>
-            <artifactId>org.eclipse.smarthome.ui.paperui</artifactId>
-            <version>${esh.version}</version>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.energenie</artifactId>
+            <version>${oh1.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.astro</artifactId>
-            <version>${project.version}</version>
+            <artifactId>org.openhab.binding.enocean</artifactId>
+            <version>${oh1.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.epsonprojector</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.exec</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.freeswitch</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.fs20</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.heatmiser</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.homematic</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.http</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.ihc</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.insteonplm</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.knx</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.milight</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.nibeheatpump</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.ntp</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.onkyo</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.openenergymonitor</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.owserver</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.snmp</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.systeminfo</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.swegonventilation</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.tinkerforge</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.weather</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.zwave</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.tellstick</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+
+        <dependency>
+            <groupId>org.openhab.persistence</groupId>
+            <artifactId>org.openhab.persistence.rrd4j</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.persistence</groupId>
+            <artifactId>org.openhab.persistence.mysql</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.persistence</groupId>
+            <artifactId>org.openhab.persistence.logging</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.persistence</groupId>
+            <artifactId>org.openhab.persistence.jpa</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+
+        <dependency>
+            <groupId>org.openhab.action</groupId>
+            <artifactId>org.openhab.action.mail</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.action</groupId>
+            <artifactId>org.openhab.action.xbmc</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+
+        <dependency>
+            <groupId>org.openhab.io</groupId>
+            <artifactId>org.openhab.io.multimedia.tts.marytts</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>openhab.repository.snapshot</id>
+            <name>openHAB 1.x Snapshots</name>
+            <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

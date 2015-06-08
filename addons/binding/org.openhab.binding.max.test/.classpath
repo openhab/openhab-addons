@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/groovy"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

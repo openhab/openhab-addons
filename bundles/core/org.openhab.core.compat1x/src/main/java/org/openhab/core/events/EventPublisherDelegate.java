@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,11 @@ public class EventPublisherDelegate implements org.openhab.core.events.EventPubl
 		try {
 			Item item = itemRegistry.getItem(itemName);
 			org.eclipse.smarthome.core.types.Command eshCommand = TypeParser.parseCommand(item.getAcceptedCommandTypes(), command.toString());
-			eventPublisher.sendCommand(itemName, eshCommand);
+            if(eshCommand!=null) {
+                eventPublisher.sendCommand(itemName, eshCommand);
+            } else {
+                logger.warn("Compatibility layer could not convert {} of type {}.", command.toString(), command.getClass().getSimpleName() );
+            }
 		} catch (ItemNotFoundException e) {
 			logger.warn("Could not process command event '{}' as item '{}' is unknown", command.toString(), itemName);
 		}
@@ -57,7 +62,11 @@ public class EventPublisherDelegate implements org.openhab.core.events.EventPubl
 		try {
 			Item item = itemRegistry.getItem(itemName);
 			org.eclipse.smarthome.core.types.Command eshCommand = TypeParser.parseCommand(item.getAcceptedCommandTypes(), command.toString());
-			eventPublisher.postCommand(itemName, eshCommand);
+            if(eshCommand!=null) {
+                eventPublisher.postCommand(itemName, eshCommand);
+            } else {
+                logger.warn("Compatibility layer could not convert {} of type {}.", command.toString(), command.getClass().getSimpleName() );
+            }
 		} catch (ItemNotFoundException e) {
 			logger.warn("Could not process command event '{}' as item '{}' is unknown", command.toString(), itemName);
 		}
@@ -67,11 +76,26 @@ public class EventPublisherDelegate implements org.openhab.core.events.EventPubl
 	public void postUpdate(String itemName, State newState) {
 		try {
 			Item item = itemRegistry.getItem(itemName);
-			org.eclipse.smarthome.core.types.State eshState = TypeParser.parseState(item.getAcceptedDataTypes(), newState.toString());
-			eventPublisher.postUpdate(itemName, eshState);
+			org.eclipse.smarthome.core.types.State eshState = mapState(item, newState);
+			if(eshState!=null) {
+			    eventPublisher.postUpdate(itemName, eshState);
+			} else {
+			    logger.warn("Compatibility layer could not convert {} of type {}.", newState.toString(), newState.getClass().getSimpleName() );
+			}
 		} catch (ItemNotFoundException e) {
 			logger.warn("Could not process command event '{}' as item '{}' is unknown", newState.toString(), itemName);
 		}
 	}
 
+	protected org.eclipse.smarthome.core.types.State mapState(Item item, State state) {
+	    org.eclipse.smarthome.core.types.State eshState = null;
+	    if(state == UnDefType.NULL) {
+	        eshState = org.eclipse.smarthome.core.types.UnDefType.NULL;
+	    } else if ( state == UnDefType.UNDEF) {
+	        eshState = org.eclipse.smarthome.core.types.UnDefType.UNDEF;
+	    } else {
+	        eshState = TypeParser.parseState(item.getAcceptedDataTypes(), state.toString());
+	    }
+	    return eshState;
+	}
 }

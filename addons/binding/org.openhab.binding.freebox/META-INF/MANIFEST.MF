@@ -23,10 +23,10 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
  org.openhab.library.tel.items,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.freebox,
  org.openhab.binding.freebox.handler
-Require-Bundle: org.apache.commons.io;bundle-version="2.2.0",
- org.apache.commons.codec;bundle-version="1.6.0"
+Require-Bundle: org.apache.commons.io,
+ org.apache.commons.codec

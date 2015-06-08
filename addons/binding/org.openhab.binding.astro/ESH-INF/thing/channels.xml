@@ -18,14 +18,14 @@
 		<item-type>Number</item-type>
 		<label>Azimuth</label>
 		<description>The azimuth of the planet</description>
-		<state readOnly="true" pattern="%d °" />
+		<state readOnly="true" pattern="%.2f °" />
 	</channel-type>
 
 	<channel-type id="elevation">
 		<item-type>Number</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the planet</description>
-		<state readOnly="true" pattern="%d °" />
+		<state readOnly="true" pattern="%.2f °" />
 	</channel-type>
 
 	<!-- sun range -->

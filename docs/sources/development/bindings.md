@@ -4,6 +4,8 @@ This page describes the necessary steps in order to implement a new binding for 
 
 _Note:_ Please note that in contrast to openHAB 1.x, openHAB 2 is based on the [Eclipse SmartHome](http://eclipse.org/smarthome/) project. So the APIs and concepts have changed, so please read this documentation carefully, if you are coming from openHAB 1.x development.
 
+For information about code style and naming conventions, please see the [guidelines of Eclipse SmartHome](https://github.com/eclipse/smarthome/blob/master/docs/sources/development/guidelines.md).
+
 ## Choosing a namespace
 
 As a first step, you need to decide in which namespace you want to develop your binding - assuming that you want to contribute it back to the community, you have two options:
