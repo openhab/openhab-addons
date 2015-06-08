@@ -7,7 +7,8 @@
  */
 package org.openhab.binding.openwebnetvdes.handler;
 
-import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.*;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.CHANNEL_OPEN_LOCK;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.CHANNEL_SWITCH_ON_OFF_CAMERA;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants;
 import org.openhab.binding.openwebnetvdes.devices.BticinoDevice;
 import org.slf4j.Logger;
@@ -202,7 +202,7 @@ public class OpenWebNetVdesHandler extends BaseThingHandler implements DeviceSta
 			bridgeHandler.unregisterDeviceStatusListener(this);
 			bridgeHandler = null;
 			forceRefresh = true;
-			getThing().setStatus(ThingStatus.OFFLINE);
+			updateStatus(ThingStatus.OFFLINE);
 		}
 	}
 

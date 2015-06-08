@@ -1,13 +1,17 @@
 package org.openhab.binding.openwebnetvdes.handler;
 
-import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.*;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.CHANNEL_OPEN_LOCK;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.CHANNEL_SWITCH_ON_OFF_CAMERA;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OPEN_MSG_99_0;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OPEN_MSG_MAC_ADDRESS_RESPONSE;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OWN_RESPONSE_ACK;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OWN_RESPONSE_MESSAGE_ACK;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OWN_RESPONSE_MESSAGE_NACK;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OWN_RESPONSE_NACK;
+import static org.openhab.binding.openwebnetvdes.OpenWebNetVdesBindingConstants.OWN_WHERE;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
