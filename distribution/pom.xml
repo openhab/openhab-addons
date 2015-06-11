@@ -245,6 +245,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.onewire</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.owserver</artifactId>
             <version>${oh1.version}</version>
         </dependency>
