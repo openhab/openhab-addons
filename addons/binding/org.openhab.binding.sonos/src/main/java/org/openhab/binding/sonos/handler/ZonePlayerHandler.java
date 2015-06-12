@@ -210,6 +210,9 @@ UpnpIOParticipant, DiscoveryListener {
 		case RADIO:
 			playRadio(command);
 			break;
+		case FAVORITE:
+			playFavorite(command);
+			break;
 		case ALARM:
 			setAlarm(command);
 			break;
@@ -897,6 +900,14 @@ UpnpIOParticipant, DiscoveryListener {
 	public List<SonosEntry> getFavoriteRadios() {
 		return getEntries("R:0/0",
 				"dc:title,res,dc:creator,upnp:artist,upnp:album");
+	}
+	
+	/**
+	 * Searches for entries in the 'favorites' list on a sonos account
+	 * @return
+	 */
+	public List<SonosEntry> getFavorites(){
+		return getEntries("FV:2","dc:title,res,dc:creator,upnp:artist,upnp:album");
 	}
 
 	protected List<SonosEntry> getEntries(String type, String filter) {
@@ -1762,6 +1773,58 @@ UpnpIOParticipant, DiscoveryListener {
 			}
 		}
 
+	}
+	
+	/**
+	 * This will attempt to match the station string with a entry in the
+	 * favorites list, this supports both single entries and playlists
+	 * 
+	 * @param favorite to match
+	 * @return true if a match was found and played.
+	 */
+	public void playFavorite(Command command) {
+
+		if (command instanceof StringType) {
+			String favorite = command.toString();
+			List<SonosEntry> favorites = getFavorites();
+
+			SonosEntry theEntry = null;
+			// search for the appropriate favorite based on its name (title)
+			for (SonosEntry entry : favorites) {
+				if (entry.getTitle().equals(favorite)) {
+					theEntry = entry;
+					break;
+				}
+			}
+
+			// set the URI of the group coordinator
+			if (theEntry != null) {
+				ZonePlayerHandler coordinator = getHandlerByName(getCoordinator());
+
+				/**
+				 * If this is a playlist we need to treat it as such
+				 */
+				if (theEntry.getResourceMetaData() != null
+						&& theEntry.getResourceMetaData().getUpnpClass()
+								.equals("object.container.playlistContainer")) {
+					coordinator.removeAllTracksFromQueue();
+					coordinator.addURIToQueue(theEntry);
+					coordinator.setCurrentURI("x-rincon-queue:" 
+							+ coordinator.getUDN() + "#0", "");
+					if (stateMap != null) {
+						String firstTrackNumberEnqueued = stateMap
+								.get("FirstTrackNumberEnqueued");
+						if (firstTrackNumberEnqueued != null) {
+							coordinator.seek("TRACK_NR",
+									firstTrackNumberEnqueued);
+						}
+					}
+				} else {
+					coordinator.setCurrentURI(theEntry);
+				}
+				coordinator.play();
+			}
+		}
 	}
 
 	public void playTrack(Command command) {
