@@ -19,6 +19,7 @@
 			<channel id="currentartist" typeId="currentartist" />
 			<channel id="currenttitle" typeId="currenttitle" />
 			<channel id="currenttrack" typeId="currenttrack" />
+			<channel id="favorite" typeId="favorite" />
 			<channel id="led" typeId="led" />
 			<channel id="linein" typeId="linein" />
 			<channel id="localcoordinator" typeId="localcoordinator" />
@@ -116,6 +117,12 @@
 		<description>Name of the current track or radio station currently playing</description>
 	</channel-type>
 
+	<channel-type id="favorite" advanced="true">
+		<item-type>String</item-type>
+		<label>Favorite</label>
+		<description>Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app</description>
+	</channel-type>
+	
 	<channel-type id="led" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Led</label>
