@@ -30,6 +30,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 
 | Add-on | Type |
 |--------|------|
+| Denon | Binding |
 | EDS OWServer | Binding |
 | Energenie | Binding |
 | Enocean | Binding |
