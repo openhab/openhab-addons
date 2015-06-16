@@ -149,14 +149,13 @@ public class NetworkService {
 				
 				int exitValue = proc.waitFor();
 				success = exitValue == 0;
-				if( exitValue != 2 && exitValue != 0 ) {
+				if( !success ) {
 					logger.debug("Ping stopped with Error Number: " + exitValue + 
 							" on Command :" + "ping" + 
 							(SystemUtils.IS_OS_UNIX ? " -t " : " -w ") + 
-							String.valueOf(timeout) + 
+							(SystemUtils.IS_OS_UNIX ? String.valueOf((int)(timeout / 1000)) : String.valueOf(timeout)) + 
 							(SystemUtils.IS_OS_UNIX ? " -c" : " -n") + 
 							" 1 " + hostname);
-					return false;
 				}
 			}
 			
@@ -171,7 +170,7 @@ public class NetworkService {
 			logger.debug("ping program was interrupted");
 		}
 		
-		return success ? true : false;
+		return success;
 		
 	}
 	
