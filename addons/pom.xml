@@ -16,7 +16,6 @@
   <packaging>pom</packaging>
 
   <modules>
-	<module>action</module>
     <module>binding</module>
     <module>ui</module>
   </modules>
