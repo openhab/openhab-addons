@@ -10,7 +10,7 @@
 
 -->
 <feature
-      id="org.openhab.runtime.minimal.feature"
+      id="org.openhab.feature.runtime.minimal"
       label="openHAB Minimal Runtime"
       version="2.0.0.qualifier"
       provider-name="openHAB.org">
@@ -20,7 +20,7 @@
    </description>
 
    <copyright>
-      Copyright (c) 2010-2014, openHAB.org &lt;admin@openhab.org&gt;
+      Copyright (c) 2010-2015, openHAB.org &lt;admin@openhab.org&gt;
    </copyright>
 
    <license url="%licenseURL">
@@ -75,4 +75,5 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>

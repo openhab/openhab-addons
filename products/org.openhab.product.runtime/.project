@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.openhab.runtime.minimal.product</name>
+	<name>org.openhab.product.runtime</name>
 	<comment></comment>
 	<projects>
 	</projects>

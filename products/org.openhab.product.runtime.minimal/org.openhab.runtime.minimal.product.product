@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openHAB Minimal Runtime" uid="org.openhab.runtime.minimal.product" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="false">
+<product name="openHAB Minimal Runtime" uid="org.openhab.product.runtime.minimal" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -31,13 +31,15 @@
    </plugins>
 
    <features>
-      <feature id="org.openhab.runtime.minimal.feature"/>
-      <feature id="org.openhab.dependencies.minimal.feature"/>
+      <feature id="org.openhab.feature.dependencies.minimal" version="2.0.0.qualifier"/>
+      <feature id="org.openhab.feature.runtime.minimal" version="2.0.0.qualifier"/>
    </features>
 
    <configurations>
       <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="1" />
       <plugin id="ch.qos.logback.core" autoStart="true" startLevel="1" />
+      <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
+      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
       <plugin id="org.apache.felix.fileinstall" autoStart="true" startLevel="3" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
@@ -80,12 +82,10 @@
       <plugin id="org.eclipse.smarthome.storage.mapdb" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.paperui" autoStart="true" startLevel="0" />
       <plugin id="org.jupnp" autoStart="true" startLevel="0" />
-      <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
-      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.core" autoStart="true" startLevel="5" />
-      <plugin id="org.openhab.ui.dashboard" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
       <plugin id="org.openhab.io.rest.docs" autoStart="true" startLevel="0" />
+      <plugin id="org.openhab.ui.dashboard" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>
