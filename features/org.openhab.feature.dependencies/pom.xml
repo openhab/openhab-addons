@@ -9,9 +9,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openhab</groupId>
-  <artifactId>org.openhab.runtime.minimal.feature</artifactId>
+  <artifactId>org.openhab.feature.dependencies</artifactId>
 
-  <name>openHAB Minimal Runtime</name>
+  <name>openHAB Dependencies</name>
 
   <packaging>eclipse-feature</packaging>
 	
