@@ -4,71 +4,62 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="meteostick_fineoffset">
-        <label>Fine Offset Weather Station</label>
-        <description>MeteoStick USB Receiver for Fine Offset weather stations</description>
-
-		<channels>
+    <bridge-type id="meteostick_bridge">
+        <label>MeteoStick USB Receiver</label>
+        <description>MeteoStick USB Receiver</description>
+        <channels>
+        	<channel id="pressure" typeId="pressure" />
 			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="pressure" typeId="pressure" />
-		</channels>
-
+        </channels>
         <config-description>
             <parameter name="port" type="text" required="true">
                 <label>Port</label>
                 <description>USB port that the MeteoStick is plugged in to</description>
             </parameter>
             <parameter name="mode" type="text" required="true">
-                <label>Frequency Band</label>
-                <description>Specifies the frequency band MeteoStick shall listen to</description>
-                <options>
-                	<option value="3">North America (915MHz)</option>
-                	<option value="4">Europe (868MHz)</option>
-                </options>
-                <default>4</default>
-            </parameter>
-        </config-description>
-    </thing-type>
-
-    <thing-type id="meteostick_davis">
-        <label>Davis Weather Station</label>
-        <description>MeteoStick USB Receiver for Fine Offset weather stations</description>
-
-		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="pressure" typeId="pressure" />
-		</channels>
-
-        <config-description>
-            <parameter name="port" type="text" required="true">
-                <label>Port</label>
-                <description>USB port that the MeteoStick is plugged in to</description>
-            </parameter>
-            <parameter name="mode" type="text" required="true">
-                <label>Transmitters</label>
-                <description>Specifies the transmitters MeteoStick shall listen to</description>
-                <options>
-                	<option value="1">TX1</option>
-                	<option value="2">TX2</option>
-                	<option value="4">TX3</option>
-                	<option value="8">TX4</option>
-                	<option value="16">TX5</option>
-                	<option value="32">TX6</option>
-                	<option value="64">TX7</option>
-                	<option value="128">TX8</option>
-                </options>
-                </parameter>
-            <parameter name="frequency" type="text" required="true">
                 <label>Frequency Band</label>
                 <description>Specifies the frequency band MeteoStick shall listen to</description>
                 <options>
                 	<option value="0">North America (915MHz)</option>
                 	<option value="1">Europe (868MHz)</option>
                 	<option value="2">Australia (915MHz)</option>
-                	<option value="3">North America (915MHz)</option>
+                </options>
+                <default>1</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <thing-type id="meteostick_davis_iss">
+    <supported-bridge-type-refs>
+			<bridge-type-ref id="meteostick_bridge" />
+		</supported-bridge-type-refs>
+		
+        <label>Davis Vantage Vue ISS</label>
+        <description>Davis Integrated Sensor Suite</description>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-speed" typeId="wind-speed" />
+			<channel id="rain" typeId="rain" />
+			<channel id="solar-power" typeId="solar-power" />
+			<channel id="signal-strength" typeId="system.signal-strength" />
+			<channel id="low-battery" typeId="system.low-battery" />
+		</channels>
+
+        <config-description>
+            <parameter name="channel" type="integer" required="true">
+                <label>Channel</label>
+                <description>Specifies the channel the sensor is using</description>
+                <options>
+                	<option value="1">Channel 1</option>
+                	<option value="2">Channel 2</option>
+                	<option value="3">Channel 3</option>
+                	<option value="4">Channel 4</option>
+                	<option value="5">Channel 5</option>
+                	<option value="6">Channel 6</option>
+                	<option value="7">Channel 7</option>
+                	<option value="8">Channel 8</option>
                 </options>
             </parameter>
         </config-description>
@@ -98,6 +89,42 @@
         <description>Current pressure in millibar</description>
         <category>Pressure</category>
         <state readOnly="true" pattern="%.1f hPa">
+        </state>
+    </channel-type>
+
+    <channel-type id="wind-direction">
+        <item-type>Number</item-type>
+        <label>Wind Direction</label>
+        <description>Wind direction</description>
+        <category>Wind</category>
+        <state readOnly="true" pattern="%.0f °">
+        </state>
+    </channel-type>
+
+    <channel-type id="wind-speed">
+        <item-type>Number</item-type>
+        <label>Wind Speed</label>
+        <description>Wind speed</description>
+        <category>Wind</category>
+        <state readOnly="true" pattern="%.0f m/s">
+        </state>
+    </channel-type>
+
+    <channel-type id="rain">
+        <item-type>Number</item-type>
+        <label>Rain</label>
+        <description>Rain</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%.1f mm">
+        </state>
+    </channel-type>
+
+    <channel-type id="solar-power">
+        <item-type>Number</item-type>
+        <label>Solar Power</label>
+        <description>Solar panel power percentage</description>
+        <category>Light</category>
+        <state readOnly="true" pattern="%.1f %%">
         </state>
     </channel-type>
 
