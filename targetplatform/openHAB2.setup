@@ -4,13 +4,14 @@
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:git="http://www.eclipse.org/oomph/setup/git/1.0"
+    xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
     xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
     name="openhab2"
     label="openHAB 2">
   <setupTask
@@ -127,14 +128,6 @@
           key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.codeComplete.argumentSuffixes"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
-          key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.classpathVariable.JRE_LIB"
-          value="/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/rt.jar"/>
-      <setupTask
-          xsi:type="setup:PreferenceTask"
-          key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.classpathVariable.JRE_SRC"
-          value="/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/src.zip"/>
-      <setupTask
-          xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.classpathVariable.JRE_SRCROOT"
           value="src"/>
       <setupTask
@@ -210,40 +203,30 @@
           key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.formatter.insert_new_line_at_end_of_file_if_missing"
           value="true"/>
     </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        id="org.eclipse.oomph.setup.ui"
-        name="org.eclipse.oomph.setup.ui">
-      <setupTask
-          xsi:type="setup:PreferenceTask"
-          key="/instance/org.eclipse.oomph.setup.ui/skip.startup.tasks"
-          value="false"/>
-    </setupTask>
   </setupTask>
-  <setupTask
-      xsi:type="setup:VariableTask"
-      name="train.url"
-      value="http://download.eclipse.org/releases/luna"/>
   <setupTask
       xsi:type="setup:VariableTask"
       id="eclipse.target.platform"
       name="eclipse.target.platform"
       value="Full"/>
   <setupTask
-      xsi:type="setup:VariableTask"
-      id="github.username"
-      name="github.username"
-      label="GitHub Username">
-    <description>The username at github for which forks will be checked out</description>
-  </setupTask>
+      xsi:type="jdt:JRETask"
+      version="JavaSE-1.7"
+      location="${jre.location-1.7}"/>
   <project name="core"
       label="Core">
     <setupTask
         xsi:type="git:GitCloneTask"
         id="git.clone.openhab2"
-        remoteURI="https://github.com/openhab/openhab2.git"
-        pushURI="https://github.com/${github.username}/openhab2.git"
-        checkoutBranch="master">
+        pushURI="https://github.com/${github.user.id}/openhab2.git"
+        remoteURI="https://github.com/openhab/openhab2.git">
+      <annotation
+          source="http://www.eclipse.org/oomph/setup/InducedChoices">
+        <detail
+            key="label">
+          <value>OpenHAB2 Git Repository</value>
+        </detail>
+      </annotation>
       <description>openHAB 2</description>
     </setupTask>
     <setupTask
@@ -321,7 +304,7 @@
           </detail>
           <detail
               key="generateVersions">
-            <value>true</value>
+            <value>false</value>
           </detail>
         </annotation>
         <requirement
@@ -482,6 +465,8 @@
         <requirement
             name="org.eclipse.smarthome.feature.runtime.core.feature.group"/>
         <requirement
+            name="org.eclipse.smarthome.feature.runtime.console.equinox.feature.group"/>
+        <requirement
             name="org.eclipse.smarthome.feature.runtime.binding.feature.group"/>
         <requirement
             name="org.eclipse.smarthome.feature.runtime.rest.feature.group"/>
@@ -492,10 +477,14 @@
         <requirement
             name="org.eclipse.smarthome.feature.test.feature.group"/>
         <requirement
+            name="org.eclipse.smarthome.feature.runtime.paperui.feature.group"/>
+        <requirement
             name="org.eclipse.jetty.bundles.f.feature.group"
             versionRange="[9.0.0,9.1.0)"/>
         <repositoryList
             name="Full">
+          <repository
+              url="http://download.eclipse.org/smarthome/updates-stable/"/>
           <repository
               url="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository"/>
           <repository
