@@ -292,7 +292,7 @@ public class FritzahaWebInterface {
 				callback);
 		asyncclient.newRequest(this.getURL(path, this.addSID(args)))
 				.method(HttpMethod.GET).onResponseSuccess(getExchange)
-				.onResponseFailure(getExchange).onComplete(getExchange)
+				.onResponseFailure(getExchange) //.onComplete(getExchange)
 				.send(getExchange);
 		logger.debug("GETting URL " + getURL(path, addSID(args)));
 		return getExchange;
@@ -323,7 +323,7 @@ public class FritzahaWebInterface {
 		this.asyncclient.newRequest(this.getURL(path))
 				.timeout(this.config.getAsyncTimeout(), TimeUnit.SECONDS)
 				.method(HttpMethod.POST).onResponseSuccess(postExchange)
-				.onResponseFailure(postExchange).onComplete(postExchange)
+				.onResponseFailure(postExchange) //.onComplete(postExchange)
 				.content(new StringContentProvider(this.addSID(args), "UTF-8"))
 				.send(postExchange);
 		return postExchange;
