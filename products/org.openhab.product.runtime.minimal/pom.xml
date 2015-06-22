@@ -9,9 +9,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openhab.products</groupId>
-  <artifactId>org.openhab.runtime.product</artifactId>
+  <artifactId>org.openhab.product.runtime.minimal</artifactId>
 
-  <name>openHAB Runtime Application</name>
+  <name>openHAB Minimal Runtime</name>
 
   <packaging>eclipse-repository</packaging>
 
@@ -78,7 +78,7 @@
 				<configuration>
 					<products>
 						<product>
-							<id>org.openhab.runtime.product</id>
+							<id>org.openhab.product.runtime.minimal</id>
 						</product>
 					</products>
 				</configuration>

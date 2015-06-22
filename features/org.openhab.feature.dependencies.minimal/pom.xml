@@ -9,7 +9,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openhab</groupId>
-  <artifactId>org.openhab.dependencies.minimal.feature</artifactId>
+  <artifactId>org.openhab.feature.dependencies.minimal</artifactId>
 
   <name>openHAB Minimal Dependencies</name>
 

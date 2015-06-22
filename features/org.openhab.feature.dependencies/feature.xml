@@ -10,7 +10,7 @@
 
 -->
 <feature
-      id="org.openhab.dependencies.feature"
+      id="org.openhab.feature.dependencies"
       label="openHAB Dependencies"
       version="2.0.0.qualifier"
       provider-name="openHAB.org">
