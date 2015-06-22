@@ -65,3 +65,9 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | XBMC | Action |
 | XMPP | Action |
 | MaryTTS | TTS engine |
+
+## Compatible Applications
+
+| Application | Description |
+|-------|----------------------|
+| [iot_bridge](https://github.com/openhab/openhab/wiki/ROS-Robot-Operating-System) | Bridge between ROS Robot Operating System and OpenHAB |
