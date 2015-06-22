@@ -42,6 +42,7 @@
     <logger name="javax.jmdns" level="OFF"/>
     <logger name="javax.jmdns.impl" level="OFF"/>
     <logger name="javax.jmdns.impl.constants" level="OFF"/>
+    <logger name="tuwien.auto.calimero" level="WARN" />
 
 	<root level="INFO">
 		<appender-ref ref="FILE" />
