@@ -1,6 +1,6 @@
 # Logitech Squeezebox Binding
 
-This binding integrates the [Logietch Media Server](http://http://www.mysqueezebox.com) and compatible Squeeze players.
+This binding integrates the [Logitech Media Server](http://www.mysqueezebox.com) and compatible Squeeze players.
 
 ## Introduction
 
