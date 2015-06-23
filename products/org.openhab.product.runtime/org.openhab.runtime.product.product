@@ -80,6 +80,12 @@
       <plugin id="org.eclipse.smarthome.io.rest.sse" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.upnp" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.exec" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.javascript" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.map" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.regex" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.xpath" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.xslt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.smarthome.model.item" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.model.item.runtime" autoStart="true" startLevel="3" />
