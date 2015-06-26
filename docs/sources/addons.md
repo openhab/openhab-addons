@@ -30,6 +30,8 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 
 | Add-on | Type |
 |--------|------|
+| Denon | Binding |
+| EDS OWServer | Binding |
 | Energenie | Binding |
 | Enocean | Binding |
 | Epsonprojector | Binding |
@@ -61,4 +63,11 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | JPA | Persistence |
 | Mail | Action |
 | XBMC | Action |
+| XMPP | Action |
 | MaryTTS | TTS engine |
+
+## Compatible Applications
+
+| Application | Description |
+|-------|----------------------|
+| [iot_bridge](https://github.com/openhab/openhab/wiki/ROS-Robot-Operating-System) | Bridge between ROS Robot Operating System and OpenHAB |

@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.persistence.HistoricItem;
 import org.eclipse.smarthome.core.persistence.QueryablePersistenceService;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.core.compat1x.internal.ItemMapper;
 import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
@@ -65,17 +66,16 @@ public class QueryablePersistenceServiceDelegate extends PersistenceServiceDeleg
 				
 				@Override
 				public State getState() {
+				    State state = null;
 					Item eshItem;
 					try {
 						eshItem = itemRegistry.getItem(item.getName());
 						if(eshItem!=null) {
-							return TypeParser.parseState(eshItem.getAcceptedDataTypes(), item.getState().toString());
-						} else {
-							return null;
+						    state = TypeParser.parseState(eshItem.getAcceptedDataTypes(), item.getState().toString());
 						}
-					} catch (ItemNotFoundException e) {
-						return null;
-					}
+					} catch (ItemNotFoundException e) {}
+					
+					return state == null ? UnDefType.NULL : state;
 				}
 				
 				@Override
