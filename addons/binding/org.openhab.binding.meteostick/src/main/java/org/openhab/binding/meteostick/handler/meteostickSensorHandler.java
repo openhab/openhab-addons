@@ -98,12 +98,6 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     }
 
     @Override
-    public void onStateChange() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public void onDataReceived(String[] data) {
         updateStatus(ThingStatus.ONLINE);
 
@@ -123,7 +117,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
                 processBattery(data.length == 6);
                 break;
             case "T": // Temperature
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE), new DecimalType(
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE), new DecimalType(
                         Double.parseDouble(data[2])));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY), new DecimalType(
                         Double.parseDouble(data[3])));
@@ -137,5 +131,11 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
                 processBattery(data.length == 5);
                 break;
         }
+    }
+
+    @Override
+    public void onStateChange() {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -9,7 +9,7 @@
         <description>MeteoStick USB Receiver</description>
         <channels>
         	<channel id="pressure" typeId="pressure" />
-			<channel id="temperature" typeId="temperature" />
+			<channel id="indoor_temperature" typeId="temperature" />
         </channels>
         <config-description>
             <parameter name="port" type="text" required="true">
@@ -37,7 +37,7 @@
         <label>Davis Vantage Vue ISS</label>
         <description>Davis Integrated Sensor Suite</description>
 		<channels>
-			<channel id="temperature" typeId="temperature" />
+			<channel id="outdoor_temperature" typeId="temperature" />
 			<channel id="humidity" typeId="humidity" />
 			<channel id="wind-direction" typeId="wind-direction" />
 			<channel id="wind-speed" typeId="wind-speed" />
@@ -65,9 +65,18 @@
         </config-description>
     </thing-type>
 
-    <channel-type id="temperature">
+    <channel-type id="indoor_temperature">
         <item-type>Number</item-type>
         <label>Indoor Temperature</label>
+        <description>Current temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+
+    <channel-type id="outdoor_temperature">
+        <item-type>Number</item-type>
+        <label>Outdoor Temperature</label>
         <description>Current temperature in degrees celsius</description>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C">

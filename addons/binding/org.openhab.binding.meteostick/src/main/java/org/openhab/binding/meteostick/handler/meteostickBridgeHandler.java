@@ -225,6 +225,8 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
                         switch (p[0]) {
                             case "B": // Barometer
+                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE), new DecimalType(
+                                        Double.parseDouble(p[1])));
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE), new DecimalType(
                                         Double.parseDouble(p[2])));
                                 break;
