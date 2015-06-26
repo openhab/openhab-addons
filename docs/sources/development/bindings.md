@@ -23,7 +23,7 @@ For the Eclipse SmartHome namespace: You need to have a private fork of the Ecli
 
 Now switch in Eclipse and choose `File->Import->General->Existing Projects into Workspace`, enter the folder of the newly created skeleton as the root directory and press "Finish".
 
-This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://github.com/eclipse/smarthome/blob/master/docs/sources/howtos/bindings.md).
+This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://github.com/eclipse/smarthome/tree/master/docs/documentation/development).
 
 ## Setup and Run the Binding
 
