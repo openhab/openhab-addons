@@ -37,4 +37,4 @@ public class meteostickBindingConstants {
 
     // List of parameters
     public final static String PARAMETER_CHANNEL = "channel";
-}// /dev/tty.usbserial-A4030TP3
+}

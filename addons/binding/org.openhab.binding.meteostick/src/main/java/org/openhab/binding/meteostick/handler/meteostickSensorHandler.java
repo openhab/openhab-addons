@@ -51,6 +51,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
         updateStatus(ThingStatus.OFFLINE);
 
+//        String x = (String)getConfig().get(PARAMETER_CHANNEL);
         channel =  ((BigDecimal)getConfig().get(PARAMETER_CHANNEL)).intValue();
     }
 

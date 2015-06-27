@@ -239,6 +239,9 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                                 sendToMeteostick(meteostickChannels);
                                 break;
                             default:
+                                if(p.length < 3) {
+                                    break;
+                                }
                                 meteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
                                 if (listener != null) {
                                     listener.onDataReceived(p);
