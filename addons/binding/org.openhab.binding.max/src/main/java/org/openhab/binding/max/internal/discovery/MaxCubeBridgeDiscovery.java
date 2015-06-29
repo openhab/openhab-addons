@@ -208,8 +208,8 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 				for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
 					InetAddress[] broadcast = new InetAddress[3];
 					broadcast[0] = InetAddress.getByName("224.0.0.1");
-					broadcast[0] = InetAddress.getByName("255.255.255.255");
-					broadcast[1] = interfaceAddress.getBroadcast();
+					broadcast[1] = InetAddress.getByName("255.255.255.255");
+					broadcast[2] = interfaceAddress.getBroadcast();
 					for (InetAddress bc : broadcast) {
 						// Send the broadcast package!
 						if (bc != null) {
