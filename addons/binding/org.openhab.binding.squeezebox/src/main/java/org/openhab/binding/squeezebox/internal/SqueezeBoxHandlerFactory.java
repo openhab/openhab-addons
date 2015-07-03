@@ -39,74 +39,64 @@ import com.google.common.collect.Sets;
  */
 public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
-	private Logger logger = LoggerFactory
-			.getLogger(SqueezeBoxHandlerFactory.class);
+    private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);
 
-	private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-			.union(SqueezeBoxServerHandler.SUPPORTED_THING_TYPES_UIDS,
-					SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
+            SqueezeBoxServerHandler.SUPPORTED_THING_TYPES_UIDS, SqueezeBoxPlayerHandler.SUPPORTED_THING_TYPES_UIDS);
 
-	private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-	@Override
-	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-		logger.debug("supportsThingType {} ", SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID));
-		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-	}
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
 
-	@Override
-	protected ThingHandler createHandler(Thing thing) {
-		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-		if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
-			return new SqueezeBoxPlayerHandler(thing);
-		}
+        if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
+            return new SqueezeBoxPlayerHandler(thing);
+        }
 
-		if (thingTypeUID.equals(SQUEEZEBOXSERVER_THING_TYPE)) {
-			logger.debug("Returning handler for bridge thing {}", thing);
-			SqueezeBoxServerHandler handler = new SqueezeBoxServerHandler(
-					(Bridge) thing);
-			registerSqueezeBoxPlayerDiscoveryService(handler);
-			return handler;
-		}
+        if (thingTypeUID.equals(SQUEEZEBOXSERVER_THING_TYPE)) {
+            logger.trace("Returning handler for bridge thing {}", thing);
+            SqueezeBoxServerHandler handler = new SqueezeBoxServerHandler((Bridge) thing);
+            registerSqueezeBoxPlayerDiscoveryService(handler);
+            return handler;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Adds SqueezeBoxServerHandlers to the discovery service to find SqueezeBox
-	 * Players
-	 * 
-	 * @param squeezeBoxServerHandler
-	 */
-	private synchronized void registerSqueezeBoxPlayerDiscoveryService(
-			SqueezeBoxServerHandler squeezeBoxServerHandler) {
-		SqueezeBoxPlayerDiscoveryParticipant discoveryService = new SqueezeBoxPlayerDiscoveryParticipant(
-				squeezeBoxServerHandler);
-		squeezeBoxServerHandler
-				.registerSqueezeBoxPlayerListener(discoveryService);
-		this.discoveryServiceRegs.put(squeezeBoxServerHandler.getThing()
-				.getUID(), bundleContext.registerService(
-				DiscoveryService.class.getName(), discoveryService,
-				new Hashtable<String, Object>()));
-	}
+    /**
+     * Adds SqueezeBoxServerHandlers to the discovery service to find SqueezeBox
+     * Players
+     * 
+     * @param squeezeBoxServerHandler
+     */
+    private synchronized void registerSqueezeBoxPlayerDiscoveryService(SqueezeBoxServerHandler squeezeBoxServerHandler) {
+        SqueezeBoxPlayerDiscoveryParticipant discoveryService = new SqueezeBoxPlayerDiscoveryParticipant(
+                squeezeBoxServerHandler);
+        squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(discoveryService);
+        this.discoveryServiceRegs.put(squeezeBoxServerHandler.getThing().getUID(), bundleContext.registerService(
+                DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
 
-	@Override
-	protected synchronized void removeHandler(ThingHandler thingHandler) {
-		if (thingHandler instanceof SqueezeBoxServerHandler) {
-			ServiceRegistration<?> serviceReg = this.discoveryServiceRegs
-					.get(thingHandler.getThing().getUID());
-			if (serviceReg != null) {
-				serviceReg.unregister();
-				discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-			}
-		}
-		if (thingHandler instanceof SqueezeBoxPlayerHandler) {
-			SqueezeBoxServerHandler bridge = 
-					((SqueezeBoxPlayerHandler)thingHandler).getSqueezeBoxServerHandler();
-			if(bridge != null){
-				bridge.removePlayerCache(((SqueezeBoxPlayerHandler)thingHandler).getMac());
-			}
-		}
-	}
+    @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof SqueezeBoxServerHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                serviceReg.unregister();
+                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            }
+        }
+        if (thingHandler instanceof SqueezeBoxPlayerHandler) {
+            SqueezeBoxServerHandler bridge = ((SqueezeBoxPlayerHandler) thingHandler).getSqueezeBoxServerHandler();
+            if (bridge != null) {
+                bridge.removePlayerCache(((SqueezeBoxPlayerHandler) thingHandler).getMac());
+            }
+        }
+    }
 }
