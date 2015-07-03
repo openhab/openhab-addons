@@ -28,7 +28,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="runtime.busevents" level="INFO" additivity="false">
+	<logger name="smarthome.event" level="INFO" additivity="false">
 		<appender-ref ref="EVENTFILE" />
 		<appender-ref ref="STDOUT" />
 	</logger>

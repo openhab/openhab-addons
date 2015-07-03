@@ -19,9 +19,7 @@ import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.core.items.GenericItem;
-import org.openhab.core.types.TypeParser;
 import org.openhab.library.tel.items.ESHCallItem;
 
 public class ItemMapper {
@@ -78,14 +76,7 @@ public class ItemMapper {
 			org.openhab.core.items.GenericItem genericItem = (GenericItem) result;
 			State state = item.getState();
 			if (state != null) {
-				org.openhab.core.types.State ohState = null;
-				if (state==UnDefType.NULL) {
-					ohState = org.openhab.core.types.UnDefType.NULL;
-				} else if (state==UnDefType.UNDEF) {
-					ohState = org.openhab.core.types.UnDefType.UNDEF;
-				} else {
-					ohState = TypeParser.parseState(genericItem.getAcceptedDataTypes(), state.toString());
-				}
+				org.openhab.core.types.State ohState = (org.openhab.core.types.State) TypeMapper.mapToOpenHABType(state);				
 				if (ohState != null) {
 					genericItem.setState(ohState);
 				}
