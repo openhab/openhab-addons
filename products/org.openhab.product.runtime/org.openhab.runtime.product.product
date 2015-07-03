@@ -62,7 +62,6 @@
       <plugin id="org.eclipse.smarthome.core" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.autoupdate" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.binding.xml" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.core.library" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.persistence" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.scheduler" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.scriptengine" autoStart="true" startLevel="3" />

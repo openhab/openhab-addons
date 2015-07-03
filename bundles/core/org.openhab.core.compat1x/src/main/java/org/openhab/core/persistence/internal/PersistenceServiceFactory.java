@@ -15,7 +15,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.openhab.core.persistence.PersistenceService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -32,7 +31,6 @@ public class PersistenceServiceFactory {
 	private BundleContext context;
 	
 	private Set<PersistenceService> persistenceServices = new HashSet<>();
-	private ItemRegistry itemRegistry;
 	
 	public void activate(BundleContext context) {
 		this.context = context;
@@ -48,14 +46,6 @@ public class PersistenceServiceFactory {
 		delegates.clear();
 		this.context = null;
 	}
-	
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
-    }
-
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
-    }
 
 	public void addPersistenceService(PersistenceService service) {
 		if(context!=null) {
@@ -75,7 +65,7 @@ public class PersistenceServiceFactory {
 		if(!delegates.containsKey(persistenceService.getName())) {
 			org.eclipse.smarthome.core.persistence.PersistenceService service = 
 					(persistenceService instanceof org.openhab.core.persistence.QueryablePersistenceService) ?
-					new QueryablePersistenceServiceDelegate(persistenceService, itemRegistry) 
+					new QueryablePersistenceServiceDelegate(persistenceService) 
 				:	new PersistenceServiceDelegate(persistenceService);
 			Dictionary<String, Object> props = new Hashtable<String, Object>();
 			ServiceRegistration<org.eclipse.smarthome.core.persistence.PersistenceService> serviceReg = 
