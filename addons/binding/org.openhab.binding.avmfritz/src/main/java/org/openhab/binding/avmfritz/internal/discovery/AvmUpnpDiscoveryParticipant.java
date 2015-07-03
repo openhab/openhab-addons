@@ -80,8 +80,6 @@ public class AvmUpnpDiscoveryParticipant implements
 	public ThingUID getThingUID(RemoteDevice device) {
 		DeviceDetails details = device.getDetails();
 		if (details != null) {
-			logger.debug(details.getFriendlyName() + ": "
-					+ details.getPresentationURI());
 			ModelDetails modelDetails = details.getModelDetails();
 			if (modelDetails != null) {
 				String modelName = modelDetails.getModelName();
