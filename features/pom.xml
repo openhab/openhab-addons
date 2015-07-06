@@ -17,9 +17,7 @@
 
   <modules>
     <module>org.openhab.feature.dependencies</module>
-    <module>org.openhab.feature.dependencies.minimal</module>
     <module>org.openhab.feature.runtime</module>
-    <module>org.openhab.feature.runtime.minimal</module>
   </modules>
 
 </project>

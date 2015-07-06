@@ -17,7 +17,6 @@
 
   <modules>
     <module>org.openhab.product.runtime</module>
-    <module>org.openhab.product.runtime.minimal</module>
     <module>org.openhab.repo</module>
   </modules>
 
