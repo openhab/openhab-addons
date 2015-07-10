@@ -1,4 +1,4 @@
-# Setting up a development environment for openHAB 2
+# Setting up an IDE for openHAB 2
 
 If you are a developer yourself, you might want to setup a development environment, so that you can debug and develop openHAB 2 yourself.
 
