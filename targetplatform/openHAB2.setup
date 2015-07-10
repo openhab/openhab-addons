@@ -753,19 +753,13 @@
       <requirement
           name="org.eclipse.wst.xml_ui.feature.feature.group"/>
       <requirement
-          name="org.eclipse.m2e.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.m2e.logback.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.emf.sdk.feature.group"/>
-      <requirement
           name="org.eclipse.mylyn.java_feature.feature.group"/>
       <requirement
-          name="org.eclipse.mylyn.bugzilla_feature.feature.group"/>
-      <requirement
-          name="org.eclipse.mylyn.hudson.feature.group"/>
+          name="org.codehaus.groovy.eclipse.feature.feature.group"/>
       <requirement
           name="org.eclipse.mylyn.git.feature.group"/>
+      <repository
+          url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>          
     </setupTask>
     <setupTask
         xsi:type="setup.targlets:TargletTask">
