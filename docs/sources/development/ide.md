@@ -16,7 +16,7 @@ Please ensure that you have the following prerequisites installed on your machin
 
 _Note:_ You can find a screencast of the setup process here:
 
-[![Screencast](http://img.youtube.com/vi/av5icYerpuQ/0.jpg)](http://www.youtube.com/watch?v=av5icYerpuQ)
+[![Screencast](http://img.youtube.com/vi/o2QjCGdZl7s/0.jpg)](http://www.youtube.com/watch?v=o2QjCGdZl7s)
 
 The Eclipse IDE is used for openHAB developments. The Eclipse Installer automatically prepares the IDE so that it comes with all required plug-ins, the correct workspace encoding settings, pre-configured code formatters and more. Simply follow these steps:
 
