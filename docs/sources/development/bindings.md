@@ -4,7 +4,7 @@ This page describes the necessary steps in order to implement a new binding for 
 
 _Note:_ Please note that in contrast to openHAB 1.x, openHAB 2 is based on the [Eclipse SmartHome](http://eclipse.org/smarthome/) project. So the APIs and concepts have changed, so please read this documentation carefully, if you are coming from openHAB 1.x development.
 
-For information about code style and naming conventions, please see the [guidelines of Eclipse SmartHome](https://github.com/eclipse/smarthome/blob/master/docs/sources/development/guidelines.md).
+For information about code style and naming conventions, please see the [guidelines of Eclipse SmartHome](https://www.eclipse.org/smarthome/documentation/development/guidelines.html).
 
 ## Choosing a namespace
 
@@ -19,11 +19,11 @@ _Note:_ Here you can find a [screencast of the binding skeleton creation](http:/
 
 For the openHAB namespace: Once you have [set up your IDE](ide.md), you can go ahead and create a skeleton for your binding. For this, go into your git repository under `<your repository>/addons/binding` and call the script `create_openhab_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
 
-For the Eclipse SmartHome namespace: You need to have a private fork of the Eclipse SmartHome project (https://github.com/eclipse/smarthome). In the local checkout of this git repository, go to `<your eclipse smarthome repository>/binding` and call the script `create_esh_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
+For the Eclipse SmartHome namespace: You need to have a private fork of the Eclipse SmartHome project (https://github.com/eclipse/smarthome). In the local checkout of this git repository, go to `<your eclipse smarthome repository>/extensions/binding` and call the script `create_esh_binding_skeleton.sh` with a single parameter, which is your binding name in camel case (e.g. 'ACMEProduct' or 'SomeSystem'). When prompted, enter your name as author and hit "Y" to start the skeleton generation.
 
 Now switch in Eclipse and choose `File->Import->General->Existing Projects into Workspace`, enter the folder of the newly created skeleton as the root directory and press "Finish".
 
-This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://github.com/eclipse/smarthome/blob/master/docs/sources/howtos/bindings.md).
+This should give you an easy starting point for your developments. To learn about the internal structure and the concepts of a binding, please see the [Eclipse tutorial on binding development](https://www.eclipse.org/smarthome/documentation/development/bindings/how-to.html).
 
 ## Setup and Run the Binding
 

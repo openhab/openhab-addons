@@ -10,8 +10,8 @@
 
 -->
 <feature
-      id="org.openhab.dependencies.minimal.feature"
-      label="openHAB Minimal Dependencies"
+      id="org.openhab.feature.dependencies"
+      label="openHAB Dependencies"
       version="2.0.0.qualifier"
       provider-name="openHAB.org">
 
@@ -288,13 +288,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.smarthome.core.library"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.smarthome.core.persistence"
          download-size="0"
          install-size="0"
@@ -303,6 +296,13 @@
 
    <plugin
          id="org.eclipse.smarthome.core.scheduler"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.core.scriptengine"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -351,7 +351,63 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.smarthome.io.rest.sitemap"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.smarthome.io.transport.mqtt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.item"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.persistence"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.rule"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.script"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.sitemap"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -449,7 +505,63 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.smarthome.model.item.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.persistence.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.rule.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.script.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.sitemap.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.thing.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.ui.icon"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.smarthome.core.thing"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.model.thing"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -547,7 +659,7 @@
          unpack="false"/>
 
    <plugin
-         id="com.eclipsesource.jaxrs.jersey-all"
+         id="com.eclipsesource.jaxrs.jersey-min"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -575,6 +687,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.smarthome.ui.classic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.smarthome.io.rest.sse"
          download-size="0"
          install-size="0"
@@ -583,6 +702,48 @@
 
    <plugin
          id="org.eclipse.smarthome.io.console.eclipse"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.transform.exec"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.transform.javascript"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.transform.map"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.transform.regex"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.transform.xpath"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.smarthome.transform.xslt"
          download-size="0"
          install-size="0"
          version="0.0.0"

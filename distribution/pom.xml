@@ -60,14 +60,14 @@
         
         <dependency>
             <groupId>org.openhab.products</groupId>
-            <artifactId>org.openhab.runtime.product</artifactId>
+            <artifactId>org.openhab.product.runtime</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <classifier>win32.win32.x86</classifier>
         </dependency>
         <dependency>
             <groupId>org.openhab.products</groupId>
-            <artifactId>org.openhab.runtime.minimal.product</artifactId>
+            <artifactId>org.openhab.product.runtime.minimal</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <classifier>win32.win32.x86</classifier>
@@ -171,6 +171,11 @@
         </dependency>
 
 		<!-- openHAB 1 add-ons to include -->
+		<dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.denon</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.energenie</artifactId>
@@ -254,6 +259,11 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.openenergymonitor</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.onewire</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>

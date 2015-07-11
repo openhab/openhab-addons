@@ -25,7 +25,7 @@ public class ClassicUIDashboardTile implements DashboardTile {
 
     @Override
     public String getUrl() {
-        return "../classicui";
+        return "../classicui/app";
     }
 
     @Override

@@ -16,8 +16,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>org.openhab.runtime.product</module>
-    <module>org.openhab.runtime.minimal.product</module>
+    <module>org.openhab.product.runtime</module>
+    <module>org.openhab.repo</module>
   </modules>
 
 </project>

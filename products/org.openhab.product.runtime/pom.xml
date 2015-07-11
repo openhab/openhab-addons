@@ -9,7 +9,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.openhab.products</groupId>
-  <artifactId>org.openhab.runtime.product</artifactId>
+  <artifactId>org.openhab.product.runtime</artifactId>
 
   <name>openHAB Runtime Application</name>
 
@@ -78,7 +78,7 @@
 				<configuration>
 					<products>
 						<product>
-							<id>org.openhab.runtime.product</id>
+							<id>org.openhab.product.runtime</id>
 						</product>
 					</products>
 				</configuration>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openHAB Runtime" uid="org.openhab.runtime.product" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="false">
+<product name="openHAB Runtime" uid="org.openhab.product.runtime" version="2.0.0.qualifier" useFeatures="true" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -31,13 +31,15 @@
    </plugins>
 
    <features>
-      <feature id="org.openhab.runtime.feature"/>
-      <feature id="org.openhab.dependencies.feature"/>
+      <feature id="org.openhab.feature.dependencies" version="2.0.0.qualifier"/>
+      <feature id="org.openhab.feature.runtime" version="2.0.0.qualifier"/>
    </features>
 
    <configurations>
       <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="1" />
       <plugin id="ch.qos.logback.core" autoStart="true" startLevel="1" />
+      <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
+      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
       <plugin id="org.apache.felix.fileinstall" autoStart="true" startLevel="3" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />
@@ -60,7 +62,6 @@
       <plugin id="org.eclipse.smarthome.core" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.autoupdate" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.binding.xml" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.core.library" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.persistence" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.scheduler" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.core.scriptengine" autoStart="true" startLevel="3" />
@@ -78,6 +79,12 @@
       <plugin id="org.eclipse.smarthome.io.rest.sse" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.mqtt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.io.transport.upnp" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.exec" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.javascript" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.map" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.regex" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.xpath" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.transform.xslt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.model.core" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.smarthome.model.item" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.model.item.runtime" autoStart="true" startLevel="3" />
@@ -93,18 +100,16 @@
       <plugin id="org.eclipse.smarthome.model.thing.runtime" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.smarthome.storage.mapdb" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.classic" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.smarthome.ui.icon" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.smarthome.ui.paperui" autoStart="true" startLevel="0" />
       <plugin id="org.jupnp" autoStart="true" startLevel="0" />
-      <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
-      <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
       <plugin id="org.openhab.core" autoStart="true" startLevel="5" />
-      <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
       <plugin id="org.openhab.core.compat1x" autoStart="true" startLevel="0" />
-      <plugin id="org.openhab.ui.dashboard" autoStart="true" startLevel="0" />
-      <plugin id="org.openhab.ui.classicui" autoStart="true" startLevel="0" />
+      <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
       <plugin id="org.openhab.io.rest.docs" autoStart="true" startLevel="0" />
+      <plugin id="org.openhab.ui.classicui" autoStart="true" startLevel="0" />
+      <plugin id="org.openhab.ui.dashboard" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>

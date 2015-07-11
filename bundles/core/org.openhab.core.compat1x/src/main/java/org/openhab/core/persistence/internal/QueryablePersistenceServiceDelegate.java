@@ -11,15 +11,11 @@ package org.openhab.core.persistence.internal;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemNotFoundException;
-import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.persistence.FilterCriteria;
 import org.eclipse.smarthome.core.persistence.HistoricItem;
 import org.eclipse.smarthome.core.persistence.QueryablePersistenceService;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.TypeParser;
-import org.openhab.core.compat1x.internal.ItemMapper;
+import org.openhab.core.compat1x.internal.TypeMapper;
 import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 
@@ -33,13 +29,9 @@ import org.openhab.core.persistence.FilterCriteria.Ordering;
  */
 public class QueryablePersistenceServiceDelegate extends PersistenceServiceDelegate implements QueryablePersistenceService {
 
-	private ItemRegistry itemRegistry;
-
 	public QueryablePersistenceServiceDelegate(
-			org.openhab.core.persistence.PersistenceService persistenceService,
-			ItemRegistry itemRegistry) {
+			org.openhab.core.persistence.PersistenceService persistenceService) {
 		super(persistenceService);
-		this.itemRegistry = itemRegistry;
 	}
 
 	@Override
@@ -52,7 +44,7 @@ public class QueryablePersistenceServiceDelegate extends PersistenceServiceDeleg
 			.setOrdering(mapOrdering(filter.getOrdering()))
 			.setPageNumber(filter.getPageNumber())
 			.setPageSize(filter.getPageSize())
-			.setState(mapState(filter.getState(), filter.getItemName()));
+			.setState(mapState(filter.getState()));
 		org.openhab.core.persistence.QueryablePersistenceService pService = (org.openhab.core.persistence.QueryablePersistenceService) service;
 		Iterable<org.openhab.core.persistence.HistoricItem> historicItems = pService.query(mappedFilter);
 		ArrayList<HistoricItem> result = new ArrayList<>();
@@ -65,17 +57,7 @@ public class QueryablePersistenceServiceDelegate extends PersistenceServiceDeleg
 				
 				@Override
 				public State getState() {
-					Item eshItem;
-					try {
-						eshItem = itemRegistry.getItem(item.getName());
-						if(eshItem!=null) {
-							return TypeParser.parseState(eshItem.getAcceptedDataTypes(), item.getState().toString());
-						} else {
-							return null;
-						}
-					} catch (ItemNotFoundException e) {
-						return null;
-					}
+				    return (State) TypeMapper.mapToESHType(item.getState());
 				}
 				
 				@Override
@@ -87,21 +69,8 @@ public class QueryablePersistenceServiceDelegate extends PersistenceServiceDeleg
 		return result;
 	}
 
-	private org.openhab.core.types.State mapState(State state, String itemName) {
-		if(state==null) return null;
-		
-		Item eshItem;
-		try {
-			eshItem = itemRegistry.getItem(itemName);
-			if(eshItem!=null) {
-				return org.openhab.core.types.TypeParser.parseState(
-						ItemMapper.mapToOpenHABItem(eshItem).getAcceptedDataTypes(), state.toString());
-			} else {
-				return null;
-			}
-		} catch (ItemNotFoundException e) {
-			return null;
-		}
+	private org.openhab.core.types.State mapState(State state) {
+	    return (org.openhab.core.types.State) TypeMapper.mapToOpenHABType(state);
 	}
 
 	private Ordering mapOrdering(FilterCriteria.Ordering ordering) {

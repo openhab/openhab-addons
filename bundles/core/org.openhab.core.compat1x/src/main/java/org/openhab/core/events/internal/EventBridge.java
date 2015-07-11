@@ -9,13 +9,21 @@
 package org.openhab.core.events.internal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.smarthome.core.events.EventConstants;
-import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemNotFoundException;
-import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.openhab.core.compat1x.internal.ItemMapper;
+import org.eclipse.smarthome.core.events.EventFilter;
+import org.eclipse.smarthome.core.events.EventPublisher;
+import org.eclipse.smarthome.core.events.EventSubscriber;
+import org.eclipse.smarthome.core.items.events.ItemCommandEvent;
+import org.eclipse.smarthome.core.items.events.ItemEventFactory;
+import org.eclipse.smarthome.core.items.events.ItemStateEvent;
+import org.openhab.core.compat1x.internal.TypeMapper;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.EventType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.Type;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventHandler;
@@ -28,11 +36,11 @@ import org.osgi.service.event.EventHandler;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
-public class EventBridge implements EventHandler {
+public class EventBridge implements EventHandler, EventSubscriber {
 
     private static final String BRIDGEMARKER = "bridgemarker";
-	private EventAdmin eventAdmin;
-	private ItemRegistry itemRegistry;
+    private EventAdmin eventAdmin;
+    private EventPublisher eventPublisher;
 
     public void setEventAdmin(EventAdmin eventAdmin) {
         this.eventAdmin = eventAdmin;
@@ -42,72 +50,96 @@ public class EventBridge implements EventHandler {
         this.eventAdmin = null;
     }
 
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
+    public void setEventPublisher(EventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
+    public void unsetEventPublisher(EventPublisher eventPublisher) {
+        this.eventPublisher = null;
     }
 
-	@Override
-	public void handleEvent(Event event) {
-		
-		if(!Boolean.TRUE.equals(event.getProperty(BRIDGEMARKER))) {
-			
-			// map event from ESH to openHAB
-			if(event.getTopic().startsWith(EventConstants.TOPIC_PREFIX)) {
-				String topic = org.openhab.core.events.EventConstants.TOPIC_PREFIX +
-						event.getTopic().substring(EventConstants.TOPIC_PREFIX.length());
-				Map<String, Object> properties = constructProperties(event);
-				eventAdmin.postEvent(new Event(topic, properties));
-			}
-		
-			// map event from openHAB to ESH
-			if(event.getTopic().startsWith(org.openhab.core.events.EventConstants.TOPIC_PREFIX)) {
-				String topic = EventConstants.TOPIC_PREFIX + 
-						event.getTopic().substring(org.openhab.core.events.EventConstants.TOPIC_PREFIX.length());
-				Map<String, Object> properties = constructProperties(event);
-				eventAdmin.postEvent(new Event(topic, properties));
-			}
-		}
-	}
+    @Override
+    public void handleEvent(Event event) {
 
-	private Map<String, Object> constructProperties(Event event) {
-		String[] propertyNames = event.getPropertyNames();
-		Map<String, Object> properties = new HashMap<>();
-		String itemName = (String) event.getProperty("item");
-		if(itemName!=null) {
-			for(String propertyName : propertyNames) {
-				if(propertyName.equals("command")) {
-					try {
-						Item item = itemRegistry.getItem(itemName);
-						org.openhab.core.items.Item ohItem = ItemMapper.mapToOpenHABItem(item);
-						if(ohItem!=null) {
-							org.openhab.core.types.Command command = 
-									org.openhab.core.types.TypeParser.parseCommand(
-											ohItem.getAcceptedCommandTypes(), event.getProperty(propertyName).toString());
-							properties.put(propertyName, command);
-						}
-					} catch (ItemNotFoundException e) {}
-				} else if(propertyName.equals("state")) {
-					try {
-						Item item = itemRegistry.getItem(itemName);
-						org.openhab.core.items.Item ohItem = ItemMapper.mapToOpenHABItem(item);
-						if(ohItem!=null) {
-							org.openhab.core.types.State state = 
-									org.openhab.core.types.TypeParser.parseState(
-											ohItem.getAcceptedDataTypes(), event.getProperty(propertyName).toString());
-							properties.put(propertyName, state);
-						}
-					} catch (ItemNotFoundException e) {}
-				} else {
-					properties.put(propertyName, event.getProperty(propertyName));
-				}
-			}
-		}
-		properties.put(BRIDGEMARKER, true);
-		return properties;
-	}
+        if (!Boolean.TRUE.equals(event.getProperty(BRIDGEMARKER))) {
+
+            // map event from openHAB to ESH
+            if (event.getTopic().startsWith(org.openhab.core.events.EventConstants.TOPIC_PREFIX)) {
+                if (event.getTopic().endsWith(EventType.COMMAND.name())) {
+                    String itemName = (String) event.getProperty("item");
+                    Command ohCommand = (Command) event.getProperty("command");
+                    ItemCommandEvent eshEvent = ItemEventFactory.createCommandEvent(itemName,
+                            (org.eclipse.smarthome.core.types.Command) TypeMapper.mapToESHType(ohCommand));
+                    eventPublisher.post(eshEvent);
+                } else if (event.getTopic().endsWith(EventType.UPDATE.name())) {
+                    String itemName = (String) event.getProperty("item");
+                    State ohState = (State) event.getProperty("state");
+                    ItemStateEvent eshEvent = ItemEventFactory.createStateEvent(itemName,
+                            (org.eclipse.smarthome.core.types.State) TypeMapper.mapToESHType(ohState));
+                    eventPublisher.post(eshEvent);
+                }
+            }
+        }
+    }
+
+    private Map<String, Object> constructProperties(org.eclipse.smarthome.core.events.Event event) {
+        Map<String, Object> properties = new HashMap<>();
+        if (event instanceof ItemCommandEvent) {
+            ItemCommandEvent icEvent = (ItemCommandEvent) event;
+            String itemName = (String) icEvent.getItemName();
+            properties.put("item", itemName);
+            Type eshType = TypeMapper.mapToOpenHABType(icEvent.getItemCommand());
+            if (eshType instanceof Command) {
+                properties.put("command", (Command) eshType);
+            } else {
+                return null;
+            }
+        } else {
+            ItemStateEvent isEvent = (ItemStateEvent) event;
+            String itemName = (String) isEvent.getItemName();
+            properties.put("item", itemName);
+            Type eshType = TypeMapper.mapToOpenHABType(isEvent.getItemState());
+            if (eshType instanceof State) {
+                properties.put("state", (State) eshType);
+            } else {
+                return null;
+            }
+        }
+        properties.put(BRIDGEMARKER, true);
+        return properties;
+    }
+
+    @Override
+    public Set<String> getSubscribedEventTypes() {
+        Set<String> types = new HashSet<>(2);
+        types.add(ItemCommandEvent.TYPE);
+        types.add(ItemStateEvent.TYPE);
+        return types;
+    }
+
+    @Override
+    public EventFilter getEventFilter() {
+        return null;
+    }
+
+    @Override
+    public void receive(org.eclipse.smarthome.core.events.Event event) {
+        if (event.getType().equals(ItemCommandEvent.TYPE)) {
+            Map<String, Object> properties = constructProperties(event);
+            if (properties != null) {
+                String topic = org.openhab.core.events.EventConstants.TOPIC_PREFIX + "/" + EventType.COMMAND + "/"
+                        + properties.get("item");
+                eventAdmin.postEvent(new Event(topic, properties));
+            }
+        } else if (event.getType().equals(ItemStateEvent.TYPE)) {
+            Map<String, Object> properties = constructProperties(event);
+            if (properties != null) {
+                String topic = org.openhab.core.events.EventConstants.TOPIC_PREFIX + "/" + EventType.UPDATE + "/"
+                        + properties.get("item");
+                ;
+                eventAdmin.postEvent(new Event(topic, properties));
+            }
+        }
+    }
 
 }

@@ -11,6 +11,8 @@ import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 import static org.junit.matchers.JUnitMatchers.*
 
+import org.eclipse.smarthome.core.events.Event
+import org.eclipse.smarthome.core.events.EventFilter
 import org.eclipse.smarthome.core.items.ItemProvider;
 import org.eclipse.smarthome.core.library.items.StringItem
 import org.eclipse.smarthome.test.OSGiTest
@@ -34,11 +36,13 @@ class EventDelegateTest extends OSGiTest {
 
     EventPublisher publisher
 
-    org.eclipse.smarthome.core.events.EventSubscriber eventSubscriber = new org.eclipse.smarthome.core.events.AbstractEventSubscriber() {
+    org.eclipse.smarthome.core.events.EventSubscriber eventSubscriber = new org.eclipse.smarthome.core.events.EventSubscriber() {
         @Override
-        public void receiveUpdate(String itemName, org.eclipse.smarthome.core.types.State newState) {
+        public void receive(Event event) {
             state = newState
         }
+        Set getSubscribedEventTypes() {};
+        EventFilter getEventFilter() { return null };
     }
     
     @Before

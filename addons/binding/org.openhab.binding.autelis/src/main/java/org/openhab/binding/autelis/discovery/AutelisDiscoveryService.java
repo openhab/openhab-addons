@@ -103,7 +103,7 @@ public class AutelisDiscoveryService extends AbstractDiscoveryService {
 			logger.debug("Constructed url '{}' is not valid: {}", url,
 					e.getMessage());
 		} catch (IOException e) {
-			logger.error("Error accessing url '{}' : {} ", url, e.getMessage());
+			logger.debug("Error accessing url '{}' : {} ", url, e.getMessage());
 		}
 		return response;
 	}

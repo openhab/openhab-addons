@@ -65,7 +65,7 @@
 				</excludes>
       </unpackOptions>      
       <includes>
-      	<include>*:org.openhab.runtime.product:zip:*</include>
+      	<include>*:org.openhab.product.runtime:zip:*</include>
       </includes>
     </dependencySet>
     <dependencySet>

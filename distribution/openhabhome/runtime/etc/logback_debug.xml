@@ -28,7 +28,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="runtime.busevents" level="INFO" additivity="false">
+	<logger name="smarthome.event" level="INFO" additivity="false">
 		<appender-ref ref="EVENTFILE" />
 		<appender-ref ref="STDOUT" />
 	</logger>
@@ -42,6 +42,7 @@
     <logger name="javax.jmdns" level="OFF"/>
     <logger name="javax.jmdns.impl" level="OFF"/>
     <logger name="javax.jmdns.impl.constants" level="OFF"/>
+    <logger name="tuwien.auto.calimero" level="WARN" />
 
 	<root level="INFO">
 		<appender-ref ref="FILE" />
