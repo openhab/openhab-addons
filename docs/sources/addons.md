@@ -50,6 +50,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Onkyo | Binding |
 | OpenEnergyMonitor | Binding |
 | OneWire | Binding |
+| RFXCOM | Binding |
 | SNMP | Binding |
 | SwegonVentilation | Binding |
 | SystemInfo | Binding |
