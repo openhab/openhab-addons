@@ -32,6 +32,7 @@
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.vitotronic</module>
+    <module>org.openhab.binding.meteostick</module>
   </modules>
 
 </project>
