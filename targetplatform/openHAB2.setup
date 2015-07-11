@@ -759,36 +759,13 @@
       <requirement
           name="org.eclipse.mylyn.git.feature.group"/>
       <repository
-          url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>          
+          url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>
     </setupTask>
     <setupTask
         xsi:type="setup.targlets:TargletTask">
       <targlet
           name="openHAB 2 Target Platform"
           activeRepositoryList="${eclipse.target.platform}">
-        <annotation
-            source="http:/www.eclipse.org/oomph/targlets/TargetDefinitionGenerator">
-          <detail
-              key="location">
-            <value>${git.clone.openhab2.location/targetplatform/openhab.target}</value>
-          </detail>
-          <detail
-              key="extraUnits">
-            <value>org.eclipse.equinox.executable.feature.group</value>
-          </detail>
-          <detail
-              key="includeAllPlatforms">
-            <value>false</value>
-          </detail>
-          <detail
-              key="includeSource">
-            <value>true</value>
-          </detail>
-          <detail
-              key="generateVersions">
-            <value>false</value>
-          </detail>
-        </annotation>
         <requirement
             name="org.eclipse.sdk.ide"/>
         <requirement
@@ -832,7 +809,7 @@
             versionRange="[2.2.4,2.3.0)"/>
         <requirement
             name="com.ibm.icu.base"
-            versionRange="[52.1.0,53.0.0)"/>
+            versionRange="[52.1.0,55.0.0)"/>
         <requirement
             name="com.sun.jersey"/>
         <requirement
@@ -939,7 +916,7 @@
             versionRange="[1.7.2,1.8.0)"/>
         <requirement
             name="org.slf4j.jcl"
-            versionRange="[1.7.2,1.8.0)"/>
+            versionRange="[1.7.0,1.8.0)"/>
         <requirement
             name="org.slf4j.log4j"
             versionRange="[1.7.2,1.8.0)"/>
