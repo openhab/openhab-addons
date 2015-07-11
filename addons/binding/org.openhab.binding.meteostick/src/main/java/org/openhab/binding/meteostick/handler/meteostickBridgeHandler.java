@@ -218,11 +218,11 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                     }
 
                     // Check for end of line
-                    if (rxByte == 13) {
+                    if (rxByte == 13 && rxCnt > 0) {
                         String inputString = new String(rxPacket, 0, rxCnt);
                         logger.debug("MeteoStick received: {}", inputString);
                         String p[] = inputString.split("\\s+");
-
+                       
                         switch (p[0]) {
                             case "B": // Barometer
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE), new DecimalType(
