@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+#  Convert .svg files to .png.
+#
+#  brew install librsvg
+#  or
+#  npm install -g svgexport
+#
+
+for file in $1*.svg; do
+  if [[ $file != 'none'* ]]; then
+    png=`echo $file | sed s/.svg/.png/`
+    if hash rsvg-convert; then
+      rsvg-convert $file -o "$png"
+    elif hash svgexport; then
+      svgexport $file $png
+    fi
+  fi  
+done
