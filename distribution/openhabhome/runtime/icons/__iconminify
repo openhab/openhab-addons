@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+#  Minify .png files using imageoptim.
+#
+#  npm install -g imageoptim-cli
+#
+
+if hash imageoptim; then
+
+  if [ "$1" != '' ] ; then
+
+    for file in $1*.png; do
+      echo $file | imageoptim
+    done
+
+	else
+		imageoptim -d `dirname $0`
+	fi
+
+fi
