@@ -927,7 +927,7 @@
             versionRange="[0.10.0,0.11.0)"/>
         <requirement
             name="org.eclipse.jetty.bundles.f.feature.group"
-            versionRange="[9.2.10,9.3.0)"/>
+            versionRange="[9.2.12,9.2.13)"/>
         <requirement
             name="org.eclipse.smarthome.feature.runtime.core.feature.group"/>
         <requirement
