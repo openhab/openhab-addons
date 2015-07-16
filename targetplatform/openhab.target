@@ -110,7 +110,7 @@
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.jetty.bundles.f.feature.group" version="0.0.0"/>
-      <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/"/>
+      <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.12.v20150709"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.mortbay.jasper.apache-jsp" version="0.0.0"/>
