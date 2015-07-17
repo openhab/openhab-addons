@@ -2,6 +2,7 @@
 #
 #  Minify .png files using imageoptim.
 #
+#  Can be installed with NPM. (Note: You must already have the GUI application installed.)
 #  npm install -g imageoptim-cli
 #
 
