@@ -929,6 +929,8 @@
             name="org.eclipse.jetty.bundles.f.feature.group"
             versionRange="[9.2.12,9.2.13)"/>
         <requirement
+            name="org.eclipse.paho.client.mqttv3"/>
+        <requirement
             name="org.eclipse.smarthome.feature.runtime.core.feature.group"/>
         <requirement
             name="org.eclipse.smarthome.feature.runtime.console.equinox.feature.group"/>
@@ -972,6 +974,8 @@
               url="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/"/>
           <repository
               url="https://github.com/openhab/openhab.repo/raw/master/jetty-deps"/>
+          <repository
+              url="http://download.eclipse.org/paho/"/>              
         </repositoryList>
       </targlet>
     </setupTask>
