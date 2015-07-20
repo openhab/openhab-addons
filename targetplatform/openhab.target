@@ -116,5 +116,9 @@
       <unit id="org.mortbay.jasper.apache-jsp" version="0.0.0"/>
       <repository location="https://github.com/openhab/openhab.repo/raw/master/jetty-deps"/>
     </location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.paho.client.mqttv3" version="1.0.2"/>
+<repository location="http://download.eclipse.org/paho/"/>
+</location>
   </locations>
 </target>
