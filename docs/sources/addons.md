@@ -65,6 +65,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Mail | Action |
 | XBMC | Action |
 | XMPP | Action |
+| GoogleTTS | TTS engine |
 | MaryTTS | TTS engine |
 
 ## Currently incompatible 1.x Add-ons:
