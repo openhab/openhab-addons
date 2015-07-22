@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.network.service.InvalidConfigurationException;
 import org.openhab.binding.network.service.NetworkService;
+import org.openhab.binding.network.service.StateUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,17 +53,17 @@ public class NetworkHandler extends BaseThingHandler {
 	public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
-            case CHANNEL_ONLINE:
-            	try {
-					State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
-					updateState(CHANNEL_ONLINE, state);					
-				} catch( InvalidConfigurationException invalidConfigurationException) {
-				    updateStatus(ThingStatus.OFFLINE);
-				}
-            	break;
-            default:
-                logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                break;
+	            case CHANNEL_ONLINE:
+	            	try {
+						State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
+						updateState(CHANNEL_ONLINE, state);					
+					} catch( InvalidConfigurationException invalidConfigurationException) {
+					    updateStatus(ThingStatus.OFFLINE);
+					}
+	            	break;
+	            default:
+	                logger.debug("Command received for an unknown channel: {}", channelUID.getId());
+	                break;
             }
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
@@ -99,22 +100,17 @@ public class NetworkHandler extends BaseThingHandler {
 			networkService.setUseSystemPing(Boolean.parseBoolean(String.valueOf(conf.get(PARAMETER_USE_SYSTEM_PING))));
 		} catch (Exception ex) {}
 		
-		startAutomaticRefresh();
-	}
-	
-	private void startAutomaticRefresh() {
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
-					updateState(CHANNEL_ONLINE, state);					
-				} catch( InvalidConfigurationException invalidConfigurationException) {
-				    updateStatus(ThingStatus.OFFLINE);
-				}
-			}
-		};
-		
-		refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, networkService.getRefreshInterval(), TimeUnit.MILLISECONDS);
+		networkService.startAutomaticRefresh(scheduler, new StateUpdate() {
+            @Override
+            public void newState(boolean state) {
+                State newState = state ? OnOffType.ON : OnOffType.OFF;
+                updateState(CHANNEL_ONLINE, newState);        
+            }
+            @Override
+            public void invalidConfig() {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        });
 	}
 
 }
