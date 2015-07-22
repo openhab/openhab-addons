@@ -72,6 +72,8 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Add-on | Type | Reason
 |--------|------|------|
 | MySQL | Persistence | [Unsynchronized change in openHAB 1 core](https://github.com/openhab/openhab/issues/2661)
+| InfluxDB | Persistence | [Unsynchronized change in openHAB 1 core](https://github.com/openhab/openhab/issues/2661)
+| MongoDB | Persistence | [Unsynchronized change in openHAB 1 core](https://github.com/openhab/openhab/issues/2661)
 
 
 ## Compatible Applications
