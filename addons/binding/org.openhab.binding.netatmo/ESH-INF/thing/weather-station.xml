@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <bridge-type id="netatmoapi">
+        <label>Netatmo API</label>
+        <description>This bridge represents the gateway to Netatmo API.</description>
+        <config-description>
+            <parameter name="refreshInterval" type="integer" required="false">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in ms which is used to poll Netatmo Service.</description>
+                <default>30000</default>
+            </parameter>
+
+            <parameter name="clientId" type="text">
+                <label>Client ID</label>
+                <description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
+                <required>true</required>
+            </parameter>
+            
+            <parameter name="clientSecret" type="text">
+                <label>Client Secret</label>
+                <description>Client Secret provided for the application you created</description>
+                <required>true</required>
+            </parameter>
+            
+            <parameter name="refreshToken" type="text">
+                <label>Refresh Token</label>
+                <description>Refresh token retrieved from Netatmo API</description>
+                <required>true</required>
+            </parameter>
+
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="NAMain">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Main indoor station</label>
+        <description>This represents the main indoor module capable of reporting temperature,humidity,pressure,air quality and sound level</description>
+
+        <channels>
+            <channel id="co2" typeId="co2"/>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="humidity" typeId="humidity" />
+            <channel id="humidex" typeId="humidex" />
+            <channel id="heatindex" typeId="heatindex" />
+            <channel id="dewpoint" typeId="dewpoint" />
+            <channel id="dewpointdepression" typeId="dewpointdepression" />
+            <channel id="noise" typeId="noise" />
+            <channel id="pressure" typeId="pressure" />
+            <channel id="wifistatus" typeId="wifistatus" />
+            <channel id="timestamp" typeId="timestamp" />
+            <channel id="location" typeId="location" />            
+        </channels>
+        
+        <config-description>
+            <parameter name="deviceId" type="text">
+                <label>Device ID</label>
+                <description>Id of the Device</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+
+    <thing-type id="NAModule1">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Outdoor module</label>
+        <description>This represents the outdoor module capable of reporting temperature and humidity</description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="humidity" typeId="humidity" />
+            <channel id="humidex" typeId="humidex" />
+            <channel id="heatindex" typeId="heatindex" />
+            <channel id="dewpoint" typeId="dewpoint" />
+            <channel id="dewpointdepression" typeId="dewpointdepression" />
+            <channel id="rfstatus" typeId="rfstatus" />
+            <channel id="batteryvp" typeId="batteryvp" />
+        </channels>
+        
+        <config-description>
+            <parameter name="deviceId" type="text">
+                <label>Device ID</label>
+                <description>Id of the Device</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="moduleId" type="text">
+                <label>Module ID</label>
+                <description>Id of the Module</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+     <thing-type id="NAModule3">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Rain Gauge</label>
+        <description>This represents the Rain Gauge capable of measuring precipitation</description>
+
+        <channels>
+            <channel id="rain" typeId="rain"/>
+            <channel id="rfstatus" typeId="rfstatus" />            
+            <channel id="batteryvp" typeId="batteryvp" />
+        </channels>
+        
+        <config-description>
+            <parameter name="deviceId" type="text">
+                <label>Device ID</label>
+                <description>Id of the Device</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="moduleId" type="text">
+                <label>Module ID</label>
+                <description>Id of the Module</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="NAModule4">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Additional module</label>
+        <description>This represents an additional indoor module capable of reporting temperature, humidity and CO2 level</description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="humidity" typeId="humidity" />
+            <channel id="humidex" typeId="humidex" />
+            <channel id="heatindex" typeId="heatindex" />
+            <channel id="dewpoint" typeId="dewpoint" />
+            <channel id="dewpointdepression" typeId="dewpointdepression" />
+            <channel id="co2" typeId="co2"/>
+            <channel id="rfstatus" typeId="rfstatus" />            
+            <channel id="batteryvp" typeId="batteryvp" />
+        </channels>
+        
+        <config-description>
+            <parameter name="deviceId" type="text">
+                <label>Device ID</label>
+                <description>Id of the Device</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="moduleId" type="text">
+                <label>Module ID</label>
+                <description>Id of the Module</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current temperature</description>
+        <category>Temperature</category>
+        <tags>      
+            <tag>Measure</tag>
+        </tags>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="humidex">
+        <item-type>Number</item-type>
+        <label>Humidex</label>
+        <description>Computed Humidex index</description>
+        <category>Temperature</category>
+        <tags>      
+            <tag>Computed</tag>
+        </tags>
+        <state readOnly="true" pattern="%.0f">
+        </state>
+    </channel-type>
+    
+    <channel-type id="heatindex">
+        <item-type>Number</item-type>
+        <label>Heat Index</label>
+        <description>Computed Heat Index</description>
+        <category>Temperature</category>
+        <tags>      
+            <tag>Computed</tag>
+        </tags>
+        <state readOnly="true" pattern="%.1f">
+        </state>
+    </channel-type>
+    
+    <channel-type id="dewpoint">
+        <item-type>Number</item-type>
+        <label>Dewpoint</label>
+        <description>Computed Dewpoint Temperature</description>
+        <category>Temperature</category>
+        <tags>      
+            <tag>Computed</tag>
+        </tags>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="dewpointdepression">
+        <item-type>Number</item-type>
+        <label>Dewpoint Depression</label>
+        <description>Computed Dewpoint Depression</description>
+        <category>Temperature</category>
+        <tags>      
+            <tag>Computed</tag>
+        </tags>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Current humidity in %</description>
+        <category>Humidity</category>
+        <tags>      
+            <tag>Measure</tag>
+        </tags>
+        <state readOnly="true" pattern="%d %%">
+        </state>
+    </channel-type>
+    
+    <channel-type id="pressure">
+        <item-type>Number</item-type>
+        <label>Pressure</label>
+        <description>Current pressure in mbar</description>
+        <category>Pressure</category>
+        <tags>      
+            <tag>Measure</tag>
+        </tags>
+        <state readOnly="true" pattern="%.1f hPa"></state>                
+    </channel-type>
+    
+    <channel-type id="noise">
+        <item-type>Number</item-type>
+        <label>Noise</label>
+        <description>Current Noise Level in dB</description>
+        <category>Noise</category>
+        <tags>      
+            <tag>Measure</tag>
+        </tags>
+        <state readOnly="true" pattern="%d dB">
+        </state>
+    </channel-type>
+    
+    <channel-type id="co2">
+        <item-type>Number</item-type>
+        <label>CO2</label>
+        <description>Air Quality in ppm</description>
+        <tags>      
+            <tag>Measure</tag>
+        </tags>
+        <state readOnly="true" pattern="%d ppm">
+        </state>
+    </channel-type>
+    
+    <channel-type id="wifistatus">
+        <item-type>Number</item-type>
+        <label>Wifi Level</label>
+        <description>Wifi connection quality</description>
+        <state readOnly="true" pattern="%d %%"/>
+    </channel-type>
+    
+     <channel-type id="rfstatus">
+        <item-type>Number</item-type>
+        <label>Rf Level</label>
+        <description>Radio connection quality</description>
+        <state readOnly="true" pattern="%d %%"/>
+    </channel-type>
+    
+     <channel-type id="batteryvp">
+        <item-type>Number</item-type>
+        <label>Battery</label>
+        <description>Battery Level</description>
+        <state readOnly="true" pattern="%d %%"/>
+    </channel-type>
+    
+    <channel-type id="timestamp">
+        <item-type>DateTime</item-type>
+        <label>Timestamp</label>
+        <description>Last update timestamp</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="rain">
+        <item-type>Number</item-type>
+        <label>Rain</label>
+        <description>Quantity of water</description>
+        <tags>      
+            <tag>Measure</tag>
+        </tags>        
+        <state readOnly="true" pattern="%d mm"/>
+    </channel-type>
+
+    <channel-type id="location">
+        <item-type>Location</item-type>
+        <label>Location</label>
+        <description>Location of the weather station</description>
+        <state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
+    </channel-type>
+
+</thing:thing-descriptions>
