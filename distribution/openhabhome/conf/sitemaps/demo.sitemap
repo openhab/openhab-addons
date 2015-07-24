@@ -56,7 +56,7 @@ sitemap demo label="Main Menu"
 				Slider item=Volume
 			}
 			Frame label="Multimedia Widgets" {
-				Image url="http://localhost:8080/images/splash-ipad-h.png" label="openHAB" {
+				Image url="http://localhost:8080/icon/splash-ipad-h.png" label="openHAB" {
 					Text label="http://www.openHAB.org" icon="icon"
 				}
 				Video url="http://demo.openhab.org/Hue.m4v"
