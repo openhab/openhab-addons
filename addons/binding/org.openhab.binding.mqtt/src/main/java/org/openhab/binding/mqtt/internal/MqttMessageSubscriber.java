@@ -13,9 +13,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.events.EventPublisher;
-import org.eclipse.smarthome.core.items.events.ItemCommandEvent;
-import org.eclipse.smarthome.core.items.events.ItemEventFactory;
-import org.eclipse.smarthome.core.items.events.ItemStateEvent;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -41,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * messages.
  *
  * @author Davy Vanherbergen
+ * @author Marcus of Wetware Labs
  * @since 1.3.0
  */
 public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements MqttMessageConsumer {
@@ -51,6 +49,8 @@ public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements 
 
     private String msgFilter = null;
 
+    private MqttMessageSubscriberListener listener;
+
     /**
      * Create new MqttMessageSubscriber from config string.
      *
@@ -59,8 +59,10 @@ public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements 
      * @throws BindingConfigParseException
      *             if the config string is invalid
      */
-    public MqttMessageSubscriber(String configuration) throws BindingConfigParseException {
+    public MqttMessageSubscriber(String configuration, MqttMessageSubscriberListener subscriberListener)
+            throws BindingConfigParseException {
 
+        listener = subscriberListener;
         String[] config = splitConfigurationString(configuration);
         try {
 
@@ -134,15 +136,17 @@ public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements 
             value = StringUtils.replace(value, "${itemName}", getItemName());
 
             if (getMessageType().equals(MessageType.COMMAND)) {
-                Command command = getCommand(value);
+                // Command command = getCommand(value);
                 // eventPublisher.postCommand(getItemName(), command);
-                ItemCommandEvent event = ItemEventFactory.createCommandEvent(getItemName(), command);
-                eventPublisher.post(event);
+                // ItemCommandEvent event = ItemEventFactory.createCommandEvent(getItemName(), command);
+                // eventPublisher.post(event);
+                listener.mqttCommandReceived(topic, value);
             } else {
-                State state = getState(value);
+                // State state = getState(value);
                 // eventPublisher.postUpdate(getItemName(), state);
-                ItemStateEvent event = ItemEventFactory.createStateEvent(getItemName(), state);
-                eventPublisher.post(event);
+                // ItemStateEvent event = ItemEventFactory.createStateEvent(getItemName(), state);
+                // eventPublisher.post(event);
+                listener.mqttStateReceived(topic, value);
             }
         } catch (Exception e) {
             logger.error("Error processing MQTT message.", e);
@@ -202,7 +206,7 @@ public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements 
      *            string representation of State
      * @return State
      */
-    protected State getState(String value) {
+    public State getState(String value) {
 
         List<Class<? extends State>> stateList = new ArrayList<Class<? extends State>>();
 
@@ -227,7 +231,7 @@ public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements 
      *            string representation of command
      * @return Command
      */
-    protected Command getCommand(String value) {
+    public Command getCommand(String value) {
 
         List<Class<? extends Command>> commandList = new ArrayList<Class<? extends Command>>();
 

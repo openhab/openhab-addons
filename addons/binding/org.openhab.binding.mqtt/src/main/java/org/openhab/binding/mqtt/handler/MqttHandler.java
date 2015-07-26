@@ -7,40 +7,235 @@
  */
 package org.openhab.binding.mqtt.handler;
 
-import static org.openhab.binding.mqtt.MqttBindingConstants.CHANNEL_1;
+import static org.openhab.binding.mqtt.MqttBindingConstants.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.items.GenericItem;
+//import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.ColorItem;
+import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.DateTimeItem;
+import org.eclipse.smarthome.core.library.items.DimmerItem;
+import org.eclipse.smarthome.core.library.items.NumberItem;
+import org.eclipse.smarthome.core.library.items.RollershutterItem;
+import org.eclipse.smarthome.core.library.items.StringItem;
+import org.eclipse.smarthome.core.library.items.SwitchItem;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.Type;
+import org.openhab.binding.mqtt.internal.MqttMessagePublisher;
+import org.openhab.binding.mqtt.internal.MqttMessageSubscriber;
+import org.openhab.binding.mqtt.internal.MqttMessageSubscriberListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 /**
- * The {@link MqttHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MqttHandler} is responsible for handling MQTT Topics as Things. MQTT messages are propagated then into
+ * relevant channels and vice versa.
  *
- * @author Marcus - Initial contribution
+ * @author Marcus of Wetware Labs - Initial contribution
  */
-public class MqttHandler extends BaseThingHandler {
+public class MqttHandler extends BaseThingHandler implements MqttBridgeListener, MqttMessageSubscriberListener {
+
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_TOPIC);
 
     private Logger logger = LoggerFactory.getLogger(MqttHandler.class);
+
+    // lists for propagating states into each possible channel (and eventually into item)
+    HashMap<String, GenericItem> itemList = new HashMap<String, GenericItem>();
+    List<Class<? extends State>> stateList = new ArrayList<Class<? extends State>>();
+    List<Class<? extends Command>> commandList = new ArrayList<Class<? extends Command>>();
+
+    private MqttBridgeHandler bridgeHandler;
+
+    /** Message producer for sending messages to MQTT **/
+    private MqttMessagePublisher publisher;
+
+    /** Message consumer for receiving state messages from MQTT **/
+    private MqttMessageSubscriber subscriber;
 
     public MqttHandler(Thing thing) {
         super(thing);
     }
 
+    /*
+     * public class ItemChannelDuo {
+     * String channel;
+     * GenericItem item;
+     *
+     * public ItemChannelDuo(GenericItem i, String c) {
+     * channel = c;
+     * item = i;
+     * }
+     * };
+     */
+
+    // Received command from MQTT Subscriber. Try to cast it to every possible Command Type and send it to all channels
+    // that support this type
+    @Override
+    public void mqttCommandReceived(String topic, String command) {
+
+        for (String channel : itemList.keySet()) {
+            // go through all channels and check if the Item associated with it has DataTypes that we can cast the
+            // command into
+            for (Class<? extends Type> asc : itemList.get(channel).getAcceptedDataTypes()) {
+
+                try {
+                    Method valueOf = asc.getMethod("valueOf", String.class);
+                    Command c = (Command) valueOf.invoke(asc, command);
+                    if (c != null) {
+                        // command could be casted to type 'type'
+                        logger.debug(
+                                "MQTT: Received state (topic '{}'). Propagating payload '{}' as type '{}' to channel '{}')",
+                                topic, command, c.getClass().getName(), channel);
+                        postCommand(channel, c);
+                        break;
+                    }
+                } catch (NoSuchMethodException e) {
+                } catch (IllegalArgumentException e) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                }
+            }
+        }
+    }
+
+    // Received state from MQTT Subscriber. Try to cast it to every possible State Type and send it to all channels that
+    // support this type
+    @Override
+    public void mqttStateReceived(String topic, String state) {
+
+        for (String channel : itemList.keySet()) {
+            // go through all channels and check if the Item associated with it has DataTypes that we can cast the state
+            // into
+            for (Class<? extends Type> asc : itemList.get(channel).getAcceptedDataTypes()) {
+
+                try {
+                    Method valueOf = asc.getMethod("valueOf", String.class);
+                    State s = (State) valueOf.invoke(asc, state);
+                    if (s != null) {
+                        // state could be casted to type 'type'
+                        logger.debug(
+                                "MQTT: Received state (topic '{}'). Propagating payload '{}' as type '{}' to channel '{}')",
+                                topic, state, s.getClass().getName(), channel);
+                        updateState(channel, s);
+                        break;
+                    }
+                } catch (NoSuchMethodException e) {
+                } catch (IllegalArgumentException e) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Initialize subscriber which broadcasts all received state events onto the
+     * openHAB event bus.
+     *
+     * @param topic
+     *            to subscribe to.
+     */
+    private void setupSubscriber(String topic, String type, String transform) {
+
+        if (StringUtils.isBlank(topic)) {
+            logger.trace("No topic defined for State Subscriber");
+            return;
+        }
+
+        try {
+            logger.debug("Setting up State Subscriber for topic {}", topic);
+            if (transform == null)
+                transform = "default";
+            subscriber = new MqttMessageSubscriber(
+                    getBridgeHandler().getBroker() + ":" + topic + ":" + type + ":" + transform, this);
+
+            getBridgeHandler().registerMessageConsumer(subscriber);
+
+        } catch (Exception e) {
+            logger.error("Could not create event bus state subscriber: {}", e.getMessage());
+        }
+
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing MQTT handler.");
+        final String topicId = (String) getConfig().get(TOPIC_ID);
+        final String type = (String) getConfig().get(TYPE);
+        if (topicId != null) {
+            if (type != null) {
+                if (getBridgeHandler() != null) {
+                    setupSubscriber(topicId, type, (String) getConfig().get(TRANSFORM));
+                }
+            } else
+                throw new IllegalArgumentException("MQTT type must not be null!");
+        } else
+            throw new IllegalArgumentException("MQTT topic must not be null!");
+
+        stateList.add(OnOffType.class);
+        stateList.add(OpenClosedType.class);
+        stateList.add(UpDownType.class);
+        stateList.add(HSBType.class);
+        stateList.add(PercentType.class);
+        stateList.add(DecimalType.class);
+        stateList.add(DateTimeType.class);
+        stateList.add(StringType.class);
+
+        commandList.add(OnOffType.class);
+        commandList.add(OpenClosedType.class);
+        commandList.add(UpDownType.class);
+        commandList.add(IncreaseDecreaseType.class);
+        commandList.add(StopMoveType.class);
+        commandList.add(HSBType.class);
+        commandList.add(PercentType.class);
+        commandList.add(DecimalType.class);
+        commandList.add(StringType.class);
+
+        itemList.put(CHANNEL_CONTACT, new ContactItem(""));
+        itemList.put(CHANNEL_DATETIME, new DateTimeItem(""));
+        itemList.put(CHANNEL_DIMMER, new DimmerItem(""));
+        itemList.put(CHANNEL_NUMBER, new NumberItem(""));
+        itemList.put(CHANNEL_ROLLERSHUTTER, new RollershutterItem(""));
+        itemList.put(CHANNEL_STRING, new StringItem(""));
+        itemList.put(CHANNEL_SWITCH, new SwitchItem(""));
+        itemList.put(CHANNEL_COLOR, new ColorItem(""));
+
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_1)) {
+        if (channelUID.getId().equals(CHANNEL_NUMBER)) {
+            // TODO: handle command
+        } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
             // TODO: handle command
         }
     }
@@ -55,9 +250,28 @@ public class MqttHandler extends BaseThingHandler {
      */
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (channelUID.getId().equals(CHANNEL_1)) {
+        if (channelUID.getId().equals(CHANNEL_NUMBER)) {
+            // TODO: handle command
+        } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
             // TODO: handle command
         }
 
+    }
+
+    private synchronized MqttBridgeHandler getBridgeHandler() {
+        if (this.bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof MqttBridgeHandler) {
+                this.bridgeHandler = (MqttBridgeHandler) handler;
+                this.bridgeHandler.registerMqttBridgeListener(this);
+            } else {
+                return null;
+            }
+        }
+        return this.bridgeHandler;
     }
 }

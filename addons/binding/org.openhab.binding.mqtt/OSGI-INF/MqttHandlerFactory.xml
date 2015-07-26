@@ -15,5 +15,5 @@
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
-
+        
 </scr:component>

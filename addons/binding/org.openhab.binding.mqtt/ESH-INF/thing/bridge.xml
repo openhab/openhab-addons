@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- MQTT Bridge -->
+    <bridge-type id="bridge">
+        <label>Mqtt Bridge</label>
+        <description>The Mqtt Bridge is a container for MQTT topics</description>
+
+        <config-description>
+            <parameter name="broker" type="text">
+                <context>broker</context>
+                <label>MQTT server name</label>
+                <description>Name of the MQTT server.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="url" type="text">
+                <context>url</context>
+                <label>URL</label>
+                <description>URL of the MQTT server.</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="user" type="text">
+                <context>username</context>
+                <label>User name</label>
+                <description>User name for connecting to the MQTT server.</description>
+                <required>false</required>
+            </parameter>            
+            <parameter name="pwd" type="text">
+                <context>password</context>
+                <label>Password</label>
+                <description>Password for connecting to the MQTT server</description>
+                <required>false</required>
+            </parameter>           
+             <parameter name="clientId" type="text">
+                <label>Client ID</label>
+                <description>Client ID for connecting to the MQTT server.</description>
+                <required>false</required>
+            </parameter>           
+        </config-description>
+        
+    </bridge-type>
+
+
+</thing:thing-descriptions>

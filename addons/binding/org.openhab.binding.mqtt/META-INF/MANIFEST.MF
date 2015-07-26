@@ -10,6 +10,7 @@ Import-Package: com.google.common.collect,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.items,
  org.eclipse.smarthome.core.items.events,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -23,4 +24,5 @@ Import-Package: com.google.common.collect,
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.mqtt,
  org.openhab.binding.mqtt.handler
-Require-Bundle: org.openhab.core.compat1x
+Require-Bundle: org.openhab.core.compat1x,
+ org.eclipse.smarthome.core

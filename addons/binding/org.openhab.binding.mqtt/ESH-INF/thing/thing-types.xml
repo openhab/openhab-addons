@@ -4,21 +4,74 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>Mqtt Binding Thing</label>
-        <description>Sample thing for Mqtt Binding</description>
+    <!-- Topic Thing Type -->
+    <thing-type id="topic">
+    
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+            
+        <label>Mqtt Topic</label>
+        <description>Topic for MQTT Binding</description>
 
         <channels>
-            <channel id="channel1" typeId="sample-channel"/>
+            <channel id="number" typeId="number-channel"/>
+            <channel id="switch" typeId="switch-channel"/>
+            <channel id="color" typeId="color-channel"/>
+            <channel id="contact" typeId="contact-channel"/>
+            <channel id="datetime" typeId="datetime-channel"/>
+            <channel id="rollershutter" typeId="rollershutter-channel"/>
+            <channel id="dimmer" typeId="dimmer-channel"/>
+            <channel id="string" typeId="string-channel"/>
         </channels>
     </thing-type>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>mqttItem</item-type>
-        <label>Mqtt Binding Channel</label>
-        <description>Sample channel for Mqtt Binding</description>
+    <channel-type id="number-channel">
+        <item-type>number</item-type>
+        <label>Number type MQTT payload</label>
+        <description>Channel for mapping Number types to MQTT messages</description>
+    </channel-type>
+
+    <channel-type id="switch-channel">
+        <item-type>switch</item-type>
+        <label>Number type MQTT payload</label>
+        <description>Channel for mapping Switch types to MQTT messages</description>
+    </channel-type>
+
+    <channel-type id="color-channel">
+        <item-type>color</item-type>
+        <label>Color type MQTT payload</label>
+        <description>Channel for mapping Color types to MQTT messages</description>
+    </channel-type>
+
+    <channel-type id="contact-channel">
+        <item-type>contact</item-type>
+        <label>Contact type MQTT payload</label>
+        <description>Channel for mapping Contact types (OPEN/CLOSED) to MQTT messages</description>
+    </channel-type>
+
+    <channel-type id="datetime-channel">
+        <item-type>datetime</item-type>
+        <label>Datetime type MQTT payload</label>
+        <description>Channel for mapping Datetime types to MQTT messages</description>
+    </channel-type>
+
+    <channel-type id="rollershutter-channel">
+        <item-type>rollershutter</item-type>
+        <label>Rollershutter type MQTT payload</label>
+        <description>Channel for mapping Rollershutter types to MQTT messages</description>
+    </channel-type>
+    
+    <channel-type id="dimmer-channel">
+        <item-type>dimmer</item-type>
+        <label>Dimmer type MQTT payload</label>
+        <description>Channel for mapping Dimmer types to MQTT messages</description>
+    </channel-type>
+    
+        <channel-type id="string-channel">
+        <item-type>string</item-type>
+        <label>string type MQTT payload</label>
+        <description>Channel for mapping string types to MQTT messages</description>
     </channel-type>
 
 </thing:thing-descriptions>

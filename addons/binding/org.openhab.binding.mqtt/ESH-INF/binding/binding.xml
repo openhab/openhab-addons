@@ -6,6 +6,6 @@
 
     <name>Mqtt Binding</name>
     <description>This is the binding for Mqtt.</description>
-    <author>Marcus</author>
+    <author>Marcus of Wetware Labs</author>
 
 </binding:binding>

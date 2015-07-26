@@ -76,7 +76,7 @@ Number Temperature_GF_Corridor 	"Temperature [%.1f °C]"	<temperature>	(Temperat
 Number Temperature_GF_Toilet 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Toilet)
 Number Temperature_GF_Living 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Living)
 Number Temperature_GF_Kitchen 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen)
-Number Temperature_FF_Bath 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bath)
+Number Temperature_FF_Bath 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bath) { channel="mqtt:topic:1:MySensor1_temp:number" }
 Number Temperature_FF_Office 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Office)
 Number Temperature_FF_Child 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Child)
 Number Temperature_FF_Bed 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bed)
