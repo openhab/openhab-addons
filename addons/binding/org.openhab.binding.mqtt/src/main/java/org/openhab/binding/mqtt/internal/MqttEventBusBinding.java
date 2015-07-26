@@ -249,27 +249,7 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
         try {
             topic = StringUtils.replace(topic, "${item}", "+");
             logger.debug("Setting up Event Bus Command Subscriber for topic {}", topic);
-            commandSubscriber = new MqttMessageSubscriber(brokerName + ":" + topic + ":command:default",
-                    this); /*
-                            * {
-                            *
-                            * @Override
-                            * public void processMessage(String topic, byte[] message) {
-                            * Command command;
-                            * try {
-                            * command = getCommand(new String(message));
-                            * } catch (Exception e) {
-                            * logger.error("Error parsing command from message.", e);
-                            * return;
-                            * }
-                            * // eventPublisher.postCommand(getItemNameFromTopic(getTopic(), topic), command);
-                            * ItemCommandEvent event = ItemEventFactory
-                            * .createCommandEvent(getItemNameFromTopic(getTopic(), topic), command);
-                            * eventPublisher.post(event);
-                            * }
-                            *
-                            * };
-                            */
+            commandSubscriber = new MqttMessageSubscriber(brokerName + ":" + topic + ":command:default", this);
             mqttService.registerMessageConsumer(brokerName, commandSubscriber);
 
         } catch (Exception e) {
@@ -295,27 +275,7 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
         try {
             topic = StringUtils.replace(topic, "${item}", "+");
             logger.debug("Setting up Event Bus State Subscriber for topic {}", topic);
-            stateSubscriber = new MqttMessageSubscriber(brokerName + ":" + topic + ":state:default",
-                    this); /*
-                            * {
-                            *
-                            * @Override
-                            * public void processMessage(String topic, byte[] message) {
-                            * State state;
-                            * try {
-                            * state = getState(new String(message));
-                            * } catch (Exception e) {
-                            * logger.error("Error parsing state from message.", e);
-                            * return;
-                            * }
-                            * // eventPublisher.postUpdate(getItemNameFromTopic(getTopic(), topic), state);
-                            * ItemStateEvent event = ItemEventFactory.createStateEvent(getItemNameFromTopic(getTopic(),
-                            * topic),
-                            * state);
-                            * eventPublisher.post(event);
-                            * }
-                            * };
-                            */
+            stateSubscriber = new MqttMessageSubscriber(brokerName + ":" + topic + ":state:default", this);
             mqttService.registerMessageConsumer(brokerName, stateSubscriber);
 
         } catch (Exception e) {

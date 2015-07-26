@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.mqtt.MqttService;
+import org.openhab.binding.mqtt.internal.MqttMessagePublisher;
 import org.openhab.binding.mqtt.internal.MqttMessageSubscriber;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
@@ -52,32 +53,24 @@ public class MqttBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    /**
-     * Setter for Declarative Services. Adds the MqttService instance.
-     *
-     * @param mqttService
-     *            Service.
-     */
-    // public void setMqttService(MqttService mqttService) {
-    // this.mqttService = mqttService;
-    // }
-
-    /**
-     * Unsetter for Declarative Services.
-     *
-     * @param mqttService
-     *            MqttService to remove.
-     */
-    // public void unsetMqttService(MqttService mqttService) {
-    // this.mqttService = null;
-    // }
-
     String getBroker() {
         return broker;
     }
 
     public void registerMessageConsumer(MqttMessageSubscriber subscriber) {
         mqttService.registerMessageConsumer(broker, subscriber);
+    }
+
+    public void registerMessageProducer(MqttMessagePublisher publisher) {
+        mqttService.registerMessageProducer(broker, publisher);
+    }
+
+    public void unRegisterMessageConsumer(MqttMessageSubscriber subscriber) {
+        mqttService.unregisterMessageConsumer(broker, subscriber);
+    }
+
+    public void unRegisterMessageProducer(MqttMessagePublisher publisher) {
+        mqttService.unregisterMessageProducer(broker, publisher);
     }
 
     @Override

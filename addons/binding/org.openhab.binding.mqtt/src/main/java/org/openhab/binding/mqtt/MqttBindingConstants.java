@@ -43,6 +43,7 @@ public class MqttBindingConstants {
     // Topic properties
     public final static String TOPIC_ID = "topicId";
     public final static String TYPE = "type";
+    public final static String DIRECTION = "direction";
     public final static String TRANSFORM = "transform";
 
     // misc

@@ -84,18 +84,6 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
         super(thing);
     }
 
-    /*
-     * public class ItemChannelDuo {
-     * String channel;
-     * GenericItem item;
-     *
-     * public ItemChannelDuo(GenericItem i, String c) {
-     * channel = c;
-     * item = i;
-     * }
-     * };
-     */
-
     // Received command from MQTT Subscriber. Try to cast it to every possible Command Type and send it to all channels
     // that support this type
     @Override
@@ -157,21 +145,19 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
     }
 
     /**
-     * Initialize subscriber which broadcasts all received state events onto the
-     * openHAB event bus.
+     * Initialize subscriber which broadcasts all received state/command events into the associated channels
      *
-     * @param topic
-     *            to subscribe to.
+     * @param topic to subscribe to.
      */
     private void setupSubscriber(String topic, String type, String transform) {
 
         if (StringUtils.isBlank(topic)) {
-            logger.trace("No topic defined for State Subscriber");
+            logger.trace("No topic defined for Subscriber");
             return;
         }
 
         try {
-            logger.debug("Setting up State Subscriber for topic {}", topic);
+            logger.debug("Setting up Subscriber for topic {}", topic);
             if (transform == null)
                 transform = "default";
             subscriber = new MqttMessageSubscriber(
@@ -180,25 +166,60 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
             getBridgeHandler().registerMessageConsumer(subscriber);
 
         } catch (Exception e) {
-            logger.error("Could not create event bus state subscriber: {}", e.getMessage());
+            logger.error("Could not create subscriber: {}", e.getMessage());
+        }
+
+    }
+
+    /**
+     * Initialize publisher which broadcasts all received state/command events from channel into MQTT broker
+     *
+     * @param topic to subscribe to.
+     */
+    private void setupPublisher(String topic, String type, String transform) {
+
+        if (StringUtils.isBlank(topic)) {
+            logger.trace("No topic defined for Publisher");
+            return;
+        }
+
+        try {
+            logger.debug("Setting up Publisher for topic {}", topic);
+            if (transform == null)
+                transform = "default";
+            publisher = new MqttMessagePublisher(
+                    getBridgeHandler().getBroker() + ":" + topic + ":" + type + ":*:" + transform);
+
+            getBridgeHandler().registerMessageProducer(publisher);
+
+        } catch (Exception e) {
+            logger.error("Could not create Publisher: {}", e.getMessage());
         }
 
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing MQTT handler.");
+        logger.debug("Initializing MQTT topic handler.");
         final String topicId = (String) getConfig().get(TOPIC_ID);
         final String type = (String) getConfig().get(TYPE);
         if (topicId != null) {
             if (type != null) {
                 if (getBridgeHandler() != null) {
-                    setupSubscriber(topicId, type, (String) getConfig().get(TRANSFORM));
+                    if (getConfig().get(DIRECTION) != null) {
+                        if (getConfig().get(DIRECTION).equals("in"))
+                            setupSubscriber(topicId, type, (String) getConfig().get(TRANSFORM));
+                        else if (getConfig().get(DIRECTION).equals("out"))
+                            setupPublisher(topicId, type, (String) getConfig().get(TRANSFORM));
+                        else
+                            throw new IllegalArgumentException("MQTT direction invalid!");
+                    } else
+                        throw new IllegalArgumentException("MQTT direction must be defined!");
                 }
             } else
-                throw new IllegalArgumentException("MQTT type must not be null!");
+                throw new IllegalArgumentException("MQTT type must be defined!");
         } else
-            throw new IllegalArgumentException("MQTT topic must not be null!");
+            throw new IllegalArgumentException("MQTT topic must be defined!");
 
         stateList.add(OnOffType.class);
         stateList.add(OpenClosedType.class);
@@ -232,29 +253,49 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_NUMBER)) {
-            // TODO: handle command
-        } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-            // TODO: handle command
-        }
+    public void dispose() {
+        logger.debug("Disposing MQTT topic handler.");
+        if (publisher != null)
+            getBridgeHandler().unRegisterMessageProducer(publisher);
+        if (subscriber != null)
+            getBridgeHandler().unRegisterMessageConsumer(subscriber);
+        updateStatus(ThingStatus.REMOVED);
     }
 
     /**
      * Handles a command for a given channel.
      *
-     * @param channelUID
-     *            unique identifier of the channel on which the update was performed
-     * @param newState
-     *            new state
+     * @param channelUID unique identifier of the channel on which the update was performed
+     * @param command new command
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        String cmdstr = command.toString();
+        logger.debug("MQTT: send command '{}' as topic '{}'", cmdstr, publisher.getTopic());
+        publisher.publish(publisher.getTopic(), cmdstr.getBytes());
+        // if (channelUID.getId().equals(CHANNEL_NUMBER)) {
+        // // TODO: handle command
+        // } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+        // // TODO: handle command
+        // }
+    }
+
+    /**
+     * Handles a update for a given channel.
+     *
+     * @param channelUID unique identifier of the channel on which the update was performed
+     * @param newState new state
      */
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (channelUID.getId().equals(CHANNEL_NUMBER)) {
-            // TODO: handle command
-        } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-            // TODO: handle command
-        }
+        String statestr = newState.toString();
+        logger.debug("MQTT: send state '{}' as topic '{}'", statestr, publisher.getTopic());
+        publisher.publish(publisher.getTopic(), statestr.getBytes());
+        // if (channelUID.getId().equals(CHANNEL_NUMBER)) {
+        // // TODO: handle command
+        // } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+        // // TODO: handle command
+        // }
 
     }
 

@@ -18,6 +18,8 @@ Group FF_Child 		"Child's Room" 	<boy1> 		(gFF)
 Group FF_Bed 		"Bedroom" 		<bedroom> 	(gFF)
 Group FF_Corridor 	"Corridor" 		<corridor> 	(gFF)
 
+Group FF_MQTT		"Example MQTT devices" <mqtt> (gFF)
+
 /* active groups */
 Group:Switch:OR(ON, OFF) 		Lights 		"All Lights [(%d)]" 								(All)
 Group:Switch:OR(ON, OFF) 		Heating 	"No. of Active Heatings [(%d)]" 	<heating> 		(All)
@@ -71,15 +73,22 @@ Rollershutter Shutter_FF_Office_Door 	"Office Door"	(FF_Office, Shutters)
 
 Switch Shutter_all
 
+Number Example_Temperature_FF_MQTT 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_MQTT)	{ channel="mqtt:topic:1:MySensor1_temp:number" }
+String Example_Status_FF_MQTT 		"Sensor status [%s]"								(FF_MQTT)	{ channel="mqtt:topic:1:MySensor1_status:string" }
+Switch Example_Switch_FF_MQTT		"Switch"											(FF_MQTT	{ channel="mqtt:topic:1:MyDevice2_switch:switch" }
+Switch Example_Switch_Tr_FF_MQTT	"Switch with status msg transform"					(FF_MQTT	{ channel="mqtt:topic:1:MyDevice3_switch:contact" }
+
 /* Indoor Temperatures */
 Number Temperature_GF_Corridor 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Corridor)
 Number Temperature_GF_Toilet 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Toilet)
 Number Temperature_GF_Living 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Living)
 Number Temperature_GF_Kitchen 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen)
-Number Temperature_FF_Bath 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bath) { channel="mqtt:topic:1:MySensor1_temp:number" }
+Number Temperature_FF_Bath 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bath) 
 Number Temperature_FF_Office 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Office)
 Number Temperature_FF_Child 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Child)
 Number Temperature_FF_Bed 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bed)
+
+
 
 /* Windows */
 Contact Window_GF_Frontdoor 	"Frontdoor [MAP(en.map):%s]"		(GF_Corridor, Windows)
@@ -104,7 +113,7 @@ Number  Sun_Elevation           "Sun Elevation"             <sun>        (Weathe
 
 /* Demo items */
 DateTime CurrentDate			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
-Switch DemoSwitch				"Switch"
+Switch DemoSwitch				"Switch"										
 Dimmer DimmedLight				"Dimmer [%d %%]"		<slider>
 Color  RGBLight					"RGB Light"				<slider>
 Rollershutter DemoShutter	 	"Roller Shutter"
