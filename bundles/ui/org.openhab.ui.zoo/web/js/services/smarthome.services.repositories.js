@@ -22,6 +22,7 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
     function ItemRepository() {
       this.rooms = {};
       this.itemsActive = [];
+      this.allItems = [];
     }
 
     ItemRepository.prototype.hasTag = function(item, tag) {
@@ -43,6 +44,7 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
         return function(data) {
           var result;
           result = {};
+          console.log('Data in service',data);
           data.members.forEach(function(member) {
             return result[member.name] = member;
           });
@@ -53,17 +55,21 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
     };
 
     ItemRepository.prototype.getScenes = function() {
+      //console.log('in get scene');
       var defered;
       defered = $q.defer();
-      itemService.getByName({
-        itemName: GROUP_SCENES
+      itemService.getByTag({
+        tags: GROUP_SCENES
       }, function(data) {
+        //console.log('data after get scene',data);
         var scenes;
-        scenes = data.members.map(function(scene) {
+        scenes = data.map(function(scene) {
+          //console.log('Scene: ',scene);
+          scene = JSON.parse(scene.state);
           var sceneData;
           sceneData = scene.state === 'Uninitialized' ? {} : JSON.parse(scene.state);
           return {
-            name: scene.name,
+            name: scene.itemName,
             data: sceneData
           };
         });
@@ -92,6 +98,7 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
     };
 
     ItemRepository.prototype.createNewScene = function(name, items) {
+      //console.log('In create new scene');
       var defered, fnError, fnSuccessItemCreate, sceneData;
       defered = $q.defer();
       sceneData = items.map(function(item) {
@@ -101,9 +108,11 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
         };
       });
       fnError = function(err) {
+         console.log('err putting scene in the backend',err);
         return defered.reject(err);
       };
       fnSuccessItemCreate = function() {
+        console.log('Success putting scene in the backend');
         return itemService.updateState({
           itemName: name,
           state: JSON.stringify(sceneData)
@@ -113,7 +122,7 @@ angular.module('SmartHome.services.repositories', ['SmartHome.services.datacache
         itemName: name,
         type: 'StringItem',
         category: 'scenes',
-        tags: [],
+        tags: [GROUP_SCENES],
         groupNames: [GROUP_SCENES]
       }, fnSuccessItemCreate, fnError);
       return defered.promise;

@@ -1,11 +1,13 @@
 <div class="container">
 
   <h2>Rooms</h2>
-
+ 
   <div class="row">
-
     <div class="col4">
       <p class="small-margin visible-mobile">Select a room</p>
+      <select id="tinynav1" ng-model="thisRoom" class="tinynav tinynav1" ng-options="room.label for (key, room) in ctrl.rooms" ng-change="changeRoomMobile(thisRoom)">
+
+      </select>
       <ul id="side-nav" class="line-list line-nav">
         <li ui-sref-active="selected" ng-repeat="room in ctrl.rooms">
           <a ui-sref="rooms.room({room:room.name})">{{room.label}}</a>

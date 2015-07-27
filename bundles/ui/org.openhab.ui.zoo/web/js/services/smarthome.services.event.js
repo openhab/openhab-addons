@@ -13,11 +13,18 @@ angular.module('SmartHome.services.event', []).factory('eventService', function(
     EventService.prototype.onEvent = function(topic, callback) {
       var topicRegex;
       topicRegex = this.createRegexFromTopic(topic);
+
       return eventSrc.addEventListener('message', function(event) {
         var data;
+       
         data = JSON.parse(event.data);
+        var dataWithPayload = JSON.parse(data.payload);
+        //console.log('data: ',data);
+        //console.log('payload: ',dataWithPayload);
+
         if (data.topic.match(topicRegex)) {
-          return callback(data.topic, data.object);
+          //console.log(data.topic,' matched');
+          return callback(data.topic, dataWithPayload);
         }
       });
     };

@@ -35,6 +35,10 @@ angular.module('ZooApp', [
 			url: '/:room',
 			templateUrl: 'partials/rooms.devices.html'
 		})
+		.state('rooms.scenes', {
+			url: '/:room/:scenes',
+			templateUrl: 'partials/rooms.scenes.html'
+		})
 		.state('access', {
 			url:'/access',
 			templateUrl: 'partials/access.html',
@@ -89,13 +93,7 @@ angular.module('ZooApp', [
 
 }).run(['$location', '$rootScope', '$log', 'itemService', function ($rootScope) {
 
-	$rootScope.leftSidebarOpen = false;
-	$rootScope.isBlackout = false;
 
-	$rootScope.toggleSidebar = function () {
-		$rootScope.leftSidebarOpen = !$rootScope.leftSidebarOpen;
-		$rootScope.isBlackout = !$rootScope.isBlackout;
-	};
 
 	//itemService.getByName({itemName:'gRooms'}, function (rooms) {
 	//	$rootScope.smarthome = {rooms : rooms.members};
@@ -123,14 +121,38 @@ angular.module("ZooApp").run(function ($rootScope, $state, $stateParams) {
 angular.module("ZooApp").run(function ($rootScope, eventService, $log) {
 	eventService.onEvent('smarthome/*', function(topic, newState) {
 		$log.debug('Received Event', topic, newState);
-		$rootScope.$broadcast(topic, newState);
+		$log.debug('Received state',newState);
+		//split itemName and broadcast
+		var itemName = topic.split('/')[2];
+
+		var eventState = newState.value;
+		//console.log(eventState);
+		// this is for restful
+		$rootScope.$broadcast('item', newState.value);
+		// this is tailored for this UI
+		$rootScope.$broadcast(itemName,eventState);
 	});
+
 });
 
 // TODO Remove this, only for dev purposes
 angular.module("ZooApp").run(function ($rootScope) {
+	$rootScope.leftSidebarOpen = false;
+    $rootScope.isBlackout = false;
+    $rootScope.console = {}
+    $rootScope.console.log = function(content){
+      console.log(content);
+    };
+
+    $rootScope.toggleSidebar = function () {
+      console.log($rootScope.leftSidebarOpen);
+      $rootScope.leftSidebarOpen = !$rootScope.leftSidebarOpen;
+      $rootScope.isBlackout = !$rootScope.isBlackout;
+    };
+
 	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 		console.log('state changed: from "%s" to "%s"', fromState.name, toState.name);
+	
 		if (toState.name === 'login') {
 			$rootScope.user = {};
 		} else {

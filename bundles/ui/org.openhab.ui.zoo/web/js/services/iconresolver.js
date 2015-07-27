@@ -5,15 +5,32 @@ angular.module('ZooLib.services.iconResolver', []).factory('iconResolver', funct
   ICON_PREFIX = 'icon-';
   return function(item) {
     var i, len, ref, val;
+    var iconList = {
+      "power": "icon-010",
+      "light": "icon-016",
+      "tv":"icon-003",
+      "cctv":"icon-098",
+      "door":"icon-007",
+      "sensor":"icon-054",
+      "fridge":"icon-004",
+      "soundSystem":"icon-026",
+      "microwave":"icon-036",
+      "fan":"icon-025",
+      "blind":"icon-125",
+    }
     if ((item != null ? item.tags : void 0) == null) {
       return;
     }
     ref = item.tags;
     for (i = 0, len = ref.length; i < len; i++) {
       val = ref[i];
-      if (val.substr(0, ICON_PREFIX.length) === ICON_PREFIX) {
+      // The code below will work if config file tag arrays comes with icon-xxx
+      /*if (val.substr(0, ICON_PREFIX.length) === ICON_PREFIX) {
         return val;
-      }
+      }*/
+      
+      // This is the new method to internally look for icon name
+      return iconList[val];
     }
   };
 });

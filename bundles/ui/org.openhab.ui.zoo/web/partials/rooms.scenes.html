@@ -1,0 +1,25 @@
+<div class="cd-tabs">
+  	<nav>
+    	<ul class="cd-tabs-navigation">
+    	  <!-- All of the selected room (default) -->
+    		<li><a ui-sref-active="selected" ui-sref="rooms.room({room:$stateParams.room})">Active <small>({{ctrl.rooms[$stateParams.room].members.length}})</small></a></li>
+
+      <!-- Scenes in that room -->
+      		<li><a ui-sref-active="selected" ui-sref="rooms.scenes({room:$stateParams.room,scenes:'scenes'})">Scenes <small>({{ctrl.scenes.length}})</small></a></li>
+
+      <!-- All devices, regardeless of the room: -->
+      		<li><a ui-sref-active="selected" ui-sref="rooms.room({all: true})">All <small>({{ctrl.items.length}})</small></a></li>
+    	</ul>
+  	</nav>
+	<ul class="cd-tabs-content" style="height: auto">
+		<ul class="line-list">
+			<li ng-repeat="scene in ctrl.scenes ">
+				<div class="radio-block-wrap">
+					<i class="electronic fa fa-tasks"></i>
+					<h4 class="up-case no-margin">{{scene.name}}</h4>
+					<button class="btn btn-primary pull-right" ng-click="ctrl.applyScene(scene.data)">Apply Scene<button>
+				</div>	                                 
+			</li>
+		</ul>
+	</ul>
+</div>

@@ -40,6 +40,7 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
     },
     link: function(scope, elem, attrs) {
       var eventBuffer, handleBroadcast, options, ranger, updateItem, updateOpacity;
+      console.log(scope.item);
       eventBuffer = null;
       scope.local = {
         stateOnOff: translateStateOnOff(scope.item.state),
@@ -50,8 +51,10 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
         cctv: attrs.cctv != null
       };
       updateItem = function(newState) {
+        
         scope.local.dimValue = translateState(newState);
         scope.local.stateOnOff = translateStateOnOff(newState);
+        scope.$apply();
         updateOpacity();
         ranger.setStart(scope.local.dimValue);
         scope.options.cssIconClass = iconResolver(scope.item);
@@ -66,6 +69,7 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
         if (newOpacity > .9) {
           newOpacity = .9;
         }
+        
         return scope.local.opacity = newOpacity;
       };
       options = {
@@ -94,9 +98,11 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
         }, scope.local.stateOnOff);
       };
       scope.handleChangeSlider = function() {
+        updateOpacity();
         $timeout.cancel(eventBuffer);
         return eventBuffer = $timeout(function() {
           $log.debug("Dimmer: Change " + scope.item.name + " to " + scope.local.dimValue);
+          //updateOpacity();
           return itemService.sendCommand({
             itemName: scope.item.name
           }, scope.local.dimValue);
@@ -113,6 +119,7 @@ angular.module('ZooLib.directives.dimmerItem', []).directive('dimmerItem', funct
         }
         updateItem(item.state);
         scope.$on("smarthome/command/" + item.name, handleBroadcast);
+        scope.$on(scope.item.name,handleBroadcast);
         return scope.$on("smarthome/update/" + item.name, handleBroadcast);
       });
     }

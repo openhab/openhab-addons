@@ -13,32 +13,47 @@ angular.module('ZooLib.directives.switchItem', []).directive('switchItem', funct
       scope.local = {
         state: null
       };
+      scope.reloadCount
       scope.options = {
-        cssIconClass: ''
+        cssIconClass: '',
       };
       updateItem = function(newState) {
         scope.options.cssIconClass = iconResolver(scope.item);
         scope.local.state = newState;
+
+        scope.$apply();
         return $rootScope.$broadcast("updateMasterSwitch/" + scope.item.groupNames[0]);
       };
+
       scope.handleChange = function() {
+
         $log.debug("Switch Item " + scope.item.name + " changed to " + scope.local.state);
+ 
         return itemService.sendCommand({
           itemName: scope.item.name
         }, scope.local.state);
       };
+      
       handleBroadcast = function(event, newState) {
+
+        console.log('Inside broadcast');
         scope.item.state = newState;
         return updateItem(newState);
       };
+
       scope.$watch('item', function(item) {
         if (item == null) {
           return;
         }
         updateItem(item.state);
         scope.$on("smarthome/command/" + item.name, handleBroadcast);
+        scope.$on("smarthome/*" + item.name, handleBroadcast);
+
         return scope.$on("smarthome/update/" + item.name, handleBroadcast);
       });
+      // broadcast new from app.js
+      scope.$on(scope.item.name, handleBroadcast);
+
     }
   };
 });

@@ -42,7 +42,7 @@
   </head>
 
   <body ng-class="{'blackout':isBlackout}">
-
+   
     <header ng-show="user.isAuthenticated" ng-include="'partials/header.html'"></header>
     <div ng-show="user.isAuthenticated" ng-include="'partials/notifications-popup.html'"></div>
     <aside ng-show="user.isAuthenticated" ng-include="'partials/left-sidebar.html'"

@@ -9,10 +9,18 @@ smartHomeModule.factory('itemService', function($resource) {
             isArray: true,
             url: '/rest/items?recursive=true'
         },
+        getByTag : {
+            method : 'GET',
+            params : {
+                tags : '@tags'
+            },
+            isArray: true,
+            url: '/rest/items?recursive=true'
+        },
         getByName : {
             method : 'GET',
             params : {
-                bindingId : '@itemName'
+                itemName : '@itemName'
             },
             url : '/rest/items/:itemName'
         },
