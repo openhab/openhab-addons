@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="openHAB 2" sequenceNumber="130">
-<locations>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.xtend.sdk.feature.group" version="2.6.2.v201407030533"/>
-<unit id="org.eclipse.xtext.sdk.feature.group" version="2.6.2.v201407030533"/>
-<repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201407030533"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.10.0.v20140519-0339"/>
-<repository location="http://download.eclipse.org/modeling/emf/emf/updates/2.10/core/R201405190339"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.jetty.bundles.f.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.jetty.bundles.f.source.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.9.v20150224"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.10.0.v20140606-1602"/>
-<repository location="http://download.eclipse.org/releases/luna/201406250900/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.sdk.ide" version="0.0.0"/>
-<unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<?pde version="3.8"?>
+<target name="Generated from openHAB 2 Target Platform" sequenceNumber="140">
+  <locations>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.smarthome.feature.runtime.console.equinox.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.smarthome.feature.runtime.paperui.feature.group" version="0.0.0"/>
+      <repository location="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.emf.mwe2.runtime.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.equinox.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.sdk.ide" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/releases/luna/201502271000"/>
+    </location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="com.google.inject" version="3.0.0.v201312141243"/>
 <unit id="com.google.inject.source" version="3.0.0.v201312141243"/>
 <unit id="com.google.gson" version="2.2.4.v201311231704"/>
@@ -92,50 +88,37 @@
 <unit id="org.slf4j.log4j.source" version="1.7.2.v20130115-1340"/>
 <unit id="org.apache.felix.gogo.runtime" version="0.10.0.v201209301036"/>
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201407030533"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.codehaus.groovy23.feature.feature.group" version="0.0.0"/>
+      <repository location="http://dist.springsource.org/release/GRECLIPSE/e4.4/"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.jupnp.feature.feature.group" version="0.0.0"/>
+      <repository location="http://www.openhab.org/jupnp/update-site"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="0.0.0"/>
+      <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="0.0.0"/>
+      <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="0.0.0"/>
+      <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="0.0.0"/>
+      <repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/5.0.0"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.eclipse.jetty.bundles.f.feature.group" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.12.v20150709"/>
+    </location>
+    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+      <unit id="org.mortbay.jasper.apache-jsp" version="0.0.0"/>
+      <repository location="https://github.com/openhab/openhab.repo/raw/master/jetty-deps"/>
+    </location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.paho.client.mqttv3" version="1.0.2"/>
+<repository location="http://download.eclipse.org/paho/"/>
 </location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.jupnp.feature.feature.group" version="0.0.0"/>
-<unit id="org.jupnp.feature.source.feature.group" version="0.0.0"/>
-<repository location="http://www.openhab.org/jupnp/update-site/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="com.eclipsesource.jaxrs.provider.security.feature.source.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.provider.gson.feature.source.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.source.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.feature.group" version="0.0.0"/>
-<unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="0.0.0"/>
-<repository location="http://hstaudacher.github.io/osgi-jax-rs-connector/5.0.0"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.core.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.console.equinox.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.console.equinox.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.binding.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.ui.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.model.source.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.test.source.feature.group" version="0.0.0"/>
-<repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.smarthome.feature.runtime.paperui.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.smarthome.feature.runtime.paperui.source.feature.group" version="0.0.0"/>
-<repository location="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.codehaus.groovy23.feature.feature.group" version="0.0.0"/>
-<repository location="http://dist.springsource.org/release/GRECLIPSE/e4.4/"/>
-</location>
-</locations>
+  </locations>
 </target>

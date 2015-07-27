@@ -1,4 +1,4 @@
-# Setting up a development environment for openHAB 2
+# Setting up an IDE for openHAB 2
 
 If you are a developer yourself, you might want to setup a development environment, so that you can debug and develop openHAB 2 yourself.
 
@@ -8,25 +8,31 @@ Note that the project build is completely mavenized - so running "mvn install" o
 
 Make sure that you have the following things installed on your computer:
 
-1. Git
-1. Maven 3.x
-1. Oracle JavaSE 7 or 8 
-1. [Yoxos Installer](https://yoxos.eclipsesource.com/downloadlauncher.html)
+Please ensure that you have the following prerequisites installed on your machine:
 
-## Setup Instructions
+1. [Git](https://git-scm.com/downloads)
+1. [Maven 3.x](https://maven.apache.org/download.cgi)
+1. [Oracle JDK 7 or 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
-_Note:_ Here you can find a [screencast of the IDE setup on YouTube](https://www.youtube.com/watch?v=8XbQkKd9wkE).
+_Note:_ You can find a screencast of the setup process here:
 
-Here are step-by-step instructions:
+[![Screencast](http://img.youtube.com/vi/o2QjCGdZl7s/0.jpg)](http://www.youtube.com/watch?v=o2QjCGdZl7s)
 
-1. Create [your own fork of the openHAB2 repository](https://github.com/openhab/openhab2/fork) at Github
-1. Create a local clone of your repository on the local filesystem by running `git clone https://github.com/<your_github_user>/openhab2.git`
-1. Download and execute the file [openHAB2.yoxos](https://raw.githubusercontent.com/openhab/openhab2/master/targetplatform/openhab2.yoxos) (in linux that can be done via command line ./yoxos openhab2.yoxos 
-). This will install you an Eclipse IDE with all required features to develop for openHAB 2. Alternatively, you can install all required plugins on top of an existing Eclipse 4.4 installation using this [update site](http://yoxos.eclipsesource.com/userdata/profile/ffb4645d9f172d6d927e2b25f19d1813) or [download a full distribution from Yoxos](http://yoxos.eclipsesource.com/userdata/profile/ffb4645d9f172d6d927e2b25f19d1813), if you register an account there.
-1. Create a new workspace and choose `File->Import->General->Existing Projects into Workspace`, enter your repository root folder and press "Finish". Ignore any compilation errors at this point.
-1. Switch the perspective to "Plug-in Development"
-1. Select the target platform by selecting `Window->Preferences->Plug-in Development->Target Platform->"openHAB 2"` (OS X: `Eclipse->...` instead of `Window->...`) from the main menu and press Ok. All project should now compile without errors.
-1. To launch openHAB from within your IDE, go to Run->Run Configurations->Eclipse Application->openHAB_Runtime
+The Eclipse IDE is used for openHAB developments. The Eclipse Installer automatically prepares the IDE so that it comes with all required plug-ins, the correct workspace encoding settings, pre-configured code formatters and more. Simply follow these steps:
+
+1. Download the [Eclipse Installer](https://wiki.eclipse.org/Eclipse_Installer)
+2. Launch the Eclipse Installer and switch to „Advanced Mode“ in the top right menu:
+![Step 0](images/ide0.png)
+3. Choose the "Eclipse IDE for Java Developers" and select "Next":
+![Step 1](images/ide1.png)
+4. Expand the "Github.com/openHAB" entry, double click "openHAB 2 Development" and select "Next".
+5. Now provide an installation folder and your Github id (used to push your changesets to) and select "Next".
+6. The installation will now begin when pressing "Finish".
+7. Once it is done, you will see the Eclipse Welcome Screen, which you can close by clicking "Workbench" on the top right. You will see that the installer not only set up an Eclipse IDE instance for you, but also checked out the openHAB 2 git repository and imported all projects into the workspace. 
+8. Your workspace should now fully compile and you can start the runtime by launching the "openHAB Runtime" launch configuration.
+
+Note that you will find the sources in a subfolder called "git" within your selected installation folder. You can use any kind of git client here, if you do not want to use the git support from within the Eclipse IDE.
+If you want to push changes, you need to do so to [your personal fork of the openHAB 2 repository](https://github.com/openhab/openhab2/fork) in order to create a pull request. You will find more details in the ["How to contribute"](../../../CONTRIBUTING.md) documentation.
 
 ### Maven build for binary packages
 
