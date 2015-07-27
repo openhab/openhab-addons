@@ -703,6 +703,11 @@
     </setupTask>
   </setupTask>
   <setupTask
+      xsi:type="setup:VariableTask"
+      id="eclipse.target.platform"
+      name="eclipse.target.platform"
+      value="Full"/>
+  <setupTask
       xsi:type="jdt:JRETask"
       version="JavaSE-1.7"
       location="${jre.location-1.7}"/>
