@@ -67,7 +67,7 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
 
     private Logger logger = LoggerFactory.getLogger(MqttHandler.class);
 
-    // lists for propagating states into each possible channel (and eventually into item)
+    // lists for propagating received states and commands into possible channels (eventually reaching an Ttem)
     HashMap<String, GenericItem> itemList = new HashMap<String, GenericItem>();
     List<Class<? extends State>> stateList = new ArrayList<Class<? extends State>>();
     List<Class<? extends Command>> commandList = new ArrayList<Class<? extends Command>>();
@@ -270,9 +270,12 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String cmdstr = command.toString();
-        logger.debug("MQTT: send command '{}' as topic '{}'", cmdstr, publisher.getTopic());
-        publisher.publish(publisher.getTopic(), cmdstr.getBytes());
+        if (publisher != null) {
+            String cmdstr = command.toString();
+            logger.debug("MQTT: send command '{}' as topic '{}'", cmdstr, publisher.getTopic());
+            publisher.publish(publisher.getTopic(), cmdstr.getBytes());
+        } else
+            logger.warn("MQTT: handleCommand invoked on topic '{}' but declared 'input'! Ignoring..");
         // if (channelUID.getId().equals(CHANNEL_NUMBER)) {
         // // TODO: handle command
         // } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
@@ -288,15 +291,24 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
      */
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        String statestr = newState.toString();
-        logger.debug("MQTT: send state '{}' as topic '{}'", statestr, publisher.getTopic());
-        publisher.publish(publisher.getTopic(), statestr.getBytes());
+        if (publisher != null) {
+            String statestr = newState.toString();
+            logger.debug("MQTT: send state '{}' as topic '{}'", statestr, publisher.getTopic());
+            publisher.publish(publisher.getTopic(), statestr.getBytes());
+        } else
+            logger.warn("MQTT: handleUpdate invoked on topic '{}' but declared 'input'! Ignoring..");
+
         // if (channelUID.getId().equals(CHANNEL_NUMBER)) {
         // // TODO: handle command
         // } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
         // // TODO: handle command
         // }
 
+    }
+
+    @Override
+    public void thingUpdated(Thing thing) {
+        super.thingUpdated(thing);
     }
 
     private synchronized MqttBridgeHandler getBridgeHandler() {

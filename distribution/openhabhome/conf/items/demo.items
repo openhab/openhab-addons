@@ -71,12 +71,14 @@ Rollershutter Shutter_FF_Bath 			"Bath"			(FF_Bath, Shutters)
 Rollershutter Shutter_FF_Office_Window	"Office Window"	(FF_Office, Shutters)
 Rollershutter Shutter_FF_Office_Door 	"Office Door"	(FF_Office, Shutters)
 
-Switch Shutter_all
+Switch Shutter_alljj
 
-Number Example_Temperature_FF_MQTT 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_MQTT)	{ channel="mqtt:topic:1:MySensor1_temp:number" }
-String Example_Status_FF_MQTT 		"Sensor status [%s]"								(FF_MQTT)	{ channel="mqtt:topic:1:MySensor1_status:string" }
-Switch Example_Switch_FF_MQTT		"Switch"											(FF_MQTT	{ channel="mqtt:topic:1:MyDevice2_switch:switch" }
-Switch Example_Switch_Tr_FF_MQTT	"Switch with status msg transform"					(FF_MQTT	{ channel="mqtt:topic:1:MyDevice3_switch:contact" }
+Number Example_Openhab_Generated_Temperature_FF_MQTT 	"OpenHab Temperature [%.1f °C]"	<temperature>	(Temperature, FF_MQTT)	{ channel="mqtt:topic:mosquitto:Openhab_temp:number" }
+Number Example_Temperature_FF_MQTT 	"Sensor Temperature [%.1f °C]" <temperature>	(FF_MQTT)	{ channel="mqtt:topic:mosquitto:MySensor1_temp:number" }
+Number Example_Humidity_FF_MQTT 	"Sensor Humidity [%.1f %%]"					(FF_MQTT)	{ channel="mqtt:topic:mosquitto:MySensor1_hum:number" }
+String Example_Status_FF_MQTT 		"Sensor Status [%s]"					(FF_MQTT)	{ channel="mqtt:topic:mosquitto:MySensor1_status:string" }
+Switch Example_Switch_FF_MQTT		"Switch"								(FF_MQTT)	{ channel="mqtt:topic:mosquitto:MyDevice2_switch:switch" }
+Switch Example_Switch_Tr_FF_MQTT	"Switch with status msg transform"		(FF_MQTT)	{ channel="mqtt:topic:mosquitto:MyDevice3_switch:switch" }
 
 /* Indoor Temperatures */
 Number Temperature_GF_Corridor 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Corridor)

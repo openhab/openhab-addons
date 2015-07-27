@@ -21,7 +21,6 @@ import org.openhab.binding.mqtt.internal.MqttMessageSubscriber;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,57 +76,62 @@ public class MqttBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing MQTT bridge handler.");
 
-        // get reference to org.eclipse.smarthome.io.transport.mqtt service
-        ServiceReference<ManagedService> mqttServiceReference = (ServiceReference<ManagedService>) bundleContext
-                .getServiceReference(MqttService.class.getName());
-        mqttService = (MqttService) bundleContext.getService(mqttServiceReference);
-
         // final String broker = this.getThing().getBridgeUID().segments[2];
-        broker = (String) getConfig().get(BROKER);
+        broker = this.getThing().getUID().getId();
+        // broker = (String) getConfig().get(BROKER);
 
-        if (broker != null) {
+        try {
+            // get a reference to org.eclipse.smarthome.io.transport.mqtt service
+            ServiceReference<MqttService> mqttServiceReference = bundleContext.getServiceReference(MqttService.class);
+            mqttService = bundleContext.getService(mqttServiceReference);
             try {
-
                 // get reference to ConfigurationAdmin and update the configuration of io.transport.mqtt service (PID is
                 // actually org.eclipse.smarthome.mqtt)
-                ServiceReference<ConfigurationAdmin> configurationAdminReference = (ServiceReference<ConfigurationAdmin>) bundleContext
-                        .getServiceReference(ConfigurationAdmin.class.getName());
+                ServiceReference<ConfigurationAdmin> configurationAdminReference = bundleContext
+                        .getServiceReference(ConfigurationAdmin.class);
                 if (configurationAdminReference != null) {
                     ConfigurationAdmin confAdmin = bundleContext.getService(configurationAdminReference);
 
                     Configuration mqttServiceConf = confAdmin.getConfiguration(MQTT_SERVICE_PID);
                     Dictionary<String, Object> properties = mqttServiceConf.getProperties();
                     if (properties == null) {
+                        // confAdmin.createFactoryConfiguration(MQTT_SERVICE_PID);
+                        // properties = mqttServiceConf.getProperties();
                         properties = new Hashtable<String, Object>();
-                        properties.put("service.pid", MQTT_SERVICE_PID); // initialize the PID. Is this necessary?
+                        properties.put("service.pid", MQTT_SERVICE_PID); // CHECK! initialize the PID. Is this
+                                                                         // necessary?
                     }
 
                     if (getConfig().get(URL) != null) {
-                        properties.put(BROKER + ":" + URL, getConfig().get(URL));
+                        properties.put(broker + "." + URL, getConfig().get(URL));
                     }
                     if (getConfig().get(USER) != null) {
-                        properties.put(BROKER + ":" + USER, getConfig().get(USER));
+                        properties.put(broker + "." + USER, getConfig().get(USER));
                     }
                     if (getConfig().get(PWD) != null) {
-                        properties.put(BROKER + ":" + PWD, getConfig().get(PWD));
+                        properties.put(broker + "." + PWD, getConfig().get(PWD));
                     }
                     if (getConfig().get(CLIENTID) != null) {
-                        properties.put(BROKER + ":" + CLIENTID, getConfig().get(CLIENTID));
+                        properties.put(broker + "." + CLIENTID, getConfig().get(CLIENTID));
                     }
-                    mqttServiceConf.update(properties);
+                    // mqttServiceConf.update(properties); // FIXME! Updating properties like this via Configuration
+                    // class does not notify the mqttservice!
+                    mqttService.updated(properties); // CHECK! Is this safe to do? Properties set this way are not
+                                                     // propagated to ConfigurationAdmin..
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (Exception e) {
                 logger.error("Failed to set MQTT broker properties");
             }
-
+        } catch (Exception e) {
+            logger.error("Failed to get MQTT service!");
         }
-
     }
 
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
+        updateStatus(ThingStatus.REMOVED);
     }
 
     private synchronized void onUpdate() {
