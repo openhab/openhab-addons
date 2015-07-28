@@ -18,7 +18,7 @@ The configuration assumes that you run the reverse proxy on the same machine as 
 	
 		location / {
 			proxy_pass                            http://localhost:8080/;
-			proxy_set_header Host                 $host;
+			proxy_set_header Host                 $http_host;
 			proxy_set_header X-Real-IP            $remote_addr;
 			proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
 			proxy_set_header X-Forwarded-Scheme   $scheme;		
@@ -45,7 +45,7 @@ Maybe you do not trust the local network. In this case it's possible to pass the
 	
 		location / {
 			proxy_pass                            http://localhost:8080/;
-			proxy_set_header Host                 $host;
+			proxy_set_header Host                 $http_host;
 			proxy_set_header X-Real-IP            $remote_addr;
 			proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
 			proxy_set_header X-Forwarded-Scheme   $scheme;		
