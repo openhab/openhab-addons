@@ -34,7 +34,7 @@
 
     <channel-type id="switch-channel">
         <item-type>switch</item-type>
-        <label>Number type MQTT payload</label>
+        <label>Switch type MQTT payload</label>
         <description>Channel for mapping Switch types to MQTT messages</description>
     </channel-type>
 

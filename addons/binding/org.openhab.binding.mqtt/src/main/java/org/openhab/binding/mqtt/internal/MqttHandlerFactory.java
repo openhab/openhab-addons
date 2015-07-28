@@ -24,14 +24,12 @@ import org.openhab.binding.mqtt.handler.MqttHandler;
 import com.google.common.collect.Sets;
 
 /**
- * The {@link MqttHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link MqttHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Marcus of Wetware Labs - Initial contribution
  */
 public class MqttHandlerFactory extends BaseThingHandlerFactory {
 
-    // private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TOPIC);
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(MqttBridgeHandler.SUPPORTED_THING_TYPES,
             MqttHandler.SUPPORTED_THING_TYPES);
 
@@ -42,8 +40,6 @@ public class MqttHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
-            // String serialNumber = (String) configuration.get(SERIAL_NUMBER);
-            // thingUID = new ThingUID(thingTypeUID, serialNumber);
             thingUID = new ThingUID(thingTypeUID, "1");
         }
         return thingUID;

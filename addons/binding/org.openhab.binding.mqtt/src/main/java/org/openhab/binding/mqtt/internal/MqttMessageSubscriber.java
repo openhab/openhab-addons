@@ -136,16 +136,8 @@ public class MqttMessageSubscriber extends AbstractMqttMessagePubSub implements 
             value = StringUtils.replace(value, "${itemName}", getItemName());
 
             if (getMessageType().equals(MessageType.COMMAND)) {
-                // Command command = getCommand(value);
-                // eventPublisher.postCommand(getItemName(), command);
-                // ItemCommandEvent event = ItemEventFactory.createCommandEvent(getItemName(), command);
-                // eventPublisher.post(event);
                 listener.mqttCommandReceived(topic, value);
             } else {
-                // State state = getState(value);
-                // eventPublisher.postUpdate(getItemName(), state);
-                // ItemStateEvent event = ItemEventFactory.createStateEvent(getItemName(), state);
-                // eventPublisher.post(event);
                 listener.mqttStateReceived(topic, value);
             }
         } catch (Exception e) {

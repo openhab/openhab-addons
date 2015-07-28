@@ -1,7 +1,7 @@
 yahooweather:weather:berlin [ location="638242" ]
 astro:sun:home  [ geolocation="52.5200066,13.4049540", interval=60 ]
 
-Bridge mqtt:bridge:mosquitto [ url="tcp://192.168.1.80:1883" ] 
+Bridge mqtt:bridge:mosquitto [ url="tcp://192.168.1.80:1883", clientId="openhab" ] 
 	{
 	topic MySensor1_temp [ topicId="/home/sensors/mysensor1/temperature", 	type="state", direction="in" ]
 	topic MySensor1_hum  [ topicId="/home/sensors/mysensor1/humidity", 		type="state", direction="in" ]

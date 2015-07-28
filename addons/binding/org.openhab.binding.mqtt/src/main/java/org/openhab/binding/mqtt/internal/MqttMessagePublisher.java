@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.mqtt.internal;
 
-import java.awt.TrayIcon.MessageType;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;

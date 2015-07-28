@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.items.GenericItem;
-//import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.ColorItem;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
@@ -84,61 +83,75 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
         super(thing);
     }
 
-    // Received command from MQTT Subscriber. Try to cast it to every possible Command Type and send it to all channels
-    // that support this type
+    /***
+     * Received command from MqttMessageSubscriber. Try to cast it to every possible Command Type and send it to all
+     * channels that support this type
+     *
+     * @param topic MQTT topic of the received message
+     * @param command Payload of the message
+     */
     @Override
     public void mqttCommandReceived(String topic, String command) {
 
         for (String channel : itemList.keySet()) {
-            // go through all channels and check if the Item associated with it has DataTypes that we can cast the
-            // command into
-            for (Class<? extends Type> asc : itemList.get(channel).getAcceptedDataTypes()) {
+            // go through every active (linked) channel and check if the Item associated with it has DataTypes that we
+            // can cast the command into
+            if (isLinked(channel)) {
+                for (Class<? extends Type> asc : itemList.get(channel).getAcceptedDataTypes()) {
 
-                try {
-                    Method valueOf = asc.getMethod("valueOf", String.class);
-                    Command c = (Command) valueOf.invoke(asc, command);
-                    if (c != null) {
-                        // command could be casted to type 'type'
-                        logger.debug(
-                                "MQTT: Received state (topic '{}'). Propagating payload '{}' as type '{}' to channel '{}')",
-                                topic, command, c.getClass().getName(), channel);
-                        postCommand(channel, c);
-                        break;
+                    try {
+                        Method valueOf = asc.getMethod("valueOf", String.class);
+                        Command c = (Command) valueOf.invoke(asc, command);
+                        if (c != null) {
+                            // command could be casted to type 'type'
+                            logger.debug(
+                                    "MQTT: Received state (topic '{}'). Propagating payload '{}' as type '{}' to channel '{}')",
+                                    topic, command, c.getClass().getName(), channel);
+                            postCommand(channel, c);
+                            break;
+                        }
+                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
                     }
-                } catch (NoSuchMethodException e) {
-                } catch (IllegalArgumentException e) {
-                } catch (IllegalAccessException e) {
-                } catch (InvocationTargetException e) {
                 }
             }
         }
     }
 
-    // Received state from MQTT Subscriber. Try to cast it to every possible State Type and send it to all channels that
-    // support this type
+    /***
+     * Received state from MqttMessageSubscriber. Try to cast it to every possible State Type and send it to all
+     * channels that support this type
+     *
+     * @param topic MQTT topic of the received message
+     * @param state Payload of the message
+     */
     @Override
     public void mqttStateReceived(String topic, String state) {
 
         for (String channel : itemList.keySet()) {
-            // go through all channels and check if the Item associated with it has DataTypes that we can cast the state
-            // into
-            for (Class<? extends Type> asc : itemList.get(channel).getAcceptedDataTypes()) {
+            // go through every active (linked) channel and check if the Item associated with it has DataTypes that we
+            // can cast the state into
+            if (isLinked(channel)) {
+                for (Class<? extends Type> asc : itemList.get(channel).getAcceptedDataTypes()) {
 
-                try {
-                    Method valueOf = asc.getMethod("valueOf", String.class);
-                    State s = (State) valueOf.invoke(asc, state);
-                    if (s != null) {
-                        // state could be casted to type 'type'
-                        logger.debug(
-                                "MQTT: Received state (topic '{}'). Propagating payload '{}' as type '{}' to channel '{}')",
-                                topic, state, s.getClass().getName(), channel);
-                        updateState(channel, s);
-                        break;
+                    try {
+                        Method valueOf = asc.getMethod("valueOf", String.class);
+                        State s = (State) valueOf.invoke(asc, state);
+                        if (s != null) {
+                            // state could be casted to type 'type'
+                            logger.debug(
+                                    "MQTT: Received state (topic '{}'). Propagating payload '{}' as type '{}' to channel '{}')",
+                                    topic, state, s.getClass().getName(), channel);
+                            updateState(channel, s);
+                            break;
+                        }
+                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
                     }
-                } catch (NoSuchMethodException e) {
-                } catch (IllegalArgumentException e) {
-                } catch (IllegalAccessException e) {
-                } catch (InvocationTargetException e) {
                 }
             }
         }
@@ -198,6 +211,9 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
 
     }
 
+    /***
+     * Called by framework when this Topic handler is initialized
+     */
     @Override
     public void initialize() {
         logger.debug("Initializing MQTT topic handler.");
@@ -252,6 +268,9 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /***
+     * Callback from framework when this Topic handler is deleted
+     */
     @Override
     public void dispose() {
         logger.debug("Disposing MQTT topic handler.");
@@ -276,11 +295,6 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
             publisher.publish(publisher.getTopic(), cmdstr.getBytes());
         } else
             logger.warn("MQTT: handleCommand invoked on topic '{}' but declared 'input'! Ignoring..");
-        // if (channelUID.getId().equals(CHANNEL_NUMBER)) {
-        // // TODO: handle command
-        // } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-        // // TODO: handle command
-        // }
     }
 
     /**
@@ -297,20 +311,24 @@ public class MqttHandler extends BaseThingHandler implements MqttBridgeListener,
             publisher.publish(publisher.getTopic(), statestr.getBytes());
         } else
             logger.warn("MQTT: handleUpdate invoked on topic '{}' but declared 'input'! Ignoring..");
-
-        // if (channelUID.getId().equals(CHANNEL_NUMBER)) {
-        // // TODO: handle command
-        // } else if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-        // // TODO: handle command
-        // }
-
     }
 
+    /***
+     * Callback from framework when a configuration of the Topic has been changed
+     *
+     * @param thing Updated thing
+     */
     @Override
-    public void thingUpdated(Thing thing) {
-        super.thingUpdated(thing);
+    public void thingUpdated(Thing topic) {
+        super.thingUpdated(topic);
     }
 
+    /***
+     * Get the MQTT bridge handler. If this is first time, register this Topic handler instance to receive events from
+     * bridge
+     *
+     * @return bridge handler
+     */
     private synchronized MqttBridgeHandler getBridgeHandler() {
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();

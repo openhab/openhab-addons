@@ -27,16 +27,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Binding to broadcasts all commands and/or states received on the OpenHab
+ * Binding to broadcast all commands and/or states received on the OpenHab
  * event bus to predefined topics on an MQTT Broker. The binding can also
  * subscribe to state or command topics and publish all of these to the openHAB
  * event bus.
  *
+ * Uses EventSubscriber and EventPublisher mechanisms to connect to the Event Bus.
+ *
+ * To configure Event Bus binding, define the broker name and the subscribing/publishing topics for commands and states
+ * in services/mqtt-eventbus.cfg
+ * To configure the MQTT broker associated with that broker name there are two ways
+ * - Configure a MQTT Bridge with the same name
+ * - Configure the MQTT Service itself by modifying services/io-mqtt.cfg (or other config file that refers to
+ * org.eclipse.smarthome.mqtt)
+ *
  * @author Davy Vanherbergen
- * @author Marcus of Wetware Labs
+ * @author Marcus of Wetware Labs - Ported to OH2
  * @since 1.3.0
  */
-// public class MqttEventBusBinding extends AbstractBinding<MqttBindingProvider>implements ManagedService {
 public class MqttEventBusBinding extends AbstractItemEventSubscriber
         implements ManagedService, MqttMessageSubscriberListener {
 
@@ -65,13 +73,16 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
      **/
     private String brokerName;
 
-    // @Override
+    /***
+     * Called by the framework when this EventSubscriber binding is activated
+     */
     public void activate() {
-        // super.activate();
-        logger.debug("MQTT: Activating event bus binding.");
+        logger.debug("MQTT event bus: Activating binding.");
     }
 
-    // @Override
+    /***
+     * Called by the framework when this EventSubscriber binding is deactivated
+     */
     public void deactivate() {
 
         if (StringUtils.isBlank(brokerName)) {
@@ -101,8 +112,8 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
      * topic string, as the topics are in the format of
      * /openHab/myItemName/command
      *
-     * @param topic
-     *            from which to parse the item name.
+     * @param topicDefinition the topic with the wildcard '+' that was used to subscribe
+     * @param actualTopic the received topic
      * @return item name or "unknown".
      */
     private String getItemNameFromTopic(String topicDefinition, String actualTopic) {
@@ -124,24 +135,11 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
         return itemName;
     }
 
-    /*
-     * @Override
-     * public void receiveUpdate(String itemName, State newState) {
-     * if (newState == null || statePublisher == null || !statePublisher.isActivated()) {
-     * return;
-     * }
-     * statePublisher.publish(statePublisher.getTopic(itemName), newState.toString().getBytes());
-     * }
+    /***
+     * Received command from Event Bus
      *
-     * @Override
-     * public void receiveCommand(String itemName, Command command) {
-     * if (commandPublisher == null || command == null || !commandPublisher.isActivated()) {
-     * return;
-     * }
-     * commandPublisher.publish(commandPublisher.getTopic(itemName), command.toString().getBytes());
-     * }
+     * @param commandEvent command
      */
-
     @Override
     protected void receiveCommand(ItemCommandEvent commandEvent) {
         if (commandPublisher == null || commandEvent.getItemCommand() == null || !commandPublisher.isActivated()) {
@@ -152,6 +150,11 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
 
     }
 
+    /***
+     * Received state from Event Bus
+     *
+     * @param stateEvent state
+     */
     @Override
     protected void receiveUpdate(ItemStateEvent stateEvent) {
         if (stateEvent.getItemState() == null || statePublisher == null || !statePublisher.isActivated()) {
@@ -161,7 +164,12 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
                 stateEvent.getItemState().toString().getBytes());
     }
 
-    // Received command from MQTT Subscriber
+    /***
+     * Received command from MQTT Subscriber
+     *
+     * @param topic received MQTT topic
+     * @param command command as MQTT payload
+     */
     @Override
     public void mqttCommandReceived(String topic, String command) {
         Command parsedCommand = commandSubscriber.getCommand(command);
@@ -170,7 +178,12 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
         eventPublisher.post(event);
     }
 
-    // Received state from MQTT Subscriber
+    /***
+     * Received state from MQTT Subscriber
+     *
+     * @param topic received MQTT topic
+     * @param state state as MQTT payload
+     */
     @Override
     public void mqttStateReceived(String topic, String state) {
         State parsedState = commandSubscriber.getState(state);
@@ -182,8 +195,7 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
     /**
      * Setter for Declarative Services. Adds the MqttService instance.
      *
-     * @param mqttService
-     *            Service.
+     * @param mqttService Service.
      */
     public void setMqttService(MqttService mqttService) {
         this.mqttService = mqttService;
@@ -192,17 +204,26 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
     /**
      * Unsetter for Declarative Services.
      *
-     * @param mqttService
-     *            MqttService to remove.
+     * @param mqttService MqttService to remove.
      */
     public void unsetMqttService(MqttService mqttService) {
         this.mqttService = null;
     }
 
+    /**
+     * Setter for Declarative Services. Adds the EventPublisher instance.
+     *
+     * @param mqttService Service.
+     */
     protected void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Unsetter for Declarative Services.
+     *
+     * @param eventPublisher EventPublisher to remove.
+     */
     protected void unsetEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = null;
     }
@@ -211,23 +232,22 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
      * Initialize publisher which publishes all openHAB commands to the given
      * MQTT topic.
      *
-     * @param topic
-     *            to subscribe to.
+     * @param topic publishing topic
      */
     private void setupEventBusStatePublisher(String topic) {
 
         if (StringUtils.isBlank(topic)) {
-            logger.trace("No topic defined for Event Bus State Publisher");
+            logger.trace("MQTT event bus: No topic defined for State Publisher");
             return;
         }
 
         try {
-            logger.debug("Setting up Event Bus State Publisher for topic {}", topic);
+            logger.debug("MQTT event bus: Setting up State Publisher for topic {}", topic);
             statePublisher = new MqttMessagePublisher(brokerName + ":" + topic + ":state:*:default");
             mqttService.registerMessageProducer(brokerName, statePublisher);
 
         } catch (Exception e) {
-            logger.error("Could not create event bus state publisher: {}", e.getMessage());
+            logger.error("MQTT event bus: Could not create state publisher: {}", e.getMessage());
         }
 
     }
@@ -236,24 +256,23 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
      * Initialize subscriber which broadcasts all received command events onto
      * the openHAB event bus.
      *
-     * @param topic
-     *            to subscribe to.
+     * @param topic to subscribe to.
      */
     private void setupEventBusCommandSubscriber(String topic) {
 
         if (StringUtils.isBlank(topic)) {
-            logger.trace("No topic defined for Event Bus Command Subsriber");
+            logger.trace("MQTT event bus: No topic defined for Command Subsriber");
             return;
         }
 
         try {
             topic = StringUtils.replace(topic, "${item}", "+");
-            logger.debug("Setting up Event Bus Command Subscriber for topic {}", topic);
+            logger.debug("MQTT event bus: Setting up Command Subscriber for topic {}", topic);
             commandSubscriber = new MqttMessageSubscriber(brokerName + ":" + topic + ":command:default", this);
             mqttService.registerMessageConsumer(brokerName, commandSubscriber);
 
         } catch (Exception e) {
-            logger.error("Could not create event bus command subscriber: {}", e.getMessage());
+            logger.error("MQTT event bus: Could not create command subscriber: {}", e.getMessage());
         }
 
     }
@@ -262,24 +281,23 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
      * Initialize subscriber which broadcasts all received state events onto the
      * openHAB event bus.
      *
-     * @param topic
-     *            to subscribe to.
+     * @param topic to subscribe to.
      */
     private void setupEventBusStateSubscriber(String topic) {
 
         if (StringUtils.isBlank(topic)) {
-            logger.trace("No topic defined for Event Bus State Subsriber");
+            logger.trace("MQTT event bus: No topic defined for State Subsriber");
             return;
         }
 
         try {
             topic = StringUtils.replace(topic, "${item}", "+");
-            logger.debug("Setting up Event Bus State Subscriber for topic {}", topic);
+            logger.debug("MQTT event bus: Setting up State Subscriber for topic {}", topic);
             stateSubscriber = new MqttMessageSubscriber(brokerName + ":" + topic + ":state:default", this);
             mqttService.registerMessageConsumer(brokerName, stateSubscriber);
 
         } catch (Exception e) {
-            logger.error("Could not create event bus state subscriber: {}", e.getMessage());
+            logger.error("MQTT event bus: Could not create state subscriber: {}", e.getMessage());
         }
 
     }
@@ -288,26 +306,29 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
      * Initialize publisher which publishes all openHAB commands to the given
      * MQTT topic.
      *
-     * @param topic
-     *            to subscribe to.
+     * @param topic publishing topic.
      */
     private void setupEventBusCommandPublisher(String topic) {
 
         if (StringUtils.isBlank(topic)) {
-            logger.trace("No topic defined for Event Bus Command Publisher");
+            logger.trace("MQTT event bus: No topic defined for Command Publisher");
             return;
         }
 
         try {
-            logger.debug("Setting up Event Bus Command Publisher for topic {}", topic);
+            logger.debug("MQTT event bus: Setting up Command Publisher for topic {}", topic);
             commandPublisher = new MqttMessagePublisher(brokerName + ":" + topic + ":command:*:default");
             mqttService.registerMessageProducer(brokerName, commandPublisher);
 
         } catch (Exception e) {
-            logger.error("Could not create event bus command publisher: {}", e.getMessage());
+            logger.error("MQTT event bus: Could not create command publisher: {}", e.getMessage());
         }
     }
 
+    /***
+     * Called by ManagedService framework after services/mqtt-eventbus.cfg is updated or initially loaded
+     * Sets publishers and subscribers and updates broker name
+     */
     @Override
     public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
 
@@ -317,14 +338,14 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
             return;
         }
 
-        logger.debug("Initializing MQTT Event Bus Binding");
+        logger.debug("MQTT event bus: Initializing binding");
 
         // stop existing publishers/subscribers
         deactivate();
 
         brokerName = (String) properties.get("broker");
         if (StringUtils.isEmpty(brokerName)) {
-            logger.debug("No broker name configured for MQTT EventBusBinding");
+            logger.debug("MQTT event bus: No broker name configured! Service not started.");
             return;
         }
 
@@ -333,7 +354,7 @@ public class MqttEventBusBinding extends AbstractItemEventSubscriber
         setupEventBusCommandPublisher((String) properties.get("commandPublishTopic"));
         setupEventBusCommandSubscriber((String) properties.get("commandSubscribeTopic"));
 
-        logger.debug("MQTT Event Bus Binding initialization completed.");
+        logger.debug("MQTT event bus: Binding initialization completed.");
     }
 
 }

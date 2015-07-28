@@ -48,30 +48,57 @@ public class MqttBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-
+        // TODO Auto-generated method stub. No implementation needed?
     }
 
+    /***
+     * Get MQTT Broker name (actually the bridge ID).
+     *
+     * @return broker name
+     */
     String getBroker() {
         return broker;
     }
 
+    /***
+     * Register a MQTT topic subscriber to the broker associated with this bridge
+     *
+     * @param subscriber message subscriber
+     */
     public void registerMessageConsumer(MqttMessageSubscriber subscriber) {
         mqttService.registerMessageConsumer(broker, subscriber);
     }
 
+    /***
+     * Register a MQTT topic publisher to the broker associated with this bridge
+     *
+     * @param publisher message publisher to be registered
+     */
     public void registerMessageProducer(MqttMessagePublisher publisher) {
         mqttService.registerMessageProducer(broker, publisher);
     }
 
+    /***
+     * Unregister a MQTT topic subscriber from the broker associated with this bridge
+     *
+     * @param subscriber message subscriber to be unregistered
+     */
     public void unRegisterMessageConsumer(MqttMessageSubscriber subscriber) {
         mqttService.unregisterMessageConsumer(broker, subscriber);
     }
 
+    /***
+     * Unregister a MQTT topic publisher from the broker associated with this bridge
+     *
+     * @param publisher message publisher to be unregistered
+     */
     public void unRegisterMessageProducer(MqttMessagePublisher publisher) {
         mqttService.unregisterMessageProducer(broker, publisher);
     }
 
+    /***
+     * Called by the framework when this MQTT bridge is initialized.
+     */
     @Override
     public void initialize() {
         logger.debug("Initializing MQTT bridge handler.");
@@ -128,22 +155,29 @@ public class MqttBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /***
+     * Called by the framework when this MQTT bridge is removed.
+     */
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
         updateStatus(ThingStatus.REMOVED);
     }
 
-    private synchronized void onUpdate() {
-    }
-
+    /***
+     * Called by a Topic handler to register itself to the bridge in order to get events.
+     * Currently no events are being sent/implemented.
+     *
+     * @param mqttBridgeListener Topic handler to be registered
+     * @return true if success
+     */
     public boolean registerMqttBridgeListener(MqttBridgeListener mqttBridgeListener) {
         if (mqttBridgeListener == null) {
             throw new NullPointerException("It's not allowed to pass a null mqttBridgeListener.");
         }
         boolean result = mqttBridgeListeners.add(mqttBridgeListener);
         if (result) {
-            onUpdate();
+            // no action needed yet
         }
         return result;
     }
