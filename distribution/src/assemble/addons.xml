@@ -26,6 +26,7 @@
       	<include>org.openhab.action:*:jar:*</include>
       	<include>org.openhab.binding:*:jar:*</include>
       	<include>org.openhab.persistence:*:jar:*</include>
+        <include>org.openhab.addons.io:*:jar:*</include>
       	<include>org.openhab.io:*:jar:*</include>
       	<include>org.eclipse.smarthome.binding:*:jar:*</include>
       </includes>
