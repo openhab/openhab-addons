@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010-2015, openHAB.org and others.
+
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+-->
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" configuration-policy="optional" deactivate="deactivate" immediate="true" name="org.openhab.myopenhab">
+   <implementation class="org.openhab.io.myopenhab.internal.MyOpenHABService"/>
+   <service>
+	   <provide interface="org.eclipse.smarthome.core.persistence.PersistenceService"/>
+       <provide interface="org.eclipse.smarthome.core.scriptengine.action.ActionService"/>
+       <provide interface="org.eclipse.smarthome.core.events.EventSubscriber"/>
+   </service>
+   <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry"/>
+   <reference bind="setEventPublisher" cardinality="0..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="dynamic" unbind="unsetEventPublisher"/>
+   <property name="service.pid" type="String" value="org.openhab.myopenhab"/>
+</scr:component>
