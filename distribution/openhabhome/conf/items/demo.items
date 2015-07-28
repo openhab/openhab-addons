@@ -71,7 +71,7 @@ Rollershutter Shutter_FF_Bath 			"Bath"			(FF_Bath, Shutters)
 Rollershutter Shutter_FF_Office_Window	"Office Window"	(FF_Office, Shutters)
 Rollershutter Shutter_FF_Office_Door 	"Office Door"	(FF_Office, Shutters)
 
-Switch Shutter_alljj
+Switch Shutter_all
 
 Number Example_Openhab_Generated_Temperature_FF_MQTT 	"OpenHab Temperature [%.1f °C]"	<temperature>	(Temperature, FF_MQTT)	{ channel="mqtt:topic:mosquitto:Openhab_temp:number" }
 Number Example_Temperature_FF_MQTT 	"Sensor Temperature [%.1f °C]" <temperature>	(FF_MQTT)	{ channel="mqtt:topic:mosquitto:MySensor1_temp:number" }
@@ -85,7 +85,7 @@ Number Temperature_GF_Corridor 	"Temperature [%.1f °C]"	<temperature>	(Temperat
 Number Temperature_GF_Toilet 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Toilet)
 Number Temperature_GF_Living 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Living)
 Number Temperature_GF_Kitchen 	"Temperature [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen)
-Number Temperature_FF_Bath 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bath) 
+Number Temperature_FF_Bath 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bath)
 Number Temperature_FF_Office 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Office)
 Number Temperature_FF_Child 	"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Child)
 Number Temperature_FF_Bed 		"Temperature [%.1f °C]"	<temperature>	(Temperature, FF_Bed)
@@ -115,7 +115,7 @@ Number  Sun_Elevation           "Sun Elevation"             <sun>        (Weathe
 
 /* Demo items */
 DateTime CurrentDate			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
-Switch DemoSwitch				"Switch"										
+Switch DemoSwitch				"Switch"
 Dimmer DimmedLight				"Dimmer [%d %%]"		<slider>
 Color  RGBLight					"RGB Light"				<slider>
 Rollershutter DemoShutter	 	"Roller Shutter"
