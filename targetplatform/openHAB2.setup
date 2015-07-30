@@ -5,13 +5,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:git="http://www.eclipse.org/oomph/setup/git/1.0"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
+    xmlns:pde="http://www.eclipse.org/oomph/setup/pde/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
     xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
-    xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/pde/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/PDE.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
     name="openhab2"
     label="openHAB">
   <setupTask
@@ -764,222 +764,6 @@
           url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>
     </setupTask>
     <setupTask
-        xsi:type="setup.targlets:TargletTask">
-      <targlet
-          name="openHAB 2 Target Platform"
-          activeRepositoryList="${eclipse.target.platform}">
-        <requirement
-            name="org.eclipse.sdk.ide"/>
-        <requirement
-            name="org.eclipse.pde.feature.group"/>
-        <requirement
-            name="org.eclipse.xtend.sdk.feature.group"
-            versionRange="[2.6.0,2.7.0)"/>
-        <requirement
-            name="org.eclipse.xtext.sdk.feature.group"
-            versionRange="[2.6.0,2.7.0)"/>
-        <requirement
-            name="org.eclipse.emf.mwe2.runtime.sdk.feature.group"/>
-        <requirement
-            name="org.eclipse.emf.sdk.feature.group"/>
-        <requirement
-            name="org.codehaus.groovy23.feature.feature.group"/>
-        <requirement
-            name="org.eclipse.equinox.sdk.feature.group"/>
-        <requirement
-            name="org.eclipse.jdt.feature.group"/>
-        <requirement
-            name="org.jupnp.feature.feature.group"/>
-        <requirement
-            name="com.eclipsesource.jaxrs.provider.gson.feature.feature.group"/>
-        <requirement
-            name="com.eclipsesource.jaxrs.connector.feature.feature.group"/>
-        <requirement
-            name="com.eclipsesource.jaxrs.provider.security.feature.feature.group"/>
-        <requirement
-            name="com.eclipsesource.jaxrs.jersey.runtime.feature.feature.group"/>
-        <requirement
-            name="com.eclipsesource.jaxrs.provider.sse.feature.feature.group"/>
-        <requirement
-            name="com.google.inject"
-            versionRange="[3.0.0,3.1.0)"/>
-        <requirement
-            name="com.google.guava"
-            versionRange="[10.0.1,10.1.0)"/>
-        <requirement
-            name="com.google.gson"
-            versionRange="[2.2.4,2.3.0)"/>
-        <requirement
-            name="com.ibm.icu.base"
-            versionRange="[52.1.0,55.0.0)"/>
-        <requirement
-            name="com.sun.jersey"/>
-        <requirement
-            name="javax.persistence"
-            versionRange="[1.0.0,1.1.0)"/>
-        <requirement
-            name="javax.xml.stream"
-            versionRange="[1.0.1,1.1.0)"/>
-        <requirement
-            name="javax.annotation"
-            versionRange="[1.2.0,1.3.0)"/>
-        <requirement
-            name="javax.inject"
-            versionRange="[1.0.0,1.1.0)"/>
-        <requirement
-            name="javax.transaction"
-            versionRange="[1.1.1,1.2.0)"/>
-        <requirement
-            name="javax.mail.glassfish"
-            versionRange="[1.4.1,1.4.2)"/>
-        <requirement
-            name="javax.servlet"
-            versionRange="[3.1.0,3.2.0)"/>
-        <requirement
-            name="javax.activation"
-            versionRange="[1.1.0,1.2.0)"/>
-        <requirement
-            name="javax.xml"
-            versionRange="[1.3.4,1.4.0)"/>
-        <requirement
-            name="javax.xml.bind"
-            versionRange="[2.2.0,2.3.0)"/>
-        <requirement
-            name="org.apache.commons.exec"
-            versionRange="[1.1.0,1.2.0)"/>
-        <requirement
-            name="org.apache.commons.codec"
-            versionRange="[1.6.0,1.7.0)"/>
-        <requirement
-            name="org.apache.commons.collections"
-            versionRange="[3.2.0,3.3.0)"/>
-        <requirement
-            name="org.apache.commons.httpclient"
-            versionRange="[3.1.0,3.2.0)"/>
-        <requirement
-            name="org.apache.commons.io"
-            versionRange="[2.2.0,2.3.0)"/>
-        <requirement
-            name="org.apache.commons.net"
-            versionRange="[3.2.0,3.3.0)"/>
-        <requirement
-            name="org.apache.commons.lang"
-            versionRange="[2.6.0,2.7.0)"/>
-        <requirement
-            name="org.apache.httpcomponents.httpclient"
-            versionRange="[4.2.6,4.3.0)"/>
-        <requirement
-            name="org.apache.httpcomponents.httpcore"
-            versionRange="[4.2.5,4.3.0)"/>
-        <requirement
-            name="org.apache.httpcomponents.httpcore.nio"
-            versionRange="[4.1.0,4.2.0)"/>
-        <requirement
-            name="org.codehaus.jackson.core"
-            versionRange="[1.6.0,1.7.0)"/>
-        <requirement
-            name="org.codehaus.jackson.jaxrs"
-            versionRange="[1.6.0,1.7.0)"/>
-        <requirement
-            name="org.codehaus.jackson.xc"
-            versionRange="[1.6.0,1.7.0)"/>
-        <requirement
-            name="org.codehaus.jackson.mapper"
-            versionRange="[1.6.0,1.7.0)"/>
-        <requirement
-            name="org.hamcrest.core"
-            versionRange="[1.3.0,1.4.0)"/>
-        <requirement
-            name="org.mockito"
-            versionRange="[1.9.5,1.10.0)"/>
-        <requirement
-            name="org.objectweb.asm"
-            versionRange="[5.0.1,5.1.0)"/>
-        <requirement
-            name="ch.qos.logback.classic"
-            versionRange="[1.0.7,1.1.0)"/>
-        <requirement
-            name="ch.qos.logback.core"
-            versionRange="[1.0.7,1.1.0)"/>
-        <requirement
-            name="ch.qos.logback.slf4j"
-            versionRange="[1.0.7,1.1.0)"/>
-        <requirement
-            name="org.objenesis"
-            versionRange="[1.0.0,1.1.0)"/>
-        <requirement
-            name="org.slf4j.api"
-            versionRange="[1.7.2,1.8.0)"/>
-        <requirement
-            name="org.slf4j.ext"
-            versionRange="[1.7.2,1.8.0)"/>
-        <requirement
-            name="org.slf4j.jul"
-            versionRange="[1.7.2,1.8.0)"/>
-        <requirement
-            name="org.slf4j.jcl"
-            versionRange="[1.7.0,1.8.0)"/>
-        <requirement
-            name="org.slf4j.log4j"
-            versionRange="[1.7.2,1.8.0)"/>
-        <requirement
-            name="org.apache.felix.gogo.runtime"
-            versionRange="[0.10.0,0.11.0)"/>
-        <requirement
-            name="org.eclipse.jetty.bundles.f.feature.group"
-            versionRange="[9.2.12,9.2.13)"/>
-        <requirement
-            name="org.eclipse.paho.client.mqttv3"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.core.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.console.equinox.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.binding.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.rest.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.ui.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.model.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.test.feature.group"/>
-        <requirement
-            name="org.eclipse.smarthome.feature.runtime.paperui.feature.group"/>
-        <repositoryList
-            name="Full">
-          <repository
-              url="http://download.eclipse.org/smarthome/updates-stable/"/>
-          <repository
-              url="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository"/>
-          <repository
-              url="http://download.eclipse.org/releases/luna/201502271000"/>
-          <repository
-              url="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
-          <repository
-              url="http://download.eclipse.org/eclipse/updates/4.4"/>
-          <repository
-              url="http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201407030533"/>
-          <repository
-              url="http://download.eclipse.org/modeling/emft/mwe/updates/releases/R201406110919/mwe"/>
-          <repository
-              url="http://download.eclipse.org/modeling/emf/emf/updates/2.10/core/R201405190339"/>
-          <repository
-              url="http://dist.springsource.org/release/GRECLIPSE/e4.4/"/>
-          <repository
-              url="http://www.openhab.org/jupnp/update-site"/>
-          <repository
-              url="http://hstaudacher.github.io/osgi-jax-rs-connector/5.0.0"/>
-          <repository
-              url="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/"/>
-          <repository
-              url="https://github.com/openhab/openhab.repo/raw/master/jetty-deps"/>
-          <repository
-              url="http://download.eclipse.org/paho/"/>
-        </repositoryList>
-      </targlet>
-    </setupTask>
-    <setupTask
         xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/addons}"
@@ -1020,6 +804,14 @@
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/products}"
           locateNestedProjects="true"/>
+    </setupTask>
+    <setupTask
+        xsi:type="pde:TargetPlatformTask"
+        id="openhab.target"
+        name="openHAB 2 Target Platform">
+      <description>
+        Manually maintained target platform
+      </description>
     </setupTask>
     <stream
         name="master"/>
