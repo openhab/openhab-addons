@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.network.service;
 
+import static org.openhab.binding.network.NetworkBindingConstants.CHANNEL_ONLINE;
+
 import java.io.IOException;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
@@ -15,8 +17,12 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Queue;
 import java.util.TreeSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,6 +30,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.actions.Ping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +44,11 @@ import org.slf4j.LoggerFactory;
  */
 public class NetworkService {
 	private final static Object lockObject = new Object();
-	private final static int TASK_CREATING_TIME_IN_MS = 1;
 	
 	private static ScheduledFuture<?> discoveryJob;
 	private static Logger logger = LoggerFactory.getLogger(NetworkService.class);
+	
+	private ScheduledFuture<?> refreshJob;
 	
 	private String hostname;
 	private int port;
@@ -112,6 +122,24 @@ public class NetworkService {
 		this.useSystemPing = useSystemPing;
 	}
 
+	public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService, final StateUpdate stateUpdate) {
+        Runnable runnable = new Runnable() {
+            public void run() {
+                try {
+                    stateUpdate.newState(updateDeviceState());
+                } catch (InvalidConfigurationException e) {
+                    stateUpdate.invalidConfig();
+                }
+            }
+        };
+        
+		refreshJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+	}	
+	
+	public void stopAutomaticRefresh() {
+		refreshJob.cancel(true);
+	}
+	
 	/**
 	 * Updates one device to a new status
 	 */
@@ -179,7 +207,7 @@ public class NetworkService {
 	 */
 	public static void discoverNetwork(DiscoveryCallback discoveryCallback, ScheduledExecutorService scheduledExecutorService) {
 		TreeSet<String> interfaceIPs;
-		Queue<String> networkIPs;
+		LinkedHashSet<String> networkIPs;
 
 		logger.debug("Starting Device Discovery");
 		interfaceIPs = getInterfaceIPs();
@@ -226,8 +254,8 @@ public class NetworkService {
 	 * @param networkIPs The IPs which are assigned to the Network Interfaces
 	 * @return Every single IP which can be assigned on the Networks the computer is connected to
 	 */
-	private static Queue<String> getNetworkIPs(TreeSet<String> interfaceIPs) {
-		Queue<String> networkIPs = new LinkedBlockingQueue<String>();
+	private static LinkedHashSet<String> getNetworkIPs(TreeSet<String> interfaceIPs) {
+		LinkedHashSet<String> networkIPs = new LinkedHashSet<String>();
 
 		for (Iterator<String> it = interfaceIPs.iterator(); it.hasNext();) {
 			try {
@@ -249,28 +277,33 @@ public class NetworkService {
 	 * Starts the DiscoveryThread for each IP on the Networks
 	 * @param allNetworkIPs
 	 */
-	private static void startDiscovery(final Queue<String> networkIPs, final DiscoveryCallback discoveryCallback, ScheduledExecutorService scheduledExecutorService) {
-		
-		Runnable runnable = new Runnable() {
-			public void run() {
-				DiscoveryThread discoveryThread = null;
-				
-				// ensures that only one thread at  a time access the queue
-				synchronized (lockObject) {
-					if( networkIPs.isEmpty()) {
-						discoveryJob.cancel(false);
-					} else {
-						discoveryThread = new DiscoveryThread(networkIPs.remove(), discoveryCallback);						
-					}
+	private static void startDiscovery(final LinkedHashSet<String> networkIPs, final DiscoveryCallback discoveryCallback, ScheduledExecutorService scheduledExecutorService) {
+		final int PING_TIMEOUT_IN_MS = 500;
+		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
+	
+		for( Iterator<String> it = networkIPs.iterator() ; it.hasNext() ; ) {
+			final String ip = it.next();
+			executorService.execute(new Runnable() {
+				@Override
+				public void run() {
+					if( ip != null ) {
+	                    try {
+	                        if( Ping.checkVitality(ip, 0, PING_TIMEOUT_IN_MS) ) {
+	                            discoveryCallback.newDevice(ip);
+	                        }
+	                    } catch (IOException e) {}
+	                }
 				}
-				
-				if( discoveryThread != null )
-					discoveryThread.start();
-			}
-		};
-		
-		/* Every milisecond a new thread will be created. Due to the fact that the PING has a timeout of 1 sec,
-		 * only about 1000 Threads will be create at max */
-		discoveryJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, TASK_CREATING_TIME_IN_MS, TimeUnit.MILLISECONDS);
+			});
+		}
+		try {
+			executorService.awaitTermination(PING_TIMEOUT_IN_MS * networkIPs.size(), TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {}
+		executorService.shutdown();
 	}
+	
+	@Override
+    public String toString() {
+        return this.hostname + ";" + this.port + ";" + this.retry + ";" + this.refreshInterval + ";" + this.timeout + ";" + this.useSystemPing;
+    }
 }
