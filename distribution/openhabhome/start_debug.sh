@@ -6,8 +6,19 @@ cd `dirname $0`
 eclipsehome="runtime/server";
 
 # set ports for HTTP(S) server
-HTTP_PORT=8080
-HTTPS_PORT=8443
+if [ ! -z ${OPENHAB_HTTP_PORT} ]
+then
+    HTTP_PORT=${OPENHAB_HTTP_PORT}
+else
+    HTTP_PORT=8080
+fi
+
+if [ ! -z ${OPENHAB_HTTPS_PORT} ]
+then
+    HTTPS_PORT=${OPENHAB_HTTPS_PORT}
+else
+    HTTPS_PORT=8443
+fi
 
 # get path to equinox jar inside $eclipsehome folder
 cp=$(find $eclipsehome -name "org.eclipse.equinox.launcher_*.jar" | sort | tail -1);
