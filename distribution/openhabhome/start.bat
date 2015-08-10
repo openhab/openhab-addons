@@ -4,10 +4,26 @@
 set ECLIPSEHOME="runtime/server"
 
 :: set ports for HTTP(S) server
+:check_http_port
+IF NOT [%OPENHAB_HTTP_PORT%] == [] GOTO :http_port_set
 set HTTP_PORT=8080
+goto :check_https_port
+
+:http_port_set
+set HTTP_PORT=%OPENHAB_HTTP_PORT%
+goto :check_https_port
+
+:check_https_port
+IF NOT [%OPENHAB_HTTPS_PORT%] == [] GOTO :https_port_set
 set HTTPS_PORT=8443
- 
+goto :check_path
+
+:https_port_set
+set HTTPS_PORT=%OPENHAB_HTTPS_PORT%
+goto :check_path
+
 :: get path to equinox jar inside ECLIPSEHOME folder
+:check_path
 for /f "delims= tokens=1" %%c in ('dir /B /S /OD %ECLIPSEHOME%\plugins\org.eclipse.equinox.launcher_*.jar') do set EQUINOXJAR=%%c
 
 IF NOT [%EQUINOXJAR%] == [] GOTO :Launch
