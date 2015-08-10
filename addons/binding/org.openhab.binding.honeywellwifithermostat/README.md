@@ -30,3 +30,7 @@ fanMode
 - Autodetect thermostats, somehow.
 - Improve UI function
 - ...
+
+# Contact
+
+JD Steffen <jdsteffen81@gmail.com>
