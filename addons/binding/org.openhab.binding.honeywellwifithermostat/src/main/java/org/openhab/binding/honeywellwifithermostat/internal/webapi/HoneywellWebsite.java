@@ -69,7 +69,9 @@ public class HoneywellWebsite {
         if (username == null || password == null) {
             return false;
         }
-        tryLogin();
+        if (httpclient == null) {
+            tryLogin();
+        }
         HttpPost req = new HttpPost("https://mytotalconnectcomfort.com/portal/Locations/");
         req.addHeader("X-Requested-With", "XMLHttpRequest");
 
@@ -143,19 +145,23 @@ public class HoneywellWebsite {
                 + thermodata.getCurrentFanMode().getValue() + "}";
         httpPost.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
 
-        try {
-            CloseableHttpResponse resp = httpclient.execute(httpPost);
-            String str = EntityUtils.toString(resp.getEntity());
+        if (isLoginValid()) {
+            try {
+                CloseableHttpResponse resp = httpclient.execute(httpPost);
+                String str = EntityUtils.toString(resp.getEntity());
 
-            if (!str.equals("{\"success\":1}")) {
-                logger.error("Failed to sumbit thermostat data.");
-                return false;
+                if (!str.equals("{\"success\":1}")) {
+                    logger.error("Failed to sumbit thermostat data.");
+                    return false;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            logger.debug("Successfully submitted thermostat data");
+            return true;
+        } else {
+            return false;
         }
-        logger.debug("Successfully submitted thermostat data");
-        return true;
     }
 
     public HoneywellThermostatData getTherostatData(String deviceID) {
