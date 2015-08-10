@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="honeywellwifithermostat"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>Honeywell WiFi Thermostat Binding</name>
+    <description>A binding to control Honeywell WiFi thermostats from OpenHAB. Connection to the Internet required.</description>
+    <author>JD Steffen</author>
+
+</binding:binding>
