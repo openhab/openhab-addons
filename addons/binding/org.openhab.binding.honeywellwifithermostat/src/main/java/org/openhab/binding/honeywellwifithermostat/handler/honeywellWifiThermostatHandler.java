@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.honeywellwifithermostat.internal.data.HoneywellThermostatData;
 import org.openhab.binding.honeywellwifithermostat.internal.data.HoneywellThermostatFanMode;
 import org.openhab.binding.honeywellwifithermostat.internal.data.HoneywellThermostatSystemMode;
-import org.openhab.binding.honeywellwifithermostat.internal.webapi.HoneywellWebsite;
+import org.openhab.binding.honeywellwifithermostat.internal.webapi.HoneywellWebsiteJetty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,8 @@ public class honeywellWifiThermostatHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(honeywellWifiThermostatHandler.class);
 
-    HoneywellWebsite webapi;
+    // HoneywellWebsite webapi;
+    HoneywellWebsiteJetty webapi;
     ScheduledFuture<?> refreshJob;
 
     private String deviceID = null;
@@ -90,7 +91,7 @@ public class honeywellWifiThermostatHandler extends BaseThingHandler {
         super.initialize();
 
         Configuration conf = this.getConfig();
-        webapi = HoneywellWebsite.getInstance();
+        webapi = HoneywellWebsiteJetty.getInstance();
 
         if (conf.get("userName") != null) {
             webapi.setUsername(String.valueOf(conf.get("userName")));
@@ -106,7 +107,6 @@ public class honeywellWifiThermostatHandler extends BaseThingHandler {
 
         logger.debug("Attempting to login to Honeywell site.");
 
-        logger.debug("Logged into Honeywell website.");
         if (webapi.isLoginValid()) {
             logger.debug("Login valid.");
 

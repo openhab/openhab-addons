@@ -9,16 +9,10 @@ Bundle-ClassPath: .,
  lib/jsoup-1.8.2.jar,
  lib/json-20141113.jar
 Import-Package: 
- org.apache.http;version="4.2.5",
- org.apache.http.client;version="4.3.6",
- org.apache.http.client.entity;version="4.3.6",
- org.apache.http.client.methods;version="4.3.6",
- org.apache.http.conn.socket;version="4.3.6",
- org.apache.http.conn.ssl;version="4.3.6",
- org.apache.http.entity;version="4.2.5",
- org.apache.http.impl.client;version="4.3.6",
- org.apache.http.message;version="4.2.5",
- org.apache.http.util;version="4.2.5",
+ org.eclipse.jetty.client;version="9.2.12",
+ org.eclipse.jetty.client.api;version="9.2.12",
+ org.eclipse.jetty.client.util;version="9.2.12",
+ org.eclipse.jetty.util.ssl;version="9.2.12",
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -28,3 +22,4 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.honeywellwifithermostat,
  org.openhab.binding.honeywellwifithermostat.handler
+Require-Bundle: org.eclipse.jetty.util
