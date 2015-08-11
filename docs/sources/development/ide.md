@@ -26,7 +26,7 @@ The Eclipse IDE is used for openHAB developments. The Eclipse Installer automati
 3. Choose the "Eclipse IDE for Java Developers" and select "Next":
 ![Step 1](images/ide1.png)
 4. Expand the "Github.com/openHAB" entry, double click "openHAB 2 Development" and select "Next".
-5. Now provide an installation folder and your Github id (used to push your changesets to) and select "Next".
+5. Now provide an installation folder (don't use spaces in the path on Windows!) and your Github id (used to push your changesets to) and select "Next".
 6. The installation will now begin when pressing "Finish".
 7. Once it is done, you will see the Eclipse Welcome Screen, which you can close by clicking "Workbench" on the top right. You will see that the installer not only set up an Eclipse IDE instance for you, but also checked out the openHAB 2 git repository and imported all projects into the workspace. 
 8. Your workspace should now fully compile and you can start the runtime by launching the "openHAB Runtime" launch configuration.
