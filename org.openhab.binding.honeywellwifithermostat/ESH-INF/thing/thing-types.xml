@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="honeywellwifithermostat"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="honeythermo">
+        <label>Honeywell WiFi Thermostat</label>
+        <description>Control your Honeywell WiFi thermostat over the internet with OpenHAB.</description>
+
+        <channels>
+            <channel id="sysMode" typeId="systemMode" />
+            <channel id="currentTemp" typeId="currentTemperature"/>
+            <channel id="heatSP" typeId="heatSetPoint" />
+            <channel id="coolSP" typeId="coolSetPoint" />
+            <channel id="fanMode" typeId="FanMode" />
+        </channels>
+        
+        <config-description>
+        <parameter name="userName" type="text" required="true">
+            <label>Username</label>
+            <description>Your Honeywell MyTotalConnectComfort website username</description>
+        </parameter>
+        <parameter name="passWord" type="text" required="true">
+            <label>Password</label>
+            <context>password</context>
+            <description>Your Honeywell MyTotalConnectComfort website password</description>
+        </parameter>
+        <parameter name="deviceID" type="text" required="true">
+            <label>Device ID</label>
+            <description>Your Honeywell Thermostat Device ID (see README)</description>
+        </parameter>
+    </config-description>
+        
+    </thing-type>
+
+    
+    <channel-type id="systemMode">
+        <item-type>String</item-type>
+        <label>System Mode</label>
+        <description>System mode: heat, cool, or off</description>
+        <state pattern="%s">
+            <options>
+                <option value="1">Heat</option>
+                <option value="2">Off</option>
+                <option value="3">Cool</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="currentTemperature">
+        <item-type>Number</item-type>
+        <label>Current Temperature</label>
+        <description>Current indoor temperature</description>
+        <state pattern="%d.0 °F" readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="heatSetPoint">
+        <item-type>Number</item-type>
+        <label>Heat Set Point</label>
+        <state min="40" max="90" step="1" pattern="%d.0 °F"/>
+    </channel-type>
+    
+    <channel-type id="coolSetPoint">
+        <item-type>Number</item-type>
+        <label>Cool Set Point</label>
+        <state min="50" max="99" step="1" pattern="%d.0 °F"/>
+    </channel-type>
+
+    <channel-type id="FanMode">
+        <item-type>Switch</item-type>
+        <label>Fan mode</label>
+        <state>
+            <options>
+                <option value="0">Auto</option>
+                <option value="1">On</option>
+            </options>
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>
