@@ -63,6 +63,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Logging | Persistence |
 | JPA | Persistence |
 | Mail | Action |
+| Pushover | Action |
 | XBMC | Action |
 | XMPP | Action |
 | GoogleTTS | TTS engine |
