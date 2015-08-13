@@ -50,4 +50,6 @@ Import-Package: com.google.common.cache;version="10.0.1",
  org.slf4j
 Bundle-SymbolicName: org.openhab.core
 Bundle-DocURL: http://www.openhab.org
+Export-Package: org.openhab.core
+Bundle-ActivationPolicy: lazy
 
