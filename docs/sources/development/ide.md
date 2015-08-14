@@ -11,7 +11,7 @@ Make sure that you have the following things installed on your computer:
 Please ensure that you have the following prerequisites installed on your machine:
 
 1. [Git](https://git-scm.com/downloads)
-1. [Maven 3.x](https://maven.apache.org/download.cgi)
+1. [Maven 3.x](https://maven.apache.org/download.cgi) (optional, Eclipse m2e can also be used)
 1. [Oracle JDK 7 or 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
 _Note:_ You can find a screencast of the setup process here:
@@ -21,7 +21,7 @@ _Note:_ You can find a screencast of the setup process here:
 The Eclipse IDE is used for openHAB developments. The Eclipse Installer automatically prepares the IDE so that it comes with all required plug-ins, the correct workspace encoding settings, pre-configured code formatters and more. Simply follow these steps:
 
 1. Download the [Eclipse Installer](https://wiki.eclipse.org/Eclipse_Installer)
-2. Launch the Eclipse Installer and switch to „Advanced Mode“ in the top right menu:
+2. Launch the Eclipse Installer and switch to "Advanced Mode" in the top right menu:
 ![Step 0](images/ide0.png)
 3. Choose the "Eclipse IDE for Java Developers" and select "Next":
 ![Step 1](images/ide1.png)
@@ -36,6 +36,6 @@ If you want to push changes, you need to do so to [your personal fork of the ope
 
 ### Maven build for binary packages
 
-To produce a binary zip of the runtime yourself, you can simply call `mvn clean package` from the repository root and you will find the result in the folder distribution/target.
+To produce a binary zip of the runtime yourself, you can simply call `mvn clean package` from the repository root and you will find the result in the folder distribution/target. Alternatively, you may use the run configuration "BuildDistribution" which uses Eclipse m2e to run the maven build inside the Eclipse console (after the first successful run, you can enable 'Offline' option which speeds up the build considerably).
 
 To run a single test you have to use following command: `mvn -o org.eclipse.tycho:tycho-surefire-plugin:0.20.0:test` which activates the tycho-surefire-specific goal for OSGI unit test using the fragment bundle xxxx.test on xxxx bundle. The maven -o (offline) option accelerates the project dependency resolution by 10-20x since it lets maven search its local repository. Normally, snapshot-enabled projects are using external repositories to find latest built packages.
