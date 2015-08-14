@@ -134,11 +134,6 @@ public class MyOpenHABClient {
         jettyClient = new HttpClient();
         jettyClient.setMaxConnectionsPerDestination(HTTP_CLIENT_MAX_CONNECTIONS_PER_DEST);
         jettyClient.setConnectTimeout(HTTP_CLIENT_TIMEOUT);
-        try {
-            jettyClient.start();
-        } catch (Exception e) {
-            logger.error("Error starting JettyClient: {}", e.getMessage());
-        }
     }
 
     /**
@@ -216,6 +211,14 @@ public class MyOpenHABClient {
     public void onConnect() {
         logger.info("Connected to my.openHAB service (UUID = {}, base URL = {})", this.uuid, this.localBaseUrl);
         isConnected = true;
+        // On connect start jetty client to process local requests to openHAB
+        if (jettyClient != null) {
+            try {
+                jettyClient.start();
+            } catch (Exception e) {
+                logger.error("Could not start Jetty client: {}", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -225,6 +228,18 @@ public class MyOpenHABClient {
     public void onDisconnect() {
         logger.info("Disconnected from my.openHAB service (UUID = {}, base URL = {})", this.uuid, this.localBaseUrl);
         isConnected = false;
+        // On disconnect stop jetty client to shutdown all ongoing requests if there were any
+        if (jettyClient != null) {
+            try {
+                jettyClient.stop();
+            } catch (Exception e) {
+                logger.error("Could not stop Jetty client: {}", e.getMessage());
+            }
+        }
+        // And clean up the list of running requests
+        if (runningRequests != null) {
+            runningRequests.clear();
+        }
     }
 
     /**
