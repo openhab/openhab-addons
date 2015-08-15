@@ -14,6 +14,8 @@ Bundle-Description: This is the runtime component of the open Home Aut
  omation Bus (openHAB)
 Bundle-License: http://www.eclipse.org/legal/epl-v10.html
 Import-Package: com.google.common.cache;version="10.0.1",
+ javax.servlet,
+ javax.servlet.http,
  org.apache.commons.collections,
  org.apache.commons.httpclient,
  org.apache.commons.httpclient.methods,
@@ -42,9 +44,12 @@ Import-Package: com.google.common.cache;version="10.0.1",
  org.osgi.service.cm,
  org.osgi.service.component,
  org.osgi.service.event,
+ org.osgi.service.http,
  org.osgi.service.log,
  org.osgi.util.tracker,
  org.slf4j
 Bundle-SymbolicName: org.openhab.core
 Bundle-DocURL: http://www.openhab.org
+Export-Package: org.openhab.core
+Bundle-ActivationPolicy: lazy
 

@@ -33,7 +33,7 @@ that feature *on top of* openHAB.
 
 ### Discuss your design on the mailing list
 
-We recommend discussing your plans [in the issue tracker](https://github.com/openhab/openhab2/issues?labels=enhancement&page=1&state=open)
+We recommend discussing your plans [in the discussion forum](https://community.openhab.org/c/openhab-2)
 before starting to code - especially for more ambitious contributions.
 This gives other contributors a chance to point you in the right
 direction, give feedback on your design, and maybe point out if someone
