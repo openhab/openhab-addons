@@ -310,10 +310,10 @@ public class MyOpenHABClient {
                 request.method(HttpMethod.GET);
             } else if (requestMethod.equals("POST")) {
                 request.method(HttpMethod.POST);
-                request.content(new BytesContentProvider(requestBody));
+                request.content(new BytesContentProvider(requestBody.getBytes()));
             } else if (requestMethod.equals("PUT")) {
                 request.method(HttpMethod.PUT);
-                request.content(new BytesContentProvider(requestBody));
+                request.content(new BytesContentProvider(requestBody.getBytes()));
             } else {
                 // TODO: Reject unsupported methods
                 logger.error("Unsupported request method " + requestMethod);
