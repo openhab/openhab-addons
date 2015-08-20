@@ -26,5 +26,3 @@ The following restrictions are known (and need to be worked on):
   - the Eclipse SmartHome Designer marks all openHAB actions as errors (yet the runtime will correctly execute them)
   - GreenT does not work as the webapps folder does not exist anymore
   - CometVisu is not yet compatible
-  - my.openHAB is not yet compatible
- 
