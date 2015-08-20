@@ -163,8 +163,13 @@
             <version>${esh.version}</version>
         </dependency>
 
-		<!-- openHAB 1 add-ons to include -->
-		<dependency>
+        <!-- openHAB 1 add-ons to include -->
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.anel</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.denon</artifactId>
             <version>${oh1.version}</version>
