@@ -22,71 +22,71 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is an OSGi service, which automatically approves all newly discovered things in the inbox.
- * As a result, the inbox will always be empty and as thing instances are immediately created.
- * This feature needs to be activated through a configuration, which is provided in services.cfg.
- * 
+ * This class is an OSGi service, which automatically approves all newly
+ * discovered things in the inbox. As a result, the inbox will always be empty
+ * and as thing instances are immediately created. This feature needs to be
+ * activated through a configuration, which is provided in services.cfg.
+ *
  * @author Kai Kreuzer
  *
  */
 public class AutoApproveService implements InboxListener {
 
-	final static private Logger logger = LoggerFactory.getLogger(AutoApproveService.class);
-	
-	private ThingSetupManager thingSetupManager;
+    final static private Logger logger = LoggerFactory.getLogger(AutoApproveService.class);
 
-	private Inbox inbox;
-	
+    private ThingSetupManager thingSetupManager;
+
+    private Inbox inbox;
+
     protected void activate(Map<String, Object> configProps) throws ConfigurationException {
-		String enabled = (String) configProps.get("enabled");
-		enable(enabled);
+        String enabled = (String) configProps.get("enabled");
+        enable(enabled);
     }
 
     protected void modified(Map<String, Object> configProps) throws ConfigurationException {
         String enabled = (String) configProps.get("enabled");
         enable(enabled);
     }
-    
-	private void enable(String enabled) {
-        if("true".equalsIgnoreCase(enabled)) {
-        	inbox.addInboxListener(this);
-        	for(DiscoveryResult result : inbox.getAll()) {
-        		if(result.getFlag().equals(DiscoveryResultFlag.NEW)) {
-        			thingAdded(inbox, result);
-        		}
-        	}
-    	} else {
-        	this.inbox.removeInboxListener(this);
-    	}
+
+    private void enable(String enabled) {
+        if ("true".equalsIgnoreCase(enabled)) {
+            inbox.addInboxListener(this);
+            for (DiscoveryResult result : inbox.getAll()) {
+                if (result.getFlag().equals(DiscoveryResultFlag.NEW)) {
+                    thingAdded(inbox, result);
+                }
+            }
+        } else {
+            this.inbox.removeInboxListener(this);
+        }
     }
 
     @Override
-	public void thingAdded(Inbox source, DiscoveryResult result) {
-		logger.debug("Approving inbox entry '{}'", result.toString());
-		Map<String, Object> props = new HashMap<>(result.getProperties());
+    public void thingAdded(Inbox source, DiscoveryResult result) {
+        logger.debug("Approving inbox entry '{}'", result.toString());
+        Map<String, Object> props = new HashMap<>(result.getProperties());
 
-		Configuration conf = new Configuration(props);
-		
-    	thingSetupManager.addThing(result.getThingUID(), conf, result.getBridgeUID(), result.getLabel());
-	}
+        Configuration conf = new Configuration(props);
 
-	@Override
-	public void thingUpdated(Inbox source, DiscoveryResult result) {
-	}
-
-	@Override
-	public void thingRemoved(Inbox source, DiscoveryResult result) {
-	}
-
-    protected void setInbox(Inbox inbox) {    	
-    	this.inbox = inbox;
+        thingSetupManager.addThing(result.getThingUID(), conf, result.getBridgeUID(), result.getLabel());
     }
-    
+
+    @Override
+    public void thingUpdated(Inbox source, DiscoveryResult result) {
+    }
+
+    @Override
+    public void thingRemoved(Inbox source, DiscoveryResult result) {
+    }
+
+    protected void setInbox(Inbox inbox) {
+        this.inbox = inbox;
+    }
+
     protected void unsetInbox(Inbox inbox) {
-    	this.inbox.removeInboxListener(this);
-    	this.inbox = null;
+        this.inbox.removeInboxListener(this);
+        this.inbox = null;
     }
-
 
     protected void setThingSetupManager(ThingSetupManager thingSetupManager) {
         this.thingSetupManager = thingSetupManager;
