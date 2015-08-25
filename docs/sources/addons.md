@@ -52,6 +52,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | OpenEnergyMonitor | Binding |
 | OneWire | Binding |
 | RFXCOM | Binding |
+| Samsung AC | Binding |
 | SNMP | Binding |
 | SwegonVentilation | Binding |
 | SystemInfo | Binding |
