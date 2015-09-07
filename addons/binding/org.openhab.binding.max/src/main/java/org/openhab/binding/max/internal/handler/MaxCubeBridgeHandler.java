@@ -37,7 +37,9 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -193,7 +195,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		logger.debug("RefreshInterval {}.", refreshInterval);
 		logger.debug("Exclusive mode  {}.", exclusive);
 		logger.debug("Max Requests    {}.", maxRequestsPerConnection);
-
+		
+		initializeMaxDevices();
 		startAutomaticRefresh();
 	}
 
@@ -245,6 +248,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 								deviceStatusListener.onDeviceStateChanged(getThing().getUID(), di);
 							} catch (Exception e) {
 								logger.error("An exception occurred while calling the DeviceStatusListener", e);
+								unregisterDeviceStatusListener(deviceStatusListener);								
 							}
 						}
 					}
@@ -271,14 +275,34 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	}
 
 	public void onConnectionLost() {
-		logger.info("Bridge connection lost. Updating thing status to OFFLINE.");
+		logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
 		previousOnline = false;
-		updateStatus(ThingStatus.OFFLINE);
+		updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+		for (Thing thing : getThing().getThings()) {
+			ThingHandler handler = thing.getHandler();
+			if (handler != null && handler instanceof MaxDevicesHandler ) {
+				((MaxDevicesHandler) handler).setForceRefresh();
+			}
+		}
+		clearDeviceList();
 	}
 
 	public void onConnection() {
-		logger.info("Bridge connected. Updating thing status to ONLINE.");
+		logger.debug("Bridge connected. Updating thing status to ONLINE.");
 		updateStatus(ThingStatus.ONLINE);
+		initializeMaxDevices();
+	}
+
+	/**
+	 * Initializes the devices for this bridge
+	 */
+	private void initializeMaxDevices() {
+		for (Thing thing : getThing().getThings()) {
+			ThingHandler handler = thing.getHandler();
+			if (handler != null) {
+				handler.initialize();
+			}
+		}
 	}
 
 	public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
@@ -293,9 +317,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	}
 
 	public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+		if (deviceStatusListener == null) {
+			throw new NullPointerException("It's not allowed to pass a null deviceStatusListener.");
+		}
 		boolean result = deviceStatusListeners.remove(deviceStatusListener);
 		if (result) {
-			// onUpdate();
+			clearDeviceList();
 		}
 		return result;
 	}
