@@ -17,8 +17,6 @@ import static org.openhab.binding.max.MaxBinding.CHANNEL_VALVE;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -26,7 +24,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -51,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusListener {
 
 	private Logger logger = LoggerFactory.getLogger(MaxDevicesHandler.class);
-	private int refresh = 60; // refresh every minute as default
 	ScheduledFuture<?> refreshJob;
 	private MaxCubeBridgeHandler bridgeHandler;
 
@@ -84,8 +80,9 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 		// until we get an update put the Thing offline
 		propertiesSet = false;
 		configSet = false;
+		forceRefresh = true;
 		updateStatus(ThingStatus.OFFLINE);
-		deviceOnlineWatchdog();
+		getMaxCubeBridgeHandler();
 	}
 
 	/*
@@ -109,35 +106,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 		super.dispose();
 	}
 
-	private void deviceOnlineWatchdog() {
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					MaxCubeBridgeHandler bridgeHandler = getMaxCubeBridgeHandler();
-					if (bridgeHandler != null) {
-						if (bridgeHandler.getDevice(maxDeviceSerial) == null) {
-							updateStatus(ThingStatus.OFFLINE,ThingStatusDetail.BRIDGE_OFFLINE);
-							bridgeHandler = null;
-						} else {
-							updateStatus(ThingStatus.ONLINE);
-						}
-
-					} else {
-						logger.debug("Bridge for maxcube device {} not found.", maxDeviceSerial);
-						updateStatus(ThingStatus.OFFLINE,ThingStatusDetail.BRIDGE_OFFLINE);
-					}
-
-				} catch (Exception e) {
-					logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
-					bridgeHandler = null;
-				}
-
-			}
-		};
-
-		refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
-	}
-
 	private synchronized MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
 
 		if (this.bridgeHandler == null) {
@@ -150,6 +118,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 			if (handler instanceof MaxCubeBridgeHandler) {
 				this.bridgeHandler = (MaxCubeBridgeHandler) handler;
 				this.bridgeHandler.registerDeviceStatusListener(this);
+				forceRefresh = true;
 			} else {
 				logger.debug("No available bridge handler found for {} bridge {} .", maxDeviceSerial,
 						bridge.getUID());
@@ -195,7 +164,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 			if (!propertiesSet) setProperties(device);
 			if (!configSet) setDeviceConfiguration(device);
 			if (device.isUpdated() || forceRefresh) {
-				forceRefresh = false;
 				logger.debug("Updating states of {} {} ({}) id: {}", device.getType(), device.getName(),
 						device.getSerialNumber(), getThing().getUID());
 				switch (device.getType()) {
@@ -231,6 +199,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 					break;
 
 				}
+				forceRefresh = false;
 			} else
 				logger.debug("No changes for {} {} ({}) id: {}", device.getType(), device.getName(),
 						device.getSerialNumber(), getThing().getUID());
@@ -249,6 +218,13 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
 	@Override
 	public void onDeviceAdded(Bridge bridge, Device device) {
+		forceRefresh = true;
+	}
+
+	/**
+	 * Set the forceRefresh flag to ensure update when next data is coming
+	 */
+	public void setForceRefresh() {
 		forceRefresh = true;
 	}
 
@@ -293,6 +269,33 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 		} catch (Exception e) {
 			logger.debug("Exception occurred during configuration edit: {}", e.getMessage(), e);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeHandlerInitialized(org.eclipse.smarthome.core.thing.binding.ThingHandler, org.eclipse.smarthome.core.thing.Bridge)
+	 */
+	@Override
+	protected void bridgeHandlerInitialized(ThingHandler thingHandler,
+			Bridge bridge) {
+		logger.debug ("Bridge {} initialized for device: {}", bridge.getUID().toString() , getThing().getUID().toString());
+		if (bridgeHandler != null) {
+			bridgeHandler.unregisterDeviceStatusListener(this);
+			bridgeHandler = null;
+		}
+		getMaxCubeBridgeHandler();
+		super.bridgeHandlerInitialized(thingHandler, bridge);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeHandlerDisposed(org.eclipse.smarthome.core.thing.binding.ThingHandler, org.eclipse.smarthome.core.thing.Bridge)
+	 */
+	@Override
+	protected void bridgeHandlerDisposed(ThingHandler thingHandler,
+			Bridge bridge) {
+		logger.debug ("Bridge {} disposed for device: {}", bridge.getUID().toString() , getThing().getUID().toString());
+		bridgeHandler = null;
+		forceRefresh = true;
+		super.bridgeHandlerDisposed(thingHandler, bridge);
 	}
 
 }
