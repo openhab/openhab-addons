@@ -46,6 +46,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | InsteonPLM | Binding |
 | KNX | Binding |
 | Milight | Binding |
+| Modbus | Binding |
 | Nibeheatpump | Binding |
 | NTP | Binding |
 | Onkyo | Binding |
