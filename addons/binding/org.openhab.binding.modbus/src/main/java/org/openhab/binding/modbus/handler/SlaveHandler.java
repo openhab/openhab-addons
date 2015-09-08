@@ -7,6 +7,12 @@
  */
 package org.openhab.binding.modbus.handler;
 
+/**
+ * The {@link SlaveHandler} class represents
+ * pool of registers within Modbus device
+ *
+ * @author Dmitry Krasnov - Initial contribution
+ */
 import static org.openhab.binding.modbus.ModbusBindingConstants.THING_TYPE_SLAVE;
 
 import java.math.BigDecimal;
@@ -84,10 +90,16 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
     private BridgeConnector connector = null;
     private boolean writeMultipleRegisters = false;
 
+    /**
+     * {@inheritDoc}
+     */
     void setConnector(BridgeConnector c) {
         this.connector = c;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SlaveHandler(Bridge thing) {
         super(thing);
         try {
@@ -111,6 +123,9 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize() {
         super.initialize();
@@ -135,9 +150,6 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
                         if (connector.isHeadless()) {
                             request.setHeadless();
                         }
-                        // if (this instanceof SerialHandler) {
-                        // request.setHeadless();
-                        // }
                         request.setUnitID(id);
                         ReadCoilsResponse responce = (ReadCoilsResponse) getModbusData(request);
                         local = responce.getCoils();
@@ -169,10 +181,6 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
                             h.update((InputRegister[]) storage);
                         }
                     }
-                    // Collection<String> items = binding.getItemNames();
-                    // for (String item : items) {
-                    // updateItem(binding, item);
-                    // }
                 } catch (Exception e) {
                     connector.resetConnection();
                     logger.info("ModbusSlave error getting responce from slave");
@@ -188,6 +196,9 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
         updateStatus(online ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose() {
         pollingJob.cancel(true);
@@ -218,19 +229,26 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
         return r;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
         for (Thing t : this.getBridge().getThings()) {
             EndpointHandler h = (EndpointHandler) t.getHandler();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        // TODO Auto-generated method stub
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setCoil(boolean b, int readRegister, int writeRegister) {
         synchronized (storage) {
@@ -267,6 +285,9 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setRegister(int value, int readRegister, int writeRegister) {
         /**
@@ -285,24 +306,6 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
             newValue = (Register) ((InputRegister[]) storage)[readRegister];
         }
 
-        // if (command instanceof IncreaseDecreaseType) {
-        // if (command.equals(IncreaseDecreaseType.INCREASE))
-        // newValue.setValue(newValue.getValue() + 1);
-        // else if (command.equals(IncreaseDecreaseType.DECREASE))
-        // newValue.setValue(newValue.getValue() - 1);
-        // } else if (command instanceof UpDownType) {
-        // if (command.equals(UpDownType.UP))
-        // newValue.setValue(newValue.getValue() + 1);
-        // else if (command.equals(UpDownType.DOWN))
-        // newValue.setValue(newValue.getValue() - 1);
-        // } else if (command instanceof DecimalType) {
-        // newValue.setValue(((DecimalType)command).intValue());
-        // } else if (command instanceof OnOffType) {
-        // if (command.equals(OnOffType.ON))
-        // newValue.setValue(1);
-        // else if (command.equals(OnOffType.OFF))
-        // newValue.setValue(0);
-        // }
         newValue.setValue(value);
         ModbusRequest request = null;
         if (writeMultipleRegisters) {
@@ -324,5 +327,4 @@ public class SlaveHandler extends BaseBridgeHandler implements SlaveConnector {
             return;
         }
     }
-
 }

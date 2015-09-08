@@ -19,6 +19,13 @@ import net.wimpi.modbus.io.ModbusTransaction;
 import net.wimpi.modbus.net.SerialConnection;
 import net.wimpi.modbus.util.SerialParameters;
 
+/**
+ * The {@link SerialHandler} class is responsible
+ * for connection to Modbus device using
+ * serial communications
+ *
+ * @author Dmitry Krasnov - Initial contribution
+ */
 public class SerialHandler extends BaseBridgeHandler implements BridgeConnector {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SERIAL);
@@ -35,6 +42,9 @@ public class SerialHandler extends BaseBridgeHandler implements BridgeConnector 
 
     private static SerialConnection connection = null;
 
+    /**
+     * {@inheritDoc}
+     */
     public SerialHandler(Bridge thing) {
         super(thing);
         parameters.setPortName(thing.getConfiguration().get(PROP_PORTNAME).toString());
@@ -46,21 +56,12 @@ public class SerialHandler extends BaseBridgeHandler implements BridgeConnector 
         transaction = new ModbusSerialTransaction();
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // if(channelUID.getId().equals(CHANNEL_1)) {
-        // // TODO: handle command
-        // }
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean connect() {
         try {
-            // Enumeration<CommPortIdentifier> portlist = CommPortIdentifier.getPortIdentifiers();
-            // while (portlist.hasMoreElements()) {
-            // logger.debug(portlist.nextElement().toString());
-            // }
-
             if (connection == null) {
                 logger.debug("connection was null, going to create a new one");
                 connection = new SerialConnection(parameters);
@@ -76,6 +77,9 @@ public class SerialHandler extends BaseBridgeHandler implements BridgeConnector 
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void resetConnection() {
         if (connection != null) {
@@ -84,19 +88,35 @@ public class SerialHandler extends BaseBridgeHandler implements BridgeConnector 
         connection = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isConnected() {
         return connection != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ModbusTransaction getTransaction() {
         return transaction;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isHeadless() {
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
 }
