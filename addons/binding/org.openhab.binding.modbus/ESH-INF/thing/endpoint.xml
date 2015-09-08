@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="endpoint">
+            <supported-bridge-type-refs>
+            <bridge-type-ref id="slave" />
+        </supported-bridge-type-refs>
+    
+        <label>Endpoint</label>
+        <description>Modbus register endpoint</description>
+        <channels>
+            <channel id="switch" typeId="switch-type" />
+            <channel id="contact" typeId="contact-type" />
+            <channel id="number" typeId="number-type" />
+        </channels>
+        <config-description>
+            <parameter name="read" type="integer">
+            <label>read register</label>
+            <description>register number for reading data</description>
+            <default>0</default>
+            </parameter>
+            <parameter name="write" type="integer">
+            <label>write register</label>
+            <description>register number for writing data</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="switch-type">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>switch item channel for Modbus Binding</description>
+    </channel-type>
+    <channel-type id="contact-type">
+        <item-type>Contact</item-type>
+        <label>Contact</label>
+        <description>contact item channel for Modbus Binding</description>
+    </channel-type>
+    <channel-type id="number-type">
+        <item-type>Number</item-type>
+        <label>Register value</label>
+        <description>number item channel for Modbus Binding</description>
+    </channel-type>
+
+</thing:thing-descriptions>

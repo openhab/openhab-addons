@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <bridge-type id="slave">
+                        <supported-bridge-type-refs>
+            <bridge-type-ref id="tcp" />
+            <bridge-type-ref id="serial" />
+        </supported-bridge-type-refs>
+    
+    
+    
+        <label>Slave</label>
+        <description>Modbus register range</description>
+        <config-description>
+            <parameter name="refresh" type="integer" min="1" max="86400">
+            <label>interval</label>
+            <description>Refresh interval  in millicesonds.</description>
+            <default>500</default>
+            </parameter>
+            <parameter name="id" type="integer">
+            <label>Id</label>
+            <description>Slave id</description>
+            <default>1</default>
+            </parameter>
+            <parameter name="start" type="integer">
+            <label>Start</label>
+            <description>Start address</description>
+            <default>0</default>
+            </parameter>
+            <parameter name="length" type="integer" required="true">
+            <label>Length</label>
+            <description>Number of data registers to read</description>
+            </parameter>
+            <parameter name="type" type="text" required="true">
+            <label>Type</label>
+            <description>Type of modbus registers</description>
+            <options>
+                <option value="coil">coil</option>
+                <option value="discrete">discrete</option>
+                <option value="holding">holding</option>
+                <option value="input">input</option>
+            </options>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+</thing:thing-descriptions>
