@@ -33,6 +33,7 @@ public class SonosBindingConstants {
     public final static String CURRENTARTIST = "currentartist";
     public final static String CURRENTTITLE = "currenttitle";
     public final static String CURRENTTRACK = "currenttrack";
+    public final static String FAVORITE = "favorite";
     public final static String LED = "led";
     public final static String LINEIN = "linein";
     public final static String LOCALCOORDINATOR = "localcoordinator";
