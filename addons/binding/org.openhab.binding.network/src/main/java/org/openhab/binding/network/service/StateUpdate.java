@@ -13,6 +13,6 @@ package org.openhab.binding.network.service;
  * @author Marc Mettke - Initial contribution
  */
 public interface StateUpdate {
-	public void newState(boolean state);
+	public void newState(double state);
     public void invalidConfig();
 }

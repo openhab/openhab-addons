@@ -143,14 +143,14 @@ public class NetworkService {
 	/**
 	 * Updates one device to a new status
 	 */
-	public boolean updateDeviceState() throws InvalidConfigurationException {
+	public double updateDeviceState() throws InvalidConfigurationException {
 		int currentTry = 0;
-		boolean result;
+		double result;
 		
 		do {
 			result = updateDeviceState(getHostname(), getPort(), getTimeout(), isUseSystemPing());		
 			currentTry++;
-		} while( !result && currentTry < this.retry);
+		} while( result < 0 && currentTry < this.retry);
 		
 		return result;
 	}
@@ -158,17 +158,22 @@ public class NetworkService {
 	/**
 	 * Try's to reach the Device by Ping
 	 */
-	private static boolean updateDeviceState(String hostname, int port, int timeout, boolean useSystemPing) throws InvalidConfigurationException {
+	private static double updateDeviceState(String hostname, int port, int timeout, boolean useSystemPing) throws InvalidConfigurationException {
 		boolean success = false;
+		double pingTime = -1;
 		
 		try {
 			if( !useSystemPing ) {
-				success = Ping.checkVitality(hostname, port, timeout);				
+				pingTime = System.nanoTime();
+				success = Ping.checkVitality(hostname, port, timeout);	
+				pingTime = System.nanoTime() - pingTime;
 			} else {
 				Process proc;
 				if( SystemUtils.IS_OS_UNIX ) {
+					pingTime = System.nanoTime();
 					proc = new ProcessBuilder("ping", "-t", String.valueOf((int)(timeout / 1000)), "-c", "1", hostname).start();
 				} else if( SystemUtils.IS_OS_WINDOWS) {
+					pingTime = System.nanoTime();
 					proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout), "-n", "1", hostname).start();
 				} else {
 					logger.error("The System Ping is not supported on this Operating System");
@@ -176,6 +181,7 @@ public class NetworkService {
 				}
 				
 				int exitValue = proc.waitFor();
+				pingTime = System.nanoTime() - pingTime;
 				success = exitValue == 0;
 				if( !success ) {
 					logger.debug("Ping stopped with Error Number: " + exitValue + 
@@ -198,7 +204,7 @@ public class NetworkService {
 			logger.debug("ping program was interrupted");
 		}
 		
-		return success;
+		return success ? pingTime / 1000000.0f : -1;
 		
 	}
 	
