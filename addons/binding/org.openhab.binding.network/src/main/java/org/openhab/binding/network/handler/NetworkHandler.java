@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -55,8 +56,16 @@ public class NetworkHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
 	            case CHANNEL_ONLINE:
 	            	try {
-						State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
+						State state = networkService.updateDeviceState() < 0 ? OnOffType.OFF : OnOffType.ON;
 						updateState(CHANNEL_ONLINE, state);					
+					} catch( InvalidConfigurationException invalidConfigurationException) {
+					    updateStatus(ThingStatus.OFFLINE);
+					}
+	            	break;
+	            case CHANNEL_TIME:
+	            	try {
+						State state = new DecimalType(networkService.updateDeviceState());
+						updateState(CHANNEL_TIME, state);					
 					} catch( InvalidConfigurationException invalidConfigurationException) {
 					    updateStatus(ThingStatus.OFFLINE);
 					}
@@ -102,10 +111,12 @@ public class NetworkHandler extends BaseThingHandler {
 		
 		networkService.startAutomaticRefresh(scheduler, new StateUpdate() {
             @Override
-            public void newState(boolean state) {
-                State newState = state ? OnOffType.ON : OnOffType.OFF;
-                updateState(CHANNEL_ONLINE, newState);        
-            }
+            public void newState(double state) {
+    		State onlineState = state < 0 ? OnOffType.OFF : OnOffType.ON;
+    		State timeState = new DecimalType(state);
+    		updateState(CHANNEL_ONLINE, onlineState);
+    		updateState(CHANNEL_TIME, timeState);
+	    }
             @Override
             public void invalidConfig() {
                 updateStatus(ThingStatus.OFFLINE);
