@@ -10,7 +10,7 @@ package org.openhab.binding.vitotronic.handler;
 /**
  * The {@link VitotronicBridgeHandler} class handles the connection to the
  * optolink adapter.
- * 
+ *
  * @author Stefan Andres - Initial contribution
  */
 
@@ -45,412 +45,401 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class VitotronicBridgeHandler extends BaseBridgeHandler {
 
-	private Logger logger = LoggerFactory
-			.getLogger(VitotronicBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(VitotronicBridgeHandler.class);
 
-	private String ipAddress;
-	private int port;
-	private int refreshInterval = 300;
-	private Socket socket;
-	private PrintStream out;
-	private InputStream inStream;
-	private boolean isConnect = false;
-	private boolean isDiscover = false;
+    private String ipAddress;
+    private int port;
+    private int refreshInterval = 300;
+    private Socket socket;
+    private PrintStream out;
+    private InputStream inStream;
+    private boolean isConnect = false;
+    private boolean isDiscover = false;
 
-	public VitotronicBridgeHandler(Bridge bridge) {
-		super(bridge);
-	}
-	
-	
-	public void updateStatus(ThingStatus status) {
-		super.updateStatus(status);
-		updateThingHandlersStatus(status);
-		
-	}
-	
-	public void updateStatus() {
-		if (isConnect) {
-			updateStatus(ThingStatus.ONLINE);
-			}
-		else {
-			updateStatus(ThingStatus.OFFLINE);
-		}
-		
-	}
+    public VitotronicBridgeHandler(Bridge bridge) {
+        super(bridge);
+    }
 
-	// Managing Thing Discovery Service
+    @Override
+    public void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        updateThingHandlersStatus(status);
 
-	private VitotronicDiscoveryService discoveryService = null;
+    }
 
-	public void registerDiscoveryService(
-			VitotronicDiscoveryService discoveryService) {
+    public void updateStatus() {
+        if (isConnect) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
 
-		if (discoveryService == null) {
-			throw new IllegalArgumentException("It's not allowed to pass a null ThingDiscoveryListener.");
-		} else {
-			this.discoveryService = discoveryService;
-			logger.trace("register Discovery Service");
-		}
-	}
-	
-	public void unregisterDiscoveryService( ) {
+    }
 
-		discoveryService = null; 
-			logger.trace("unregister Discovery Service");
-		
-	}
+    // Managing Thing Discovery Service
 
-	// Handles Thing discovery
+    private VitotronicDiscoveryService discoveryService = null;
 
-	private void createThing(String thingType, String thingID) {
-		logger.trace("Create thing Type='{}' id='{}'", thingType, thingID);
-		if (discoveryService != null)
-			discoveryService.addVitotronicThing(thingType, thingID);
-	}
+    public void registerDiscoveryService(VitotronicDiscoveryService discoveryService) {
 
-	// Managing ThingHandler
+        if (discoveryService == null) {
+            throw new IllegalArgumentException("It's not allowed to pass a null ThingDiscoveryListener.");
+        } else {
+            this.discoveryService = discoveryService;
+            logger.trace("register Discovery Service");
+        }
+    }
 
-	private Map<String, VitotronicThingHandler> thingHandlerMap = new HashMap<String, VitotronicThingHandler>();
+    public void unregisterDiscoveryService() {
 
-	public void registerVitotronicThingListener(VitotronicThingHandler thingHandler) {
-		if (thingHandler == null) {
-			throw new IllegalArgumentException("It's not allowed to pass a null ThingHandler.");
-		} else {
-			String thingID = thingHandler.getThing().getUID().getId();
-			if (thingHandlerMap.get(thingID) == null) {
-				thingHandlerMap.put(thingID, thingHandler);
-				logger.trace("register thingHandler for thing: {}", thingID);
-				updateThingHandlerStatus(thingHandler, this.getStatus());
-				sendSocketData("get " + thingID);
-			}
+        discoveryService = null;
+        logger.trace("unregister Discovery Service");
 
-	} }
+    }
 
-	public void unregisterThingListener(VitotronicThingHandler thingHandler) {
-		if (thingHandler != null) {
-			String thingID = thingHandler.getThing().getUID().getId();
-			if (thingHandlerMap.remove(thingID) == null) {
-				logger.trace("thingHandler for thing: {} not registered",
-						thingID);
-			} else {
-				updateThingHandlerStatus(thingHandler, ThingStatus.OFFLINE);
-			}
-		}
+    // Handles Thing discovery
 
-	}
-	
-	private void updateThingHandlerStatus(VitotronicThingHandler thingHandler, ThingStatus status) {
-		thingHandler.updateStatus(status);
-	}
-	
-	private void updateThingHandlersStatus(ThingStatus status) {
-		for (Map.Entry<String, VitotronicThingHandler> entry : thingHandlerMap.entrySet() ) {
-			updateThingHandlerStatus(entry.getValue(), status);
-		}
-	}
+    private void createThing(String thingType, String thingID) {
+        logger.trace("Create thing Type='{}' id='{}'", thingType, thingID);
+        if (discoveryService != null)
+            discoveryService.addVitotronicThing(thingType, thingID);
+    }
 
-	// Background Runables
+    // Managing ThingHandler
 
-	private ScheduledFuture<?> pollingJob;
+    private Map<String, VitotronicThingHandler> thingHandlerMap = new HashMap<String, VitotronicThingHandler>();
 
-	private Runnable pollingRunnable = new Runnable() {
-		@Override
-		public void run() {
-			logger.trace("Polling job called");
-			if (!isConnect) {
-				startSocketReceiver();
-				try {
-					Thread.sleep(5000); // Wait for connection .
-				} catch (InterruptedException e) {
-				}
-			}
-			if (isConnect) {
-				scanThings();
-				refreshData();
-			}
-			
-		}
+    public void registerVitotronicThingListener(VitotronicThingHandler thingHandler) {
+        if (thingHandler == null) {
+            throw new IllegalArgumentException("It's not allowed to pass a null ThingHandler.");
+        } else {
+            String thingID = thingHandler.getThing().getUID().getId();
+            if (thingHandlerMap.get(thingID) == null) {
+                thingHandlerMap.put(thingID, thingHandler);
+                logger.trace("register thingHandler for thing: {}", thingID);
+                updateThingHandlerStatus(thingHandler, this.getStatus());
+                sendSocketData("get " + thingID);
+            } else {
+                logger.trace("thingHandler for thing: '{}' allready registerd", thingID);
+            }
 
-	};
+        }
+    }
 
-	private synchronized void startAutomaticRefresh() {
-		if (pollingJob == null || pollingJob.isCancelled()) {
-			pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0,
-					refreshInterval, TimeUnit.SECONDS);
-		}
-	}
+    public void unregisterThingListener(VitotronicThingHandler thingHandler) {
+        if (thingHandler != null) {
+            String thingID = thingHandler.getThing().getUID().getId();
+            if (thingHandlerMap.remove(thingID) == null) {
+                logger.trace("thingHandler for thing: {} not registered", thingID);
+            } else {
+                updateThingHandlerStatus(thingHandler, ThingStatus.OFFLINE);
+            }
+        }
 
-	private void refreshData() {
-		logger.trace("Job: refresh Data...");
-		String thingId;
-		for (Map.Entry<String, VitotronicThingHandler> entry : thingHandlerMap.entrySet() ) {
-			thingId = entry.getValue().getThing().getUID().getId();
-			if (isConnect) {
-				logger.trace("Get Data for '{}'", thingId);
-				sendSocketData("get " + thingId);
-			}
+    }
 
-		}
-	}
+    private void updateThingHandlerStatus(VitotronicThingHandler thingHandler, ThingStatus status) {
+        thingHandler.updateStatus(status);
+    }
 
-	// Methods for ThingHandler
+    private void updateThingHandlersStatus(ThingStatus status) {
+        for (Map.Entry<String, VitotronicThingHandler> entry : thingHandlerMap.entrySet()) {
+            updateThingHandlerStatus(entry.getValue(), status);
+        }
+    }
 
-	public void scanThings() {
-		logger.trace("Job: Discover Things...");
-		if (!isDiscover) {
-			sendSocketData("list");
-			isDiscover = true;
-		}
+    // Background Runables
 
-	}
-	
-	public ThingStatus getStatus() {
-		return getThing().getStatus();
-	}
-	
-	public void updateChannel(String thingId, String channelId, String value) {
-		sendSocketData("set "+thingId+":"+ channelId + " "+value);	
-	}
+    private ScheduledFuture<?> pollingJob;
 
-	// internal Methods 
+    private Runnable pollingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            logger.trace("Polling job called");
+            if (!isConnect) {
+                startSocketReceiver();
+                try {
+                    Thread.sleep(5000); // Wait for connection .
+                } catch (InterruptedException e) {
+                }
+            }
+            if (isConnect) {
+                scanThings();
+                refreshData();
+            }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		// No channels - nothing to do
-	}
+        }
 
-	@Override
-	public void initialize() {
-		logger.debug("Initializing Vitotronic bridge handler {}",
-				this.toString());
-		updateStatus();
-		VitotronicBindingConfiguration configuration = getConfigAs(VitotronicBindingConfiguration.class);
-		ipAddress = configuration.ipAddress;
-		port = configuration.port;
-		refreshInterval = configuration.refreshInterval;
+    };
 
-		isDiscover = false;
-		startAutomaticRefresh();
-	}
-	
-	@Override
-	public void dispose() {
-		logger.debug("Dispose Vitottronic bridge handler{}",
-				this.toString());
+    private synchronized void startAutomaticRefresh() {
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+        }
+    }
 
-		if (pollingJob != null && !pollingJob.isCancelled()) {
-			pollingJob.cancel(true);
-			pollingJob = null;
-		}
-		updateStatus(ThingStatus.OFFLINE); // Set all State to offline
-	}
+    private void refreshData() {
+        logger.trace("Job: refresh Data...");
+        String thingId;
+        String channelList;
+        for (Map.Entry<String, VitotronicThingHandler> entry : thingHandlerMap.entrySet()) {
+            channelList = entry.getValue().getActiveChannelListAsString();
+            thingId = entry.getValue().getThing().getUID().getId();
+            if (isConnect && (channelList.length() > 0)) {
+                logger.trace("Get Data for '{}'", thingId);
+                sendSocketData("get " + thingId + " " + channelList);
+            }
 
-	// Connection to adapter
+        }
+    }
 
-	private void openSocket() {
-		logger.trace("Try to open connection to Optolink Adapter {}:{}",
-				ipAddress, port);
+    // Methods for ThingHandler
 
-		try {
-			socket = new Socket(ipAddress, port);
-			out = new PrintStream(socket.getOutputStream());
-			inStream = socket.getInputStream();
-		} catch (UnknownHostException e) {
-			logger.error("Can't find Host: {}:{}", ipAddress, port);
-		} catch (IOException e) {
-			logger.debug("Error in communication to Host: {}:{}", ipAddress,
-					port);
-			logger.trace("Diagnostic: ", e);
-		}
-	}
+    public void scanThings() {
+        logger.trace("Job: Discover Things...");
+        if (!isDiscover) {
+            sendSocketData("list");
+            isDiscover = true;
+        }
 
-	Runnable socketReceiverRunnable = new Runnable() {
+    }
 
-		public void run() {
-			logger.trace("Start Background Thread for recieving data from adapter");
-			try {
-				XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-				xmlReader.setContentHandler(new xmlHandler());
-				logger.trace("Start Parser for optolink adapter");
-				xmlReader.parse(new InputSource(inStream));
+    public ThingStatus getStatus() {
+        return getThing().getStatus();
+    }
 
-			} catch (IOException e) {
-				logger.trace("Connection error from optolink adapter");
-			} catch (SAXException e) {
-				logger.trace("XML Parser Error");
+    public void updateChannel(String thingId, String channelId, String value) {
+        sendSocketData("set " + thingId + ":" + channelId + " " + value);
+    }
 
-			}
-			updateStatus(ThingStatus.OFFLINE);
-			isConnect = false;
-			try {
-				if (!socket.isClosed()) socket.close();
-			} catch (Exception e) {
-			}
-			logger.trace("Connection to optolink adapter is died ... wait for restart");
-		}
+    // internal Methods
 
-	};
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // No channels - nothing to do
+    }
 
-	private void startSocketReceiver() {
+    @Override
+    public void initialize() {
+        logger.debug("Initializing Vitotronic bridge handler {}", this.toString());
+        updateStatus();
+        VitotronicBindingConfiguration configuration = getConfigAs(VitotronicBindingConfiguration.class);
+        ipAddress = configuration.ipAddress;
+        port = configuration.port;
+        refreshInterval = configuration.refreshInterval;
 
-		if (!isConnect) {
+        isDiscover = false;
+        startAutomaticRefresh();
+    }
 
-			openSocket();
+    @Override
+    public void dispose() {
+        logger.debug("Dispose Vitottronic bridge handler{}", this.toString());
 
-			Thread thread = new Thread(socketReceiverRunnable);
-			thread.setName("VitotronicSocketThread");
-			thread.start();
-		}
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
+        updateStatus(ThingStatus.OFFLINE); // Set all State to offline
+    }
 
-	}
+    // Connection to adapter
 
-	private void sendSocketData(String message) {
+    private void openSocket() {
+        logger.trace("Try to open connection to Optolink Adapter {}:{}", ipAddress, port);
 
-		try {
-			logger.trace("Send Message {}", message);
-			if (isConnect)
-				out.write((message + "\n").getBytes());
-		} catch (IOException e) {
-			logger.error("Error in sending data to optolink addapter");
-			logger.trace("Diagnostic: ", e);
-		}
+        try {
+            socket = new Socket(ipAddress, port);
+            out = new PrintStream(socket.getOutputStream());
+            inStream = socket.getInputStream();
+        } catch (UnknownHostException e) {
+            logger.error("Can't find Host: {}:{}", ipAddress, port);
+        } catch (IOException e) {
+            logger.debug("Error in communication to Host: {}:{}", ipAddress, port);
+            logger.trace("Diagnostic: ", e);
+        }
+    }
 
-	}
+    Runnable socketReceiverRunnable = new Runnable() {
 
-	// Handles all data what received from optolink adapter 
-	
-	public class xmlHandler implements ContentHandler {
+        @Override
+        public void run() {
+            logger.trace("Start Background Thread for recieving data from adapter");
+            try {
+                XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+                xmlReader.setContentHandler(new xmlHandler());
+                logger.trace("Start Parser for optolink adapter");
+                xmlReader.parse(new InputSource(inStream));
 
-		boolean isData;
-		boolean isDefine;
-		boolean isThing;
-		boolean isChannel;
-		boolean isDescription;
-		String thingID;
-		String thingType;
-		String channelID;
-		String description;
-		VitotronicThingHandler thingHandler;
-		Set<String> channels = new HashSet<String>();
+            } catch (IOException e) {
+                logger.trace("Connection error from optolink adapter");
+            } catch (SAXException e) {
+                logger.trace("XML Parser Error");
 
-		@Override
-		public void startElement(String uri, String localName, String pName,
-				Attributes attr) throws SAXException {
-			try {
+            }
+            updateStatus(ThingStatus.OFFLINE);
+            isConnect = false;
+            try {
+                if (!socket.isClosed())
+                    socket.close();
+            } catch (Exception e) {
+            }
+            logger.trace("Connection to optolink adapter is died ... wait for restart");
+        }
 
-				// logger.trace("StartElement: {}", localName);
-				switch (localName) {
-				case "optolink":
-					isConnect = true;
-					updateStatus(ThingStatus.ONLINE);
-					break;
-				case "data":
-					isDefine = false;
-					break;
-				case "define":
-					isDefine = true;
-					break;
-				case "description":
-					isDescription = true;
-					;
-					break;
-				case "thing":
-					isThing = true;
-					if (isDefine)
-						thingType = attr.getValue("type");
-					thingID = attr.getValue("id");
-					channels.clear();
-					thingHandler = thingHandlerMap.get(thingID);
-					break;
-				case "channel":
-					isChannel = true;
-					channelID = attr.getValue("id");
-					if (isDefine) {
-						channels.add(channelID);
-					} else { // is data
-						if (thingHandler != null) {
-							logger.trace(
-									"Set Data for channel '{}' value '{}'",
-									channelID, attr.getValue("value"));
-							thingHandler.setChannelValue(channelID,
-									attr.getValue("value"));
-						}
-					}
-					break;
-				}
-			} catch (Exception e) {
-				logger.error("Error in parsing data");
-				logger.trace("Diagnostic: ", e);
-			}
+    };
 
-		}
+    private void startSocketReceiver() {
 
-		@Override
-		public void characters(char[] ch, int start, int length)
-				throws SAXException {
-			if (isDescription) {
-				description = new String(ch, start, length);
-			}
-		}
+        if (!isConnect) {
 
-		@Override
-		public void endElement(String uri, String localName, String qName)
-				throws SAXException {
-			// logger.trace("StartElement: {}", localName);
-			switch (localName) {
-			case "description":
-				isDescription = false;
-				;
-				break;
-			case "thing":
-				if (isDefine)
-					createThing(thingType, thingID);
-				isThing = false;
-				thingHandler = null;
-				break;
-			case "channel":
-				isChannel = false;
-				break;
-			}
+            openSocket();
 
-		}
+            Thread thread = new Thread(socketReceiverRunnable);
+            thread.setName("VitotronicSocketThread");
+            thread.start();
+        }
 
-		// Unused function of xmlReader
-		@Override
-		public void endDocument() throws SAXException {
-		}
+    }
 
-		@Override
-		public void ignorableWhitespace(char[] arg0, int arg1, int arg2)
-				throws SAXException {
-		}
+    private void sendSocketData(String message) {
 
-		@Override
-		public void processingInstruction(String arg0, String arg1)
-				throws SAXException {
-		}
+        try {
+            logger.trace("Send Message {}", message);
+            if (isConnect)
+                out.write((message + "\n").getBytes());
+        } catch (IOException e) {
+            logger.error("Error in sending data to optolink addapter");
+            logger.trace("Diagnostic: ", e);
+        }
 
-		@Override
-		public void setDocumentLocator(Locator arg0) {
-		}
+    }
 
-		@Override
-		public void skippedEntity(String arg0) throws SAXException {
-		}
+    // Handles all data what received from optolink adapter
 
-		@Override
-		public void startDocument() throws SAXException {
-		}
+    public class xmlHandler implements ContentHandler {
 
-		@Override
-		public void startPrefixMapping(String arg0, String arg1)
-				throws SAXException {
-		}
+        boolean isData;
+        boolean isDefine;
+        boolean isThing;
+        boolean isChannel;
+        boolean isDescription;
+        String thingID;
+        String thingType;
+        String channelID;
+        String description;
+        VitotronicThingHandler thingHandler;
+        Set<String> channels = new HashSet<String>();
 
-		@Override
-		public void endPrefixMapping(String prefix) throws SAXException {
-		}
+        @Override
+        public void startElement(String uri, String localName, String pName, Attributes attr) throws SAXException {
+            try {
 
-	}
+                // logger.trace("StartElement: {}", localName);
+                switch (localName) {
+                    case "optolink":
+                        isConnect = true;
+                        updateStatus(ThingStatus.ONLINE);
+                        break;
+                    case "data":
+                        isDefine = false;
+                        break;
+                    case "define":
+                        isDefine = true;
+                        break;
+                    case "description":
+                        isDescription = true;
+                        ;
+                        break;
+                    case "thing":
+                        isThing = true;
+                        if (isDefine)
+                            thingType = attr.getValue("type");
+                        thingID = attr.getValue("id");
+                        channels.clear();
+                        thingHandler = thingHandlerMap.get(thingID);
+                        break;
+                    case "channel":
+                        isChannel = true;
+                        channelID = attr.getValue("id");
+                        if (isDefine) {
+                            channels.add(channelID);
+                        } else { // is data
+                            if (thingHandler != null) {
+                                logger.trace("Set Data for channel '{}' value '{}'", channelID, attr.getValue("value"));
+                                thingHandler.setChannelValue(channelID, attr.getValue("value"));
+                            }
+                        }
+                        break;
+                }
+            } catch (Exception e) {
+                logger.error("Error in parsing data");
+                logger.trace("Diagnostic: ", e);
+            }
+
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            if (isDescription) {
+                description = new String(ch, start, length);
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            // logger.trace("StartElement: {}", localName);
+            switch (localName) {
+                case "description":
+                    isDescription = false;
+                    ;
+                    break;
+                case "thing":
+                    if (isDefine)
+                        createThing(thingType, thingID);
+                    isThing = false;
+                    thingHandler = null;
+                    break;
+                case "channel":
+                    isChannel = false;
+                    break;
+            }
+
+        }
+
+        // Unused function of xmlReader
+        @Override
+        public void endDocument() throws SAXException {
+        }
+
+        @Override
+        public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
+        }
+
+        @Override
+        public void processingInstruction(String arg0, String arg1) throws SAXException {
+        }
+
+        @Override
+        public void setDocumentLocator(Locator arg0) {
+        }
+
+        @Override
+        public void skippedEntity(String arg0) throws SAXException {
+        }
+
+        @Override
+        public void startDocument() throws SAXException {
+        }
+
+        @Override
+        public void startPrefixMapping(String arg0, String arg1) throws SAXException {
+        }
+
+        @Override
+        public void endPrefixMapping(String prefix) throws SAXException {
+        }
+
+    }
 
 }
