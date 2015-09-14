@@ -35,8 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Marc Mettke - Initial contribution
  */
 public class NetworkHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(NetworkHandler.class);    
-	private ScheduledFuture<?> refreshJob;
+    private Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
 	private NetworkService networkService;
     
 	public NetworkHandler(Thing thing) {
@@ -46,7 +45,7 @@ public class NetworkHandler extends BaseThingHandler {
 	
 	@Override
 	public void dispose() {
-		refreshJob.cancel(true);
+		networkService.stopAutomaticRefresh();
 	}
 	
 	@Override
