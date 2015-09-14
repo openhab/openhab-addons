@@ -28,6 +28,7 @@ public class NetworkBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_ONLINE = "online";
+    public final static String CHANNEL_TIME = "time";
 
     // List of all Parameters
     public final static String PARAMETER_HOSTNAME = "hostname";
