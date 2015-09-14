@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ownet"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="29">
+            <supported-bridge-type-refs>
+            <bridge-type-ref id="tcp" />
+        </supported-bridge-type-refs>
+    
+        <label>Endpoint</label>
+        <description>1-wire endpoint device</description>
+        <channels>
+            <channel id="switch-1" typeId="switch-type" />
+            <channel id="switch-2" typeId="switch-type" />
+            <channel id="switch-3" typeId="switch-type" />
+            <channel id="switch-4" typeId="switch-type" />
+            <channel id="switch-5" typeId="switch-type" />
+            <channel id="switch-6" typeId="switch-type" />
+            <channel id="switch-7" typeId="switch-type" />
+            <channel id="switch-8" typeId="switch-type" />
+        </channels>
+        <config-description>
+            <parameter name="id" type="text" required="true">
+            <label>id</label>
+            <description>1-wire device id</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="switch-type">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+    </channel-type>
+</thing:thing-descriptions>

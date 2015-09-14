@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OWNet Binding
+Bundle-SymbolicName: org.openhab.binding.ownet;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: com.google.common.collect,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.types,
+ org.osgi.framework;version="1.8.0",
+ org.osgi.service.device;version="1.1.0",
+ org.slf4j
+Service-Component: OSGI-INF/*
+Export-Package: org.openhab.binding.ownet,
+ org.openhab.binding.ownet.handler
+Require-Bundle: org.openhab.io.transport.serial

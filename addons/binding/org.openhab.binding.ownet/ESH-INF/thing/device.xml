@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ownet"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="device">
+            <supported-bridge-type-refs>
+            <bridge-type-ref id="tcp" />
+        </supported-bridge-type-refs>
+    
+        <label>Endpoint</label>
+        <description>1-wire endpoint device</description>
+        <channels>
+            <channel id="switch" typeId="switch-type" />
+            <channel id="contact" typeId="contact-type" />
+            <channel id="number" typeId="number-type" />
+        </channels>
+        <config-description>
+            <parameter name="id" type="text" required="true">
+            <label>id</label>
+            <description>1-wire device id</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="switch-type">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>switch item channel for OWNet Binding</description>
+    </channel-type>
+    <channel-type id="contact-type">
+        <item-type>Contact</item-type>
+        <label>Contact</label>
+        <description>contact item channel for OWNet Binding</description>
+    </channel-type>
+    <channel-type id="number-type">
+        <item-type>Number</item-type>
+        <label>Value</label>
+        <description>number item channel for OWNet Binding</description>
+    </channel-type>
+
+</thing:thing-descriptions>
