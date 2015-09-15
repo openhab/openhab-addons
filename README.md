@@ -6,6 +6,8 @@ It is designed to be absolutely vendor-neutral as well as hardware/protocol-agno
 
 For further Information please refer to our homepage [www.openhab.org](http://www.openhab.org). 
 
+For the latest SNAPSHOT build refer to our [cloudbees job](https://openhab.ci.cloudbees.com/job/openHAB2/).
+
 
 ## openHAB 1 vs. openHAB 2
 
