@@ -10,7 +10,7 @@ For a quick start, there is now also a [demo package](installation/demo.md) avai
 There are a few changes in openHAB 2 that you should be aware of, if you are coming from openHAB 1:
  - there is a new dashboard, which welcomes you at http://localhost:8080 (assuming openHAB is running on your local machine) and provides you links to the different UIs
  - there is an early prototype of a new HTML5-based UI that allows to configure and operate the system, calles Paper UI
- - the Classic UI URL has changed from `/openhab.app` to `/classicui`, so you can access your sitemaps at `http://<server>:8080/classicui?sitemap=<yoursitemap>`
+ - the Classic UI URL has changed from `/openhab.app` to `/classicui/app`, so you can access your sitemaps at `http://<server>:8080/classicui/app?sitemap=<yoursitemap>`
  - a new default sitemap provider is in place, which provides a dynamic sitemap with the name `_default`, which lists all group items that are not contained within any other group.
  - the `configuration` folder has been renamed to `conf`
  - instead of the global `configuration/openhab.cfg` file, there is now an individual file per add-on in `conf/services`
@@ -26,5 +26,3 @@ The following restrictions are known (and need to be worked on):
   - the Eclipse SmartHome Designer marks all openHAB actions as errors (yet the runtime will correctly execute them)
   - GreenT does not work as the webapps folder does not exist anymore
   - CometVisu is not yet compatible
-  - my.openHAB is not yet compatible
- 

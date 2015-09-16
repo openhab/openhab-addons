@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -24,6 +25,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.network.service.InvalidConfigurationException;
 import org.openhab.binding.network.service.NetworkService;
+import org.openhab.binding.network.service.StateUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Marc Mettke - Initial contribution
  */
 public class NetworkHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(NetworkHandler.class);    
-	private ScheduledFuture<?> refreshJob;
+    private Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
 	private NetworkService networkService;
     
 	public NetworkHandler(Thing thing) {
@@ -45,24 +46,32 @@ public class NetworkHandler extends BaseThingHandler {
 	
 	@Override
 	public void dispose() {
-		refreshJob.cancel(true);
+		networkService.stopAutomaticRefresh();
 	}
 	
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
-            case CHANNEL_ONLINE:
-            	try {
-					State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
-					updateState(CHANNEL_ONLINE, state);					
-				} catch( InvalidConfigurationException invalidConfigurationException) {
-				    updateStatus(ThingStatus.OFFLINE);
-				}
-            	break;
-            default:
-                logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-                break;
+	            case CHANNEL_ONLINE:
+	            	try {
+						State state = networkService.updateDeviceState() < 0 ? OnOffType.OFF : OnOffType.ON;
+						updateState(CHANNEL_ONLINE, state);					
+					} catch( InvalidConfigurationException invalidConfigurationException) {
+					    updateStatus(ThingStatus.OFFLINE);
+					}
+	            	break;
+	            case CHANNEL_TIME:
+	            	try {
+						State state = new DecimalType(networkService.updateDeviceState());
+						updateState(CHANNEL_TIME, state);					
+					} catch( InvalidConfigurationException invalidConfigurationException) {
+					    updateStatus(ThingStatus.OFFLINE);
+					}
+	            	break;
+	            default:
+	                logger.debug("Command received for an unknown channel: {}", channelUID.getId());
+	                break;
             }
         } else {
             logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
@@ -99,22 +108,19 @@ public class NetworkHandler extends BaseThingHandler {
 			networkService.setUseSystemPing(Boolean.parseBoolean(String.valueOf(conf.get(PARAMETER_USE_SYSTEM_PING))));
 		} catch (Exception ex) {}
 		
-		startAutomaticRefresh();
-	}
-	
-	private void startAutomaticRefresh() {
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					State state = networkService.updateDeviceState() ? OnOffType.ON : OnOffType.OFF;
-					updateState(CHANNEL_ONLINE, state);					
-				} catch( InvalidConfigurationException invalidConfigurationException) {
-				    updateStatus(ThingStatus.OFFLINE);
-				}
-			}
-		};
-		
-		refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, networkService.getRefreshInterval(), TimeUnit.MILLISECONDS);
+		networkService.startAutomaticRefresh(scheduler, new StateUpdate() {
+            @Override
+            public void newState(double state) {
+    		State onlineState = state < 0 ? OnOffType.OFF : OnOffType.ON;
+    		State timeState = new DecimalType(state);
+    		updateState(CHANNEL_ONLINE, onlineState);
+    		updateState(CHANNEL_TIME, timeState);
+	    }
+            @Override
+            public void invalidConfig() {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        });
 	}
 
 }

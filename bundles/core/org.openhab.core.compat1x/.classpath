@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="lib" path="lib/jl1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.9.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl-1.9.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

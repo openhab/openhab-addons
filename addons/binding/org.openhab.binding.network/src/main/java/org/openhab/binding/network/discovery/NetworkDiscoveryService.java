@@ -34,7 +34,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService {
 	private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
 
 	public NetworkDiscoveryService() {
-		super(SUPPORTED_THING_TYPES_UIDS, 300, false);
+		super(SUPPORTED_THING_TYPES_UIDS, 900, false);
 	}
 
 	public Set<ThingTypeUID> getSupportedThingTypes() {

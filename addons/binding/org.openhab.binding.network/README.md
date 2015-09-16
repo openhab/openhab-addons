@@ -1,6 +1,6 @@
 # Network Binding
 
-This binding integrates a way to check whether a device is currently available on the network. 
+This binding integrates a way to check whether a device is currently available on the network and the required ping time. 
 
 ## Supported Things
 
@@ -30,6 +30,7 @@ All devices support some of the following channels:
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|----------------- |------------- |
 | online | Switch       | This channel indicates whether a device is online or not |
+| time   | Number       | This channel indicates the Ping time in milliseconds |
 
 
 ## Full Example
@@ -42,6 +43,7 @@ network:device:1 [ hostname="192.168.0.64", port="0", retry="1", timeout="5000",
 demo.items:
 ```
 Switch MyDevice { channel="network:device:1:online" }
+Number MyTime { channel="network:device:1:time" }
 ```
 
 demo.sitemap:
@@ -50,6 +52,7 @@ sitemap demo label="Main Menu"
 {
 	Frame {
 		Switch item=MyDevice
+		Number item=MyTime
 	}
 }
 ```
