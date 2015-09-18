@@ -849,7 +849,9 @@
         <excludedPath>org.openhab.binding.wemo</excludedPath>
       </sourceLocator>
       <sourceLocator
-          rootFolder="${git.clone.openhab.location/bundles/action}"/>
+          rootFolder="${git.clone.openhab.location/bundles/action}">
+        <excludedPath>org.openhab.action.astro</excludedPath>
+      </sourceLocator>
       <sourceLocator
           rootFolder="${git.clone.openhab.location/bundles/persistence}"/>
       <sourceLocator
