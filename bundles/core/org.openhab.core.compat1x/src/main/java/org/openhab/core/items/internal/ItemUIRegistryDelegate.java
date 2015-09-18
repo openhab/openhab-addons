@@ -25,7 +25,8 @@ import org.openhab.model.sitemap.Sitemap;
 import org.openhab.model.sitemap.Widget;
 import org.openhab.ui.items.ItemUIRegistry;
 
-public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeListener<org.eclipse.smarthome.core.items.Item> {
+public class ItemUIRegistryDelegate
+        implements ItemUIRegistry, RegistryChangeListener<org.eclipse.smarthome.core.items.Item> {
 
     private org.eclipse.smarthome.ui.items.ItemUIRegistry itemUIRegistry;
     private Set<ItemRegistryChangeListener> listeners = new HashSet<>();
@@ -68,7 +69,7 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
         Collection<org.eclipse.smarthome.core.items.Item> eshItems = itemUIRegistry.getItems();
         Collection<Item> ohItems = new HashSet<Item>(eshItems.size());
 
-        for(org.eclipse.smarthome.core.items.Item eshItem : eshItems) {
+        for (org.eclipse.smarthome.core.items.Item eshItem : eshItems) {
             ohItems.add(ItemMapper.mapToOpenHABItem(eshItem));
         }
         return ohItems;
@@ -79,7 +80,7 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
         Collection<org.eclipse.smarthome.core.items.Item> eshItems = itemUIRegistry.getItems(pattern);
         Collection<Item> ohItems = new HashSet<Item>(eshItems.size());
 
-        for(org.eclipse.smarthome.core.items.Item eshItem : eshItems) {
+        for (org.eclipse.smarthome.core.items.Item eshItem : eshItems) {
             ohItems.add(ItemMapper.mapToOpenHABItem(eshItem));
         }
         return ohItems;
@@ -103,7 +104,7 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
     @Override
     public void added(org.eclipse.smarthome.core.items.Item element) {
         Item ohItem = ItemMapper.mapToOpenHABItem(element);
-        for(ItemRegistryChangeListener listener : listeners) {
+        for (ItemRegistryChangeListener listener : listeners) {
             listener.itemAdded(ohItem);
         }
     }
@@ -111,15 +112,16 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
     @Override
     public void removed(org.eclipse.smarthome.core.items.Item element) {
         Item ohItem = ItemMapper.mapToOpenHABItem(element);
-        for(ItemRegistryChangeListener listener : listeners) {
+        for (ItemRegistryChangeListener listener : listeners) {
             listener.itemRemoved(ohItem);
         }
     }
 
     @Override
-    public void updated(org.eclipse.smarthome.core.items.Item oldElement, org.eclipse.smarthome.core.items.Item element) {
+    public void updated(org.eclipse.smarthome.core.items.Item oldElement,
+            org.eclipse.smarthome.core.items.Item element) {
         Item ohItem = ItemMapper.mapToOpenHABItem(element);
-        for(ItemRegistryChangeListener listener : listeners) {
+        for (ItemRegistryChangeListener listener : listeners) {
             listener.itemRemoved(ohItem);
             listener.itemAdded(ohItem);
         }
@@ -127,7 +129,7 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
 
     @Override
     public String getIcon(String itemName) {
-        return itemUIRegistry.getIcon(itemName);
+        return itemUIRegistry.getCategory(itemName);
     }
 
     @Override
@@ -152,7 +154,7 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
 
     @Override
     public String getIcon(Widget w) {
-        return itemUIRegistry.getIcon(w.getItem());
+        return itemUIRegistry.getCategory(w.getItem());
     }
 
     @Override
@@ -177,7 +179,7 @@ public class ItemUIRegistryDelegate implements ItemUIRegistry, RegistryChangeLis
 
     @Override
     public boolean iconExists(String icon) {
-        return itemUIRegistry.iconExists(icon);
+        return true;
     }
 
     @Override

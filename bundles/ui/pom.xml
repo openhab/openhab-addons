@@ -17,6 +17,7 @@
 
   <modules>
     <module>org.openhab.ui.dashboard</module>
+    <module>org.openhab.ui.iconset.classic</module>
   </modules>
 
 </project>
