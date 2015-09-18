@@ -711,22 +711,43 @@
       xsi:type="jdt:JRETask"
       version="JavaSE-1.7"
       location="${jre.location-1.7}"/>
+  <setupTask
+      xsi:type="setup.p2:P2Task">
+    <requirement
+        name="org.eclipse.wst.xml_ui.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.mylyn.java_feature.feature.group"/>
+    <requirement
+        name="org.codehaus.groovy.eclipse.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.mylyn.git.feature.group"/>
+    <requirement
+        name="org.eclipse.pde.feature.group"/>
+    <repository
+        url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>
+  </setupTask>
+  <setupTask
+      xsi:type="git:GitCloneTask"
+      id="git.clone.openhab2"
+      remoteURI="https://github.com/openhab/openhab2.git"
+      pushURI="https://github.com/${github.user.id}/openhab2.git">
+    <annotation
+        source="http://www.eclipse.org/oomph/setup/InducedChoices">
+      <detail
+          key="label">
+        <value>OpenHAB2 Git Repository</value>
+      </detail>
+    </annotation>
+    <description>openHAB 2</description>
+  </setupTask>
+  <setupTask
+      xsi:type="pde:TargetPlatformTask"
+      id="openhab.target"
+      name="openHAB 2 Target Platform">
+    <description>Manually maintained target platform</description>
+  </setupTask>
   <project name="runtime2"
       label="openHAB 2 Development">
-    <setupTask
-        xsi:type="git:GitCloneTask"
-        id="git.clone.openhab2"
-        remoteURI="https://github.com/openhab/openhab2.git"
-        pushURI="https://github.com/${github.user.id}/openhab2.git">
-      <annotation
-          source="http://www.eclipse.org/oomph/setup/InducedChoices">
-        <detail
-            key="label">
-          <value>OpenHAB2 Git Repository</value>
-        </detail>
-      </annotation>
-      <description>openHAB 2</description>
-    </setupTask>
     <setupTask
         xsi:type="setup.workingsets:WorkingSetTask">
       <workingSet
@@ -749,69 +770,208 @@
       </workingSet>
     </setupTask>
     <setupTask
-        xsi:type="setup.p2:P2Task">
-      <requirement
-          name="org.eclipse.wst.xml_ui.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.mylyn.java_feature.feature.group"/>
-      <requirement
-          name="org.codehaus.groovy.eclipse.feature.feature.group"/>
-      <requirement
-          name="org.eclipse.mylyn.git.feature.group"/>
-      <requirement
-          name="org.eclipse.pde.feature.group"/>
-      <repository
-          url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>
-    </setupTask>
-    <setupTask
         xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/addons}"
           locateNestedProjects="true"/>
-    </setupTask>
-    <setupTask
-        xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/bundles}"
           locateNestedProjects="true"/>
-    </setupTask>
-    <setupTask
-        xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/distribution}"
           locateNestedProjects="true"/>
-    </setupTask>
-    <setupTask
-        xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/features}"
           locateNestedProjects="true"/>
-    </setupTask>
-    <setupTask
-        xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/docs}"
           locateNestedProjects="true"/>
-    </setupTask>
-    <setupTask
-        xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/targetplatform}"
           locateNestedProjects="true"/>
-    </setupTask>
-    <setupTask
-        xsi:type="projects:ProjectsImportTask">
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/products}"
           locateNestedProjects="true"/>
     </setupTask>
+    <stream
+        name="master"/>
+  </project>
+  <project name="1addons"
+      label="openHAB 1 Add-on Development">
     <setupTask
-        xsi:type="pde:TargetPlatformTask"
-        id="openhab.target"
-        name="openHAB 2 Target Platform">
-      <description>
-        Manually maintained target platform
-      </description>
+        xsi:type="git:GitCloneTask"
+        id="git.clone.openhab"
+        remoteURI="https://github.com/openhab/openhab.git"
+        pushURI="https://github.com/${github.user.id}/openhab.git">
+      <annotation
+          source="http://www.eclipse.org/oomph/setup/InducedChoices">
+        <detail
+            key="label">
+          <value>openHAB 1 Git Repository</value>
+        </detail>
+      </annotation>
+      <description>openHAB 1</description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup.workingsets:WorkingSetTask">
+      <workingSet
+          name="2.x Core Bundles">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab2/bundles/core/.*"/>
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab2/bundles/ui/.*"/>
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab2/bundles/io/.*"/>
+      </workingSet>
+      <workingSet
+          name="1.x Addons">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab/bundles/.*"/>
+      </workingSet>
+      <workingSet
+          name="Features">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/features/.*"/>
+      </workingSet>
+    </setupTask>
+    <setupTask
+        xsi:type="projects:ProjectsImportTask">
+      <sourceLocator
+          rootFolder="${git.clone.openhab.location/bundles/binding}">
+        <excludedPath>org.openhab.binding.fritzaha</excludedPath>
+        <excludedPath>org.openhab.binding.hue</excludedPath>
+        <excludedPath>org.openhab.binding.sonos</excludedPath>
+        <excludedPath>org.openhab.binding.wemo</excludedPath>
+      </sourceLocator>
+      <sourceLocator
+          rootFolder="${git.clone.openhab.location/bundles/action}"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab.location/bundles/persistence}"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab.location/bundles/io}">
+        <excludedPath>org.openhab.io.multimedia</excludedPath>
+        <excludedPath>org.openhab.io.console</excludedPath>
+        <excludedPath>org.openhab.io.monitor</excludedPath>
+        <excludedPath>org.openhab.io.cv</excludedPath>
+        <excludedPath>org.openhab.io.net</excludedPath>
+        <excludedPath>org.openhab.io.net.test</excludedPath>
+        <excludedPath>org.openhab.io.myopenhab</excludedPath>
+        <excludedPath>org.openhab.io.rest</excludedPath>
+        <excludedPath>org.openhab.io.rest.lib</excludedPath>
+        <excludedPath>org.openhab.io.rest.test</excludedPath>
+      </sourceLocator>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/bundles}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/distribution}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/features}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/docs}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/targetplatform}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/products}"
+          locateNestedProjects="true"/>
+    </setupTask>
+    <stream
+        name="master"/>
+  </project>
+  <project name="esh"
+      label="openHAB 2 with Eclipse SmartHome Core">
+    <setupTask
+        xsi:type="git:GitCloneTask"
+        id="git.clone.esh"
+        remoteURI="https://github.com/eclipse/smarthome.git"
+        pushURI="https://github.com/${github.user.id}/smarthome.git">
+      <annotation
+          source="http://www.eclipse.org/oomph/setup/InducedChoices">
+        <detail
+            key="label">
+          <value>Eclipse SmartHome Git Repository</value>
+        </detail>
+      </annotation>
+      <description>Eclipse SmartHome</description>
+    </setupTask>
+    <setupTask
+        xsi:type="setup.workingsets:WorkingSetTask">
+      <workingSet
+          name="OH2 Core Bundles">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab2/bundles/core/.*"/>
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab2/bundles/ui/.*"/>
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/openhab2/bundles/io/.*"/>
+      </workingSet>
+      <workingSet
+          name="OH2 Addons">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/addons/.*"/>
+      </workingSet>
+      <workingSet
+          name="ESH Bundles">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/smarthome/bundles/.*"/>
+      </workingSet>
+      <workingSet
+          name="ESH Extensions">
+        <predicate
+            xsi:type="predicates:LocationPredicate"
+            pattern=".*/smarthome/extensions/.*"/>
+      </workingSet>
+    </setupTask>
+    <setupTask
+        xsi:type="projects:ProjectsImportTask">
+      <sourceLocator
+          rootFolder="${git.clone.esh.location/bundles/core}"/>
+      <sourceLocator
+          rootFolder="${git.clone.esh.location/bundles/config}"/>
+      <sourceLocator
+          rootFolder="${git.clone.esh.location/bundles/storage}"/>
+      <sourceLocator
+          rootFolder="${git.clone.esh.location/bundles/ui}"/>
+      <sourceLocator
+          rootFolder="${git.clone.esh.location/bundles/io}">
+        <excludedPath>org.eclipse.smarthome.io.console.karaf</excludedPath>
+      </sourceLocator>
+      <sourceLocator
+          rootFolder="${git.clone.esh.location/extensions}"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/bundles}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/distribution}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/features}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/docs}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/targetplatform}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/products}"
+          locateNestedProjects="true"/>
+      <sourceLocator
+          rootFolder="${git.clone.openhab2.location/addons}"/>
     </setupTask>
     <stream
         name="master"/>
