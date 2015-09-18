@@ -751,19 +751,19 @@
     <setupTask
         xsi:type="setup.workingsets:WorkingSetTask">
       <workingSet
-          name="Bundles">
+          name="OH2 Bundles">
         <predicate
             xsi:type="predicates:LocationPredicate"
             pattern=".*/bundles/.*"/>
       </workingSet>
       <workingSet
-          name="Addons">
+          name="OH2 Addons">
         <predicate
             xsi:type="predicates:LocationPredicate"
             pattern=".*/addons/.*"/>
       </workingSet>
       <workingSet
-          name="Features">
+          name="OH2 Features">
         <predicate
             xsi:type="predicates:LocationPredicate"
             pattern=".*/features/.*"/>
@@ -815,7 +815,7 @@
     <setupTask
         xsi:type="setup.workingsets:WorkingSetTask">
       <workingSet
-          name="2.x Core Bundles">
+          name="OH2 Core Bundles">
         <predicate
             xsi:type="predicates:LocationPredicate"
             pattern=".*/openhab2/bundles/core/.*"/>
@@ -827,13 +827,13 @@
             pattern=".*/openhab2/bundles/io/.*"/>
       </workingSet>
       <workingSet
-          name="1.x Addons">
+          name="OH1 Addons">
         <predicate
             xsi:type="predicates:LocationPredicate"
             pattern=".*/openhab/bundles/.*"/>
       </workingSet>
       <workingSet
-          name="Features">
+          name="OH2 Features">
         <predicate
             xsi:type="predicates:LocationPredicate"
             pattern=".*/features/.*"/>
