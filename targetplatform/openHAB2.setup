@@ -740,12 +740,6 @@
     </annotation>
     <description>openHAB 2</description>
   </setupTask>
-  <setupTask
-      xsi:type="pde:TargetPlatformTask"
-      id="openhab.target"
-      name="openHAB 2 Target Platform">
-    <description>Manually maintained target platform</description>
-  </setupTask>
   <project name="runtime2"
       label="openHAB 2 Development">
     <setupTask
@@ -978,6 +972,12 @@
     <stream
         name="master"/>
   </project>
+  <setupTask
+      xsi:type="pde:TargetPlatformTask"
+      id="openhab.target"
+      name="openHAB 2 Target Platform">
+    <description>Manually maintained target platform</description>
+  </setupTask>
   <logicalProjectContainer
       xsi:type="setup:ProjectCatalog"
       href="index:/org.eclipse.setup#//@projectCatalogs[name='org.eclipse']"/>
