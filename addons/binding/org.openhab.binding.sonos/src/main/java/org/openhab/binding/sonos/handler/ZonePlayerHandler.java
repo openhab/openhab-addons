@@ -140,6 +140,9 @@ UpnpIOParticipant, DiscoveryListener {
 			pollingJob.cancel(true);
 			pollingJob = null;
 		}
+
+        this.discoveryServiceRegistry.removeDiscoveryListener(this);
+        removeSubscription();
 	}
 
 	@Override
@@ -490,15 +493,24 @@ UpnpIOParticipant, DiscoveryListener {
 
 	}
 
-	private synchronized void onSubscription() {
-		// Set up GENA Subscriptions
-		if (service.isRegistered(this)) {
-			for (String subscription : SERVICE_SUBSCRIPTIONS) {
-				service.addSubscription(this, subscription,
-						SUBSCRIPTION_DURATION);
-			}
-		}
-	}
+    private synchronized void onSubscription() {
+        // Set up GENA Subscriptions
+        if (service.isRegistered(this)) {
+            for (String subscription : SERVICE_SUBSCRIPTIONS) {
+                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
+            }
+        }
+    }
+
+    private synchronized void removeSubscription() {
+        // Set up GENA Subscriptions
+        if (service.isRegistered(this)) {
+            for (String subscription : SERVICE_SUBSCRIPTIONS) {
+                service.removeSubscription(this, subscription);
+            }
+            service.unregisterParticipant(this);
+        }
+    }
 
 	private synchronized void onUpdate() {
 		if (service.isRegistered(this)) {
