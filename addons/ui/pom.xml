@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="MACROMAN"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <groupId>org.openhab.addons</groupId>
@@ -8,16 +8,17 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab.ui</groupId>
+  <groupId>org.openhab.addons.ui</groupId>
   <artifactId>pom</artifactId>
 
-  <name>openHAB UI Add-Ons</name>
+  <name>openHAB UI Components</name>
 
   <packaging>pom</packaging>
 
   <modules>
     <module>org.openhab.ui.classicui</module>
     <module>org.openhab.ui.paperui</module>
+    <module>org.openhab.ui.cometvisu</module>
   </modules>
 
 </project>
