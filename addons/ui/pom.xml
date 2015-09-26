@@ -8,7 +8,7 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab.addons.ui</groupId>
+  <groupId>org.openhab.ui</groupId>
   <artifactId>pom</artifactId>
 
   <name>openHAB UI Components</name>
