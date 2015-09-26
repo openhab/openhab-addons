@@ -787,6 +787,11 @@
           rootFolder="${git.clone.openhab2.location/products}"
           locateNestedProjects="true"/>
     </setupTask>
+    <setupTask
+        xsi:type="pde:TargetPlatformTask"
+        name="openHAB 2 Target Platform">
+      <description>Manually maintained target platform</description>
+    </setupTask>
     <stream
         name="master"/>
   </project>
@@ -880,6 +885,11 @@
           rootFolder="${git.clone.openhab2.location/products}"
           locateNestedProjects="true"/>
     </setupTask>
+    <setupTask
+        xsi:type="pde:TargetPlatformTask"
+        name="openHAB 2 Target Platform">
+      <description>Manually maintained target platform</description>
+    </setupTask>
     <stream
         name="master"/>
   </project>
@@ -969,15 +979,14 @@
       <sourceLocator
           rootFolder="${git.clone.openhab2.location/addons}"/>
     </setupTask>
+    <setupTask
+        xsi:type="pde:TargetPlatformTask"
+        name="openHAB 2 Target Platform">
+      <description>Manually maintained target platform</description>
+    </setupTask>
     <stream
         name="master"/>
   </project>
-  <setupTask
-      xsi:type="pde:TargetPlatformTask"
-      id="openhab.target"
-      name="openHAB 2 Target Platform">
-    <description>Manually maintained target platform</description>
-  </setupTask>
   <logicalProjectContainer
       xsi:type="setup:ProjectCatalog"
       href="index:/org.eclipse.setup#//@projectCatalogs[name='org.eclipse']"/>
