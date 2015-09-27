@@ -25,11 +25,11 @@ The Eclipse IDE is used for openHAB developments. The Eclipse Installer automati
 ![Step 0](images/ide0.png)
 3. Choose the "Eclipse IDE for Java Developers" and select "Next":
 ![Step 1](images/ide1.png)
-4. Expand the "Github.com/openHAB" entry, double click "openHAB 2 Development" and select "Next".
+4. Expand the "Github.com/openHAB" entry, double click "openHAB 2 Development" (the double click is important: The entry has to appear in the empty table at the bottom) and select "Next". If you want to setup an IDE, which also allows you to do changes to Eclipse SmartHome core bundles, you can alternatively select the entry "openHAB 2 with Eclipse SmartHome Core". If you instead want to develop openHAB 1 add-ons on the openHAB 2 runtime, please choose "openHAB 1 Add-on Development".
 5. Now provide an installation folder (don't use spaces in the path on Windows!) and your Github id (used to push your changesets to) and select "Next".
 6. The installation will now begin when pressing "Finish".
 7. Once it is done, you will see the Eclipse Welcome Screen, which you can close by clicking "Workbench" on the top right. You will see that the installer not only set up an Eclipse IDE instance for you, but also checked out the openHAB 2 git repository and imported all projects into the workspace. 
-8. Your workspace should now fully compile and you can start the runtime by launching the "openHAB Runtime" launch configuration.
+8. Your workspace should now fully compile and you can start the runtime by launching the "openHAB_Runtime" launch configuration (or "openHAB_with_ESH" if you chose the "with Eclipse SmartHome Core" option in step 4).
 
 Note that you will find the sources in a subfolder called "git" within your selected installation folder. You can use any kind of git client here, if you do not want to use the git support from within the Eclipse IDE.
 If you want to push changes, you need to do so to [your personal fork of the openHAB 2 repository](https://github.com/openhab/openhab2/fork) in order to create a pull request. You will find more details in the ["How to contribute"](../../../CONTRIBUTING.md) documentation.
