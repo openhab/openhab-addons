@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openhab.distributions</groupId>
+        <artifactId>pom</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>openhab2-runtime</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <repack.artifactId>openhab2-runtime-karaf</repack.artifactId>
+        <repack.version>${project.version}</repack.version>
+        <dir.karaf.bin.openhab.home>../../..</dir.karaf.bin.openhab.home>
+        <dir.karaf.bin.openhab.home.win>..\..\..</dir.karaf.bin.openhab.home.win>
+        <dir.karaf.base>userdata</dir.karaf.base>
+        <dir.karaf.base.win>userdata</dir.karaf.base.win>
+        <dir.karaf.data>userdata</dir.karaf.data>
+        <dir.karaf.data.win>userdata</dir.karaf.data.win>
+        <dir.karaf.etc>runtime/karaf/etc</dir.karaf.etc>
+        <dir.karaf.etc.win>runtime\karaf\etc</dir.karaf.etc.win>
+        <dir.karaf.home>runtime/karaf</dir.karaf.home>
+        <dir.karaf.home.win>runtime\karaf</dir.karaf.home.win>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${repack.artifactId}</artifactId>
+            <version>${repack.version}</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${repack.artifactId}</artifactId>
+                                    <version>${repack.version}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bin</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/descriptors/bin.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
