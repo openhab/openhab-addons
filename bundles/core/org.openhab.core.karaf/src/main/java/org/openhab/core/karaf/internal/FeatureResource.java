@@ -18,7 +18,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,6 +25,8 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.karaf.features.Feature;
+import org.apache.karaf.features.FeaturesService;
 import org.eclipse.smarthome.io.rest.RESTResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class FeatureResource implements RESTResource {
     @Path("/{addonname: [a-zA-Z_0-9-]*}/install")
     public Response installAddon(@PathParam("addonname") String name) {
         try {
-            featureService.installAddon(Addon.PREFIX + name);
+            featureService.installFeature(Addon.PREFIX + name);
             return Response.ok().build();
         } catch (Exception e) {
             logger.error("Exception while installing feature: {}", e.getMessage());
