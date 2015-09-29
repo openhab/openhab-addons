@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.karaf.features.FeaturesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class FeatureInstaller {
         for (String addon : install.split(",")) {
             String name = Addon.PREFIX + type + "-" + addon.trim();
             try {
-                featureService.installAddon(name);
+                featureService.installFeature(name);
             } catch (Exception e) {
                 logger.error("Failed installing feature '{}'", name);
             }
