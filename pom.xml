@@ -1,142 +1,392 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
-    
+
     <groupId>org.openhab</groupId>
     <artifactId>pom</artifactId>
     <version>2.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
     <name>openHAB</name>
-    
+    <description>This is the open Home Automation Bus (openHAB)</description>
+
     <organization>
         <name>openHAB.org</name>
         <url>http://www.openhab.org</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>Eclipse Public License</name>
             <url>http://www.eclipse.org/legal/epl-v10.html</url>
         </license>
     </licenses>
-    
+
     <scm>
         <connection>scm:git:https://github.com/openhab/openhab2.git</connection>
         <developerConnection>scm:git:https://github.com/openhab/openhab2.git</developerConnection>
         <url>https://github.com/openhab/openhab2</url>
     </scm>
-        
+
     <issueManagement>
         <url>https://github.com/openhab/openhab2/issues</url>
         <system>Github</system>
     </issueManagement>
-    
-    <description>This is the open Home Automation Bus (openHAB)</description>
-    
+
     <properties>
         <esh.version>0.8.0-SNAPSHOT</esh.version>
-        <tycho-version>0.22.0</tycho-version>
-        <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
+
+        <dep.karaf.version>4.0.1</dep.karaf.version>
+        <karaf.maven.plugin.version>4.0.1</karaf.maven.plugin.version>
+        <karaf.features.version>4.0.1</karaf.features.version>
+        <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
+        <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
+        <license.maven.plugin.version>2.10</license.maven.plugin.version>
+
+        <!-- provided by Karaf -->
+        <dep.slf4j.api.groupId>org.slf4j</dep.slf4j.api.groupId>
+        <dep.slf4j.api.artifactId>slf4j-api</dep.slf4j.api.artifactId>
+        <dep.slf4j.api.version>1.7.7</dep.slf4j.api.version>
+
+        <!-- custom dependencies -->
+        <dep.javax.servlet.api.groupId>javax.servlet</dep.javax.servlet.api.groupId>
+        <dep.javax.servlet.api.artifactId>javax.servlet-api</dep.javax.servlet.api.artifactId>
+        <dep.javax.servlet.api.version>3.1.0</dep.javax.servlet.api.version>
+
+        <dep.org.osgi.compendium.split.groupId>tmp.need.a.home</dep.org.osgi.compendium.split.groupId>
+        <dep.org.osgi.compendium.split.component.artifact>org.osgi.compendium.split.service.component</dep.org.osgi.compendium.split.component.artifact>
+        <dep.org.osgi.compendium.split.event.artifact>org.osgi.compendium.split.service.event</dep.org.osgi.compendium.split.event.artifact>
+        <dep.org.osgi.compendium.split.version>5.0.0</dep.org.osgi.compendium.split.version>
+
+        <dep.jmdns.groupId>javax.jmdns</dep.jmdns.groupId>
+        <dep.jmdns.artifactId>jmdns</dep.jmdns.artifactId>
+        <dep.jmdns.version>3.4.2</dep.jmdns.version>
+
+        <!-- openHAB 2 distribution: ESH -->
+        <dep.bsn.org.eclipse.smarthome.ui.paperui.groupId>tmp.need.a.home</dep.bsn.org.eclipse.smarthome.ui.paperui.groupId>
+        <dep.bsn.org.eclipse.smarthome.ui.paperui.artifactId>org.eclipse.smarthome.ui.paperui</dep.bsn.org.eclipse.smarthome.ui.paperui.artifactId>
+        <dep.bsn.org.eclipse.smarthome.ui.paperui.version>0.8.0.201509021731</dep.bsn.org.eclipse.smarthome.ui.paperui.version>
+
+        <!-- openHAB 2 distribution: TP -->
+        <dep.bsn.com.eclipsesource.jaxrs.jersey-min.groupId>com.eclipsesource.jaxrs</dep.bsn.com.eclipsesource.jaxrs.jersey-min.groupId>
+        <dep.bsn.com.eclipsesource.jaxrs.jersey-min.artifactId>jersey-min</dep.bsn.com.eclipsesource.jaxrs.jersey-min.artifactId>
+        <dep.bsn.com.eclipsesource.jaxrs.jersey-min.version>2.18</dep.bsn.com.eclipsesource.jaxrs.jersey-min.version>
+
+        <dep.bsn.com.eclipsesource.jaxrs.provider.gson.groupId>com.eclipsesource.jaxrs</dep.bsn.com.eclipsesource.jaxrs.provider.gson.groupId>
+        <dep.bsn.com.eclipsesource.jaxrs.provider.gson.artifactId>provider-gson</dep.bsn.com.eclipsesource.jaxrs.provider.gson.artifactId>
+        <dep.bsn.com.eclipsesource.jaxrs.provider.gson.version>2.3</dep.bsn.com.eclipsesource.jaxrs.provider.gson.version>
+
+        <dep.bsn.com.eclipsesource.jaxrs.publisher.groupId>com.eclipsesource.jaxrs</dep.bsn.com.eclipsesource.jaxrs.publisher.groupId>
+        <dep.bsn.com.eclipsesource.jaxrs.publisher.artifactId>publisher</dep.bsn.com.eclipsesource.jaxrs.publisher.artifactId>
+        <dep.bsn.com.eclipsesource.jaxrs.publisher.version>5.0</dep.bsn.com.eclipsesource.jaxrs.publisher.version>
+
+        <dep.bsn.com.google.gson.groupId>com.google.code.gson</dep.bsn.com.google.gson.groupId>
+        <dep.bsn.com.google.gson.artifactId>gson</dep.bsn.com.google.gson.artifactId>
+        <dep.bsn.com.google.gson.version>2.3.1</dep.bsn.com.google.gson.version>
+
+        <dep.jetty.osgi.boot.groupId>org.eclipse.jetty.osgi</dep.jetty.osgi.boot.groupId>
+        <dep.jetty.osgi.boot.artifactId>jetty-osgi-boot</dep.jetty.osgi.boot.artifactId>
+        <dep.jetty.osgi.boot.version>9.2.12.v20150709</dep.jetty.osgi.boot.version>
+        <dep.jetty.osgi.httpservice.groupId>org.eclipse.jetty.osgi</dep.jetty.osgi.httpservice.groupId>
+        <dep.jetty.osgi.httpservice.artifactId>jetty-httpservice</dep.jetty.osgi.httpservice.artifactId>
+        <dep.jetty.osgi.httpservice.version>9.2.12.v20150709</dep.jetty.osgi.httpservice.version>
+        <dep.jetty.client.groupId>org.eclipse.jetty</dep.jetty.client.groupId>
+        <dep.jetty.client.artifactId>jetty-client</dep.jetty.client.artifactId>
+        <dep.jetty.client.version>9.2.12.v20150709</dep.jetty.client.version>
+        <dep.jetty.continuation.groupId>org.eclipse.jetty</dep.jetty.continuation.groupId>
+        <dep.jetty.continuation.artifactId>jetty-continuation</dep.jetty.continuation.artifactId>
+        <dep.jetty.continuation.version>9.2.12.v20150709</dep.jetty.continuation.version>
+        <dep.jetty.deploy.groupId>org.eclipse.jetty</dep.jetty.deploy.groupId>
+        <dep.jetty.deploy.artifactId>jetty-deploy</dep.jetty.deploy.artifactId>
+        <dep.jetty.deploy.version>9.2.12.v20150709</dep.jetty.deploy.version>
+        <dep.jetty.http.groupId>org.eclipse.jetty</dep.jetty.http.groupId>
+        <dep.jetty.http.artifactId>jetty-http</dep.jetty.http.artifactId>
+        <dep.jetty.http.version>9.2.12.v20150709</dep.jetty.http.version>
+        <dep.jetty.io.groupId>org.eclipse.jetty</dep.jetty.io.groupId>
+        <dep.jetty.io.artifactId>jetty-io</dep.jetty.io.artifactId>
+        <dep.jetty.io.version>9.2.12.v20150709</dep.jetty.io.version>
+        <dep.jetty.rewrite.groupId>org.eclipse.jetty</dep.jetty.rewrite.groupId>
+        <dep.jetty.rewrite.artifactId>jetty-rewrite</dep.jetty.rewrite.artifactId>
+        <dep.jetty.rewrite.version>9.2.12.v20150709</dep.jetty.rewrite.version>
+        <dep.jetty.security.groupId>org.eclipse.jetty</dep.jetty.security.groupId>
+        <dep.jetty.security.artifactId>jetty-security</dep.jetty.security.artifactId>
+        <dep.jetty.security.version>9.2.12.v20150709</dep.jetty.security.version>
+        <dep.jetty.server.groupId>org.eclipse.jetty</dep.jetty.server.groupId>
+        <dep.jetty.server.artifactId>jetty-server</dep.jetty.server.artifactId>
+        <dep.jetty.server.version>9.2.12.v20150709</dep.jetty.server.version>
+        <dep.jetty.servlet.groupId>org.eclipse.jetty</dep.jetty.servlet.groupId>
+        <dep.jetty.servlet.artifactId>jetty-servlet</dep.jetty.servlet.artifactId>
+        <dep.jetty.servlet.version>9.2.12.v20150709</dep.jetty.servlet.version>
+        <dep.jetty.util.groupId>org.eclipse.jetty</dep.jetty.util.groupId>
+        <dep.jetty.util.artifactId>jetty-util</dep.jetty.util.artifactId>
+        <dep.jetty.util.version>9.2.12.v20150709</dep.jetty.util.version>
+        <dep.jetty.webapp.groupId>org.eclipse.jetty</dep.jetty.webapp.groupId>
+        <dep.jetty.webapp.artifactId>jetty-webapp</dep.jetty.webapp.artifactId>
+        <dep.jetty.webapp.version>9.2.12.v20150709</dep.jetty.webapp.version>
+        <dep.jetty.xml.groupId>org.eclipse.jetty</dep.jetty.xml.groupId>
+        <dep.jetty.xml.artifactId>jetty-xml</dep.jetty.xml.artifactId>
+        <dep.jetty.xml.version>9.2.12.v20150709</dep.jetty.xml.version>
+
+        <dep.bsn.com.google.guava.groupId>tmp.need.a.home</dep.bsn.com.google.guava.groupId>
+        <dep.bsn.com.google.guava.artifactId>com.google.guava</dep.bsn.com.google.guava.artifactId>
+        <dep.bsn.com.google.guava.version>10.0.1.v201203051515</dep.bsn.com.google.guava.version>
+        <dep.bsn.com.google.inject.groupId>tmp.need.a.home</dep.bsn.com.google.inject.groupId>
+        <dep.bsn.com.google.inject.artifactId>com.google.inject</dep.bsn.com.google.inject.artifactId>
+        <dep.bsn.com.google.inject.version>3.0.0.v201312141243</dep.bsn.com.google.inject.version>
+        <dep.bsn.com.ibm.icu.groupId>tmp.need.a.home</dep.bsn.com.ibm.icu.groupId>
+        <dep.bsn.com.ibm.icu.artifactId>com.ibm.icu</dep.bsn.com.ibm.icu.artifactId>
+        <dep.bsn.com.ibm.icu.version>52.1.1.v201501240615</dep.bsn.com.ibm.icu.version>
+        <dep.bsn.com.ibm.icu.base.groupId>tmp.need.a.home</dep.bsn.com.ibm.icu.base.groupId>
+        <dep.bsn.com.ibm.icu.base.artifactId>com.ibm.icu.base</dep.bsn.com.ibm.icu.base.artifactId>
+        <dep.bsn.com.ibm.icu.base.version>52.1.0.v201404171520</dep.bsn.com.ibm.icu.base.version>
+        <dep.bsn.javax.activation.groupId>tmp.need.a.home</dep.bsn.javax.activation.groupId>
+        <dep.bsn.javax.activation.artifactId>javax.activation</dep.bsn.javax.activation.artifactId>
+        <dep.bsn.javax.activation.version>1.1.0.v201211130549</dep.bsn.javax.activation.version>
+        <dep.bsn.javax.mail.groupId>tmp.need.a.home</dep.bsn.javax.mail.groupId>
+        <dep.bsn.javax.mail.artifactId>javax.mail</dep.bsn.javax.mail.artifactId>
+        <dep.bsn.javax.mail.version>1.4.0.v201005080615</dep.bsn.javax.mail.version>
+        <dep.bsn.javax.xml.groupId>tmp.need.a.home</dep.bsn.javax.xml.groupId>
+        <dep.bsn.javax.xml.artifactId>javax.xml</dep.bsn.javax.xml.artifactId>
+        <dep.bsn.javax.xml.version>1.3.4.v201005080400</dep.bsn.javax.xml.version>
+        <dep.bsn.org.antlr.runtime.groupId>tmp.need.a.home</dep.bsn.org.antlr.runtime.groupId>
+        <dep.bsn.org.antlr.runtime.artifactId>org.antlr.runtime</dep.bsn.org.antlr.runtime.artifactId>
+        <dep.bsn.org.antlr.runtime.version>3.2.0.v201101311130</dep.bsn.org.antlr.runtime.version>
+        <dep.bsn.org.apache.ant.groupId>tmp.need.a.home</dep.bsn.org.apache.ant.groupId>
+        <dep.bsn.org.apache.ant.artifactId>org.apache.ant</dep.bsn.org.apache.ant.artifactId>
+        <dep.bsn.org.apache.ant.version>1.9.2.v201404171502</dep.bsn.org.apache.ant.version>
+
+        <dep.apache.commons.cli.groupId>commons-cli</dep.apache.commons.cli.groupId>
+        <dep.apache.commons.cli.artifactId>commons-cli</dep.apache.commons.cli.artifactId>
+        <dep.apache.commons.cli.version>1.2</dep.apache.commons.cli.version>
+        <dep.apache.commons.codec.groupId>commons-codec</dep.apache.commons.codec.groupId>
+        <dep.apache.commons.codec.artifactId>commons-codec</dep.apache.commons.codec.artifactId>
+        <dep.apache.commons.codec.version>1.6</dep.apache.commons.codec.version>
+        <dep.apache.commons.collections.groupId>commons-collections</dep.apache.commons.collections.groupId>
+        <dep.apache.commons.collections.artifactId>commons-collections</dep.apache.commons.collections.artifactId>
+        <dep.apache.commons.collections.version>3.2.1</dep.apache.commons.collections.version>
+        <dep.apache.commons.exec.groupId>org.apache.commons</dep.apache.commons.exec.groupId>
+        <dep.apache.commons.exec.artifactId>commons-exec</dep.apache.commons.exec.artifactId>
+        <dep.apache.commons.exec.version>1.1</dep.apache.commons.exec.version>
+        <dep.apache.commons.io.groupId>commons-io</dep.apache.commons.io.groupId>
+        <dep.apache.commons.io.artifactId>commons-io</dep.apache.commons.io.artifactId>
+        <dep.apache.commons.io.version>2.2</dep.apache.commons.io.version>
+        <dep.apache.commons.lang.groupId>commons-lang</dep.apache.commons.lang.groupId>
+        <dep.apache.commons.lang.artifactId>commons-lang</dep.apache.commons.lang.artifactId>
+        <dep.apache.commons.lang.version>2.6</dep.apache.commons.lang.version>
+        <dep.apache.commons.net.groupId>commons-net</dep.apache.commons.net.groupId>
+        <dep.apache.commons.net.artifactId>commons-net</dep.apache.commons.net.artifactId>
+        <dep.apache.commons.net.version>3.2</dep.apache.commons.net.version>
+
+        <dep.bsn.org.apache.commons.logging.groupId>tmp.need.a.home</dep.bsn.org.apache.commons.logging.groupId>
+        <dep.bsn.org.apache.commons.logging.artifactId>org.apache.commons.logging</dep.bsn.org.apache.commons.logging.artifactId>
+        <dep.bsn.org.apache.commons.logging.version>1.1.1.v201101211721</dep.bsn.org.apache.commons.logging.version>
+        <dep.bsn.org.apache.commons.httpclient.groupId>tmp.need.a.home</dep.bsn.org.apache.commons.httpclient.groupId>
+        <dep.bsn.org.apache.commons.httpclient.artifactId>org.apache.commons.httpclient</dep.bsn.org.apache.commons.httpclient.artifactId>
+        <dep.bsn.org.apache.commons.httpclient.version>3.1.0.v201012070820</dep.bsn.org.apache.commons.httpclient.version>
+        <dep.bsn.org.apache.httpcomponents.httpclient.groupId>tmp.need.a.home</dep.bsn.org.apache.httpcomponents.httpclient.groupId>
+        <dep.bsn.org.apache.httpcomponents.httpclient.artifactId>org.apache.httpcomponents.httpclient</dep.bsn.org.apache.httpcomponents.httpclient.artifactId>
+        <dep.bsn.org.apache.httpcomponents.httpclient.version>4.3.6.v201411290715</dep.bsn.org.apache.httpcomponents.httpclient.version>
+        <dep.bsn.org.apache.httpcomponents.httpcore.groupId>tmp.need.a.home</dep.bsn.org.apache.httpcomponents.httpcore.groupId>
+        <dep.bsn.org.apache.httpcomponents.httpcore.artifactId>org.apache.httpcomponents.httpcore</dep.bsn.org.apache.httpcomponents.httpcore.artifactId>
+        <dep.bsn.org.apache.httpcomponents.httpcore.version>4.3.3.v201411290715</dep.bsn.org.apache.httpcomponents.httpcore.version>
+
+        <dep.bsn.org.eclipse.core.commands.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.commands.groupId>
+        <dep.bsn.org.eclipse.core.commands.artifactId>org.eclipse.core.commands</dep.bsn.org.eclipse.core.commands.artifactId>
+        <dep.bsn.org.eclipse.core.commands.version>3.6.100.v20140528-1422</dep.bsn.org.eclipse.core.commands.version>
+        <dep.bsn.org.eclipse.core.contenttype.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.contenttype.groupId>
+        <dep.bsn.org.eclipse.core.contenttype.artifactId>org.eclipse.core.contenttype</dep.bsn.org.eclipse.core.contenttype.artifactId>
+        <dep.bsn.org.eclipse.core.contenttype.version>3.4.200.v20140207-1251</dep.bsn.org.eclipse.core.contenttype.version>
+        <dep.bsn.org.eclipse.core.expressions.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.expressions.groupId>
+        <dep.bsn.org.eclipse.core.expressions.artifactId>org.eclipse.core.expressions</dep.bsn.org.eclipse.core.expressions.artifactId>
+        <dep.bsn.org.eclipse.core.expressions.version>3.4.600.v20140128-0851</dep.bsn.org.eclipse.core.expressions.version>
+        <dep.bsn.org.eclipse.core.filesystem.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.filesystem.groupId>
+        <dep.bsn.org.eclipse.core.filesystem.artifactId>org.eclipse.core.filesystem</dep.bsn.org.eclipse.core.filesystem.artifactId>
+        <dep.bsn.org.eclipse.core.filesystem.version>1.4.100.v20140514-1614</dep.bsn.org.eclipse.core.filesystem.version>
+        <dep.bsn.org.eclipse.core.jobs.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.jobs.groupId>
+        <dep.bsn.org.eclipse.core.jobs.artifactId>org.eclipse.core.jobs</dep.bsn.org.eclipse.core.jobs.artifactId>
+        <dep.bsn.org.eclipse.core.jobs.version>3.6.1.v20141014-1248</dep.bsn.org.eclipse.core.jobs.version>
+        <dep.bsn.org.eclipse.core.resources.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.resources.groupId>
+        <dep.bsn.org.eclipse.core.resources.artifactId>org.eclipse.core.resources</dep.bsn.org.eclipse.core.resources.artifactId>
+        <dep.bsn.org.eclipse.core.resources.version>3.9.1.v20140825-1431</dep.bsn.org.eclipse.core.resources.version>
+        <dep.bsn.org.eclipse.core.runtime.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.runtime.groupId>
+        <dep.bsn.org.eclipse.core.runtime.artifactId>org.eclipse.core.runtime</dep.bsn.org.eclipse.core.runtime.artifactId>
+        <dep.bsn.org.eclipse.core.runtime.version>3.10.0.v20140318-2214</dep.bsn.org.eclipse.core.runtime.version>
+        <dep.bsn.org.eclipse.core.variables.groupId>tmp.need.a.home</dep.bsn.org.eclipse.core.variables.groupId>
+        <dep.bsn.org.eclipse.core.variables.artifactId>org.eclipse.core.variables</dep.bsn.org.eclipse.core.variables.artifactId>
+        <dep.bsn.org.eclipse.core.variables.version>3.2.800.v20130819-1716</dep.bsn.org.eclipse.core.variables.version>
+        <dep.bsn.org.eclipse.debug.core.groupId>tmp.need.a.home</dep.bsn.org.eclipse.debug.core.groupId>
+        <dep.bsn.org.eclipse.debug.core.artifactId>org.eclipse.debug.core</dep.bsn.org.eclipse.debug.core.artifactId>
+        <dep.bsn.org.eclipse.debug.core.version>3.9.1.v20140805-1629</dep.bsn.org.eclipse.debug.core.version>
+        <dep.bsn.org.eclipse.emf.codegen.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.codegen.groupId>
+        <dep.bsn.org.eclipse.emf.codegen.artifactId>org.eclipse.emf.codegen</dep.bsn.org.eclipse.emf.codegen.artifactId>
+        <dep.bsn.org.eclipse.emf.codegen.version>2.10.0.v20150123-0452</dep.bsn.org.eclipse.emf.codegen.version>
+        <dep.bsn.org.eclipse.emf.codegen.ecore.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.codegen.ecore.groupId>
+        <dep.bsn.org.eclipse.emf.codegen.ecore.artifactId>org.eclipse.emf.codegen.ecore</dep.bsn.org.eclipse.emf.codegen.ecore.artifactId>
+        <dep.bsn.org.eclipse.emf.codegen.ecore.version>2.10.2.v20150123-0452</dep.bsn.org.eclipse.emf.codegen.ecore.version>
+        <dep.bsn.org.eclipse.emf.common.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.common.groupId>
+        <dep.bsn.org.eclipse.emf.common.artifactId>org.eclipse.emf.common</dep.bsn.org.eclipse.emf.common.artifactId>
+        <dep.bsn.org.eclipse.emf.common.version>2.10.1.v20150123-0348</dep.bsn.org.eclipse.emf.common.version>
+        <dep.bsn.org.eclipse.emf.ecore.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.ecore.groupId>
+        <dep.bsn.org.eclipse.emf.ecore.artifactId>org.eclipse.emf.ecore</dep.bsn.org.eclipse.emf.ecore.artifactId>
+        <dep.bsn.org.eclipse.emf.ecore.version>2.10.2.v20150123-0348</dep.bsn.org.eclipse.emf.ecore.version>
+        <dep.bsn.org.eclipse.emf.ecore.xmi.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.ecore.xmi.groupId>
+        <dep.bsn.org.eclipse.emf.ecore.xmi.artifactId>org.eclipse.emf.ecore.xmi</dep.bsn.org.eclipse.emf.ecore.xmi.artifactId>
+        <dep.bsn.org.eclipse.emf.ecore.xmi.version>2.10.2.v20150123-0348</dep.bsn.org.eclipse.emf.ecore.xmi.version>
+        <dep.bsn.org.eclipse.emf.mwe.core.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.mwe.core.groupId>
+        <dep.bsn.org.eclipse.emf.mwe.core.artifactId>org.eclipse.emf.mwe.core</dep.bsn.org.eclipse.emf.mwe.core.artifactId>
+        <dep.bsn.org.eclipse.emf.mwe.core.version>1.3.4.v201409021027</dep.bsn.org.eclipse.emf.mwe.core.version>
+        <dep.bsn.org.eclipse.emf.mwe.utils.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.mwe.utils.groupId>
+        <dep.bsn.org.eclipse.emf.mwe.utils.artifactId>org.eclipse.emf.mwe.utils</dep.bsn.org.eclipse.emf.mwe.utils.artifactId>
+        <dep.bsn.org.eclipse.emf.mwe.utils.version>1.3.4.v201409021027</dep.bsn.org.eclipse.emf.mwe.utils.version>
+        <dep.bsn.org.eclipse.emf.mwe2.lib.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.mwe2.lib.groupId>
+        <dep.bsn.org.eclipse.emf.mwe2.lib.artifactId>org.eclipse.emf.mwe2.lib</dep.bsn.org.eclipse.emf.mwe2.lib.artifactId>
+        <dep.bsn.org.eclipse.emf.mwe2.lib.version>2.7.0.v201409021027</dep.bsn.org.eclipse.emf.mwe2.lib.version>
+        <dep.bsn.org.eclipse.emf.mwe2.runtime.groupId>tmp.need.a.home</dep.bsn.org.eclipse.emf.mwe2.runtime.groupId>
+        <dep.bsn.org.eclipse.emf.mwe2.runtime.artifactId>org.eclipse.emf.mwe2.runtime</dep.bsn.org.eclipse.emf.mwe2.runtime.artifactId>
+        <dep.bsn.org.eclipse.emf.mwe2.runtime.version>2.7.0.v201409021027</dep.bsn.org.eclipse.emf.mwe2.runtime.version>
+        <dep.bsn.org.eclipse.equinox.app.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.app.groupId>
+        <dep.bsn.org.eclipse.equinox.app.artifactId>org.eclipse.equinox.app</dep.bsn.org.eclipse.equinox.app.artifactId>
+        <dep.bsn.org.eclipse.equinox.app.version>1.3.200.v20130910-1609</dep.bsn.org.eclipse.equinox.app.version>
+        <dep.bsn.org.eclipse.equinox.common.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.common.groupId>
+        <dep.bsn.org.eclipse.equinox.common.artifactId>org.eclipse.equinox.common</dep.bsn.org.eclipse.equinox.common.artifactId>
+        <dep.bsn.org.eclipse.equinox.common.version>3.6.200.v20130402-1505</dep.bsn.org.eclipse.equinox.common.version>
+        <dep.bsn.org.eclipse.equinox.ds.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.ds.groupId>
+        <dep.bsn.org.eclipse.equinox.ds.artifactId>org.eclipse.equinox.ds</dep.bsn.org.eclipse.equinox.ds.artifactId>
+        <dep.bsn.org.eclipse.equinox.ds.version>1.4.200.v20131126-2331</dep.bsn.org.eclipse.equinox.ds.version>
+        <dep.bsn.org.eclipse.equinox.event.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.event.groupId>
+        <dep.bsn.org.eclipse.equinox.event.artifactId>org.eclipse.equinox.event</dep.bsn.org.eclipse.equinox.event.artifactId>
+        <dep.bsn.org.eclipse.equinox.event.version>1.3.100.v20140115-1647</dep.bsn.org.eclipse.equinox.event.version>
+        <dep.bsn.org.eclipse.equinox.http.servlet.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.http.servlet.groupId>
+        <dep.bsn.org.eclipse.equinox.http.servlet.artifactId>org.eclipse.equinox.http.servlet</dep.bsn.org.eclipse.equinox.http.servlet.artifactId>
+        <dep.bsn.org.eclipse.equinox.http.servlet.version>1.1.500.v20140318-1755</dep.bsn.org.eclipse.equinox.http.servlet.version>
+        <dep.bsn.org.eclipse.equinox.launcher.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.launcher.groupId>
+        <dep.bsn.org.eclipse.equinox.launcher.artifactId>org.eclipse.equinox.launcher</dep.bsn.org.eclipse.equinox.launcher.artifactId>
+        <dep.bsn.org.eclipse.equinox.launcher.version>1.3.0.v20140415-2008</dep.bsn.org.eclipse.equinox.launcher.version>
+        <dep.bsn.org.eclipse.equinox.preferences.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.preferences.groupId>
+        <dep.bsn.org.eclipse.equinox.preferences.artifactId>org.eclipse.equinox.preferences</dep.bsn.org.eclipse.equinox.preferences.artifactId>
+        <dep.bsn.org.eclipse.equinox.preferences.version>3.5.200.v20140224-1527</dep.bsn.org.eclipse.equinox.preferences.version>
+        <dep.bsn.org.eclipse.equinox.registry.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.registry.groupId>
+        <dep.bsn.org.eclipse.equinox.registry.artifactId>org.eclipse.equinox.registry</dep.bsn.org.eclipse.equinox.registry.artifactId>
+        <dep.bsn.org.eclipse.equinox.registry.version>3.5.400.v20140428-1507</dep.bsn.org.eclipse.equinox.registry.version>
+        <dep.bsn.org.eclipse.equinox.supplement.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.supplement.groupId>
+        <dep.bsn.org.eclipse.equinox.supplement.artifactId>org.eclipse.equinox.supplement</dep.bsn.org.eclipse.equinox.supplement.artifactId>
+        <dep.bsn.org.eclipse.equinox.supplement.version>1.5.100.v20140428-1446</dep.bsn.org.eclipse.equinox.supplement.version>
+        <dep.bsn.org.eclipse.equinox.util.groupId>tmp.need.a.home</dep.bsn.org.eclipse.equinox.util.groupId>
+        <dep.bsn.org.eclipse.equinox.util.artifactId>org.eclipse.equinox.util</dep.bsn.org.eclipse.equinox.util.artifactId>
+        <dep.bsn.org.eclipse.equinox.util.version>1.0.500.v20130404-1337</dep.bsn.org.eclipse.equinox.util.version>
+        <dep.bsn.org.eclipse.jdt.core.groupId>tmp.need.a.home</dep.bsn.org.eclipse.jdt.core.groupId>
+        <dep.bsn.org.eclipse.jdt.core.artifactId>org.eclipse.jdt.core</dep.bsn.org.eclipse.jdt.core.artifactId>
+        <dep.bsn.org.eclipse.jdt.core.version>3.10.2.v20150120-1634</dep.bsn.org.eclipse.jdt.core.version>
+        <dep.bsn.org.eclipse.jdt.debug.groupId>tmp.need.a.home</dep.bsn.org.eclipse.jdt.debug.groupId>
+        <dep.bsn.org.eclipse.jdt.debug.artifactId>org.eclipse.jdt.debug</dep.bsn.org.eclipse.jdt.debug.artifactId>
+        <dep.bsn.org.eclipse.jdt.debug.version>3.8.102.v20150115-1323</dep.bsn.org.eclipse.jdt.debug.version>
+        <dep.bsn.org.eclipse.jdt.launching.groupId>tmp.need.a.home</dep.bsn.org.eclipse.jdt.launching.groupId>
+        <dep.bsn.org.eclipse.jdt.launching.artifactId>org.eclipse.jdt.launching</dep.bsn.org.eclipse.jdt.launching.artifactId>
+        <dep.bsn.org.eclipse.jdt.launching.version>3.7.102.v20141111-0953</dep.bsn.org.eclipse.jdt.launching.version>
+        <dep.bsn.org.eclipse.paho.client.mqttv3.groupId>tmp.need.a.home</dep.bsn.org.eclipse.paho.client.mqttv3.groupId>
+        <dep.bsn.org.eclipse.paho.client.mqttv3.artifactId>org.eclipse.paho.client.mqttv3</dep.bsn.org.eclipse.paho.client.mqttv3.artifactId>
+        <dep.bsn.org.eclipse.paho.client.mqttv3.version>1.0.2</dep.bsn.org.eclipse.paho.client.mqttv3.version>
+        <dep.bsn.org.eclipse.text.groupId>tmp.need.a.home</dep.bsn.org.eclipse.text.groupId>
+        <dep.bsn.org.eclipse.text.artifactId>org.eclipse.text</dep.bsn.org.eclipse.text.artifactId>
+        <dep.bsn.org.eclipse.text.version>3.5.300.v20130515-1451</dep.bsn.org.eclipse.text.version>
+        <dep.bsn.org.eclipse.xpand.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xpand.groupId>
+        <dep.bsn.org.eclipse.xpand.artifactId>org.eclipse.xpand</dep.bsn.org.eclipse.xpand.artifactId>
+        <dep.bsn.org.eclipse.xpand.version>2.0.0.v201406030414</dep.bsn.org.eclipse.xpand.version>
+        <dep.bsn.org.eclipse.xtend.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtend.groupId>
+        <dep.bsn.org.eclipse.xtend.artifactId>org.eclipse.xtend</dep.bsn.org.eclipse.xtend.artifactId>
+        <dep.bsn.org.eclipse.xtend.version>2.0.0.v201406030414</dep.bsn.org.eclipse.xtend.version>
+        <dep.bsn.org.eclipse.xtend.lib.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtend.lib.groupId>
+        <dep.bsn.org.eclipse.xtend.lib.artifactId>org.eclipse.xtend.lib</dep.bsn.org.eclipse.xtend.lib.artifactId>
+        <dep.bsn.org.eclipse.xtend.lib.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtend.lib.version>
+        <dep.bsn.org.eclipse.xtend.typesystem.emf.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtend.typesystem.emf.groupId>
+        <dep.bsn.org.eclipse.xtend.typesystem.emf.artifactId>org.eclipse.xtend.typesystem.emf</dep.bsn.org.eclipse.xtend.typesystem.emf.artifactId>
+        <dep.bsn.org.eclipse.xtend.typesystem.emf.version>2.0.0.v201406030414</dep.bsn.org.eclipse.xtend.typesystem.emf.version>
+        <dep.bsn.org.eclipse.xtext.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.groupId>
+        <dep.bsn.org.eclipse.xtext.artifactId>org.eclipse.xtext</dep.bsn.org.eclipse.xtext.artifactId>
+        <dep.bsn.org.eclipse.xtext.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.version>
+        <dep.bsn.org.eclipse.xtext.common.types.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.common.types.groupId>
+        <dep.bsn.org.eclipse.xtext.common.types.artifactId>org.eclipse.xtext.common.types</dep.bsn.org.eclipse.xtext.common.types.artifactId>
+        <dep.bsn.org.eclipse.xtext.common.types.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.common.types.version>
+        <dep.bsn.org.eclipse.xtext.ecore.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.ecore.groupId>
+        <dep.bsn.org.eclipse.xtext.ecore.artifactId>org.eclipse.xtext.ecore</dep.bsn.org.eclipse.xtext.ecore.artifactId>
+        <dep.bsn.org.eclipse.xtext.ecore.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.ecore.version>
+        <dep.bsn.org.eclipse.xtext.generator.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.generator.groupId>
+        <dep.bsn.org.eclipse.xtext.generator.artifactId>org.eclipse.xtext.generator</dep.bsn.org.eclipse.xtext.generator.artifactId>
+        <dep.bsn.org.eclipse.xtext.generator.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.generator.version>
+        <dep.bsn.org.eclipse.xtext.smap.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.smap.groupId>
+        <dep.bsn.org.eclipse.xtext.smap.artifactId>org.eclipse.xtext.smap</dep.bsn.org.eclipse.xtext.smap.artifactId>
+        <dep.bsn.org.eclipse.xtext.smap.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.smap.version>
+        <dep.bsn.org.eclipse.xtext.util.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.util.groupId>
+        <dep.bsn.org.eclipse.xtext.util.artifactId>org.eclipse.xtext.util</dep.bsn.org.eclipse.xtext.util.artifactId>
+        <dep.bsn.org.eclipse.xtext.util.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.util.version>
+        <dep.bsn.org.eclipse.xtext.xbase.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.xbase.groupId>
+        <dep.bsn.org.eclipse.xtext.xbase.artifactId>org.eclipse.xtext.xbase</dep.bsn.org.eclipse.xtext.xbase.artifactId>
+        <dep.bsn.org.eclipse.xtext.xbase.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.xbase.version>
+        <dep.bsn.org.eclipse.xtext.xbase.lib.groupId>tmp.need.a.home</dep.bsn.org.eclipse.xtext.xbase.lib.groupId>
+        <dep.bsn.org.eclipse.xtext.xbase.lib.artifactId>org.eclipse.xtext.xbase.lib</dep.bsn.org.eclipse.xtext.xbase.lib.artifactId>
+        <dep.bsn.org.eclipse.xtext.xbase.lib.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.xbase.lib.version>
+
+        <dep.bsn.org.jupnp.groupId>tmp.need.a.home</dep.bsn.org.jupnp.groupId>
+        <dep.bsn.org.jupnp.artifactId>org.jupnp</dep.bsn.org.jupnp.artifactId>
+        <dep.bsn.org.jupnp.version>2.0.0.201508200936</dep.bsn.org.jupnp.version>
+
+        <dep.bsn.org.objectweb.asm.groupId>tmp.need.a.home</dep.bsn.org.objectweb.asm.groupId>
+        <dep.bsn.org.objectweb.asm.artifactId>org.objectweb.asm</dep.bsn.org.objectweb.asm.artifactId>
+        <dep.bsn.org.objectweb.asm.version>5.0.1.v201404251740</dep.bsn.org.objectweb.asm.version>
     </properties>
-    
-    <packaging>pom</packaging>
-    
+
     <modules>
-	<module>addons</module>
+        <module>poms</module>
+        <module>addons</module>
         <module>bundles</module>
         <module>features</module>
-        <module>products</module>
         <module>targetplatform</module>
-        <module>distribution</module>
+        <module>distributions</module>
     </modules>
-        
-    <!-- dependencies, which are not available in a p2-repository -->
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.fileinstall</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-    </dependencies>
-    
+
+
     <build>
-        <plugins>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>tycho-maven-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>target-platform-configuration</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <resolver>p2</resolver>
-                    <ignoreTychoRepositories>true</ignoreTychoRepositories>
-                    <pomDependencies>consider</pomDependencies>
-                    <target>
-                        <artifact>
-                            <groupId>org.openhab</groupId>
-                            <artifactId>targetplatform</artifactId>
-                            <version>${project.version}</version>
-                            <classifier>openhab</classifier>
-                        </artifact>
-                    </target>
-                    <environments>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                        <environment>
-                            <os>win32</os>
-                            <ws>win32</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>macosx</os>
-                            <ws>cocoa</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                    </environments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>tycho-packaging-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <strictVersions>false</strictVersions>
-                </configuration>
-            </plugin>
-        </plugins>
-        
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>${tycho-groupid}</groupId>
-                    <artifactId>tycho-compiler-plugin</artifactId>
-                    <version>${tycho-version}</version>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${karaf.maven.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.5.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
                     <configuration>
-                        <encoding>UTF-8</encoding>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build.helper.maven.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>${license.maven.plugin.version}</version>
                     <configuration>
                         <basedir>${basedir}</basedir>
                         <header>src/etc/header.txt</header>
@@ -168,103 +418,26 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>${tycho-groupid}</groupId>
-                    <artifactId>tycho-versions-plugin</artifactId>
-                    <version>${tycho-version}</version>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-    
-    <profiles>
-        <profile>
-            <id>prepare-release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-versions-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>update-version</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>set-version</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        
-        <profile>
-            <id>deploy</id>
-            <distributionManagement>
-                <repository>
-                    <id>${repo.id}</id>
-                    <url>${repo.url}/maven</url>
-                    <uniqueVersion>false</uniqueVersion>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>${tycho-groupid}</groupId>
-                        <artifactId>tycho-source-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>plugin-source</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>plugin-source</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <sourceBundle>true</sourceBundle>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        
-        <profile>
-            <id>prepare-next-snapshot</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-versions-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>update-version</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>set-version</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
-	<repositories>
-		<repository>
-			<id>eclipse</id>
-			<name>Eclipse Snapshot Repository</name>
-			<layout>default</layout>
-			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-    
+    <repositories>
+        <repository>
+            <!-- TODO: temporary solution as long there is no maven repo for 3rd party libs -->
+            <id>github-openhab2-mvn-repo</id>
+            <name>Git repo for OH2 3rd party libs</name>
+            <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/master/</url>
+        </repository>
+        <repository>
+            <id>eclipse</id>
+            <name>Eclipse Snapshot Repository</name>
+            <layout>default</layout>
+            <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 </project>

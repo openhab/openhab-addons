@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+#    Licensed to the Apache Software Foundation (ASF) under one or more
+#    contributor license agreements.  See the NOTICE file distributed with
+#    this work for additional information regarding copyright ownership.
+#    The ASF licenses this file to You under the Apache License, Version 2.0
+#    (the "License"); you may not use this file except in compliance with
+#    the License.  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+#
+# handle specific scripts; the SCRIPT_NAME is exactly the name of the Karaf
+# script; for example karaf, start, stop, admin, client, ...
+#
+# if [ "$KARAF_SCRIPT" == "SCRIPT_NAME" ]; then
+#   Actions go here...
+# fi
+
+#
+# general settings which should be applied for all scripts go here; please keep
+# in mind that it is possible that scripts might be executed more than once, e.g.
+# in example of the start script where the start script is executed first and the
+# karaf script afterwards.
+#
+
+#
+# The following section shows the possible configuration options for the default
+# karaf scripts
+#
+# export JAVA_HOME # Location of Java installation
+# export JAVA_MIN_MEM # Minimum memory for the JVM
+# export JAVA_MAX_MEM # Maximum memory for the JVM
+# export JAVA_PERM_MEM # Minimum perm memory for the JVM
+# export JAVA_MAX_PERM_MEM # Maximum perm memory for the JVM
+# export EXTRA_JAVA_OPTS # Additional JVM options
+# export KARAF_HOME # Karaf home folder
+# export KARAF_DATA # Karaf data folder
+# export KARAF_BASE # Karaf base folder
+# export KARAF_ETC  # Karaf etc  folder
+# export KARAF_OPTS # Additional available Karaf options
+# export KARAF_DEBUG # Enable debug mode
+# export KARAF_REDIRECT # Enable/set the std/err redirection when using bin/start
+
+#
+# Import openHAB 2 directory layout
+#
+. "$DIRNAME/oh2_dir_layout"
+
+#
+# set ports for HTTP(S) server
+#
+if [ ! -z ${OPENHAB_HTTP_PORT} ]; then
+    HTTP_PORT=${OPENHAB_HTTP_PORT}
+else
+    HTTP_PORT=8080
+fi
+
+if [ ! -z ${OPENHAB_HTTPS_PORT} ]; then
+    HTTPS_PORT=${OPENHAB_HTTPS_PORT}
+else
+    HTTPS_PORT=8443
+fi
+
+#
+# set java options
+#
+
+export JAVA_OPTS="${JAVA_OPTS}
+  -Dopenhab.home=${OPENHAB_HOME}
+  -Dopenhab.conf=${OPENHAB_CONF}
+  -Dopenhab.runtime=${OPENHAB_RUNTIME}
+  -Dopenhab.userdata=${OPENHAB_USERDATA}
+  -Dorg.osgi.service.http.port=${HTTP_PORT}
+  -Dorg.osgi.service.http.port.secure=${HTTPS_PORT}"
