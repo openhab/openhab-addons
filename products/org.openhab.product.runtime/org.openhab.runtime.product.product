@@ -112,6 +112,7 @@
       <plugin id="org.openhab.core.compat1x" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.core.init" autoStart="true" startLevel="1" />
       <plugin id="org.openhab.io.rest.docs" autoStart="true" startLevel="0" />
+      <plugin id="org.openhab.io.jetty.certificate" autoStart="true" startLevel="3" />
       <plugin id="org.openhab.ui.classicui" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.ui.dashboard" autoStart="true" startLevel="0" />
       <plugin id="org.openhab.ui.iconset.classic" autoStart="true" startLevel="0" />
