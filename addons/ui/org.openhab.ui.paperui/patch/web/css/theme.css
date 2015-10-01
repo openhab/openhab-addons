@@ -34,7 +34,7 @@ nav.menu .top .title {
 
 /* Tabs */
 
-md-tabs md-tab {
+md-tabs md-tabs-wrapper {
 	background-color: #ff6600;
 }
 
