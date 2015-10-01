@@ -33,6 +33,13 @@
     <feature name="openhab2-addon-binding-anel" description="" version="${project.version}">
         <feature>openhab2-runtime-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.anel/${oh1.version}</bundle>
+        <configfile finalname="conf/services/anel.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/anel</configfile>
+    </feature>
+
+    <feature name="openhab2-addon-binding-astro1" description="" version="${project.version}">
+        <feature>openhab2-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.astro/${oh1.version}</bundle>
+        <configfile finalname="conf/services/astro.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/astro</configfile>
     </feature>
 
     <feature name="openhab2-addon-binding-astro" description="" version="${project.version}">
@@ -172,6 +179,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab2-addon-binding-networkhealth" description="" version="${project.version}">
+        <feature>openhab2-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.networkhealth/${oh1.version}</bundle>
+        <configfile finalname="conf/services/networkhealth.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/networkhealth</configfile>
+    </feature>
+
     <feature name="openhab2-addon-binding-nibeheatpump" description="" version="${project.version}">
         <feature>openhab2-runtime-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nibeheatpump/${oh1.version}</bundle>
@@ -286,6 +299,16 @@
 
     <feature name="openhab2-addon-binding-wemo" description="" version="${project.version}">
         <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.wemo/${esh.version}</bundle>
+    </feature>
+
+    <feature name="openhab2-addon-binding-wol" description="" version="${project.version}">
+        <feature>openhab2-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.wol/${oh1.version}</bundle>
+    </feature>
+
+    <feature name="openhab2-addon-binding-xbmc" description="" version="${project.version}">
+        <feature>openhab2-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.xbmc/${oh1.version}</bundle>
     </feature>
 
     <feature name="openhab2-addon-binding-yahooweather" description="" version="${project.version}">
