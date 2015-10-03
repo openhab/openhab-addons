@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonytv"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="bravia">
+        <label>Sony Bravia TV</label>
+        <description>Represents a Sony Bravia TV.</description>
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="input" typeId="input"/>
+        </channels>
+        <config-description>
+            <parameter-group name="general">
+                <label>General</label>
+            </parameter-group>
+            <parameter-group name="authentication">
+                <label>Authentication</label>
+            </parameter-group>
+            <parameter name="udn" type="text" groupName="general" required="true">
+                <label>Unique Device Name</label>
+                <description>The UDN identifies the TV.</description>
+            </parameter>
+            <parameter name="apiUrl" type="text" groupName="general" required="true">
+                <label>API URL</label>
+                <description>An address of the Sony Scalar API for the TV.</description>
+            </parameter>
+            <parameter name="refresh" type="integer" groupName="general">
+                <label>Refresh interval</label>
+                <description>Specifies the refresh interval in seconds</description>
+                <default>5</default>
+            </parameter>
+            <parameter name="preSharedKey" type="text" groupName="authentication" required="true">
+                <label>Pre-shared Key</label>
+                <description>A pre-shared key set in TV's IP control settings.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Power on/off the TV</description>
+    </channel-type>
+    <channel-type id="input">
+        <item-type>String</item-type>
+        <label>Input</label>
+        <description>Input source to show on the TV</description>
+    </channel-type>
+</thing:thing-descriptions>
