@@ -46,9 +46,9 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
 
-        <dep.karaf.version>4.0.1</dep.karaf.version>
-        <karaf.maven.plugin.version>4.0.1</karaf.maven.plugin.version>
-        <karaf.features.version>4.0.1</karaf.features.version>
+        <dep.karaf.version>4.0.2</dep.karaf.version>
+        <karaf.maven.plugin.version>4.0.2</karaf.maven.plugin.version>
+        <karaf.features.version>4.0.2</karaf.features.version>
         <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <license.maven.plugin.version>2.10</license.maven.plugin.version>
