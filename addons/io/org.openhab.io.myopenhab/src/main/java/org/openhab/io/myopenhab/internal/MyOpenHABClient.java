@@ -407,6 +407,56 @@ public class MyOpenHABClient {
     }
 
     /**
+     * This method sends log notification to my.openHAB
+     *
+     * @param message notification message text
+     * @param icon name of the icon for this notification
+     * @param severity severity name for this notification
+     *
+     */
+
+    public void sendLogNotification(String message, String icon, String severity) {
+        if (isConnected()) {
+            JSONObject notificationMessage = new JSONObject();
+            try {
+                notificationMessage.put("message", message);
+                notificationMessage.put("icon", icon);
+                notificationMessage.put("severity", severity);
+                socket.emit("lognotification", notificationMessage);
+            } catch (JSONException e) {
+                logger.error(e.getMessage());
+            }
+        } else {
+            logger.debug("No connection, notification is not sent");
+        }
+    }
+
+    /**
+     * This method sends broadcast notification to my.openHAB
+     *
+     * @param message notification message text
+     * @param icon name of the icon for this notification
+     * @param severity severity name for this notification
+     *
+     */
+
+    public void sendBroadcastNotification(String message, String icon, String severity) {
+        if (isConnected()) {
+            JSONObject notificationMessage = new JSONObject();
+            try {
+                notificationMessage.put("message", message);
+                notificationMessage.put("icon", icon);
+                notificationMessage.put("severity", severity);
+                socket.emit("broadcastnotification", notificationMessage);
+            } catch (JSONException e) {
+                logger.error(e.getMessage());
+            }
+        } else {
+            logger.debug("No connection, notification is not sent");
+        }
+    }
+
+    /**
      * Send SMS to my.openHAB
      *
      * @param phone number to send notification to
