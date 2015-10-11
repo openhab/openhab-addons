@@ -108,6 +108,14 @@
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openhab.features</groupId>
+            <artifactId>org.openhab.feature.demo</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>

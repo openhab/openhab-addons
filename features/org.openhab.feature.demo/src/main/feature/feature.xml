@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+    <!-- <feature name="${project.artifactId}" description="${project.name}" version="${project.version}"> -->
+
+    <feature name="openhab2-demo" description="${project.name}" version="${project.version}">
+        <details>${project.description}</details>
+        <feature>openhab2-addon-ui-classic</feature>
+        <feature>openhab2-addon-ui-paper</feature>
+        <feature>openhab2-addon-binding-yahooweather</feature>
+        <feature>openhab2-addon-binding-wemo</feature>
+        <feature>openhab2-addon-binding-hue</feature>
+        <feature>openhab2-addon-binding-sonos</feature>
+        <feature>openhab2-addon-binding-ipp</feature>
+        <feature>openhab2-addon-binding-astro</feature>
+        <feature>openhab2-addon-binding-avmfritz</feature>
+        <feature>openhab2-addon-binding-ntp</feature>
+        <feature>openhab2-addon-persistence-rrd4j</feature>
+        <configfile finalname="${openhab.conf}/items/demo.items" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/items</configfile>
+        <configfile finalname="${openhab.conf}/sitemaps/demo.sitemap" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/sitemaps</configfile>
+        <configfile finalname="${openhab.conf}/things/demo.things" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/things</configfile>
+        <configfile finalname="${openhab.conf}/rules/demo.rules" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/rules</configfile>
+        <configfile finalname="${openhab.conf}/scripts/demo.script" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/scripts</configfile>
+        <configfile finalname="${openhab.conf}/persistence/logging.persist" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/persistence-logging</configfile>
+        <configfile finalname="${openhab.conf}/persistence/rrd4j.persist" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/persistence-rrd4j</configfile>
+        <configfile finalname="${openhab.conf}/transform/en.map" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/transform-en</configfile>
+        <configfile finalname="${openhab.conf}/transform/de.map" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/transform-de</configfile>
+        <configfile finalname="${openhab.conf}/services/classicui.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/services-classicui</configfile>
+        <configfile finalname="${openhab.conf}/services/logging.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/services-logging</configfile>
+        <configfile finalname="${openhab.conf}/services/runtime.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.demo.resources/${project.version}/cfg/services-runtime</configfile>
+    </feature>
+
+</features>

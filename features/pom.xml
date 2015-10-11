@@ -19,6 +19,8 @@
     <module>org.openhab.feature.addons</module>
     <module>org.openhab.feature.addons.external</module>
     <module>org.openhab.feature.runtime</module>
+    <module>org.openhab.feature.demo.resources</module>
+    <module>org.openhab.feature.demo</module>
   </modules>
 
 </project>
