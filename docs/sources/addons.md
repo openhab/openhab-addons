@@ -33,6 +33,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Anel | Binding |
 | Astro | Binding |
 | Denon | Binding |
+| DMX (OLA) | Binding |
 | EDS OWServer | Binding |
 | Energenie | Binding |
 | Enocean | Binding |
