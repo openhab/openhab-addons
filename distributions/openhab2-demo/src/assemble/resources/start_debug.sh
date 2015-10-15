@@ -40,6 +40,7 @@ java $debug_opts $prog_args \
 	-Declipse.ignoreApp=true \
 	-Dosgi.noShutdown=true \
 	-Djetty.home.bundle=org.openhab.io.jetty \
+	-Djetty.keystore.path=./runtime/etc/keystore \
 	-Dorg.osgi.service.http.port=$HTTP_PORT \
 	-Dorg.osgi.service.http.port.secure=$HTTPS_PORT \
 	-Dfelix.fileinstall.dir=addons \
