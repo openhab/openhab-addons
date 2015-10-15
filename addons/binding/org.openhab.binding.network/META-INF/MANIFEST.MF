@@ -7,14 +7,14 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: com.google.common.collect,
- org.apache.commons.net.util;version="3.2.0",
+ org.apache.commons.net.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.eclipse.smarthome.io.net.actions,
+ org.eclipse.smarthome.model.script.actions,
  org.slf4j
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.network,
