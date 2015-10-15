@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Karaf Integration Tests
+Bundle-SymbolicName: org.openhab.core.karaf.test
+Bundle-Version: 2.0.0.qualifier
+Bundle-Vendor: openHAB.org
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: org.apache.karaf.features
+Fragment-Host: org.openhab.core.karaf
+Service-Component: OSGI-INF/featuresservicemock.xml

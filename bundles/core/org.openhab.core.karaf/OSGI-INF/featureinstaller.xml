@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="require" name="org.openhab.addons">
+   <implementation class="org.openhab.core.karaf.internal.FeatureInstaller"/>
+   <reference bind="setFeaturesService" cardinality="1..1" interface="org.apache.karaf.features.FeaturesService" name="FeaturesService" policy="static" unbind="unsetFeaturesService"/>
+   <property name="service.pid" type="String" value="org.openhab.addons"/>
+</scr:component>

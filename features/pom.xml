@@ -8,15 +8,16 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab</groupId>
-  <artifactId>features</artifactId>
+  <groupId>org.openhab.features</groupId>
+  <artifactId>pom</artifactId>
 
   <name>openHAB Features</name>
 
   <packaging>pom</packaging>
 
   <modules>
-    <module>org.openhab.feature.dependencies</module>
+    <module>org.openhab.feature.addons</module>
+    <module>org.openhab.feature.addons.external</module>
     <module>org.openhab.feature.runtime</module>
   </modules>
 
