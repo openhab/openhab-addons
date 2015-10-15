@@ -50,7 +50,6 @@
         <bundle start-level="54">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.id/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.persistence/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.scheduler/${esh.version}</bundle>
-        <bundle start-level="53">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.scriptengine/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.thing/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.thing.xml/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.core/org.eclipse.smarthome.core.transform/${esh.version}</bundle>

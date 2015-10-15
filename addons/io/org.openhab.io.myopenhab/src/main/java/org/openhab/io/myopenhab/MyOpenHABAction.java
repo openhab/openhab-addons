@@ -9,7 +9,7 @@
 
 package org.openhab.io.myopenhab;
 
-import org.eclipse.smarthome.core.scriptengine.action.ActionDoc;
+import org.eclipse.smarthome.model.script.engine.action.ActionDoc;
 import org.openhab.io.myopenhab.internal.MyOpenHABService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
