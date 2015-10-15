@@ -243,6 +243,12 @@
         <configfile finalname="${openhab.conf}/services/samsungac.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/samsungac</configfile>
     </feature>
 
+    <feature name="openhab2-addon-binding-satel" description="" version="${project.version}">
+        <feature>openhab2-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.satel/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/satel.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/satel</configfile>
+    </feature>
+
     <feature name="openhab2-addon-binding-snmp" description="" version="${project.version}">
         <feature>openhab2-runtime-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.snmp/${oh1.version}</bundle>
