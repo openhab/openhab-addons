@@ -13,8 +13,8 @@
    <implementation class="org.openhab.io.myopenhab.internal.MyOpenHABService"/>
    <service>
 	   <provide interface="org.eclipse.smarthome.core.persistence.PersistenceService"/>
-       <provide interface="org.eclipse.smarthome.core.scriptengine.action.ActionService"/>
        <provide interface="org.eclipse.smarthome.core.events.EventSubscriber"/>
+       <provide interface="org.eclipse.smarthome.model.script.engine.action.ActionService"/>
    </service>
    <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry"/>
    <reference bind="setEventPublisher" cardinality="0..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="dynamic" unbind="unsetEventPublisher"/>
