@@ -38,9 +38,9 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.persistence.PersistenceService;
-import org.eclipse.smarthome.core.scriptengine.action.ActionService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
+import org.eclipse.smarthome.model.script.engine.action.ActionService;
 import org.openhab.core.OpenHAB;
 import org.openhab.io.myopenhab.MyOpenHABAction;
 import org.osgi.framework.BundleContext;
@@ -68,7 +68,8 @@ public class MyOpenHABService implements PersistenceService, ActionService, MyOp
     protected ItemRegistry itemRegistry = null;
     protected EventPublisher eventPublisher = null;
 
-    public MyOpenHABService() {}
+    public MyOpenHABService() {
+    }
 
     /**
      * This method sends notification message to mobile app through my.openHAB service
@@ -81,6 +82,32 @@ public class MyOpenHABService implements PersistenceService, ActionService, MyOp
     public void sendNotification(String userId, String message, String icon, String severity) {
         logger.debug("Sending message '{}' to user id {}", message, userId);
         myOHClient.sendNotification(userId, message, icon, severity);
+    }
+
+    /**
+     * Sends an advanced notification to log. Log notifications are not pushed to user
+     * devices but are shown to all account users in notifications log
+     *
+     * @param message the {@link String} containing a message to send to specified user id
+     * @param icon the {@link String} containing a name of the icon to be used with this notification
+     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     */
+    public void sendLogNotification(String message, String icon, String severity) {
+        logger.debug("Sending log message '{}'", message);
+        myOHClient.sendLogNotification(message, icon, severity);
+    }
+
+    /**
+     * Sends a broadcast notification. Broadcast notifications are pushed to all
+     * mobile devices of all users of the account
+     *
+     * @param message the {@link String} containing a message to send to specified user id
+     * @param icon the {@link String} containing a name of the icon to be used with this notification
+     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     */
+    public void sendBroadcastNotification(String message, String icon, String severity) {
+        logger.debug("Sending broadcast message '{}' to all users", message);
+        myOHClient.sendBroadcastNotification(message, icon, severity);
     }
 
     /**

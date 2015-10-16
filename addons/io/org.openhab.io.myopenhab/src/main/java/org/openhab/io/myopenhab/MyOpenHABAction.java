@@ -9,7 +9,7 @@
 
 package org.openhab.io.myopenhab;
 
-import org.eclipse.smarthome.core.scriptengine.action.ActionDoc;
+import org.eclipse.smarthome.model.script.engine.action.ActionDoc;
 import org.openhab.io.myopenhab.internal.MyOpenHABService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +55,62 @@ public class MyOpenHABAction {
         logger.debug("sending notification '{}' to user {}", message, userId);
         if (myOpenHABService != null)
             myOpenHABService.sendNotification(userId, message, icon, severity);
+    }
+
+    /**
+     * Sends a simple notification to log. Log notifications are not pushed to user
+     * devices but are shown to all account users in notifications log
+     *
+     * @param message the body of the notification
+     *
+     */
+    @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
+    static public void sendLogNotification(String message) {
+        sendLogNotification(message, null, null);
+    }
+
+    /**
+     * Sends an advanced notification to log. Log notifications are not pushed to user
+     * devices but are shown to all account users in notifications log
+     *
+     * @param message the body of the notification
+     * @param icon name for the notification
+     * @param severity category for the notification
+     *
+     */
+    @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
+    static public void sendLogNotification(String message, String icon, String severity) {
+        logger.debug("sending log notification '{}'", message);
+        if (myOpenHABService != null)
+            myOpenHABService.sendLogNotification(message, icon, severity);
+    }
+
+    /**
+     * Sends a simple broadcast notification. Broadcast notifications are pushed to all
+     * mobile devices of all users of the account
+     *
+     * @param message the body of the notification
+     *
+     */
+    @ActionDoc(text = "Sends a broadcast notification to all mobile devices of all account users")
+    static public void sendBroadcastNotification(String message) {
+        sendBroadcastNotification(message, null, null);
+    }
+
+    /**
+     * Sends an advanced broadcast notification. Broadcast notifications are pushed to all
+     * mobile devices of all users of the account
+     *
+     * @param message the body of the notification
+     * @param icon name for the notification
+     * @param severity category for the notification
+     *
+     */
+    @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
+    static public void sendBroadcastNotification(String message, String icon, String severity) {
+        logger.debug("sending broadcast notification '{}' to all users", message);
+        if (myOpenHABService != null)
+            myOpenHABService.sendBroadcastNotification(message, icon, severity);
     }
 
     /**

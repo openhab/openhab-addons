@@ -18,6 +18,7 @@
   <modules>
     <module>org.openhab.io.transport.serial</module>
     <module>org.openhab.io.jetty</module>
+    <module>org.openhab.io.jetty.certificate</module>
     <module>org.openhab.io.rest.docs</module>
   </modules>
 

@@ -33,6 +33,7 @@
                                 <artifact><file>src/main/resources/conf/astro.cfg</file><type>cfg</type><classifier>astro</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/cometvisu.cfg</file><type>cfg</type><classifier>cometvisu</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/denon.cfg</file><type>cfg</type><classifier>denon</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/dmx.cfg</file><type>cfg</type><classifier>dmx</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/enocean.cfg</file><type>cfg</type><classifier>enocean</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/epsonprojector.cfg</file><type>cfg</type><classifier>epsonprojector</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/freeswitch.cfg</file><type>cfg</type><classifier>freeswitch</classifier></artifact>
@@ -59,6 +60,7 @@
                                 <artifact><file>src/main/resources/conf/pushover.cfg</file><type>cfg</type><classifier>pushover</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/rrd4j.cfg</file><type>cfg</type><classifier>rrd4j</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/samsungac.cfg</file><type>cfg</type><classifier>samsungac</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/satel.cfg</file><type>cfg</type><classifier>satel</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/snmp.cfg</file><type>cfg</type><classifier>snmp</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/swegonventilation.cfg</file><type>cfg</type><classifier>swegonventilation</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/systeminfo.cfg</file><type>cfg</type><classifier>systeminfo</classifier></artifact>
