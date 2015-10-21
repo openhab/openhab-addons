@@ -60,6 +60,7 @@ public class MaxBinding {
 	public final static String PROPERTY_RFADDRESS = "rfAddress";
 	public final static String PROPERTY_ROOMNAME = "room";
 	public final static String PROPERTY_DEVICENAME = "name";
+	public final static String PROPERTY_REFRESH_ACTUAL_RATE ="refreshActualRate";
 	
 
 	public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(

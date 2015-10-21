@@ -6,19 +6,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.max.internal.message;
+package org.openhab.binding.max.internal.command;
 
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
+import org.openhab.binding.max.internal.device.ThermostatModeType;
 
 /**
- * Command to be send via the MAX!Cube protocol.
+ * S CubeCommand for setting MAX! thermostat properties.
  * 
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 update + simplification
  * @since 1.4.0
  */
-public class S_Command {
+public class S_Command extends CubeCommand {
 
 	private String baseString = "000440000000";
 	private boolean[] bits = null;
@@ -87,5 +88,10 @@ public class S_Command {
 		String encodedString = Base64.encodeBase64String(Utils.hexStringToByteArray(commandString));
 
 		return "s:" + encodedString;
+	}
+
+	@Override
+	public String getReturnStrings() {
+		return "S:";
 	}
 }

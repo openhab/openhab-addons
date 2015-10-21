@@ -6,8 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.max.internal.message;
+package org.openhab.binding.max.internal.device;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -15,7 +18,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 
 /**
- * MAX!Cube heating thermostat.
+ * MAX! Heating thermostat & Heating thermostat+ .
  * 
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 update
@@ -33,12 +36,16 @@ public class HeatingThermostat extends Device {
 	/** Actual Temperature in degrees celcius */
 	private double temperatureActual;
 
-	/** Date setpoint until the termperature setpoint is valid */
+	/** Date setpoint until the temperature setpoint is valid */
 	private Date dateSetpoint;
 
 	/** Device type for this thermostat **/
 	private DeviceType deviceType = DeviceType.HeatingThermostat;
 
+	/** Date/Time the actual temperature was last updated */
+	private Date actualTempLastUpdated = null;
+
+	
 	public HeatingThermostat(DeviceConfiguration c) {
 		super(c);
 	}
@@ -108,19 +115,23 @@ public class HeatingThermostat extends Device {
 	 * @param value the actual temperature raw value as provided by the L message
 	 */
 	public void setTemperatureActual(double value) {
-		if(this.temperatureActual != value ) setUpdated (true);
+		if(this.temperatureActual != value) {
+			setUpdated (true);
+			this.actualTempLastUpdated = Calendar.getInstance().getTime();
+		}
 		this.temperatureActual = value ;
 	}
 
 	/**
 	 * Returns the measured temperature  of this thermostat. 
-	 * 0ï¿½C is displayed if no actual is measured. Temperature is only updated after valve position changes
+	 * 0°C is displayed if no actual is measured. Temperature is only updated after valve position changes
 	 *
 	 * @return 
 	 * 			the actual temperature as <code>DecimalType</code>
 	 */
 	public State getTemperatureActual() {
-		return new DecimalType(this.temperatureActual);
+		BigDecimal temperatureActual = BigDecimal.valueOf(this.temperatureActual).setScale(1, RoundingMode.HALF_UP);
+		return new DecimalType(temperatureActual);
 	}
 
 	/**
@@ -134,7 +145,7 @@ public class HeatingThermostat extends Device {
 
 	/**
 	 * Returns the setpoint temperature  of this thermostat. 
-	 * 4.5Â°C is displayed as OFF, 30.5Â°C is displayed as On at the thermostat display.
+	 * 4.5°C is displayed as OFF, 30.5°C is displayed as On at the thermostat display.
 	 *
 	 * @return 
 	 * 			the setpoint temperature as <code>DecimalType</code>
@@ -142,4 +153,19 @@ public class HeatingThermostat extends Device {
 	public State getTemperatureSetpoint() {
 		return new DecimalType(this.temperatureSetpoint);
 	}
+
+	/**
+	 * @return the Date the actual Temperature was last Updated
+	 */
+	public Date getActualTempLastUpdated() {
+		return actualTempLastUpdated;
+	}
+
+	/**
+	 * @param actualTempLastUpdated the Date the actual Temperature was last Updated
+	 */
+	public void setActualTempLastUpdated(Date actualTempLastUpdated) {
+		this.actualTempLastUpdated = actualTempLastUpdated;
+	}
+
 }

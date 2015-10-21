@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.max.internal.device.DeviceType;
 
 /**
  * Tests cases for {@link C_Message}.

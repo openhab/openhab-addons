@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.max.internal.message;
+package org.openhab.binding.max.internal.device;
 
 /**
 * This enumeration represents the different message types provided by the MAX!Cube protocol. 
