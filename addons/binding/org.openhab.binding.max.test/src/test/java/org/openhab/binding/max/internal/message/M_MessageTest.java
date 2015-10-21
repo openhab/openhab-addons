@@ -14,6 +14,9 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.max.internal.device.DeviceInformation;
+import org.openhab.binding.max.internal.device.DeviceType;
+import org.openhab.binding.max.internal.device.RoomInformation;
 
 /**
  * Tests cases for {@link M_Message}.
