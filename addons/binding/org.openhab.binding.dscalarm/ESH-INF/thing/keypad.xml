@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dscalarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="keypad">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="envisalink" />
+			<bridge-type-ref id="it100" />
+		</supported-bridge-type-refs>
+
+		<label>DSC Alarm Keypad</label>
+		<description>Represents the central administrative unit of the DSC Alarm System.</description>
+
+		<channels>
+			<channel id="keypad_ready_led" typeId="led">
+				<label>Keypad Ready LED</label>
+				<description>Keypad Ready LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_armed_led" typeId="led">
+				<label>Keypad Armed LED</label>
+				<description>Keypad Armed LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_memory_led" typeId="led">
+				<label>Keypad Memory LED</label>
+				<description>Keypad Memory LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_bypass_led" typeId="led">
+				<label>Keypad Bypass LED</label>
+				<description>Keypad Bypass LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_trouble_led" typeId="led">
+				<label>Keypad Trouble LED</label>
+				<description>Keypad Trouble LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_program_led" typeId="led">
+				<label>Keypad Program LED</label>
+				<description>Keypad Program LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_fire_led" typeId="led">
+				<label>Keypad Fire LED</label>
+				<description>Keypad Fire LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_backlight_led" typeId="led">
+				<label>Keypad Backlight LED</label>
+				<description>Keypad Backlight LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+			<channel id="keypad_ac_led" typeId="led">
+				<label>Keypad AC LED</label>
+				<description>Keypad AC LED (0=Off, 1=On, 2=Flashing)</description>
+			</channel>
+		</channels>
+
+	</thing-type>
+
+	<channel-type id="led">
+		<item-type>Number</item-type>
+		<label>Keypad LED</label>
+		<description>Keypad LED (0=Off, 1=On, 2=Flashing)</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="2">Flashing</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
