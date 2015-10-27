@@ -17,9 +17,9 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.handler.DeviceStatusListener;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
-import org.openhab.binding.max.internal.message.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

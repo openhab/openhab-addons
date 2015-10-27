@@ -9,7 +9,7 @@
 package org.openhab.binding.max.internal.message;
 
 /**
-* This enumeration represents the different message types provided by the MAX!Cube protocol. 
+* This enumeration represents the different message types provided by the MAX! Cube protocol. 
 * 
 * @author Andreas Heil (info@aheil.de)
 * @since 1.4.0
