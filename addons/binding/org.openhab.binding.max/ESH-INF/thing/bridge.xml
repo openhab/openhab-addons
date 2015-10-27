@@ -50,7 +50,7 @@
 				<description>If set to true, the binding will leave the connection
 					to the Cube open.
 				</description>
-				<default>false</default>
+				<default>true</default>
 			</parameter>
 			<parameter name="maxRequestsPerConnection" type="integer"
 				required="false">

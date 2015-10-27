@@ -11,7 +11,7 @@ package org.openhab.binding.max.internal.message;
 import org.slf4j.Logger;
 
 /**
- * Base message received by the MAX!Cube protocol.
+* Base message for the messages received from the MAX! Cube.
  * 
  * @author Andreas Heil (info@aheil.de)
  * @since 1.4.0
