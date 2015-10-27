@@ -10,7 +10,7 @@ package org.openhab.binding.max.internal.handler;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.max.internal.message.Device;
+import org.openhab.binding.max.internal.device.Device;
 
 /**
  * The {@link DeviceStatusListener} is notified when a device status has changed
