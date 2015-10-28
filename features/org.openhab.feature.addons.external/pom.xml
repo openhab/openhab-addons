@@ -32,6 +32,7 @@
                                 <artifact><file>src/main/resources/conf/anel.cfg</file><type>cfg</type><classifier>anel</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/astro.cfg</file><type>cfg</type><classifier>astro</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/cometvisu.cfg</file><type>cfg</type><classifier>cometvisu</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/comfoair.cfg</file><type>cfg</type><classifier>comfoair</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/denon.cfg</file><type>cfg</type><classifier>denon</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/dmx.cfg</file><type>cfg</type><classifier>dmx</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/enocean.cfg</file><type>cfg</type><classifier>enocean</classifier></artifact>

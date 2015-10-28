@@ -19,10 +19,11 @@ There are a few changes in openHAB 2 that you should be aware of, if you are com
  - the REST API does not support websocket access anymore - it actually completely drops "push" support and only has a simple long-polling implementation to provide a basic backward-compatibility for clients. 
  - the webapps folder has been discontinued, so there is no way to make files available this way through HTTP.
  - it is possible to provide your own custom icons in the `conf/icons` folder - no need to overwrite the icons that come with the runtime
- - the rule syntax has slightly changed, you e.g. do not need import statements anymore for the most common classes. At the same time, there is no openHAB Designer anymore, but the Eclipse SmartHome designer can be used. 
+ - the rule syntax has slightly changed, you e.g. do not need import statements anymore for the most common classes (see the [Migration Guide](migration.md) for details). At the same time, there is no openHAB Designer anymore, but the Eclipse SmartHome designer can be used. 
+
+## Known Limitations
  
 The following restrictions are known (and need to be worked on):
   - there is no way yet to enable authentication on HTTP(S)
   - the Eclipse SmartHome Designer marks all openHAB actions as errors (yet the runtime will correctly execute them)
   - GreenT does not work as the webapps folder does not exist anymore
-  - CometVisu is not yet compatible

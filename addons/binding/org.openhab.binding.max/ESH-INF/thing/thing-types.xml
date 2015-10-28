@@ -38,6 +38,16 @@
 				<description>The RF Address used for communication between the devices.
 				</description>
 			</parameter>
+			<parameter name="refreshActualRate" type="integer"
+				required="false">
+				<label>Actual Temperature Refresh Rate</label>
+				<description>Experimental feature! Rate of the actual refresh in minutes. 0-9=refresh disabled.
+				Minimum refresh rate once/10 minutes, recommended 60min.
+				The settings of the heating thermostats are changed to trigger an update of temperature, as the actual
+				temperature only is updated when the valves changes.
+				</description>
+				<default>0</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -74,6 +84,16 @@
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
 				</description>
+			</parameter>
+			<parameter name="refreshActualRate" type="integer"
+				required="false">
+				<label>Actual Temperature Refresh Rate</label>
+				<description>Experimental feature! Rate of the actual refresh in minutes. 0-9=refresh disabled.
+				Minimum refresh rate once/10 minutes, recommended 60min.
+				The settings of the heating thermostats are changed to trigger an update of temperature, as the actual
+				temperature only is updated when the valves changes.
+				</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>
