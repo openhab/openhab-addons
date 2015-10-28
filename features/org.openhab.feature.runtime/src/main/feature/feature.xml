@@ -82,7 +82,6 @@
         <bundle start-level="54">mvn:org.eclipse.smarthome.transform/org.eclipse.smarthome.transform.xpath/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.transform/org.eclipse.smarthome.transform.xslt/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome/org.eclipse.smarthome.ui/${esh.version}</bundle>
-        <bundle start-level="54">mvn:org.eclipse.smarthome.ui/org.eclipse.smarthome.ui.classic/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome/org.eclipse.smarthome.ui.icon/${esh.version}</bundle>
     </feature>
 

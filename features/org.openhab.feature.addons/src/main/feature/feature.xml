@@ -54,6 +54,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab2-addon-binding-comfoair" description="" version="${project.version}">
+        <feature>openhab2-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.comfoair/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/comfoair.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/comfoair</configfile>
+    </feature>
+
     <feature name="openhab2-addon-binding-denon" description="" version="${project.version}">
         <feature>openhab2-runtime-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.denon/${oh1.version}</bundle>
@@ -65,6 +71,10 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dmx/${oh1.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dmx.ola/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/dmx.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/dmx</configfile>
+    </feature>
+
+    <feature name="openhab2-addon-binding-dscalarm" description="" version="${project.version}">
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dscalarm/${project.version}</bundle>
     </feature>
 
     <feature name="openhab2-addon-binding-energenie" description="" version="${project.version}">
@@ -199,9 +209,7 @@
     </feature>
 
     <feature name="openhab2-addon-binding-ntp" description="" version="${project.version}">
-        <feature>openhab2-runtime-compat1x</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ntp/${oh1.version}</bundle>
-        <configfile finalname="${openhab.conf}/services/ntp.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/ntp</configfile>
+        <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.ntp/${esh.version}</bundle>
     </feature>
 
     <feature name="openhab2-addon-binding-onkyo" description="" version="${project.version}">
@@ -254,6 +262,10 @@
         <feature>openhab2-runtime-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.satel/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/satel.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/satel</configfile>
+    </feature>
+
+    <feature name="openhab2-addon-binding-smaenergymeter" description="" version="${project.version}">
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.smaenergymeter/${project.version}</bundle>
     </feature>
 
     <feature name="openhab2-addon-binding-snmp" description="" version="${project.version}">
@@ -399,7 +411,9 @@
 
     <feature name="openhab2-addon-ui-classic" version="${project.version}">
         <feature>openhab2-addon-ui-dashboard</feature>
+        <bundle start-level="80">mvn:org.eclipse.smarthome.ui/org.eclipse.smarthome.ui.classic/${esh.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.classicui/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.bundles.ui/org.openhab.ui.iconset.classic/${project.version}</bundle>
     </feature>
 
     <feature name="openhab2-addon-ui-cometvisu" version="${project.version}">
