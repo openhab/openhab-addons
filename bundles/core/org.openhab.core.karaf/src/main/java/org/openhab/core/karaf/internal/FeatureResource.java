@@ -8,9 +8,11 @@
 package org.openhab.core.karaf.internal;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -82,26 +84,34 @@ public class FeatureResource implements RESTResource {
 
     @POST
     @Path("/{addonname: [a-zA-Z_0-9-]*}/install")
-    public Response installAddon(@PathParam("addonname") String name) {
-        try {
-            featureService.installFeature(Addon.PREFIX + name);
-            return Response.ok().build();
-        } catch (Exception e) {
-            logger.error("Exception while installing feature: {}", e.getMessage());
-            return Response.serverError().build();
-        }
+    public Response installAddon(@PathParam("addonname") final String name) {
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    featureService.installFeature(Addon.PREFIX + name);
+                } catch (Exception e) {
+                    logger.error("Exception while installing feature: {}", e.getMessage());
+                }
+            }
+        });
+        return Response.ok().build();
     }
 
     @POST
     @Path("/{addonname: [a-zA-Z_0-9-]*}/uninstall")
-    public Response uninstallFeature(@PathParam("addonname") String name) {
-        try {
-            featureService.uninstallFeature(Addon.PREFIX + name);
-            return Response.ok().build();
-        } catch (Exception e) {
-            logger.error("Exception while uninstalling feature: {}", e.getMessage());
-            return Response.serverError().build();
-        }
+    public Response uninstallFeature(@PathParam("addonname") final String name) {
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    featureService.uninstallFeature(Addon.PREFIX + name);
+                } catch (Exception e) {
+                    logger.error("Exception while installing feature: {}", e.getMessage());
+                }
+            }
+        });
+        return Response.ok().build();
     }
 
     /* default */ Object getAddonBeans(URI uri) {
@@ -109,7 +119,8 @@ public class FeatureResource implements RESTResource {
         logger.debug("Received HTTP GET request at '{}'.", UriBuilder.fromUri(uri).build().toASCIIString());
         try {
             for (Feature feature : featureService.listFeatures()) {
-                if (feature.getName().startsWith(Addon.PREFIX)) {
+                if (feature.getName().startsWith(Addon.PREFIX)
+                        && Arrays.asList(FeatureInstaller.addonTypes).contains(getType(feature.getName()))) {
                     Addon bean = getAddonBean(feature);
                     beans.add(bean);
                 }

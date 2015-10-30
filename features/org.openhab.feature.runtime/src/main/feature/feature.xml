@@ -3,43 +3,43 @@
 
     <!-- <feature name="${project.artifactId}" description="${project.name}" version="${project.version}"> -->
 
-    <feature name="openhab2-runtime" description="${project.name}" version="${project.version}">
+    <feature name="openhab-runtime" description="${project.name}" version="${project.version}">
         <details>${project.description}</details>
-        <feature>openhab2-tp-base</feature>
-        <feature>openhab2-runtime-split-esh</feature>
-        <feature>openhab2-runtime-split-oh2</feature>
-        <feature>openhab2-jetty</feature>
-        <feature>openhab2-tp-addon-console-karaf</feature>
-        <feature>openhab2-addon-ui-dashboard</feature>
-        <feature>openhab2-addon-io-rest-docs</feature>
+        <feature>openhab-tp-base</feature>
+        <feature>openhab-runtime-split-esh</feature>
+        <feature>openhab-runtime-split-oh</feature>
+        <feature>openhab-jetty</feature>
+        <feature>openhab-tp-addon-console-karaf</feature>
+        <feature>openhab-ui-dashboard</feature>
+        <feature>openhab-misc-restdocs</feature>
     </feature>
 
-    <feature name="openhab2-runtime-compat1x" description="openHAB2 Compatibility runtime for openHAB1" version="${project.version}">
+    <feature name="openhab-runtime-compat1x" description="Compatibility runtime for openHAB 1 addons" version="${project.version}">
         <details>${project.description}</details>
-        <feature>openhab2-runtime</feature>
+        <feature>openhab-runtime</feature>
         <bundle start-level="54">mvn:org.openhab.bundles.core/org.openhab.core.compat1x/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab2-tp-addon-console-karaf" description="Karaf Console support for SmartHome stuff" version="${project.version}">
+    <feature name="openhab-tp-addon-console-karaf" description="Karaf Console support for SmartHome stuff" version="${project.version}">
         <feature>shell</feature>
         <bundle start-level="54">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.console.karaf/${esh.version}</bundle>
         <bundle start-level="50">mvn:de.maggu2810.playground/karaf-console-equinox/1.0.0</bundle>
     </feature>
 
-    <feature name="openhab2-jetty" description="openHAB2 Jetty integration" version="${project.version}">
-        <details>openHAB2: Bundles for Jetty integration</details>
-        <feature prerequisite="false" dependency="false">openhab2-tp-jetty</feature>
+    <feature name="openhab-jetty" description="openHAB2 Jetty integration" version="${project.version}">
+        <details>openHAB: Bundles for Jetty integration</details>
+        <feature prerequisite="false" dependency="false">openhab-tp-jetty</feature>
         <bundle start-level="54">mvn:org.openhab.bundles.io/org.openhab.io.jetty/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab2-runtime-split-oh2" description="openHAB2 Runtime (OH2)" version="${project.version}">
-        <details>openHAB2 Runtime (OH2 specific part)</details>
+    <feature name="openhab-runtime-split-oh" description="openHAB Runtime (OH)" version="${project.version}">
+        <details>openHAB Runtime (OH specific part)</details>
         <bundle start-level="55">mvn:org.openhab.bundles.core/org.openhab.core/${project.version}</bundle>
         <bundle start-level="55">mvn:org.openhab.bundles.core/org.openhab.core.karaf/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab2-runtime-split-esh" description="openHAB2 Runtime (ESH)" version="${project.version}">
-        <details>openHAB2 Runtime (ESH specific part)</details>
+    <feature name="openhab-runtime-split-esh" description="openHAB Runtime (ESH)" version="${project.version}">
+        <details>openHAB Runtime (ESH specific part)</details>
         <bundle start-level="54">mvn:org.eclipse.smarthome.config/org.eclipse.smarthome.config.core/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.config/org.eclipse.smarthome.config.discovery/${esh.version}</bundle>
         <bundle start-level="54">mvn:org.eclipse.smarthome.config/org.eclipse.smarthome.config.dispatch/${esh.version}</bundle>
@@ -85,12 +85,12 @@
         <bundle start-level="54">mvn:org.eclipse.smarthome/org.eclipse.smarthome.ui.icon/${esh.version}</bundle>
     </feature>
 
-    <feature name="openhab2-tp-base" description="openHAB2 TargetPlatform Base" version="${project.version}">
-        <details>openHAB2 targetplatform non-ESH and non-OH2 specific part to be splitted</details>
+    <feature name="openhab-tp-base" description="openHAB TargetPlatform Base" version="${project.version}">
+        <details>openHAB targetplatform non-ESH and non-OH specific part to be splitted</details>
         <feature>equinox-ds</feature>
         <feature>equinox-event</feature>
         <feature>javax-http-servlet</feature>
-        <feature>openhab2-tp-jaxrs</feature>
+        <feature>openhab-tp-jaxrs</feature>
         <bundle start-level="54">mvn:${dep.bsn.com.google.guava.groupId}/${dep.bsn.com.google.guava.artifactId}/${dep.bsn.com.google.guava.version}</bundle>
         <bundle start-level="54">mvn:${dep.bsn.com.google.inject.groupId}/${dep.bsn.com.google.inject.artifactId}/${dep.bsn.com.google.inject.version}</bundle>
         <bundle start-level="54">mvn:${dep.bsn.com.ibm.icu.groupId}/${dep.bsn.com.ibm.icu.artifactId}/${dep.bsn.com.ibm.icu.version}</bundle>
@@ -155,14 +155,14 @@
         <bundle start-level="54">mvn:${dep.bsn.org.objectweb.asm.groupId}/${dep.bsn.org.objectweb.asm.artifactId}/${dep.bsn.org.objectweb.asm.version}</bundle>
     </feature>
 
-    <feature name="openhab2-tp-jaxrs" version="${project.version}">
+    <feature name="openhab-tp-jaxrs" version="${project.version}">
         <bundle start-level="54">mvn:${dep.bsn.com.eclipsesource.jaxrs.jersey-min.groupId}/${dep.bsn.com.eclipsesource.jaxrs.jersey-min.artifactId}/${dep.bsn.com.eclipsesource.jaxrs.jersey-min.version}</bundle>
         <bundle start-level="55">mvn:${dep.bsn.com.eclipsesource.jaxrs.provider.gson.groupId}/${dep.bsn.com.eclipsesource.jaxrs.provider.gson.artifactId}/${dep.bsn.com.eclipsesource.jaxrs.provider.gson.version}</bundle>
         <bundle start-level="55">mvn:${dep.bsn.com.eclipsesource.jaxrs.publisher.groupId}/${dep.bsn.com.eclipsesource.jaxrs.publisher.artifactId}/${dep.bsn.com.eclipsesource.jaxrs.publisher.version}</bundle>
         <bundle start-level="54">mvn:${dep.bsn.com.google.gson.groupId}/${dep.bsn.com.google.gson.artifactId}/${dep.bsn.com.google.gson.version}</bundle>
     </feature>
 
-    <feature name="openhab2-tp-jetty" description="Jetty as it is used for openHAB 2" version="9.2.12.1">
+    <feature name="openhab-tp-jetty" description="Jetty as it is used for openHAB" version="9.2.12.1">
         <feature>javax-http-servlet</feature>
         <bundle start-level="54">mvn:${dep.bsn.org.eclipse.equinox.http.servlet.groupId}/${dep.bsn.org.eclipse.equinox.http.servlet.artifactId}/${dep.bsn.org.eclipse.equinox.http.servlet.version}</bundle>
         <bundle start-level="54">mvn:${dep.jetty.client.groupId}/${dep.jetty.client.artifactId}/${dep.jetty.client.version}</bundle>

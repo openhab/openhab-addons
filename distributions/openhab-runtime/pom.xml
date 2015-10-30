@@ -9,11 +9,13 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openhab2-runtime</artifactId>
+    <artifactId>openhab-runtime</artifactId>
     <packaging>pom</packaging>
 
+    <name>openHAB Runtime Distribution</name>
+
     <properties>
-        <repack.artifactId>openhab2-runtime-karaf</repack.artifactId>
+        <repack.artifactId>openhab-runtime-karaf</repack.artifactId>
         <repack.version>${project.version}</repack.version>
         <dir.karaf.bin.openhab.home>../../..</dir.karaf.bin.openhab.home>
         <dir.karaf.bin.openhab.home.win>..\..\..</dir.karaf.bin.openhab.home.win>

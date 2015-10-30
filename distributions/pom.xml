@@ -17,8 +17,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>openhab2-runtime-karaf</module>
-    <module>openhab2-runtime</module>
+    <module>openhab-runtime-karaf</module>
+    <module>openhab-runtime</module>
   </modules>
 
 </project>
