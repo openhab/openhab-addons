@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureInstaller {
 
-    private static final String[] addonTypes = new String[] { "binding", "ui", "persistence", "action", "tts",
-            "transformation", "io" };
+    public static final String[] addonTypes = new String[] { "binding", "ui", "persistence", "action", "tts",
+            "transformation", "misc" };
 
     private final Logger logger = LoggerFactory.getLogger(FeatureInstaller.class);
 

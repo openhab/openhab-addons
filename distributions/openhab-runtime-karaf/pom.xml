@@ -8,11 +8,11 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openhab2-runtime-karaf</artifactId>
+    <artifactId>openhab-runtime-karaf</artifactId>
     <packaging>karaf-assembly</packaging>
 
-    <name>openHAB Distribution Runtime</name>
-    <description>This is the core runtime of openHAB2</description>
+    <name>openHAB Karaf Packaging</name>
+    <description>This is the core runtime of openHAB</description>
 
     <repositories>
         <!-- Apache ServiceMix repository (for region) -->
@@ -175,7 +175,7 @@
                         <feature>service</feature>
                         <feature>system</feature>
                         <!-- <feature>webconsole</feature> -->
-                        <feature>openhab2-runtime</feature>
+                        <feature>openhab-runtime</feature>
                     </bootFeatures>
                 </configuration>
             </plugin>
