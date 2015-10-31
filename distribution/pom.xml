@@ -172,6 +172,11 @@
             <artifactId>org.eclipse.smarthome.binding.lifx</artifactId>
             <version>${esh.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.smarthome.binding</groupId>
+            <artifactId>org.eclipse.smarthome.binding.ntp</artifactId>
+            <version>${esh.version}</version>
+        </dependency>
 
         <!-- openHAB 1 add-ons to include -->
         <dependency>
@@ -277,11 +282,6 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.nibeheatpump</artifactId>
-            <version>${oh1.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.ntp</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>
