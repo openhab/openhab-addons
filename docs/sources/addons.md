@@ -15,6 +15,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | [IPP Binding](../../addons/binding/org.openhab.binding.ipp/README.md) | Internet Printing Protocol (replaces 1.x CUPS Binding) |
 | [KEBA Binding](../../addons/binding/org.openhab.binding.keba/README.md) | Electric vehicle charging station |
 | [LIFX Binding](https://github.com/eclipse/smarthome/blob/20150525/addons/binding/org.eclipse.smarthome.binding.lifx/README.md) | Wifi-enabled LED bulbs |
+| [Lutron Binding](../../addons/binding/org.openhab.binding.lutron/README.md) | Dimmers And Lighting Controls |
 | [MAX! Binding](../../addons/binding/org.openhab.binding.max/README.md) | Heater control solution by eQ-3 |
 | [Network Binding](../../addons/binding/org.openhab.binding.network/) | Scans local network (replaces 1.x networkhealth Binding) |
 | [NTP Binding](https://github.com/eclipse/smarthome/blob/master/extensions/binding/org.eclipse.smarthome.binding.ntp/README.md) | NTP time servers |
