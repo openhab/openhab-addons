@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link meteostickSensorHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Chris Jackson - Initial contribution
  */
 public class meteostickSensorHandler extends BaseThingHandler implements meteostickEventListener {
@@ -51,14 +51,15 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
         updateStatus(ThingStatus.OFFLINE);
 
-//        String x = (String)getConfig().get(PARAMETER_CHANNEL);
-        channel =  ((BigDecimal)getConfig().get(PARAMETER_CHANNEL)).intValue();
+        // String x = (String)getConfig().get(PARAMETER_CHANNEL);
+        channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    @Override
     protected void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         bridgeHandler = (meteostickBridgeHandler) thingHandler;
 
@@ -72,7 +73,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
         // Until we get an update put the Thing offline
         updateStatus(ThingStatus.OFFLINE);
     }
-    
+
     private void processSignalStrength(String dbmString) {
         double dbm = Double.parseDouble(dbmString);
         int strength;
@@ -110,24 +111,24 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
                 processBattery(data.length == 5);
                 break;
             case "W": // Wind
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED), new DecimalType(
-                        Double.parseDouble(data[2])));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
+                        new DecimalType(new BigDecimal(data[2])));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
                         new DecimalType(Integer.parseInt(data[3])));
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
                 break;
             case "T": // Temperature
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE), new DecimalType(
-                        Double.parseDouble(data[2])));
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY), new DecimalType(
-                        Double.parseDouble(data[3])));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
+                        new DecimalType(new BigDecimal(data[2])));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
+                        new DecimalType(new BigDecimal(data[3])));
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
                 break;
             case "P": // Solar panel power
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER), new DecimalType(
-                        Double.parseDouble(data[2])));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER),
+                        new DecimalType(new BigDecimal(data[2])));
                 processSignalStrength(data[3]);
                 processBattery(data.length == 5);
                 break;
@@ -137,6 +138,6 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     @Override
     public void onStateChange() {
         // TODO Auto-generated method stub
-        
+
     }
 }

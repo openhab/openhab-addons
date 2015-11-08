@@ -10,20 +10,12 @@ package org.openhab.binding.meteostick.handler;
 import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -37,10 +29,19 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
+
 /**
  * The {@link meteostickBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Chris Jackson - Initial contribution
  */
 public class meteostickBridgeHandler extends BaseThingHandler {
@@ -84,25 +85,25 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
-    
+
     private void createChannelCommand() {
         int channels = 0;
-        for(int channel = 1; channel < 8; channel++) {
-            if(eventListeners.get(channel) != null) {
-                channels += Math.pow(2, channel-1); 
+        for (int channel = 1; channel < 8; channel++) {
+            if (eventListeners.get(channel) != null) {
+                channels += Math.pow(2, channel - 1);
             }
         }
-        
-        meteostickChannels = "t"+channels;
+
+        meteostickChannels = "t" + channels;
     }
-    
+
     private void resetMeteoStick() {
         sendToMeteostick("r");
     }
 
     protected void subscribeEvents(int channel, meteostickEventListener handler) {
         eventListeners.put(channel, handler);
-        
+
         createChannelCommand();
         resetMeteoStick();
     }
@@ -116,7 +117,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
     /**
      * Connects to the comm port and starts send and receive threads.
-     * 
+     *
      * @param serialPortName the port name to open
      * @throws SerialInterfaceException when a connection error occurs.
      */
@@ -140,11 +141,11 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
             logger.info("Serial port is initialized");
         } catch (NoSuchPortException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Serial Error: Port "
-                    + serialPortName + " does not exist");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Serial Error: Port " + serialPortName + " does not exist");
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Serial Error: Port "
-                    + serialPortName + " in use");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Serial Error: Port " + serialPortName + " in use");
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Unsupported comm operation on Port " + serialPortName);
@@ -222,13 +223,13 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                         String inputString = new String(rxPacket, 0, rxCnt);
                         logger.debug("MeteoStick received: {}", inputString);
                         String p[] = inputString.split("\\s+");
-                       
+
                         switch (p[0]) {
                             case "B": // Barometer
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE), new DecimalType(
-                                        Double.parseDouble(p[1])));
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE), new DecimalType(
-                                        Double.parseDouble(p[2])));
+                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
+                                        new DecimalType(new BigDecimal(p[1])));
+                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
+                                        new DecimalType(new BigDecimal(p[2])));
                                 break;
                             case "#":
                                 break;
@@ -239,7 +240,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                                 sendToMeteostick(meteostickChannels);
                                 break;
                             default:
-                                if(p.length < 3) {
+                                if (p.length < 3) {
                                     break;
                                 }
                                 meteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
@@ -255,8 +256,8 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                     } else if (rxByte != 10) {
                         // Ignore line feed
                         rxPacket[rxCnt] = (byte) rxByte;
-                        
-                        if(rxCnt < rxPacket.length) {
+
+                        if (rxCnt < rxPacket.length) {
                             rxCnt++;
                         }
                     }
