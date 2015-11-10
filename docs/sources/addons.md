@@ -52,6 +52,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | IHC | Binding |
 | InsteonPLM | Binding |
 | KNX | Binding |
+| LCN | Binding |
 | Milight | Binding |
 | Modbus | Binding |
 | Networkhealth | Binding |
