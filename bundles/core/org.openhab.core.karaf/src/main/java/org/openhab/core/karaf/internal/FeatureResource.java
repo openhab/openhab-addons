@@ -70,11 +70,11 @@ public class FeatureResource implements RESTResource {
     }
 
     @GET
-    @Path("/{addonname: [a-zA-Z_0-9-]*}")
+    @Path("/{id: [a-zA-Z_0-9-]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAddon(@Context HttpHeaders headers, @PathParam("addonname") String name) {
+    public Response getAddon(@Context HttpHeaders headers, @PathParam("id") String id) {
         logger.debug("Received HTTP GET request at '{}'.", uriInfo.getPath());
-        Object responseObject = getFeatureBean(name);
+        Object responseObject = getFeatureBean(id);
         if (responseObject != null) {
             return Response.ok(responseObject).build();
         } else {
@@ -83,13 +83,13 @@ public class FeatureResource implements RESTResource {
     }
 
     @POST
-    @Path("/{addonname: [a-zA-Z_0-9-]*}/install")
-    public Response installAddon(@PathParam("addonname") final String name) {
+    @Path("/{id: [a-zA-Z_0-9-]*}/install")
+    public Response installAddon(@PathParam("id") final String id) {
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    featureService.installFeature(Addon.PREFIX + name);
+                    featureService.installFeature(Addon.PREFIX + id);
                 } catch (Exception e) {
                     logger.error("Exception while installing feature: {}", e.getMessage());
                 }
@@ -99,13 +99,13 @@ public class FeatureResource implements RESTResource {
     }
 
     @POST
-    @Path("/{addonname: [a-zA-Z_0-9-]*}/uninstall")
-    public Response uninstallFeature(@PathParam("addonname") final String name) {
+    @Path("/{id: [a-zA-Z_0-9-]*}/uninstall")
+    public Response uninstallFeature(@PathParam("id") final String id) {
         Executors.newSingleThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    featureService.uninstallFeature(Addon.PREFIX + name);
+                    featureService.uninstallFeature(Addon.PREFIX + id);
                 } catch (Exception e) {
                     logger.error("Exception while installing feature: {}", e.getMessage());
                 }
@@ -132,25 +132,24 @@ public class FeatureResource implements RESTResource {
         return beans;
     }
 
-    /* default */ Addon getFeatureBean(String name) {
+    /* default */ Addon getFeatureBean(String id) {
         Feature feature;
         try {
-            feature = featureService.getFeature(Addon.PREFIX + name);
+            feature = featureService.getFeature(Addon.PREFIX + id);
             return getAddonBean(feature);
         } catch (Exception e) {
-            logger.error("Exception while querying feature '{}'", name);
+            logger.error("Exception while querying feature '{}'", id);
             return null;
         }
     }
 
     private Addon getAddonBean(Feature feature) {
         Addon bean = new Addon();
-        bean.id = feature.getId();
-        bean.name = getType(feature.getName()) + "-" + getName(feature.getName());
+        bean.id = getType(feature.getName()) + "-" + getName(feature.getName());
         bean.type = getType(feature.getName());
-        bean.description = feature.getDescription();
+        bean.label = feature.getDescription();
         bean.version = feature.getVersion();
-        bean.isInstalled = featureService.isInstalled(feature);
+        bean.installed = featureService.isInstalled(feature);
         return bean;
     }
 
