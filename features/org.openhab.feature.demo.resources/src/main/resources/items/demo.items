@@ -103,7 +103,7 @@ DateTime Weather_LastUpdate		"Last Update [%1$ta %1$tR]"	<clock>
 Number  Sun_Elevation           "Sun Elevation"             <sun>        (Weather)   { channel="astro:sun:home:position#elevation" }
 
 /* Demo items */
-DateTime CurrentDate			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Berlin:de_DE" }
+DateTime CurrentDate			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ channel="ntp:ntp:demo:dateTime" }
 Switch DemoSwitch				"Switch"
 Dimmer DimmedLight				"Dimmer [%d %%]"		<slider>
 Color  RGBLight					"RGB Light"				<slider>
