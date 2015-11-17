@@ -19,15 +19,18 @@
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
+    <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pulseaudio</module>
+    <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.tesla</module>

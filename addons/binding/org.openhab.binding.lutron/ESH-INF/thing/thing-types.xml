@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lutron"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="ipbridge">
+        <label>Lutron IP Access Point</label>
+        <description>Ethernet access point to Lutron lighting control system</description>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP or Host Name</label>
+                <description>The IP or host name of the Lutron integration access point</description>
+            </parameter>
+            <parameter name="user" type="text" required="true">
+                <label>User Name</label>
+                <description>The user name to log in to the integration access point</description>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <context>password</context>
+                <label>Password</label>
+                <description>The user password to log in to the integration access point</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <thing-type id="dimmer">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Maestro Dimmer</label>
+        <description>Controls dimmable loads</description>
+
+        <channels>
+            <channel id="lightlevel" typeId="lightDimmer"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of dimmer in the Lutron lighting system</description>
+            </parameter>
+            <parameter name="fadeInTime" type="decimal">
+                <label>Fade In Time</label>
+                <description>Fade time in seconds when turning on the light</description>
+            </parameter>
+            <parameter name="fadeOutTime" type="decimal">
+                <label>Fade Out Time</label>
+                <description>Fade time in seconds when turning off the light</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Maestro Switch</label>
+        <description>On/off switch</description>
+
+        <channels>
+            <channel id="switchstatus" typeId="switchState"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of switch in the Lutron lighting system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="occupancysensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>Radio Powr Savr Sensor</label>
+        <description>Motion sensor to detect occupancy status</description>
+
+        <channels>
+            <channel id="occupancystatus" typeId="occupiedState"/>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of sensor in the Lutron lighting system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="keypad">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge"/>
+        </supported-bridge-type-refs>
+
+        <label>seeTouch Keypad</label>
+        <description>Button keypad</description>
+
+        <channels>
+            <channel id="button1" typeId="button">
+                <label>Button 1</label>
+            </channel>
+            <channel id="button2" typeId="button">
+                <label>Button 2</label>
+            </channel>
+            <channel id="button3" typeId="button">
+                <label>Button 3</label>
+            </channel>
+            <channel id="button4" typeId="button">
+                <label>Button 4</label>
+            </channel>
+            <channel id="button5" typeId="button">
+                <label>Button 5</label>
+            </channel>
+            <channel id="button6" typeId="button">
+                <label>Button 6</label>
+            </channel>
+            <channel id="button7" typeId="button">
+                <label>Button 7</label>
+            </channel>
+            <channel id="buttontopraise" typeId="button">
+                <label>Button Top Raise</label>
+            </channel>
+            <channel id="buttontoplower" typeId="button">
+                <label>Button Top Lower</label>
+            </channel>
+            <channel id="buttonbottomraise" typeId="button">
+                <label>Button Bottom Raise</label>
+            </channel>
+            <channel id="buttonbottomlower" typeId="button">
+                <label>Button Bottom Lower</label>
+            </channel>
+            <channel id="led1" typeId="ledIndicator">
+                <label>LED 1</label>
+            </channel>
+            <channel id="led2" typeId="ledIndicator">
+                <label>LED 2</label>
+            </channel>
+            <channel id="led3" typeId="ledIndicator">
+                <label>LED 3</label>
+            </channel>
+            <channel id="led4" typeId="ledIndicator">
+                <label>LED 4</label>
+            </channel>
+            <channel id="led5" typeId="ledIndicator">
+                <label>LED 5</label>
+            </channel>
+            <channel id="led6" typeId="ledIndicator">
+                <label>LED 6</label>
+            </channel>
+            <channel id="led7" typeId="ledIndicator">
+                <label>LED 7</label>
+            </channel>
+        </channels>
+
+        <config-description>
+            <parameter name="integrationId" type="integer" required="true">
+                <label>Integration ID</label>
+                <description>Address of keypad in the Lutron lighting system</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="lightDimmer">
+        <item-type>Dimmer</item-type>
+        <label>Light Level</label>
+        <description>Increase/decrease the light level</description>
+        <category>DimmableLight</category>
+        <state min="0" max="100" pattern="%d %%"/>
+    </channel-type>
+
+    <channel-type id="switchState">
+        <item-type>Switch</item-type>
+        <label>Switch State</label>
+        <description>On/off status of the switch</description>
+        <category>Switch</category>
+    </channel-type>
+
+    <channel-type id="occupiedState">
+        <item-type>Switch</item-type>
+        <label>Occupied State</label>
+        <description>Occupancy status</description>
+        <category>Motion</category>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="button">
+        <item-type>Switch</item-type>
+        <label>Keypad button</label>
+        <description>Button to trigger a scene or rule</description>
+        <category>Switch</category>
+    </channel-type>
+
+    <channel-type id="ledIndicator">
+        <item-type>Switch</item-type>
+        <label>Keypad button LED indicator</label>
+        <description>LED indicator for the associated button</description>
+        <category>Light</category>
+    </channel-type>
+</thing:thing-descriptions>
