@@ -87,6 +87,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.dscalarm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.freebox</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -107,6 +112,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.lutron</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.network</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -118,6 +128,11 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.pioneeravr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.smaenergymeter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -162,6 +177,11 @@
             <artifactId>org.eclipse.smarthome.binding.lifx</artifactId>
             <version>${esh.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.smarthome.binding</groupId>
+            <artifactId>org.eclipse.smarthome.binding.ntp</artifactId>
+            <version>${esh.version}</version>
+        </dependency>
 
         <!-- openHAB 1 add-ons to include -->
         <dependency>
@@ -171,7 +191,22 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.comfoair</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.denon</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.dmx</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.dmx.ola</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>
@@ -236,6 +271,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.lcn</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.milight</artifactId>
             <version>${oh1.version}</version>
         </dependency>
@@ -252,11 +292,6 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.nibeheatpump</artifactId>
-            <version>${oh1.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.ntp</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>
@@ -282,6 +317,11 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.rfxcom</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.satel</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>

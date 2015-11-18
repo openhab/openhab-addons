@@ -13,17 +13,15 @@ import static org.junit.Assert.*;
 import org.apache.commons.net.util.Base64;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
+import org.openhab.binding.max.internal.command.S_Command;
+import org.openhab.binding.max.internal.device.ThermostatModeType;
 
 /**
 * Tests cases for {@link S_Command}.
 * 
-* @author Andreas Heil (info@aheil.de)
-* @author Marcel Verpaalen - OH2 Version and updates
-* @since 1.4.0
+* @author Marcel Verpaalen - Initial version
 */
 public class S_CommandTest {
-
-	public final String foo = "s:AARAAAAAAP4wAaiLix8=\r\n";
 	
 	@Test
 	public void PrefixTest() {

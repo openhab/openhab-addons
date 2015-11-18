@@ -28,21 +28,24 @@ Import-Package: org.apache.commons.io,
  org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.persistence,
- org.eclipse.smarthome.core.scriptengine.action,
  org.eclipse.smarthome.core.service,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.model.script.engine.action,
  org.eclipse.smarthome.ui.items,
  org.eclipse.xtext.resource,
  org.openhab.core,
+ org.openhab.core.scriptengine.action,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.event,
  org.slf4j
 Export-Package: org.openhab.io.myopenhab
 Bundle-ClassPath: .,
- lib/Java-WebSocket-1.3.0.jar,
- lib/socket.io-client-0.4.3-SNAPSHOT.jar,
- lib/engine.io-client-0.4.2-SNAPSHOT.jar,
- lib/json-20140107.jar
+ lib/json-20140107.jar,
+ lib/engine.io-client-0.6.2-SNAPSHOT.jar,
+ lib/okhttp-2.4.0.jar,
+ lib/okhttp-ws-2.4.0.jar,
+ lib/okio-1.6.0.jar,
+ lib/socket.io-client-0.6.2-SNAPSHOT.jar
 Bundle-Vendor: openHAB.org
 

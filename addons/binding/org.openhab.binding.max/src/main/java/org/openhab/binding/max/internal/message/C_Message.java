@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
+import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -45,6 +45,7 @@ java ^
 -Dorg.osgi.service.http.port=%HTTP_PORT% ^
 -Dorg.osgi.service.http.port.secure=%HTTPS_PORT% ^
 -Djetty.home.bundle=org.openhab.io.jetty ^
+-Djetty.keystore.path=./runtime/etc/keystore ^
 -Dlogback.configurationFile=./runtime/etc/logback.xml ^
 -Dfelix.fileinstall.dir=./addons ^
 -Djava.library.path=./lib ^

@@ -13,6 +13,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.max.internal.device.DeviceConfiguration;
+import org.openhab.binding.max.internal.device.DeviceType;
 
 /**
  * Tests cases for {@link DeviceConfiguration}.

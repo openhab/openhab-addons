@@ -14,8 +14,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -37,11 +39,11 @@ import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.engineio.client.Transport;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Manager;
-import com.github.nkzawa.socketio.client.Socket;
+import io.socket.client.IO;
+import io.socket.client.Manager;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import io.socket.engineio.client.Transport;
 
 /**
  * This class provides communication between openHAB and my.openHAB service.
@@ -156,11 +158,11 @@ public class MyOpenHABClient {
                     public void call(Object... args) {
                         logger.trace("Transport.EVENT_REQUEST_HEADERS");
                         @SuppressWarnings("unchecked")
-                        Map<String, String> headers = (Map<String, String>) args[0];
-                        headers.put("uuid", uuid);
-                        headers.put("secret", secret);
-                        headers.put("openhabversion", OpenHAB.getVersion());
-                        headers.put("myohversion", MyOpenHABService.myohVersion);
+                        Map<String, List<String>> headers = (Map<String, List<String>>) args[0];
+                        headers.put("uuid", Arrays.asList(uuid));
+                        headers.put("secret", Arrays.asList(secret));
+                        headers.put("openhabversion", Arrays.asList(OpenHAB.getVersion()));
+                        headers.put("myohversion", Arrays.asList(MyOpenHABService.myohVersion));
                     }
                 });
             }
@@ -396,6 +398,56 @@ public class MyOpenHABClient {
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
                 socket.emit("notification", notificationMessage);
+            } catch (JSONException e) {
+                logger.error(e.getMessage());
+            }
+        } else {
+            logger.debug("No connection, notification is not sent");
+        }
+    }
+
+    /**
+     * This method sends log notification to my.openHAB
+     *
+     * @param message notification message text
+     * @param icon name of the icon for this notification
+     * @param severity severity name for this notification
+     *
+     */
+
+    public void sendLogNotification(String message, String icon, String severity) {
+        if (isConnected()) {
+            JSONObject notificationMessage = new JSONObject();
+            try {
+                notificationMessage.put("message", message);
+                notificationMessage.put("icon", icon);
+                notificationMessage.put("severity", severity);
+                socket.emit("lognotification", notificationMessage);
+            } catch (JSONException e) {
+                logger.error(e.getMessage());
+            }
+        } else {
+            logger.debug("No connection, notification is not sent");
+        }
+    }
+
+    /**
+     * This method sends broadcast notification to my.openHAB
+     *
+     * @param message notification message text
+     * @param icon name of the icon for this notification
+     * @param severity severity name for this notification
+     *
+     */
+
+    public void sendBroadcastNotification(String message, String icon, String severity) {
+        if (isConnected()) {
+            JSONObject notificationMessage = new JSONObject();
+            try {
+                notificationMessage.put("message", message);
+                notificationMessage.put("icon", icon);
+                notificationMessage.put("severity", severity);
+                socket.emit("broadcastnotification", notificationMessage);
             } catch (JSONException e) {
                 logger.error(e.getMessage());
             }

@@ -8,7 +8,7 @@
  */
 package org.openhab.core.compat1x.internal;
 
-import org.eclipse.smarthome.core.scriptengine.ScriptEngine;
+import org.eclipse.smarthome.model.script.engine.ScriptEngine;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.io.multimedia.actions.Audio;
@@ -18,43 +18,48 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class CompatibilityActivator implements BundleActivator {
 
-	private static BundleContext context;
+    private static BundleContext context;
 
-	public static ServiceTracker<ItemRegistry, ItemRegistry> itemRegistryTracker;
-	public static ServiceTracker<EventPublisher, EventPublisher> eventPublisherTracker;
-	public static ServiceTracker<ScriptEngine, ScriptEngine> scriptEngineTracker;
+    public static ServiceTracker<ItemRegistry, ItemRegistry> itemRegistryTracker;
+    public static ServiceTracker<EventPublisher, EventPublisher> eventPublisherTracker;
+    public static ServiceTracker<ScriptEngine, ScriptEngine> scriptEngineTracker;
 
-	static public BundleContext getContext() {
-		return context;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext bundleContext) throws Exception {
-		CompatibilityActivator.context = bundleContext;
+    static public BundleContext getContext() {
+        return context;
+    }
 
-		itemRegistryTracker = new ServiceTracker<ItemRegistry, ItemRegistry>(bundleContext, ItemRegistry.class, null);
-		itemRegistryTracker.open();
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void start(BundleContext bundleContext) throws Exception {
+        CompatibilityActivator.context = bundleContext;
 
-		eventPublisherTracker = new ServiceTracker<EventPublisher, EventPublisher>(bundleContext, EventPublisher.class, null);
-		eventPublisherTracker.open();
+        itemRegistryTracker = new ServiceTracker<ItemRegistry, ItemRegistry>(bundleContext, ItemRegistry.class, null);
+        itemRegistryTracker.open();
 
-		scriptEngineTracker = new ServiceTracker<ScriptEngine, ScriptEngine>(bundleContext, ScriptEngine.class, null);
-		scriptEngineTracker.open();
-	}
+        eventPublisherTracker = new ServiceTracker<EventPublisher, EventPublisher>(bundleContext, EventPublisher.class,
+                null);
+        eventPublisherTracker.open();
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext bundleContext) throws Exception {
-		CompatibilityActivator.context = null;
-		itemRegistryTracker.close();
-		eventPublisherTracker.close();
-		scriptEngineTracker.close();
-		Audio.playStream(null);
-	}
+        scriptEngineTracker = new ServiceTracker<ScriptEngine, ScriptEngine>(bundleContext, ScriptEngine.class, null);
+        scriptEngineTracker.open();
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void stop(BundleContext bundleContext) throws Exception {
+        CompatibilityActivator.context = null;
+        itemRegistryTracker.close();
+        eventPublisherTracker.close();
+        scriptEngineTracker.close();
+        Audio.playStream(null);
+    }
 
 }

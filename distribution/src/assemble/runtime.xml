@@ -17,6 +17,7 @@
 		<exclude>conf/services/classicui.cfg</exclude>
 	  	<exclude>**/persistence/*.persist</exclude>
 	  	<exclude>userdata/**</exclude>
+        <exclude>runtime/etc/keystore</exclude>
 	  </excludes>
     </fileSet>
   </fileSets>
