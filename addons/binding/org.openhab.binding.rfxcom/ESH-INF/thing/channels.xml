@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel definitions -->
+
+	<channel-type id="command">
+		<item-type>Switch</item-type>
+		<label>Command</label>
+		<description>Command channel</description>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Contact channel</description>
+	</channel-type>
+
+	<channel-type id="dimminglevel">
+		<item-type>Dimmer</item-type>
+		<label>Dimming Level</label>
+		<description>Dimming level channel</description>
+		<state min="0" max="100" step="1" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="mood">
+		<item-type>Number</item-type>
+		<label>Mood</label>
+		<description>Mood channel</description>
+		<state min="1" max="5" step="1" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="setpoint">
+		<item-type>Number</item-type>
+		<label>Set-point</label>
+		<description>Requested temperature</description>
+		<state min="0" max="255" step="1" pattern="%d °C" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="motion">
+		<item-type>Switch</item-type>
+		<label>Motion</label>
+		<description>Motion detection sensor state</description>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="rainrate">
+		<item-type>Number</item-type>
+		<label>Rain Rate</label>
+		<description>Rain fall rate in millimeters per hour</description>
+		<state pattern="%d mm/h" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="raintotal">
+		<item-type>Number</item-type>
+		<label>Rain Total</label>
+		<description>Total rain in millimeters</description>
+		<state pattern="%d mm" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="shutter">
+		<item-type>Rollershutter</item-type>
+		<label>Shutter</label>
+		<description>Shutter channel</description>
+	</channel-type>
+
+	<channel-type id="instantpower">
+		<item-type>Number</item-type>
+		<label>Instant Power</label>
+		<description>Instant power consumption in Watts</description>
+		<state pattern="%d W" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="totalusage">
+		<item-type>Number</item-type>
+		<label>Total Usage</label>
+		<description>Used energy in Watt hours</description>
+		<state pattern="%d Wh" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="instantamp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Instant Amp</label>
+		<description>Instant current in Amperes</description>
+		<state pattern="%d A" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="totalamphours" advanced="true">
+		<item-type>Number</item-type>
+		<label>Total Ampere-hours</label>
+		<description>Used "energy" in ampere-hours</description>
+		<state pattern="%d Ah" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degree Celsius</description>
+		<state pattern="%d °C" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Relative humidity level in percentages</description>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humiditystatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Humidity Status</label>
+		<description>Current humidity status</description>
+		<state readOnly="true">
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="COMFORT">Comfort</option>
+				<option value="DRY">Dry</option>
+				<option value="WET">Wet</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="signallevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Signal Level</label>
+		<description>Received signal strength level</description>
+		<state min="0" max="15" step="1" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batterylevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+		<description>Battery level</description>
+		<state min="0" max="9" step="1" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="windspeed">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<description>Average wind speed in meters per second</description>
+		<state pattern="%d m/s" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="winddirection">
+		<item-type>Number</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction in degrees</description>
+		<state min="0" max="360" step="1" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
