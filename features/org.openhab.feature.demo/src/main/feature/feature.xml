@@ -3,7 +3,7 @@
 
     <!-- <feature name="${project.artifactId}" description="${project.name}" version="${project.version}"> -->
 
-    <feature name="openhab2-demo" description="${project.name}" version="${project.version}">
+    <feature name="openhab-demo" description="${project.name}" version="${project.version}">
         <details>${project.description}</details>
         <feature>openhab-ui-classic</feature>
         <feature>openhab-ui-paper</feature>
