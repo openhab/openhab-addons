@@ -22,6 +22,8 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | [PioneerAVR Binding](../../addons/binding/org.openhab.binding.pioneeravr/README.md) | AV receivers by Pioneer |
 | [Philips Hue Binding](https://github.com/eclipse/smarthome/blob/20150525/addons/binding/org.eclipse.smarthome.binding.hue/README.md) | LED lighting system |
 | [Pulseaudio Binding](../../addons/binding/org.openhab.binding.pulseaudio/README.md) | software-based audio distribution |
+| [Rfxcom Binding](../../addons/binding/org.openhab.binding.rfxcom/README.md) | 433MHz radio transceiver and devices |
+| [SamsungTV Binding](../../addons/binding/org.openhab.binding.samsungtv/README.md) | Samsung Smart TVs |
 | [SMAEnergyMeter Binding](../../addons/binding/org.openhab.binding.smaenergymeter/README.md) | SMA Energy Meter for photovoltaic systems |
 | [Sonos Binding](../../addons/binding/org.openhab.binding.sonos/README.md) | Multi-room audio system |
 | [Squeezebox Binding](../../addons/binding/org.openhab.binding.squeezebox/README.md) | Logitech's connected speakers |

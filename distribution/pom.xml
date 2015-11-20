@@ -132,6 +132,16 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.rfxcom</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.samsungtv</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.smaenergymeter</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -312,11 +322,6 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.owserver</artifactId>
-            <version>${oh1.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.rfxcom</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>
