@@ -100,7 +100,7 @@
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.jupnp.feature.feature.group" version="0.0.0"/>
-      <repository location="http://www.openhab.org/jupnp/update-site"/>
+      <repository location="http://www.jupnp.org/update-site/"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="0.0.0"/>
