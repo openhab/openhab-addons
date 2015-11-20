@@ -326,11 +326,6 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.rfxcom</artifactId>
-            <version>${oh1.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.satel</artifactId>
             <version>${oh1.version}</version>
         </dependency>
