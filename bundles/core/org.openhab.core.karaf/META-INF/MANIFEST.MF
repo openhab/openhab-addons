@@ -6,9 +6,7 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: openHAB.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/*.xml
-Import-Package: javax.ws.rs;resolution:=optional,
- javax.ws.rs.core;resolution:=optional,
- org.apache.commons.lang,
+Import-Package: org.apache.commons.lang,
  org.apache.karaf.features,
- org.eclipse.smarthome.io.rest;resolution:=optional,
+ org.eclipse.smarthome.core.extension,
  org.slf4j
