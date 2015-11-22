@@ -23,19 +23,21 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureInstaller {
 
+    public static final String PREFIX = "openhab-";
+
     public static final String[] addonTypes = new String[] { "binding", "ui", "persistence", "action", "tts",
             "transformation", "misc" };
 
     private final Logger logger = LoggerFactory.getLogger(FeatureInstaller.class);
 
-    private FeaturesService featureService;
+    private FeaturesService featuresService;
 
-    protected void setFeaturesService(FeaturesService featureService) {
-        this.featureService = featureService;
+    protected void setFeaturesService(FeaturesService featuresService) {
+        this.featuresService = featuresService;
     }
 
-    protected void unsetFeaturesService(FeaturesService featureService) {
-        this.featureService = null;
+    protected void unsetFeaturesService(FeaturesService featuresService) {
+        this.featuresService = null;
     }
 
     protected void activate(final Map<String, Object> config) {
@@ -55,9 +57,9 @@ public class FeatureInstaller {
 
     private void installFeatures(String type, String install) {
         for (String addon : install.split(",")) {
-            String name = Addon.PREFIX + type + "-" + addon.trim();
+            String name = PREFIX + type + "-" + addon.trim();
             try {
-                featureService.installFeature(name);
+                featuresService.installFeature(name);
             } catch (Exception e) {
                 logger.error("Failed installing feature '{}'", name);
             }
