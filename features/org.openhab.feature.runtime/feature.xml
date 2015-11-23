@@ -90,14 +90,14 @@
          unpack="false"/>
 
    <plugin
-         id="org.openhab.ui.paperui"
+         id="org.openhab.ui.basicui"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.smarthome.ui.paperui"
+         id="org.openhab.ui.paperui"
          download-size="0"
          install-size="0"
          version="0.0.0"
