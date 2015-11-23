@@ -78,6 +78,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | InfluxDB | Persistence |
 | rrd4j | Persistence |
 | MySQL | Persistence |
+| MongoDB | Persistence |
 | Logging | Persistence |
 | JPA | Persistence |
 | Mail | Action |
@@ -91,8 +92,6 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 
 | Add-on | Type | Reason
 |--------|------|------|
-| MySQL | Persistence | [Unsynchronized change in openHAB 1 core](https://github.com/openhab/openhab/issues/2661)
-| MongoDB | Persistence | [Unsynchronized change in openHAB 1 core](https://github.com/openhab/openhab/issues/2661)
 | Twitter | Action | [Hardcoded path for local file storage](https://github.com/openhab/openhab/issues/3454)
 
 
