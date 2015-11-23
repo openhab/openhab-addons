@@ -20,6 +20,15 @@
         <bundle start-level="54">mvn:org.openhab.bundles.core/org.openhab.core.compat1x/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
+        <feature>openhab-ui-dashboard</feature>
+        <bundle start-level="80">mvn:org.openhab.bundles.io/org.openhab.io.rest.docs/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-ui-dashboard" description="Dashboard" version="${project.version}">
+        <bundle start-level="80">mvn:org.openhab.bundles.ui/org.openhab.ui.dashboard/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-tp-addon-console-karaf" description="Karaf Console support for SmartHome stuff" version="${project.version}">
         <feature>shell</feature>
         <bundle start-level="54">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.console.karaf/${esh.version}</bundle>

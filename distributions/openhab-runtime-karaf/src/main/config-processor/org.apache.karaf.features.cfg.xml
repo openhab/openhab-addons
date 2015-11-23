@@ -1,0 +1,6 @@
+<processor>
+    <modify>
+        <find>mvn:org.apache.karaf.features/standard/</find>
+        <replace>mvn:org.openhab.features/org.openhab.feature.addons/${project.version}/xml/features, mvn:org.openhab.features/org.openhab.feature.demo/${project.version}/xml/features, mvn:org.apache.karaf.features/standard/</replace>
+    </modify>
+</processor>
