@@ -398,7 +398,7 @@
     </feature>
 
     <feature name="openhab-transport-mdns" description="mDNS Transport" version="${project.version}">
-        <bundle start-level="80">mvn:${dep.jmdns.groupId}/${dep.jmdns.artifactId}/${dep.jmdns.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.jmdns/jmdns/${dep.jmdns.version}</bundle>
         <bundle start-level="80">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.transport.mdns/${esh.version}</bundle>
     </feature>
 
@@ -413,7 +413,7 @@
 
     <feature name="openhab-transport-upnp" description="UPnP Transport" version="${project.version}">
         <bundle start-level="80">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.transport.upnp/${esh.version}</bundle>
-        <bundle start-level="80">mvn:${dep.bsn.org.jupnp.groupId}/${dep.bsn.org.jupnp.artifactId}/${dep.bsn.org.jupnp.version}</bundle>
+        <bundle start-level="80">mvn:org.jupnp/org.jupnp/${dep.jupnp.version}</bundle>
     </feature>
 
     <!-- ui -->

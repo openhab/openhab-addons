@@ -68,10 +68,6 @@
         <dep.org.osgi.compendium.split.event.artifact>org.osgi.compendium.split.service.event</dep.org.osgi.compendium.split.event.artifact>
         <dep.org.osgi.compendium.split.version>5.0.0</dep.org.osgi.compendium.split.version>
 
-        <dep.jmdns.groupId>javax.jmdns</dep.jmdns.groupId>
-        <dep.jmdns.artifactId>jmdns</dep.jmdns.artifactId>
-        <dep.jmdns.version>3.4.2</dep.jmdns.version>
-
         <!-- openHAB 2 distribution: ESH -->
         <dep.bsn.org.eclipse.smarthome.ui.paperui.groupId>tmp.need.a.home</dep.bsn.org.eclipse.smarthome.ui.paperui.groupId>
         <dep.bsn.org.eclipse.smarthome.ui.paperui.artifactId>org.eclipse.smarthome.ui.paperui</dep.bsn.org.eclipse.smarthome.ui.paperui.artifactId>
@@ -93,6 +89,9 @@
         <dep.bsn.com.google.gson.groupId>com.google.code.gson</dep.bsn.com.google.gson.groupId>
         <dep.bsn.com.google.gson.artifactId>gson</dep.bsn.com.google.gson.artifactId>
         <dep.bsn.com.google.gson.version>2.3.1</dep.bsn.com.google.gson.version>
+
+        <dep.jupnp.version>2.0.0</dep.jupnp.version>
+        <dep.jmdns.version>3.4.2</dep.jmdns.version>
 
         <dep.jetty.osgi.boot.groupId>org.eclipse.jetty.osgi</dep.jetty.osgi.boot.groupId>
         <dep.jetty.osgi.boot.artifactId>jetty-osgi-boot</dep.jetty.osgi.boot.artifactId>
@@ -336,10 +335,6 @@
         <dep.bsn.org.eclipse.xtext.xbase.lib.artifactId>org.eclipse.xtext.xbase.lib</dep.bsn.org.eclipse.xtext.xbase.lib.artifactId>
         <dep.bsn.org.eclipse.xtext.xbase.lib.version>2.6.2.v201407030533</dep.bsn.org.eclipse.xtext.xbase.lib.version>
 
-        <dep.bsn.org.jupnp.groupId>tmp.need.a.home</dep.bsn.org.jupnp.groupId>
-        <dep.bsn.org.jupnp.artifactId>org.jupnp</dep.bsn.org.jupnp.artifactId>
-        <dep.bsn.org.jupnp.version>2.0.0.201508200936</dep.bsn.org.jupnp.version>
-
         <dep.bsn.org.objectweb.asm.groupId>tmp.need.a.home</dep.bsn.org.objectweb.asm.groupId>
         <dep.bsn.org.objectweb.asm.artifactId>org.objectweb.asm</dep.bsn.org.objectweb.asm.artifactId>
         <dep.bsn.org.objectweb.asm.version>5.0.1.v201404251740</dep.bsn.org.objectweb.asm.version>
@@ -423,6 +418,11 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
         <repository>
             <!-- TODO: temporary solution as long there is no maven repo for 3rd party libs -->
             <id>github-openhab2-mvn-repo</id>
