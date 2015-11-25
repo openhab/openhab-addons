@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="openHAB 2 Target Platform" sequenceNumber="143">
+<target name="openHAB 2 Target Platform" sequenceNumber="144">
   <locations>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.smarthome.feature.runtime.core.feature.group" version="0.0.0"/>
@@ -9,10 +9,6 @@
       <unit id="org.eclipse.smarthome.feature.runtime.rest.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.smarthome.feature.test.feature.group" version="0.0.0"/>
       <repository location="http://download.eclipse.org/smarthome/updates-stable/"/>
-    </location>
-    <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-      <unit id="org.eclipse.smarthome.feature.runtime.paperui.feature.group" version="0.0.0"/>
-      <repository location="https://openhab.ci.cloudbees.com/job/smarthome/lastSuccessfulBuild/artifact/products/org.eclipse.smarthome.repo/target/repository"/>
     </location>
     <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.emf.mwe2.runtime.sdk.feature.group" version="0.0.0"/>
