@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -69,7 +70,7 @@ public class ChartResource implements RESTResource {
     static final DecimalFormat df;
 
     protected final static String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
-            + File.separator + "rrd4j";
+            + File.separator + "persistence" + File.separator + "rrd4j";
 
     static {
         df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ENGLISH);
@@ -211,7 +212,7 @@ public class ChartResource implements RESTResource {
      */
     public Object getRrdSeries(QueryablePersistenceService persistenceService, Item item,
             ConsolFun consilidationFunction, Date timeBegin, Date timeEnd, long resolution) {
-        Map<Long, ArrayList<String>> data = new HashMap<Long, ArrayList<String>>();
+        Map<Long, ArrayList<String>> data = new TreeMap<Long, ArrayList<String>>();
         try {
             List<String> itemNames = new ArrayList<String>();
 
