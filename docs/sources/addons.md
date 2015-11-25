@@ -44,6 +44,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | EDS OWServer | Binding |
 | Energenie | Binding |
 | Enocean | Binding |
+| Enphaseenergy | Binding |
 | Epsonprojector | Binding |
 | Exec | Binding |
 | Freeswitch | Binding |
