@@ -17,8 +17,6 @@ import org.openhab.binding.max.internal.exceptions.MessageIsWaitingException;
 import org.openhab.binding.max.internal.exceptions.NoMessageAvailableException;
 import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException;
 import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The message processor was introduced to combine multiple received lines to
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 public class MessageProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
-    
     public static final String SEPARATOR = ":";
 
     /**

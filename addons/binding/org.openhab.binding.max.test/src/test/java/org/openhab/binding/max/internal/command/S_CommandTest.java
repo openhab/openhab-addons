@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.max.internal.message;
+package org.openhab.binding.max.internal.command;
 
 import static org.junit.Assert.*;
 
@@ -67,7 +67,7 @@ public class S_CommandTest {
 	}
 	
 	@Test
-	public void autotModeTest() {
+	public void autoModeTest() {
 		S_Command scmd = new S_Command("0b0da3", 1, ThermostatModeType.AUTOMATIC, 0);
 		
 		String commandStr = scmd.getCommandString();

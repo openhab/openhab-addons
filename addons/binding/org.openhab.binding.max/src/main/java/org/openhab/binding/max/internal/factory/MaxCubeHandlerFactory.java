@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.max.internal.factory;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -36,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
 	private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
-	private ServiceRegistration<?> discoveryServiceReg;
+	private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
 	@Override
 	public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
@@ -79,18 +81,23 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 	private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
 		MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
 		discoveryService.activate();
-		this.discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-				new Hashtable<String, Object>());
+
+		this.discoveryServiceRegs.put(maxCubeBridgeHandler.getThing().getUID(), bundleContext.registerService(
+                DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
 	}
 
 	@Override
-	protected void removeHandler(ThingHandler thingHandler) {
-		if (this.discoveryServiceReg != null) {
-			MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext
-					.getService(discoveryServiceReg.getReference());
-			service.deactivate();
-			discoveryServiceReg.unregister();
-			discoveryServiceReg = null;
+	protected synchronized void removeHandler(ThingHandler thingHandler) {
+		if (thingHandler instanceof MaxCubeBridgeHandler) {
+			ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+			if (serviceReg != null) {
+				// remove discovery service, if bridge handler is removed
+				MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext.getService(serviceReg
+						.getReference());
+				service.deactivate();
+				serviceReg.unregister();
+				discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+			}
 		}
 		super.removeHandler(thingHandler);
 	}

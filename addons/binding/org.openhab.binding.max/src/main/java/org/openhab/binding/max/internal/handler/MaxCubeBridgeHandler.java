@@ -157,7 +157,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 			logger.debug("Refresh command received.");
 			refreshData();
 		} else
-			logger.warn("No bridge commands defined.");
+			logger.warn("No bridge commands defined. Cannot process '{}'.", command.toString());
 	}
 
 	@Override
@@ -219,8 +219,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 			CubeCommand cmd = getCommand(sendCommand);
 			// Actual sending of the data to the Max! Cube Lan Gateway
 			if (sendCubeCommand(cmd)) {
-				logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(), sendCommand.getKey(),
-						sendCommand.getCommand().toString(), ipAddress);
+				logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(),
+						sendCommand.getKey(), sendCommand.getCommand().toString(), ipAddress);
 			} else
 				logger.warn("Error sending command {} ({}:{}) to MAX! Cube at IP: {}", sendCommand.getId(),
 						sendCommand.getKey(), sendCommand.getCommand().toString(), ipAddress);
@@ -323,7 +323,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 	}
 
 	public void clearDeviceList() {
-		lastActiveDevices = new HashSet<String>();
+		lastActiveDevices.clear();
 	}
 
 	/**
@@ -418,11 +418,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					logger.info("Error while handling response from MAX! Cube lan gateway: {}", e.getMessage(), e);
 					this.messageProcessor.reset();
 				}
+                if (terminator == null || raw.startsWith(terminator)) {
+                    cont = false;
+                }
 			} else
 				cont = false;
-			if (terminator == null || raw.startsWith(terminator)) {
-				cont = false;
-			}
 		}
 	}
 
@@ -444,8 +444,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					dutyCycle = dutyCycleMsg;
 					updateCubeState();
 				}
-			    if (!propertiesSet) setProperties((H_Message) message);
-			    
+				if (!propertiesSet){
+					setProperties((H_Message) message);
+				}
+
 			}
 			if (message.getType() == MessageType.M) {
 				M_Message msg = (M_Message) message;
@@ -466,8 +468,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 					configurations.add(c);
 					c.setRoomId(di.getRoomId());
 					String roomName = "";
-					for (RoomInformation room : msg.rooms ) {
-						if (room.getPosition() == di.getRoomId()) roomName = room.getName();
+					for (RoomInformation room : msg.rooms) {
+						if (room.getPosition() == di.getRoomId()) {
+							roomName = room.getName();
+						}
 					}
 					c.setRoomName(roomName);
 				}
@@ -645,6 +649,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 		}
 		return cmd;
 	}
+
 	private boolean socketConnect() throws UnknownHostException, IOException {
 		socket = new Socket(ipAddress, port);
 		socket.setSoTimeout((int) (3000));
