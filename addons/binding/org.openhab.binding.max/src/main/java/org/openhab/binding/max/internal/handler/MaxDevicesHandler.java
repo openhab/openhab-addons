@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -125,22 +124,49 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 	 */
 	@Override
 	public void dispose() {
+		logger.debug("Disposed MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
+		super.dispose();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.smarthome.core.thing.binding.BaseThingHandler#preDispose()
+	 */
+	@Override
+	public void preDispose() {
+		logger.debug("Disposing MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
 		if (refreshingActuals)
 			refreshActualsRestore();
 		if (refreshActualsJob != null && !refreshActualsJob.isCancelled()) {
 			refreshActualsJob.cancel(true);
 			refreshActualsJob = null;
 		}
-		updateStatus(ThingStatus.OFFLINE);
-		if (bridgeHandler != null)
+		if (bridgeHandler != null) {
+			logger.trace("Clear MAX! device {} {} from bridge.", getThing().getUID(), maxDeviceSerial);
 			bridgeHandler.clearDeviceList();
-		if (bridgeHandler != null)
 			bridgeHandler.unregisterDeviceStatusListener(this);
-		bridgeHandler = null;
-		logger.debug("Thing {} {} disposed.", getThing().getUID(), maxDeviceSerial);
-		super.dispose();
+			bridgeHandler = null;
+		}
+		super.preDispose();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.smarthome.core.thing.binding.BaseThingHandler#thingUpdated
+	 * (org.eclipse.smarthome.core.thing.Thing)
+	 */
+	@Override
+	public void thingUpdated(Thing thing) {
+		//TODO: test for changes in config and send update
+		configSet = false;
+		forceRefresh = true;
+		super.thingUpdated(thing);
+	}
+	
 	private synchronized MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
 
 		if (this.bridgeHandler == null) {
@@ -183,7 +209,9 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 		}
 
 		if (channelUID.getId().equals(CHANNEL_SETTEMP) || channelUID.getId().equals(CHANNEL_MODE)) {
-			if (refreshingActuals) refreshActualsRestore();
+			if (refreshingActuals){
+				refreshActualsRestore();
+			}
 			SendCommand sendCommand = new SendCommand(maxDeviceSerial, channelUID, command);
 			maxCubeBridge.queueCommand(sendCommand);
 		} else {
@@ -301,7 +329,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 	}
 
 	/**
-	 * Send the commands to restore the original settings for mode & temperature to end the automatic update cycle 
+	 * Send the commands to restore the original settings for mode & temperature
+	 * to end the automatic update cycle
 	 */
 	private synchronized void refreshActualsRestore() {
 		try {

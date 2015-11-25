@@ -91,7 +91,9 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
 
 	@Override
 	protected void startScan() {
-		// this can be ignored here as we discover via the bridge
+		if (maxCubeBridgeHandler != null) {
+			maxCubeBridgeHandler.clearDeviceList();
+		}
 	}
 
 	@Override

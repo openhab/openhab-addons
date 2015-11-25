@@ -105,7 +105,7 @@ public final class M_Message extends Message {
 			logger.debug("\tRAW : {}", this.getPayload());
 		}
 		else {
-			logger.info("No rooms defined. Configure your Max!Cube");
+			logger.info("No rooms defined. Configure your Max! Cube");
 			hasConfiguration = false;
 		} 
 	}
