@@ -209,7 +209,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 				updateStatus(ThingStatus.ONLINE);
 			}
 		} catch (Exception e) {
-			logger.error("Connection to RFXCOM transceiver failed", e.getMessage());
+			logger.error("Connection to RFXCOM transceiver failed: {}", e.getMessage());
 		} catch (UnsatisfiedLinkError e) {
 			logger.error(
 					"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
