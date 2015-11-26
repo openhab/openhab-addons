@@ -13,7 +13,7 @@ import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
 
 /**
- * S CubeCommand for setting MAX! thermostat properties.
+ * {@link S_Command} for setting MAX! thermostat temperature & mode.
  * 
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 update + simplification
