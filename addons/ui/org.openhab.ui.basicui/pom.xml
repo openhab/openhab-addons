@@ -16,11 +16,4 @@
 	<name>openHAB Basic UI Dashboard Integration</name>
 	<packaging>eclipse-plugin</packaging>
 
-	<dependencies>
-		<dependency>
-                	<groupId>org.eclipse.smarthome.ui</groupId>
-           	     	<artifactId>org.eclipse.smarthome.ui.basic</artifactId>
-               		<version>${esh.version}</version>
-		</dependency>
-        </dependencies>
 </project>
