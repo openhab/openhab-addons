@@ -8,26 +8,25 @@
  */
 package org.openhab.binding.max.internal.device;
 
-
-
 /**
- *  MAX!Cube wall mounted thermostat. 
- * 
+ * MAX! wall mounted thermostat.
+ *
  * @author Andreas Heil (info@aheil.de)
  * @since 1.4.0
  */
 public class WallMountedThermostat extends HeatingThermostat {
 
-	/**
-	 * Class constructor. 
-	 * @param c
-	 */
-	public WallMountedThermostat(DeviceConfiguration c) {
-		super(c);
-	}
-	
-	@Override
-	public DeviceType getType() {
-		return DeviceType.WallMountedThermostat;
-	}
+    /**
+     * Class constructor.
+     *
+     * @param c
+     */
+    public WallMountedThermostat(DeviceConfiguration c) {
+        super(c);
+    }
+
+    @Override
+    public DeviceType getType() {
+        return DeviceType.WallMountedThermostat;
+    }
 }

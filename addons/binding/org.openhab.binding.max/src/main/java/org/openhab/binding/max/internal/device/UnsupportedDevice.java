@@ -8,30 +8,28 @@
  */
 package org.openhab.binding.max.internal.device;
 
-
 /**
-* Unsupported devices. 
-* 
-* @author Andreas Heil (info@aheil.de)
-* @author Marcel Verpaalen
-* @since 1.4.0
-*/
-
+ * Unsupported devices.
+ *
+ * @author Andreas Heil (info@aheil.de)
+ * @author Marcel Verpaalen
+ * @since 1.4.0
+ */
 
 public class UnsupportedDevice extends Device {
 
-	public UnsupportedDevice(DeviceConfiguration c) {
-		super(c);
-	}
+    public UnsupportedDevice(DeviceConfiguration c) {
+        super(c);
+    }
 
-	@Override
-	public DeviceType getType() {
-		return DeviceType.Invalid;
-	}
+    @Override
+    public DeviceType getType() {
+        return DeviceType.Invalid;
+    }
 
-	@Override
-	public String getName() {
-		return "Unsupported device";
-	}
+    @Override
+    public String getName() {
+        return "Unsupported device";
+    }
 
 }
