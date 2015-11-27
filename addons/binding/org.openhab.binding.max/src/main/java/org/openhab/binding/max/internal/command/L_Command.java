@@ -10,21 +10,21 @@ package org.openhab.binding.max.internal.command;
 
 /**
  * The {@link L_Command} request a status update for MAX! devices.
- * 
+ *
  * @author Marcel Verpaalen - Initial Contribution
  * @since 2.0
  */
 
-public class L_Command extends CubeCommand{
+public class L_Command extends CubeCommand {
 
-	@Override
-	public String getCommandString() {
-		return "l:" + '\r' + '\n';
-	}
+    @Override
+    public String getCommandString() {
+        return "l:" + '\r' + '\n';
+    }
 
-	@Override
-	public String getReturnStrings() {
-		return "L:";
-	}
+    @Override
+    public String getReturnStrings() {
+        return "L:";
+    }
 
 }

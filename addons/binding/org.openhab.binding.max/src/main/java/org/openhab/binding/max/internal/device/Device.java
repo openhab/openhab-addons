@@ -19,302 +19,304 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base class for devices provided by the MAX! protocol.
- * 
+ *
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 update
  * @since 1.4.0
  */
 public abstract class Device {
 
-	private final static Logger logger = LoggerFactory.getLogger(Device.class);
+    private final static Logger logger = LoggerFactory.getLogger(Device.class);
 
-	private String serialNumber = "";
-	private String rfAddress = "";
-	private int roomId = -1;
-	private DeviceConfiguration config;
+    private String serialNumber = "";
+    private String rfAddress = "";
+    private int roomId = -1;
+    private DeviceConfiguration config;
 
-	private boolean updated;
-	private boolean batteryLow;
+    private boolean updated;
+    private boolean batteryLow;
 
-	private boolean initialized;
-	private boolean answer;
-	private boolean error;
-	private boolean valid;
-	private boolean DstSettingsActive;
-	private boolean gatewayKnown;
-	private boolean panelLocked;
-	private boolean linkStatusError;
+    private boolean initialized;
+    private boolean answer;
+    private boolean error;
+    private boolean valid;
+    private boolean DstSettingsActive;
+    private boolean gatewayKnown;
+    private boolean panelLocked;
+    private boolean linkStatusError;
 
-	public Device(DeviceConfiguration c) {
-		this.serialNumber = c.getSerialNumber();
-		this.rfAddress = c.getRFAddress();
-		this.roomId= c.getRoomId();
-		this.config = c;
-	}
+    public Device(DeviceConfiguration c) {
+        this.serialNumber = c.getSerialNumber();
+        this.rfAddress = c.getRFAddress();
+        this.roomId = c.getRoomId();
+        this.config = c;
+    }
 
-	public abstract DeviceType getType();
+    public abstract DeviceType getType();
 
-	public String getName(){
-		return config.getName();	
-	}
+    public String getName() {
+        return config.getName();
+    }
 
-	private static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
-		Device returnValue = null;
-		for (DeviceConfiguration c : configurations) {
-			if (c.getRFAddress().toUpperCase().equals(rfAddress.toUpperCase())) {
-				switch (c.getDeviceType()) {
-				case HeatingThermostatPlus:
-				case HeatingThermostat:
-					HeatingThermostat thermostat = new HeatingThermostat(c);
-					thermostat.setType(c.getDeviceType());
-					return thermostat;
-				case EcoSwitch:
-					return new EcoSwitch(c);
-				case ShutterContact:
-					return new ShutterContact(c);
-				case WallMountedThermostat:
-					return new WallMountedThermostat(c);
-				default:
-					return new UnsupportedDevice(c);
-				}
-			}
-		}
-		return returnValue;
-	}
+    private static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
+        Device returnValue = null;
+        for (DeviceConfiguration c : configurations) {
+            if (c.getRFAddress().toUpperCase().equals(rfAddress.toUpperCase())) {
+                switch (c.getDeviceType()) {
+                    case HeatingThermostatPlus:
+                    case HeatingThermostat:
+                        HeatingThermostat thermostat = new HeatingThermostat(c);
+                        thermostat.setType(c.getDeviceType());
+                        return thermostat;
+                    case EcoSwitch:
+                        return new EcoSwitch(c);
+                    case ShutterContact:
+                        return new ShutterContact(c);
+                    case WallMountedThermostat:
+                        return new WallMountedThermostat(c);
+                    default:
+                        return new UnsupportedDevice(c);
+                }
+            }
+        }
+        return returnValue;
+    }
 
-	public static Device create(byte[] raw, List<DeviceConfiguration> configurations) {
-		if (raw.length == 0) {
-			return null;
-		}
+    public static Device create(byte[] raw, List<DeviceConfiguration> configurations) {
+        if (raw.length == 0) {
+            return null;
+        }
 
-		String rfAddress = Utils.toHex(raw[0] & 0xFF, raw[1] & 0xFF, raw[2] & 0xFF);
+        String rfAddress = Utils.toHex(raw[0] & 0xFF, raw[1] & 0xFF, raw[2] & 0xFF);
 
-		// Based on the RF address and the corresponding configuration,
-		// create the device based on the type specified in it's configuration
+        // Based on the RF address and the corresponding configuration,
+        // create the device based on the type specified in it's configuration
 
-		Device device = Device.create(rfAddress, configurations);
-		if (device == null) {
-			logger.warn("Can't create device from received message, returning NULL.");
-			return null;
-		}
-		
-		return Device.update(raw,configurations, device);
-	}
-	
-	public static Device update(byte[] raw, List<DeviceConfiguration> configurations, Device device) {
+        Device device = Device.create(rfAddress, configurations);
+        if (device == null) {
+            logger.warn("Can't create device from received message, returning NULL.");
+            return null;
+        }
 
-		String rfAddress = device.getRFAddress();
+        return Device.update(raw, configurations, device);
+    }
 
-		// byte 4 is skipped
+    public static Device update(byte[] raw, List<DeviceConfiguration> configurations, Device device) {
 
-		// multiple device information are encoded in those particular bytes
-		boolean[] bits1 = Utils.getBits(Utils.fromByte(raw[4]));
-		boolean[] bits2 = Utils.getBits(Utils.fromByte(raw[5]));
+        String rfAddress = device.getRFAddress();
 
-		device.setInitialized(bits1[1]);
-		device.setAnswer(bits1[2]);
-		device.setError(bits1[3]);
-		device.setValid(bits1[4]);
+        // byte 4 is skipped
 
-		device.setDstSettingActive(bits2[3]);
-		device.setGatewayKnown(bits2[4]);
-		device.setPanelLocked(bits2[5]);
-		device.setLinkStatusError(bits2[6]);
-		device.setBatteryLow(bits2[7]);
+        // multiple device information are encoded in those particular bytes
+        boolean[] bits1 = Utils.getBits(Utils.fromByte(raw[4]));
+        boolean[] bits2 = Utils.getBits(Utils.fromByte(raw[5]));
 
-		logger.trace ("Device {} type {} L Message length: {} content: {}", rfAddress,device.getType().toString(), raw.length,Utils.getHex(raw));
+        device.setInitialized(bits1[1]);
+        device.setAnswer(bits1[2]);
+        device.setError(bits1[3]);
+        device.setValid(bits1[4]);
 
-		// TODO move the device specific readings into the sub classes
-		switch (device.getType()) {
-		case WallMountedThermostat:
-		case HeatingThermostat:
-		case HeatingThermostatPlus:
-			HeatingThermostat heatingThermostat = (HeatingThermostat) device;
-			// "xxxx xx00 = automatic, xxxx xx01 = manual, xxxx xx10 = vacation, xxxx xx11 = boost":
-			if (bits2[1] == false && bits2[0] == false) {
-				heatingThermostat.setMode(ThermostatModeType.AUTOMATIC);
-			} else if (bits2[1] == false && bits2[0] == true) {
-				heatingThermostat.setMode(ThermostatModeType.MANUAL);
-			} else if (bits2[1] == true && bits2[0] == false) {
-				heatingThermostat.setMode(ThermostatModeType.VACATION);
-			} else if (bits2[1] == true && bits2[0] == true) {
-				heatingThermostat.setMode(ThermostatModeType.BOOST);
-			} else {
-				logger.debug ("Device {}: Unknown mode",rfAddress) ;
-			}
+        device.setDstSettingActive(bits2[3]);
+        device.setGatewayKnown(bits2[4]);
+        device.setPanelLocked(bits2[5]);
+        device.setLinkStatusError(bits2[6]);
+        device.setBatteryLow(bits2[7]);
 
-			heatingThermostat.setValvePosition(raw[6] & 0xFF);
-			heatingThermostat.setTemperatureSetpoint(raw[7] & 0x7F);
+        logger.trace("Device {} type {} L Message length: {} content: {}", rfAddress, device.getType().toString(),
+                raw.length, Utils.getHex(raw));
 
-			// 9 2 858B Date until (05-09-2011) (see Encoding/Decoding
-			// date/time)
-			// B 1 2E Time until (23:00) (see Encoding/Decoding date/time)
-			String hexDate = Utils.toHex(raw[8] & 0xFF, raw[9] & 0xFF);
-			int dateValue = Utils.fromHex(hexDate);
-			int timeValue = raw[10] & 0xFF;
-			Date date = Utils.resolveDateTime(dateValue, timeValue);
-			heatingThermostat.setDateSetpoint(date);
+        // TODO move the device specific readings into the sub classes
+        switch (device.getType()) {
+            case WallMountedThermostat:
+            case HeatingThermostat:
+            case HeatingThermostatPlus:
+                HeatingThermostat heatingThermostat = (HeatingThermostat) device;
+                // "xxxx xx00 = automatic, xxxx xx01 = manual, xxxx xx10 = vacation, xxxx xx11 = boost":
+                if (bits2[1] == false && bits2[0] == false) {
+                    heatingThermostat.setMode(ThermostatModeType.AUTOMATIC);
+                } else if (bits2[1] == false && bits2[0] == true) {
+                    heatingThermostat.setMode(ThermostatModeType.MANUAL);
+                } else if (bits2[1] == true && bits2[0] == false) {
+                    heatingThermostat.setMode(ThermostatModeType.VACATION);
+                } else if (bits2[1] == true && bits2[0] == true) {
+                    heatingThermostat.setMode(ThermostatModeType.BOOST);
+                } else {
+                    logger.debug("Device {}: Unknown mode", rfAddress);
+                }
 
-			int actualTemp = 0;
-			if (device.getType() == DeviceType.WallMountedThermostat) {
-				actualTemp = (raw[11] & 0xFF) + (raw[7] & 0x80) * 2 ;
-				
-			} else {
-				if ( heatingThermostat.getMode() != ThermostatModeType.VACATION && 
-						heatingThermostat.getMode() != ThermostatModeType.BOOST){
-					actualTemp = (raw[8] & 0xFF ) * 256  + ( raw[9] & 0xFF );
-				} else{
-					logger.debug ("Device {}: No temperature reading in {} mode",rfAddress, heatingThermostat.getMode()) ;
-				}
-			}
-			logger.trace ("Device {}: Actual Temperature : {}",rfAddress,  (double)actualTemp / 10);
-			heatingThermostat.setTemperatureActual((double)actualTemp / 10);
-			break;
-		case EcoSwitch:
-			String eCoSwitchData = Utils.toHex(raw[3] & 0xFF, raw[4] & 0xFF, raw[5] & 0xFF);
-			logger.trace ("EcoSwitch Device {} status bytes : {}", rfAddress, eCoSwitchData);
-			EcoSwitch ecoswitch = (EcoSwitch) device;
-			// xxxx xx10 = shutter open, xxxx xx00 = shutter closed
-			if (bits2[1] == true && bits2[0] == false) {
-				ecoswitch.setEcoMode(OnOffType.ON);
-				logger.trace ("Device {} status: ON", rfAddress);
-			} else if (bits2[1] == false && bits2[0] == false) {
-				ecoswitch.setEcoMode(OnOffType.OFF);
-				logger.trace ("Device {} status: OFF", rfAddress);
-			} else {
-				logger.trace ("Device {} status switch status Unknown (true-true)", rfAddress);
-			}
-			break;
-		case ShutterContact:
-			ShutterContact shutterContact = (ShutterContact) device;
-			// xxxx xx10 = shutter open, xxxx xx00 = shutter closed
-			if (bits2[1] == true && bits2[0] == false) {
-				shutterContact.setShutterState(OpenClosedType.OPEN);
-				logger.trace ("Device {} status: Open", rfAddress);
-			} else if (bits2[1] == false && bits2[0] == false) {
-				shutterContact.setShutterState(OpenClosedType.CLOSED);
-				logger.trace ("Device {} status: Closed", rfAddress);
-			} else {
-				logger.trace ("Device {} status switch status Unknown (true-true)", rfAddress);
-			}
+                heatingThermostat.setValvePosition(raw[6] & 0xFF);
+                heatingThermostat.setTemperatureSetpoint(raw[7] & 0x7F);
 
-			break;
-		default:
-			logger.debug("Unhandled Device. DataBytes: " + Utils.getHex(raw));
-			break;
+                // 9 2 858B Date until (05-09-2011) (see Encoding/Decoding
+                // date/time)
+                // B 1 2E Time until (23:00) (see Encoding/Decoding date/time)
+                String hexDate = Utils.toHex(raw[8] & 0xFF, raw[9] & 0xFF);
+                int dateValue = Utils.fromHex(hexDate);
+                int timeValue = raw[10] & 0xFF;
+                Date date = Utils.resolveDateTime(dateValue, timeValue);
+                heatingThermostat.setDateSetpoint(date);
 
-		}
-		return device;
-	}
+                int actualTemp = 0;
+                if (device.getType() == DeviceType.WallMountedThermostat) {
+                    actualTemp = (raw[11] & 0xFF) + (raw[7] & 0x80) * 2;
 
-	private final void setBatteryLow(boolean batteryLow) {
-		if(this.batteryLow != batteryLow) {
-			this.updated = true;
-		}else {
-			this.updated = false;
-		}
-		this.batteryLow = batteryLow;
-	}
-	
-	public final OnOffType getBatteryLow() { 
-			return (this.batteryLow ?  OnOffType.ON : OnOffType.OFF);			
-	}
+                } else {
+                    if (heatingThermostat.getMode() != ThermostatModeType.VACATION
+                            && heatingThermostat.getMode() != ThermostatModeType.BOOST) {
+                        actualTemp = (raw[8] & 0xFF) * 256 + (raw[9] & 0xFF);
+                    } else {
+                        logger.debug("Device {}: No temperature reading in {} mode", rfAddress,
+                                heatingThermostat.getMode());
+                    }
+                }
+                logger.trace("Device {}: Actual Temperature : {}", rfAddress, (double) actualTemp / 10);
+                heatingThermostat.setTemperatureActual((double) actualTemp / 10);
+                break;
+            case EcoSwitch:
+                String eCoSwitchData = Utils.toHex(raw[3] & 0xFF, raw[4] & 0xFF, raw[5] & 0xFF);
+                logger.trace("EcoSwitch Device {} status bytes : {}", rfAddress, eCoSwitchData);
+                EcoSwitch ecoswitch = (EcoSwitch) device;
+                // xxxx xx10 = shutter open, xxxx xx00 = shutter closed
+                if (bits2[1] == true && bits2[0] == false) {
+                    ecoswitch.setEcoMode(OnOffType.ON);
+                    logger.trace("Device {} status: ON", rfAddress);
+                } else if (bits2[1] == false && bits2[0] == false) {
+                    ecoswitch.setEcoMode(OnOffType.OFF);
+                    logger.trace("Device {} status: OFF", rfAddress);
+                } else {
+                    logger.trace("Device {} status switch status Unknown (true-true)", rfAddress);
+                }
+                break;
+            case ShutterContact:
+                ShutterContact shutterContact = (ShutterContact) device;
+                // xxxx xx10 = shutter open, xxxx xx00 = shutter closed
+                if (bits2[1] == true && bits2[0] == false) {
+                    shutterContact.setShutterState(OpenClosedType.OPEN);
+                    logger.trace("Device {} status: Open", rfAddress);
+                } else if (bits2[1] == false && bits2[0] == false) {
+                    shutterContact.setShutterState(OpenClosedType.CLOSED);
+                    logger.trace("Device {} status: Closed", rfAddress);
+                } else {
+                    logger.trace("Device {} status switch status Unknown (true-true)", rfAddress);
+                }
 
-	public final String getRFAddress() {
-		return this.rfAddress;
-	}
+                break;
+            default:
+                logger.debug("Unhandled Device. DataBytes: " + Utils.getHex(raw));
+                break;
 
-	public final void setRFAddress(String rfAddress) {
-		this.rfAddress = rfAddress;
-	}
+        }
+        return device;
+    }
 
-	public final int getRoomId() {
-		return roomId;
-	}
+    private final void setBatteryLow(boolean batteryLow) {
+        if (this.batteryLow != batteryLow) {
+            this.updated = true;
+        } else {
+            this.updated = false;
+        }
+        this.batteryLow = batteryLow;
+    }
 
-	public final void setRoomId(int roomId) {
-		this.roomId = roomId;
-	}
+    public final OnOffType getBatteryLow() {
+        return (this.batteryLow ? OnOffType.ON : OnOffType.OFF);
+    }
 
-	public final String getRoomName() {
-		return config.getRoomName();
-	}
+    public final String getRFAddress() {
+        return this.rfAddress;
+    }
 
-	private void setLinkStatusError(boolean linkStatusError) {
-		this.linkStatusError = linkStatusError;
-	}
+    public final void setRFAddress(String rfAddress) {
+        this.rfAddress = rfAddress;
+    }
 
-	private void setPanelLocked(boolean panelLocked) {
-		this.panelLocked = panelLocked;
-	}
+    public final int getRoomId() {
+        return roomId;
+    }
 
-	private void setGatewayKnown(boolean gatewayKnown) {
-		this.gatewayKnown = gatewayKnown;
-	}
+    public final void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
 
-	private void setDstSettingActive(boolean dstSettingsActive) {
-		this.DstSettingsActive = dstSettingsActive;
-	}
+    public final String getRoomName() {
+        return config.getRoomName();
+    }
 
-	public boolean isDstSettingsActive() {
-		return DstSettingsActive;
-	}
+    private void setLinkStatusError(boolean linkStatusError) {
+        this.linkStatusError = linkStatusError;
+    }
 
-	private void setValid(boolean valid) {
-		this.valid = valid;
-	}
+    private void setPanelLocked(boolean panelLocked) {
+        this.panelLocked = panelLocked;
+    }
 
-	private void setError(boolean error) {
-		this.error = error;
+    private void setGatewayKnown(boolean gatewayKnown) {
+        this.gatewayKnown = gatewayKnown;
+    }
 
-	}
+    private void setDstSettingActive(boolean dstSettingsActive) {
+        this.DstSettingsActive = dstSettingsActive;
+    }
 
-	public String getSerialNumber() {
-		return serialNumber;
-	}
+    public boolean isDstSettingsActive() {
+        return DstSettingsActive;
+    }
 
-	private void setInitialized(boolean initialized) {
-		this.initialized = initialized;
-	}
+    private void setValid(boolean valid) {
+        this.valid = valid;
+    }
 
-	private void setAnswer(boolean answer) {
-		this.answer = answer;
-	}
+    private void setError(boolean error) {
+        this.error = error;
 
-	public boolean isUpdated() {
-		return updated;
-	}
+    }
 
-	public void setUpdated(boolean updated) {
-		this.updated = updated;
-	}
+    public String getSerialNumber() {
+        return serialNumber;
+    }
 
-	public boolean isInitialized() {
-		return initialized;
-	}
+    private void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
 
-	public boolean isAnswer() {
-		return answer;
-	}
+    private void setAnswer(boolean answer) {
+        this.answer = answer;
+    }
 
-	public boolean isError() {
-		return error;
-	}
+    public boolean isUpdated() {
+        return updated;
+    }
 
-	public boolean isValid() {
-		return valid;
-	}
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
+    }
 
-	public boolean isGatewayKnown() {
-		return gatewayKnown;
-	}
+    public boolean isInitialized() {
+        return initialized;
+    }
 
-	public boolean isPanelLocked() {
-		return panelLocked;
-	}
+    public boolean isAnswer() {
+        return answer;
+    }
 
-	public boolean isLinkStatusError() {
-		return linkStatusError;
-	}
+    public boolean isError() {
+        return error;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public boolean isGatewayKnown() {
+        return gatewayKnown;
+    }
+
+    public boolean isPanelLocked() {
+        return panelLocked;
+    }
+
+    public boolean isLinkStatusError() {
+        return linkStatusError;
+    }
 
 }
