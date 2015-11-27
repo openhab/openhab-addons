@@ -168,6 +168,12 @@
         </dependency>    	
 
         <dependency>
+            <groupId>org.openhab.ui</groupId>
+            <artifactId>org.openhab.ui.cometvisu</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.yahooweather</artifactId>
             <version>${esh.version}</version>
