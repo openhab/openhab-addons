@@ -11,32 +11,35 @@ package org.openhab.binding.max.internal.device;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 /**
-*  MAX!Cube EcoSwitch. 
-* 
-* @author Marcel Verpaalen
-* @since 1.6.0
-*/
+ * MAX! EcoSwitch.
+ *
+ * @author Marcel Verpaalen
+ * @since 1.6.0
+ */
 
 public class EcoSwitch extends ShutterContact {
 
-	private OnOffType ecoMode = null;
-	
-	/**
-	 * Class constructor. 
-	 * @param c
-	 */
-	public EcoSwitch(DeviceConfiguration c) {
-		super(c);
-	}
-	@Override
-	public DeviceType getType() {
-		return DeviceType.EcoSwitch;
-	}
+    private OnOffType ecoMode = null;
 
-	public OnOffType getEcoMode() {
-		return ecoMode;
-	}
-	public void setEcoMode(OnOffType ecoMode) {
-		this.ecoMode = ecoMode;
-	}
+    /**
+     * Class constructor.
+     *
+     * @param c
+     */
+    public EcoSwitch(DeviceConfiguration c) {
+        super(c);
+    }
+
+    @Override
+    public DeviceType getType() {
+        return DeviceType.EcoSwitch;
+    }
+
+    public OnOffType getEcoMode() {
+        return ecoMode;
+    }
+
+    public void setEcoMode(OnOffType ecoMode) {
+        this.ecoMode = ecoMode;
+    }
 }

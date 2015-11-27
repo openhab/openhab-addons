@@ -11,32 +11,33 @@ package org.openhab.binding.max.internal.device;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 
 /**
- * MAX!Cube Shutter contact device.
- * 
+ * MAX! Shutter contact device.
+ *
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 update
  * @since 1.4.0
  */
 public class ShutterContact extends Device {
 
-	private OpenClosedType shutterState = null;
+    private OpenClosedType shutterState = null;
 
-	public ShutterContact(DeviceConfiguration c) {
-		super(c);
-	}
+    public ShutterContact(DeviceConfiguration c) {
+        super(c);
+    }
 
-	public void setShutterState(OpenClosedType shutterState) {
-		if(this.shutterState != shutterState ) setUpdated (true);
-		this.shutterState = shutterState;
-	}
+    public void setShutterState(OpenClosedType shutterState) {
+        if (this.shutterState != shutterState)
+            setUpdated(true);
+        this.shutterState = shutterState;
+    }
 
-	public OpenClosedType getShutterState() {
-		return shutterState;
-	}
+    public OpenClosedType getShutterState() {
+        return shutterState;
+    }
 
-	@Override
-	public DeviceType getType() {
-		return DeviceType.ShutterContact;
-	}
+    @Override
+    public DeviceType getType() {
+        return DeviceType.ShutterContact;
+    }
 
 }
