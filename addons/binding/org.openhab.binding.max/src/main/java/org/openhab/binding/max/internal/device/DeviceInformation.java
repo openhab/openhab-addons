@@ -8,47 +8,45 @@
  */
 package org.openhab.binding.max.internal.device;
 
-
-
 /**
-* Device information provided by the M message meta information. 
-* 
-* @author Andreas Heil (info@aheil.de)
-* @since 1.4.0
-*/
+ * Device information provided by the M message meta information.
+ *
+ * @author Andreas Heil (info@aheil.de)
+ * @since 1.4.0
+ */
 public class DeviceInformation {
 
-	private DeviceType deviceType = DeviceType.Invalid;
-	private String serialNumber = "";
-	private String rfAddress = "";
-	private String name = "";
-	private int roomId = -1;
-	
-	public DeviceInformation(DeviceType deviceType, String serialNumber, String rfAddress, String name, int roomId) {
-		this.deviceType = deviceType;
-		this.serialNumber = serialNumber;
-		this.rfAddress = rfAddress;
-		this.name = name;
-		this.roomId = roomId;
-	}
+    private DeviceType deviceType = DeviceType.Invalid;
+    private String serialNumber = "";
+    private String rfAddress = "";
+    private String name = "";
+    private int roomId = -1;
 
-	public String getRFAddress() {
-		return rfAddress;
-	}
+    public DeviceInformation(DeviceType deviceType, String serialNumber, String rfAddress, String name, int roomId) {
+        this.deviceType = deviceType;
+        this.serialNumber = serialNumber;
+        this.rfAddress = rfAddress;
+        this.name = name;
+        this.roomId = roomId;
+    }
 
-	public DeviceType getDeviceType() {
-		return deviceType;
-	}
+    public String getRFAddress() {
+        return rfAddress;
+    }
 
-	public String getSerialNumber() {
-		return serialNumber;
-	}
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
 
-	public int getRoomId() {
-		return roomId;
-	}
-	
-	public String getName() {
-		return name;
-	}
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
