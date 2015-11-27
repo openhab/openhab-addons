@@ -64,6 +64,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Onkyo | Binding |
 | OpenEnergyMonitor | Binding |
 | OneWire | Binding |
+| RWE SmartHome | Binding |
 | RFXCOM | Binding |
 | Samsung AC | Binding |
 | Satel | Binding |
