@@ -114,6 +114,7 @@ public class CometVisuServlet extends HttpServlet {
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     private Pattern sitemapPattern = Pattern.compile(".*/visu_config_(oh_)?([^\\.]+)\\.xml");
+    private Pattern configStorePattern = Pattern.compile("config/visu_config_oh_([a-z0-9_]+)\\.xml");
 
     private String rrsLogPath = "/plugins/rsslog/rsslog_oh.php";
     private final String rssLogMessageSeparator = "\\|";
@@ -181,8 +182,8 @@ public class CometVisuServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         File requestedFile = getRequestedFile(req);
-        if (requestedFile.getName().endsWith("save_config.php")
-                && req.getParameter("config").contains("visu_config_oh_") && req.getParameter("type") != null
+        Matcher match = configStorePattern.matcher(req.getParameter("config"));
+        if (requestedFile.getName().endsWith("save_config.php") && match.find() && req.getParameter("type") != null
                 && req.getParameter("type").equals("xml")) {
             saveConfig(req, resp);
         } else {
@@ -801,6 +802,26 @@ public class CometVisuServlet extends HttpServlet {
             // file exists and we only write if the file exists (creating new files this way is prohibited for security
             // reasons
             logger.debug("save config file'{}' requested", file);
+
+            // check is backup folder exists
+            File backupFolder = new File(userFileFolder, "config/backup/");
+            boolean backup = true;
+            if (!backupFolder.exists()) {
+                try {
+                    backupFolder.mkdir();
+                } catch (SecurityException e) {
+                    logger.error("Error creating backup directory for CometVisu config files");
+                    backup = false;
+                }
+            }
+
+            if (backup) {
+                // Backup existing file
+                File backupFile = new File(backupFolder, file.getName() + "-" + System.currentTimeMillis());
+                FileUtils.copyFile(file, backupFile);
+            }
+
+            // write data to file
             String data = request.getParameter("data");
             FileUtils.writeStringToFile(file, data);
             resp.success = true;
