@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<bridge-type id="RFXrec433">
+		<label>RFXrec433 USB 433.92MHz Receiver</label>
+		<description>This is an RFXCOM 433.92MHz receiver bridge.</description>
+
+		<config-description>
+			<parameter name="bridgeId" type="text" required="true">
+				<label>Serial number</label>
+				<description>Serial number of the RFXCOM (FTDI) device</description>
+			</parameter>
+			<parameter name="ignoreConfig" type="boolean">
+				<label>Skip transceiver configuration</label>
+				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message configurations are ignored.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="setMode" type="text">
+				<label>RFXCOM transceiver mode</label>
+				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters (14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+			</parameter>
+			<parameter name="enableUndecoded" type="boolean">
+				<label>Undecoded messages</label>
+				<description>Enable display of unencoded messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableImagintronixOpus" type="boolean">
+				<label>Imagintronix/Opus messages</label>
+				<description>Enable Imagintronix/Opus messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableByronSX" type="boolean">
+				<label>Byron SX messages</label>
+				<description>Enable Byron SX messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableRSL" type="boolean">
+				<label>RSL messages</label>
+				<description>Enable RSL messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableLighting4" type="boolean">
+				<label>Lighting4 messages</label>
+				<description>Enable Lighting4 messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableFineOffsetViking" type="boolean">
+				<label>FineOffset/Viking messages</label>
+				<description>Enable FineOffset/Viking messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableRubicson" type="boolean">
+				<label>Rubicson messages</label>
+				<description>Enable Rubicson messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableAEBlyss" type="boolean">
+				<label>AE Blyss messages</label>
+				<description>Enable AE Blyss messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableBlindsT1T2T3T4" type="boolean">
+				<label>BlindsT1/T2/T3/T4 messages</label>
+				<description>Enable BlindsT1/T2/T3/T4 messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableBlindsT0" type="boolean">
+				<label>BlindsT0 messages</label>
+				<description>Enable BlindsT0 messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableLaCrosse" type="boolean">
+				<label>La Crosse messages</label>
+				<description>Enable La Crosse messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableHidekiUPM" type="boolean">
+				<label>Hideki/UPM messages</label>
+				<description>Enable Hideki/UPM messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableADLightwaveRF" type="boolean">
+				<label>AD LightwaveRF messages</label>
+				<description>Enable AD LightwaveRF messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableMertik" type="boolean">
+				<label>Mertik messages</label>
+				<description>Enable Mertik messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableATI" type="boolean">
+				<label>ATI messages</label>
+				<description>Enable ATI messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableOregonScientific" type="boolean">
+				<label>Oregon Scientific messages</label>
+				<description>Enable Oregon Scientific messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableMeiantech" type="boolean">
+				<label>Meiantech messages</label>
+				<description>Enable Meiantech messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableHomeEasyEU" type="boolean">
+				<label>HomeEasy EU messages</label>
+				<description>Enable HomeEasy EU messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableAC" type="boolean">
+				<label>AC messages</label>
+				<description>Enable AC messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableARC" type="boolean">
+				<label>ARC messages</label>
+				<description>Enable ARC messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableX10" type="boolean">
+				<label>X10 messages</label>
+				<description>Enable X10 messages to RFXCOM transceiver.</description>
+				<default>false</default>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lighting5">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Lighting5 Actuator</label>
+		<description>A Lighting5 device.</description>
+
+		<channels>
+			<channel id="command" typeId="command" />
+			<channel id="contact" typeId="contact" />
+			<channel id="dimmingLevel" typeId="dimminglevel" />
+			<channel id="mood" typeId="mood" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Device Id. Id + unit code, separated by dot. Example 10001.1</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="LIGHTWAVERF">LightwaveRF, Siemens</option>
+					<option value="EMW100">EMW100 GAO/Everflourish</option>
+					<option value="BBSB_NEW">BBSB new types</option>
+					<option value="MDREMOTE">MDREMOTE LED dimmer</option>
+					<option value="CONRAD_RSL2">Conrad RSL2</option>
+					<option value="LIVOLO">Livolo Dimmer or On/Off 1-3</option>
+					<option value="RGB_TRC02">RGB TRC02 (2 batt)</option>
+					<option value="AOKE">Aoke Relay</option>
+					<option value="RGB_TRC02_2">RGB TRC02_2 (3 batt)</option>
+					<option value="EURODOMEST">Eurodomest</option>
+					<option value="LIVOLO_APPLIANCE">Livolo Appliance On/Off 1-10</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -16,50 +16,50 @@ import org.openhab.binding.max.internal.device.DeviceType;
 
 /**
  * Tests cases for {@link C_Message}.
- * 
+ *
  * @author Andreas Heil (info@aheil.de)
  * @author Marcel Verpaalen - OH2 Version and updates
  * @since 1.4.0
  */
 public class C_MessageTest {
 
-	public final String rawData = "C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==";
+    public final String rawData = "C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==";
 
-	private C_Message message = null;
+    private C_Message message = null;
 
-	@Before
-	public void Before() {
-		message = new C_Message(rawData);
-	}
+    @Before
+    public void Before() {
+        message = new C_Message(rawData);
+    }
 
-	@Test
-	public void getMessageTypeTest() {
+    @Test
+    public void getMessageTypeTest() {
 
-		MessageType messageType = ((Message) message).getType();
+        MessageType messageType = ((Message) message).getType();
 
-		assertEquals(MessageType.C, messageType);
-	}
+        assertEquals(MessageType.C, messageType);
+    }
 
-	@Test
-	public void getRFAddressTest() {
+    @Test
+    public void getRFAddressTest() {
 
-		String rfAddress = message.getRFAddress();
+        String rfAddress = message.getRFAddress();
 
-		assertEquals("0b0da3", rfAddress);
-	}
+        assertEquals("0b0da3", rfAddress);
+    }
 
-	@Test
-	public void getDeviceTypeTest() {
+    @Test
+    public void getDeviceTypeTest() {
 
-		DeviceType deviceType = message.getDeviceType();
+        DeviceType deviceType = message.getDeviceType();
 
-		assertEquals(DeviceType.HeatingThermostatPlus, deviceType);
-	}
+        assertEquals(DeviceType.HeatingThermostatPlus, deviceType);
+    }
 
-	@Test
-	public void getSerialNumberTes() {
-		String serialNumber = message.getSerialNumber();
+    @Test
+    public void getSerialNumberTes() {
+        String serialNumber = message.getSerialNumber();
 
-		assertEquals("KEQ0544242", serialNumber);
-	}
+        assertEquals("KEQ0544242", serialNumber);
+    }
 }

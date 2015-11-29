@@ -77,13 +77,13 @@
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.yahooweather:jar:*</include>
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.wemo:jar:*</include>
       	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.hue:jar:*</include>
+      	<include>org.eclipse.smarthome.binding:org.eclipse.smarthome.binding.ntp:jar:*</include>
       	<include>org.openhab.binding:org.openhab.binding.sonos:jar:*</include>
       	<include>org.openhab.binding:org.openhab.binding.ipp:jar:*</include>
       	<include>org.openhab.binding:org.openhab.binding.astro:jar:*</include>
       	<include>org.openhab.binding:org.openhab.binding.avmfritz:jar:*</include>      	
 		<!-- 1.x addons -->
       	<include>org.openhab.persistence:org.openhab.persistence.rrd4j:jar:*</include>
-      	<include>org.openhab.binding:org.openhab.binding.ntp:jar:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

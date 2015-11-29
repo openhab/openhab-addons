@@ -11,9 +11,14 @@ package org.openhab.binding.max.internal.exceptions;
 /**
  * Will be thrown when there is an attempt to pull a message from the message processor,
  * but the processor does not yet have a complete message.
- * 
+ *
  * @author Christian Rockrohr <christian@rockrohr.de>
  */
 public class NoMessageAvailableException extends Exception {
+
+    /**
+     * required variable to avoid IncorrectMultilineIndexException warning
+     */
+    private static final long serialVersionUID = -7663390696233390452L;
 
 }

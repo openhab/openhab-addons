@@ -11,12 +11,6 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-
-	<properties>
-		<bundle.symbolicName>org.openhab.ui.paperui</bundle.symbolicName>
-		<bundle.namespace>org.openhab.ui.paperui</bundle.namespace>
-	</properties>
-
 	<artifactId>org.openhab.ui.paperui</artifactId>
 
 	<name>openHAB Paper UI Theme Fragment</name>
