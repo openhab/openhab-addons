@@ -17,25 +17,21 @@ import org.openhab.binding.max.internal.exceptions.MessageIsWaitingException;
 import org.openhab.binding.max.internal.exceptions.NoMessageAvailableException;
 import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException;
 import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The message processor was introduced to combine multiple received lines to
- * one single message. There are cases, when the MAX!Cube sends multiple
+ * one single message. There are cases, when the MAX! Cube sends multiple
  * messages (M-Message for example). The message processor acts as stack for
  * received messages. Every received line should be added to the processor.
  * After every added line, the message processor analyses the line. It is not
  * possible to add additional lines when there is a message ready to be
  * processed.
- * 
+ *
  * @author Christian Rockrohr <christian@rockrohr.de>
  * @since 1.7.0
  */
 public class MessageProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
-    
     public static final String SEPARATOR = ":";
 
     /**
@@ -74,7 +70,7 @@ public class MessageProcessor {
      * additional lines. If the new line does not fit into current state
      * (incomplete M: message on stack but L: message line received) a
      * IncompleteMessageException is thrown.
-     * 
+     *
      * @param line
      *            is the new line received
      * @return true if a message could be created by this line, false in any
@@ -132,8 +128,8 @@ public class MessageProcessor {
         return result;
     }
 
-    private Boolean handle_M_MessageLine(String line) throws UnprocessableMessageException, IncompleteMessageException,
-            IncorrectMultilineIndexException {
+    private Boolean handle_M_MessageLine(String line)
+            throws UnprocessableMessageException, IncompleteMessageException, IncorrectMultilineIndexException {
         Boolean result = false;
 
         String[] tokens = line.split(Message.DELIMETER); // M:00,01,xyz.....
@@ -182,7 +178,7 @@ public class MessageProcessor {
 
         return result;
     }
-    
+
     /**
      * @return true if there is a message waiting to be pulled
      */
@@ -195,7 +191,7 @@ public class MessageProcessor {
      * to be done before next line can be added into message processor. When
      * message is pulled, the message processor is reseted and ready to process
      * next line.
-     * 
+     *
      * @return Message
      * @throws NoMessageAvailableException
      *             when there was no message on the stack
@@ -216,7 +212,7 @@ public class MessageProcessor {
     /**
      * Processes the raw TCP data read from the MAX protocol, returning the
      * corresponding MessageType.
-     * 
+     *
      * @param line
      *            the raw data provided read from the MAX protocol
      * @return MessageType of the line added

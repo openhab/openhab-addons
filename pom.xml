@@ -92,6 +92,7 @@
 
         <dep.jupnp.version>2.0.0</dep.jupnp.version>
         <dep.jmdns.version>3.4.2</dep.jmdns.version>
+        <dep.paho.version>1.0.2</dep.paho.version>
 
         <dep.jetty.osgi.boot.groupId>org.eclipse.jetty.osgi</dep.jetty.osgi.boot.groupId>
         <dep.jetty.osgi.boot.artifactId>jetty-osgi-boot</dep.jetty.osgi.boot.artifactId>
@@ -292,9 +293,6 @@
         <dep.bsn.org.eclipse.jdt.launching.groupId>tmp.need.a.home</dep.bsn.org.eclipse.jdt.launching.groupId>
         <dep.bsn.org.eclipse.jdt.launching.artifactId>org.eclipse.jdt.launching</dep.bsn.org.eclipse.jdt.launching.artifactId>
         <dep.bsn.org.eclipse.jdt.launching.version>3.7.102.v20141111-0953</dep.bsn.org.eclipse.jdt.launching.version>
-        <dep.bsn.org.eclipse.paho.client.mqttv3.groupId>tmp.need.a.home</dep.bsn.org.eclipse.paho.client.mqttv3.groupId>
-        <dep.bsn.org.eclipse.paho.client.mqttv3.artifactId>org.eclipse.paho.client.mqttv3</dep.bsn.org.eclipse.paho.client.mqttv3.artifactId>
-        <dep.bsn.org.eclipse.paho.client.mqttv3.version>1.0.2</dep.bsn.org.eclipse.paho.client.mqttv3.version>
         <dep.bsn.org.eclipse.text.groupId>tmp.need.a.home</dep.bsn.org.eclipse.text.groupId>
         <dep.bsn.org.eclipse.text.artifactId>org.eclipse.text</dep.bsn.org.eclipse.text.artifactId>
         <dep.bsn.org.eclipse.text.version>3.5.300.v20130515-1451</dep.bsn.org.eclipse.text.version>

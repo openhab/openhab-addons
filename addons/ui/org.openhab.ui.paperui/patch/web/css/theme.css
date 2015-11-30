@@ -163,3 +163,10 @@ md-select.md-default-theme:not([disabled]):focus .md-select-label {
 .items .item p[class*=" home-icon-"]:before {
 	background-color: #ff6600;
 }
+
+/* Extensions */
+
+.fab-item .circle.green {
+    background-color: #4c9ffb;
+    color: white;
+}

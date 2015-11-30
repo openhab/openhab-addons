@@ -11,9 +11,14 @@ package org.openhab.binding.max.internal.exceptions;
 /**
  * Will be thrown when there is an attempt to put a new message line into the message processor,
  * but the processor is currently processing an other message type.
- * 
+ *
  * @author Christian Rockrohr <christian@rockrohr.de>
  */
 public class IncompleteMessageException extends Exception {
+
+    /**
+     * required variable to avoid IncorrectMultilineIndexException warning
+     */
+    private static final long serialVersionUID = -8882867114144637120L;
 
 }

@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
@@ -180,7 +181,13 @@ public class CometVisuServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         File requestedFile = getRequestedFile(req);
-        phpService(requestedFile, req, resp);
+        if (requestedFile.getName().endsWith("save_config.php")
+                && req.getParameter("config").contains("visu_config_oh_") && req.getParameter("type") != null
+                && req.getParameter("type").equals("xml")) {
+            saveConfig(req, resp);
+        } else {
+            phpService(requestedFile, req, resp);
+        }
     }
 
     private Sitemap getSitemap(String sitemapname) {
@@ -223,7 +230,6 @@ public class CometVisuServlet extends HttpServlet {
                 throw new ServletException("Sitemap '" + matcher.group(1) + "' could not be found");
             }
         }
-
         // logger.info("Path: " + req.getPathInfo());
         if (path.matches(".*editor/dataproviders/.+\\.(php|json)$") || path.matches(".*designs/get_designs\\.php$")) {
             dataProviderService(requestedFile, req, resp);
@@ -765,6 +771,43 @@ public class CometVisuServlet extends HttpServlet {
             close(output);
             close(input);
         }
+    }
+
+    /**
+     * Save config file send by editor
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private final void saveConfig(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String fileName = request.getParameter("config");
+        File file = new File(userFileFolder, URLDecoder.decode(fileName, "UTF-8"));
+
+        response.setContentType(MediaType.APPLICATION_JSON);
+
+        class Response {
+            public Boolean success = false;
+            public String message = "";
+
+            Response() {
+            }
+        }
+        Response resp = new Response();
+
+        if (file.exists()) {
+            // file exists and we only write if the file exists (creating new files this way is prohibited for security
+            // reasons
+            logger.debug("save config file'{}' requested", file);
+            String data = request.getParameter("data");
+            FileUtils.writeStringToFile(file, data);
+            resp.success = true;
+            resp.message = "File saved";
+        }
+        response.getWriter().write(marshalJson(resp));
+        response.flushBuffer();
     }
 
     /**

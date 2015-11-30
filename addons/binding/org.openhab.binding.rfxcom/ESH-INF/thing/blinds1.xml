@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="blinds1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Blinds1 Actuator</label>
+		<description>A Blinds1 device.</description>
+
+		<channels>
+			<channel id="command" typeId="command" />
+			<channel id="shutter" typeId="shutter" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Device Id. Id + unit code, separated by dot. Example 23455.1</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="T0">RollerTrol, Hasta new</option>
+					<option value="T1">Hasta old</option>
+					<option value="T2">A-OK RF01</option>
+					<option value="T3">A-OK AC114/AC123</option>
+					<option value="T4">Raex YR1326</option>
+					<option value="T5">Media Mount</option>
+					<option value="T6">DC106/Rohrmotor24-RMF/Yooda</option>
+					<option value="T7">Forest</option>
+					<option value="T8">Chamberlain CS4330CN</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

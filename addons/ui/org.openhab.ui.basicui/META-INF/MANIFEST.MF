@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Basic UI Fragment
+Bundle-SymbolicName: org.openhab.ui.basicui
+Bundle-Version: 2.0.0.qualifier
+Fragment-Host: org.eclipse.smarthome.ui.basic
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: patch/,.
+Service-Component: OSGI-INF/dashboardtile.xml
+Import-Package: org.openhab.ui.dashboard
+Bundle-Vendor: openHAB.org
