@@ -3,6 +3,10 @@
 
     <!-- <feature name="${project.artifactId}" description="${project.name}" version="${project.version}"> -->
 
+    <feature name="openhab-runtime-base" description="${project.name}" version="${project.version}">
+        <feature>openhab-runtime</feature>
+    </feature>
+
     <feature name="openhab-runtime" description="${project.name}" version="${project.version}">
         <details>${project.description}</details>
         <feature>openhab-tp-base</feature>
