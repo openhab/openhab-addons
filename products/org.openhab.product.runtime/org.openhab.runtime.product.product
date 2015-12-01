@@ -39,7 +39,9 @@
       <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="1" />
       <plugin id="ch.qos.logback.core" autoStart="true" startLevel="1" />
       <plugin id="com.eclipsesource.jaxrs.provider.gson" autoStart="true" startLevel="5" />
+      <plugin id="com.eclipsesource.jaxrs.provider.swagger" autoStart="true" startLevel="5" />
       <plugin id="com.eclipsesource.jaxrs.publisher" autoStart="true" startLevel="5" />
+      <plugin id="com.eclipsesource.jaxrs.swagger-all" autoStart="true" startLevel="5" />
       <plugin id="org.apache.felix.fileinstall" autoStart="true" startLevel="3" />
       <plugin id="org.apache.felix.gogo.command" autoStart="true" startLevel="0" />
       <plugin id="org.apache.felix.gogo.runtime" autoStart="true" startLevel="0" />

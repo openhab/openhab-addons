@@ -14,4 +14,5 @@
    <service>
       <provide interface="org.openhab.ui.dashboard.DashboardTile"/>
    </service>
+   <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
 </scr:component>
