@@ -18,7 +18,7 @@
         <feature>openhab-misc-restdocs</feature>
     </feature>
 
-    <feature name="openhab-runtime-compat1x" description="Compatibility runtime for openHAB 1 addons" version="${project.version}">
+    <feature name="openhab-misc-compat1x" description="Compatibility runtime for openHAB 1 addons" version="${project.version}">
         <details>${project.description}</details>
         <feature>openhab-runtime</feature>
         <bundle start-level="54">mvn:org.openhab.bundles.core/org.openhab.core.compat1x/${project.version}</bundle>
