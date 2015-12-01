@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
 
-    <!-- <feature name="${project.artifactId}" description="${project.name}" version="${project.version}"> -->
-
     <!-- action -->
 
     <feature name="openhab-action-mail" description="Mail Action" version="${oh1.version}">
@@ -60,6 +58,7 @@
 
     <feature name="openhab-binding-avmfritz" description="AVM Fritz!Box Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
     </feature>
 
@@ -74,11 +73,13 @@
     <feature name="openhab-binding-denon" description="Denon Binding" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
+        <feature>shk-apache-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.denon/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/denon.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/denon</configfile>
     </feature>
 
     <feature name="openhab-binding-dmx" description="DMX OLA Binding" version="${oh1.version}">
+        <!-- TODO: osgi.wiring.package=org.eclipse.osgi.framework.console -->
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dmx/${oh1.version}</bundle>
@@ -88,6 +89,7 @@
 
     <feature name="openhab-binding-dscalarm" description="DSCAlarm Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dscalarm/${project.version}</bundle>
     </feature>
 
@@ -128,6 +130,7 @@
 
     <feature name="openhab-binding-freebox" description="Freebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-misc-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
     </feature>
 
@@ -172,8 +175,7 @@
     </feature>
 
     <feature name="openhab-binding-hue" description="Hue Binding" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.hue/${esh.version}</bundle>
+        <feature>shk-esh-binding-hue</feature>
     </feature>
 
     <feature name="openhab-binding-ihc" description="IHC Binding" version="${oh1.version}">
@@ -187,6 +189,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
         <feature>openhab-transport-serial</feature>
+        <feature>shk-apache-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.insteonplm/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/insteonplm.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/insteonplm</configfile>
     </feature>
@@ -194,6 +197,7 @@
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
+        <feature>shk-apache-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ipp/${project.version}</bundle>
     </feature>
 
@@ -216,8 +220,7 @@
     </feature>
 
     <feature name="openhab-binding-lifx" description="LIFX Binding" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.lifx/${esh.version}</bundle>
+        <feature>shk-esh-binding-lifx</feature>
     </feature>
 
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
@@ -265,8 +268,7 @@
     </feature>
 
     <feature name="openhab-binding-ntp" description="NTP Binding" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.ntp/${esh.version}</bundle>
+        <feature>shk-esh-binding-ntp</feature>
     </feature>
 
     <feature name="openhab-binding-onkyo" description="Onkyo Binding" version="${oh1.version}">
@@ -300,17 +302,20 @@
 
     <feature name="openhab-binding-pioneeravr" description="PioneerAVR Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pioneeravr/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pulseaudio" description="Pulseaudio Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pulseaudio/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-rfxcom" description="RFXCOM Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-misc-compat1x</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rfxcom/${project.version}</bundle>
     </feature>
@@ -318,6 +323,7 @@
     <feature name="openhab-binding-rwesmarthome" description="RWE SmartHome Binding" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
+        <feature>shk-apache-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rwesmarthome/${oh1.version}</bundle>
     </feature>
 
@@ -337,6 +343,7 @@
     <feature name="openhab-binding-satel" description="Satel Binding" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
+        <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.satel/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/satel.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/satel</configfile>
     </feature>
@@ -411,8 +418,7 @@
     </feature>
 
     <feature name="openhab-binding-wemo" description="Wemo Binding" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.wemo/${esh.version}</bundle>
+        <feature>shk-esh-binding-wemo</feature>
     </feature>
 
     <feature name="openhab-binding-wol" description="Wake-on-LAN Binding" version="${project.version}">
@@ -428,8 +434,7 @@
     </feature>
 
     <feature name="openhab-binding-yahooweather" description="Yahoo Weather Binding" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.binding/org.eclipse.smarthome.binding.yahooweather/${esh.version}</bundle>
+        <feature>shk-esh-binding-yahooweather</feature>
     </feature>
 
     <feature name="openhab-binding-zwave" description="Z-Wave Binding" version="${oh1.version}">
@@ -459,6 +464,7 @@
     </feature>
 
     <feature name="openhab-persistence-logging" description="Logging Persistence" version="${oh1.version}">
+        <!-- TODO: osgi.wiring.package=ch.qos.logback.classic -->
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.persistence/org.openhab.persistence.logging/${oh1.version}</bundle>
@@ -482,15 +488,11 @@
     </feature>
 
     <feature name="openhab-transport-mdns" description="mDNS Transport" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.jmdns/jmdns/${dep.jmdns.version}</bundle>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.transport.mdns/${esh.version}</bundle>
+        <feature>shk-esh-io-transport-mdns</feature>
     </feature>
 
     <feature name="openhab-transport-mqtt" description="MQTT Transport" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.paho/org.eclipse.paho.client.mqttv3/${dep.paho.version}</bundle>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.transport.mqtt/${esh.version}</bundle>
+        <feature>shk-esh-io-transport-mqtt</feature>
     </feature>
 
     <feature name="openhab-transport-serial" description="Serial Transport" version="${project.version}">
@@ -499,32 +501,32 @@
     </feature>
 
     <feature name="openhab-transport-upnp" description="UPnP Transport" version="${esh.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.io/org.eclipse.smarthome.io.transport.upnp/${esh.version}</bundle>
-        <bundle start-level="80">mvn:org.jupnp/org.jupnp/${dep.jupnp.version}</bundle>
+        <feature>shk-esh-io-transport-upnp</feature>
     </feature>
 
     <!-- ui -->
 
-    <feature name="openhab-ui-classic" description="Classic UI" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-ui-dashboard</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.extension.ui/org.eclipse.smarthome.ui.classic/${esh.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.classicui/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab.bundles.ui/org.openhab.ui.iconset.classic/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-ui-basic" description="Basic UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-dashboard</feature>
+        <feature>shk-esh-ui-basic</feature>
         <bundle start-level="80">mvn:org.eclipse.smarthome.extension.ui/org.eclipse.smarthome.ui.basic/${esh.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.basicui/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.bundles.ui/org.openhab.ui.iconset.classic/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/basicui.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/basicui</configfile>
     </feature>
 
+    <feature name="openhab-ui-classic" description="Classic UI" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-ui-dashboard</feature>
+        <feature>shk-esh-ui-classic</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.classicui/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.bundles.ui/org.openhab.ui.iconset.classic/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-misc-compat1x</feature>
         <feature>openhab-ui-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/cometvisu</configfile>
@@ -533,7 +535,7 @@
     <feature name="openhab-ui-paper" description="Paper UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-dashboard</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.extension.ui/org.eclipse.smarthome.ui.paper/${esh.version}</bundle>
+        <feature>shk-esh-ui-paper</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.paperui/${project.version}</bundle>
     </feature>
 
@@ -541,6 +543,7 @@
 
     <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-misc-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.myopenhab/${project.version}</bundle>
     </feature>
 
