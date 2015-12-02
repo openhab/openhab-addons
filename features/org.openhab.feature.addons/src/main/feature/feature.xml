@@ -78,14 +78,14 @@
         <configfile finalname="${openhab.conf}/services/denon.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/denon</configfile>
     </feature>
 
-    <feature name="openhab-binding-dmx" description="DMX OLA Binding" version="${oh1.version}">
-        <!-- TODO: osgi.wiring.package=org.eclipse.osgi.framework.console -->
+    <!-- TODO: osgi.wiring.package=org.eclipse.osgi.framework.console -->
+    <!--    <feature name="openhab-binding-dmx" description="DMX OLA Binding" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dmx/${oh1.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dmx.ola/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/dmx.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/dmx</configfile>
-    </feature>
+    </feature>-->
 
     <feature name="openhab-binding-dscalarm" description="DSCAlarm Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -468,13 +468,13 @@
         <configfile finalname="${openhab.conf}/services/mysql.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/mysql</configfile>
     </feature>
 
-    <feature name="openhab-persistence-logging" description="Logging Persistence" version="${oh1.version}">
-        <!-- TODO: osgi.wiring.package=ch.qos.logback.classic -->
+    <!-- TODO: osgi.wiring.package=ch.qos.logback.classic -->
+    <!--    <feature name="openhab-persistence-logging" description="Logging Persistence" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-misc-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.persistence/org.openhab.persistence.logging/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/logging.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/logging</configfile>
-    </feature>
+    </feature>-->
 
     <feature name="openhab-persistence-jpa" description="JPA Persistence" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
