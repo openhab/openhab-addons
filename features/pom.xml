@@ -16,6 +16,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>org.openhab.feature.aggregate</module>
         <module>org.openhab.feature.addons</module>
         <module>org.openhab.feature.addons.external</module>
         <module>org.openhab.feature.runtime</module>

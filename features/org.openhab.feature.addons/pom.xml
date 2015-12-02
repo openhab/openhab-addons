@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>org.openhab.feature.addons</artifactId>
-    <packaging>kar</packaging>
+    <packaging>feature</packaging>
 
     <name>openHAB Feature Addons</name>
     <description>openHAB 2</description>
@@ -34,7 +34,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>4.0.4-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <configuration>
                     <startLevel>80</startLevel>
@@ -48,25 +47,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <!-- TODO: temporary solution as long as karaf-maven-plugin <= 4.0.3 -->
-            <id>apache-snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>https://repository.apache.org/content/groups/snapshots</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <repositories>
-        <repository>
-            <id>openhab.repository.snapshot</id>
-            <name>openHAB 1.x Snapshots</name>
-            <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
 </project>

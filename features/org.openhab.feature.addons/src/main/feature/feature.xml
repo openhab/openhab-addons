@@ -447,6 +447,11 @@
 
     <!-- misc -->
 
+    <feature name="openhab-misc-compat1x" description="Compatibility runtime for openHAB 1 addons" version="${project.version}">
+        <feature>shk-esh-base</feature>
+        <bundle>mvn:org.openhab.bundles.core/org.openhab.core.compat1x/${project.version}</bundle>
+    </feature>
+
     <!-- persistence -->
 
     <feature name="openhab-persistence-rrd4j" description="RRD4j Persistence" version="${oh1.version}">
