@@ -207,6 +207,16 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.caldab-command</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.caldav-personal</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.comfoair</artifactId>
             <version>${oh1.version}</version>
         </dependency>
@@ -295,7 +305,7 @@
             <artifactId>org.openhab.binding.lcn</artifactId>
             <version>${oh1.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.milight</artifactId>
             <version>${oh1.version}</version>
@@ -443,6 +453,11 @@
             <version>${oh1.version}</version>
         </dependency>    	
 
+        <dependency>
+            <groupId>org.openhab.io</groupId>
+            <artifactId>org.openhab.io.caldav</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.openhab.io</groupId>
             <artifactId>org.openhab.io.multimedia.tts.marytts</artifactId>
