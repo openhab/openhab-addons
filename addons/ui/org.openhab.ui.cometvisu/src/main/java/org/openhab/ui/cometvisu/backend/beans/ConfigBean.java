@@ -9,15 +9,16 @@
 package org.openhab.ui.cometvisu.backend.beans;
 
 /**
- * This is a java bean that is used with JAXB to define the login entry
- * page of the Cometvisu interface.
+ * This is a java bean that is used with JAXB to define the backend configurationfor the
+ * Cometvisu client.
  *
  * @author Tobias Bräutigam
  * @since 2.0.0
  *
  */
-public class LoginBean {
-    public String v;
-    public String s;
-    public ConfigBean c;
+public class ConfigBean {
+    public String name = "openhab2";
+    public String transport = "sse";
+    public String baseURL = "/rest/cv/";
+    public ResourcesBean resources;
 }
