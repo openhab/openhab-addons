@@ -18,12 +18,6 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.openhab.core.binding,
- org.openhab.core.events,
- org.openhab.core.items,
- org.openhab.core.library.items,
- org.openhab.core.library.types,
- org.openhab.core.types,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
