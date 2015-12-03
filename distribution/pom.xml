@@ -207,7 +207,7 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.caldab-command</artifactId>
+            <artifactId>org.openhab.binding.caldav-command</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>
