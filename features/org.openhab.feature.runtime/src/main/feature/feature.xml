@@ -14,15 +14,9 @@
         <bundle>mvn:org.openhab.bundles.core/org.openhab.core.karaf/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
-        <feature>shk-esh-base</feature>
-        <feature>openhab-ui-dashboard</feature>
-        <bundle>mvn:org.openhab.bundles.io/org.openhab.io.rest.docs/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-ui-dashboard" description="Dashboard" version="${project.version}">
-        <feature>shk-esh-base</feature>
-        <bundle>mvn:org.openhab.bundles.ui/org.openhab.ui.dashboard/${project.version}</bundle>
+    <feature name="openhab-runtime-compat1x" description="Compatibility runtime for openHAB 1 addons" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle>mvn:org.openhab.bundles.core/org.openhab.core.compat1x/${project.version}</bundle>
     </feature>
 
 </features>
