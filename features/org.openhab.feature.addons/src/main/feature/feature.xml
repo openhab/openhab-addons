@@ -453,6 +453,7 @@
     <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
         <feature>shk-esh-base</feature>
         <feature>openhab-ui-dashboard</feature>
+        <feature>shk-jax-rs-provider-swagger</feature>
         <bundle>mvn:org.openhab.bundles.io/org.openhab.io.rest.docs/${project.version}</bundle>
     </feature>
 
