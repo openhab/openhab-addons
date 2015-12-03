@@ -23,7 +23,6 @@ Import-Package: com.google.common.base,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.openhab.library.tel.items,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*
