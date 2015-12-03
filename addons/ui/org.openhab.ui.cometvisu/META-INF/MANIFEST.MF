@@ -43,7 +43,6 @@ Import-Package:
  org.glassfish.jersey.media.sse,
  org.glassfish.jersey.server,
  org.glassfish.jersey.servlet.spi,
- org.openhab.core.types,
  org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.cm,
