@@ -62,11 +62,6 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
-            <artifactId>org.openhab.binding.sonos</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.max</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -181,6 +176,11 @@
         <dependency>
             <groupId>org.eclipse.smarthome.binding</groupId>
             <artifactId>org.eclipse.smarthome.binding.hue</artifactId>
+            <version>${esh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.smarthome.binding</groupId>
+            <artifactId>org.eclipse.smarthome.binding.sonos</artifactId>
             <version>${esh.version}</version>
         </dependency>
         <dependency>
