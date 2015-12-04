@@ -17,6 +17,13 @@
         <configfile finalname="${openhab.conf}/services/pushover.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/pushover</configfile>
     </feature>
 
+    <feature name="openhab-action-telegram" description="Telegram Action" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.action/org.openhab.action.telegram/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/telegram.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/telegram</configfile>
+    </feature>
+
     <feature name="openhab-action-xbmc" description="XBMC Action" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-runtime-compat1x</feature>
@@ -60,6 +67,22 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-caldav-command" description="CalDAV Binding (command)" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <feature>openhab-io-caldav</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.caldav-command/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/caldavCommand.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/caldavCommand</configfile>
+    </feature>
+
+    <feature name="openhab-binding-caldav-personal" description="CalDAV Binding (personal)" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <feature>openhab-io-caldav</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.caldav-personal/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/caldavPersonal.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/caldavPersonal</configfile>
     </feature>
 
     <feature name="openhab-binding-comfoair" description="ComfoAir Binding" version="${oh1.version}">
@@ -338,6 +361,13 @@
         <configfile finalname="${openhab.conf}/services/samsungac.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/samsungac</configfile>
     </feature>
 
+    <feature name="openhab-binding-sapp" description="Sapp Binding" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sapp/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/sapp.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/sapp</configfile>
+    </feature>
+
     <feature name="openhab-binding-satel" description="Satel Binding" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-runtime-compat1x</feature>
@@ -359,9 +389,7 @@
     </feature>
 
     <feature name="openhab-binding-sonos" description="Sonos Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonos/${project.version}</bundle>
+        <feature>shk-esh-binding-sonos</feature>
     </feature>
 
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
@@ -554,6 +582,13 @@
     </feature>
 
     <!-- find the category -->
+
+    <feature name="openhab-io-caldav" description="CalDAV I/O" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.caldav/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/caldavio.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/caldavio</configfile>
+    </feature>
 
     <feature name="openhab-tts-marytts" description="MaryTTS" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>

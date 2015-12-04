@@ -38,6 +38,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 |--------|------|
 | Anel | Binding |
 | Astro | Binding |
+| CalDAV | Binding |
 | Comfo Air | Binding |
 | Denon | Binding |
 | DMX (OLA) | Binding |
@@ -67,6 +68,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | RWE SmartHome | Binding |
 | RFXCOM | Binding |
 | Samsung AC | Binding |
+| Sapp | Binding |
 | Satel | Binding |
 | SNMP | Binding |
 | SwegonVentilation | Binding |
@@ -85,6 +87,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | JPA | Persistence |
 | Mail | Action |
 | Pushover | Action |
+| Telegram | Action |
 | XBMC | Action |
 | XMPP | Action |
 | GoogleTTS | TTS engine |

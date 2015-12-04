@@ -23,7 +23,7 @@
         <module>org.openhab.feature.runtime</module>
         <module>org.openhab.feature.demo.resources</module>
         <module>org.openhab.feature.demo</module>
-        <!--<module>org.openhab.feature.verify</module>-->
+        <module>org.openhab.feature.verify</module>
     </modules>
 
 </project>

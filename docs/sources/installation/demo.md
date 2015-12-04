@@ -1,6 +1,6 @@
 # Installation of the openHAB 2 Demo Distribution
 
-If you are new to openHAB 2, you might not want to start building your setup from scratch, but rather use a working setup as a starting point - for this purpose, there is a dedicated [demo distribution](https://bintray.com/artifact/download/openhab/bin/openhab-2.0.0.alpha2-demo.zip) available.
+If you are new to openHAB 2, you might not want to start building your setup from scratch, but rather use a working setup as a starting point - for this purpose, there is a dedicated [demo distribution](https://openhab.ci.cloudbees.com/job/openHAB2/lastSuccessfulBuild/artifact/distribution/target/distribution-2.0.0-SNAPSHOT-demo.zip) available.
 
 ## What's in the Demo?
 

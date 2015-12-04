@@ -9,9 +9,10 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.openhab.io.rest.docs.dashboardtile">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.io.rest.docs.dashboardtile">
    <implementation class="org.openhab.io.rest.docs.internal.RESTDashboardTile"/>
    <service>
       <provide interface="org.openhab.ui.dashboard.DashboardTile"/>
    </service>
+   <reference bind="setHttpService" cardinality="1..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="static" unbind="unsetHttpService"/>
 </scr:component>

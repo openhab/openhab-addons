@@ -32,6 +32,9 @@
                                 <artifact><file>src/main/resources/conf/anel.cfg</file><type>cfg</type><classifier>anel</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/astro.cfg</file><type>cfg</type><classifier>astro</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/basicui.cfg</file><type>cfg</type><classifier>basicui</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/caldavCommand.cfg</file><type>cfg</type><classifier>caldavCommand</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/caldavio.cfg</file><type>cfg</type><classifier>caldavio</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/caldavPersonal.cfg</file><type>cfg</type><classifier>caldavPersonal</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/cometvisu.cfg</file><type>cfg</type><classifier>cometvisu</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/comfoair.cfg</file><type>cfg</type><classifier>comfoair</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/denon.cfg</file><type>cfg</type><classifier>denon</classifier></artifact>
@@ -64,10 +67,12 @@
                                 <artifact><file>src/main/resources/conf/rwesmarthome.cfg</file><type>cfg</type><classifier>rwesmarthome</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/rrd4j.cfg</file><type>cfg</type><classifier>rrd4j</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/samsungac.cfg</file><type>cfg</type><classifier>samsungac</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/sapp.cfg</file><type>cfg</type><classifier>sapp</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/satel.cfg</file><type>cfg</type><classifier>satel</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/snmp.cfg</file><type>cfg</type><classifier>snmp</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/swegonventilation.cfg</file><type>cfg</type><classifier>swegonventilation</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/systeminfo.cfg</file><type>cfg</type><classifier>systeminfo</classifier></artifact>
+                                <artifact><file>src/main/resources/conf/telegram.cfg</file><type>cfg</type><classifier>telegram</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/tinkerforge.cfg</file><type>cfg</type><classifier>tinkerforge</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/weather.cfg</file><type>cfg</type><classifier>weather</classifier></artifact>
                                 <artifact><file>src/main/resources/conf/xmpp.cfg</file><type>cfg</type><classifier>xmpp</classifier></artifact>
