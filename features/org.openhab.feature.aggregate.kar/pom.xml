@@ -9,19 +9,19 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.openhab.feature.demo</artifactId>
-    <packaging>feature</packaging>
+    <artifactId>org.openhab.feature.aggregate.kar</artifactId>
+    <packaging>kar</packaging>
 
-    <name>openHAB Feature Demo</name>
-    <description>openHAB 2 Demo Feature</description>
+    <name>openHAB Feature Aggregate KAR</name>
+    <description>openHAB 2</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>org.openhab.feature.demo.resources</artifactId>
+            <artifactId>org.openhab.feature.aggregate.xml</artifactId>
             <version>${project.version}</version>
-            <type>pom</type>
-            <scope>provided</scope>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
     </dependencies>
 
@@ -30,6 +30,7 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
+                <version>4.0.4-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <configuration>
                     <startLevel>80</startLevel>
@@ -43,5 +44,25 @@
             </plugin>
         </plugins>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <!-- TODO: temporary solution as long as karaf-maven-plugin <= 4.0.3 -->
+            <id>apache-snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>https://repository.apache.org/content/groups/snapshots</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <repositories>
+        <repository>
+            <id>openhab.repository.snapshot</id>
+            <name>openHAB 1.x Snapshots</name>
+            <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

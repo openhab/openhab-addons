@@ -90,29 +90,21 @@
             <version>${karaf.features.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.openhab.features</groupId>
-            <artifactId>org.openhab.feature.runtime</artifactId>
+            <artifactId>org.openhab.feature.aggregate.kar</artifactId>
+            <version>${project.version}</version>
+            <type>kar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.features</groupId>
+            <artifactId>org.openhab.feature.aggregate.xml</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.features</groupId>
-            <artifactId>org.openhab.feature.addons</artifactId>
-            <version>${project.version}</version>
-            <type>kar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openhab.features</groupId>
-            <artifactId>org.openhab.feature.demo</artifactId>
-            <version>${project.version}</version>
-            <type>kar</type>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -154,7 +146,9 @@
                     <installedFeatures>
                         <feature>wrapper</feature>
                     </installedFeatures>
-                    <!-- <startupFeatures/> -->
+                    <startupFeatures>
+                        <feature>eventadmin</feature>
+                    </startupFeatures>
                     <bootFeatures>
                         <feature>jaas</feature>
                         <feature>shell</feature>
@@ -169,34 +163,11 @@
                         <feature>kar</feature>
                         <feature>log</feature>
                         <feature>package</feature>
-                        <!-- <feature>scr</feature> -->
                         <feature>service</feature>
                         <feature>system</feature>
-                        <!-- <feature>webconsole</feature> -->
                         <feature>openhab-runtime</feature>
                     </bootFeatures>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.google.code.maven-config-processor-plugin</groupId>
-                <artifactId>config-processor-maven-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <transformations>
-                        <transformation>
-                            <type>properties</type>
-                            <input>${project.build.directory}/assembly/etc/org.apache.karaf.features.cfg</input>
-                            <config>src/main/config-processor/org.apache.karaf.features.cfg.xml</config>
-                        </transformation>
-                    </transformations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

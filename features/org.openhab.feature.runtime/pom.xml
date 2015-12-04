@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>org.openhab.feature.runtime</artifactId>
-    <packaging>kar</packaging>
+    <packaging>feature</packaging>
 
     <name>openHAB Feature Runtime</name>
     <description>openHAB 2</description>
@@ -24,7 +24,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>4.0.4-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <configuration>
                     <startLevel>80</startLevel>
@@ -38,14 +37,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <!-- TODO: temporary solution as long as karaf-maven-plugin <= 4.0.3 -->
-            <id>apache-snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>https://repository.apache.org/content/groups/snapshots</url>
-        </pluginRepository>
-    </pluginRepositories>
 
 </project>
