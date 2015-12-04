@@ -375,9 +375,7 @@
     </feature>
 
     <feature name="openhab-binding-sonos" description="Sonos Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonos/${project.version}</bundle>
+        <feature>shk-esh-binding-sonos</feature>
     </feature>
 
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
