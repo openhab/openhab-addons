@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>org.openhab.features</groupId>
+      <artifactId>pom</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>org.openhab.feature.demo.resources</artifactId>
+    <packaging>pom</packaging>
+
+    <name>openHAB Feature Demo Resources</name>
+    <description>openHAB 2</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact><file>src/main/resources/items/demo.items</file><type>cfg</type><classifier>items</classifier></artifact>
+                                <artifact><file>src/main/resources/sitemaps/demo.sitemap</file><type>cfg</type><classifier>sitemaps</classifier></artifact>
+                                <artifact><file>src/main/resources/things/demo.things</file><type>cfg</type><classifier>things</classifier></artifact>
+                                <artifact><file>src/main/resources/rules/demo.rules</file><type>cfg</type><classifier>rules</classifier></artifact>
+                                <artifact><file>src/main/resources/scripts/demo.script</file><type>cfg</type><classifier>scripts</classifier></artifact>
+                                <artifact><file>src/main/resources/persistence/logging.persist</file><type>cfg</type><classifier>persistence-logging</classifier></artifact>
+                                <artifact><file>src/main/resources/persistence/rrd4j.persist</file><type>cfg</type><classifier>persistence-rrd4j</classifier></artifact>
+                                <artifact><file>src/main/resources/transform/en.map</file><type>cfg</type><classifier>transform-en</classifier></artifact>
+                                <artifact><file>src/main/resources/transform/de.map</file><type>cfg</type><classifier>transform-de</classifier></artifact>
+                                <artifact><file>src/main/resources/services/logging.cfg</file><type>cfg</type><classifier>services-logging</classifier></artifact>
+                                <artifact><file>src/main/resources/services/classicui.cfg</file><type>cfg</type><classifier>services-classicui</classifier></artifact>
+                                <artifact><file>src/main/resources/services/runtime.cfg</file><type>cfg</type><classifier>services-runtime</classifier></artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

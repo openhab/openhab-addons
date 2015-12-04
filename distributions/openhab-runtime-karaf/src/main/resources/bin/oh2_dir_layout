@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# DIRNAME is the directory of karaf, setenv, etc.
+(unset CDPATH) >/dev/null 2>&1 && unset CDPATH
+export OPENHAB_HOME=`cd "$DIRNAME/.."; pwd`
+export OPENHAB_CONF="${OPENHAB_HOME}/conf"
+export OPENHAB_RUNTIME="${OPENHAB_HOME}/runtime"
+export OPENHAB_USERDATA="${OPENHAB_HOME}/userdata"
+
