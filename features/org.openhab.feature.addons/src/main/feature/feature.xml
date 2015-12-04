@@ -338,6 +338,13 @@
         <configfile finalname="${openhab.conf}/services/samsungac.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/samsungac</configfile>
     </feature>
 
+    <feature name="openhab-binding-sapp" description="Sapp Binding" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sapp/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/sapp.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/sapp</configfile>
+    </feature>
+
     <feature name="openhab-binding-satel" description="Satel Binding" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-runtime-compat1x</feature>
