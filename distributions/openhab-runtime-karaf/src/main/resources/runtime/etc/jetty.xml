@@ -56,10 +56,10 @@
 		<Call name="addHandler">
 			<Arg>
 				<New class="org.eclipse.jetty.server.handler.ContextHandler">
-					<Set name="contextPath">/webapps</Set>
+					<Set name="contextPath">/static</Set>
 					<Set name="handler">
 						<New class="org.eclipse.jetty.server.handler.ResourceHandler">
-							<Set name="resourceBase"><SystemProperty name="openhab.conf" />/webapps</Set>
+							<Set name="resourceBase"><SystemProperty name="openhab.conf" />/html</Set>
 							<Set name="directoriesListed">false</Set>
 						</New>
 					</Set>
