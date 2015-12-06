@@ -40,7 +40,6 @@
 # export JAVA_MAX_MEM # Maximum memory for the JVM
 # export JAVA_PERM_MEM # Minimum perm memory for the JVM
 # export JAVA_MAX_PERM_MEM # Maximum perm memory for the JVM
-# export EXTRA_JAVA_OPTS # Additional JVM options
 # export KARAF_HOME # Karaf home folder
 # export KARAF_DATA # Karaf data folder
 # export KARAF_BASE # Karaf base folder
@@ -80,3 +79,9 @@ export JAVA_OPTS="${JAVA_OPTS}
   -Dopenhab.userdata=${OPENHAB_USERDATA}
   -Dorg.osgi.service.http.port=${HTTP_PORT}
   -Dorg.osgi.service.http.port.secure=${HTTPS_PORT}"
+
+#
+# set jvm options
+#
+
+export EXTRA_JAVA_OPTS=-XX:+UseG1GC
