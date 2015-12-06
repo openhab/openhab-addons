@@ -48,8 +48,6 @@ rem Minimum perm memory for the JVM
 rem SET JAVA_PERM_MEM
 rem Maximum perm memory for the JVM
 rem SET JAVA_MAX_PERM_MEM
-rem Additional JVM options
-rem SET EXTRA_JAVA_OPTS
 rem Karaf home folder
 rem SET KARAF_HOME
 rem Karaf data folder
@@ -98,3 +96,5 @@ set JAVA_OPTS=%JAVA_OPTS% ^
   -Dorg.osgi.service.http.port=%HTTP_PORT% ^
   -Dorg.osgi.service.http.port.secure=%HTTPS_PORT%
 
+:: set jvm options
+set EXTRA_JAVA_OPTS=-XX:+UseG1GC
