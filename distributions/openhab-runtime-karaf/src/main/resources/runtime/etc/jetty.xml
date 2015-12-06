@@ -52,6 +52,22 @@
 			</Arg>
 		</Call>
 	</Get>
+	<Get name="handler">
+		<Call name="addHandler">
+			<Arg>
+				<New class="org.eclipse.jetty.server.handler.ContextHandler">
+					<Set name="contextPath">/webapps</Set>
+					<Set name="handler">
+						<New class="org.eclipse.jetty.server.handler.ResourceHandler">
+							<Set name="resourceBase"><SystemProperty name="openhab.conf" />/webapps</Set>
+							<Set name="directoriesListed">false</Set>
+						</New>
+					</Set>
+				</New>
+			</Arg>
+		</Call>
+	</Get>
+
 
 	<New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
 		<Set name="secureScheme">https</Set>
@@ -130,28 +146,14 @@
 
 
 	<New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
-		<Set name="KeyStorePath">
-			<SystemProperty name="openhab.runtime"></SystemProperty><SystemProperty name="jetty.keystore" default="/etc/keystore" />
-		</Set>
-		<Set name="KeyStorePassword">
-			<SystemProperty name="jetty.ssl.password" default="OBF:1uh81uha1toc1wn31toi1ugg1ugi" />
-		</Set>
-		<Set name="KeyManagerPassword">
-			<SystemProperty name="jetty.ssl.keypassword" default="OBF:1uh81uha1toc1wn31toi1ugg1ugi" />
-		</Set>
-		<Set name="TrustStorePath">
-			<SystemProperty name="openhab.runtime"></SystemProperty><SystemProperty name="jetty.keystore" default="/etc/keystore" />
-		</Set>
-		<Set name="TrustStorePassword">
-			<SystemProperty name="jetty.ssl.password" default="OBF:1uh81uha1toc1wn31toi1ugg1ugi" />
-		</Set>
+		<Set name="KeyStorePath"><SystemProperty name="openhab.runtime"></SystemProperty><SystemProperty name="jetty.keystore" default="/etc/keystore" /></Set>
+		<Set name="KeyStorePassword"><SystemProperty name="jetty.ssl.password" default="OBF:1uh81uha1toc1wn31toi1ugg1ugi" /></Set>
+		<Set name="KeyManagerPassword"><SystemProperty name="jetty.ssl.keypassword" default="OBF:1uh81uha1toc1wn31toi1ugg1ugi" /></Set>
+		<Set name="TrustStorePath"><SystemProperty name="openhab.runtime"></SystemProperty><SystemProperty name="jetty.keystore" default="/etc/keystore" /></Set>
+		<Set name="TrustStorePassword"><SystemProperty name="jetty.ssl.password" default="OBF:1uh81uha1toc1wn31toi1ugg1ugi" /></Set>
 		<Set name="EndpointIdentificationAlgorithm"></Set>
-		<Set name="NeedClientAuth">
-			<SystemProperty name="jetty.ssl.needClientAuth" default="false" />
-		</Set>
-		<Set name="WantClientAuth">
-			<SystemProperty name="jetty.ssl.wantClientAuth" default="false" />
-		</Set>
+		<Set name="NeedClientAuth"><SystemProperty name="jetty.ssl.needClientAuth" default="false" /></Set>
+		<Set name="WantClientAuth"><SystemProperty name="jetty.ssl.wantClientAuth" default="false" /></Set>
 		<Set name="ExcludeCipherSuites">
 			<Array type="String">
 				<Item>SSL_RSA_WITH_DES_CBC_SHA</Item>
