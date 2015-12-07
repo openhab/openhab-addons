@@ -484,6 +484,10 @@
         <feature>shk-jax-rs-provider-swagger</feature>
         <bundle>mvn:org.openhab.bundles.io/org.openhab.io.rest.docs/${project.version}</bundle>
     </feature>
+    
+    <feature name="openhab-misc-certificate" description="SSL Generator" version="${project.version}">
+        <bundle start-level="20">mvn:org.openhab.bundles.io/org.openhab.io.jetty.certificate/${project.version}</bundle>
+    </feature>
 
     <!-- persistence -->
 

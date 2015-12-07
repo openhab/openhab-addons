@@ -6,6 +6,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-dashboard</feature>
         <feature>openhab-misc-restdocs</feature>
+        <feature>openhab-misc-certificate</feature>
     </feature>
 
     <feature name="openhab-runtime-base" description="openHAB Runtime (OH)" version="${project.version}">
