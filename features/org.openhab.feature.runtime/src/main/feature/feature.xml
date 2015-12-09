@@ -5,6 +5,8 @@
         <details>${project.description}</details>
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-dashboard</feature>
+        <feature>openhab-ui-basic</feature>
+        <feature>openhab-ui-paper</feature>
         <feature>openhab-misc-restdocs</feature>
         <feature>openhab-misc-certificate</feature>
     </feature>
