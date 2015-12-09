@@ -1,7 +1,6 @@
-target/
+**/target/
 src-gen/
 xtend-gen/
-bin/
 bundles/io/org.openhab.io.multimedia.tts.marytts/lib/
 .antlr*
 .metadata/
@@ -18,3 +17,6 @@ distribution/openhabhome/userdata/logs/openhab.log
 distribution/openhabhome/userdata/mapdb/storage.mapdb
 distribution/openhabhome/userdata/mapdb/storage.mapdb.p
 distribution/openhabhome/userdata/mapdb/storage.mapdb.t
+
+/*features*/*/src/main/history/
+maven-metadata-local.xml

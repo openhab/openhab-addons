@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="MACROMAN"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <parent>
-    <groupId>org.openhab</groupId>
+    <parent>
+        <groupId>org.openhab</groupId>
+        <artifactId>pom</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.openhab.features</groupId>
     <artifactId>pom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
-  </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openhab</groupId>
-  <artifactId>features</artifactId>
+    <name>openHAB Features</name>
 
-  <name>openHAB Features</name>
+    <packaging>pom</packaging>
 
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>org.openhab.feature.dependencies</module>
-    <module>org.openhab.feature.runtime</module>
-  </modules>
+    <modules>
+        <module>org.openhab.feature.aggregate.kar</module>
+        <module>org.openhab.feature.aggregate.xml</module>
+        <module>org.openhab.feature.addons</module>
+        <module>org.openhab.feature.addons.external</module>
+        <module>org.openhab.feature.runtime</module>
+        <module>org.openhab.feature.demo.resources</module>
+        <module>org.openhab.feature.demo</module>
+        <module>org.openhab.feature.verify</module>
+    </modules>
 
 </project>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <parent>
+        <groupId>org.openhab</groupId>
+        <artifactId>pom-bundle-spec</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>pom-mbp</artifactId>
+    <packaging>pom</packaging>
+
+    <name>openHAB - maven-bundle-plugin settings</name>
+    <description>This pom contains the settings for Bundles using the maven-bundle-plugins</description>
+
+    <properties>
+        <!-- TODO: do not use 2.5.4 (https://issues.apache.org/jira/browse/FELIX-4874); wait for 2.5.5 -->
+        <maven.bundle.plugin.version>2.5.3</maven.bundle.plugin.version>
+
+        <!-- added for OSGi in general -->
+        <dep.osgi.core.groupId>org.osgi</dep.osgi.core.groupId>
+        <dep.osgi.core.artifactId>org.osgi.core</dep.osgi.core.artifactId>
+        <dep.osgi.core.version>6.0.0</dep.osgi.core.version>
+        <dep.osgi.compendium.groupId>org.osgi</dep.osgi.compendium.groupId>
+        <dep.osgi.compendium.artifactId>org.osgi.compendium</dep.osgi.compendium.artifactId>
+        <dep.osgi.compendium.version>5.0.0</dep.osgi.compendium.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${dep.osgi.core.groupId}</groupId>
+            <artifactId>${dep.osgi.core.artifactId}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${dep.osgi.compendium.groupId}</groupId>
+            <artifactId>${dep.osgi.compendium.artifactId}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${dep.slf4j.api.groupId}</groupId>
+            <artifactId>${dep.slf4j.api.artifactId}</artifactId>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${dep.osgi.core.groupId}</groupId>
+                <artifactId>${dep.osgi.core.artifactId}</artifactId>
+                <version>${dep.osgi.core.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>${dep.osgi.compendium.groupId}</groupId>
+                <artifactId>${dep.osgi.compendium.artifactId}</artifactId>
+                <version>${dep.osgi.compendium.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <artifactId>${dep.slf4j.api.artifactId}</artifactId>
+                <groupId>${dep.slf4j.api.groupId}</groupId>
+                <version>${dep.slf4j.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <_dsannotations>*</_dsannotations>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven.bundle.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

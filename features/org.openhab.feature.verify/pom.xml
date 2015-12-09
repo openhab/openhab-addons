@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.openhab.features</groupId>
+        <artifactId>pom</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>org.openhab.feature.verify</artifactId>
+    <packaging>pom</packaging>
+
+    <name>openHAB Feature Verification</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>framework</artifactId>
+            <version>${dep.karaf.version}</version>
+            <type>kar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.openhab.feature.aggregate.xml</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>features</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>verify</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>mvn:org.apache.karaf.features/framework/${dep.karaf.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${dep.karaf.version}/xml/features</descriptor>
+                                <descriptor>mvn:${project.groupId}/org.openhab.feature.aggregate.xml/${project.version}/xml/features</descriptor>
+                            </descriptors>
+                            <distribution>org.apache.karaf.features:framework</distribution>
+                            <javase>1.7</javase>
+                            <framework>
+                                <feature>framework</feature>
+                            </framework>
+                            <features>
+                                <feature>openhab-*</feature>
+                            </features>
+                            <verifyTransitive>false</verifyTransitive>
+                            <ignoreMissingConditions>true</ignoreMissingConditions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
