@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <id>archive</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+
+        <!-- Add addons, conf & userdata -->
+        <fileSet>
+            <directory>target/assembly</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>addons/**</include>
+                <include>conf/**</include>
+                <include>userdata/**</include>
+                <include>LICENSE.TXT</include>
+            </includes>
+        </fileSet>
+
+        <!-- Add etc & sounds -->
+        <fileSet>
+            <directory>src/main/resources/runtime</directory>
+            <outputDirectory>runtime</outputDirectory>
+            <includes>
+                <include>etc/**</include>
+                <include>sounds/**</include>
+            </includes>
+        </fileSet>
+
+        <!-- KARAF_BASE -->
+        <fileSet>
+            <directory>target/assembly</directory>
+            <outputDirectory>userdata</outputDirectory>
+            <includes>
+                <include>deploy/**</include>
+            </includes>
+        </fileSet>
+
+        <!-- KARAF_HOME -->
+        <fileSet>
+            <directory>target/assembly</directory>
+            <outputDirectory>runtime/karaf</outputDirectory>
+            <includes>
+                <include>bin/**</include>
+                <include>lib/**</include>
+                <include>system/**</include>
+            </includes>
+        </fileSet>
+
+        <!-- KARAF_DATA -->
+        <fileSet>
+            <directory>target/assembly/data</directory>
+            <outputDirectory>userdata</outputDirectory>
+        </fileSet>
+
+        <!-- KARAF_ETC -->
+        <fileSet>
+            <directory>target/assembly/etc</directory>
+            <outputDirectory>runtime/karaf/etc</outputDirectory>
+        </fileSet>
+
+    </fileSets>
+
+    <!-- Add start scripts to openHAB home folder -->
+    <files>
+        <file>
+            <source>src/main/resources/home/start.sh</source>
+            <outputDirectory></outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/home/start_debug.sh</source>
+            <outputDirectory></outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+        <file>
+            <source>src/main/resources/home/start.bat</source>
+            <outputDirectory></outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>windows</lineEnding>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/home/start_debug.bat</source>
+            <outputDirectory></outputDirectory>
+            <fileMode>0644</fileMode>
+            <lineEnding>windows</lineEnding>
+        </file>
+    </files>
+
+</assembly>
