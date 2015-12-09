@@ -70,7 +70,7 @@
         <module>bundles</module>
         <module>features</module>
         <module>targetplatform</module>
-        <module>distribution</module>
+        <module>distributions</module>
     </modules>
 
     <build>
