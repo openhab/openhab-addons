@@ -7,7 +7,6 @@
  */
 package org.openhab.ui.iconset.classic.internal;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,7 +40,7 @@ public class ClassicIconProvider extends AbstractResourceIconProvider implements
     @Override
     protected InputStream getResource(String iconSetId, String resourceName) {
         if (ICONSET_ID.equals(iconSetId)) {
-            URL iconResource = context.getBundle().getEntry("icons" + File.separator + resourceName);
+            URL iconResource = context.getBundle().getEntry("icons/" + resourceName);
             try {
                 return iconResource.openStream();
             } catch (IOException e) {
@@ -56,7 +55,7 @@ public class ClassicIconProvider extends AbstractResourceIconProvider implements
     @Override
     protected boolean hasResource(String iconSetId, String resourceName) {
         if (ICONSET_ID.equals(iconSetId)) {
-            URL iconResource = context.getBundle().getEntry("icons" + File.separator + resourceName);
+            URL iconResource = context.getBundle().getEntry("icons/" + resourceName);
             return iconResource != null;
         } else {
             return false;
