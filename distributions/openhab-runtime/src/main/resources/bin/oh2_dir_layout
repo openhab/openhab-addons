@@ -10,6 +10,6 @@ export OPENHAB_USERDATA="${OPENHAB_HOME}/userdata"
 
 export KARAF_HOME="${OPENHAB_RUNTIME}/karaf"
 export KARAF_DATA="${OPENHAB_USERDATA}"
-export KARAF_BASE="${OPENHAB_USERDATA}"
+export KARAF_BASE="${OPENHAB_RUNTIME}/karaf"
 export KARAF_ETC="${OPENHAB_RUNTIME}/karaf/etc"
 
