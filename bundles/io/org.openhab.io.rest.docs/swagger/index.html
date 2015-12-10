@@ -33,7 +33,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "http://localhost:8080/rest/swagger.json";
+        url = window.location.protocol + "//" + window.location.host + "/rest/swagger.json";
       }
 
       // Pre load translate...
@@ -92,6 +92,8 @@
 
       window.swaggerUi.load();
 
+      $('#input_baseUrl').value = url;
+      
       function log() {
         if ('console' in window) {
           console.log.apply(console, arguments);
@@ -106,7 +108,7 @@
   <div class="swagger-ui-wrap">
     <a id="logo" href="../">openHAB</a>
     <form id='api_selector'>
-      <div class='input'><input placeholder="http://localhost:8080/rest/swagger.json" id="input_baseUrl" name="baseUrl" type="text"/></div>
+      <div class='input'><input id="input_baseUrl" name="baseUrl" type="text"/></div>
       <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
       <div class='input'><a id="explore" href="#" data-sw-translate>Explore</a></div>
     </form>
