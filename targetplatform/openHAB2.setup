@@ -703,6 +703,26 @@
     </setupTask>
     <setupTask
         xsi:type="setup:CompoundTask"
+        name="org.eclipse.wst.html.core">
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.wst.html.core/indentationChar"
+          value="tab"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.wst.html.core/inlineElements"
+          value="sub,b,acronym,select,font,a,img,abbr,label,td,sup,br,i,th,li,cite,input,u,title,strike,s,strong,q,basefont,em,big,small,span"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.wst.html.core/lineWidth"
+          value="120"/>
+      <setupTask
+          xsi:type="setup:PreferenceTask"
+          key="/instance/org.eclipse.wst.html.core/outputCodeset"
+          value="UTF-8"/>
+    </setupTask>
+    <setupTask
+        xsi:type="setup:CompoundTask"
         name="org.eclipse.wst.jsdt.core">
       <setupTask
           xsi:type="setup:PreferenceTask"
