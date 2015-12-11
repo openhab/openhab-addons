@@ -711,7 +711,7 @@
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.html.core/inlineElements"
-          value="sub,b,acronym,select,font,a,img,abbr,label,td,sup,br,i,th,li,cite,input,u,title,strike,s,strong,q,basefont,em,big,small,span"/>
+          value="sub,b,acronym,select,font,a,img,abbr,label,td,sup,br,th,i,cite,li,strike,title,u,input,s,strong,basefont,q,em,big,small,span"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.html.core/lineWidth"
@@ -967,7 +967,7 @@
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.core/org.eclipse.wst.jsdt.core.formatter.comment.line_length"
-          value="80"/>
+          value="120"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.core/org.eclipse.wst.jsdt.core.formatter.compact_else_if"
@@ -1027,7 +1027,7 @@
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.core/org.eclipse.wst.jsdt.core.formatter.indent_switchstatements_compare_to_switch"
-          value="false"/>
+          value="true"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.core/org.eclipse.wst.jsdt.core.formatter.indentation.size"
@@ -2127,7 +2127,7 @@
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.ui/sp_cleanup.remove_unnecessary_nls_tags"
-          value="false"/>
+          value="true"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.ui/sp_cleanup.remove_unused_imports"
@@ -2163,7 +2163,7 @@
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.ui/sp_cleanup.use_blocks"
-          value="false"/>
+          value="true"/>
       <setupTask
           xsi:type="setup:PreferenceTask"
           key="/instance/org.eclipse.wst.jsdt.ui/sp_cleanup.use_blocks_only_for_return_and_throw"
