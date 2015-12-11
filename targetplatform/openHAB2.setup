@@ -739,6 +739,8 @@
         name="org.eclipse.pde.feature.group"/>
     <requirement
         name="org.eclipse.wst.jsdt.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.wst.web_ui.feature.feature.group"/>
     <repository
         url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/"/>
   </setupTask>
