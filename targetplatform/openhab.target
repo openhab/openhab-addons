@@ -120,7 +120,7 @@
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="javax.jmdns.feature.feature.group" version="3.4.2"/>
-<repository location="http://www.openhab.org/jmdns/update-site/3.4.2/"/>
+<repository location="http://www.jmdns.org/update-site/3.4.2/"/>
 </location>
   </locations>
 </target>
