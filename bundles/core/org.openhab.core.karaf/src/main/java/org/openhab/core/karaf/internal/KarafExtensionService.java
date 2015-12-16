@@ -11,6 +11,7 @@ package org.openhab.core.karaf.internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +62,14 @@ public class KarafExtensionService implements ExtensionService {
             logger.error("Exception while retrieving features: {}", e.getMessage());
             return Collections.emptyList();
         }
+
+        // let's sort the result alphabetically
+        Collections.sort(extensions, new Comparator<Extension>() {
+            @Override
+            public int compare(Extension ext1, Extension ext2) {
+                return ext1.getLabel().compareTo(ext2.getLabel());
+            }
+        });
         return extensions;
     }
 
@@ -89,10 +98,11 @@ public class KarafExtensionService implements ExtensionService {
     public List<ExtensionType> getTypes(Locale locale) {
         List<ExtensionType> typeList = new ArrayList<>(6);
         typeList.add(new ExtensionType("binding", "Bindings"));
-        typeList.add(new ExtensionType("ui", "User Interface"));
-        typeList.add(new ExtensionType("persistence", "Persistence Service"));
+        typeList.add(new ExtensionType("ui", "User Interfaces"));
+        typeList.add(new ExtensionType("persistence", "Persistence Services"));
         typeList.add(new ExtensionType("action", "Actions"));
         typeList.add(new ExtensionType("transformation", "Transformations"));
+        typeList.add(new ExtensionType("tts", "Text-2-Speech"));
         typeList.add(new ExtensionType("misc", "Misc"));
         return typeList;
     }
