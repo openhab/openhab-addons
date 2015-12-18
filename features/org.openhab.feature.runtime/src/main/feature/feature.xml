@@ -13,7 +13,7 @@
 
     <feature name="openhab-runtime-base" description="openHAB Runtime (OH)" version="${project.version}">
         <feature>shk-esh-base</feature>
-        <bundle>mvn:org.openhab.bundles.core/org.openhab.core/${project.version}</bundle>
+        <bundle start-level="90">mvn:org.openhab.bundles.core/org.openhab.core/${project.version}</bundle>
         <bundle>mvn:org.openhab.bundles.core/org.openhab.core.karaf/${project.version}</bundle>
     </feature>
 
