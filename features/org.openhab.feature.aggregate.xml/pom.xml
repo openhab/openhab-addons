@@ -19,7 +19,7 @@
         <dependency>
             <groupId>de.maggu2810.playground.shk</groupId>
             <artifactId>shk-feature-base</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.3</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>

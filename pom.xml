@@ -147,18 +147,26 @@
             <url>https://jcenter.bintray.com/</url>
         </repository>
         <repository>
-            <!-- TODO: temporary solution as long there is no maven repo for 3rd party libs -->
-            <id>github-openhab2-mvn-repo</id>
-            <name>Git repo for OH2 3rd party libs</name>
-            <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/master/</url>
-        </repository>
-        <repository>
             <id>eclipse</id>
             <name>Eclipse Snapshot Repository</name>
             <layout>default</layout>
             <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+           <id>tmp-jaxrs-swagger</id>
+           <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/jaxrs-swagger</url>
+           <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+           <id>tmp-shk</id>
+           <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/shk</url>
+           <snapshots>
+              <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
