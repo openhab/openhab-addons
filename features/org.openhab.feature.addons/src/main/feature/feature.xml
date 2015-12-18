@@ -520,39 +520,12 @@
         <configfile finalname="${openhab.conf}/services/jpa.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/jpa</configfile>
     </feature>
 
-    <!-- transport -->
-
-    <feature name="openhab-transport-cul" description="CUL Transport" version="${oh1.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-runtime-compat1x</feature>
-        <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.transport.cul/${oh1.version}</bundle>
-    </feature>
-
-    <feature name="openhab-transport-mdns" description="mDNS Transport" version="${esh.version}">
-        <feature>shk-esh-io-transport-mdns</feature>
-    </feature>
-
-    <feature name="openhab-transport-mqtt" description="MQTT Transport" version="${esh.version}">
-        <feature>shk-esh-io-transport-mqtt</feature>
-    </feature>
-
-    <feature name="openhab-transport-serial" description="Serial Transport" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.bundles.io/org.openhab.io.transport.serial/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-transport-upnp" description="UPnP Transport" version="${esh.version}">
-        <feature>shk-esh-io-transport-upnp</feature>
-    </feature>
-
     <!-- ui -->
 
     <feature name="openhab-ui-basic" description="Basic UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-dashboard</feature>
         <feature>shk-esh-ui-basic</feature>
-        <bundle start-level="80">mvn:org.eclipse.smarthome.extension.ui/org.eclipse.smarthome.ui.basic/${esh.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.basicui/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.bundles.ui/org.openhab.ui.iconset.classic/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/basicui.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/basicui</configfile>
@@ -585,20 +558,80 @@
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.paperui/${project.version}</bundle>
     </feature>
 
-    <!-- find the category -->
+    <!-- transformation -->   
 
-    <feature name="openhab-io-caldav" description="CalDAV I/O" version="${oh1.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-runtime-compat1x</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.caldav/${oh1.version}</bundle>
-        <configfile finalname="${openhab.conf}/services/caldavio.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/caldavio</configfile>
+    <feature name="openhab-transformation-exec" description="Exec Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-exec</feature>
     </feature>
+
+    <feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-javascript</feature>
+    </feature>
+
+    <feature name="openhab-transformation-map" description="Map Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-map</feature>
+    </feature>
+
+    <feature name="openhab-transformation-scale" description="Scale Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-scale</feature>
+    </feature>
+
+    <feature name="openhab-transformation-regex" description="RegEx Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-regex</feature>
+    </feature>
+
+    <feature name="openhab-transformation-xpath" description="XPath Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-xpath</feature>
+    </feature>
+
+    <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-jsonpath</feature>
+    </feature>
+
+    <feature name="openhab-transformation-xslt" description="XSLT Transformation" version="${esh.version}">
+        <feature>shk-esh-transform-xslt</feature>
+    </feature>
+
+    <!-- text-to-speech -->   
 
     <feature name="openhab-tts-marytts" description="MaryTTS" version="${oh1.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-runtime-compat1x</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.multimedia.tts.marytts/${oh1.version}</bundle>
         <configfile finalname="${openhab.conf}/services/marytts.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/marytts</configfile>
+    </feature>
+
+    <!-- shared features, not end user facing -->
+
+    <feature name="openhab-transport-cul" description="CUL Transport" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.transport.cul/${oh1.version}</bundle>
+    </feature>
+
+    <feature name="openhab-transport-mdns" description="mDNS Transport" version="${esh.version}">
+        <feature>shk-esh-io-transport-mdns</feature>
+    </feature>
+
+    <feature name="openhab-transport-mqtt" description="MQTT Transport" version="${esh.version}">
+        <feature>shk-esh-io-transport-mqtt</feature>
+    </feature>
+
+    <feature name="openhab-transport-serial" description="Serial Transport" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.bundles.io/org.openhab.io.transport.serial/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-transport-upnp" description="UPnP Transport" version="${esh.version}">
+        <feature>shk-esh-io-transport-upnp</feature>
+    </feature>
+
+    <feature name="openhab-io-caldav" description="CalDAV I/O" version="${oh1.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-runtime-compat1x</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.caldav/${oh1.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/caldavio.cfg" override="false">mvn:${project.groupId}/org.openhab.feature.addons.external/${project.version}/cfg/caldavio</configfile>
     </feature>
 
 </features>
