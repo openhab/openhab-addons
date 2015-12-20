@@ -3,6 +3,7 @@
 
     <feature name="openhab-runtime" description="${project.name}" version="${project.version}">
         <details>${project.description}</details>
+        <feature>shk-esh-io-console-karaf</feature>
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-dashboard</feature>
         <feature>openhab-ui-basic</feature>
