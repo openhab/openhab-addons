@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.orvibo.OrviboBindingConstants;
 import org.openhab.binding.orvibo.handler.S20Handler;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class OrviboHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         try {
+            logger.debug(String.format("Activating binding id: %s", OrviboBindingConstants.BINDING_ID));
             s20Client = S20Client.getInstance();
             s20Client.connect();
         } catch (Exception e) {
