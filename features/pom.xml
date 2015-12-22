@@ -16,6 +16,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>esh</module>
         <module>org.openhab.feature.aggregate.kar</module>
         <module>org.openhab.feature.aggregate.xml</module>
         <module>org.openhab.feature.addons</module>
