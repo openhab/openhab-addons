@@ -15,6 +15,10 @@
     <feature name="openhab-runtime-base" description="openHAB Runtime (OH)" version="${project.version}">
         <feature>shk-esh-base</feature>
         <bundle start-level="90">mvn:org.openhab.bundles.core/org.openhab.core/${project.version}</bundle>
+        <feature dependency="true">shell</feature>
+        <bundle prerequisite="true">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${dep.karaf.version}</bundle>
+        <bundle prerequisite="true">mvn:org.apache.karaf.wrapper/org.apache.karaf.wrapper.core/${dep.karaf.version}</bundle>
+        <bundle>mvn:org.openhab.bundles.core/org.openhab.core/${project.version}</bundle>
         <bundle>mvn:org.openhab.bundles.core/org.openhab.core.karaf/${project.version}</bundle>
     </feature>
 

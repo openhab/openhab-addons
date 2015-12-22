@@ -5,8 +5,13 @@ Bundle-SymbolicName: org.openhab.core.karaf
 Bundle-Version: 2.0.0.qualifier
 Bundle-Vendor: openHAB.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Karaf-Commands: org.openhab.core.karaf.internal.command
 Service-Component: OSGI-INF/*.xml
 Import-Package: org.apache.commons.lang,
  org.apache.karaf.features,
+ org.apache.karaf.shell.api.action,
+ org.apache.karaf.shell.api.action.lifecycle,
+ org.apache.karaf.shell.support.ansi,
+ org.apache.karaf.wrapper,
  org.eclipse.smarthome.core.extension,
  org.slf4j

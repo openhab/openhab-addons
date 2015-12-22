@@ -36,8 +36,6 @@
 # karaf scripts
 #
 # export JAVA_HOME # Location of Java installation
-# export JAVA_MIN_MEM # Minimum memory for the JVM
-# export JAVA_MAX_MEM # Maximum memory for the JVM
 # export JAVA_PERM_MEM # Minimum perm memory for the JVM
 # export JAVA_MAX_PERM_MEM # Maximum perm memory for the JVM
 # export KARAF_HOME # Karaf home folder
@@ -83,5 +81,4 @@ export JAVA_OPTS="${JAVA_OPTS}
 #
 # set jvm options
 #
-
-export EXTRA_JAVA_OPTS=-XX:+UseG1GC
+export EXTRA_JAVA_OPTS="-XX:+UseG1GC -Xms128m -Xmx256m"
