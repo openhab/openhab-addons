@@ -81,7 +81,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
         try {
             s20Client = S20Client.getInstance();
             String deviceId = thing.getUID().getId();
-            socket = Socket.socketWithDeviceID(deviceId, s20Client);
+            socket = s20Client.socketWithDeviceID(deviceId);
             socket.addSocketStateListener(this);
             socket.findOnNetwork();
             subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
@@ -115,4 +115,5 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
             updateStatus(ThingStatus.ONLINE);
         }
     }
+
 }
