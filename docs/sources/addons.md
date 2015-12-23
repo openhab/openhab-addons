@@ -59,6 +59,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | LCN | Binding |
 | Milight | Binding |
 | Modbus | Binding |
+| MQTT | Binding |
 | Networkhealth | Binding |
 | Nibeheatpump | Binding |
 | NTP | Binding |
