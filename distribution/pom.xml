@@ -317,6 +317,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.mqtt</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.networkhealth</artifactId>
             <version>${oh1.version}</version>
         </dependency>
@@ -467,7 +472,12 @@
             <groupId>org.openhab.io</groupId>
             <artifactId>org.openhab.io.multimedia.tts.marytts</artifactId>
             <version>${oh1.version}</version>
-        </dependency>    	
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.io</groupId>
+            <artifactId>org.openhab.io.transport.mqtt</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
