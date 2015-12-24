@@ -52,7 +52,7 @@
                                 <descriptor>mvn:${project.groupId}/org.openhab.feature.aggregate.xml/${project.version}/xml/features</descriptor>
                             </descriptors>
                             <distribution>org.apache.karaf.features:framework</distribution>
-                            <javase>1.7</javase>
+                            <javase>1.8</javase>
                             <framework>
                                 <feature>framework</feature>
                             </framework>
