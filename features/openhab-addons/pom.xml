@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>org.openhab.addons</groupId>
-    <artifactId>openhab-addons</artifactId>
+    <artifactId>openhab2-addons</artifactId>
     <packaging>feature</packaging>
 
-    <name>openHAB Feature Addons</name>
+    <name>openHAB 2 Feature Addons</name>
     <description>openHAB 2 Addons</description>
 
     <dependencies>
