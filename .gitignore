@@ -18,3 +18,4 @@ distribution/openhabhome/userdata/logs/openhab.log
 distribution/openhabhome/userdata/mapdb/storage.mapdb
 distribution/openhabhome/userdata/mapdb/storage.mapdb.p
 distribution/openhabhome/userdata/mapdb/storage.mapdb.t
+features/*/src/main/history
