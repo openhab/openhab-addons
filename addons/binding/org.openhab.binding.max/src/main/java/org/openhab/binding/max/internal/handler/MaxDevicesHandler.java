@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -238,6 +239,9 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                     case WallMountedThermostat:
                     case HeatingThermostat:
                     case HeatingThermostatPlus:
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_LOCKED),
+                                ((HeatingThermostat) device).isPanelLocked() ? OpenClosedType.CLOSED
+                                        : OpenClosedType.OPEN);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SETTEMP),
                                 ((HeatingThermostat) device).getTemperatureSetpoint());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MODE),
@@ -266,6 +270,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                         break;
                 }
                 forceRefresh = false;
+                device.setUpdated(false);
             } else
                 logger.debug("No changes for {} {} ({}) id: {}", device.getType(), device.getName(),
                         device.getSerialNumber(), getThing().getUID());

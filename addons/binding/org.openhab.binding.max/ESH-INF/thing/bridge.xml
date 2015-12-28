@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="max"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="max" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
 		<label>MAX! Cube LAN gateway</label>
@@ -15,50 +14,71 @@
 		</channels>
 
 		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="network">
+				<label>Connection</label>
+				<description>Connection Settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="ipAddress" type="text" required="true" groupName="network">
 				<context>network-address</context>
 				<label>MAX! Cube LAN gateway IP</label>
 				<description>The IP address of the MAX! Cube LAN gateway
 				</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false" min="1"
-				max="65335">
+			<parameter name="port" type="integer" required="false" min="1" max="65335" groupName="network">
 				<context>network-address</context>
 				<label>MAX! Cube LAN gateway port</label>
 				<description>Port of the LAN gateway</description>
 				<default>62910</default>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" min="1">
+			<parameter name="refreshInterval" type="integer" required="false" min="1" groupName="network">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in seconds which is used to poll given
 					MAX! Cube.
 				</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="serialNumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.
 				</description>
 			</parameter>
-			<parameter name="rfAddress" type="text" required="false">
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
 				</description>
 			</parameter>
-			<parameter name="exclusive" type="boolean" required="false">
+			<parameter name="exclusive" type="boolean" required="false" groupName="network">
 				<label>Exclusive Mode</label>
 				<description>If set to true, the binding will leave the connection
 					to the Cube open.
 				</description>
 				<default>true</default>
 			</parameter>
-			<parameter name="maxRequestsPerConnection" type="integer"
-				required="false">
+			<parameter name="maxRequestsPerConnection" type="integer" required="false" groupName="network">
 				<label>Max Requests per Connection</label>
 				<description>In exclusive mode, how many requests are allowed until
 					connection is closed and reopened.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -69,7 +89,6 @@
 		<label>Free Memory Slots</label>
 		<description>Free memory slots to store commands send to the devices
 		</description>
-		<category>FreeMemory</category>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
@@ -79,8 +98,7 @@
 		<label>Duty Cycle</label>
 		<description>Duty Cycle for sending commands to the devices
 		</description>
-		<category>DutyCycle</category>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 
