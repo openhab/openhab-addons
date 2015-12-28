@@ -40,7 +40,7 @@ public abstract class Device {
     private boolean answer;
     private boolean error;
     private boolean valid;
-    private boolean DstSettingsActive;
+    private boolean dstSettingsActive;
     private boolean gatewayKnown;
     private boolean panelLocked;
     private boolean linkStatusError;
@@ -212,8 +212,6 @@ public abstract class Device {
     private final void setBatteryLow(boolean batteryLow) {
         if (this.batteryLow != batteryLow) {
             this.updated = true;
-        } else {
-            this.updated = false;
         }
         this.batteryLow = batteryLow;
     }
@@ -243,30 +241,48 @@ public abstract class Device {
     }
 
     private void setLinkStatusError(boolean linkStatusError) {
+        if (this.linkStatusError != linkStatusError) {
+            this.updated = true;
+        }
         this.linkStatusError = linkStatusError;
     }
 
     private void setPanelLocked(boolean panelLocked) {
+        if (this.panelLocked != panelLocked) {
+            this.updated = true;
+        }
         this.panelLocked = panelLocked;
     }
 
     private void setGatewayKnown(boolean gatewayKnown) {
+        if (this.gatewayKnown != gatewayKnown) {
+            this.updated = true;
+        }
         this.gatewayKnown = gatewayKnown;
     }
 
     private void setDstSettingActive(boolean dstSettingsActive) {
-        this.DstSettingsActive = dstSettingsActive;
+        if (this.dstSettingsActive != dstSettingsActive) {
+            this.updated = true;
+        }
+        this.dstSettingsActive = dstSettingsActive;
     }
 
     public boolean isDstSettingsActive() {
-        return DstSettingsActive;
+        return dstSettingsActive;
     }
 
     private void setValid(boolean valid) {
+        if (this.valid != valid) {
+            this.updated = true;
+        }
         this.valid = valid;
     }
 
     private void setError(boolean error) {
+        if (this.error != error) {
+            this.updated = true;
+        }
         this.error = error;
 
     }
@@ -276,10 +292,16 @@ public abstract class Device {
     }
 
     private void setInitialized(boolean initialized) {
+        if (this.initialized != initialized) {
+            this.updated = true;
+        }
         this.initialized = initialized;
     }
 
     private void setAnswer(boolean answer) {
+        if (this.answer != answer) {
+            this.updated = true;
+        }
         this.answer = answer;
     }
 

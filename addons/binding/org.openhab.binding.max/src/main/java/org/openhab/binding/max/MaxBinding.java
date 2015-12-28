@@ -49,6 +49,7 @@ public class MaxBinding {
     public final static String CHANNEL_MODE = "mode";
     public final static String CHANNEL_ACTUALTEMP = "actual_temp";
     public final static String CHANNEL_SETTEMP = "set_temp";
+    public final static String CHANNEL_LOCKED = "locked";
     public final static String CHANNEL_SWITCH_STATE = "eco_mode";
     public final static String CHANNEL_CONTACT_STATE = "contact_state";
     public final static String CHANNEL_FREE_MEMORY = "free_mem";

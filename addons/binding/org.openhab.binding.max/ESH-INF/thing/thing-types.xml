@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="max"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="max" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -18,28 +17,44 @@
 			<channel id="mode" typeId="mode" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
+			<channel id="locked" typeId="locked" />
 		</channels>
 
 		<config-description>
-			<parameter name="room" type="text" required="false">
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Thermostat Name</label>
-				<description>The Thermostat description.</description>
+			<parameter name="name" type="text" required="false" groupName="identification">
+				<label>Device Name</label>
+				<description>The device description.</description>
 			</parameter>
-			<parameter name="serialNumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
 			</parameter>
-			<parameter name="rfAddress" type="text" required="false">
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
 				</description>
 			</parameter>
-			<parameter name="refreshActualRate" type="integer"
-				required="false">
+			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
 				<label>Actual Temperature Refresh Rate</label>
 				<description>Experimental feature! Rate of the actual refresh in minutes. 0-9=refresh disabled.
 				Minimum refresh rate once/10 minutes, recommended 60min.
@@ -65,34 +80,50 @@
 			<channel id="mode" typeId="mode" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
+			<channel id="locked" typeId="locked" />
 		</channels>
 
 		<config-description>
-			<parameter name="room" type="text" required="false">
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Thermostat Name</label>
-				<description>The Thermostat description.</description>
+			<parameter name="name" type="text" required="false" groupName="identification">
+				<label>Device Name</label>
+				<description>The device description.</description>
 			</parameter>
-			<parameter name="serialNumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
 			</parameter>
-			<parameter name="rfAddress" type="text" required="false">
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
-				</description>
+                </description>
 			</parameter>
-			<parameter name="refreshActualRate" type="integer"
-				required="false">
+			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
 				<label>Actual Temperature Refresh Rate</label>
 				<description>Experimental feature! Rate of the actual refresh in minutes. 0-9=refresh disabled.
-				Minimum refresh rate once/10 minutes, recommended 60min.
-				The settings of the heating thermostats are changed to trigger an update of temperature, as the actual
-				temperature only is updated when the valves changes.
-				</description>
+                Minimum refresh rate once/10 minutes, recommended 60min.
+                The settings of the heating thermostats are changed to trigger an update of temperature, as the actual
+                temperature only is updated when the valves changes.
+                </description>
 				<default>0</default>
 			</parameter>
 		</config-description>
@@ -112,25 +143,42 @@
 			<channel id="mode" typeId="mode" />
 			<channel id="actual_temp" typeId="actual_temp" />
 			<channel id="set_temp" typeId="set_temp" />
+			<channel id="locked" typeId="locked" />
 		</channels>
 
 		<config-description>
-			<parameter name="room" type="text" required="false">
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Thermostat Name</label>
-				<description>The Thermostat description.</description>
+			<parameter name="name" type="text" required="false" groupName="identification">
+				<label>Device Name</label>
+				<description>The device description.</description>
 			</parameter>
-			<parameter name="serialNumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
 			</parameter>
-			<parameter name="rfAddress" type="text" required="false">
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
-				</description>
+                </description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -148,24 +196,41 @@
 		</channels>
 
 		<config-description>
-			<parameter name="room" type="text" required="false">
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Thermostat Name</label>
-				<description>The Ecoswitch description.</description>
+			<parameter name="name" type="text" required="false" groupName="identification">
+				<label>Device Name</label>
+				<description>The device description.</description>
 			</parameter>
-			<parameter name="serialNumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
 			</parameter>
-			<parameter name="rfAddress" type="text" required="false">
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
-				</description>
+                </description>
 			</parameter>
 		</config-description>
+
 	</thing-type>
 
 	<thing-type id="shuttercontact">
@@ -182,32 +247,48 @@
 		</channels>
 
 		<config-description>
-			<parameter name="room" type="text" required="false">
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+				<advanced>false</advanced>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false">
-				<label>Thermostat Name</label>
-				<description>The description.</description>
+			<parameter name="name" type="text" required="false" groupName="identification">
+				<label>Device Name</label>
+				<description>The device description.</description>
 			</parameter>
-			<parameter name="serialNumber" type="text" required="true">
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
 			</parameter>
-			<parameter name="rfAddress" type="text" required="false">
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
-				</description>
+                </description>
 			</parameter>
 		</config-description>
+
 	</thing-type>
 
 	<channel-type id="valve" advanced="true">
 		<item-type>Number</item-type>
 		<label>Valve Position</label>
 		<description>Thermostat Valve Position</description>
-		<category>Flow</category>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 
@@ -216,6 +297,7 @@
 		<label>Battery Level Low</label>
 		<description>Battery charge Level</description>
 		<category>Battery</category>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="mode">
@@ -225,7 +307,7 @@
 		<tags>
 			<tag>heating</tag>
 		</tags>
-		<state readOnly="false">
+		<state pattern="%s" readOnly="false">
 			<options>
 				<option value="AUTOMATIC">AUTOMATIC</option>
 				<option value="MANUAL">MANUAL</option>
@@ -245,7 +327,6 @@
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
-
 	</channel-type>
 
 	<channel-type id="set_temp">
@@ -260,11 +341,20 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="locked" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Thermostat Locked</label>
+		<description>Thermostat is locked for adjustments</description>
+		<category>Lock</category>
+		<state pattern="%s" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="contact_state">
 		<item-type>Contact</item-type>
 		<label>Contact State</label>
 		<description>Contact state information</description>
 		<category>Contact</category>
+		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="eco_mode">
@@ -272,6 +362,7 @@
 		<label>Eco Mode</label>
 		<description>Eco Mode Activated</description>
 		<category>Switch</category>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
