@@ -38,8 +38,13 @@
     
     <properties>
         <esh.version>0.8.0-SNAPSHOT</esh.version>
+        <ohc.version>2.0.0.a3</ohc.version>
+        <karaf.version>4.0.3</karaf.version>
+        <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
+        <karaf.features.version>4.0.3</karaf.features.version>
         <tycho-version>0.22.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
+        <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
@@ -124,6 +129,12 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${karaf.maven.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+                <plugin>
                     <groupId>${tycho-groupid}</groupId>
                     <artifactId>tycho-compiler-plugin</artifactId>
                     <version>${tycho-version}</version>
@@ -132,6 +143,11 @@
                         <source>1.7</source>
                         <target>1.7</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build.helper.maven.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.mycila</groupId>
