@@ -97,7 +97,6 @@ set JAVA_OPTS=%JAVA_OPTS% ^
   -Dorg.osgi.service.http.port.secure=%HTTPS_PORT%
 
 :: set jvm options
-:: set jvm options
 set EXTRA_JAVA_OPTS=-XX:+UseG1GC ^
-  -Xms128m ^
+  -Xms64m ^
   -Xmx256m

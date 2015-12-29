@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
  * service installation to install a Java Service Wrapper. After installation,
  * it will inject the current JVM arguments into the wrapper.conf. This will
  * make sure that all necessary properties like openhab.home, etc are available
- * when running as a system service.
+ * when running as a system service. The service binaries are installed into
+ * karaf.home rather than karaf.base, which means the service can only support a
+ * single Karaf instance.
  * 
  * @author Davy Vanherbergen
  */
@@ -88,12 +90,34 @@ public class InstallServiceCommand implements Action {
 	    }
 	}
 
+	// we want to install to karaf.runtime, rather than karaf.base
+	// to prevent the installed binaries from being deleted with karaf
+	// clean.
+	// so we need to temporarily change our environment to trick the install
+	String karafBase = System.getProperty("karaf.base");
+	String karafHome = System.getProperty("karaf.home");
+
+	// can we install to karaf.home?
+	if (!new File(karafHome).canWrite()) {
+	    System.out.println("Cannot write to " + karafHome + ". Install aborted.");
+	    return null;
+	}
+
+	// override karaf.base to trick install
+	System.setProperty("karaf.base", karafHome);
+
 	// install Karaf service
 	File[] files = service.install(SERVICE_NAME, SERVICE_DISPLAY_NAME, SERVICE_DESCRIPTION, SERVICE_START_TYPE);
 	File wrapperConf = files[0];
 	File serviceFile = files[1];
 	File systemdFile = files[2];
 
+	// restore karaf base location
+	System.setProperty("karaf.base", karafBase);
+	
+	// determine os
+	String os = System.getProperty("os.name", "Unknown");
+	
 	// read contents of config file.
 	List<String> content = new ArrayList<String>();
 	InputStream is = null;
@@ -102,10 +126,22 @@ public class InstallServiceCommand implements Action {
 	    Scanner scanner = new Scanner(is);
 	    while (scanner.hasNextLine()) {
 		String line = scanner.nextLine();
+		
+		// update log location
 		if (line.indexOf("/log/") > 0) {
-		    // update log location
 		    line = line.replace("/log/", "/logs/");
 		}
+		
+		// restore karaf.base location
+		if (line.startsWith("set.default.KARAF_BASE")) {
+		    line = "set.default.KARAF_BASE=" + karafBase;
+		}
+		
+		// disable default max mem
+		if (line.startsWith("wrapper.java.maxmemory")) {
+		    line = "#" + line;
+		}
+		
 		content.add(line);
 	    }
 	    scanner.close();
@@ -151,7 +187,6 @@ public class InstallServiceCommand implements Action {
 
 	// print post installation steps to be done by user
 	System.out.println("");
-	String os = System.getProperty("os.name", "Unknown");
 	if (os.startsWith("Win")) {
 	    printPostInstallStepsWindows(serviceFile);
 	} else if (os.startsWith("Mac OS X")) {
@@ -330,12 +365,12 @@ public class InstallServiceCommand implements Action {
      * Convert the default generated karaf.plist to the openHAB.plist.
      * 
      * @return File openHAB.plist
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
     private File createOpenHabPList() throws FileNotFoundException {
 
 	// tweak plist file
-	String plistPath = System.getProperty("karaf.base") + "/bin/";
+	String plistPath = System.getProperty("karaf.home") + "/bin/";
 	File karafPlist = new File(plistPath + "org.apache.karaf.openHAB.plist");
 	File openHabPlist = new File(plistPath + "openHAB.plist");
 

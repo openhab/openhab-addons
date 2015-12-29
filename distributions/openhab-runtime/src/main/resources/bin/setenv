@@ -81,4 +81,4 @@ export JAVA_OPTS="${JAVA_OPTS}
 #
 # set jvm options
 #
-export EXTRA_JAVA_OPTS="-XX:+UseG1GC -Xms128m -Xmx256m"
+export EXTRA_JAVA_OPTS="-XX:+UseG1GC -Xms64m -Xmx256m"
