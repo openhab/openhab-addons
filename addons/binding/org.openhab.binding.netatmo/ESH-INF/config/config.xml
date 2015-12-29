@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="thing-type:netatmo:bridge">                         
+        <parameter name="clientId" type="text">
+            <label>Client ID</label>
+            <description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
+            <required>true</required>
+            <advanced>false</advanced>
+        </parameter>
+            
+        <parameter name="clientSecret" type="text">
+            <label>Client Secret</label>
+            <description>Client Secret provided for the application you created</description>
+            <required>true</required>
+            <advanced>false</advanced>
+        </parameter>
+            
+        <parameter name="username" type="text">
+            <label>Username</label>
+            <description>Your Netatmo API username (email)</description>
+            <required>true</required>
+            <advanced>false</advanced>
+        </parameter>
+            
+        <parameter name="password" type="text">
+            <label>Password</label>
+            <description>Your Netatmo API password</description>
+            <required>true</required>
+            <advanced>false</advanced>
+            <context>password</context>
+        </parameter>            
+                       
+        <parameter name="readStation" type="boolean" required="true">
+            <label>Access Weather Station</label>
+            <description>Read weather station's data.</description>
+            <default>true</default>
+        </parameter>
+            
+        <parameter name="readThermostat" type="boolean" required="true">
+            <label>Access Thermostat</label>
+            <description>Read and Write thermostat's data.</description>
+            <default>true</default>
+        </parameter>                                               
+    </config-description>
+
+    <config-description uri="thing-type:netatmo:device">
+        <parameter name="equipmentId" type="text">
+            <label>Equipment ID</label>
+            <description>Id of the Device (mac address)</description>
+            <required>true</required>
+        </parameter>
+    
+        <parameter name="refreshInterval" type="integer" required="false">
+            <label>Refresh Interval</label>
+            <description>The refresh interval to poll Netatmo API (in ms).</description>
+            <default>600000</default>
+            <advanced>true</advanced>
+        </parameter>
+    </config-description>                 
+    
+    <config-description uri="thing-type:netatmo:module">
+        <parameter name="equipmentId" type="text">
+            <label>Module ID</label>
+            <description>Id of the Module</description>
+            <required>true</required>
+        </parameter>
+        
+        <parameter name="parentId" type="text">
+            <label>Device ID</label>
+            <description>Id of the main device</description>
+            <required>true</required>
+        </parameter>     
+    </config-description>     
+
+</config-description:config-descriptions>
