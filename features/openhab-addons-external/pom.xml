@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>org.openhab.addons</groupId>
-    <artifactId>openhab-addons-external</artifactId>
+    <artifactId>openhab2-addons-external</artifactId>
     <packaging>pom</packaging>
 
     <name>openHAB Feature Addons External</name>
