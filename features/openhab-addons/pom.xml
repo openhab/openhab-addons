@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openhab-addons-external</artifactId>
+            <artifactId>openhab2-addons-external</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
             <scope>provided</scope>
