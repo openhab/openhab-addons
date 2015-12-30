@@ -284,13 +284,13 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse</id>
+			<id>eclipse-release</id>
 			<name>Eclipse Release Repository</name>
 			<layout>default</layout>
 			<url>https://repo.eclipse.org/content/repositories/releases/</url>
 		</repository>
 		<repository>
-			<id>eclipse</id>
+			<id>eclipse-snapshot</id>
 			<name>Eclipse Snapshot Repository</name>
 			<layout>default</layout>
 			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
