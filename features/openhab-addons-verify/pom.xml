@@ -64,7 +64,7 @@
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:de.maggu2810.playground.shk/shk-feature-base/1.0.3/xml/features</descriptor>
                                 <descriptor>mvn:org.openhab.core/openhab-core/${ohc.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.openhab.addons/openhab-addons/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.openhab.addons/openhab2-addons/${project.version}/xml/features</descriptor>
                             </descriptors>
                             <distribution>org.apache.karaf.features:framework</distribution>
                             <javase>1.8</javase>
