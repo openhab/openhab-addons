@@ -283,21 +283,42 @@
     </profiles>
 
 	<repositories>
-		<repository>
-			<id>eclipse-release</id>
-			<name>Eclipse Release Repository</name>
-			<layout>default</layout>
-			<url>https://repo.eclipse.org/content/repositories/releases/</url>
-		</repository>
-		<repository>
-			<id>eclipse-snapshot</id>
-			<name>Eclipse Snapshot Repository</name>
-			<layout>default</layout>
-			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+        <repository>
+            <id>jfrog</id>
+            <name>JFrog OSS Repository</name>
+            <url>http://oss.jfrog.org/libs-snapshot/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>eclipse</id>
+            <name>Eclipse Snapshot Repository</name>
+            <layout>default</layout>
+            <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+           <id>tmp-jaxrs-swagger</id>
+           <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/jaxrs-swagger</url>
+           <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+           <id>tmp-shk</id>
+           <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/shk</url>
+           <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
     
 </project>
