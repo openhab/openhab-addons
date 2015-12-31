@@ -48,8 +48,8 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
     
     <properties>
-        <esh.version>0.8.0.b1</esh.version>
-        <ohc.version>2.0.0.a3</ohc.version>
+        <esh.version>0.8.0-SNAPSHOT</esh.version>
+        <ohc.version>2.0.0-SNAPSHOT</ohc.version>
         <karaf.version>4.0.3</karaf.version>
         <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
         <karaf.features.version>4.0.3</karaf.features.version>
