@@ -49,6 +49,7 @@
     
     <properties>
         <esh.version>0.8.0-SNAPSHOT</esh.version>
+        <shk.version>1.2</shk.version>
         <ohc.version>2.0.0-SNAPSHOT</ohc.version>
         <karaf.version>4.0.3</karaf.version>
         <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
@@ -289,6 +290,11 @@
             <url>https://jcenter.bintray.com/</url>
         </repository>
         <repository>
+            <id>shk-bintray</id>
+            <name>Bintray Repository for shk</name>
+            <url>https://dl.bintray.com/maggu2810/maven</url>
+        </repository>
+        <repository>
             <id>jfrog</id>
             <name>JFrog OSS Repository</name>
             <url>http://oss.jfrog.org/libs-snapshot/</url>
@@ -303,20 +309,6 @@
             <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-           <id>tmp-jaxrs-swagger</id>
-           <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/jaxrs-swagger</url>
-           <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-           <id>tmp-shk</id>
-           <url>https://github.com/maggu2810/openhab2-mvn-repo/raw/shk</url>
-           <snapshots>
-              <enabled>true</enabled>
             </snapshots>
         </repository>
 	</repositories>
