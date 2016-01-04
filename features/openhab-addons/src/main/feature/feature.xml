@@ -59,6 +59,7 @@
 
     <feature name="openhab-binding-network" description="Network Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>esh-model-script</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
     </feature>
 
@@ -93,7 +94,7 @@
     </feature>
 
     <feature name="openhab-binding-sonos" description="Sonos Binding" version="${project.version}">
-        <feature>shk-esh-binding-sonos</feature>
+        <feature>esh-binding-sonos</feature>
     </feature>
 
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
@@ -116,6 +117,8 @@
 
     <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>esh-model-script</feature>
+        <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.myopenhab/${project.version}</bundle>
     </feature>
 
@@ -124,6 +127,10 @@
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-dashboard</feature>
+        <feature>esh-model-item</feature>
+        <feature>esh-model-sitemap</feature>
+        <feature>esh-ui-icon</feature>
+        <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/cometvisu</configfile>
     </feature>
