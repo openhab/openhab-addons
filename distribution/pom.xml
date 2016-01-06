@@ -237,6 +237,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.ecobee</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.energenie</artifactId>
             <version>${oh1.version}</version>
         </dependency>
@@ -318,6 +323,11 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.mqtt</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.nest</artifactId>
             <version>${oh1.version}</version>
         </dependency>
         <dependency>
@@ -437,6 +447,11 @@
             <version>${oh1.version}</version>
         </dependency>    	
 
+        <dependency>
+            <groupId>org.openhab.action</groupId>
+            <artifactId>org.openhab.action.ecobee</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.openhab.action</groupId>
             <artifactId>org.openhab.action.mail</artifactId>

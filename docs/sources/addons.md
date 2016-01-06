@@ -42,6 +42,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Comfo Air | Binding |
 | Denon | Binding |
 | DMX (OLA) | Binding |
+| Ecobee | Binding |
 | EDS OWServer | Binding |
 | Energenie | Binding |
 | Enocean | Binding |
@@ -60,6 +61,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | Milight | Binding |
 | Modbus | Binding |
 | MQTT | Binding |
+| Nest | Binding |
 | Networkhealth | Binding |
 | Nibeheatpump | Binding |
 | NTP | Binding |
@@ -86,6 +88,7 @@ All optional add-ons for openHAB 2 are [available in a separate download](https:
 | MongoDB | Persistence |
 | Logging | Persistence |
 | JPA | Persistence |
+| Ecobee | Action |
 | Mail | Action |
 | Pushover | Action |
 | Telegram | Action |
