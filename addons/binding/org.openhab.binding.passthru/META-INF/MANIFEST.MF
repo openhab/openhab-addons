@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Passthru Binding
+Bundle-SymbolicName: org.openhab.binding.passthru;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: org.apache.commons.httpclient;version="3.1.0",
+ org.apache.commons.httpclient.methods;version="3.1.0",
+ org.apache.commons.io;version="2.2.0",
+ org.apache.commons.lang;version="2.6.0",
+ org.apache.http.auth;version="4.2.6",
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.types,
+ org.slf4j
+Service-Component: OSGI-INF/*
+Export-Package: org.openhab.binding.passthru,
+ org.openhab.binding.passthru.handler
+Require-Bundle: com.google.guava,
+ org.apache.commons.httpclient,
+ org.apache.httpcomponents.httpclient
