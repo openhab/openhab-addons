@@ -24,20 +24,20 @@
     </licenses>
     
     <scm>
-        <connection>scm:git:https://github.com/openhab/openhab2.git</connection>
-        <developerConnection>scm:git:https://github.com/openhab/openhab2.git</developerConnection>
-        <url>https://github.com/openhab/openhab2</url>
+        <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
+        <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
+        <url>https://github.com/openhab/openhab2-addons</url>
     </scm>
         
     <issueManagement>
-        <url>https://github.com/openhab/openhab2/issues</url>
+        <url>https://github.com/openhab/openhab2-addons/issues</url>
         <system>Github</system>
     </issueManagement>
 
     <distributionManagement>
         <repository>
             <id>bintray</id>
-            <url>https://api.bintray.com/maven/openhab/mvn/openhab-core/;publish=1</url>
+            <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
         </repository>
         <snapshotRepository>
             <id>jfrog</id>
