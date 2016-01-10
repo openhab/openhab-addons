@@ -54,7 +54,7 @@
         <karaf.version>4.0.3</karaf.version>
         <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
         <karaf.features.version>4.0.3</karaf.features.version>
-        <tycho-version>0.22.0</tycho-version>
+        <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -64,22 +64,9 @@
     
     <modules>
 	<module>addons</module>
-        <module>bundles</module>
         <module>features</module>
-        <module>products</module>
-        <module>targetplatform</module>
-        <module>distribution</module>
     </modules>
-        
-    <!-- dependencies, which are not available in a p2-repository -->
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.fileinstall</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-    </dependencies>
-    
+            
     <build>
         <plugins>
             <plugin>

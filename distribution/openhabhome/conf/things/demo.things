@@ -1,3 +1,0 @@
-yahooweather:weather:berlin [ location="638242" ]
-astro:sun:home  [ geolocation="52.5200066,13.4049540", interval=60 ]
-ntp:ntp:demo [ ntpServer="nl.pool.ntp.org", refreshInterval=60, refreshNtp=30 ]
