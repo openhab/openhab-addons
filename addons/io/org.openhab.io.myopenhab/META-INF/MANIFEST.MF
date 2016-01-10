@@ -7,7 +7,8 @@ Bundle-SymbolicName: org.openhab.io.myopenhab
 Bundle-Version: 2.0.0.qualifier
 Service-Component: OSGI-INF/myopenhab.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: javax.net.ssl,
+Import-Package: javax.net,
+ javax.net.ssl,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.emf.common.notify,
