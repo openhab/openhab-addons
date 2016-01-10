@@ -1,4 +1,1 @@
-# Compatibility of openHAB 1.x Add-ons with openHAB 2
-
-The compatibility matrix has been replaced by the [list of compatible 1.x add-ons](../addons.md#compatible-1x-add-ons).
-Please report compatible add-ons in order to have the list as complete as possible. Please also report problems, so that these can be solved in order to make more add-ons compatible!
+This page has moved [here](https://github.com/openhab/openhab-distro/blob/master/docs/sources/features/compatibilitylayer.md).
