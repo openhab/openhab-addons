@@ -278,6 +278,11 @@
             <url>https://jcenter.bintray.com/</url>
         </repository>
         <repository>
+            <id>openhab-bintray</id>
+            <name>Bintray Repository for openHAB</name>
+            <url>https://dl.bintray.com/openhab/mvn/</url>
+        </repository>
+        <repository>
             <id>shk-bintray</id>
             <name>Bintray Repository for shk</name>
             <url>https://dl.bintray.com/maggu2810/maven</url>
