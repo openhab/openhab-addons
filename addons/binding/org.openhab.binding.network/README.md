@@ -13,6 +13,13 @@ Every device with an ip address in the local LAN is supported.
 
 
 
+
+
+
+
+
+
+
 ## Discovery
 
 Network devices can be manually discovered by sending a PING to every IP on the network. This functionality should be used with caution, because it produces heavy load to the operating hardware. For this reason, the binding does not do an automatic background discovery, but discovery needs to be triggered manually.
