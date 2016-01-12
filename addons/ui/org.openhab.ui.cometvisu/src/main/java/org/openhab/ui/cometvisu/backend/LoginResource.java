@@ -50,7 +50,7 @@ public class LoginResource implements RESTResource {
         if (uriInfo.getBaseUri().getPort() != 80) {
             serverHost += ":" + uriInfo.getBaseUri().getPort();
         }
-        String host = serverHost.compareToIgnoreCase(origin) == 0 ? "" : serverHost;
+        String host = origin == null || serverHost.compareToIgnoreCase(origin) == 0 ? "" : serverHost;
 
         conf.baseURL = host + "/rest/" + Config.COMETVISU_BACKEND_ALIAS + "/";
         conf.resources = res;
