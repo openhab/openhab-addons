@@ -12,6 +12,7 @@ Import-Package:
  javax.servlet,
  javax.servlet.annotation,
  javax.servlet.http,
+ javax.sql,
  javax.ws.rs,
  javax.ws.rs.container,
  javax.ws.rs.core,
