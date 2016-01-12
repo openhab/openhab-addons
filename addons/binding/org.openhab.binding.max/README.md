@@ -16,6 +16,15 @@ This binding support 6 different things types
 | ecoswitch  | Thing | MAX! Ecoswitch. |
 | shuttercontact  | Thing  | MAX! Shuttercontact / Window Contact. |
 
+
+
+
+
+
+
+
+
+
 Generally one does not have to worry about the thing types as they are automatically defined.
 If for any reason you need to manually define the Things and you are not exactly sure what type of thermostat you have, you can choose `thermostat` for both the thermostat and thermostat+ of them, this will not affect its working.
 
@@ -74,8 +83,8 @@ Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
 
 Switch maxBattery "Battery Low" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:battery_low"}
 String maxMode    "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
-Number maxActual  "Actual measured room temperature  [%.1f °C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
-Number maxSetTemp "Thermostat temperature setpoint [%.1f °C]"  (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
+Number maxActual  "Actual measured room temperature  [%.1f ï¿½C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
+Number maxSetTemp "Thermostat temperature setpoint [%.1f ï¿½C]"  (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
 
 
 ```
