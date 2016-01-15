@@ -17,74 +17,68 @@ import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 /**
  * The {@link ServiceFactory} is helper class for creating Samsung TV related
  * services.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class ServiceFactory {
 
-	@SuppressWarnings("serial")
-	private final static Map<String, Class<?>> serviceMap = Collections
-			.unmodifiableMap(new HashMap<String, Class<?>>() {
-				{
-					put(MainTVServerService.SERVICE_NAME,
-							MainTVServerService.class);
-					put(MediaRendererService.SERVICE_NAME,
-							MediaRendererService.class);
-					put(RemoteControllerService.SERVICE_NAME,
-							RemoteControllerService.class);
-				}
-			});
+    @SuppressWarnings("serial")
+    private final static Map<String, Class<?>> serviceMap = Collections
+            .unmodifiableMap(new HashMap<String, Class<?>>() {
+                {
+                    put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);
+                    put(MediaRendererService.SERVICE_NAME, MediaRendererService.class);
+                    put(RemoteControllerService.SERVICE_NAME, RemoteControllerService.class);
+                }
+            });
 
-	/**
-	 * Create Samsung TV service.
-	 * 
-	 * @param type
-	 * @param upnpIOService
-	 * @param udn
-	 * @param pollingInterval
-	 * @param host
-	 * @param port
-	 * @return
-	 */
-	static public SamsungTvService createService(String type,
-			UpnpIOService upnpIOService, String udn, int pollingInterval,
-			String host, int port) {
+    /**
+     * Create Samsung TV service.
+     * 
+     * @param type
+     * @param upnpIOService
+     * @param udn
+     * @param pollingInterval
+     * @param host
+     * @param port
+     * @return
+     */
+    static public SamsungTvService createService(String type, UpnpIOService upnpIOService, String udn,
+            int pollingInterval, String host, int port) {
 
-		SamsungTvService service = null;
+        SamsungTvService service = null;
 
-		switch (type) {
-		case MainTVServerService.SERVICE_NAME:
-			service = new MainTVServerService(upnpIOService, udn,
-					pollingInterval);
-			break;
-		case MediaRendererService.SERVICE_NAME:
-			service = new MediaRendererService(upnpIOService, udn,
-					pollingInterval);
-			break;
-		case RemoteControllerService.SERVICE_NAME:
-			service = new RemoteControllerService(host, port);
-			break;
-		}
+        switch (type) {
+            case MainTVServerService.SERVICE_NAME:
+                service = new MainTVServerService(upnpIOService, udn, pollingInterval);
+                break;
+            case MediaRendererService.SERVICE_NAME:
+                service = new MediaRendererService(upnpIOService, udn, pollingInterval);
+                break;
+            case RemoteControllerService.SERVICE_NAME:
+                service = new RemoteControllerService(host, port);
+                break;
+        }
 
-		return service;
-	}
+        return service;
+    }
 
-	/**
-	 * Procedure to query amount of supported services.
-	 * 
-	 * @return Amount of supported services
-	 */
-	public static int getServiceCount() {
-		return serviceMap.size();
-	}
+    /**
+     * Procedure to query amount of supported services.
+     * 
+     * @return Amount of supported services
+     */
+    public static int getServiceCount() {
+        return serviceMap.size();
+    }
 
-	/**
-	 * Procedure to get service class by service name.
-	 * 
-	 * @param serviceName Name of the service
-	 * @return Class of the service
-	 */
-	public static Class<?> getClassByServiceName(String serviceName) {
-		return serviceMap.get(serviceName);
-	}
+    /**
+     * Procedure to get service class by service name.
+     * 
+     * @param serviceName Name of the service
+     * @return Class of the service
+     */
+    public static Class<?> getClassByServiceName(String serviceName) {
+        return serviceMap.get(serviceName);
+    }
 }

@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.samsungtv.handler;
 
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
+import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.POWER;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,299 +45,282 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SamsungTvHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
-public class SamsungTvHandler extends BaseThingHandler implements
-		DiscoveryListener, RegistryListener, ValueReceiver {
+public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListener, RegistryListener, ValueReceiver {
 
-	private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
+    private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
-	/** Polling job for searching UPnP devices on startup */
-	private ScheduledFuture<?> pollingJob;
+    /** Polling job for searching UPnP devices on startup */
+    private ScheduledFuture<?> pollingJob;
 
-	/** Global configuration for Samsung TV Thing */
-	private SamsungTvConfiguration configuration;
+    /** Global configuration for Samsung TV Thing */
+    private SamsungTvConfiguration configuration;
 
-	private UpnpIOService upnpIOService;
-	private DiscoveryServiceRegistry discoveryServiceRegistry;
-	private UpnpService upnpService;
+    private UpnpIOService upnpIOService;
+    private DiscoveryServiceRegistry discoveryServiceRegistry;
+    private UpnpService upnpService;
 
-	/** Samsung TV services */
-	private List<SamsungTvService> services;
+    /** Samsung TV services */
+    private List<SamsungTvService> services;
 
-	private boolean powerOn = false;
+    private boolean powerOn = false;
 
-	public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService,
-			DiscoveryServiceRegistry discoveryServiceRegistry,
-			UpnpService upnpService) {
+    public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, DiscoveryServiceRegistry discoveryServiceRegistry,
+            UpnpService upnpService) {
 
-		super(thing);
+        super(thing);
 
-		logger.debug("Create a Samsung TV Handler for thing '{}'", getThing()
-				.getUID());
+        logger.debug("Create a Samsung TV Handler for thing '{}'", getThing().getUID());
 
-		if (upnpIOService != null) {
-			this.upnpIOService = upnpIOService;
-		} else {
-			logger.debug("upnpIOService not set.");
-		}
+        if (upnpIOService != null) {
+            this.upnpIOService = upnpIOService;
+        } else {
+            logger.debug("upnpIOService not set.");
+        }
 
-		if (discoveryServiceRegistry != null) {
-			this.discoveryServiceRegistry = discoveryServiceRegistry;
-			this.discoveryServiceRegistry.addDiscoveryListener(this);
-		}
+        if (discoveryServiceRegistry != null) {
+            this.discoveryServiceRegistry = discoveryServiceRegistry;
+            this.discoveryServiceRegistry.addDiscoveryListener(this);
+        }
 
-		if (upnpService != null) {
-			this.upnpService = upnpService;
-			this.upnpService.getRegistry().addListener(this);
-		} else {
-			logger.debug("upnpService not set.");
-		}
+        if (upnpService != null) {
+            this.upnpService = upnpService;
+            this.upnpService.getRegistry().addListener(this);
+        } else {
+            logger.debug("upnpService not set.");
+        }
 
-		services = new ArrayList<>();
-	}
+        services = new ArrayList<>();
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		logger.debug("Received channel: {}, command: {}", channelUID, command);
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Received channel: {}, command: {}", channelUID, command);
 
-		if (getThing().getStatus() == ThingStatus.ONLINE) {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
 
-			// Delegate command to correct service
+            // Delegate command to correct service
 
-			String channel = channelUID.getId();
+            String channel = channelUID.getId();
 
-			for (SamsungTvService service : services) {
-				if (service != null) {
-					List<String> supportedCommands = service
-							.getSupportedChannelNames();
-					for (String s : supportedCommands) {
-						if (channel.equals(s)) {
-							service.handleCommand(channel, command);
-							return;
-						}
-					}
-				}
-			}
+            for (SamsungTvService service : services) {
+                if (service != null) {
+                    List<String> supportedCommands = service.getSupportedChannelNames();
+                    for (String s : supportedCommands) {
+                        if (channel.equals(s)) {
+                            service.handleCommand(channel, command);
+                            return;
+                        }
+                    }
+                }
+            }
 
-			logger.warn("Channel '{}' not supported", channelUID);
-		} else {
-			logger.debug("Samsung TV '{}' is OFFLINE", getThing().getUID());
-		}
-	}
+            logger.warn("Channel '{}' not supported", channelUID);
+        } else {
+            logger.debug("Samsung TV '{}' is OFFLINE", getThing().getUID());
+        }
+    }
 
-	private synchronized void updatePowerState(boolean state) {
-		powerOn = state;
-	}
+    private synchronized void updatePowerState(boolean state) {
+        powerOn = state;
+    }
 
-	private synchronized boolean getPowerState() {
-		return powerOn;
-	}
+    private synchronized boolean getPowerState() {
+        return powerOn;
+    }
 
-	/*
-	 * One Samsung TV contains several UPnP devices. Samsung TV is discovered by
-	 * Media Renderer UPnP device. This polling job tries to find another UPnP
-	 * devices related to same Samsung TV and create handler for those.
-	 */
-	private Runnable scanUPnPDevicesRunnable = new Runnable() {
+    /*
+     * One Samsung TV contains several UPnP devices. Samsung TV is discovered by
+     * Media Renderer UPnP device. This polling job tries to find another UPnP
+     * devices related to same Samsung TV and create handler for those.
+     */
+    private Runnable scanUPnPDevicesRunnable = new Runnable() {
 
-		@Override
-		public void run() {
-			logger.debug("Check UPnP devices");
-			checkAndCreateServices();
-		}
-	};
+        @Override
+        public void run() {
+            logger.debug("Check UPnP devices");
+            checkAndCreateServices();
+        }
+    };
 
-	@Override
-	public void initialize() {
-		updateStatus(ThingStatus.OFFLINE);
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.OFFLINE);
 
-		configuration = getConfigAs(SamsungTvConfiguration.class);
+        configuration = getConfigAs(SamsungTvConfiguration.class);
 
-		logger.debug("Initializing Samsung TV handler for uid '{}'", getThing()
-				.getUID());
+        logger.debug("Initializing Samsung TV handler for uid '{}'", getThing().getUID());
 
-		pollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0,
-				TimeUnit.MILLISECONDS);
-	}
+        pollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0, TimeUnit.MILLISECONDS);
+    }
 
-	@Override
-	public void dispose() {
-		if (pollingJob != null && !pollingJob.isCancelled()) {
-			pollingJob.cancel(true);
-			pollingJob = null;
-		}
+    @Override
+    public void dispose() {
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
 
-		stopServices();
-	}
+        stopServices();
+    }
 
-	@Override
-	public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-		if (result.getThingUID().equals(this.getThing().getUID())) {
-			logger.debug("thingDiscovered");
-			if (configuration != null) {
-				updateStatus(ThingStatus.ONLINE);
-				updatePowerState(true);
-				updateState(new ChannelUID(getThing().getUID(), POWER),
-						OnOffType.ON);
-			} else {
-				logger.debug("thingDiscovered: Thing not yet initialized");
-			}
-		}
-	}
+    @Override
+    public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+        if (result.getThingUID().equals(this.getThing().getUID())) {
+            logger.debug("thingDiscovered");
+            if (configuration != null) {
+                updateStatus(ThingStatus.ONLINE);
+                updatePowerState(true);
+                updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.ON);
+            } else {
+                logger.debug("thingDiscovered: Thing not yet initialized");
+            }
+        }
+    }
 
-	@Override
-	public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-		if (thingUID.equals(this.getThing().getUID())) {
-			logger.debug("thingRemoved: shutdown services");
-			updateStatus(ThingStatus.OFFLINE);
-			stopServices();
-			updateState(new ChannelUID(getThing().getUID(), POWER),
-					OnOffType.OFF);
-			updatePowerState(false);
-		}
-	}
+    @Override
+    public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+        if (thingUID.equals(this.getThing().getUID())) {
+            logger.debug("thingRemoved: shutdown services");
+            updateStatus(ThingStatus.OFFLINE);
+            stopServices();
+            updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.OFF);
+            updatePowerState(false);
+        }
+    }
 
-	@Override
-	public Collection<ThingUID> removeOlderResults(DiscoveryService source,
-			long timestamp, Collection<ThingTypeUID> thingTypeUIDs) {
-		return null;
-	}
+    @Override
+    public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            Collection<ThingTypeUID> thingTypeUIDs) {
+        return null;
+    }
 
-	@Override
-	public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-		logger.debug("remoteDeviceAdded: device={}", device);
-		createService(device);
-	}
+    @Override
+    public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
+        logger.debug("remoteDeviceAdded: device={}", device);
+        createService(device);
+    }
 
-	@Override
-	public void remoteDeviceUpdated(Registry registry, RemoteDevice device) {
-	}
+    @Override
+    public void remoteDeviceUpdated(Registry registry, RemoteDevice device) {
+    }
 
-	@Override
-	public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
-		logger.debug("remoteDeviceRemoved: device={}", device);
-	}
+    @Override
+    public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
+        logger.debug("remoteDeviceRemoved: device={}", device);
+    }
 
-	@Override
-	public void localDeviceAdded(Registry registry, LocalDevice device) {
-	}
+    @Override
+    public void localDeviceAdded(Registry registry, LocalDevice device) {
+    }
 
-	@Override
-	public void localDeviceRemoved(Registry registry, LocalDevice device) {
-	}
+    @Override
+    public void localDeviceRemoved(Registry registry, LocalDevice device) {
+    }
 
-	@Override
-	public void beforeShutdown(Registry registry) {
-	}
+    @Override
+    public void beforeShutdown(Registry registry) {
+    }
 
-	@Override
-	public void afterShutdown() {
-	}
+    @Override
+    public void afterShutdown() {
+    }
 
-	@Override
-	public void remoteDeviceDiscoveryStarted(Registry registry,
-			RemoteDevice device) {
-	}
+    @Override
+    public void remoteDeviceDiscoveryStarted(Registry registry, RemoteDevice device) {
+    }
 
-	@Override
-	public void remoteDeviceDiscoveryFailed(Registry registry,
-			RemoteDevice device, Exception ex) {
-	}
+    @Override
+    public void remoteDeviceDiscoveryFailed(Registry registry, RemoteDevice device, Exception ex) {
+    }
 
-	private void checkAndCreateServices() {
-		Iterator<?> itr = upnpService.getRegistry().getDevices().iterator();
+    private void checkAndCreateServices() {
+        Iterator<?> itr = upnpService.getRegistry().getDevices().iterator();
 
-		while (itr.hasNext()) {
-			RemoteDevice device = (RemoteDevice) itr.next();
-			createService(device);
-		}
-	}
+        while (itr.hasNext()) {
+            RemoteDevice device = (RemoteDevice) itr.next();
+            createService(device);
+        }
+    }
 
-	private synchronized void createService(RemoteDevice device) {
-		if (configuration != null) {
-			if (configuration.hostName.equals(device.getIdentity()
-					.getDescriptorURL().getHost())) {
+    private synchronized void createService(RemoteDevice device) {
+        if (configuration != null) {
+            if (configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
 
-				String modelName = device.getDetails().getModelDetails()
-						.getModelName();
-				String udn = device.getIdentity().getUdn()
-						.getIdentifierString();
-				String type = device.getType().getType();
+                String modelName = device.getDetails().getModelDetails().getModelName();
+                String udn = device.getIdentity().getUdn().getIdentifierString();
+                String type = device.getType().getType();
 
-				logger.debug(" modelName={}, udn={}, type={}", modelName, udn,
-						type);
+                logger.debug(" modelName={}, udn={}, type={}", modelName, udn, type);
 
-				SamsungTvService service = findServiceInstance(type);
-				if (service == null) {
-					SamsungTvService newService = ServiceFactory.createService(
-							type, upnpIOService, udn,
-							configuration.refreshInterval,
-							configuration.hostName, configuration.port);
+                SamsungTvService service = findServiceInstance(type);
+                if (service == null) {
+                    SamsungTvService newService = ServiceFactory.createService(type, upnpIOService, udn,
+                            configuration.refreshInterval, configuration.hostName, configuration.port);
 
-					if (newService != null) {
-						startService(newService);
-						services.add(newService);
-					}
-				} else {
-					logger.debug("Device rediscovered, clear caches");
-					service.clearCache();
-				}
-			}
-		} else {
-			logger.debug("Thing not yet initialized");
-		}
-	}
+                    if (newService != null) {
+                        startService(newService);
+                        services.add(newService);
+                    }
+                } else {
+                    logger.debug("Device rediscovered, clear caches");
+                    service.clearCache();
+                }
+            }
+        } else {
+            logger.debug("Thing not yet initialized");
+        }
+    }
 
-	private SamsungTvService findServiceInstance(String serviceName) {
-		Class<?> cl = ServiceFactory.getClassByServiceName(serviceName);
+    private SamsungTvService findServiceInstance(String serviceName) {
+        Class<?> cl = ServiceFactory.getClassByServiceName(serviceName);
 
-		if (cl != null) {
-			for (SamsungTvService service : services) {
-				if (service != null) {
-					if (service.getClass() == cl) {
-						return service;
-					}
-				}
-			}
-		}
-		return null;
-	}
+        if (cl != null) {
+            for (SamsungTvService service : services) {
+                if (service != null) {
+                    if (service.getClass() == cl) {
+                        return service;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
-	private void startService(SamsungTvService service) {
-		if (service != null) {
-			service.addEventListener(this);
-			service.start();
-		}
-	}
+    private void startService(SamsungTvService service) {
+        if (service != null) {
+            service.addEventListener(this);
+            service.start();
+        }
+    }
 
-	private void stopService(SamsungTvService service) {
-		if (service != null) {
-			service.removeEventListener(this);
-			service.stop();
-			service = null;
-		}
-	}
+    private void stopService(SamsungTvService service) {
+        if (service != null) {
+            service.removeEventListener(this);
+            service.stop();
+            service = null;
+        }
+    }
 
-	private void stopServices() {
-		for (SamsungTvService service : services) {
-			stopService(service);
-		}
-		services.clear();
-	}
+    private void stopServices() {
+        for (SamsungTvService service : services) {
+            stopService(service);
+        }
+        services.clear();
+    }
 
-	@Override
-	public synchronized void valueReceived(String variable, State value) {
-		logger.debug("Received value '{}':'{}' for thing '{}'", new Object[] {
-				variable, value, this.getThing().getUID() });
+    @Override
+    public synchronized void valueReceived(String variable, State value) {
+        logger.debug("Received value '{}':'{}' for thing '{}'",
+                new Object[] { variable, value, this.getThing().getUID() });
 
-		updateState(new ChannelUID(getThing().getUID(), variable), value);
+        updateState(new ChannelUID(getThing().getUID(), variable), value);
 
-		if (!getPowerState()) {
-			updatePowerState(true);
-			updateState(new ChannelUID(getThing().getUID(), POWER),
-					OnOffType.ON);
-		}
-	}
+        if (!getPowerState()) {
+            updatePowerState(true);
+            updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.ON);
+        }
+    }
 }
