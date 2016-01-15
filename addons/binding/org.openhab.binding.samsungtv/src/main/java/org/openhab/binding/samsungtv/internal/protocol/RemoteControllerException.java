@@ -9,27 +9,27 @@ package org.openhab.binding.samsungtv.internal.protocol;
 
 /**
  * Exception for Samsung TV communication
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class RemoteControllerException extends Exception {
 
-	private static final long serialVersionUID = -5292218577704635666L;
-	
-	public RemoteControllerException() {
-		super();
-	}
+    private static final long serialVersionUID = -5292218577704635666L;
 
-	public RemoteControllerException(String message) {
-		super(message);
-	}
+    public RemoteControllerException() {
+        super();
+    }
 
-	public RemoteControllerException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public RemoteControllerException(String message) {
+        super(message);
+    }
 
-	public RemoteControllerException(Throwable cause) {
-		super(cause);
-	}
+    public RemoteControllerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RemoteControllerException(Throwable cause) {
+        super(cause);
+    }
 
 }

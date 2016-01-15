@@ -11,15 +11,15 @@ import org.eclipse.smarthome.core.types.State;
 
 /**
  * Interface for receiving data from Samsung TV services.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public interface ValueReceiver {
-	/**
-	 * Invoked when value is received from the TV.
-	 *  
-	 * @param variable Name of the variable.
-	 * @param value	Value of the variable value.
-	 */
-	public void valueReceived(String variable, State value);
+    /**
+     * Invoked when value is received from the TV.
+     * 
+     * @param variable Name of the variable.
+     * @param value Value of the variable value.
+     */
+    public void valueReceived(String variable, State value);
 }

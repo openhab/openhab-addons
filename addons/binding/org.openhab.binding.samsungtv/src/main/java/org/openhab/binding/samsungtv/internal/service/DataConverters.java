@@ -18,78 +18,67 @@ import org.eclipse.smarthome.core.types.Command;
 /**
  * The {@link DataConverters} provides utils for converting openhab commands to
  * Samsung TV specific values.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class DataConverters {
 
-	/**
-	 * Convert openhab command to int.
-	 * 
-	 * @param command
-	 * @param min
-	 * @param max
-	 * @param currentValue
-	 * @return
-	 */
-	public static int convertCommandToIntValue(Command command, int min,
-			int max, int currentValue) {
-		if (command instanceof IncreaseDecreaseType
-				|| command instanceof DecimalType
-				|| command instanceof PercentType) {
+    /**
+     * Convert openhab command to int.
+     * 
+     * @param command
+     * @param min
+     * @param max
+     * @param currentValue
+     * @return
+     */
+    public static int convertCommandToIntValue(Command command, int min, int max, int currentValue) {
+        if (command instanceof IncreaseDecreaseType || command instanceof DecimalType
+                || command instanceof PercentType) {
 
-			int value;
-			if (command instanceof IncreaseDecreaseType
-					&& command == IncreaseDecreaseType.INCREASE) {
-				value = Math.min(max, currentValue + 1);
-			} else if (command instanceof IncreaseDecreaseType
-					&& command == IncreaseDecreaseType.DECREASE) {
-				value = Math.max(min, currentValue - 1);
-			} else if (command instanceof DecimalType) {
-				value = ((DecimalType) command).intValue();
-			} else {
-				throw new NumberFormatException("Command '" + command
-						+ "' not supported");
-			}
+            int value;
+            if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
+                value = Math.min(max, currentValue + 1);
+            } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
+                value = Math.max(min, currentValue - 1);
+            } else if (command instanceof DecimalType) {
+                value = ((DecimalType) command).intValue();
+            } else {
+                throw new NumberFormatException("Command '" + command + "' not supported");
+            }
 
-			return value;
+            return value;
 
-		} else {
-			throw new NumberFormatException("Command '" + command
-					+ "' not supported");
-		}
-	}
+        } else {
+            throw new NumberFormatException("Command '" + command + "' not supported");
+        }
+    }
 
-	/**
-	 * Convert openhab command to boolean.
-	 * 
-	 * @param command
-	 * @return
-	 */
-	public static boolean convertCommandToBooleanValue(Command command) {
+    /**
+     * Convert openhab command to boolean.
+     * 
+     * @param command
+     * @return
+     */
+    public static boolean convertCommandToBooleanValue(Command command) {
 
-		if (command instanceof OnOffType || command instanceof OpenClosedType
-				|| command instanceof UpDownType) {
+        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
 
-			boolean newValue;
+            boolean newValue;
 
-			if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-					|| command.equals(OpenClosedType.OPEN)) {
-				newValue = true;
-			} else if (command.equals(OnOffType.OFF)
-					|| command.equals(UpDownType.DOWN)
-					|| command.equals(OpenClosedType.CLOSED)) {
-				newValue = false;
-			} else {
-				throw new NumberFormatException("Command '" + command
-						+ "' not supported");
-			}
+            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
+                newValue = true;
+            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
+                    || command.equals(OpenClosedType.CLOSED)) {
+                newValue = false;
+            } else {
+                throw new NumberFormatException("Command '" + command + "' not supported");
+            }
 
-			return newValue;
+            return newValue;
 
-		} else {
-			throw new NumberFormatException("Command '" + command
-					+ "' not supported for channel");
-		}
-	}
+        } else {
+            throw new NumberFormatException("Command '" + command + "' not supported for channel");
+        }
+    }
 }
