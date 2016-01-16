@@ -82,7 +82,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
         if (discoveryServiceRegistry != null) {
             this.discoveryServiceRegistry = discoveryServiceRegistry;
-            this.discoveryServiceRegistry.addDiscoveryListener(this);
         }
 
         if (upnpService != null) {
@@ -123,6 +122,17 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         }
     }
 
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        logger.debug("channelLinked: {}", channelUID);
+
+        for (SamsungTvService service : services) {
+            if (service != null) {
+                service.clearCache();
+            }
+        }
+    }
+
     private synchronized void updatePowerState(boolean state) {
         powerOn = state;
     }
@@ -152,6 +162,10 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         configuration = getConfigAs(SamsungTvConfiguration.class);
 
         logger.debug("Initializing Samsung TV handler for uid '{}'", getThing().getUID());
+
+        if (discoveryServiceRegistry != null) {
+            discoveryServiceRegistry.addDiscoveryListener(this);
+        }
 
         pollingJob = scheduler.schedule(scanUPnPDevicesRunnable, 0, TimeUnit.MILLISECONDS);
     }
