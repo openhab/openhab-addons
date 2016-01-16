@@ -126,6 +126,8 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channelLinked: {}", channelUID);
 
+        updateState(new ChannelUID(getThing().getUID(), POWER), getPowerState() ? OnOffType.ON : OnOffType.OFF);
+
         for (SamsungTvService service : services) {
             if (service != null) {
                 service.clearCache();
