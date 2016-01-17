@@ -84,14 +84,6 @@
                     <resolver>p2</resolver>
                     <ignoreTychoRepositories>true</ignoreTychoRepositories>
                     <pomDependencies>consider</pomDependencies>
-                    <target>
-                        <artifact>
-                            <groupId>org.openhab.distro</groupId>
-                            <artifactId>targetplatform</artifactId>
-                            <version>${tp.version}</version>
-                            <classifier>openhab</classifier>
-                        </artifact>
-                    </target>
                     <environments>
                         <environment>
                             <os>linux</os>
@@ -268,48 +260,158 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+        </profile>        
     </profiles>
 
-	<repositories>
+
+    <repositories>
+
+        <!-- ESH releases -->
         <repository>
-            <id>jcenter</id>
-            <name>JCenter Repository</name>
-            <url>https://jcenter.bintray.com/</url>
+          <id>eclipse-releases</id>
+          <name>Eclipse Release Repository</name>
+          <layout>default</layout>
+          <url>https://repo.eclipse.org/content/repositories/releases/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+
+        <!-- ESH Snapshots -->
+        <repository>
+          <id>eclipse-snapshots</id>
+          <name>Eclipse Snapshot Repository</name>
+          <layout>default</layout>
+          <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+
+        <!-- openHAB releases -->
+        <repository>
+          <id>jcenter</id>
+          <name>JCenter Repository</name>
+          <url>https://jcenter.bintray.com/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+
+        <repository>
+          <id>openhab-bintray</id>
+          <name>Bintray Repository for openHAB</name>
+          <url>https://dl.bintray.com/openhab/mvn/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+
+        <!-- openHAB snapshots -->
+        <repository>
+          <id>jfrog</id>
+          <name>JFrog OSS Repository</name>
+          <url>http://oss.jfrog.org/libs-snapshot/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+
+        <!-- SHK releases -->
+        <repository>
+          <id>shk-bintray</id>
+          <name>Bintray Repository for shk</name>
+          <url>https://dl.bintray.com/maggu2810/maven</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+
+        <!-- 
+            P2 Repositories for tycho build.
+            This list should match or at least be a subset of the list of URL's in openhab-distro target platform.
+            These repos can be mirrored by maven if needed.
+         -->
+        <repository>
+            <id>p2-smarthome</id>
+            <url>http://download.eclipse.org/smarthome/updates-stable</url>
+            <layout>p2</layout>
         </repository>
         <repository>
-            <id>openhab-bintray</id>
-            <name>Bintray Repository for openHAB</name>
-            <url>https://dl.bintray.com/openhab/mvn/</url>
+            <id>p2-openhab-core</id>
+            <url>https://dl.bintray.com/kaikreuzer/openhab-core/p2/${ohc.version}</url>
+            <layout>p2</layout>
         </repository>
         <repository>
-            <id>shk-bintray</id>
-            <name>Bintray Repository for shk</name>
-            <url>https://dl.bintray.com/maggu2810/maven</url>
+            <id>p2-eclipse-orbit</id>
+            <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository</url>
+            <layout>p2</layout>
         </repository>
         <repository>
-            <id>jfrog</id>
-            <name>JFrog OSS Repository</name>
-            <url>http://oss.jfrog.org/libs-snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>p2-eclipse-modeling</id>
+            <url>http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201407030533</url>
+            <layout>p2</layout>
         </repository>
         <repository>
-            <id>eclipse-snapshots</id>
-            <name>Eclipse Snapshot Repository</name>
-            <layout>default</layout>
-            <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>p2-eclipse-luna</id>
+            <url>http://download.eclipse.org/releases/luna/201502271000</url>
+            <layout>p2</layout>
         </repository>
         <repository>
-            <id>eclipse-releases</id>
-            <name>Eclipse Release Repository</name>
-            <layout>default</layout>
-            <url>https://repo.eclipse.org/content/repositories/releases/</url>
+            <id>p2-eclipse-jetty</id>
+            <url>http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.12.v20150709</url>
+            <layout>p2</layout>
         </repository>
-	</repositories>
-    
+        <repository>
+            <id>p2-jax-rs</id>
+            <url>http://hstaudacher.github.io/osgi-jax-rs-connector/5.2.0</url>
+            <layout>p2</layout>
+        </repository>
+        <repository>
+            <id>p2-groovy</id>
+            <url>http://dist.springsource.org/release/GRECLIPSE/e4.4</url>
+            <layout>p2</layout>
+        </repository>
+        <repository>
+            <id>p2-jupnp</id>
+            <url>http://www.jupnp.org/update-site</url>
+            <layout>p2</layout>
+        </repository>
+        <repository>
+            <id>p2-paho</id>
+            <url>http://download.eclipse.org/paho</url>
+            <layout>p2</layout>
+        </repository>
+        <repository>
+            <id>p2-jmdns</id>
+            <url>http://www.jmdns.org/update-site/3.4.2</url>
+            <layout>p2</layout>
+        </repository>
+
+    </repositories>
+
 </project>
