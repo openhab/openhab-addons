@@ -9,16 +9,16 @@ package org.openhab.binding.samsungtv.config;
 
 /**
  * Configuration class for {@link SamsungTvBinding} device.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class SamsungTvConfiguration {
-	public static final String HOST_NAME = "hostName";
-	public static final String PORT = "port";
-	public static final String REFRESH_INTERVAL = "refreshInterval";
-	
-	public String hostName;
-	public int port;
-	public int refreshInterval;
-	
+    public static final String HOST_NAME = "hostName";
+    public static final String PORT = "port";
+    public static final String REFRESH_INTERVAL = "refreshInterval";
+
+    public String hostName;
+    public int port;
+    public int refreshInterval;
+
 }

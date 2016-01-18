@@ -7,8 +7,8 @@
  */
 package org.openhab.binding.samsungtv.discovery;
 
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
-import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.*;
+import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
+import static org.openhab.binding.samsungtv.config.SamsungTvConfiguration.HOST_NAME;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,79 +27,72 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SamsungTvDiscoveryParticipant} is responsible for processing the
  * results of searched UPnP devices
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-	private Logger logger = LoggerFactory
-			.getLogger(SamsungTvDiscoveryParticipant.class);
+    private Logger logger = LoggerFactory.getLogger(SamsungTvDiscoveryParticipant.class);
 
-	@Override
-	public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-		return Collections.singleton(SAMSUNG_TV_THING_TYPE);
-	}
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+        return Collections.singleton(SAMSUNG_TV_THING_TYPE);
+    }
 
-	@Override
-	public DiscoveryResult createResult(RemoteDevice device) {
-		ThingUID uid = getThingUID(device);
-		if (uid != null) {
-			Map<String, Object> properties = new HashMap<>(3);
-			String label = "Samsung TV";
-			try {
-				label = device.getDetails().getFriendlyName();
-			} catch (Exception e) {
-				// ignore and use the default label
-			}
-			properties.put(HOST_NAME, device.getIdentity().getDescriptorURL()
-					.getHost());
+    @Override
+    public DiscoveryResult createResult(RemoteDevice device) {
+        ThingUID uid = getThingUID(device);
+        if (uid != null) {
+            Map<String, Object> properties = new HashMap<>(3);
+            String label = "Samsung TV";
+            try {
+                label = device.getDetails().getFriendlyName();
+            } catch (Exception e) {
+                // ignore and use the default label
+            }
+            properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
 
-			DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-					.withProperties(properties).withLabel(label).build();
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
+                    .build();
 
-			logger.debug(
-					"Created a DiscoveryResult for device '{}' with UDN '{}'",
-					device.getDetails().getModelDetails().getModelName(),
-					device.getIdentity().getUdn().getIdentifierString());
-			return result;
-		} else {
-			return null;
-		}
-	}
+            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
+                    device.getDetails().getModelDetails().getModelName(),
+                    device.getIdentity().getUdn().getIdentifierString());
+            return result;
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public ThingUID getThingUID(RemoteDevice device) {
-		if (device != null) {
+    @Override
+    public ThingUID getThingUID(RemoteDevice device) {
+        if (device != null) {
 
-			String manufacturer = device.getDetails().getManufacturerDetails()
-					.getManufacturer();
-			String modelName = device.getDetails().getModelDetails()
-					.getModelName();
-			String friedlyName = device.getDetails().getFriendlyName();
+            String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
+            String modelName = device.getDetails().getModelDetails().getModelName();
+            String friedlyName = device.getDetails().getFriendlyName();
 
-			if (manufacturer != null && modelName != null) {
+            if (manufacturer != null && modelName != null) {
 
-				if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
+                if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
 
-					// UDN shouldn't contain '-' characters.
-					String udn = device.getIdentity().getUdn()
-							.getIdentifierString().replace("-", "_");
+                    // UDN shouldn't contain '-' characters.
+                    String udn = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
 
-					// One Samsung TV contains several UPnP devices.
-					// Create unique Samsung TV thing for every MediaRenderer
-					// device and ignore rest of the UPnP devices.
+                    // One Samsung TV contains several UPnP devices.
+                    // Create unique Samsung TV thing for every MediaRenderer
+                    // device and ignore rest of the UPnP devices.
 
-					if (device.getType().getType().equals("MediaRenderer")) {
+                    if (device.getType().getType().equals("MediaRenderer")) {
 
-						logger.debug(
-								"Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'",
-								friedlyName, modelName, udn);
+                        logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friedlyName,
+                                modelName, udn);
 
-						return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
-					}
-				}
-			}
-		}
-		return null;
-	}
+                        return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }
