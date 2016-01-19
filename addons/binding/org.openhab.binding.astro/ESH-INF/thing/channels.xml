@@ -52,14 +52,14 @@
 		<item-type>DateTime</item-type>
 		<label>Start time</label>
 		<description>The start time of the event</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="end">
 		<item-type>DateTime</item-type>
 		<label>End time</label>
 		<description>The end time of the event</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="duration">
@@ -133,28 +133,28 @@
 		<item-type>DateTime</item-type>
 		<label>Spring</label>
 		<description>The beginning of spring</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="summer">
 		<item-type>DateTime</item-type>
 		<label>Summer</label>
 		<description>The beginning of summer</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="autumn">
 		<item-type>DateTime</item-type>
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="winter">
 		<item-type>DateTime</item-type>
 		<label>Winter</label>
 		<description>The beginning of winter</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 
@@ -173,21 +173,21 @@
 		<item-type>DateTime</item-type>
 		<label>Total eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="partial">
 		<item-type>DateTime</item-type>
 		<label>Partial eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="ring">
 		<item-type>DateTime</item-type>
 		<label>Ring eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 	
 	<!-- moonphase -->
@@ -209,28 +209,28 @@
 		<item-type>DateTime</item-type>
 		<label>First quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="thirdQuarter">
 		<item-type>DateTime</item-type>
 		<label>Third quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="fullMoon">
 		<item-type>DateTime</item-type>
 		<label>New moon</label>
 		<description>The DateTime for full moon</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="newMoon">
 		<item-type>DateTime</item-type>
 		<label>New moon</label>
 		<description>The DateTime for new moon</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="age">
@@ -290,7 +290,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
-		<state readOnly="true" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="miles">
