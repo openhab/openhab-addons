@@ -45,9 +45,11 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     private Runnable subscribeTask = new Runnable() {
         @Override
         public void run() {
-            socket.subscribe();
-            socket.getSocketData();
-            // socket.getTableData();
+            if (socket != null) {
+                socket.subscribe();
+                socket.getSocketData();
+                // socket.getTableData();
+            }
         }
     };
 
@@ -57,6 +59,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
 
     @Override
     public void initialize() {
+        logger.debug("Initialising handler");
         configure();
     }
 
@@ -85,6 +88,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
             socket.addSocketStateListener(this);
             socket.findOnNetwork();
             subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
+            logger.debug("socket instance found");
         } catch (SocketException ex) {
             logger.error("Error occured while initializing S20 handler: " + ex.getMessage(), ex);
         }
@@ -101,6 +105,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     @Override
     public void socketDidChangePowerState(Socket socket, PowerState state) {
         if (socket.getDeviceId().equals(thing.getUID().getId())) {
+            logger.debug("state changed to " + state);
             if (state == PowerState.ON) {
                 updateState(CHANNEL_S20_SWITCH, OnOffType.ON);
             } else if (state == PowerState.OFF) {
@@ -111,6 +116,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
 
     @Override
     public void socketDidInitialisation(Socket socket) {
+        logger.debug("Initialisation complete");
         if (thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
