@@ -51,7 +51,7 @@
         <esh.version>0.8.0.b2</esh.version>
         <shk.version>1.2</shk.version>
         <ohc.version>2.0.0.b1</ohc.version>
-        <tp.version>2.0.0.a1</tp.version>
+        <ohdr.version>1.0.0</ohdr.version>
         <karaf.version>4.0.3</karaf.version>
         <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
         <karaf.features.version>4.0.3</karaf.features.version>
@@ -364,64 +364,24 @@
             </snapshots>
         </repository>
 
-        <!--
-           P2 Repositories for tycho build.
-           This list should match or at least be a subset of the list of URL's in openhab-distro target platform.
-           These repos can be mirrored by maven if needed.
-        -->
+        <!-- SmartHome p2 repository -->
         <repository>
             <id>p2-smarthome</id>
             <url>http://download.eclipse.org/smarthome/updates-stable</url>
             <layout>p2</layout>
         </repository>
+
+        <!-- openHAB core p2 repository -->
         <repository>
             <id>p2-openhab-core</id>
             <url>https://dl.bintray.com/kaikreuzer/openhab-core/p2/${ohc.version}</url>
             <layout>p2</layout>
         </repository>
+
+        <!-- openHAB dependencies p2 repository -->
         <repository>
-            <id>p2-eclipse-orbit</id>
-            <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-eclipse-modeling</id>
-            <url>http://download.eclipse.org/modeling/tmf/xtext/updates/releases/maintenance/R201407030533</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-eclipse-luna</id>
-            <url>http://download.eclipse.org/releases/luna/201502271000</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-eclipse-jetty</id>
-            <url>http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.2.12.v20150709</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-jax-rs</id>
-            <url>http://hstaudacher.github.io/osgi-jax-rs-connector/5.2.0</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-groovy</id>
-            <url>http://dist.springsource.org/release/GRECLIPSE/e4.4</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-jupnp</id>
-            <url>http://www.jupnp.org/update-site</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-paho</id>
-            <url>http://download.eclipse.org/paho</url>
-            <layout>p2</layout>
-        </repository>
-        <repository>
-            <id>p2-jmdns</id>
-            <url>http://www.jmdns.org/update-site/3.4.2</url>
+            <id>p2-openhab-deps-repo</id>
+            <url>http://repository-openhab.forge.cloudbees.com/release/openhab-deps-repo/${ohdr.version}</url>
             <layout>p2</layout>
         </repository>
 
