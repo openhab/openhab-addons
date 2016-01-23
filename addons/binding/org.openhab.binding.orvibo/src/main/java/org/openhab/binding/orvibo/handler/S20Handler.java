@@ -44,9 +44,11 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     private Runnable subscribeTask = new Runnable() {
         @Override
         public void run() {
-            socket.subscribe();
-            socket.getSocketData();
-            // socket.getTableData();
+            if (socket != null) {
+                socket.subscribe();
+                socket.getSocketData();
+                // socket.getTableData();
+            }
         }
     };
 
