@@ -1,6 +1,6 @@
 #!/bin/sh
 
-serialPort="/dev/pts/12"
+serialPort="/dev/pts/1"
 
 # socat -d -d pty,raw,echo=0 pty,raw,echo=0
 
@@ -32,6 +32,13 @@ echo "172;255;3;0;12;1.0" > $serialPort
 #echo "172;2;0;0;38;1.4.1" > $serialPort
 #0;0;3;0;9;read: 172-172-0 s=3,c=0,t=3,pt=0,l=5:1.4.1
 #echo "172;3;0;0;3;1.4.1" > $serialPort
+
+# Set Humidty status
+echo "172;0;1;0;1;87" > $serialPort
+
+# Set Temperature status
+echo "172;1;1;0;0;27" > $serialPort
+
 
 #### Represent door
 #echo "172;4;0;0;0;1.4.1" > $serialPort
