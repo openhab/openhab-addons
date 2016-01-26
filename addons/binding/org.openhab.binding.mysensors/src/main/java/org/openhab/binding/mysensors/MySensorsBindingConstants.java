@@ -32,6 +32,7 @@ public class MySensorsBindingConstants {
     public static final String PARAMETER_IPADDRESS = "ipAddress";
     public static final String PRAMETER_TCPPORT = "tcpPort";
     public static final String PARAMETER_SENDDELAY = "sendDelay";
+    public static final String PARAMETER_BAUDRATE = "baudRate";
     public static final String PARAMETER_REQUESTACK = "requestack";
 
     public static final int MYSENSORS_MSG_TYPE_PRESENTATION = 0;

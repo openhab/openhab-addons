@@ -24,6 +24,12 @@
 				</description>
 				<default>100</default>
 			</parameter>
+			<parameter name="baudRate" type="integer" required="false" min="300" max="250000">
+                <label>Baudrate</label>
+                <description>Baudrate for serial port
+                </description>
+                <default>115200</default>
+            </parameter>
 		</config-description>
 
 	</bridge-type>
@@ -53,13 +59,6 @@
 				</description>
 				<default>100</default>
 			</parameter>
-			<parameter name="baudRate" type="integer" required="true" min="300" max="250000">
-                <context>baudrate</context>
-                <label>Baudrate</label>
-                <description>Baudrate for serial port
-                </description>
-                <default>115200</default>
-            </parameter>
 		</config-description>
 
 	</bridge-type>
