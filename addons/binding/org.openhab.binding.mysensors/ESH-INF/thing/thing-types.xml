@@ -24,6 +24,12 @@
 				</description>
 				<default>100</default>
 			</parameter>
+			<parameter name="baudRate" type="integer" required="true" min="1" max="230400">
+			 <context>baudrate</context>
+			 <label>Baud rate</label>
+			 <description>Specify the baud rate of the connected serial gateway. DEFAULT is 115200</description>
+			 <default>115200</default>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
