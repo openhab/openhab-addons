@@ -27,6 +27,8 @@ public class MySensorsBindingConstants {
 
     public static final String BINDING_ID = "mysensors";
 
+    public static final int DEFAULT_SERIAL_BAUDRATE = 115200;
+
     public static final String PARAMETER_NODEID = "nodeId";
     public static final String PARAMETER_CHILDID = "childId";
     public static final String PARAMETER_IPADDRESS = "ipAddress";
