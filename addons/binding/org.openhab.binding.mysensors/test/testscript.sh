@@ -1,6 +1,6 @@
 #!/bin/sh
 
-serialPort="/dev/pts/1"
+serialPort="/dev/pts/12"
 
 # socat -d -d pty,raw,echo=0 pty,raw,echo=0
 
