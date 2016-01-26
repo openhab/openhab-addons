@@ -114,7 +114,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements
 	};
 	
 	@Override
-	protected void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge){
+	public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge){
 		if (thingHandler instanceof SqueezeBoxServerHandler) {
 			this.squeezeBoxServerHandler = (SqueezeBoxServerHandler)thingHandler;
 			updateStatus(squeezeBoxServerHandler.getThing().getStatus());
@@ -122,7 +122,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements
 	}
 	
 	@Override
-	protected void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
+	public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
 		this.squeezeBoxServerHandler = null;
 		updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
 	}
