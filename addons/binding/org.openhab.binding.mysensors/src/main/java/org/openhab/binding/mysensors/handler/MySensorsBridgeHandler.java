@@ -58,9 +58,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         MySensorsBridgeConfiguration configuration = getConfigAs(MySensorsBridgeConfiguration.class);
 
+        logger.debug("BAUDRATE {} {}", configuration.baudRate, configuration.sendDelay);
+
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
-            mysCon = new MySensorsSerialConnection(configuration.serialPort,
-                    (configuration.baudRate == null) ? DEFAULT_SERIAL_BAUDRATE : configuration.baudRate,
+            mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
                     configuration.sendDelay);
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_ETH)) {
             mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
