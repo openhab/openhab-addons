@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -36,12 +39,15 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     private Logger logger = LoggerFactory.getLogger(MySensorsBridgeHandler.class);
 
-    public MySensorsBridgeConnection mysCon = null;
-
     public Collection<Thing> connectedThings = Lists.newArrayList();
 
     // List of Ids that OpenHAB has given, in response to an id request from a sensor node
     private List<Number> givenIds = new ArrayList<Number>();
+
+    // Executor that hold the bridge reader thread
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Future<?> future = null;
+    private MySensorsBridgeConnection mysCon = null;
 
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -65,8 +71,8 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
         }
 
-        if (mysCon.connected) {
-            mysCon.start();
+        if (mysCon.connect()) {
+            future = executor.submit(mysCon);
             mysCon.addUpdateListener(this);
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -86,7 +92,16 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     @Override
     public void dispose() {
         if (mysCon != null) {
-            mysCon.stopReader();
+            mysCon.disconnect();
+        }
+
+        if (future != null) {
+            future.cancel(true);
+        }
+
+        if (executor != null) {
+            executor.shutdown();
+            executor.shutdownNow();
         }
     }
 
@@ -184,6 +199,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
         // TODO Auto-generated method stub
 
+    }
+
+    public MySensorsBridgeConnection getBridgeConnection() {
+        return mysCon;
     }
 
 }

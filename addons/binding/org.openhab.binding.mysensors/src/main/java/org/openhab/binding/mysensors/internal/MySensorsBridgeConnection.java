@@ -10,7 +10,7 @@ import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class MySensorsBridgeConnection extends Thread {
+public abstract class MySensorsBridgeConnection implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(MySensorsBridgeConnection.class);
 
@@ -19,13 +19,27 @@ public abstract class MySensorsBridgeConnection extends Thread {
     public List<MySensorsMessage> MySensorsMessageOutboundQueue = Collections
             .synchronizedList(new LinkedList<MySensorsMessage>());
 
-    public boolean connected = false;
+    protected boolean connected = false;
 
     protected boolean stopReader = false;
 
     public MySensorsBridgeConnection() {
         updateListeners = new ArrayList<>();
     }
+
+    /**
+     * startup connection with bridge
+     *
+     * @return
+     */
+    public abstract boolean connect();
+
+    /**
+     * shutodown method that allows the correct disconnection with the used bridge
+     *
+     * @return
+     */
+    public abstract void disconnect();
 
     /**
      * @param listener An Object, that wants to listen on status updates

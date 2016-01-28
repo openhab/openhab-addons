@@ -1,7 +1,6 @@
 package org.openhab.binding.mysensors.protocol.serial;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -39,6 +38,10 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         this.baudRate = baudRate;
         this.sendDelay = sendDelay;
 
+    }
+
+    @Override
+    public boolean connect() {
         logger.debug("Connecting to {} [baudRate:{}]", serialPort, baudRate);
 
         serialConnection = new NRSerialPort(serialPort, baudRate);
@@ -50,6 +53,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
             logger.error("Can't connect to serial port. Wrong port?");
         }
 
+        return connected;
     }
 
     /**
@@ -59,11 +63,10 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
     @Override
     public void run() {
 
-        mysConWriter.start();
+        mysConWriter.startWriter();
 
-        DataInputStream ins = new DataInputStream(serialConnection.getInputStream());
-
-        BufferedReader buffRead = new BufferedReader(new InputStreamReader(ins));
+        InputStreamReader ins = new InputStreamReader(serialConnection.getInputStream());
+        BufferedReader buffRead = new BufferedReader(ins);
 
         while (!stopReader) {
             try {
@@ -80,12 +83,18 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
                     }
                 }
             } catch (IOException e) {
-                // Ignore this, there is nothing to read
+                // Strange behavior...
+                logger.error("exception on reading from serial port, message: {}", e.getMessage());
             }
         }
 
+    }
+
+    @Override
+    public void disconnect() {
         logger.debug("Shutting down serial connection!");
 
+        stopReader();
         serialConnection.disconnect();
         mysConWriter.stopWriting();
     }
