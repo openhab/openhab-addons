@@ -112,7 +112,7 @@ public class RFXComHandler extends BaseThingHandler implements
 	}
 
 	@Override
-	protected void bridgeHandlerInitialized(ThingHandler thingHandler,
+	public void bridgeHandlerInitialized(ThingHandler thingHandler,
 			Bridge bridge) {
 
 		logger.debug("Bridge initialized");
@@ -133,7 +133,7 @@ public class RFXComHandler extends BaseThingHandler implements
 	}
 
 	@Override
-	protected void bridgeHandlerDisposed(ThingHandler thingHandler,
+	public void bridgeHandlerDisposed(ThingHandler thingHandler,
 			Bridge bridge) {
 		logger.debug("Bridge disposed");
 		if (bridgeHandler != null) {
