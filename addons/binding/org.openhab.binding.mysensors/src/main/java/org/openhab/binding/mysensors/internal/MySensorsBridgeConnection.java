@@ -16,6 +16,7 @@ public abstract class MySensorsBridgeConnection implements Runnable {
 
     public List<MySensorsUpdateListener> updateListeners;
 
+    // FIXME must be replaced with a blocking queue
     public List<MySensorsMessage> MySensorsMessageOutboundQueue = Collections
             .synchronizedList(new LinkedList<MySensorsMessage>());
 

@@ -1,7 +1,6 @@
 package org.openhab.binding.mysensors.protocol.serial;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.openhab.binding.mysensors.handler.MySensorsStatusUpdateEvent;
@@ -46,8 +45,8 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
         serialConnection = new NRSerialPort(serialPort, baudRate);
         if (serialConnection.connect()) {
-            connected = true;
             logger.debug("Successfully connected to serial port.");
+            connected = true;
             mysConWriter = new MySensorsSerialWriter(serialConnection, this, sendDelay);
         } else {
             logger.error("Can't connect to serial port. Wrong port?");
@@ -65,27 +64,28 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
         mysConWriter.startWriter();
 
-        InputStreamReader ins = new InputStreamReader(serialConnection.getInputStream());
-        BufferedReader buffRead = new BufferedReader(ins);
+        BufferedReader buffRead = new BufferedReader(new InputStreamReader(serialConnection.getInputStream()));
+        String line = null;
 
         while (!stopReader) {
+            // Is there something to read?
+            // String line = buffRead.readLine();
             try {
-                // Is there something to read?
-                String line = buffRead.readLine();
-                if (line != null) {
-                    logger.debug(line);
-                    MySensorsMessage msg = MySensorsMessageParser.parse(line);
-                    if (msg != null) {
-                        MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
-                        for (MySensorsUpdateListener mySensorsEventListener : updateListeners) {
-                            mySensorsEventListener.statusUpdateReceived(event);
-                        }
+                line = buffRead.readLine();
+                logger.debug(line);
+                MySensorsMessage msg = MySensorsMessageParser.parse(line);
+                if (msg != null) {
+                    MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
+                    for (MySensorsUpdateListener mySensorsEventListener : updateListeners) {
+                        mySensorsEventListener.statusUpdateReceived(event);
                     }
                 }
-            } catch (IOException e) {
-                // Strange behavior...
-                logger.error("exception on reading from serial port, message: {}", e.getMessage());
+            } catch (Exception e) {
+                // FIXME this exception has to be fixed, is not normal to have exception: Underlying input stream
+                // returned zero bytes
+                // logger.error("exception on reading from serial port, message: {}", e.getMessage());
             }
+
         }
 
     }
@@ -94,9 +94,15 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
     public void disconnect() {
         logger.debug("Shutting down serial connection!");
 
+        if (mysConWriter != null) {
+            mysConWriter.stopWriting();
+        }
+
         stopReader();
-        serialConnection.disconnect();
-        mysConWriter.stopWriting();
+
+        if (serialConnection != null && serialConnection.isConnected()) {
+            serialConnection.disconnect();
+        }
     }
 
 }

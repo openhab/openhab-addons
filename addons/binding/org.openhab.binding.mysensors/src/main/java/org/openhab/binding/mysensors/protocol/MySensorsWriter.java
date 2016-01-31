@@ -33,7 +33,6 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
 
     @Override
     public synchronized void run() {
-
         while (!stopWriting) {
             if (lastSend + sendDelay < System.currentTimeMillis()) {
                 // Is there something to write?

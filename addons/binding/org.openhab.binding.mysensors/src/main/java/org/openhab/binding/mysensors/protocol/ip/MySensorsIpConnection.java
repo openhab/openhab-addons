@@ -90,7 +90,12 @@ public class MySensorsIpConnection extends MySensorsBridgeConnection {
 
     @Override
     public void disconnect() {
-        mysConWriter.stopWriting();
+
+        if (mysConWriter != null) {
+            mysConWriter.stopWriting();
+        }
+
+        stopReader();
 
         // Shut down socket
         try {
@@ -99,7 +104,7 @@ public class MySensorsIpConnection extends MySensorsBridgeConnection {
                 buffRead.close();
             }
 
-            if (sock != null) {
+            if (sock != null && sock.isConnected()) {
                 sock.close();
             }
         } catch (IOException e) {
