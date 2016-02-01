@@ -89,6 +89,17 @@ conf/sitemaps/demo.sitemap:
   }
 ```
 
+## Enable ACK request for things
+
+If you would like to receive an ACK for a command sent to an actuator add the requestAck option:
+
+```
+Bridge mysensors:bridge-ser:gateway [ serialPort="/dev/pts/6", sendDelay=200 ] {
+    light           light01     [ nodeId="172", childId="2", requestAck=true ]
+  }
+```
+
+
 ## Supported gateways
 
 - SerialGateway

@@ -180,7 +180,7 @@
 				<description>The ID of the child of a node in the MySensors network
 				</description>
 			</parameter>
-			<parameter name="requestack" type="boolean" required="true">
+			<parameter name="requestAck" type="boolean" required="true">
 			<label>Request ACK</label>
 			<description>Request ACK from Actuator</description>
 			<default>false</default>

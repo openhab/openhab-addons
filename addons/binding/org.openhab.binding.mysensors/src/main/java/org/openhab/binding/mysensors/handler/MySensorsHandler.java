@@ -42,7 +42,10 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
     private int nodeId = 0;
     private int childId = 0;
-    private boolean requestack = false;
+    private boolean requestAck = false;
+
+    private Command oldCommand = null;
+    private ChannelUID oldChannelUID = null;
 
     public MySensorsHandler(Thing thing) {
         super(thing);
@@ -55,7 +58,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         configuration = getConfigAs(MySensorsSensorConfiguration.class);
         nodeId = Integer.parseInt(configuration.nodeId);
         childId = Integer.parseInt(configuration.childId);
-        requestack = configuration.requestack;
+        requestAck = configuration.requestAck;
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -79,7 +82,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         String msg = "";
         int subType = 0;
         int int_requestack = 0;
-        if (requestack) {
+        if (requestAck) {
             int_requestack = 1;
         }
 
@@ -129,6 +132,8 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                 msg = "1";
 
             }
+            oldCommand = command;
+            oldChannelUID = channelUID;
         }
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack, subType,
