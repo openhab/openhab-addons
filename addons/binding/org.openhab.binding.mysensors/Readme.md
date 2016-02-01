@@ -89,9 +89,20 @@ conf/sitemaps/demo.sitemap:
   }
 ```
 
+## Enable ACK request for things
+
+If you would like to receive an ACK for a command sent to an actuator add the requestAck option:
+
+```
+Bridge mysensors:bridge-ser:gateway [ serialPort="/dev/pts/6", sendDelay=200 ] {
+    light           light01     [ nodeId="172", childId="2", requestAck=true ]
+  }
+```
+
+
 ## Supported gateways
 
-- SerialGateway (115.200 baud)
+- SerialGateway
 - EthernetGateway
 
 ## Supported sensors
@@ -106,7 +117,7 @@ conf/sitemaps/demo.sitemap:
 - S_MOTION
 - S_SMOKE
 - S_DIMMER
-- S_COVER (V_STOP not implemented in OH2, can't use it yet)
+- S_COVER
 - S_WIND
 - S_RAIN
 - S_UV

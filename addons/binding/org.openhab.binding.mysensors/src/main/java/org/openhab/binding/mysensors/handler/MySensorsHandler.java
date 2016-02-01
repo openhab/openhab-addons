@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -22,7 +23,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.mysensors.config.MySensorsSensorConfiguration;
 import org.openhab.binding.mysensors.internal.MySensorsMessage;
 import org.slf4j.Logger;
@@ -42,9 +42,10 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
     private int nodeId = 0;
     private int childId = 0;
-    private boolean requestack = false;
+    private boolean requestAck = false;
 
-    private State oldState = null;
+    private Command oldCommand = null;
+    private ChannelUID oldChannelUID = null;
 
     public MySensorsHandler(Thing thing) {
         super(thing);
@@ -57,7 +58,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         configuration = getConfigAs(MySensorsSensorConfiguration.class);
         nodeId = Integer.parseInt(configuration.nodeId);
         childId = Integer.parseInt(configuration.childId);
-        requestack = configuration.requestack;
+        requestAck = configuration.requestAck;
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -71,29 +72,17 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.eclipse.smarthome.core.thing.binding.ThingHandler#handleCommand(org.eclipse.smarthome.core.thing.ChannelUID,
      * org.eclipse.smarthome.core.types.Command)
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#handleUpdate(org.eclipse.smarthome.core.thing.
-     * ChannelUID, org.eclipse.smarthome.core.types.State)
-     */
-    @Override
-    public void handleUpdate(ChannelUID channelUID, org.eclipse.smarthome.core.types.State newState) {
-
         String msg = "";
         int subType = 0;
         int int_requestack = 0;
-        if (requestack) {
+        if (requestAck) {
             int_requestack = 1;
         }
 
@@ -101,53 +90,71 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
             subType = MYSENSORS_SUBTYPE_V_STATUS;
 
-            if ((OnOffType) newState == OnOffType.ON) {
-                msg = "1";
-            } else if ((OnOffType) newState == OnOffType.OFF) {
-                msg = "0";
+            if (command instanceof OnOffType) {
+                if ((OnOffType) command == OnOffType.ON) {
+                    msg = "1";
+                } else if ((OnOffType) command == OnOffType.OFF) {
+                    msg = "0";
+                }
             }
 
         } else if (channelUID.getId().equals(CHANNEL_DIMMER)) {
-            if (newState.getClass() == PercentType.class) {
-                msg = ((PercentType) newState).toString();
+            if (command instanceof PercentType) {
+                msg = ((PercentType) command).toString();
                 subType = MYSENSORS_SUBTYPE_V_PERCENTAGE;
             } else {
-                if ((OnOffType) newState == OnOffType.ON) {
-                    msg = "1";
-                } else if ((OnOffType) newState == OnOffType.OFF) {
-                    msg = "0";
+                if (command instanceof OnOffType) {
+                    if ((OnOffType) command == OnOffType.ON) {
+                        msg = "1";
+                    } else if ((OnOffType) command == OnOffType.OFF) {
+                        msg = "0";
+                    }
                 }
                 subType = MYSENSORS_SUBTYPE_V_STATUS;
             }
         } else if (channelUID.getId().equals(CHANNEL_COVER)) {
-            if (newState.getClass() == PercentType.class) {
-                msg = ((PercentType) newState).toString();
+            if (command instanceof PercentType) {
+                msg = ((PercentType) command).toString();
                 subType = MYSENSORS_SUBTYPE_V_PERCENTAGE;
             } else {
-                if ((UpDownType) newState == UpDownType.UP) {
-                    subType = MYSENSORS_SUBTYPE_V_UP;
-                } else if ((UpDownType) newState == UpDownType.DOWN) {
-                    subType = MYSENSORS_SUBTYPE_V_DOWN;
+                if (command instanceof UpDownType) {
+                    if ((UpDownType) command == UpDownType.UP) {
+                        subType = MYSENSORS_SUBTYPE_V_UP;
+                    } else if ((UpDownType) command == UpDownType.DOWN) {
+                        subType = MYSENSORS_SUBTYPE_V_DOWN;
+                    }
+                } else if (command instanceof StopMoveType) {
+                    if ((StopMoveType) command == StopMoveType.STOP) {
+                        subType = MYSENSORS_SUBTYPE_V_STOP;
+                    }
                 }
-                /*
-                 * else if ((StopMoveType) newState == StopMoveType.STOP)
-                 * subType = MYSENSORS_SUBTYPE_V_STOP;
-                 */
+
                 msg = "1";
 
             }
+            oldCommand = command;
+            oldChannelUID = channelUID;
         }
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack, subType,
                 msg);
 
         getBridgeHandler().getBridgeConnection().addMySensorsOutboundMessage(newMsg);
-        oldState = newState;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
+     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#handleUpdate(org.eclipse.smarthome.core.thing.
+     * ChannelUID, org.eclipse.smarthome.core.types.State)
+     */
+    @Override
+    public void handleUpdate(ChannelUID channelUID, org.eclipse.smarthome.core.types.State newState) {
+    }
+
+    /*
+     * (non-Javadoc)
+     *
      * @see
      * org.openhab.binding.mysensors.handler.MySensorsUpdateListener#statusUpdateReceived(org.openhab.binding.mysensors.
      * handler.MySensorsStatusUpdateEvent)
@@ -211,7 +218,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
     /**
      * Returns the BridgeHandler of the bridge/gateway to the MySensors network
-     * 
+     *
      * @return BridgeHandler of the bridge/gateway to the MySensors network
      */
     public synchronized MySensorsBridgeHandler getBridgeHandler() {
