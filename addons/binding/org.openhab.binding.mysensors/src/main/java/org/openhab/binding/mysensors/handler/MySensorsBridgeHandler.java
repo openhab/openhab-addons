@@ -143,7 +143,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     }
 
     /**
-     * If an ID -Request from a sensor is received the conroller will send an id to the sensor
+     * If an ID -Request from a sensor is received the controller will send an id to the sensor
      */
     private void answerIDRequest() {
         logger.debug("ID Request received");

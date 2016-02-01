@@ -1,6 +1,7 @@
 package org.openhab.binding.mysensors.protocol.serial;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.openhab.binding.mysensors.handler.MySensorsStatusUpdateEvent;
@@ -11,7 +12,9 @@ import org.openhab.binding.mysensors.internal.MySensorsMessageParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.io.NRSerialPort;
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
 
 /**
  * @author Tim Oberföll
@@ -26,7 +29,8 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
     private int baudRate = 115200;
     public int sendDelay = 0;
 
-    private NRSerialPort serialConnection = null;
+    // private NRSerialPort serialConnection = null;
+    private SerialPort serialConnection = null;
 
     private MySensorsSerialWriter mysConWriter = null;
 
@@ -43,13 +47,37 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
     public boolean connect() {
         logger.debug("Connecting to {} [baudRate:{}]", serialPort, baudRate);
 
-        serialConnection = new NRSerialPort(serialPort, baudRate);
-        if (serialConnection.connect()) {
-            logger.debug("Successfully connected to serial port.");
-            connected = true;
-            mysConWriter = new MySensorsSerialWriter(serialConnection, this, sendDelay);
-        } else {
-            logger.error("Can't connect to serial port. Wrong port?");
+        // serialConnection = new NRSerialPort(serialPort, baudRate);
+        // if (serialConnection.connect()) {
+        // logger.debug("Successfully connected to serial port.");
+        // connected = true;
+        // mysConWriter = new MySensorsSerialWriter(serialConnection, this, sendDelay);
+        // } else {
+        // logger.error("Can't connect to serial port. Wrong port?");
+        // }
+
+        try {
+            CommPortIdentifier serialPortIdentifier = CommPortIdentifier.getPortIdentifier(serialPort);
+            if (serialPortIdentifier != null) {
+                if (!serialPortIdentifier.isCurrentlyOwned()) {
+                    CommPort c = serialPortIdentifier.open(this.getClass().getName(), 2000);
+                    if (c != null && c instanceof SerialPort) {
+                        serialConnection = (SerialPort) c;
+                        serialConnection.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                                SerialPort.PARITY_NONE);
+                        connected = true;
+                        mysConWriter = new MySensorsSerialWriter(serialConnection, this, sendDelay);
+                    } else {
+                        logger.error("com port is not an instance of serial port");
+                    }
+                } else {
+                    logger.error("port " + serialPort + " is already in use");
+                }
+            }
+        } catch (Exception e) {
+            logger.error(
+                    "failed to connect to port: " + serialPort + " " + e.getClass() + ", message: " + e.getMessage());
+            e.getStackTrace();
         }
 
         return connected;
@@ -64,7 +92,13 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
         mysConWriter.startWriter();
 
-        BufferedReader buffRead = new BufferedReader(new InputStreamReader(serialConnection.getInputStream()));
+        BufferedReader buffRead = null;
+        try {
+            buffRead = new BufferedReader(new InputStreamReader(serialConnection.getInputStream()));
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         String line = null;
 
         while (!stopReader) {
@@ -83,7 +117,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
             } catch (Exception e) {
                 // FIXME this exception has to be fixed, is not normal to have exception: Underlying input stream
                 // returned zero bytes
-                // logger.error("exception on reading from serial port, message: {}", e.getMessage());
+                logger.error("exception on reading from serial port, message: {}", e.getMessage());
             }
 
         }
@@ -100,8 +134,12 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
         stopReader();
 
-        if (serialConnection != null && serialConnection.isConnected()) {
-            serialConnection.disconnect();
+        // if (serialConnection != null && serialConnection.isConnected()) {
+        // serialConnection.disconnect();
+        // }
+
+        if (serialConnection != null) {
+            serialConnection.close();
         }
     }
 

@@ -1,10 +1,10 @@
 package org.openhab.binding.mysensors.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.slf4j.Logger;
@@ -17,14 +17,19 @@ public abstract class MySensorsBridgeConnection implements Runnable {
     public List<MySensorsUpdateListener> updateListeners;
 
     // FIXME must be replaced with a blocking queue
-    public List<MySensorsMessage> MySensorsMessageOutboundQueue = Collections
-            .synchronizedList(new LinkedList<MySensorsMessage>());
+    /*
+     * public List<MySensorsMessage> MySensorsMessageOutboundQueue = Collections
+     * .synchronizedList(new LinkedList<MySensorsMessage>());
+     */
+
+    private BlockingQueue<MySensorsMessage> outboundMessageQueue = null;
 
     protected boolean connected = false;
 
     protected boolean stopReader = false;
 
     public MySensorsBridgeConnection() {
+        outboundMessageQueue = new LinkedBlockingQueue<MySensorsMessage>();
         updateListeners = new ArrayList<>();
     }
 
@@ -59,12 +64,20 @@ public abstract class MySensorsBridgeConnection implements Runnable {
         }
     }
 
+    public BlockingQueue<MySensorsMessage> getOutBoundMessageQueue() {
+        return outboundMessageQueue;
+    }
+
     public void addMySensorsOutboundMessage(MySensorsMessage msg) {
-        MySensorsMessageOutboundQueue.add(msg);
+        try {
+            outboundMessageQueue.put(msg);
+        } catch (InterruptedException e) {
+            logger.error("Interrupted message while ruuning");
+        }
     }
 
     public void removeMySensorsOutboundMessage(MySensorsMessage msg) {
-        Iterator<MySensorsMessage> iterator = MySensorsMessageOutboundQueue.iterator();
+        Iterator<MySensorsMessage> iterator = outboundMessageQueue.iterator();
         while (iterator.hasNext()) {
             MySensorsMessage msgInQueue = iterator.next();
             if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()
