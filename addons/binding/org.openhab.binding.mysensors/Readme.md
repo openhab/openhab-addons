@@ -91,7 +91,7 @@ conf/sitemaps/demo.sitemap:
 
 ## Supported gateways
 
-- SerialGateway (115.200 baud)
+- SerialGateway
 - EthernetGateway
 
 ## Supported sensors
@@ -106,7 +106,7 @@ conf/sitemaps/demo.sitemap:
 - S_MOTION
 - S_SMOKE
 - S_DIMMER
-- S_COVER (V_STOP not implemented in OH2, can't use it yet)
+- S_COVER
 - S_WIND
 - S_RAIN
 - S_UV
