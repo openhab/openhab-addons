@@ -21,4 +21,15 @@ public class MySensorsIpWriter extends MySensorsWriter {
             e.printStackTrace();
         }
     }
+
+    public MySensorsIpWriter(Socket sock, MySensorsIpConnection mysCon) {
+        this.mysCon = mysCon;
+        this.sock = sock;
+        try {
+            outs = new PrintWriter(sock.getOutputStream());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

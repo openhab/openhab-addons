@@ -5,12 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class MySensorsBridgeConnection implements Runnable {
+public abstract class MySensorsBridgeConnection {
 
     private Logger logger = LoggerFactory.getLogger(MySensorsBridgeConnection.class);
 
@@ -25,8 +26,6 @@ public abstract class MySensorsBridgeConnection implements Runnable {
     private BlockingQueue<MySensorsMessage> outboundMessageQueue = null;
 
     protected boolean connected = false;
-
-    protected boolean stopReader = false;
 
     public MySensorsBridgeConnection() {
         outboundMessageQueue = new LinkedBlockingQueue<MySensorsMessage>();
@@ -64,8 +63,8 @@ public abstract class MySensorsBridgeConnection implements Runnable {
         }
     }
 
-    public BlockingQueue<MySensorsMessage> getOutBoundMessageQueue() {
-        return outboundMessageQueue;
+    public MySensorsMessage pollMySensorsOutboundQueue() throws InterruptedException {
+        return outboundMessageQueue.poll(1, TimeUnit.DAYS);
     }
 
     public void addMySensorsOutboundMessage(MySensorsMessage msg) {
@@ -86,12 +85,5 @@ public abstract class MySensorsBridgeConnection implements Runnable {
                 iterator.remove();
             }
         }
-    }
-
-    /**
-     * Stop the communication with the serial/ip interface (stop Thread)
-     */
-    public void stopReader() {
-        this.stopReader = true;
     }
 }

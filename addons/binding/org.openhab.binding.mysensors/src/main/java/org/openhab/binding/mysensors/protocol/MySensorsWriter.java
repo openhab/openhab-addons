@@ -1,11 +1,9 @@
 package org.openhab.binding.mysensors.protocol;
 
 import java.io.PrintWriter;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.mysensors.MySensorsBindingConstants;
 import org.openhab.binding.mysensors.handler.MySensorsStatusUpdateEvent;
@@ -35,11 +33,9 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     @Override
     public void run() {
 
-        BlockingQueue<MySensorsMessage> msgQueue = mysCon.getOutBoundMessageQueue();
-
         while (!stopWriting) {
             try {
-                MySensorsMessage msg = msgQueue.poll(1, TimeUnit.DAYS);
+                MySensorsMessage msg = mysCon.pollMySensorsOutboundQueue();
 
                 if (msg != null) {
                     if (msg.getNextSend() < System.currentTimeMillis()) {
@@ -50,8 +46,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                             if (!(msg.getRetries() >= MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
                                 msg.setNextSend(System.currentTimeMillis()
                                         + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries()]);
-                                logger.debug("Adding message to queue another time");
-                                msgQueue.add(msg);
+                                mysCon.addMySensorsOutboundMessage(msg);
                             } else {
                                 logger.warn("NO ACK from nodeId: " + msg.getNodeId());
 
@@ -70,7 +65,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                         sendMessage(output);
                     } else {
                         // Is not time for send again...
-                        msgQueue.add(msg);
+                        mysCon.addMySensorsOutboundMessage(msg);
                     }
                 } else {
                     logger.warn("Message returned from queue is null");
