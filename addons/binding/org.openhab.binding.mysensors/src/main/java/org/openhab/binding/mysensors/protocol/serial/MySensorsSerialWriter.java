@@ -9,7 +9,7 @@ public class MySensorsSerialWriter extends MySensorsWriter {
 
     public MySensorsSerialWriter(OutputStream outStream, MySensorsSerialConnection mysCon) {
         this.mysCon = mysCon;
-
+        this.outStream = outStream;
         outs = new PrintWriter(outStream);
     }
 }

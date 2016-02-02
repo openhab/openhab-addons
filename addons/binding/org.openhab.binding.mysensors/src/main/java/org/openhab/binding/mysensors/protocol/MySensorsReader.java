@@ -2,6 +2,7 @@ package org.openhab.binding.mysensors.protocol;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -22,6 +23,7 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
     protected Future<?> future = null;
 
     protected MySensorsBridgeConnection mysCon = null;
+    protected InputStream inStream = null;
     protected BufferedReader reads = null;
 
     protected boolean stopReader = false;
@@ -75,6 +77,10 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
         try {
             if (reads != null) {
                 reads.close();
+            }
+
+            if (inStream != null) {
+                inStream.close();
             }
         } catch (IOException e) {
             logger.error("Cannot close reader stream");

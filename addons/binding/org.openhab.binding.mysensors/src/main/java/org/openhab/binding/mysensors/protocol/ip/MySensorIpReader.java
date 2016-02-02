@@ -9,7 +9,7 @@ import org.openhab.binding.mysensors.protocol.MySensorsReader;
 public class MySensorIpReader extends MySensorsReader {
     public MySensorIpReader(InputStream inStream, MySensorsIpConnection mysCon) {
         this.mysCon = mysCon;
-
+        this.inStream = inStream;
         reads = new BufferedReader(new InputStreamReader(inStream));
     }
 }

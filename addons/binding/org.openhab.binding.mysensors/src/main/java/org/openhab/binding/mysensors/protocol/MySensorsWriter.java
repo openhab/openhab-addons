@@ -1,5 +1,7 @@
 package org.openhab.binding.mysensors.protocol;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +22,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     protected boolean stopWriting = false;
     protected long lastSend = System.currentTimeMillis();
     protected PrintWriter outs = null;
-    protected int sendDelay = 0;
+    protected OutputStream outStream = null;
     protected MySensorsBridgeConnection mysCon = null;
 
     protected ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -97,9 +99,17 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
             executor.shutdownNow();
         }
 
-        if (outs != null) {
-            outs.flush();
-            outs.close();
+        try {
+            if (outs != null) {
+                outs.flush();
+                outs.close();
+            }
+            
+            if (outStream != null) {
+                outStream.close();
+            }
+        } catch (IOException e) {
+            logger.error("Cannot close writer stream");
         }
 
     }

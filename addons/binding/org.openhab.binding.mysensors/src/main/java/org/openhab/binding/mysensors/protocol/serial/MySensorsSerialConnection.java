@@ -69,18 +69,25 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         // serialConnection = (SerialPort) c;
         // serialConnection.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
         // SerialPort.PARITY_NONE);
+        //
+        // mysConReader = new MySensorsSerialReader(serialConnection.getInputStream(), this);
+        // mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this);
+        //
+        // mysConReader.startReader();
+        // mysConWriter.startWriter();
+        //
         // connected = true;
-        // mysConWriter = new MySensorsSerialWriter(serialConnection, this, sendDelay);
+        //
         // } else {
-        // logger.error("com port is not an instance of serial port");
+        // logger.error("ComPort is not an instance of serial port");
         // }
         // } else {
-        // logger.error("port " + serialPort + " is already in use");
+        // logger.error("Port " + serialPort + " is already in use");
         // }
         // }
         // } catch (Exception e) {
         // logger.error(
-        // "failed to connect to port: " + serialPort + " " + e.getClass() + ", message: " + e.getMessage());
+        // "Failed to connect to port: " + serialPort + " " + e.getClass() + ", message: " + e.getMessage());
         // e.getStackTrace();
         // }
 
@@ -103,11 +110,22 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
             serialConnection.disconnect();
         }
 
-        /*
-         * if (serialConnection != null) {
-         * serialConnection.close();
-         * }
-         */
+        // // Close is blocking...
+        // new Thread() {
+        // @Override
+        // public void run() {
+        // if (serialConnection != null) {
+        // try {
+        // serialConnection.getInputStream().close();
+        // serialConnection.getOutputStream().close();
+        // serialConnection.removeEventListener();
+        // serialConnection.close();
+        // } catch (IOException e) {
+        // }
+        // }
+        // };
+        // }.start();
+
     }
 
 }

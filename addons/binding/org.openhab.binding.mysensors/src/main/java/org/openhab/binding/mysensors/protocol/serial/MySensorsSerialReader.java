@@ -10,7 +10,7 @@ public class MySensorsSerialReader extends MySensorsReader {
 
     public MySensorsSerialReader(InputStream inStream, MySensorsSerialConnection mysCon) {
         this.mysCon = mysCon;
-
+        this.inStream = inStream;
         reads = new BufferedReader(new InputStreamReader(inStream));
     }
 }
