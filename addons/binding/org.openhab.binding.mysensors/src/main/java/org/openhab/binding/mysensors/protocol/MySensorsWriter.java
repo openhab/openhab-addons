@@ -50,7 +50,8 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                             if (!(msg.getRetries() >= MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
                                 msg.setNextSend(System.currentTimeMillis()
                                         + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries()]);
-                                msgQueue.put(msg);
+                                logger.debug("Adding message to queue another time");
+                                msgQueue.add(msg);
                             } else {
                                 logger.warn("NO ACK from nodeId: " + msg.getNodeId());
 
@@ -67,6 +68,9 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                         logger.debug("Sending to MySensors: " + output);
 
                         sendMessage(output);
+                    } else {
+                        // Is not time for send again...
+                        msgQueue.add(msg);
                     }
                 } else {
                     logger.warn("Message returned from queue is null");
