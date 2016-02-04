@@ -120,18 +120,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     @Override
     public void dispose() {
-        logger.debug("Disposed MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
-        super.dispose();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.eclipse.smarthome.core.thing.binding.BaseThingHandler#preDispose()
-     */
-    @Override
-    public void preDispose() {
         logger.debug("Disposing MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
         if (refreshingActuals)
             refreshActualsRestore();
@@ -145,7 +133,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             bridgeHandler.unregisterDeviceStatusListener(this);
             bridgeHandler = null;
         }
-        super.preDispose();
+        logger.debug("Disposed MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
+        super.dispose();
     }
 
     /*
@@ -424,7 +413,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      * org.eclipse.smarthome.core.thing.Bridge)
      */
     @Override
-    protected void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         logger.debug("Bridge {} initialized for device: {}", bridge.getUID().toString(),
                 getThing().getUID().toString());
         if (bridgeHandler != null) {
@@ -446,7 +435,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      * org.eclipse.smarthome.core.thing.Bridge)
      */
     @Override
-    protected void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
+    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
         logger.debug("Bridge {} disposed for device: {}", bridge.getUID().toString(), getThing().getUID().toString());
         bridgeHandler = null;
         forceRefresh = true;
