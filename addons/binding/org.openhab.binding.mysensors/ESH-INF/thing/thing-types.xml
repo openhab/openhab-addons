@@ -17,7 +17,7 @@
 				<description>The serial port the MySensors Gateway is connected to
 				</description>
 			</parameter>
-			<parameter name="sendDelay" type="integer" required="true" min="1" max="1000">
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
 				<context>senddelay</context>
 				<label>Send Delay</label>
 				<description>The delay between messages send to the gateway 
@@ -52,7 +52,7 @@
 				</description>
 				<default>5003</default>
 			</parameter>
-			<parameter name="sendDelay" type="integer" required="true" min="1" max="1000">
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
 				<context>senddelay</context>
 				<label>Send Delay</label>
 				<description>The delay between messages send to the gateway 

@@ -1,12 +1,13 @@
 package org.openhab.binding.mysensors.protocol;
 
-import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
-
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.openhab.binding.mysensors.MySensorsBindingConstants;
 import org.openhab.binding.mysensors.handler.MySensorsStatusUpdateEvent;
 import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.openhab.binding.mysensors.internal.MySensorsBridgeConnection;
@@ -21,7 +22,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     protected boolean stopWriting = false;
     protected long lastSend = System.currentTimeMillis();
     protected PrintWriter outs = null;
-    protected int sendDelay = 0;
+    protected OutputStream outStream = null;
     protected MySensorsBridgeConnection mysCon = null;
 
     protected ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -32,20 +33,21 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
+
         while (!stopWriting) {
-            if (lastSend + sendDelay < System.currentTimeMillis()) {
-                // Is there something to write?
-                if (!mysCon.MySensorsMessageOutboundQueue.isEmpty()) {
-                    MySensorsMessage msg = mysCon.MySensorsMessageOutboundQueue.get(0);
+            try {
+                MySensorsMessage msg = mysCon.pollMySensorsOutboundQueue();
+
+                if (msg != null) {
                     if (msg.getNextSend() < System.currentTimeMillis()) {
-                        mysCon.MySensorsMessageOutboundQueue.remove(0);
                         // if we request an ACK we will wait for it and keep the message in the queue (at the end)
                         // otherwise we remove the message from the queue
                         if (msg.getAck() == 1) {
                             msg.setRetries(msg.getRetries() + 1);
-                            if (!(msg.getRetries() >= MYSENSORS_NUMBER_OF_RETRIES)) {
-                                msg.setNextSend(System.currentTimeMillis() + MYSENSORS_RETRY_TIMES[msg.getRetries()]);
+                            if (!(msg.getRetries() >= MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
+                                msg.setNextSend(System.currentTimeMillis()
+                                        + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries()]);
                                 mysCon.addMySensorsOutboundMessage(msg);
                             } else {
                                 logger.warn("NO ACK from nodeId: " + msg.getNodeId());
@@ -63,10 +65,16 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                         logger.debug("Sending to MySensors: " + output);
 
                         sendMessage(output);
-
+                    } else {
+                        // Is not time for send again...
+                        mysCon.addMySensorsOutboundMessage(msg);
                     }
-                    lastSend = System.currentTimeMillis();
+                } else {
+                    logger.warn("Message returned from queue is null");
                 }
+
+            } catch (InterruptedException e) {
+                logger.warn("Writer thread interrupted");
             }
         }
     }
@@ -91,9 +99,17 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
             executor.shutdownNow();
         }
 
-        if (outs != null) {
-            outs.flush();
-            outs.close();
+        try {
+            if (outs != null) {
+                outs.flush();
+                outs.close();
+            }
+            
+            if (outStream != null) {
+                outStream.close();
+            }
+        } catch (IOException e) {
+            logger.error("Cannot close writer stream");
         }
 
     }
