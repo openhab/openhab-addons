@@ -231,7 +231,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     }
 
     @Override
-    protected void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         MySensorsBridgeHandler bridgeHandler = (MySensorsBridgeHandler) thingHandler;
         bridgeHandler.getBridgeConnection().addUpdateListener(this);
     }
