@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="wink_hub_2">
+    	<label>Wink Hub 2</label>
+	</bridge-type>
+	<thing-type id="light_bulb">
+        <supported-bridge-type-refs>
+        	<bridge-type-ref id="wink_hub_2" />
+        </supported-bridge-type-refs>
+        <label>Light Bulb (Dimmable)</label>
+        <description>Controls dimmable light bulb</description>
+
+        <channels>
+            <channel id="lightlevel" typeId="lightDimmer" />
+            <channel id="lightstate" typeId="lightSwitch" />
+        </channels>
+        <config-description>
+            <parameter name="uuid" type="text" required="true">
+                <label>UUID</label>
+                <description>Unique Identifier assigned by Wink</description>
+            </parameter>
+        </config-description>
+	</thing-type>
+    <thing-type id="remote">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2" />
+        </supported-bridge-type-refs>
+        <label>Remote</label>
+        <description>Remote</description>
+        <config-description>
+            <parameter name="uuid" type="text" required="true">
+                <label>UUID</label>
+                <description>Unique Identifier assigned by Wink</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+	<thing-type id="binary_switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2" />
+        </supported-bridge-type-refs>
+        <label>On/Off switch</label>
+        <description>Std On/Off Switch</description>
+		<channels>
+			<channel id="switchstate" typeId="lightSwitch" />
+		</channels>
+        <config-description>
+            <parameter name="uuid" type="text" required="true">
+                <label>UUID</label>
+                <description>Unique Identifier assigned by Wink</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="lock">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2"/>
+        </supported-bridge-type-refs>
+        <label>Lock</label>
+        <description>Generic Connected Lock</description>
+        <channels>
+            <channel typeId="lockState" id="lockstate" />
+        </channels>
+       <config-description>
+            <parameter name="uuid" type="text" required="true">
+                <label>UUID</label>
+                <description>Unique Identifier assigned by Wink</description>
+            </parameter>
+       </config-description>        
+    </thing-type>
+    <thing-type id="door_bell">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2"/>
+        </supported-bridge-type-refs>
+        <label>Doorbell</label>
+        <description>Connected Video Doorbell</description>
+        <channels>
+            <channel typeId="motion" id="motion"/>
+            <channel typeId="buttonpress" id="buttonpress"/>
+        </channels>
+        <config-description>
+            <parameter name="uuid" type="text" required="true">
+                <label>UUID</label>
+                <description>Unique Identifier assigned by Wink</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="lightDimmer">
+        <item-type>Dimmer</item-type>
+        <label>Light Level</label>
+        <description>Increase/decrease the light level</description>
+        <category>DimmableLight</category>
+        <state min="0" max="100" pattern="%d %%"/>
+    </channel-type>
+	<channel-type id="lightSwitch">
+        <item-type>Switch</item-type>
+        <label>Switch State</label>
+        <description>The switch channel allows to switch the light on and off.
+        </description>
+        <category>Light</category>
+    </channel-type>
+    <channel-type id="lockState">
+        <item-type>Switch</item-type>
+        <label>Lock State</label>
+        <description>The Lock State</description>
+        <category>Lock</category>
+    </channel-type>
+    <channel-type id="motion">
+        <item-type>Switch</item-type>
+        <label>Motion</label>
+        <description>Motion Detected</description>
+        <category>Motion</category>
+    </channel-type>
+    <channel-type id="buttonpress">
+        <item-type>Switch</item-type>
+        <label>Button Press</label>
+        <description>Button Pressed</description>
+        <category>Button</category>
+    </channel-type>
+</thing:thing-descriptions>

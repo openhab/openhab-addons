@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.openhab.wink.AuthenticationConfigurationService">
+
+   <implementation class="org.openhab.binding.wink.internal.AuthenticationConfigurationService"/>
+
+   <service>
+      <provide interface="org.osgi.service.cm.ManagedService"/>
+   </service>
+   
+   <property name="service.pid" value="org.openhab.wink" />
+
+</scr:component>
