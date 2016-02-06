@@ -97,6 +97,7 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
                 addWinkDevice(THING_TYPE_LIGHT_BULB, element.getAsJsonObject(), "light_bulb_id");
             } else if (element.getAsJsonObject().get("remote_id") != null) {
                 addWinkDevice(THING_TYPE_REMOTE, element.getAsJsonObject(), "remote_id");
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 8b97becdef5db102e58dcf125a75329676144f43
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 			} else if (element.getAsJsonObject().get("binary_switch_id") != null) {
@@ -107,6 +108,10 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
             } else if (element.getAsJsonObject().get("binary_switch_id") != null) {
                 addWinkDevice(THING_TYPE_BINARY_SWITCH, element.getAsJsonObject(), "binary_switch_id");
 >>>>>>> added binary switch type
+=======
+            } else if (element.getAsJsonObject().get("binary_switch_id") != null) {
+                addWinkDevice(THING_TYPE_BINARY_SWITCH, element.getAsJsonObject(), "binary_switch_id");
+>>>>>>> Added Chamberlain MyQ skeleton
             }
         }
     }

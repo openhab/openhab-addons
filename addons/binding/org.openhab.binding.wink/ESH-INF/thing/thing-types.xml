@@ -40,7 +40,10 @@
                 <required>true</required></parameter>
             <parameter name="device_config_string" type="text" required="true"></parameter></config-description>
     </thing-type>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
 	<thing-type id="binary_switch">
         <supported-bridge-type-refs>
             <bridge-type-ref id="wink_hub_2" />
@@ -55,8 +58,11 @@
                 <required>true</required></parameter>
             <parameter name="device_config_string" type="text" required="true"></parameter></config-description>
     </thing-type>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 =======
 >>>>>>> Project skeleton.
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>
@@ -64,7 +70,10 @@
         <category>DimmableLight</category>
         <state min="0" max="100" pattern="%d %%"/>
     </channel-type>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
 	<channel-type id="lightSwitch">
         <item-type>Switch</item-type>
         <label>Switch State</label>
@@ -72,7 +81,10 @@
         </description>
         <category>Light</category>
     </channel-type>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 =======
 >>>>>>> Project skeleton.
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
 
 </thing:thing-descriptions>

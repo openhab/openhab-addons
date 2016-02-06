@@ -77,7 +77,10 @@
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
@@ -86,6 +89,7 @@
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 =======
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
@@ -93,6 +97,8 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.oceanic</module>
 >>>>>>> readded branch changes
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
@@ -103,6 +109,7 @@
     <module>org.openhab.binding.rfxcom.test</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 420b4b230457f3af25ac2fb2a2c2c8b5975fd5bf
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
@@ -110,6 +117,11 @@
 =======
     <module>org.openhab.binding.silvercrestwifisocket</module>
 >>>>>>> fixing pom file
+=======
+    <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.silvercrestwifisocket</module>
+    <module>org.openhab.binding.sleepiq</module>
+>>>>>>> Added Chamberlain MyQ skeleton
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
 <<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
@@ -134,6 +146,10 @@
 <<<<<<< 1890327677540776060f92d04c05da99fae895c2
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
+=======
+    <module>org.openhab.binding.wink</module>
+>>>>>>> Added Chamberlain MyQ skeleton
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>

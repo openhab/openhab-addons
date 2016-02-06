@@ -1,9 +1,13 @@
 /**
  * Copyright (c) 2014-2016 by the respective copyright holders.
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
  *
 >>>>>>> Project skeleton.
+=======
+ *
+>>>>>>> Added Chamberlain MyQ skeleton
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,10 +48,13 @@ public class LightBulbHandler extends WinkHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid config.");
             return;
         }
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
         // TODO: Update status.
 =======
 >>>>>>> Project skeleton.
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
         updateStatus(ThingStatus.ONLINE);
     }
 
