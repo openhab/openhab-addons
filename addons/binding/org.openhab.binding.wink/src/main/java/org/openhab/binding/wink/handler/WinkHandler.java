@@ -1,9 +1,13 @@
 /**
  * Copyright (c) 2014-2016 by the respective copyright holders.
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
  *
 >>>>>>> Project skeleton.
+=======
+ *
+>>>>>>> Added Chamberlain MyQ skeleton
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,6 +71,7 @@ public abstract class WinkHandler extends BaseThingHandler {
     public WinkHandler(Thing thing) {
         super(thing);
         String config = (String) getThing().getConfiguration().get(WINK_DEVICE_CONFIG);
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
         String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
@@ -77,26 +82,36 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
         logger.trace("Initializing a thing with the following config: {}", config);
 >>>>>>> Fixes
+=======
+        logger.trace("Initializing a thing with the following config: {}", config);
+>>>>>>> Added Chamberlain MyQ skeleton
         String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
         logger.trace("Thing ID: {}", id);
         this.deviceConfig = new WinkDeviceConfig(id);
         parseConfig(config);
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
         logger.info("Initializing a Wink device: \n" + deviceConfig.asString());
 >>>>>>> Project skeleton.
 =======
         logger.info("Initializing a Wink device: \n{}", deviceConfig.asString());
 >>>>>>> Fixes
+=======
+        logger.info("Initializing a Wink device: \n{}", deviceConfig.asString());
+>>>>>>> Added Chamberlain MyQ skeleton
         registerToPubNub();
     }
 
     @Override
     public void dispose() {
         super.dispose();
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 
 =======
 >>>>>>> Project skeleton.
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
         pubnub.unsubscribe().channels(Arrays.asList(deviceConfig.getPubnubChannel()));
         pubnub.destroy();
     }
@@ -107,6 +122,7 @@ public abstract class WinkHandler extends BaseThingHandler {
      * @param jsonConfigString the string containing the configuration of this thing as returned by the hub (in JSON).
      */
     protected void parseConfig(String jsonConfigString) {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -115,6 +131,9 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
         logger.trace("Parsing a thing's config: {}", jsonConfigString);
 >>>>>>> Fixes
+=======
+        logger.trace("Parsing a thing's config: {}", jsonConfigString);
+>>>>>>> Added Chamberlain MyQ skeleton
         JsonParser parser = new JsonParser();
         deviceConfig.readConfigFromJson(parser.parse(jsonConfigString).getAsJsonObject());
     }
@@ -158,11 +177,15 @@ public abstract class WinkHandler extends BaseThingHandler {
          * @param handler The handler for which the configuration should be read.
          */
         public WinkDeviceRequestCallback(WinkHandler handler) {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
             Preconditions.checkArgument(handler != null, "The argument 'handler' must not be null.");
 =======
             Preconditions.checkArgument(handler != null, "The argument |handler| must not be null.");
 >>>>>>> Project skeleton.
+=======
+            Preconditions.checkArgument(handler != null, "The argument |handler| must not be null.");
+>>>>>>> Added Chamberlain MyQ skeleton
             this.handler = handler;
         }
 
@@ -191,6 +214,7 @@ public abstract class WinkHandler extends BaseThingHandler {
 
         @Override
         public void parseRequestResult(JsonObject jsonResult) {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -199,6 +223,9 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
             logger.trace("Parsing a ReadDeviceState request result: {}", jsonResult);
 >>>>>>> Fixes
+=======
+            logger.trace("Parsing a ReadDeviceState request result: {}", jsonResult);
+>>>>>>> Added Chamberlain MyQ skeleton
             // The response from the server is a JSON object containing the device information and state.
             handler.updateDeviceStateCallback(jsonResult.get("data").getAsJsonObject());
         }
@@ -208,6 +235,7 @@ public abstract class WinkHandler extends BaseThingHandler {
      * Query the {@link WinkHub2Handler} for this device's state.
      */
     protected void ReadDeviceState() {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -216,6 +244,9 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
         logger.trace("Querying the device state for: \n{}", deviceConfig.asString());
 >>>>>>> Fixes
+=======
+        logger.trace("Querying the device state for: \n{}", deviceConfig.asString());
+>>>>>>> Added Chamberlain MyQ skeleton
         try {
             getHubHandler().sendRequestToServer(getDeviceRequestPath(), new ReadDeviceStateCallback(this));
         } catch (IOException e) {
@@ -241,6 +272,7 @@ public abstract class WinkHandler extends BaseThingHandler {
 
         @Override
         public void parseRequestResult(JsonObject jsonResult) {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -249,11 +281,15 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
             logger.trace("Parsing a SendCommandCallback request result: {}", jsonResult);
 >>>>>>> Fixes
+=======
+            logger.trace("Parsing a SendCommandCallback request result: {}", jsonResult);
+>>>>>>> Added Chamberlain MyQ skeleton
             handler.sendCommandCallback(jsonResult);
         }
     }
 
     public void sendCommand(String payLoad) {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -263,6 +299,9 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
         logger.trace("Sending a command with the following payload: {}\nto device: \n", payLoad, deviceConfig.asString());
 >>>>>>> Fixes
+=======
+        logger.trace("Sending a command with the following payload: {}\nto device: \n", payLoad, deviceConfig.asString());
+>>>>>>> Added Chamberlain MyQ skeleton
         try {
             getHubHandler().sendRequestToServer(getDeviceRequestPath() + "/desired_state",
                     new SendCommandCallback(this), payLoad);
@@ -276,6 +315,7 @@ public abstract class WinkHandler extends BaseThingHandler {
     /////////////////////////////////////////////////
 
     protected void registerToPubNub() {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -284,6 +324,9 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
         logger.debug("Doing the PubNub registration for :\n{}", deviceConfig.asString());
 >>>>>>> Fixes
+=======
+        logger.debug("Doing the PubNub registration for :\n{}", deviceConfig.asString());
+>>>>>>> Added Chamberlain MyQ skeleton
         PNConfiguration pnConfiguration = new PNConfiguration();
         pnConfiguration.setSubscribeKey(this.deviceConfig.getPubnubSubscribeKey());
 
@@ -291,6 +334,7 @@ public abstract class WinkHandler extends BaseThingHandler {
         this.pubnub.addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
@@ -299,6 +343,9 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
                 logger.trace("Received a reply from PubNub: {}", message.getMessage().getAsString());
 >>>>>>> Fixes
+=======
+                logger.trace("Received a reply from PubNub: {}", message.getMessage().getAsString());
+>>>>>>> Added Chamberlain MyQ skeleton
                 JsonParser parser = new JsonParser();
                 JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                 pubNubMessageCallback(jsonMessage);
@@ -309,16 +356,22 @@ public abstract class WinkHandler extends BaseThingHandler {
             }
 
             @Override
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
             public void status(PubNub arg0, PNStatus arg1) {
 =======
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
             public void status(PubNub arg0, PNStatus status) {
               if (status.isError()) {
                 logger.error("PubNub communication error: {}", status.getStatusCode());
               } else {
                 logger.trace("PubNub status: no error.");
               }
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 >>>>>>> Project skeleton.
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
             }
         });
 

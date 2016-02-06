@@ -43,15 +43,21 @@ public class WinkDeviceConfig {
         }
     }
 
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
     public String asString() {
       // TODO: Add more data?
       return ("Name:       " + name + "\n"+
               "Model name: " + modelName);
     }
 
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 >>>>>>> Project skeleton.
+=======
+>>>>>>> Added Chamberlain MyQ skeleton
     public boolean validateConfig() {
         if (this.deviceId == null || this.name == null) {
             return false;
@@ -82,8 +88,12 @@ public class WinkDeviceConfig {
     public String getPubnubChannel() {
         return pubnubChannel;
     }
+<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 }
 =======
 }
 >>>>>>> Project skeleton.
+=======
+}
+>>>>>>> Added Chamberlain MyQ skeleton
