@@ -81,11 +81,15 @@
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
+<<<<<<< 1890327677540776060f92d04c05da99fae895c2
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
+=======
+    <module>org.openhab.binding.chamberlainmyq</module>
+>>>>>>> Added Chamberlain MyQ skeleton
   </modules>
 
 </project>
