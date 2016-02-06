@@ -1,24 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="chamberlainmyq"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="dscalarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>ChamberlainMyQ Binding Thing</label>
-        <description>Sample thing for ChamberlainMyQ Binding</description>
+ <bridge-type id="myqgateway">
+        <label>MyQ Gateway</label>
+        <description>Web API for MyQ Devices</description>
+
+        <config-description>
+            <parameter name="user" type="text" required="true">
+                <label>User Name</label>
+                <description>The user name to log in to the MyQ App</description>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <context>password</context>
+                <label>Password</label>
+                <description>The user password to log in to the  MyQ App</description>
+            </parameter>
+			<parameter name="pollPeriod" type="integer" required="false"
+				min="1" max="600">
+				<label>Poll Period(sec)</label>
+				<description>The Poll Period(sec).</description>
+				<default>60</default>
+			</parameter>
+        </config-description>
+    </bridge-type>
+	<thing-type id="dooropener">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="myqgateway"/>
+        </supported-bridge-type-refs>
+
+        <label>Garage Door Opener</label>
+        <description>Garage Door Opener</description>
 
         <channels>
-            <channel id="channel1" typeId="sample-channel"/>
+            <channel id="doorstatusSW" typeId="doorstate"/>
         </channels>
+		<channels>
+            <channel id="doorstatusST" typeId="status"/>
+        </channels>
+
+        <config-description>
+            <parameter name="MyQDeviceId" type="integer" required="true">
+                <label>MyQDeviceId</label>
+                <description>ID of light in the API</description>
+            </parameter>
+        </config-description>
     </thing-type>
+    <thing-type id="light">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="myqgateway"/>
+        </supported-bridge-type-refs>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>chamberlainmyqItem</item-type>
-        <label>ChamberlainMyQ Binding Channel</label>
-        <description>Sample channel for ChamberlainMyQ Binding</description>
+        <label>Lamp Module</label>
+        <description>On/off switch</description>
+
+        <channels>
+            <channel id="lightstatus" typeId="lightstate"/>
+        </channels>
+
+        <config-description>
+            <parameter name="MyQDeviceId" type="integer" required="true">
+                <label>MyQDeviceId</label>
+                <description>ID of light in the API</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+	
+	<channel-type id="lightstate">
+        <item-type>Switch</item-type>
+        <label>light State</label>
+        <description>On/off status of the light</description>
+        <category>Switch</category>
     </channel-type>
-
+		<channel-type id="doorstate">
+        <item-type>Switch</item-type>
+        <label>Door State</label>
+        <description>On/off status of the garage door</description>
+        <category>Switch</category>
+    </channel-type>
+	
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>Door Status</description>
+		<state readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>
