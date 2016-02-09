@@ -28,6 +28,8 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     protected ExecutorService executor = Executors.newSingleThreadExecutor();
     protected Future<?> future = null;
 
+    protected int sendDelay = 0;
+
     public void startWriter() {
         future = executor.submit(this);
     }
@@ -40,7 +42,8 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                 MySensorsMessage msg = mysCon.pollMySensorsOutboundQueue();
 
                 if (msg != null) {
-                    if (msg.getNextSend() < System.currentTimeMillis()) {
+                    if (msg.getNextSend() < System.currentTimeMillis()
+                            && (lastSend + sendDelay) < System.currentTimeMillis()) {
                         // if we request an ACK we will wait for it and keep the message in the queue (at the end)
                         // otherwise we remove the message from the queue
                         if (msg.getAck() == 1) {
@@ -52,19 +55,14 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                             } else {
                                 logger.warn("NO ACK from nodeId: " + msg.getNodeId());
 
-                                // Revert to old state
-                                MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
-                                for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
-                                    mySensorsEventListener.revertToOldStatus(event);
-                                }
-
                                 continue;
                             }
                         }
                         String output = MySensorsMessageParser.generateAPIString(msg);
-                        logger.debug("Sending to MySensors: " + output);
+                        logger.debug("Sending to MySensors: {}", output);
 
                         sendMessage(output);
+                        lastSend = System.currentTimeMillis();
                     } else {
                         // Is not time for send again...
                         mysCon.addMySensorsOutboundMessage(msg);
@@ -104,7 +102,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                 outs.flush();
                 outs.close();
             }
-            
+
             if (outStream != null) {
                 outStream.close();
             }
@@ -116,12 +114,6 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
 
     @Override
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
         // TODO Auto-generated method stub
 
     }

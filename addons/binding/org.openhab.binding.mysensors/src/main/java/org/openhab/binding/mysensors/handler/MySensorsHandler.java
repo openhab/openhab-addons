@@ -44,9 +44,6 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     private int childId = 0;
     private boolean requestAck = false;
 
-    private Command oldCommand = null;
-    private ChannelUID oldChannelUID = null;
-
     public MySensorsHandler(Thing thing) {
         super(thing);
     }
@@ -132,8 +129,6 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                 msg = "1";
 
             }
-            oldCommand = command;
-            oldChannelUID = channelUID;
         }
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack, subType,
@@ -196,8 +191,6 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                                 updateState(channel, UpDownType.DOWN);
                             }
                         } else {
-                            logger.debug(channel);
-                            logger.debug("subtype:" + msg.getSubType());
                             updateState(channel, new DecimalType(msg.getMsg()));
                         }
                     }
@@ -234,10 +227,5 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         MySensorsBridgeHandler bridgeHandler = (MySensorsBridgeHandler) thingHandler;
         bridgeHandler.getBridgeConnection().addUpdateListener(this);
-    }
-
-    @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
-
     }
 }

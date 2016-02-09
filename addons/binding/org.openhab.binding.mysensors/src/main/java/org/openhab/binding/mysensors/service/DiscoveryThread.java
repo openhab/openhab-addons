@@ -6,32 +6,25 @@ import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.openhab.binding.mysensors.internal.MySensorsBridgeConnection;
 
 public class DiscoveryThread implements MySensorsUpdateListener {
-	private MySensorsBridgeConnection mysCon;
-	private MySensorsDiscoveryService mysDiscoServ;
-	
-	
-	public DiscoveryThread(MySensorsBridgeConnection mysCon, MySensorsDiscoveryService mysDiscoServ) {
-		this.mysCon = mysCon;
-		this.mysDiscoServ = mysDiscoServ;
-	}
-	
-	public void start() {
-		mysCon.addUpdateListener(this);
-	}
-	
-	public void stop() {
-		mysCon.removeUpdateListener(this);
-	}
+    private MySensorsBridgeConnection mysCon;
+    private MySensorsDiscoveryService mysDiscoServ;
 
-	@Override
-	public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
-		mysDiscoServ.newDevicePresented(event.getData());
-		
-	}
+    public DiscoveryThread(MySensorsBridgeConnection mysCon, MySensorsDiscoveryService mysDiscoServ) {
+        this.mysCon = mysCon;
+        this.mysDiscoServ = mysDiscoServ;
+    }
 
-	@Override
-	public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void start() {
+        mysCon.addUpdateListener(this);
+    }
+
+    public void stop() {
+        mysCon.removeUpdateListener(this);
+    }
+
+    @Override
+    public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
+        mysDiscoServ.newDevicePresented(event.getData());
+
+    }
 }

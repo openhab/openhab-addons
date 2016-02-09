@@ -41,7 +41,7 @@ public class MySensorsIpConnection extends MySensorsBridgeConnection {
         try {
             sock = new Socket(ipAddress, tcpPort);
             mysConReader = new MySensorIpReader(sock.getInputStream(), this);
-            mysConWriter = new MySensorsIpWriter(sock, this);
+            mysConWriter = new MySensorsIpWriter(sock, this, sendDelay);
 
             mysConReader.startReader();
             mysConWriter.startWriter();

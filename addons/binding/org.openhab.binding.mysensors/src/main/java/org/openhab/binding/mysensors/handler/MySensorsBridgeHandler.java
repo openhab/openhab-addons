@@ -59,9 +59,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         MySensorsBridgeConfiguration configuration = getConfigAs(MySensorsBridgeConfiguration.class);
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
-            mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate);
+            mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
+                    configuration.sendDelay);
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_ETH)) {
-            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort);
+            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
         }
 
         if (mysCon.connect()) {
@@ -176,12 +177,6 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         }
 
         return id;
-    }
-
-    @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
-        // TODO Auto-generated method stub
-
     }
 
     public MySensorsBridgeConnection getBridgeConnection() {

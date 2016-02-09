@@ -93,11 +93,4 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
         // TODO Auto-generated method stub
 
     }
-
-    @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
