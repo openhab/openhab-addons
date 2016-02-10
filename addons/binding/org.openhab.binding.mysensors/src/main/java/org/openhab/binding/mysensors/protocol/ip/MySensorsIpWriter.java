@@ -19,4 +19,5 @@ public class MySensorsIpWriter extends MySensorsWriter {
         }
         this.sendDelay = sendDelay;
     }
+
 }

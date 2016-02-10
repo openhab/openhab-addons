@@ -12,4 +12,6 @@ public interface MySensorsUpdateListener extends EventListener {
      * Procedure for receive status update from MySensorsNetwork.
      */
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event);
+
+    public void disconnectEvent();
 }

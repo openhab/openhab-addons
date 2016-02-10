@@ -27,4 +27,10 @@ public class DiscoveryThread implements MySensorsUpdateListener {
         mysDiscoServ.newDevicePresented(event.getData());
 
     }
+
+    @Override
+    public void disconnectEvent() {
+        // TODO Auto-generated method stub
+
+    }
 }

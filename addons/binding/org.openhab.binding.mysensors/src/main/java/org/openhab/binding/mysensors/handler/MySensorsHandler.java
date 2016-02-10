@@ -228,4 +228,10 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         MySensorsBridgeHandler bridgeHandler = (MySensorsBridgeHandler) thingHandler;
         bridgeHandler.getBridgeConnection().addUpdateListener(this);
     }
+
+    @Override
+    public void disconnectEvent() {
+        // TODO Auto-generated method stub
+
+    }
 }

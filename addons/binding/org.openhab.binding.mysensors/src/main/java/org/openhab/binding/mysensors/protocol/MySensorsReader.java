@@ -41,6 +41,13 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
             // String line = buffRead.readLine();
             try {
                 line = reads.readLine();
+
+                // We lost connection
+                if (line == null) {
+                    broadCastDisconnect();
+                    break;
+                }
+
                 logger.debug(line);
                 MySensorsMessage msg = MySensorsMessageParser.parse(line);
                 if (msg != null) {
@@ -57,6 +64,15 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
         }
 
+    }
+
+    private void broadCastDisconnect() {
+        logger.warn("Connection to Gateway lost!");
+        stopReader();
+
+        for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
+            mySensorsEventListener.disconnectEvent();
+        }
     }
 
     public void stopReader() {
@@ -92,5 +108,10 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void disconnectEvent() {
+        stopReader();
     }
 }

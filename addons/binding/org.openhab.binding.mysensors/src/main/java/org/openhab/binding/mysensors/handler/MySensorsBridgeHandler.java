@@ -183,4 +183,8 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         return mysCon;
     }
 
+    @Override
+    public void disconnectEvent() {
+        updateStatus(ThingStatus.OFFLINE);
+    }
 }

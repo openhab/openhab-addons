@@ -117,4 +117,9 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
         // TODO Auto-generated method stub
 
     }
+
+    @Override
+    public void disconnectEvent() {
+
+    }
 }
