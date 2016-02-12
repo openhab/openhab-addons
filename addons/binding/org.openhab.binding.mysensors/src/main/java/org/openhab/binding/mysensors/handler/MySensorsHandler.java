@@ -162,11 +162,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         if (nodeId == msg.getNodeId()) { // is this message for me?
             if (msg.getMsgType() == MYSENSORS_MSG_TYPE_SET) {
                 if (childId == msg.getChildId()) { // which child should be updated?
-
-                    // Do we get an ACK?
-                    if (msg.getAck() == 1) {
-                        getBridgeHandler().getBridgeConnection().removeMySensorsOutboundMessage(msg);
-                    } else if (CHANNEL_MAP.containsKey(msg.getSubType())) {
+                    if (CHANNEL_MAP.containsKey(msg.getSubType())) {
                         String channel = CHANNEL_MAP.get(msg.getSubType());
                         if (channel.equals(CHANNEL_BARO)) {
                             updateState(channel, new StringType(msg.getMsg()));

@@ -112,6 +112,23 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
         MySensorsMessage msg = event.getData();
 
+        // Do we get an ACK?
+        if (msg.getAck() == 1) {
+
+            // Pause the writer, so the msg we will try to remove is not blocked by the writer
+            mysCon.pauseWriter = true;
+
+            // Give the writer some time to settle
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            mysCon.removeMySensorsOutboundMessage(msg);
+            mysCon.pauseWriter = false;
+        }
+
         // Are we getting a Request ID Message?
         if (msg.getNodeId() == 255) {
             if (msg.getChildId() == 255) {

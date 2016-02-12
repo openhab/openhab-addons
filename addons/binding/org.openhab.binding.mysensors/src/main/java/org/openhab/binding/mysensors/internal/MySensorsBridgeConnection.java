@@ -16,6 +16,7 @@ public abstract class MySensorsBridgeConnection {
     private Logger logger = LoggerFactory.getLogger(MySensorsBridgeConnection.class);
 
     public List<MySensorsUpdateListener> updateListeners;
+    public boolean pauseWriter = false;
 
     // FIXME must be replaced with a blocking queue
     /*
