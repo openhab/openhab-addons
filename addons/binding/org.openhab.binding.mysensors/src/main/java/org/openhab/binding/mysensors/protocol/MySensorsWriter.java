@@ -49,13 +49,22 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                             // otherwise we remove the message from the queue
                             if (msg.getAck() == 1) {
                                 msg.setRetries(msg.getRetries() + 1);
-                                if (!(msg.getRetries() >= MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
+                                if (!(msg.getRetries() > MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
                                     msg.setNextSend(System.currentTimeMillis()
-                                            + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries()]);
+                                            + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries() - 1]);
                                     mysCon.addMySensorsOutboundMessage(msg);
                                 } else {
                                     logger.warn("NO ACK from nodeId: " + msg.getNodeId());
-
+                                    if (msg.getOldMsg().isEmpty()) {
+                                        logger.debug("No old status know to revert to!");
+                                    } else {
+                                        logger.debug("Reverting status!");
+                                        msg.setMsg(msg.getOldMsg());
+                                        MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
+                                        for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
+                                            mySensorsEventListener.statusUpdateReceived(event);
+                                        }
+                                    }
                                     continue;
                                 }
                             }

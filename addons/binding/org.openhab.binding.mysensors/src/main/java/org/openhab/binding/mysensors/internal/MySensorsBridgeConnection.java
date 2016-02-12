@@ -69,6 +69,18 @@ public abstract class MySensorsBridgeConnection {
     }
 
     public void addMySensorsOutboundMessage(MySensorsMessage msg) {
+        // Is there already are message in the queue for this nodeId & childId? --> Remove it first!
+        // We don't want to stack messages
+
+        Iterator<MySensorsMessage> iterator = outboundMessageQueue.iterator();
+
+        while (iterator.hasNext()) {
+            MySensorsMessage msgInQueue = iterator.next();
+            if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()) {
+                iterator.remove();
+            }
+        }
+
         try {
             outboundMessageQueue.put(msg);
         } catch (InterruptedException e) {
@@ -77,7 +89,19 @@ public abstract class MySensorsBridgeConnection {
     }
 
     public void removeMySensorsOutboundMessage(MySensorsMessage msg) {
+        // Pause the writer, so the msg we will try to remove is not blocked by the writer
+        pauseWriter = true;
+
+        // Give the writer some time to settle
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         Iterator<MySensorsMessage> iterator = outboundMessageQueue.iterator();
+
         while (iterator.hasNext()) {
             MySensorsMessage msgInQueue = iterator.next();
             if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()
@@ -86,5 +110,7 @@ public abstract class MySensorsBridgeConnection {
                 iterator.remove();
             }
         }
+
+        pauseWriter = false;
     }
 }

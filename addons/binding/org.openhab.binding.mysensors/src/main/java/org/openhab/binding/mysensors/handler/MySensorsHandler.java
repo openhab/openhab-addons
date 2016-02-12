@@ -44,6 +44,8 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     private int childId = 0;
     private boolean requestAck = false;
 
+    private String oldMsgContent = "";
+
     public MySensorsHandler(Thing thing) {
         super(thing);
     }
@@ -133,6 +135,8 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack, subType,
                 msg);
+        newMsg.setOldMsg(oldMsgContent);
+        oldMsgContent = msg;
 
         getBridgeHandler().getBridgeConnection().addMySensorsOutboundMessage(newMsg);
     }
@@ -189,6 +193,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                         } else {
                             updateState(channel, new DecimalType(msg.getMsg()));
                         }
+                        oldMsgContent = msg.getMsg();
                     }
                 }
             } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) { // INTERNAL MESSAGE?

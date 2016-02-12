@@ -114,19 +114,8 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         // Do we get an ACK?
         if (msg.getAck() == 1) {
-
-            // Pause the writer, so the msg we will try to remove is not blocked by the writer
-            mysCon.pauseWriter = true;
-
-            // Give the writer some time to settle
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            logger.debug("ACK received!");
             mysCon.removeMySensorsOutboundMessage(msg);
-            mysCon.pauseWriter = false;
         }
 
         // Are we getting a Request ID Message?
@@ -153,6 +142,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         givenIds.add(newId);
         MySensorsMessage newMsg = new MySensorsMessage(255, 255, 3, 0, 4, newId + "");
         mysCon.addMySensorsOutboundMessage(newMsg);
+        logger.info("New Node in the MySensors network has requested an ID. ID is: {}", newId);
     }
 
     private int getFreeId() {
