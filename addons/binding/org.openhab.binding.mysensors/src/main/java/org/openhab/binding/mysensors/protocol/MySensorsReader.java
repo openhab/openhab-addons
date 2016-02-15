@@ -28,8 +28,13 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
     protected boolean stopReader = false;
 
-    public void startReader() {
+    private Object holdingThread = null;
+
+    private boolean iVersionResponse = false;
+
+    public void startReader(Object o) {
         future = executor.submit(this);
+        holdingThread = o;
     }
 
     @Override
@@ -38,12 +43,16 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
         while (!stopReader) {
             // Is there something to read?
-            // String line = buffRead.readLine();
+
             try {
                 line = reads.readLine();
                 logger.debug(line);
                 MySensorsMessage msg = MySensorsMessageParser.parse(line);
                 if (msg != null) {
+                    if (!iVersionResponse && MySensorsMessageParser.isIVersionMessage(msg)) {
+                        handleIncomingVersionMessage(msg.msg);
+                    }
+
                     MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
                     for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
                         mySensorsEventListener.statusUpdateReceived(event);
@@ -57,6 +66,18 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
         }
 
+    }
+
+    private void handleIncomingVersionMessage(String message) {
+        iVersionResponse = true;
+        synchronized (holdingThread) {
+            holdingThread.notify();
+        }
+        logger.debug("Good,Gateway is up and running! (Ver:{})", message);
+    }
+
+    public boolean isIVersionMessageArrived() {
+        return iVersionResponse;
     }
 
     public void stopReader() {

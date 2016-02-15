@@ -43,10 +43,7 @@ public class MySensorsIpConnection extends MySensorsBridgeConnection {
             mysConReader = new MySensorIpReader(sock.getInputStream(), this);
             mysConWriter = new MySensorsIpWriter(sock, this);
 
-            mysConReader.startReader();
-            mysConWriter.startWriter();
-
-            connected = true;
+            connected = startReaderWriterThread(mysConReader, mysConWriter);
         } catch (UnknownHostException e) {
             logger.error("Error while trying to connect to: " + ipAddress + ":" + tcpPort);
             e.printStackTrace();
