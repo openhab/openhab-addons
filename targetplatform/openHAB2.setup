@@ -2368,7 +2368,6 @@
         <excludedPath>org.openhab.binding.hue</excludedPath>
         <excludedPath>org.openhab.binding.sagercaster</excludedPath>
         <excludedPath>org.openhab.binding.sonos</excludedPath>
-        <excludedPath>org.openhab.binding.urtsi</excludedPath>
         <excludedPath>org.openhab.binding.wemo</excludedPath>
       </sourceLocator>
       <sourceLocator
