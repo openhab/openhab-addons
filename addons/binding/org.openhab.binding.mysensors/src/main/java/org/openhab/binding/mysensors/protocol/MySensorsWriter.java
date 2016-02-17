@@ -30,6 +30,8 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
 
     private static final MySensorsMessage I_VERSION_MESSAGE = new MySensorsMessage(0, 0, 3, 0, 2, "");
 
+    protected int sendDelay = 0;
+
     public void startWriter() {
         future = executor.submit(this);
 
@@ -37,49 +39,56 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
         mysCon.addMySensorsOutboundMessage(I_VERSION_MESSAGE);
     }
 
-    @Override
+@Override
     public void run() {
 
         while (!stopWriting) {
-            try {
-                MySensorsMessage msg = mysCon.pollMySensorsOutboundQueue();
+            if (!mysCon.pauseWriter) {
+                try {
+                    MySensorsMessage msg = mysCon.pollMySensorsOutboundQueue();
 
-                if (msg != null) {
-                    if (msg.getNextSend() < System.currentTimeMillis()) {
-                        // if we request an ACK we will wait for it and keep the message in the queue (at the end)
-                        // otherwise we remove the message from the queue
-                        if (msg.getAck() == 1) {
-                            msg.setRetries(msg.getRetries() + 1);
-                            if (!(msg.getRetries() >= MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
-                                msg.setNextSend(System.currentTimeMillis()
-                                        + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries()]);
-                                mysCon.addMySensorsOutboundMessage(msg);
-                            } else {
-                                logger.warn("NO ACK from nodeId: " + msg.getNodeId());
-
-                                // Revert to old state
-                                MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
-                                for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
-                                    mySensorsEventListener.revertToOldStatus(event);
+                    if (msg != null) {
+                        if (msg.getNextSend() < System.currentTimeMillis()
+                                && (lastSend + sendDelay) < System.currentTimeMillis()) {
+                            // if we request an ACK we will wait for it and keep the message in the queue (at the end)
+                            // otherwise we remove the message from the queue
+                            if (msg.getAck() == 1) {
+                                msg.setRetries(msg.getRetries() + 1);
+                                if (!(msg.getRetries() > MySensorsBindingConstants.MYSENSORS_NUMBER_OF_RETRIES)) {
+                                    msg.setNextSend(System.currentTimeMillis()
+                                            + MySensorsBindingConstants.MYSENSORS_RETRY_TIMES[msg.getRetries() - 1]);
+                                    mysCon.addMySensorsOutboundMessage(msg);
+                                } else {
+                                    logger.warn("NO ACK from nodeId: " + msg.getNodeId());
+                                    if (msg.getOldMsg().isEmpty()) {
+                                        logger.debug("No old status know to revert to!");
+                                    } else {
+                                        logger.debug("Reverting status!");
+                                        msg.setMsg(msg.getOldMsg());
+                                        MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
+                                        for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
+                                            mySensorsEventListener.statusUpdateReceived(event);
+                                        }
+                                    }
+                                    continue;
                                 }
-
-                                continue;
                             }
+                            String output = MySensorsMessageParser.generateAPIString(msg);
+                            logger.debug("Sending to MySensors: {}", output);
+
+                            sendMessage(output);
+                            lastSend = System.currentTimeMillis();
+                        } else {
+                            // Is not time for send again...
+                            mysCon.addMySensorsOutboundMessage(msg);
                         }
-                        String output = MySensorsMessageParser.generateAPIString(msg);
-                        logger.debug("Sending to MySensors: " + output);
-
-                        sendMessage(output);
                     } else {
-                        // Is not time for send again...
-                        mysCon.addMySensorsOutboundMessage(msg);
+                        logger.warn("Message returned from queue is null");
                     }
-                } else {
-                    logger.warn("Message returned from queue is null");
-                }
 
-            } catch (InterruptedException e) {
-                logger.warn("Writer thread interrupted");
+                } catch (InterruptedException e) {
+                    logger.warn("Writer thread interrupted");
+                }
             }
         }
     }
@@ -126,8 +135,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     }
 
     @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
-        // TODO Auto-generated method stub
+    public void disconnectEvent() {
 
     }
 }

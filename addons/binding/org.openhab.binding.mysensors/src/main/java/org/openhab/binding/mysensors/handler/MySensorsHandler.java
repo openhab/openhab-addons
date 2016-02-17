@@ -44,8 +44,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     private int childId = 0;
     private boolean requestAck = false;
 
-    private Command oldCommand = null;
-    private ChannelUID oldChannelUID = null;
+    private String oldMsgContent = "";
 
     public MySensorsHandler(Thing thing) {
         super(thing);
@@ -132,12 +131,12 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                 msg = "1";
 
             }
-            oldCommand = command;
-            oldChannelUID = channelUID;
         }
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack, subType,
                 msg);
+        newMsg.setOldMsg(oldMsgContent);
+        oldMsgContent = msg;
 
         getBridgeHandler().getBridgeConnection().addMySensorsOutboundMessage(newMsg);
     }
@@ -167,11 +166,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         if (nodeId == msg.getNodeId()) { // is this message for me?
             if (msg.getMsgType() == MYSENSORS_MSG_TYPE_SET) {
                 if (childId == msg.getChildId()) { // which child should be updated?
-
-                    // Do we get an ACK?
-                    if (msg.getAck() == 1) {
-                        getBridgeHandler().getBridgeConnection().removeMySensorsOutboundMessage(msg);
-                    } else if (CHANNEL_MAP.containsKey(msg.getSubType())) {
+                    if (CHANNEL_MAP.containsKey(msg.getSubType())) {
                         String channel = CHANNEL_MAP.get(msg.getSubType());
                         if (channel.equals(CHANNEL_BARO)) {
                             updateState(channel, new StringType(msg.getMsg()));
@@ -196,10 +191,9 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                                 updateState(channel, UpDownType.DOWN);
                             }
                         } else {
-                            logger.debug(channel);
-                            logger.debug("subtype:" + msg.getSubType());
                             updateState(channel, new DecimalType(msg.getMsg()));
                         }
+                        oldMsgContent = msg.getMsg();
                     }
                 }
             } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) { // INTERNAL MESSAGE?
@@ -231,13 +225,14 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     }
 
     @Override
-    protected void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         MySensorsBridgeHandler bridgeHandler = (MySensorsBridgeHandler) thingHandler;
         bridgeHandler.getBridgeConnection().addUpdateListener(this);
     }
 
     @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
+    public void disconnectEvent() {
+        // TODO Auto-generated method stub
 
     }
 }

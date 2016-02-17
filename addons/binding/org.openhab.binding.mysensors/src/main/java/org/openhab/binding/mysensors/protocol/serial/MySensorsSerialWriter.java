@@ -7,9 +7,10 @@ import org.openhab.binding.mysensors.protocol.MySensorsWriter;
 
 public class MySensorsSerialWriter extends MySensorsWriter {
 
-    public MySensorsSerialWriter(OutputStream outStream, MySensorsSerialConnection mysCon) {
+    public MySensorsSerialWriter(OutputStream outStream, MySensorsSerialConnection mysCon, int sendDelay) {
         this.mysCon = mysCon;
         this.outStream = outStream;
         outs = new PrintWriter(outStream);
+        this.sendDelay = sendDelay;
     }
 }

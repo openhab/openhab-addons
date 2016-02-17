@@ -18,6 +18,7 @@ public abstract class MySensorsBridgeConnection {
     private Logger logger = LoggerFactory.getLogger(MySensorsBridgeConnection.class);
 
     public List<MySensorsUpdateListener> updateListeners;
+    public boolean pauseWriter = false;
 
     private BlockingQueue<MySensorsMessage> outboundMessageQueue = null;
 

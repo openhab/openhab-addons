@@ -1,4 +1,4 @@
-# MySensors Serial Binding
+# MySensors OpenHAB 2.x Binding
 
 ## ID Request
 
@@ -130,9 +130,5 @@ Bridge mysensors:bridge-ser:gateway [ serialPort="/dev/pts/6", sendDelay=200 ] {
 
 - implement discovery of bridges / gateways
 - react on requests from sensors (examples: pulsecount (power sensor), isMetric (temperature)
-
-## Done
-
-- look into items-, rules-, config-files (the OpenHAB 1.X way to implement things) -> Readme.md
-- representation of light status -> Fixed
-- Added a delay between messages send to the gateway (2015-11-19)
+- Add an item / thing that receives all messages from the gateway and is able to send messages to the MySensors network. This would help users to migrate from OH 1.X to OH 2.
+- finish requestACK feature

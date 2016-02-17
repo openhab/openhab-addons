@@ -208,7 +208,6 @@ public class FreeboxHandler extends BaseThingHandler {
 			phoneJob.cancel(true);
 			phoneJob = null;
 		}
-		updateStatus(ThingStatus.OFFLINE);
 	}
 	
 	private void fetchNewCalls() throws FreeboxException {

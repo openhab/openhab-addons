@@ -8,7 +8,7 @@ import org.openhab.binding.mysensors.protocol.MySensorsWriter;
 
 public class MySensorsIpWriter extends MySensorsWriter {
 
-    public MySensorsIpWriter(Socket sock, MySensorsIpConnection mysCon) {
+    public MySensorsIpWriter(Socket sock, MySensorsIpConnection mysCon, int sendDelay) {
         this.mysCon = mysCon;
         try {
             this.outStream = sock.getOutputStream();
@@ -17,5 +17,7 @@ public class MySensorsIpWriter extends MySensorsWriter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        this.sendDelay = sendDelay;
     }
+
 }

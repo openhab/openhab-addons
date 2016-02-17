@@ -141,7 +141,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Publishes the channel with data if it's linked.
      */
     private void publishChannelIfLinked(Channel channel) {
-        if (channel.isLinked()) {
+        if (isLinked(channel.getUID().getId())) {
             try {
                 updateState(channel.getUID(), PropertyUtils.getState(channel.getUID(), getPlanet()));
             } catch (Exception ex) {

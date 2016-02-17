@@ -59,9 +59,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         MySensorsBridgeConfiguration configuration = getConfigAs(MySensorsBridgeConfiguration.class);
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
-            mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate);
+            mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
+                    configuration.sendDelay);
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_ETH)) {
-            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort);
+            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
         }
 
         if (mysCon.connect()) {
@@ -111,6 +112,12 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
         MySensorsMessage msg = event.getData();
 
+        // Do we get an ACK?
+        if (msg.getAck() == 1) {
+            logger.debug("ACK received!");
+            mysCon.removeMySensorsOutboundMessage(msg);
+        }
+
         // Are we getting a Request ID Message?
         if (msg.getNodeId() == 255) {
             if (msg.getChildId() == 255) {
@@ -135,6 +142,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         givenIds.add(newId);
         MySensorsMessage newMsg = new MySensorsMessage(255, 255, 3, 0, 4, newId + "");
         mysCon.addMySensorsOutboundMessage(newMsg);
+        logger.info("New Node in the MySensors network has requested an ID. ID is: {}", newId);
     }
 
     private int getFreeId() {
@@ -178,14 +186,12 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         return id;
     }
 
-    @Override
-    public void revertToOldStatus(MySensorsStatusUpdateEvent event) {
-        // TODO Auto-generated method stub
-
-    }
-
     public MySensorsBridgeConnection getBridgeConnection() {
         return mysCon;
     }
 
+    @Override
+    public void disconnectEvent() {
+        updateStatus(ThingStatus.OFFLINE);
+    }
 }

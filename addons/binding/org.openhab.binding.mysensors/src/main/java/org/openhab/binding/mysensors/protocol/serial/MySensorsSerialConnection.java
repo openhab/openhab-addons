@@ -49,7 +49,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         if (serialConnection.connect()) {
             logger.debug("Successfully connected to serial port.");
             mysConReader = new MySensorsSerialReader(serialConnection.getInputStream(), this);
-            mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this);
+            mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this, sendDelay);
 
             connected = startReaderWriterThread(mysConReader, mysConWriter);
         } else {
