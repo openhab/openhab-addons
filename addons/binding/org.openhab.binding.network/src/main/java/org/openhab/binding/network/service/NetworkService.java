@@ -9,12 +9,16 @@
 package org.openhab.binding.network.service;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.model.script.actions.Ping;
+import org.openhab.binding.network.service.dhcp.ReceiveDHCPRequestPackets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,20 +37,22 @@ public class NetworkService {
     private String hostname;
     private int port;
     private int retry;
+    private boolean dhcplisten;
     private long refreshInterval;
     private int timeout;
     private boolean useSystemPing;
 
     public NetworkService() {
-        this("", 0, 1, 60000, 5000, false);
+        this("", 0, 1, true, 60000, 5000, false);
     }
 
-    public NetworkService(String hostname, int port, int retry, long refreshInterval, int timeout,
+    public NetworkService(String hostname, int port, int retry, boolean dhcplisten, long refreshInterval, int timeout,
             boolean useSystemPing) {
         super();
         this.hostname = hostname;
         this.port = port;
         this.retry = retry;
+        this.dhcplisten = dhcplisten;
         this.refreshInterval = refreshInterval;
         this.timeout = timeout;
         this.useSystemPing = useSystemPing;
@@ -89,6 +95,7 @@ public class NetworkService {
     }
 
     public void setDHCPListen(boolean dhcplisten) {
+        this.dhcplisten = dhcplisten;
     }
 
     public void setRefreshInterval(long refreshInterval) {
@@ -117,10 +124,23 @@ public class NetworkService {
         };
 
         refreshJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+
+        if (dhcplisten) {
+            try {
+                ReceiveDHCPRequestPackets.register(InetAddress.getByName(hostname).getHostAddress(), stateUpdate);
+            } catch (SocketException | UnknownHostException e) {
+                e.printStackTrace();
+                logger.error("Cannot use DHCP listen: " + e.getMessage());
+            }
+        }
     }
 
     public void stopAutomaticRefresh() {
         refreshJob.cancel(true);
+        try {
+            ReceiveDHCPRequestPackets.unregister(InetAddress.getByName(hostname).getHostAddress());
+        } catch (UnknownHostException e) {
+        }
     }
 
     /**

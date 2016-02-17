@@ -128,6 +128,11 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
             networkService.setTimeout(confValueToInt(value));
         }
 
+        value = conf.get(PARAMETER_DHCPLISTEN);
+        if (value != null) {
+            networkService.setDHCPListen(confValueToBoolean(value));
+        }
+
         value = conf.get(PARAMETER_USE_SYSTEM_PING);
         if (value != null) {
             networkService.setUseSystemPing(confValueToBoolean(value));
