@@ -725,7 +725,7 @@ public class TeslaHandler extends BaseThingHandler {
                 eventInputStreamReader = new InputStreamReader(dummy);
                 eventBufferedReader = new BufferedReader(eventInputStreamReader);
             } else {
-                throw new Exception();
+                throw new Exception("Establishing event stream failed with code " + eventResponse.getStatus());
             }
         }
 
