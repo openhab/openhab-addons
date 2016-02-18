@@ -11,7 +11,7 @@ import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -104,8 +104,7 @@ public class OpenSprinklerHTTPHandler extends OpenSprinklerHandler {
     }
 
     /**
-     * Threaded scheduled job that periodically syncs the state of the OpenSprinkler device with
-     * OpenHab.
+     * Threaded scheduled job that periodically syncs the state of the OpenSprinkler device.
      */
     private Runnable refreshService = new Runnable() {
         @Override
@@ -116,9 +115,9 @@ public class OpenSprinklerHTTPHandler extends OpenSprinklerHandler {
 
                     try {
                         if (openSprinklerDevice.isRainDetected()) {
-                            updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), new DecimalType(1));
+                            updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), OnOffType.ON);
                         } else {
-                            updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), new DecimalType(0));
+                            updateState(new ChannelUID(getThing().getUID(), SENSOR_RAIN), OnOffType.OFF);
                         }
 
                         for (int i = 0; i < openSprinklerDevice.getNumberOfStations(); i++) {

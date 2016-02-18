@@ -444,16 +444,11 @@
     </thing-type>
    
     <channel-type id="rainsensor">
-        <item-type>Number</item-type>
+        <item-type>Switch</item-type>
         <label>Rain</label>
         <description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
         <category>Sensor</category>
-        <state min="0" max="1" readOnly="true">
-            <options>
-                <option value="0">Not Detected</option>
-                <option value="1">Detected</option>
-            </options>
-        </state>
+        <state readOnly="true"/>
     </channel-type>
     
     <channel-type id="station">

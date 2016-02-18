@@ -5,7 +5,7 @@ This binding allows allows basic control of the OpenSprinkler and OpenSprinkler 
 ## Supported Things
 
 * OpenSprinkler using the HTTP API access on the network.
-* OpenSprinkler PI (Plus) through the GPIO when OpenHab is installed on the same Raspberry Pi used in the OpenSprinkler PI.
+* OpenSprinkler PI (Plus) through the GPIO when openHAB is installed on the same Raspberry Pi used in the OpenSprinkler PI.
 
 ## Discovery
 
@@ -92,7 +92,7 @@ The following are only support by the OpenSprinkler using the HTTP API interface
 
 | Channel Type ID | Item Type |   | Description |
 |-----------------|-----------|---|-------------|----------------- |------------- |
-| rainsensor | Decimal | RO | This channel indicates whether rain is detected by the device or not. |
+| rainsensor | Switch | RO | This channel indicates whether rain is detected by the device or not. |
 
 ## Full Example
 
@@ -113,7 +113,7 @@ Switch Station06 (stations) { channel="opensprinkler:http:1:station06" }
 Switch Station07 (stations) { channel="opensprinkler:http:1:station07" }
 Switch Station08 (stations) { channel="opensprinkler:http:1:station08" }
 
-Decimal RainSensor { channel="opensprinkler:http:1:rainsensor" }
+Switch RainSensor { channel="opensprinkler:http:1:rainsensor" }
 ```
 
 demo.sitemap:
@@ -121,7 +121,7 @@ demo.sitemap:
 sitemap demo label="Main Menu"
 {
     Frame {
-        Contact item=RainSensor label "Rain Detection"
+        Text item=RainSensor label="Rain [%s]"
         Group item=stations label="Water Stations"
     }
 }

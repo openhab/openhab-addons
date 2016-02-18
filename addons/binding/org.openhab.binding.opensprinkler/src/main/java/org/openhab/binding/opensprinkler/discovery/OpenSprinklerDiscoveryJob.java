@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerDiscoveryJob} class allow manual discovery of
- * OpenSprinkler devices for OpenHab for a single IP address. This is used
+ * OpenSprinkler devices for a single IP address. This is used
  * for threading to make discovery faster.
  *
  * @author Chris Graham - Initial contribution
