@@ -118,6 +118,12 @@
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.myopenhab/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.homekit/${project.version}</bundle>
+    </feature>
+
     <!-- ui -->
 
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
