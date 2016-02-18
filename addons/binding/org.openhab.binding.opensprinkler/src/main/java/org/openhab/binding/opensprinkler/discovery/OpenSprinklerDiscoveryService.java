@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerDiscoveryService} class allow manual discovery of
- * OpenSprinkler devices for OpenHab.
+ * OpenSprinkler devices.
  *
  * @author Chris Graham - Initial contribution
  */
@@ -80,7 +80,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Create a new Thing in OpenHab with an IP address given. Uses default port and password.
+     * Create a new Thing with an IP address given. Uses default port and password.
      *
      * @param ip IP address of the OpenSprinkler device as a string.
      */

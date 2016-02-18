@@ -15,7 +15,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 
 /**
  * The {@link OpenSprinklerGpioApi} class is used for communicating with
- * the OpenSprinkler PI when OpenHAB is installed on the same Raspberry PI
+ * the OpenSprinkler PI when openHAB is installed on the same Raspberry PI
  * that the OpenSprinkler PI device is using.
  *
  * @author Jonathan Giles
@@ -46,8 +46,9 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
         this.numberOfStations = stations;
         this.stationState = new boolean[stations];
 
-        for (int i = 0; i < stations; i++)
+        for (int i = 0; i < stations; i++) {
             stationState[i] = false;
+        }
 
         gpio = GpioFactory.getInstance();
 
