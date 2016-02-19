@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bosesoundtouch"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="device">
+		<label>Bose SoundTouch</label>
+		<description>The represents a Bose SoundTouch device like the SoundTouch 10, 20, 30, etc</description>
+
+		<channels>
+			<channel id="control" typeId="control" />
+			<channel id="mute" typeId="mute" />
+			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
+			<channel id="nowPlayingArt" typeId="nowPlayingArt" />
+			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
+			<channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
+			<channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
+			<channel id="nowPlayingPlayStatus" typeId="nowPlayingPlayStatus" />
+			<channel id="nowPlayingSource" typeId="nowPlayingSource" />
+			<channel id="nowPlayingStationLocation" typeId="nowPlayingStationLocation" />
+			<channel id="nowPlayingStationName" typeId="nowPlayingStationName" />
+			<channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
+			<channel id="operationMode" typeId="operationMode" />
+            <channel id="operationModeNum" typeId="operationModeNum" />
+			<channel id="power" typeId="power" />
+			<channel id="volume" typeId="volume" />
+            <channel id="zoneInfo" typeId="zoneInfo" />
+		</channels>
+        <config-description>
+            <parameter name="room" type="text" required="false">
+                <label>Room</label>
+                <description>The room name.</description>
+            </parameter>
+            <parameter name="serialNumber" type="text" required="true">
+                <label>Serial Number</label>
+                <description>The Serial Number identifies one specific device.</description>
+            </parameter>
+            <parameter name="DEVICE_HOST" type="text" required="true">
+                <label>Host Address</label>
+                <description>The Host / IP Address used for communication to this device.
+                </description>
+            </parameter>
+            <parameter name="DEVICE_PORT" type="integer" required="true" min="1" max="65335">
+                <label>Port</label>
+                <description>Port for communication on this device.
+                </description>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control the Player, e.g. play/pause/standby/preset[1-6]/bluetooth/next/previous/ffward/rewind</description>
+		<category>Player</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute state of the Thing.</description>
+	</channel-type>
+	<channel-type id="nowPlayingAlbum">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Current playing album name</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingArt">
+		<item-type>String</item-type>
+		<label>Art</label>
+		<description>URL to image of artwork for the current playing song</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingArtist">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Current playing artist name</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingDescription">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Description to current playing song</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingItemName">
+		<item-type>String</item-type>
+		<label>Item Name</label>
+		<description>Visible description shown in display</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingSource">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>Current playing source</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingStationLocation">
+		<item-type>String</item-type>
+		<label>Station location</label>
+		<description>Location of current playing radio station</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingStationName">
+		<item-type>String</item-type>
+		<label>Station name</label>
+		<description>Name of current playing radio station</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingPlayStatus">
+		<item-type>String</item-type>
+		<label>PlayStatus</label>
+		<description>Play status (more detailed, read-only)</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingTrack">
+		<item-type>String</item-type>
+		<label>Track</label>
+		<description>Track currently playing</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="operationMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Bose SoundTouch Mode Setting</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFFLINE">Offline</option>
+				<option value="STANDBY">Off / Standby</option>
+				<option value="PRESET_1">Preset 1</option>
+				<option value="PRESET_2">Preset 2</option>
+				<option value="PRESET_3">Preset 3</option>
+				<option value="PRESET_4">Preset 4</option>
+				<option value="PRESET_5">Preset 5</option>
+				<option value="PRESET_6">Preset 6</option>
+				<option value="BLUETOOTH">Bluetooth</option>
+				<option value="AUX">AUX in</option>
+				<option value="MEDIA">Mediathek</option>
+				<option value="OTHER">Other</option>
+				<option value="GROUPMEMBER">Member in other group</option>
+			</options>
+		</state>
+	</channel-type>
+    <channel-type id="operationModeNum">
+        <item-type>Number</item-type>
+        <label>Mode</label>
+        <description>Bose SoundTouch Mode Setting</description>
+        <state readOnly="false">
+            <options>
+                <option value="0">Offline</option>
+                <option value="1">Off / Standby</option>
+                <option value="2">Preset 1</option>
+                <option value="3">Preset 2</option>
+                <option value="4">Preset 3</option>
+                <option value="5">Preset 4</option>
+                <option value="6">Preset 5</option>
+                <option value="7">Preset 6</option>
+                <option value="8">Bluetooth</option>
+                <option value="9">AUX in</option>
+                <option value="10">Mediathek</option>
+                <option value="11">Other</option>
+                <option value="12">Member in other group</option>
+            </options>
+        </state>
+    </channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>SoundTouch power state. In real this switches between standby and operational.</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Set or get the volume</description>
+		<category>SoundVolume</category>
+	</channel-type>
+    <channel-type id="zoneInfo">
+        <item-type>String</item-type>
+        <label>Zone info</label>
+        <description>Shows information about the current zone setup</description>
+        <state readOnly="true" />
+    </channel-type>
+
+</thing:thing-descriptions>
