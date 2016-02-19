@@ -63,8 +63,6 @@ smarthome send Bose1_control "preset1"
 smarthome send Bose1_control "zone add <devicename>” e.g.
 smarthome send Bose1_control "zone add livingroom"
 smarthome send Bose1_control "zone add <device-mac-address>” e.g.
-smarthome send Bose1_control "zone add 689E193E0EB0"
-smarthome send Bose1_control "zone remove 689E193E0EB0”
 ```
 this also can be done through rules:
 
