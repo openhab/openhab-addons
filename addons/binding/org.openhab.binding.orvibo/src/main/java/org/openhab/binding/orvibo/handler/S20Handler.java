@@ -95,7 +95,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     public void socketDidChangeLabel(Socket socket, String label) {
         if (!StringUtils.isBlank(label)) {
             logger.debug("Updating thing label to " + label);
-            thing.getLinkedItem().setLabel(label);
+            thing.setLabel(label);
         }
     }
 
