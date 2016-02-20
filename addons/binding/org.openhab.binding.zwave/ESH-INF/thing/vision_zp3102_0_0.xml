@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+  <thing-type id="vision_zp3102_00_000">
+    <label>ZP3102 Motion Sensor</label>
+    <description>Motion Sensor</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="alarm_burglar" typeId="alarm_burglar">
+        <label>Alarm (burglar)</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM;sensorType=BURGLAR</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature" typeId="sensor_temperature">
+        <label>Sensor (temperature)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Vision Security</property>
+      <property name="model">ZP3102</property>
+      <property name="manufacturerId">0109</property>
+      <property name="manufacturerRef">2002:0201,2002:0202,2002:0203,2002:0204,2002:0205</property>
+      <property name="DefaultAssociations">1</property>
+    </properties>
+
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_1" type="integer" groupName="configuration"
+                 min="1" max="255">
+        <label>1: On time in minutes</label>
+        <description>Delay before sending OFF</description>
+        <default>3</default>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+        <label>1: Control Command</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>
