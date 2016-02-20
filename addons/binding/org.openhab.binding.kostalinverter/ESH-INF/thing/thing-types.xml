@@ -16,7 +16,7 @@
         <config-description>
 			<parameter name="url" type="text" required="true">
 				<label>URL of the web interface</label>
-				<default>http://192.168.0.x</default>
+				<default>http://192.168.0.1</default>
 			</parameter>
 			
 			<parameter name="userName" type="text" required="true">

@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.kostal.inverter;
 
 import java.io.IOException;
@@ -14,6 +22,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -23,8 +32,11 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Christian Schneider
+ */
 public class WebscrapeHandler extends BaseThingHandler {
-    private static Logger logger = LoggerFactory.getLogger(WebscrapeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(WebscrapeHandler.class);
     private boolean active;
     private SourceConfig config;
     private List<ChannelConfig> channelConfigs;
@@ -41,7 +53,6 @@ public class WebscrapeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SourceConfig.class);
-        updateStatus(ThingStatus.ONLINE);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
             @Override
@@ -49,8 +60,11 @@ public class WebscrapeHandler extends BaseThingHandler {
                 while (active) {
                     try {
                         refresh();
+                        updateStatus(ThingStatus.ONLINE);
+                        Thread.sleep(5000);
                     } catch (Exception e) {
-                        logger.warn("Error refreshing source " + getThing().getUID(), e);
+						updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        logger.debug("Error refreshing source " + getThing().getUID(), e);
                     }
                 }
             }
@@ -64,8 +78,8 @@ public class WebscrapeHandler extends BaseThingHandler {
     }
 
     @Override
-    public void preDispose() {
-        super.preDispose();
+    public void dispose() {
+        super.dispose();
         active = false;
     }
 
@@ -77,7 +91,6 @@ public class WebscrapeHandler extends BaseThingHandler {
             State state = getState(value);
             updateState(channel.getUID(), state);
         }
-        Thread.sleep(5000);
     }
 
     private static List<String> getTag(Document doc, String tag) {
