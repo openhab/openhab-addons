@@ -28,13 +28,8 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
     protected boolean stopReader = false;
 
-    private Object holdingThread = null;
-
-    private boolean iVersionResponse = false;
-
-    public void startReader(Object o) {
+    public void startReader() {
         future = executor.submit(this);
-        holdingThread = o;
     }
 
     @Override
@@ -56,12 +51,10 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
                 logger.debug(line);
                 MySensorsMessage msg = MySensorsMessageParser.parse(line);
                 if (msg != null) {
-                    if (!iVersionResponse && MySensorsMessageParser.isIVersionMessage(msg)) {
-                        handleIncomingVersionMessage(msg.msg);
-                    }
-
                     MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
+                    logger.warn("Ciaooooo");
                     for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
+                        logger.warn("Ciaooooo");
                         mySensorsEventListener.statusUpdateReceived(event);
                     }
                 }
@@ -73,18 +66,6 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
         }
 
-    }
-
-    private void handleIncomingVersionMessage(String message) {
-        iVersionResponse = true;
-        synchronized (holdingThread) {
-            holdingThread.notify();
-        }
-        logger.debug("Good,Gateway is up and running! (Ver:{})", message);
-    }
-
-    public boolean isIVersionMessageArrived() {
-        return iVersionResponse;
     }
 
     private void broadCastDisconnect() {

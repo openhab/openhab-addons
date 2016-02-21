@@ -65,10 +65,12 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
         }
 
+        mysCon.addUpdateListener(this);
+
         if (mysCon.connect()) {
-            mysCon.addUpdateListener(this);
             updateStatus(ThingStatus.ONLINE);
         } else {
+            mysCon.removeUpdateListener(this);
             updateStatus(ThingStatus.OFFLINE);
         }
 
@@ -130,6 +132,20 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
                 }
             }
         }
+
+        // Have we get a ICONFIG message?
+        if (msg.getNodeId() == 0) {
+            if (msg.getChildId() == 0) {
+                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                    if (msg.getAck() == 0) {
+                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_VERSION) {
+
+                            handleIncomingVersionMessage(msg.msg);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -143,6 +159,13 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         MySensorsMessage newMsg = new MySensorsMessage(255, 255, 3, 0, 4, newId + "");
         mysCon.addMySensorsOutboundMessage(newMsg);
         logger.info("New Node in the MySensors network has requested an ID. ID is: {}", newId);
+    }
+
+    /**
+     * Wake up main thread that is waiting for confirmation of link up
+     */
+    private void handleIncomingVersionMessage(String message) {
+        mysCon.iVersionMessageReceived(message);
     }
 
     private int getFreeId() {

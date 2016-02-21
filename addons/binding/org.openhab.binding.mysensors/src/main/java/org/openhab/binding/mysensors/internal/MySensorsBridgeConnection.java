@@ -24,6 +24,9 @@ public abstract class MySensorsBridgeConnection {
 
     protected boolean connected = false;
 
+    private Object holdingThread = null;
+    private boolean iVersionResponse = false;
+
     public MySensorsBridgeConnection() {
         outboundMessageQueue = new LinkedBlockingQueue<MySensorsMessage>();
         updateListeners = new ArrayList<>();
@@ -49,24 +52,28 @@ public abstract class MySensorsBridgeConnection {
      *
      * @return true if the gateway test pass successfully
      */
-    protected synchronized boolean startReaderWriterThread(MySensorsReader reader, MySensorsWriter writer) {
+    protected boolean startReaderWriterThread(MySensorsReader reader, MySensorsWriter writer) {
 
-        reader.startReader(this);
+        reader.startReader();
         writer.startWriter();
 
-        try {
-            if (!reader.isIVersionMessageArrived()) {
-                this.wait(2 * 1000); // wait 2s the reply for the I_VERSION message
+        holdingThread = this;
+
+        synchronized (holdingThread) {
+            try {
+                if (!iVersionResponse) {
+                    this.wait(2 * 1000); // wait 2s the reply for the I_VERSION message
+                }
+            } catch (Exception e) {
+                logger.error("Exception on waiting for I_VERSION message", e);
             }
-        } catch (Exception e) {
-            logger.error("Exception on waiting for I_VERSION message", e);
         }
 
-        if (!reader.isIVersionMessageArrived()) {
+        if (!iVersionResponse) {
             logger.error("Cannot start reading/writing thread, probably sync message (I_VERSION) not received");
         }
 
-        return reader.isIVersionMessageArrived();
+        return iVersionResponse;
     }
 
     /**
@@ -114,5 +121,13 @@ public abstract class MySensorsBridgeConnection {
                 iterator.remove();
             }
         }
+    }
+
+    public void iVersionMessageReceived(String msg) {
+        iVersionResponse = true;
+        synchronized (holdingThread) {
+            holdingThread.notify();
+        }
+        logger.debug("Good,Gateway is up and running! (Ver:{})", msg);
     }
 }
