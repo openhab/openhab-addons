@@ -95,11 +95,32 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
         <default>112</default>
       </parameter>
 
-      <parameter name="config_121_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
-        <label>121: Flag values for triggered magnet switch</label>
-        <description>Flag values for which reports to send when the magnet switch is triggered</description>
-        <default>256</default>
+      <parameter name="config_121_4_0000FF00" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>121: Config value 3 - BASIC SET</label>
+        <description><![CDATA[
+Set BASIC SET reporting<br /><h1>Overview</h1><p>Set to 1 for BASIC SET report (factory default)</p>
+<p>Set to 0 to disable BASIC SET report</p>
+    !]]></description>
+        <default>1</default>
+        <options>
+          <option value="0">do not send BASIC SET</option>
+          <option value="1">send BASIC SET (factory default)</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_121_4_000000FF" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>121: Configuration Value 4(LSB) SENSOR BINARY</label>
+        <description><![CDATA[
+Configuration Value 4(LSB) SENSOR BINARY<br /><h1>Overview</h1><p>set to 16 for sensor binary (recommended)</p>
+<p>set to 0 for factory default</p>
+    !]]></description>
+        <default>0</default>
+        <options>
+          <option value="0">disable SENSOR BINARY (factory)</option>
+          <option value="16">enable SENSOR BINARY (recommended)</option>
+        </options>
       </parameter>
 
       <parameter name="config_252_1" type="integer" groupName="configuration"

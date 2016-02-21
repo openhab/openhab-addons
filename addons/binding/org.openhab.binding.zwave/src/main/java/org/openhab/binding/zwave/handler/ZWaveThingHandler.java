@@ -363,20 +363,28 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                         logger.error("NODE {}: Error parsing bitmask for {}", nodeId, configurationParameter.getKey());
                     }
 
+                    boolean requestUpdate = false;
                     ZWaveConfigSubParameter subParameter = subParameters.get(parameterIndex);
                     if (subParameter == null) {
                         subParameter = new ZWaveConfigSubParameter();
+                        requestUpdate = true;
                     }
 
-                    logger.debug("NODE{}: Set sub-parameter {} from {} / {}", nodeId, parameterIndex, bitmask,
-                            String.format("%08X", value));
+                    logger.debug("NODE {}: Set sub-parameter {} from {} / {}", nodeId, parameterIndex, value,
+                            String.format("%08X", bitmask));
+
+                    logger.debug("NODE {}: Parameter {} set value {} mask {}", nodeId, parameterIndex,
+                            String.format("%08X", value), String.format("%08X", bitmask));
 
                     subParameter.addBitmask(bitmask, value);
                     subParameters.put(parameterIndex, subParameter);
 
                     // Request the value. When this is received, we'll update the relevant bits
                     // and send the SET command.
-                    controllerHandler.sendData(configurationCommandClass.getConfigMessage(parameterIndex));
+                    // Only send the request if there's not already a request outstanding
+                    if (requestUpdate == true) {
+                        controllerHandler.sendData(configurationCommandClass.getConfigMessage(parameterIndex));
+                    }
                 } else {
                     ZWaveConfigurationParameter cfgParameter = configurationCommandClass.getParameter(parameterIndex);
                     if (cfgParameter == null) {
@@ -642,7 +650,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     logger.debug("NODE {}: Updating sub-parameter {} to {}", nodeId, parameter.getIndex(), value);
 
                     // Remove the sub parameter so we don't loop forever!
-                    subParameters.remove(parameter.getValue());
+                    subParameters.remove(parameter.getIndex());
 
                     ZWaveNode node = controllerHandler.getNode(nodeId);
                     ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
@@ -671,22 +679,29 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 }
 
                 Configuration configuration = editConfiguration();
+                logger.debug("NODE {}: Config about to update {} parameters...", nodeId, configuration.keySet().size());
                 for (String key : configuration.keySet()) {
+                    logger.debug("NODE {}: Processing {}", nodeId, key);
                     String[] cfg = key.split("_");
+                    // Check this is a config parameter
+                    if (!"config".equals(cfg[0])) {
+                        continue;
+                    }
+                    logger.debug("NODE {}: Processing {} len={}", nodeId, key, cfg.length);
+
                     if (cfg.length < 3) {
                         logger.warn("NODE {}: Configuration invalid {}", nodeId, key);
                         continue;
                     }
 
-                    // Check this is a config parameter
-                    if (!"config".equals(cfg[0])) {
-                        continue;
-                    }
+                    logger.debug("NODE {}: Processing {} - id = '{}'", nodeId, key, cfg[1]);
 
                     // Check this is for the right parameter
                     if (Integer.parseInt(cfg[1]) != parameter.getIndex()) {
                         continue;
                     }
+
+                    logger.debug("NODE {}: Processing {} - size = '{}'", nodeId, key, cfg[2]);
 
                     // Get the size
                     int size = Integer.parseInt(cfg[2]);
@@ -698,27 +713,42 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     // Get the bitmask
                     int bitmask = 0xffffffff;
                     if (cfg.length >= 4) {
+                        logger.debug("NODE {}: Processing {} - bitmask = '{}'", nodeId, key, cfg[3]);
                         try {
                             bitmask = Integer.parseInt(cfg[3], 16);
+                            logger.debug("NODE {}: Processing {} - dec = '{}'", nodeId, key, bitmask);
+
                         } catch (NumberFormatException e) {
                             logger.error("NODE {}: Error parsing bitmask for {}", nodeId, key);
                         }
                     }
 
                     int value = parameter.getValue() & bitmask;
-                    logger.error("NODE {}: Sub-parameter {} is {}", nodeId, key, String.format("%08X", value));
+                    logger.debug("NODE {}: Sub-parameter {} is {}", nodeId, key, String.format("%08X", value));
+
+                    logger.debug("NODE {}: Pre-processing  {}>>{}", nodeId, String.format("%08X", value),
+                            String.format("%08X", bitmask));
 
                     // Shift the value
                     int bits = bitmask;
                     while ((bits & 0x01) == 0) {
                         value = value >> 1;
+                        bits = bits >> 1;
                     }
 
-                    logger.error("NODE {}: Sub-parameter {} is {}", nodeId, key, value);
+                    // And the bitmask to get rid of any sign extension
+                    // value &= bits;
+
+                    logger.debug("NODE {}: Post-processing {}>>{}", nodeId, String.format("%08X", value),
+                            String.format("%08X", bitmask));
+
+                    logger.debug("NODE {}: Sub-parameter setting {} is {} [{}]", nodeId, key,
+                            String.format("%08X", value), value);
 
                     configuration.put(key, value);
                 }
                 updateConfiguration(configuration);
+                logger.debug("NODE {}: Config updated", nodeId);
 
                 return;
             }
@@ -919,6 +949,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             int bits = bitmask;
             while ((bits & 0x01) == 0) {
                 value = value << 1;
+                bits = bits >> 1;
             }
 
             // Add the new sub-parameter value
