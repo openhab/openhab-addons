@@ -68,7 +68,7 @@ Single-socket PowerNode<br /><h1>Overview</h1><p>This Configuration is for the 1
       <property name="manufacturerId">0099</property>
       <property name="manufacturerRef">0002:0002</property>
       <property name="versionMin">3.0</property>
-      <property name="versionMax">4.0</property>
+      <property name="DefaultAssociations">3,4</property>
     </properties>
 
     <config-description>
