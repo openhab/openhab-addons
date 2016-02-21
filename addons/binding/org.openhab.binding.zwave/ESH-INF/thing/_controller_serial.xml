@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<bridge-type id="serial_zstick">
+		<label>Z-Wave Serial Controller</label>
+		<description>Z-Wave USB Stick with Serial Interface</description>
+
+		<channels>
+			<channel id="serial_sof" typeId="serial_sof" />
+			<channel id="serial_ack" typeId="serial_ack" />
+			<channel id="serial_nak" typeId="serial_nak" />
+			<channel id="serial_can" typeId="serial_can" />
+			<channel id="serial_oof" typeId="serial_oof" />
+		</channels>
+
+		<config-description>
+			<parameter-group name="port">
+				<context>communication</context>
+				<label>Port Configuration</label>
+				<description></description>
+			</parameter-group>
+
+			<parameter-group name="network">
+				<context>wireless</context>
+				<label>Z-Wave Network Settings</label>
+				<description></description>
+			</parameter-group>
+
+            <parameter-group name="heal">
+                <context>health</context>
+                <label>Z-Wave Network Heal</label>
+                <description></description>
+            </parameter-group>
+
+            <parameter name="port" type="text" required="true"
+                groupName="port">
+                <label>Serial Port</label>
+                <description>Set the serial port used to access the Z-Wave stick</description>
+                <default></default>
+            </parameter>
+
+            <parameter name="master" type="boolean" required="true"
+				groupName="network">
+				<label>Controller is Master</label>
+				<description><![CDATA[This controller is the master controller in the network.<br/>
+				The binding will perform automatic configuration of the network.
+				This setting should be set to <i>true</i> unless you have another controller that is required to run the network.]]></description>
+				<options>
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</options>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="SUC" type="boolean" required="true"
+				groupName="network">
+				<label>Controller is SUC</label>
+				<description>Controller is SUC and will receive updates from other controllers in the network</description>
+				<options>
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</options>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="healEnable" type="boolean" groupName="heal">
+				<label>Heal Enabled</label>
+				<description></description>
+                <options>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </options>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="healTime" type="integer" min="0" max="23"
+				groupName="heal">
+				<label>Heal Time</label>
+				<description></description>
+				<default>2</default>
+			</parameter>
+			
+			<parameter-group name="actions">
+                <context></context>
+                <label>Actions</label>
+                <description></description>
+            </parameter-group>
+           
+            <parameter name="controller_softreset" type="text" groupName="actions">
+                <label>Soft Reset Controller</label>
+                <description>Resets the Z-Wave stick - similar to removing the stick from the USB.</description>
+                <advanced>true</advanced>
+            </parameter>
+            
+            <parameter name="controller_hardreset" type="text" groupName="actions">
+                <label>Hard Reset Controller</label>
+                <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!.</description>
+                <advanced>true</advanced>
+            </parameter>
+			
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="serial_sof">
+		<item-type>Number</item-type>
+		<label>Start Frames</label>
+		<description>Counter tracking the number of SOF bytes received</description>
+		<category>Temperature</category>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="serial_ack">
+		<item-type>Number</item-type>
+		<label>Frames Acknowledged</label>
+		<description>Counter tracking the number of frames acknowldeged by the controller</description>
+		<category>Temperature</category>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="serial_nak">
+		<item-type>Number</item-type>
+		<label>Frames Rejected</label>
+		<description>Counter tracking the number of frames rejected by the controller</description>
+		<category>Temperature</category>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="serial_can">
+		<item-type>Number</item-type>
+		<label>Frames Cancelled</label>
+		<description>Counter tracking the number of frames cancelled by the controller</description>
+		<category>Temperature</category>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="serial_oof">
+		<item-type>Number</item-type>
+		<label>OOF Bytes Received</label>
+		<description>Counter tracking the number of out of flow bytes recieved</description>
+		<category>Temperature</category>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

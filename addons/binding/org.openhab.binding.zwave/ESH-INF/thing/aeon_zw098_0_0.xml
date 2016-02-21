@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+  <thing-type id="aeon_zw098_00_000">
+    <label>ZW098 LED Bulb</label>
+    <description><![CDATA[
+LED Bulb<br /><h2>Inclusion Information</h2><p>Non-secure inclusion:<br />1. Power on your LED Bulb.<br />2. Set the primary controller into inclusion mode (If you don’t know how to do this, please refer to its manual).<br />3. Turn off the LED Bulb and then turn on.<br />4. If the inclusion is failed, please repeat the process from step 2. </p>
+<p>Secure inclusion:<br />1. Power on your LED Bulb.<br />2. Set the primary controller into inclusion mode (If you don’t know how to do this, please refer to its manual).<br />3. Turn off the LED Bulb and then turn on it on 3 times within 2 seconds.<br />4. If the inclusion fails, please repeat the process from step 2.</p>
+<p>Note: If LED Bulb has been successfully included into your Z-Wave network, its warm white LED will be solid. If the linking was unsuccessful and the LED Bulb continues to be active with a colourful gradient. </p>
+<br /><h2>Exclusion Information</h2><p>1. Power on your LED Bulb.<br />2. Set the primary controller into exclusion mode (If you don’t know how to do this, please refer to its manual).<br />3. Turn off the LED Bulb and then turn on 3 times within 2 seconds.<br />4. If the exclusion fails, please repeat the process from step 2.</p>
+<p>Note: If LED Bulb has been successfully excluded from your Z-Wave network, its warm white LED will be active with a colourful gradient. If the exclusion was unsuccessful and the LED Bulb continues to be solid. </p>
+    !]]></description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="switch_dimmer" typeId="switch_dimmer">
+        <label>Dimmer</label>
+        <properties>
+          <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+        </properties>
+      </channel>
+      <channel id="color_color" typeId="color_color">
+        <label>Color Control</label>
+        <properties>
+          <property name="binding:*:HSBType">COLOR;</property>
+          <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+        </properties>
+      </channel>
+      <channel id="color_temperature" typeId="color_temperature">
+        <label>Color Temperature</label>
+        <properties>
+          <property name="binding:*:PercentType">COLOR;colorMode=DIFF_WHITE</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Aeon Labs</property>
+      <property name="model">ZW098</property>
+      <property name="manufacturerId">0086</property>
+      <property name="manufacturerRef">0003:0062,0103:0062,0203:0062</property>
+      <property name="DefaultAssociations">1,2</property>
+    </properties>
+
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_34_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>34: Turn on/off bulb</label>
+        <description>Enable/disable the function of using External Switch to turn on/off the bulb.
+            </description>
+        <default>0</default>
+        <options>
+          <option value="0">disabled</option>
+          <option value="1">enabled</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_35_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>35: Change bulb color</label>
+        <description>Enable/disable the function of using External Switch to changes the bulb’s color.
+            </description>
+        <default>0</default>
+        <options>
+          <option value="0">disabled</option>
+          <option value="1">enabled</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_50_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>50: Enable notifications</label>
+        <description>Enable to send notifications to associated devices (Group 1) when the state of LED Bulb is changed.
+            </description>
+        <default>0</default>
+        <options>
+          <option value="0">Disable</option>
+          <option value="1">Hail</option>
+          <option value="1">Basic</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_252_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>252: Lock configuration</label>
+        <description>Enable/disable the ability to configure the device.
+            </description>
+        <default>0</default>
+        <options>
+          <option value="0">disabled</option>
+          <option value="1">enabled</option>
+        </options>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+        <label>1: Group 1</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+        <label>2: Group 2</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>
