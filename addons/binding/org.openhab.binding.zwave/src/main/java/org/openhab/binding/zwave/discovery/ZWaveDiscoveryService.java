@@ -99,16 +99,20 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
     private ThingUID getThingUID(ZWaveNode node) {
         ThingUID bridgeUID = controllerHandler.getThing().getUID();
 
+        logger.debug("NODE {}: Scanning for things to match {}", node.getNodeId(), node.toString());
+
         ThingTypeUID thingTypeUID = null;
         for (ZWaveProduct product : ZWaveConfigProvider.getProductIndex()) {
+            logger.debug("Scanning {}", product.toString());
             if (product.match(node) == true) {
                 thingTypeUID = product.getThingTypeUID();
                 break;
             }
         }
+        logger.debug("Found {}", thingTypeUID);
 
         if (thingTypeUID == null) {
-            logger.warn("NODE {}: Could note be resolved to a thingType! {}:{}:{}::{}",
+            logger.warn("NODE {}: Could note be resolved to a thingType! {}:{}:{}::{}", node.getNodeId(),
                     String.format("%04X", node.getManufacturer()), String.format("%04X", node.getDeviceType()),
                     String.format("%04X", node.getDeviceId()), node.getVersion());
             return null;
@@ -121,6 +125,8 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
             String thingId = "node" + node.getNodeId();
             return new ThingUID(thingTypeUID, bridgeUID, thingId);
         } else {
+            logger.warn("NODE {}: Thing type {} is not supported", node.getNodeId(), thingTypeUID);
+
             return null;
         }
     }

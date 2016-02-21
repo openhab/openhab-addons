@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+  <thing-type id="philio_pan111_00_000">
+    <label>PAN11-1 Smart Energy Plug In Switch</label>
+    <description>Smart Energy Plug In Switch</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="meter_kwh" typeId="meter_kwh">
+        <label>Electric meter (kWh)</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+        </properties>
+      </channel>
+      <channel id="meter_voltage" typeId="meter_voltage">
+        <label>Electric meter (volts)</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER;meterScale=E_V</property>
+        </properties>
+      </channel>
+      <channel id="meter_current" typeId="meter_current">
+        <label>Electric meter (amps)</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER;meterScale=E_A</property>
+        </properties>
+      </channel>
+      <channel id="meter_watts" typeId="meter_watts">
+        <label>Electric meter (watts)</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+        </properties>
+      </channel>
+      <channel id="meter_powerfactor" typeId="meter_powerfactor">
+        <label>Electric meter (power factor)</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER;meterScale=E_Power_Factor</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Philio Technology Corporation</property>
+      <property name="model">PAN11-1</property>
+      <property name="manufacturerId">013C</property>
+      <property name="manufacturerRef">0001:0001</property>
+      <property name="DefaultAssociations">1</property>
+    </properties>
+
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>1: W meter report period</label>
+        <description>If the setting is configured for 1 hour (value = 720),
+							the device will report its instant power consumption every 1 hour to Z-Wave Controller.
+							Unit: 5 seconds</description>
+        <default>720</default>
+      </parameter>
+
+      <parameter name="config_2_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>2: kWh meter report period</label>
+        <description>If the setting is configured for 1 hour (value = 6),
+							the device will report its total power consumption every 1 hour to Z-Wave Controller.
+							Unit: 10 minutes</description>
+        <default>6</default>
+      </parameter>
+
+      <parameter name="config_3_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>3: Threshold of Watt for Load Caution</label>
+        <description>If threshold of wattage is reached, a meter report will be generated</description>
+        <default>3000</default>
+      </parameter>
+
+      <parameter name="config_4_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>4: Threshold of kWh for Load Caution</label>
+        <description>If threshold of kWh is reached, a Meter Report will be generated</description>
+        <default>10000</default>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association">
+        <label>1: Reports</label>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>

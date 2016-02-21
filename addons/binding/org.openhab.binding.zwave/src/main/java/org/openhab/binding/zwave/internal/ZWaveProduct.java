@@ -91,4 +91,10 @@ public class ZWaveProduct {
     public ThingTypeUID getThingTypeUID() {
         return thingTypeUID;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Manufacturer %04X, Type %04X, Id %04X, vMin %s, vMax %s", manufacturer, type, id,
+                versionMin.toString(), versionMax.toString());
+    }
 }
