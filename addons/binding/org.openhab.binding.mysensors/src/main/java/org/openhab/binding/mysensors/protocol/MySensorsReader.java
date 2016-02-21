@@ -52,9 +52,7 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
                 MySensorsMessage msg = MySensorsMessageParser.parse(line);
                 if (msg != null) {
                     MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
-                    logger.warn("Ciaooooo");
                     for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
-                        logger.warn("Ciaooooo");
                         mySensorsEventListener.statusUpdateReceived(event);
                     }
                 }
