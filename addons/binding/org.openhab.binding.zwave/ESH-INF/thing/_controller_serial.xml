@@ -96,13 +96,19 @@
                 <description>Resets the Z-Wave stick - similar to removing the stick from the USB.</description>
                 <advanced>true</advanced>
             </parameter>
-            
+
             <parameter name="controller_hardreset" type="text" groupName="actions">
                 <label>Hard Reset Controller</label>
-                <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!.</description>
+                <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!</description>
                 <advanced>true</advanced>
             </parameter>
-			
+            
+            <parameter name="controller_exclude" type="text" groupName="actions">
+                <label>Exclude Devices</label>
+                <description>Puts the controller into Exclusion mode.</description>
+                <advanced>true</advanced>
+            </parameter>
+            
 		</config-description>
 	</bridge-type>
 
