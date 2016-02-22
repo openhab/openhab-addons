@@ -41,6 +41,7 @@
       <property name="model">004001</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0100:0201</property>
+      <property name="DefaultAssociations">1</property>
     </properties>
 
     <config-description>
@@ -58,9 +59,9 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
+      <parameter name="config_2_1" type="integer" groupName="configuration"
                  min="1" max="63">
-        <label>1: Siren alarm tone length</label>
+        <label>2: Siren alarm tone length</label>
         <description>The additional siren is creating a different acoustic signal differentiate from the smoke alarm. This sound is partly on and partly off. This parameter defines the total length of the sound versus silence within this interval.</description>
         <default>8</default>
       </parameter>

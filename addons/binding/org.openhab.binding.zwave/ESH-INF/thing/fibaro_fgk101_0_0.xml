@@ -21,6 +21,12 @@
           <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
+      <channel id="sensor_temperature2" typeId="sensor_temperature">
+        <label>Temperature Sensor</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
