@@ -19,25 +19,25 @@
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
         <label>Sensor (relative humidity)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=RELATIVE_HUMIDITY</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=RELATIVE_HUMIDITY</property>
         </properties>
       </channel>
       <channel id="sensor_ultraviolet" typeId="sensor_ultraviolet">
         <label>Sensor (ultraviolet)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=ULTRAVIOLET</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=ULTRAVIOLET</property>
         </properties>
       </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
         <label>Sensor (luminance)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=LUMINANCE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=LUMINANCE</property>
         </properties>
       </channel>
       <channel id="sensor_binary" typeId="sensor_binary">

@@ -43,10 +43,10 @@
         <description>Activate/Deactive ALL ON/OFF</description>
         <default>255</default>
         <options>
-          <option value="-1">ALL ON active / ALL OFF active</option>
           <option value="0">ALL ON disabled / ALL OFF disabled</option>
           <option value="1">ALL ON disabled / ALL OFF active</option>
           <option value="2">ALL ON active / ALL OFF disabled</option>
+          <option value="255">ALL ON active / ALL OFF active</option>
         </options>
       </parameter>
 
