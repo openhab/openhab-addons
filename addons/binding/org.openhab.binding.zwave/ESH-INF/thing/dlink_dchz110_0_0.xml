@@ -59,31 +59,45 @@
       </parameter-group>
 
       <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="-1" max="100">
+                 min="0" max="100">
         <label>2: Basic Set Level</label>
         <description><![CDATA[
-Setting the BASIC command value to turn on the light.<br /><ul><li>-1 = 0xFF(-1) turns on the light. (Default)</li>
-				<li>0 = Turn off the light.</li>
-				<li>1 - 100 = For dimmers 1 to 100 means the light strength.</li></ul>    !]]></description>
-        <default>-1</default>
+Setting the BASIC command value to turn on the light.<br /><h1>Overview</h1><ul><li>0: Turn off the light.</li>
+<li>1 - 100: For dimmers 1 to 100 means the light level.</li>
+<li>255: Turns on the light. (Default) </li>
+</ul>    !]]></description>
+        <default>255</default>
+        <options>
+          <option value="0">Off</option>
+          <option value="255">On</option>
+        </options>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="99">
         <label>3: PIR Sensitivity</label>
         <description><![CDATA[
-Parameter to set the sensitivity for the PIR (Passiv Infrared Sensor).<br /><ul><li>0 = Disable the PIR motion detection.</li>
-				<li>1 - 99 = 1 means the lowest sensitivity, 99 means the highest sensitivity</li></ul>
-				High sensitivity means de    !]]></description>
+Set the sensitivity for the PIR (Passive Infrared Sensor).<br /><h1>Overview</h1><ul><li>0 = Disable the PIR motion detection.</li>
+<li>1 - 99 = 1 means the lowest sensitivity, 99 means the highest sensitivity</li>
+</ul><p>High sensitivity means de</p>
+    !]]></description>
         <default>70</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
       </parameter>
 
       <parameter name="config_4_1" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>4: Light Threshold</label>
         <description><![CDATA[
-Setting the illumination threshold to turn on the light. When the event triggers and the environment illumination is lower than the threshold, the device will turn on the light.<br /><ul><li>0 = Turn off illumination detected function and never turn </li></ul>    !]]></description>
+Set the illumination threshold to turn on the light. <br /><h1>Overview</h1><p>When the event triggers and the environment illumination is lower than the threshold, the device will turn on the light.</p>
+<ul><li>0 = Turn off illumination detected function and never turn</li>
+</ul>    !]]></description>
         <default>100</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
       </parameter>
 
       <parameter name="config_5_1" type="integer" groupName="configuration"
@@ -105,13 +119,88 @@ Parameter to set the sensor functions.<br /><ul><li>Bit 0: Disable magnetic inte
         <default>4</default>
       </parameter>
 
+      <parameter name="config_7_1_00000008" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>7: Disable send of BASIC OFF after door closed</label>
+        <default>1</default>
+        <options>
+          <option value="0">Enable</option>
+          <option value="1">Disable</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_7_1_00000010" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>7: Notification Type</label>
+        <default>0</default>
+        <options>
+          <option value="0">Notification Report</option>
+          <option value="1">Sensor Binary Report</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_7_1_00000020" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>7: Disable Multi CC in auto report</label>
+        <default>0</default>
+        <options>
+          <option value="0">Enable</option>
+          <option value="1">Disable</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_7_1_00000040" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>7: Disable to report battery state when the device triggered</label>
+        <default>0</default>
+        <options>
+          <option value="0">Enable</option>
+          <option value="1">Disable</option>
+        </options>
+      </parameter>
+
       <parameter name="config_7_1" type="integer" groupName="configuration"
                  min="0" max="127">
         <label>7: Customer Function</label>
         <description><![CDATA[
-Parameter to set the Customer Function.<br /><ul><li>Bit 0: Reserved.</li>
-				<li>Bit 1: Enable sending motion OFF report. 0: Disable, 1: Enable. Note: Depends on the Bit4, 0: Report Notification CC, Type: 0x07, Event: 0xFE 1: Sensor Binary Report,</li></ul>    !]]></description>
+Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Parameter 7 Customer Function. </strong></p>
+
+<strong>Available_Bits_for_Z110_Model</strong>
+<strong>Default </strong>
+<strong>Recommended</strong>
+Bit0: unused for Z110 Model
+0
+0
+Bit1: unused for Z110 Model
+0
+0
+Bit2: unused for Z110 Model
+1
+1
+Bit3: Disable send out BASIC OFF after door closed. (1:Disable, 0:Enable)
+0
+0
+Bit4: Notification Type, 0: Using Notification Report. 1: Using Sensor Binary Report. 
+0
+1
+Bit5: Disable Multi CC in auto report. (1:Disable, 0:Enable).
+0
+0
+Bit6: Disable to report battery state when the device triggered. (1:Disable, 10 0:Enable).
+0
+0
+Bit7: unused for Z110 Model
+0
+0
+
+<p>Comments / Tips for this device from the community:</p>
+<ul><li>Setting this Parameter to <strong>20</strong> is from user side wanted as this enables Binary Sensor to report OPEN / CLOSE status by changing Bit 4</li>
+</ul>
+<p>The calculation from the recommended column is:  Bit7 to Bit0 = 000100100 Binary which is euqal to 20 decimal</p>
+
+    !]]></description>
         <default>4</default>
+        <advanced>true</advanced>
       </parameter>
 
       <parameter name="config_8_1" type="integer" groupName="configuration"
