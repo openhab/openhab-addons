@@ -9,12 +9,12 @@
 package org.openhab.binding.kostal.inverter;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 public class WebscrapeHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(WebscrapeHandler.class);
-    private boolean active;
     private SourceConfig config;
     private List<ChannelConfig> channelConfigs;
 
@@ -53,34 +52,24 @@ public class WebscrapeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SourceConfig.class);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                while (active) {
-                    try {
-                        refresh();
-                        updateStatus(ThingStatus.ONLINE);
-                        Thread.sleep(5000);
-                    } catch (Exception e) {
-						updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                        logger.debug("Error refreshing source " + getThing().getUID(), e);
-                    }
+                try {
+                    refresh();
+                   updateStatus(ThingStatus.ONLINE);
+                } catch (Exception e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getClass().getName() + ":" + e.getMessage());
+                    logger.debug("Error refreshing source " + getThing().getUID(), e);
                 }
             }
 
-        });
+        }, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Read only
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        active = false;
     }
 
     private void refresh() throws Exception {
@@ -109,13 +98,12 @@ public class WebscrapeHandler extends BaseThingHandler {
     private Document getDoc() throws IOException {
         String login = config.userName + ":" + config.password;
         String base64login = new String(Base64.getEncoder().encode(login.getBytes()));
-        Document doc = Jsoup.connect(config.url).header("Authorization", "Basic " + base64login).get();
-        return doc;
+        return Jsoup.connect(config.url).header("Authorization", "Basic " + base64login).get();
     }
 
     private State getState(String value) {
         try {
-            return new DecimalType(Integer.parseInt(value));
+            return new DecimalType(new BigDecimal(value));
         } catch (NumberFormatException e) {
             return new StringType(value);
         }

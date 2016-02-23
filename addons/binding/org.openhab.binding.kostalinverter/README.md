@@ -1,10 +1,18 @@
+---
+layout: documentation
+---
+
+{% include base.html %}
+
 # Kostal inverter Binding
 
-Uses jsoup to scrape the web interface of the inverter for the metrics below.
+![LIFX E27](doc/kostalpico.jpg)
+
+Scrapes the web interface of the inverter for the metrics of the supported channels below.
 
 ## Supported Things
 
-Kostal Inverter
+Tested with Kostal Inverter Pico but might work with other inverters from kostal too.
 
 ## Discovery
 
@@ -17,7 +25,23 @@ totalEnergy
 dayEnergy
 status
 
-## Full Example
+## Thing Configuration
 
-Number SolarPower "Solar Power [%.2f Watt]" (gGF) {kostal="aktuell"}
-Number SolarEnergyDay "TagesLeistung Solar[%.2f kwh]" (gGF) {webscrape="Tagesenergie"}
+demo.things
+```
+Thing kostalpico:kostalpico:inverter [ url="http://192.168.0.128" ]
+```
+
+If the thing goes online then the connection to the web interface is successful. In case
+it is offline you should see an error message.
+
+## Items
+
+demo.items:
+```
+Number SolarPower "Solar power [%.2f Watt]" <energy> (gGF) { channel="kostalpico:kostalpico:inverter:acPower" }
+Number SolarEnergyDay "Solar day energy[%.2f kwh]" <energy> (gGF)  { channel="kostalpico:kostalpico:inverter:dayEnergy" }
+Number SolarTotalEnergy "Solar total energy[%.2f kwh]" <energy> (gGF) { channel="kostalpico:kostalpico:inverter:totalEnergy" }
+String SolarStatus "Solar status [%s]" <energy> (gGF) { channel="kostalpico:kostalpico:inverter:status" }
+```
+
