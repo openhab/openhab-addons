@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -118,8 +119,9 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         thingChannelsPoll = new ArrayList<ZWaveThingChannel>();
         thingChannelsState = new ArrayList<ZWaveThingChannel>();
         for (Channel channel : getThing().getChannels()) {
-            // Process the channel properties
+            // Process the channel properties and configuration
             Map<String, String> properties = channel.getProperties();
+            Configuration configuration = channel.getConfiguration();
 
             for (String key : properties.keySet()) {
                 String[] bindingType = key.split(":");
@@ -146,6 +148,11 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                         String[] prop = arg.split("=");
                         argumentMap.put(prop[0], prop[1]);
                     }
+                }
+
+                // Process the user configuration and add it to the argument map
+                for (String configName : configuration.getProperties().keySet()) {
+                    argumentMap.put(configName, configuration.get(configName).toString());
                 }
 
                 // Add all the command classes...
@@ -306,9 +313,14 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
     }
 
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        ZWaveNode node = controllerHandler.getNode(nodeId);
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
+            throws ConfigValidationException {
         logger.debug("NODE {}: Configuration update received", nodeId);
+
+        // Call base implementation to perform checking on the configuration
+        super.handleConfigurationUpdate(configurationParameters);
+
+        ZWaveNode node = controllerHandler.getNode(nodeId);
 
         Configuration configuration = editConfiguration();
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
