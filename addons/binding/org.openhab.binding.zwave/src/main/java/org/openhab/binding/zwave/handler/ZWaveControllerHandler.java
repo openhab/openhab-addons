@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -67,7 +68,14 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         logger.debug("Initializing ZWave Controller.");
 
         isMaster = (Boolean) getConfig().get(CONFIGURATION_MASTER);
+        if (isMaster == null) {
+            isMaster = true;
+        }
+
         isSUC = (Boolean) getConfig().get(CONFIGURATION_SUC);
+        if (isSUC == null) {
+            isSUC = false;
+        }
 
         super.initialize();
     }
@@ -118,9 +126,13 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     @Override
     public void dispose() {
         // Remove the discovery service
-        discoveryService.deactivate();
+        if (discoveryService != null) {
+            discoveryService.deactivate();
+        }
 
-        discoveryRegistration.unregister();
+        if (discoveryRegistration != null) {
+            discoveryRegistration.unregister();
+        }
 
         // if (this.converterHandler != null) {
         // this.converterHandler = null;
@@ -134,7 +146,13 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     }
 
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
+            throws ConfigValidationException {
+        logger.debug("Controller Configuration update received");
+
+        // Call base implementation to perform checking on the configuration
+        super.handleConfigurationUpdate(configurationParameters);
+
         boolean reinitialise = false;
 
         Configuration configuration = editConfiguration();

@@ -28,6 +28,30 @@
           <property name="binding:*:OnOffType">SENSOR_BINARY:2</property>
         </properties>
       </channel>
+      <channel id="sensor_temperature3" typeId="sensor_temperature">
+        <label>Sensor (temperature 1)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:3;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature4" typeId="sensor_temperature">
+        <label>Sensor (temperature 2)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:4;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature5" typeId="sensor_temperature">
+        <label>Sensor (temperature 3)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:5;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature6" typeId="sensor_temperature">
+        <label>Sensor (temperature 4)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:6;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
