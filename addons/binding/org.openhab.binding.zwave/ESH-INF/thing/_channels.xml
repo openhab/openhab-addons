@@ -276,17 +276,17 @@
         <category>Temperature</category>
         <state pattern="%.1f" readOnly="true">
         </state>
-<!--         <config-description>
-            <parameter name="scale" type="text">
+        <config-description>
+            <parameter name="config_scale" type="text">
                 <label>Scale</label>
                 <description>Select the scale for temperature readings</description>
                 <default>celsius</default>
                 <options>
-                    <option value="celsius">Celsius</option>
-                    <option value="fahrenheit">Fahrenheit</option>
+                    <option value="0">Celsius</option>
+                    <option value="1">Fahrenheit</option>
                 </options>
             </parameter>
-        </config-description> -->
+        </config-description>
     </channel-type>
 
     <!-- Ultraviolet Channel -->
