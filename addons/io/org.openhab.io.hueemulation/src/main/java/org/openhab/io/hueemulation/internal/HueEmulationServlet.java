@@ -369,7 +369,13 @@ public class HueEmulationServlet extends HttpServlet {
         if (xmlDoc == null) {
             xmlDoc = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("discovery.xml"), "UTF-8");
         }
-        String formattedXML = String.format(xmlDoc, InetAddress.getLocalHost().getHostAddress(),
+
+        InetAddress address = disco.getAddress();
+        if (address == null) {
+            return;
+        }
+
+        String formattedXML = String.format(xmlDoc, address.getHostAddress(),
                 System.getProperty("org.osgi.service.http.port"), getUDN());
         resp.setContentType(APPLICATION_XML);
         PrintWriter out = resp.getWriter();
