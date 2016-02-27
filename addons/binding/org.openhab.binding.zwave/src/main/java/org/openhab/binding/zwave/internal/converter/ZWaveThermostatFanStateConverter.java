@@ -11,12 +11,15 @@ package org.openhab.binding.zwave.internal.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveThermostatFanStateCommandClass;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +61,14 @@ public class ZWaveThermostatFanStateConverter extends ZWaveCommandClassConverter
         List<SerialMessage> response = new ArrayList<SerialMessage>(1);
         response.add(serialMessage);
         return response;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
+        return new DecimalType((Integer) event.getValue());
     }
 
 }
