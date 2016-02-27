@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tivo"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="sckt">
+        <label>TiVo DVR Controller</label>
+        <description>Monitor and control your TiVo via DIRECT SOCKET commands leveraging the TIVO protocol 1.1 specification.</description>
+
+        <channels>
+            <channel id="tivoChannelForce" typeId="tivoChannelForce"/>
+            <channel id="tivoChannelSet" typeId="tivoChannelSet"/>
+            <channel id="tivoCommand" typeId="tivoCommand"/>
+            <channel id="tivoTeleport" typeId="tivoTeleport"/>
+            <channel id="tivoIRCommand" typeId="tivoIRCommand"/>
+            <channel id="tivoKBDCommand" typeId="tivoKBDCommand"/>
+            <channel id="tivoStatus" typeId="tivoStatus"/>
+        </channels>
+        <config-description>
+        	<parameter name="deviceName" type="text" required="true">
+				<default>My Tivo</default>
+				<label>Device Name</label>
+				<description>A friendly name to refer to this device</description>
+			</parameter>
+        	<parameter name="address" type="text" required="true">
+            	<!-- Sample Thing Type -->
+            	<!-- TODO: REMOVE DEFAULT IP ADDRESS TESTING ONLY -->
+            	<default></default>
+            	<label>Address</label>
+            	<description>The hostname or IP address of your TiVo box</description>
+        	</parameter>
+        	<parameter name="tcpPort" type="integer" max="65535" min="1">
+				<default>31339</default>
+				<label>TCP Port</label>
+				<context>network-address</context>
+				<description>The TCP port number used to connect to the TiVo. There is no need to change this</description>
+			</parameter>
+			<parameter name="numRetry" type="integer" max="65535" min="0">
+				<default>5</default>
+				<label>Connection Retries</label>
+				<description>The number of times to attempt to reconnect to the TIVO box in case of a failure</description>
+			</parameter>
+			<parameter name="keepConActive" type="boolean">
+				<default>true</default>
+				<required>true</required>
+				<label>Keep Connection Open</label>
+				<description>Keep connection to the TiVo open - best for when monitoring the TiVo for changing channels</description>
+			</parameter>
+			<parameter name="pollForChanges" type="boolean">
+				<default>true</default>
+				<required>true</required>
+				<label>Poll for Channel Changes</label>
+				<description>Feed channel changes and other information back into the OpenHAB platform to allow decisions and rules to be fired based on activity on your TiVo</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" max="65535" min="3">
+				<default>10</default>
+				<required>true</required>
+				<label>Polling Interval (Seconds)</label>
+				<description>Number of seconds to request the status information from the TiVo</description>
+			</parameter>
+			<parameter name="cmdWaitInterval" type="integer" max="65535" min="0">
+                <default>200</default>
+                <required>true</required>
+                <label>Command Wait Interval (Milliseconds)</label>
+                <description>Period to wait AFTER a command is sent to the TiVo in milliseconds</description>
+            </parameter>
+            <parameter name="ignoreChannels" type="text">
+                <default></default>
+                <required>false</required>
+                <label>Channels to Ignore</label>
+                <description>Most useful for channel up/down operations - will skip the channels you list here. Comma seperated.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="tivoChannelForce">
+        <item-type>Number</item-type>
+        <label>TiVo Current Channel + Forced</label>
+        <description>Current channel the TiVo tuner is tuned into</description>
+        <category>SoundVolume</category>
+        <state min="1" max="9999" step="1" pattern="CH %n" />
+    </channel-type>
+    <channel-type id="tivoChannelSet">
+        <item-type>Number</item-type>
+        <label>TiVo Current Channel + Request</label>
+        <description>Request a channel change (doesn't stop a recording in progress)</description>
+        <category>SoundVolume</category>
+        <state min="1" max="9999" step="1" pattern="CH %n" />
+    </channel-type>
+    <channel-type id="tivoCommand">
+        <item-type>String</item-type>
+        <label>Directly execute a TiVo command</label>
+        <description>Requested TiVo Action</description>
+        <state readOnly="false"/>
+    </channel-type>
+    <channel-type id="tivoTeleport">
+        <item-type>String</item-type>
+        <label>Change Screen</label>
+        <description>Change to one of the following TiVo screens: TIVO, LIVETV, GUIDE, NOWPLAYING</description>
+        <state readOnly="false">
+            <options>
+                <option value="TIVO">TIVO</option>
+                <option value="LIVETV">LIVETV</option>
+                <option value="GUIDE">GUIDE</option>
+                <option value="NOWPLAYING">NOWPLAYING</option>
+            </options>        
+        </state>
+    </channel-type>
+    <channel-type id="tivoIRCommand">
+        <item-type>String</item-type>
+        <label>Send TiVo IR Command</label>
+        <description>Send a simulated button push from the remote to the TiVo</description>
+        <state readOnly="false"/>
+    </channel-type>
+    <channel-type id="tivoKBDCommand">
+        <item-type>String</item-type>
+        <label>Send TiVo KEYBOARD Command</label>
+        <description>Send a button press from a keyboard that could be used with the TiVo</description>
+        <state readOnly="false"/>
+    </channel-type>
+    <channel-type id="tivoStatus">
+        <item-type>String</item-type>
+        <label>TiVo Status</label>
+        <description>Return code or information returned by the TiVo</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+</thing:thing-descriptions>

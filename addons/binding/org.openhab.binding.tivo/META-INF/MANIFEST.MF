@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TiVo Binding
+Bundle-SymbolicName: org.openhab.binding.tivo;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: 
+ javax.jmdns;version="3.4.2",
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.mdns.discovery,
+ org.openhab.binding.tivo,
+ org.openhab.binding.tivo.handler,
+ org.openhab.core.library.types,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.quartz,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.tivo,
+ org.openhab.binding.tivo.handler

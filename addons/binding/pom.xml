@@ -36,6 +36,7 @@
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.zwave</module>
   </modules>
