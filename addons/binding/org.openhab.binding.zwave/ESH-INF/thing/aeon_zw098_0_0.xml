@@ -26,7 +26,7 @@ LED Bulb<br /><h2>Inclusion Information</h2><p>Non-secure inclusion:<br />1. Pow
       <channel id="color_color" typeId="color_color">
         <label>Color Control</label>
         <properties>
-          <property name="binding:*:HSBType">COLOR;</property>
+          <property name="binding:*:HSBType">COLOR;colorMode=RGB</property>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
