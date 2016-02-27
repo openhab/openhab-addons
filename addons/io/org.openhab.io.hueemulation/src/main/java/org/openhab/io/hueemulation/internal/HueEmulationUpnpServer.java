@@ -11,11 +11,13 @@ package org.openhab.io.hueemulation.internal;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Enumeration;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ public class HueEmulationUpnpServer extends Thread {
     private boolean running;
     private String discoPath;
     private String usn;
+    private InetAddress address;
 
     private String discoString = "HTTP/1.1 200 OK\r\n" + "CACHE-CONTROL: max-age=100\r\n" + "EXT:\r\n"
             + "LOCATION: %s\r\n" + "SERVER: FreeRTOS/7.4.2 UPnP/1.0 IpBridge/1.10.0\r\n"
@@ -70,9 +73,22 @@ public class HueEmulationUpnpServer extends Thread {
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         while (running) {
             try {
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface ni = interfaces.nextElement();
+                    Enumeration<InetAddress> addresses = ni.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress addr = addresses.nextElement();
+                        if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                            address = addr;
+                            break;
+                        }
+
+                    }
+                }
                 InetSocketAddress socketAddr = new InetSocketAddress(MULTI_ADDR, UPNP_PORT_RECV);
                 recvSocket = new MulticastSocket(UPNP_PORT_RECV);
-                recvSocket.joinGroup(socketAddr, NetworkInterface.getByInetAddress(InetAddress.getLocalHost()));
+                recvSocket.joinGroup(socketAddr, NetworkInterface.getByInetAddress(address));
                 sendSocket = new DatagramSocket(UPNP_PORT_SEND);
                 while (running) {
                     recvSocket.receive(recv);
@@ -83,7 +99,7 @@ public class HueEmulationUpnpServer extends Thread {
                         if (data.startsWith("M-SEARCH")) {
                             String msg = String
                                     .format(discoString,
-                                            "http://" + InetAddress.getLocalHost().getHostAddress().toString() + ":"
+                                            "http://" + address.getHostAddress().toString() + ":"
                                                     + System.getProperty("org.osgi.service.http.port") + discoPath,
                                             usn);
                             DatagramPacket response = new DatagramPacket(msg.getBytes(), msg.length(),
@@ -112,5 +128,9 @@ public class HueEmulationUpnpServer extends Thread {
                 }
             }
         }
+    }
+
+    public InetAddress getAddress() {
+        return address;
     }
 }
