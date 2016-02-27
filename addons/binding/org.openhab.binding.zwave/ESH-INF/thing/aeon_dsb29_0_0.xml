@@ -76,15 +76,27 @@
         </options>
       </parameter>
 
-      <parameter name="config_121_4" type="integer" groupName="configuration"
-                 min="0" max="4">
-        <label>121: Send those commands to associated devices on open/close/tamper events</label>
+      <parameter name="config_121_4_000000FF" type="integer" groupName="configuration"
+                 min="0" max="17">
+        <label>121: command class to use for open/close</label>
         <description><![CDATA[
-Available Configurations<br />
-				0 -&gt; Battery report<br />
-				4 -&gt; Sensor binary report<br />
-				8 -&gt; Basic Set      !]]></description>
-        <default>4</default>
+parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p>
+<p>Set to 1 for BATTERY report</p>
+<p>Set to 16 for SENSOR_BINARY report</p>
+<p>Set to 17 for SENSOR_BINARY and BATTERY</p>
+    !]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_121_4_0000FF00" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>121: command class to use for open/close</label>
+        <description><![CDATA[
+see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p>
+<p>set to 1 for BASIC report (default)</p>
+
+    !]]></description>
+        <default>1</default>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->
