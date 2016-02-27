@@ -135,7 +135,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         // Have we get a ICONFIG message?
         if (msg.getNodeId() == 0) {
-            if (msg.getChildId() == 0) {
+            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
                 if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
                     if (msg.getAck() == 0) {
                         if (msg.getSubType() == MYSENSORS_SUBTYPE_I_VERSION) {
