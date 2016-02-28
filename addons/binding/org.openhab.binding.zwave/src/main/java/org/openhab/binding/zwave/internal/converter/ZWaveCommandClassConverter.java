@@ -135,16 +135,22 @@ public abstract class ZWaveCommandClassConverter {
      * @return converted value
      */
     protected BigDecimal convertTemperature(int fromScale, int toScale, BigDecimal val) {
+        BigDecimal valConverted;
+
         // For temperature, there are only two scales, so we simplify the conversion
         if (fromScale == 0 && toScale == 1) {
             // Scale is celsius, convert to fahrenheit
-            val = val.multiply(ONE_POINT_EIGHT).add(THIRTY_TWO).movePointRight(1);
+            valConverted = val.multiply(ONE_POINT_EIGHT).add(THIRTY_TWO).movePointRight(1);
         } else if (fromScale == 1 && toScale == 0) {
             // Scale is fahrenheit, convert to celsius
-            val = val.movePointLeft(1).subtract(THIRTY_TWO).divide(ONE_POINT_EIGHT, MathContext.DECIMAL32);
+            valConverted = val.movePointLeft(1).subtract(THIRTY_TWO).divide(ONE_POINT_EIGHT, MathContext.DECIMAL32);
+        } else {
+            valConverted = val;
         }
 
-        return val;
+        logger.debug("Converted temperature from {}{} to {}{}", val, fromScale == 0 ? "C" : "F", valConverted,
+                toScale == 0 ? "C" : "F");
+        return valConverted;
     }
 
 }

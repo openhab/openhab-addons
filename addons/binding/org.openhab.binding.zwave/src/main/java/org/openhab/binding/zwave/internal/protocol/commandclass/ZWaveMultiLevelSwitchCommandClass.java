@@ -100,9 +100,9 @@ public class ZWaveMultiLevelSwitchCommandClass extends ZWaveCommandClass
                 logger.debug("NODE {}: Requesting level from endpoint {}", this.getNode().getNodeId(), endpoint);
                 this.getController().sendData(this.getNode().encapsulate(this.getValueMessage(), this, endpoint));
                 break;
+            case SWITCH_MULTILEVEL_SET:
+                logger.debug("NODE {}: Switch Multi Level SET", this.getNode().getNodeId());
             case SWITCH_MULTILEVEL_REPORT:
-                logger.trace("Process Switch Multi Level Report");
-
                 int value = serialMessage.getMessagePayloadByte(offset + 1);
                 logger.debug("NODE {}: Switch Multi Level report, value = {}", this.getNode().getNodeId(), value);
                 ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
