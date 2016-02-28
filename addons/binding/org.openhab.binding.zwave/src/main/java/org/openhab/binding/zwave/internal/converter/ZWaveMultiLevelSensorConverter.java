@@ -74,33 +74,31 @@ public class ZWaveMultiLevelSensorConverter extends ZWaveCommandClassConverter {
         ZWaveMultiLevelSensorValueEvent sensorEvent = (ZWaveMultiLevelSensorValueEvent) event;
 
         // Don't trigger event if this item is bound to another sensor type
-        if (sensorType != null && SensorType.valueOf(sensorType) != sensorEvent.getSensorType()) {
+        if (sensorType == null) {
+            logger.debug("NODE {}: No sensorType set for channel {}", event.getNodeId(), channel.getUID());
+            return null;
+        }
+
+        if (SensorType.valueOf(sensorType) != sensorEvent.getSensorType()) {
             return null;
         }
 
         BigDecimal val = (BigDecimal) event.getValue();
-        // Perform a scale conversion if needed
-        if (sensorScale != null && Integer.parseInt(sensorScale) != sensorEvent.getSensorScale()) {
-            int intType = Integer.parseInt(sensorType);
-            SensorType senType = SensorType.getSensorType(intType);
-            if (senType == null) {
-                logger.error("NODE {}: Error parsing sensor type {}", event.getNodeId(), sensorType);
-            } else {
-                switch (senType) {
-                    case TEMPERATURE:
-                        val = convertTemperature(sensorEvent.getSensorScale(), Integer.parseInt(sensorScale), val);
-                        // Perform a scale conversion if needed
-                        if (sensorScale != null && Integer.parseInt(sensorScale) != sensorEvent.getSensorScale()) {
-                            val = convertTemperature(sensorEvent.getSensorScale(), Integer.parseInt(sensorScale), val);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
 
+        // Perform a scale conversion if needed
+        if (sensorScale != null) {
             logger.debug("NODE {}: Sensor is reporting scale {}, requiring conversion to {}. Value is now {}.",
                     event.getNodeId(), sensorEvent.getSensorScale(), sensorScale, val);
+
+            SensorType senType = SensorType.valueOf(sensorType);
+            switch (senType) {
+                case TEMPERATURE:
+                    val = convertTemperature(sensorEvent.getSensorScale(), Integer.parseInt(sensorScale), val);
+                    break;
+                default:
+                    logger.debug("NODE {}: Sensor conversion not performed for {}.", event.getNodeId(), senType);
+                    break;
+            }
         }
 
         return new DecimalType(val);
