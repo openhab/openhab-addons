@@ -17,6 +17,7 @@
 
   <modules>
     <module>org.openhab.io.myopenhab</module>
+    <module>org.openhab.io.hueemulation</module>
   </modules>
 
   <profiles>

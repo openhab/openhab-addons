@@ -142,6 +142,12 @@ public class AutelisHandler extends BaseThingHandler {
         logger.debug("Handler disposed.");
         stopPolling();
     }
+    
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        //clear our cached values so the new channel gets updated
+        clearState(true);
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -304,7 +310,7 @@ public class AutelisHandler extends BaseThingHandler {
     protected void execute() {
         logger.trace("Connecting to {}", baseURL);
 
-        clearState();
+        clearState(false);
 
         // we will reconstruct the document with all the responses combined for
         // XPATH
@@ -408,8 +414,8 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * Clears our state if it is time
      */
-    private void clearState() {
-        if (System.currentTimeMillis() >= clearTime) {
+    private void clearState(boolean force) {
+        if (force || System.currentTimeMillis() >= clearTime) {
             stateMap.clear();
             scheduleClearTime(NORMAL_CLEARTIME);
         }

@@ -48,4 +48,6 @@ public class MaxCubeBridgeConfiguration {
      * closed and reopened
      */
     public Integer maxRequestsPerConnection;
+
+    public Integer cubeReboot;
 }

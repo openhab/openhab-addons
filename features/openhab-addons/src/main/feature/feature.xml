@@ -114,6 +114,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.vitotronic/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-zwave" description="Z-Wave Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
+    </feature>
+
     <!-- misc -->
 
     <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
@@ -121,6 +127,11 @@
         <feature>esh-model-script</feature>
         <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.myopenhab/${project.version}</bundle>
+    </feature>
+    
+    <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.hueemulation/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
