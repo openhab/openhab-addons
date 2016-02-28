@@ -9,7 +9,6 @@ package org.openhab.ui.cometvisu.servlet;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,53 +58,23 @@ import org.openhab.ui.cometvisu.internal.config.VisuConfig;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.DataBean;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.ItemBean;
 import org.openhab.ui.cometvisu.internal.rrs.beans.Feed;
+import org.openhab.ui.cometvisu.servlet.quercus.PHProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.caucho.java.WorkDir;
-import com.caucho.quercus.QuercusContext;
-import com.caucho.quercus.QuercusDieException;
 import com.caucho.quercus.QuercusEngine;
-import com.caucho.quercus.QuercusErrorException;
-import com.caucho.quercus.QuercusExitException;
-import com.caucho.quercus.QuercusLineRuntimeException;
-import com.caucho.quercus.QuercusRequestAdapter;
-import com.caucho.quercus.QuercusRuntimeException;
-import com.caucho.quercus.env.Env;
-import com.caucho.quercus.env.QuercusValueException;
-import com.caucho.quercus.env.StringValue;
-import com.caucho.quercus.page.QuercusPage;
-import com.caucho.quercus.servlet.api.QuercusHttpServletRequest;
-import com.caucho.quercus.servlet.api.QuercusHttpServletRequestImpl;
-import com.caucho.quercus.servlet.api.QuercusHttpServletResponse;
-import com.caucho.quercus.servlet.api.QuercusHttpServletResponseImpl;
-import com.caucho.quercus.servlet.api.QuercusServletContextImpl;
-import com.caucho.util.CurrentTime;
-import com.caucho.util.L10N;
-import com.caucho.vfs.FilePath;
-import com.caucho.vfs.Path;
-import com.caucho.vfs.Vfs;
-import com.caucho.vfs.WriteStream;
 import com.google.gson.Gson;
 
 /**
- * Servlet for CometVisu static + php files
+ * Servlet for CometVisu files
  *
- * @author Tobias Bräutigam - initial contribution and API
- * @author BalusC - code for static files (taken from FileServlet)
- * @author Scott Ferguson - code for php files (taken from QuercusServletImpl)
- * @see com.caucho.quercus.servlet.QuercusServletImpl
- *
- * @link
- *       http://balusc.blogspot.com/2009/02/fileservlet-supporting-resume-and.html
- * @link http://quercus.caucho.com/
+ * @author Tobias Bräutigam
  */
 public class CometVisuServlet extends HttpServlet {
     /**
      *
      */
     private static final long serialVersionUID = 4448918908615003303L;
-    private static final L10N L = new L10N(CometVisuServlet.class);
     private static final Logger logger = LoggerFactory.getLogger(CometVisuServlet.class);
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
@@ -125,10 +94,11 @@ public class CometVisuServlet extends HttpServlet {
     protected File userFileFolder;
     // protected String serverAlias;
     protected String defaultUserDir;
-    protected QuercusEngine engine;
+    protected PHProvider engine;
     protected ServletContext _servletContext;
-    protected QuercusContext _quercus;
     protected ServletConfig _config;
+
+    protected boolean phpEnabled = false;
 
     private CometVisuApp cometVisuApp;
 
@@ -138,10 +108,24 @@ public class CometVisuServlet extends HttpServlet {
         userFileFolder = new File(org.eclipse.smarthome.config.core.ConfigConstants.getConfigFolder()
                 + Config.COMETVISU_WEBAPP_USERFILE_FOLDER);
         defaultUserDir = System.getProperty("user.dir");
-        engine = new QuercusEngine();
-        engine.getQuercus().setIni("include_path", ".:" + rootFolder.getAbsolutePath());
-
         this.cometVisuApp = cometVisuApp;
+
+        this.initQuercusEngine();
+    }
+
+    private void initQuercusEngine() {
+        try {
+            // for some reason the QuercusEngine must be created here, because otherwise the modules are not loaded
+            // and quercus is useless
+            engine = new PHProvider(new QuercusEngine());
+            this.engine.setIni("include_path", ".:" + rootFolder.getAbsolutePath());
+            if (_servletContext != null) {
+                this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, _servletContext);
+                phpEnabled = true;
+            }
+        } catch (Exception e) {
+            phpEnabled = false;
+        }
     }
 
     /**
@@ -153,24 +137,11 @@ public class CometVisuServlet extends HttpServlet {
         _config = config;
         _servletContext = config.getServletContext();
 
-        checkServletAPIVersion();
-
-        // Path pwd = new FilePath(_servletContext.getRealPath("/"));
-        Path pwd = new FilePath(rootFolder.getAbsolutePath());
-        Path webInfDir = pwd;
-
-        logger.info("initial pwd " + pwd);
-        logger.info("initial webinf " + webInfDir);
-        engine.getQuercus().setPwd(pwd);
-        engine.getQuercus().setWebInfDir(webInfDir);
-
-        // need to set these for non-Resin containers
-        if (!CurrentTime.isTest() && !engine.getQuercus().isResin()) {
-            Vfs.setPwd(pwd);
-            WorkDir.setLocalWorkDir(webInfDir.lookup("work"));
+        // init php service if available
+        if (this.engine != null) {
+            this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, _servletContext);
+            phpEnabled = true;
         }
-        engine.getQuercus().init();
-        engine.getQuercus().start();
     }
 
     /**
@@ -187,7 +158,7 @@ public class CometVisuServlet extends HttpServlet {
                 && req.getParameter("type").equals("xml")) {
             saveConfig(req, resp);
         } else {
-            phpService(requestedFile, req, resp);
+            processPhpRequest(requestedFile, req, resp);
         }
     }
 
@@ -244,9 +215,22 @@ public class CometVisuServlet extends HttpServlet {
         } else if (path.equalsIgnoreCase(rrsLogPath)) {
             processRssLogRequest(requestedFile, req, resp);
         } else if (requestedFile.getName().endsWith(".php")) {
-            phpService(requestedFile, req, resp);
+            processPhpRequest(requestedFile, req, resp);
         } else {
             processStaticRequest(requestedFile, req, resp, true);
+        }
+    }
+
+    protected void processPhpRequest(File file, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (!this.phpEnabled) {
+            // try to initialize the php service
+            initQuercusEngine();
+        }
+        if (this.phpEnabled) {
+            this.engine.phpService(file, request, response);
+        } else {
+            logger.debug("php service is not available please install com.caucho.quercus bundle");
         }
     }
 
@@ -290,8 +274,9 @@ public class CometVisuServlet extends HttpServlet {
     private void processRssLogRequest(File file, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // retrieve the item
-        if (request.getParameter("f") == null)
+        if (request.getParameter("f") == null) {
             return;
+        }
 
         String[] itemNames = request.getParameter("f").split(",");
         List<Item> items = new ArrayList<Item>();
@@ -398,8 +383,9 @@ public class CometVisuServlet extends HttpServlet {
                     while (it.hasNext()) {
                         i++;
                         HistoricItem historicItem = it.next();
-                        if (historicItem.getState() == null || historicItem.getState().toString().isEmpty())
+                        if (historicItem.getState() == null || historicItem.getState().toString().isEmpty()) {
                             continue;
+                        }
                         org.openhab.ui.cometvisu.internal.rrs.beans.Entry entry = new org.openhab.ui.cometvisu.internal.rrs.beans.Entry();
                         entry.publishedDate = historicItem.getTimestamp().getTime();
                         logger.info(rssPubDateFormat.format(entry.publishedDate) + ": " + historicItem.getState());
@@ -924,233 +910,6 @@ public class CometVisuServlet extends HttpServlet {
     private String marshalJson(Object bean) {
         Gson gson = new Gson();
         return gson.toJson(bean);
-    }
-
-    /**
-     * Service.
-     */
-    private final void phpService(File file, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        Env env = null;
-        WriteStream ws = null;
-
-        QuercusHttpServletRequest req = new QuercusHttpServletRequestImpl(request);
-        QuercusHttpServletResponse res = new QuercusHttpServletResponseImpl(response);
-
-        try {
-            Path path = getPath(file, req);
-            logger.info("phpService path: " + path);
-
-            QuercusPage page;
-
-            try {
-                page = engine.getQuercus().parse(path);
-            } catch (FileNotFoundException e) {
-                // php/2001
-                logger.debug(e.toString(), e);
-
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-
-                return;
-            }
-
-            ws = openWrite(response);
-
-            // php/2002
-            // for non-Resin containers
-            // for servlet filters that do post-request work after Quercus
-            ws.setDisableCloseSource(true);
-
-            // php/6006
-            ws.setNewlineString("\n");
-
-            QuercusContext quercus = engine.getQuercus();
-
-            env = quercus.createEnv(page, ws, req, res);
-
-            // php/815d
-            env.setPwd(path.getParent());
-            logger.info("setting user dir to " + path.getParent().getNativePath());
-            System.setProperty("user.dir", path.getParent().getNativePath());
-            quercus.setServletContext(new QuercusServletContextImpl(_servletContext));
-
-            try {
-                env.start();
-
-                // php/2030, php/2032, php/2033
-                // Jetty hides server classes from web-app
-                // http://docs.codehaus.org/display/JETTY/Classloading
-                //
-                // env.setGlobalValue("request", env.wrapJava(request));
-                // env.setGlobalValue("response", env.wrapJava(response));
-                // env.setGlobalValue("servletContext",
-                // env.wrapJava(_servletContext));
-
-                StringValue prepend = quercus.getIniValue("auto_prepend_file").toStringValue(env);
-                if (prepend.length() > 0) {
-                    Path prependPath = env.lookup(prepend);
-
-                    if (prependPath == null)
-                        env.error(L.l("auto_prepend_file '{0}' not found.", prepend));
-                    else {
-                        QuercusPage prependPage = engine.getQuercus().parse(prependPath);
-                        prependPage.executeTop(env);
-                    }
-                }
-
-                env.executeTop();
-
-                StringValue append = quercus.getIniValue("auto_append_file").toStringValue(env);
-                if (append.length() > 0) {
-                    Path appendPath = env.lookup(append);
-
-                    if (appendPath == null)
-                        env.error(L.l("auto_append_file '{0}' not found.", append));
-                    else {
-                        QuercusPage appendPage = engine.getQuercus().parse(appendPath);
-                        appendPage.executeTop(env);
-                    }
-                }
-                // return;
-            } catch (QuercusExitException e) {
-                throw e;
-            } catch (QuercusErrorException e) {
-                throw e;
-            } catch (QuercusLineRuntimeException e) {
-                logger.debug(e.toString(), e);
-
-                ws.println(e.getMessage());
-                // return;
-            } catch (QuercusValueException e) {
-                logger.debug(e.toString(), e);
-
-                ws.println(e.toString());
-
-                // return;
-            } catch (StackOverflowError e) {
-                RuntimeException myException = new RuntimeException(L.l("StackOverflowError at {0}", env.getLocation()),
-                        e);
-
-                throw myException;
-            } catch (Throwable e) {
-                if (response.isCommitted())
-                    e.printStackTrace(ws.getPrintWriter());
-
-                ws = null;
-
-                throw e;
-            } finally {
-                if (env != null)
-                    env.close();
-
-                // don't want a flush for an exception
-                if (ws != null && env != null && env.getDuplex() == null)
-                    ws.close();
-
-                System.setProperty("user.dir", defaultUserDir);
-            }
-        } catch (QuercusDieException e) {
-            // normal exit
-            logger.trace(e.getMessage(), e);
-        } catch (QuercusExitException e) {
-            // normal exit
-            logger.trace(e.getMessage(), e);
-        } catch (QuercusErrorException e) {
-            // error exit
-            logger.error(e.getMessage(), e);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Throwable e) {
-            handleThrowable(response, e);
-        }
-    }
-
-    protected Path getPath(File file, QuercusHttpServletRequest req) {
-        // php/8173
-        Path pwd = engine.getQuercus().getPwd().copy();
-
-        String servletPath = QuercusRequestAdapter.getPageServletPath(req);
-
-        if (servletPath.startsWith("/")) {
-            servletPath = servletPath.substring(1);
-        }
-
-        Path path = pwd.lookupChild(servletPath);
-
-        // php/2010, php/2011, php/2012
-        if (path.isFile()) {
-            return path;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        if (path.exists())
-            sb.append(servletPath);
-
-        String pathInfo = QuercusRequestAdapter.getPagePathInfo(req);
-        if (pathInfo != null) {
-            if (pathInfo.startsWith("/")) {
-                pathInfo = pathInfo.substring(1);
-            }
-            if (sb.length() > 1)
-                sb.append("/");
-            sb.append(pathInfo);
-
-        }
-
-        String scriptPath = sb.toString();
-
-        path = pwd.lookupChild(scriptPath);
-        if (file != null && !path.isFile())
-            path = path.lookupChild(file.getName());
-
-        logger.info("ServletPath '{}', PathInfo: '{}', ScriptPath: '{}' => Path '{}'", servletPath, pathInfo,
-                scriptPath, path);
-
-        return path;
-
-        /*
-         * jetty getRealPath() de-references symlinks, which causes problems
-         * with MergePath // php/8173 Path pwd = getQuercus().getPwd().copy();
-         *
-         * String scriptPath = QuercusRequestAdapter.getPageServletPath(req);
-         * String pathInfo = QuercusRequestAdapter.getPagePathInfo(req);
-         *
-         * Path path = pwd.lookup(req.getRealPath(scriptPath));
-         *
-         * if (path.isFile()) return path;
-         *
-         * // XXX: include
-         *
-         * String fullPath; if (pathInfo != null) fullPath = scriptPath +
-         * pathInfo; else fullPath = scriptPath;
-         *
-         * return pwd.lookup(req.getRealPath(fullPath));
-         */
-    }
-
-    protected void handleThrowable(HttpServletResponse response, Throwable e) throws IOException, ServletException {
-        throw new ServletException(e);
-    }
-
-    protected WriteStream openWrite(HttpServletResponse response) throws IOException {
-        WriteStream ws;
-
-        OutputStream out = response.getOutputStream();
-
-        ws = Vfs.openWrite(out);
-
-        return ws;
-    }
-
-    /**
-     * Makes sure the servlet container supports Servlet API 2.4+.
-     */
-    protected void checkServletAPIVersion() {
-        int major = _servletContext.getMajorVersion();
-        int minor = _servletContext.getMinorVersion();
-
-        if (major < 2 || major == 2 && minor < 4)
-            throw new QuercusRuntimeException(L.l("Quercus requires Servlet API 2.4+."));
     }
 
     /**
