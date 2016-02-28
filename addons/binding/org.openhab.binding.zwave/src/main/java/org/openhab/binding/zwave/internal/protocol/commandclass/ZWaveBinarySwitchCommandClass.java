@@ -78,12 +78,7 @@ public class ZWaveBinarySwitchCommandClass extends ZWaveCommandClass
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SWITCH_BINARY_SET:
-                logger.debug("Switch Binary Set sent to the controller will be processed as Switch Binary Report");
-                // Now, some devices report their value as a switch binary set. For instance the Aeon Labs Micro Smart
-                // Energy Switch.
-                // Process this as if it was a value report.
-                processSwitchBinaryReport(serialMessage, offset, endpoint);
-                break;
+                logger.debug("NODE {}: Switch Binary SET", this.getNode().getNodeId());
             case SWITCH_BINARY_REPORT:
                 processSwitchBinaryReport(serialMessage, offset, endpoint);
 
@@ -104,7 +99,7 @@ public class ZWaveBinarySwitchCommandClass extends ZWaveCommandClass
      */
     protected void processSwitchBinaryReport(SerialMessage serialMessage, int offset, int endpoint) {
         int value = serialMessage.getMessagePayloadByte(offset + 1);
-        logger.debug(String.format("NODE %d: Switch Binary report, value = 0x%02X", this.getNode().getNodeId(), value));
+        logger.debug("NODE {}: Switch Binary report, value = {}", this.getNode().getNodeId(), value);
         ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
                 this.getCommandClass(), value);
         this.getController().notifyEventListeners(zEvent);

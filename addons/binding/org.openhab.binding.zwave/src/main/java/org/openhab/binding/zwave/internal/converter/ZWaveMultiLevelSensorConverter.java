@@ -91,7 +91,7 @@ public class ZWaveMultiLevelSensorConverter extends ZWaveCommandClassConverter {
                         val = convertTemperature(sensorEvent.getSensorScale(), Integer.parseInt(sensorScale), val);
                         // Perform a scale conversion if needed
                         if (sensorScale != null && Integer.parseInt(sensorScale) != sensorEvent.getSensorScale()) {
-                            convertTemperature(sensorEvent.getSensorScale(), Integer.parseInt(sensorScale), val);
+                            val = convertTemperature(sensorEvent.getSensorScale(), Integer.parseInt(sensorScale), val);
                         }
                         break;
                     default:
