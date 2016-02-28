@@ -28,13 +28,16 @@ public class ZWaveBindingConstants {
     public final static ThingTypeUID CONTROLLER_SERIAL = new ThingTypeUID(BINDING_ID, "serial_zstick");
 
     public final static String CONFIGURATION_PORT = "port";
-    public final static String CONFIGURATION_MASTER = "master";
-    public final static String CONFIGURATION_SUC = "SUC";
+    public final static String CONFIGURATION_MASTER = "controller_master";
+    public final static String CONFIGURATION_SUC = "controller_suc";
+
+    public final static String CONFIGURATION_POLLPERIOD = "binding_pollperiod";
 
     public final static String UNKNOWN_THING = BINDING_ID + ":unknown";
 
-    public final static String PARAMETER_NODEID = "nodeid";
-    public final static String PARAMETER_POLLPERIOD = "binding_pollperiod";
+    public final static String PROPERTY_NODEID = "nodeid";
+
+    public final static String PROPERTY_NEIGHBOURS = "node_neighbours";
 
     public final static String CHANNEL_SERIAL_SOF = "serial_sof";
     public final static String CHANNEL_SERIAL_ACK = "serial_ack";
