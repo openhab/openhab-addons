@@ -210,7 +210,7 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
         String label = String.format("Node %d: %s", node.getNodeId(), thingType.getLabel());
 
         Map<String, Object> properties = new HashMap<>(1);
-        properties.put(ZWaveBindingConstants.PARAMETER_NODEID, BigDecimal.valueOf(node.getNodeId()));
+        properties.put(ZWaveBindingConstants.PROPERTY_NODEID, BigDecimal.valueOf(node.getNodeId()));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withBridge(bridgeUID).withLabel(label).build();
 

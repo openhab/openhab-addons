@@ -11,6 +11,7 @@ package org.openhab.binding.zwave.internal.converter;
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,10 +141,12 @@ public abstract class ZWaveCommandClassConverter {
         // For temperature, there are only two scales, so we simplify the conversion
         if (fromScale == 0 && toScale == 1) {
             // Scale is celsius, convert to fahrenheit
-            valConverted = val.multiply(ONE_POINT_EIGHT).add(THIRTY_TWO).movePointRight(1);
+            valConverted = val.multiply(ONE_POINT_EIGHT).add(THIRTY_TWO).movePointRight(1).setScale(1,
+                    RoundingMode.HALF_DOWN);
         } else if (fromScale == 1 && toScale == 0) {
             // Scale is fahrenheit, convert to celsius
-            valConverted = val.movePointLeft(1).subtract(THIRTY_TWO).divide(ONE_POINT_EIGHT, MathContext.DECIMAL32);
+            valConverted = val.subtract(THIRTY_TWO).divide(ONE_POINT_EIGHT, MathContext.DECIMAL32).setScale(1,
+                    RoundingMode.HALF_DOWN);
         } else {
             valConverted = val;
         }

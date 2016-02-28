@@ -93,7 +93,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
 
         BigDecimal value = (BigDecimal) event.getValue();
         // Perform a scale conversion if needed
-        if (setpointScale != null && Integer.parseInt(setpointScale) != setpointEvent.getScale()) {
+        if (setpointScale != null) {
             value = convertTemperature(setpointEvent.getScale(), Integer.parseInt(setpointScale), value);
         }
 

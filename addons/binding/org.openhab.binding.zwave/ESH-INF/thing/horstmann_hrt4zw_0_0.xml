@@ -6,7 +6,9 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
   <thing-type id="horstmann_hrt4zw_00_000">
     <label>HRT4-ZW Battery Powered Wall Thermostat</label>
-    <description>Battery Powered Wall Thermostat</description>
+    <description><![CDATA[
+Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: This device is also sold as Secure SRT321</p>
+    !]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
