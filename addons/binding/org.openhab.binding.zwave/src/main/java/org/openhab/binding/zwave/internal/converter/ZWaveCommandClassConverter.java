@@ -9,6 +9,8 @@
 package org.openhab.binding.zwave.internal.converter;
 
 import java.lang.reflect.Constructor;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +23,9 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
-import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;;
 
 /**
  * ZWaveCommandClassConverter class. Base class for all converters that convert between Z-Wave command classes and
@@ -30,7 +34,12 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueE
  * @author Chris Jackson
  */
 public abstract class ZWaveCommandClassConverter {
-    private static Map<CommandClass, Class<? extends ZWaveCommandClassConverter>> messageMap = null;
+    private static Map<CommandClass, Class<? extends ZWaveCommandClassConverter>> converterMap = null;
+
+    private static Logger logger = LoggerFactory.getLogger(ZWaveCommandClassConverter.class);
+
+    private static BigDecimal ONE_POINT_EIGHT = new BigDecimal("1.8");
+    private static BigDecimal THIRTY_TWO = new BigDecimal("32");
 
     /**
      * Constructor. Creates a new instance of the {@link ZWaveCommandClassConverter} class.
@@ -79,43 +88,63 @@ public abstract class ZWaveCommandClassConverter {
     }
 
     public static ZWaveCommandClassConverter getConverter(CommandClass commandClass) {
-        if (messageMap == null) {
-            messageMap = new HashMap<CommandClass, Class<? extends ZWaveCommandClassConverter>>();
+        if (converterMap == null) {
+            converterMap = new HashMap<CommandClass, Class<? extends ZWaveCommandClassConverter>>();
 
-            messageMap.put(CommandClass.ALARM, ZWaveAlarmConverter.class);
-            messageMap.put(CommandClass.BASIC, ZWaveBasicConverter.class);
-            messageMap.put(CommandClass.BATTERY, ZWaveBatteryConverter.class);
-            messageMap.put(CommandClass.COLOR, ZWaveColorConverter.class);
-            messageMap.put(CommandClass.CONFIGURATION, ZWaveConfigurationConverter.class);
-            messageMap.put(CommandClass.METER, ZWaveMeterConverter.class);
-            messageMap.put(CommandClass.SENSOR_ALARM, ZWaveAlarmSensorConverter.class);
-            messageMap.put(CommandClass.SENSOR_BINARY, ZWaveBinarySensorConverter.class);
-            messageMap.put(CommandClass.SENSOR_MULTILEVEL, ZWaveMultiLevelSensorConverter.class);
-            messageMap.put(CommandClass.SWITCH_BINARY, ZWaveBinarySwitchConverter.class);
-            messageMap.put(CommandClass.SWITCH_MULTILEVEL, ZWaveMultiLevelSwitchConverter.class);
-            messageMap.put(CommandClass.THERMOSTAT_FAN_MODE, ZWaveThermostatFanModeConverter.class);
-            messageMap.put(CommandClass.THERMOSTAT_FAN_STATE, ZWaveThermostatFanStateConverter.class);
-            messageMap.put(CommandClass.THERMOSTAT_MODE, ZWaveThermostatModeConverter.class);
-            messageMap.put(CommandClass.THERMOSTAT_OPERATING_STATE, ZWaveThermostatOperatingStateConverter.class);
-            messageMap.put(CommandClass.THERMOSTAT_SETPOINT, ZWaveThermostatSetpointConverter.class);
+            converterMap.put(CommandClass.ALARM, ZWaveAlarmConverter.class);
+            converterMap.put(CommandClass.BASIC, ZWaveBasicConverter.class);
+            converterMap.put(CommandClass.BATTERY, ZWaveBatteryConverter.class);
+            converterMap.put(CommandClass.COLOR, ZWaveColorConverter.class);
+            converterMap.put(CommandClass.CONFIGURATION, ZWaveConfigurationConverter.class);
+            converterMap.put(CommandClass.METER, ZWaveMeterConverter.class);
+            converterMap.put(CommandClass.SENSOR_ALARM, ZWaveAlarmSensorConverter.class);
+            converterMap.put(CommandClass.SENSOR_BINARY, ZWaveBinarySensorConverter.class);
+            converterMap.put(CommandClass.SENSOR_MULTILEVEL, ZWaveMultiLevelSensorConverter.class);
+            converterMap.put(CommandClass.SWITCH_BINARY, ZWaveBinarySwitchConverter.class);
+            converterMap.put(CommandClass.SWITCH_MULTILEVEL, ZWaveMultiLevelSwitchConverter.class);
+            converterMap.put(CommandClass.THERMOSTAT_FAN_MODE, ZWaveThermostatFanModeConverter.class);
+            converterMap.put(CommandClass.THERMOSTAT_FAN_STATE, ZWaveThermostatFanStateConverter.class);
+            converterMap.put(CommandClass.THERMOSTAT_MODE, ZWaveThermostatModeConverter.class);
+            converterMap.put(CommandClass.THERMOSTAT_OPERATING_STATE, ZWaveThermostatOperatingStateConverter.class);
+            converterMap.put(CommandClass.THERMOSTAT_SETPOINT, ZWaveThermostatSetpointConverter.class);
         }
 
         Constructor<? extends ZWaveCommandClassConverter> constructor;
         try {
-            if (messageMap.get(commandClass) == null) {
-                // logger.warn("CommandClass converter {} is not implemented!", commandClass.getLabel());
+            if (converterMap.get(commandClass) == null) {
+                logger.warn("CommandClass converter {} is not implemented!", commandClass.getLabel());
                 return null;
             }
-            constructor = messageMap.get(commandClass).getConstructor();
+            constructor = converterMap.get(commandClass).getConstructor();
             return constructor.newInstance();
-        } catch (
+        } catch (Exception e) {
+            logger.error("Error getting converter {}", e.getMessage());
+            return null;
+        }
+    }
 
-        Exception e)
+    // ---------------------------------------
+    // Common Conversions...
 
-        {
-            // logger.error("Command processor error");
+    /**
+     * Convert temperature scales
+     *
+     * @param fromScale scale to convert FROM (0=C, 1=F)
+     * @param toScale scale to convert TO (0=C, 1=F)
+     * @param val value to convert
+     * @return converted value
+     */
+    protected BigDecimal convertTemperature(int fromScale, int toScale, BigDecimal val) {
+        // For temperature, there are only two scales, so we simplify the conversion
+        if (fromScale == 0 && toScale == 1) {
+            // Scale is celsius, convert to fahrenheit
+            val = val.multiply(ONE_POINT_EIGHT).add(THIRTY_TWO).movePointRight(1);
+        } else if (fromScale == 1 && toScale == 0) {
+            // Scale is fahrenheit, convert to celsius
+            val = val.movePointLeft(1).subtract(THIRTY_TWO).divide(ONE_POINT_EIGHT, MathContext.DECIMAL32);
         }
 
-        return null;
+        return val;
     }
+
 }

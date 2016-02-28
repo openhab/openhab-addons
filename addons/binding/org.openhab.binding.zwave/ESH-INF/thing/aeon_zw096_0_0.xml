@@ -87,7 +87,7 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
                  min="0" max="1">
         <label>3: Current overload protection enable</label>
         <description><![CDATA[
-Current Overload Protection. Load will be closed when the                 Current overrun (US: 15.5A, other country: 16.2A) and the                 time more than 2 minutes (0=disabled, 1=enabled).            <br /><h1>Overview</h1><p>Current Overload Protection. Load will be closed when the Current overrun (US: 15.5A, other country: 16.2A) and the time more than 2 minutes (0=disabled, 1=enabled).</p>
+Current overload protection enable<br /><h1>Overview</h1><p>Current Overload Protection. Load will be closed when the Current overrun (US: 15.5A, other country: 16.2A) and the time more than 2 minutes (0=disabled, 1=enabled).</p>
     !]]></description>
         <default>0</default>
         <options>
@@ -100,7 +100,7 @@ Current Overload Protection. Load will be closed when the                 Curren
                  min="0" max="2">
         <label>20: Output load after re-power</label>
         <description><![CDATA[
-Configure the output load status after re‐power on                 (0=last status, 1=always on, 2=always off)             <br /><h1>Overview</h1><p>Configure the output load status after re-power on<br />(0=last status, 1=always on, 2=always off)</p>
+Configure the output load status after re‐power<br /><h1>Overview</h1><p>Configure the output load status after re-power on<br />(0=last status, 1=always on, 2=always off)</p>
     !]]></description>
         <default>0</default>
         <options>
@@ -114,7 +114,7 @@ Configure the output load status after re‐power on                 (0=last sta
                  min="0" max="2">
         <label>80: Enable send to associated devices</label>
         <description><![CDATA[
-Enable to send notifications to associated devices (Group 1)                 when the state of Micro Switch’s load changed (0=nothing,                 1=hail CC, 2=basic CC report).             <br /><h1>Overview</h1><p>Enable to send notifications to associated devices (Group 1)<br />when the state of Micro Switch’s load changed (0=nothing,<br />1=hail CC, 2=basic CC report).</p>
+Enable to send notifications to Group 1<br /><h1>Overview</h1><p>Enable to send notifications to associated devices (Group 1) when the state of Micro Switch’s load changed (0=nothing, 1=hail CC, 2=basic CC report).</p>
     !]]></description>
         <default>0</default>
         <options>
@@ -126,10 +126,13 @@ Enable to send notifications to associated devices (Group 1)                 whe
 
       <parameter name="config_81_1" type="integer" groupName="configuration"
                  min="0" max="2">
-        <label>81: Configure LED</label>
+        <label>81: Configure LED state</label>
         <description><![CDATA[
-Configure the state of red LED:                  0= The LED will follow the status (on/off) of its load (Energy mode).                 1= When the state of Switch’s load changed, The LED will                 follow the status (on/off) of its load, b<br /><h1>Overview</h1><p>Configure the state of LED when it is in 3 modes below:<br />0= The LED will follow the status (on/off) of its load (Energy<br />mode).<br />1= When the state of Switch’s load changed, The LED will<br />follow the status (on/off) of its load, but the red LED will<br />turn off after 5 seconds if there is no any switch action<br />(momentary indicate mode).<br />2= Night light mode.</p>
-    !]]></description>
+Configure the state of the LED<br /><h1>Overview</h1><p>Configure the state of LED when it is in 3 modes below:</p>
+<ul><li>0= The LED will follow the status (on/off) of its load (Energy mode).</li>
+<li>1= When the state of Switch’s load changed, The LED will follow the status (on/off) of its load, but the red LED will turn off after 5 seconds if there is no any switch action (momentary indicate mode).</li>
+<li>2= Night light mode.</li>
+</ul>    !]]></description>
         <default>0</default>
         <options>
           <option value="0">LED follows load</option>
@@ -138,15 +141,15 @@ Configure the state of red LED:                  0= The LED will follow the stat
         </options>
       </parameter>
 
-      <parameter name="config_82_4" type="integer" groupName="configuration"
-                 min="0" max="23592359">
-        <label>82: Time of Nightlight mode</label>
-        <description>Set the time of night light mode 
-                Value1: the time of LED on (unit is hour). 
-                Value2: the time of LED on (unit is minute). 
-                Value3: the time of LED off (unit is hour) 
-                Value4: the time of</description>
-        <default>18000730</default>
+      <parameter name="config_83_3_000000FF" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>83: Red night light color value</label>
+        <description><![CDATA[
+Configure the RGB value when it is in Night light mode<br /><h1>Overview</h1><p>Configure the RGB value when it is in Night light mode.<br />Value1: Red color value<br />Value2: Green color value<br />Value3: Blue color value</p>
+<p>defaults:</p>
+<p>Value1=0xDD<br />Value2=0xA0<br />Value3=0xDD</p>
+    !]]></description>
+        <default>221</default>
       </parameter>
 
       <parameter name="config_83_3_0000FF00" type="integer" groupName="configuration"
@@ -167,15 +170,13 @@ Blue night light color value<br /><h1>Overview</h1><p>Value for parameter 83, ni
         <default>221</default>
       </parameter>
 
-      <parameter name="config_83_3_000000FF" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>83: Red night light color value</label>
+      <parameter name="config_84_3_000000FF" type="integer" groupName="configuration"
+                 min="0" max="100">
+        <label>84: Green brightness in energy mode (%)</label>
         <description><![CDATA[
-Configure the RGB value when it is in Night light mode.                 Value1: Red color value                 Value2: Green color value                 Value3: Blue color value             <br /><h1>Overview</h1><p>Configure the RGB value when it is in Night light mode.<br />Value1: Red color value<br />Value2: Green color value<br />Value3: Blue color value</p>
-<p>defaults:</p>
-<p>Value1=0xDD<br />Value2=0xA0<br />Value3=0xDD</p>
+Green brightness in energy mode (%)<br /><h1>Overview</h1><p>Configure the brightness level of RGB LED (0%-100%) when<br />it is in Energy Mode/momentary indicate mode.<br />Value1: green color value.<br />Value2: yellow color value.<br />Value3: red color value.</p>
     !]]></description>
-        <default>221</default>
+        <default>50</default>
       </parameter>
 
       <parameter name="config_84_3_0000FF00" type="integer" groupName="configuration"
@@ -192,20 +193,11 @@ Configure the RGB value when it is in Night light mode.                 Value1: 
         <default>50</default>
       </parameter>
 
-      <parameter name="config_84_3_000000FF" type="integer" groupName="configuration"
-                 min="0" max="100">
-        <label>84: Green brightness in energy mode (%)</label>
-        <description><![CDATA[
-Green brightness in energy mode (%)<br /><h1>Overview</h1><p>Configure the brightness level of RGB LED (0%-100%) when<br />it is in Energy Mode/momentary indicate mode.<br />Value1: green color value.<br />Value2: yellow color value.<br />Value3: red color value.</p>
-    !]]></description>
-        <default>50</default>
-      </parameter>
-
       <parameter name="config_90_1" type="integer" groupName="configuration"
                  min="0" max="1">
         <label>90: Enable items 91 and 92</label>
         <description><![CDATA[
-Enables/disables parameter 91 and 92 below (1=enabled,                 0=disabled).             <br /><h1>Overview</h1><p>Enables/disables parameter 91 and 92 below (1=enabled,<br />0=disabled).</p>
+Enables/disables parameter 91 and 92<br /><h1>Overview</h1><p>Enables/disables parameter 91 and 92 below (1=enabled, 0=disabled).</p>
     !]]></description>
         <default>1</default>
         <options>
@@ -217,20 +209,18 @@ Enables/disables parameter 91 and 92 below (1=enabled,                 0=disable
       <parameter name="config_91_2" type="integer" groupName="configuration"
                  min="0" max="60000">
         <label>91: Wattage Threshold</label>
-        <description>The value here represents minimum change in wattage (in 
-                terms of wattage) for a REPORT to be sent (Valid values 0‐
-                60000). 
-            </description>
+        <description><![CDATA[
+minimum change in wattage to trigger<br /><h1>Overview</h1><p>The value here represents minimum change in wattage (in<br />terms of wattage) for a REPORT to be sent (Valid values 0-<br />60000).</p>
+    !]]></description>
         <default>25</default>
       </parameter>
 
       <parameter name="config_92_1" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>92: Wattage Percent Change</label>
-        <description>The value here represents minimum change in wattage 
-                percent (in terms of percentage) for a REPORT to be sent 
-                (Valid values 0‐100). 
-            </description>
+        <description><![CDATA[
+minimum change in wattage percent<br /><h1>Overview</h1><p>The value here represents minimum change in wattage<br />percent (in terms of percentage) for a REPORT to be sent<br />(Valid values 0-100).</p>
+    !]]></description>
         <default>5</default>
       </parameter>
 
@@ -246,7 +236,7 @@ Enables/disables parameter 91 and 92 below (1=enabled,                 0=disable
                  min="0" max="1">
         <label>252: Configuration Locked</label>
         <description><![CDATA[
-Enable/disable Configuration Locked (0 =disable, 1 = enable).             <br /><h1>Overview</h1><p>Enable/disable Configuration Locked (0 =disable, 1 =<br />enable).</p>
+Enable/disable Configuration Locked (0 =disable, 1 = enable).             <br /><h1>Overview</h1><p>Enable/disable Configuration Locked (0 =disable, 1 =enable).</p>
     !]]></description>
         <default>0</default>
         <options>
@@ -264,15 +254,18 @@ Enable/disable Configuration Locked (0 =disable, 1 = enable).             <br />
       <parameter name="group_1" type="text" groupName="association"  multiple="true">
         <label>1: Group 1</label>
         <description><![CDATA[
-load notification type<br /><h1>Overview</h1><p>When the state of Smart Switch (turn on/off the load ) is changed:<br />1, Set Configuration parameter 80 to 0 Reserved (Default).<br />2, Set Configuration parameter 80 to 1 Send Hail CC.<br />3. Set Configuration parameter 80 to 2: Send the Basic Report.</p>
-    !]]></description>
+load notification type<br /><h1>Overview</h1><p>When the state of Smart Switch (turn on/off the load ) is changed:</p>
+<ol><li>Set Configuration parameter 80 to 0 Reserved (Default).</li>
+<li>Set Configuration parameter 80 to 1 Send Hail CC.</li>
+<li>Set Configuration parameter 80 to 2: Send the Basic Report.</li>
+</ol>    !]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
       <parameter name="group_2" type="text" groupName="association"  multiple="true">
         <label>2: Group 2</label>
         <description><![CDATA[
-forwarding basic set<br /><h1>Overview</h1><p>Forward the Basic Set, Switch Binary Set to associated nodes in<br />Group 2 when the Smart Switch receives the Basic Set, Switch<br />Binary Set commands from main controller.</p>
+forwarding basic set<br /><h1>Overview</h1><p>Forward the Basic Set, Switch Binary Set to associated nodes in Group 2 when the Smart Switch receives the Basic Set, Switch Binary Set commands from main controller.</p>
     !]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
