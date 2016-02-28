@@ -4,8 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="zwaveme_zme054313z_00_000">
-    <label>ZME_054313Z Flush mountable switch</label>
+  <thing-type id="zwaveme_zme054313_00_000">
+    <label>ZME_054313 Flush mountable switch</label>
     <description>Flush mountable switch</description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -21,7 +21,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">ZWave.me</property>
-      <property name="model">ZME_054313Z</property>
+      <property name="model">ZME_054313</property>
       <property name="manufacturerId">0115</property>
       <property name="manufacturerRef">1000:0001</property>
     </properties>

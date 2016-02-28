@@ -41,6 +41,7 @@ Aeon Labs Garage Door Controller  Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garag
       <property name="model">ZW062</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0103:003E</property>
+      <property name="DefaultAssociations">1</property>
     </properties>
 
     <config-description>
@@ -63,7 +64,7 @@ Configure the default startup ringtone<br /><h1>Overview</h1><p>Configure the de
 
       <parameter name="config_34_1" type="integer" groupName="configuration"
                  min="0" max="1">
-        <label>34: Sensor Calibration</label>
+        <label>34: Sensor Calibration (see overview)</label>
         <description><![CDATA[
 Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration Steps:</p>
 <ol><li>Let the garage door move to full close position.</li>
@@ -98,21 +99,47 @@ Get the numbers of alarm music.(not support Set CC)<br /><h1>Overview</h1><p>Get
         <default>1</default>
       </parameter>
 
-      <parameter name="config_37_4" type="integer" groupName="configuration"
-                 min="0" max="4294967295">
-        <label>37: Opening alarm mode</label>
+      <parameter name="config_37_4_000000FF" type="integer" groupName="configuration"
+                 min="1" max="10">
+        <label>37: Opening alarm LED mode</label>
         <description><![CDATA[
-alarm mode (opening)<br /><h1>Overview</h1><p>Configure the alarm mode for when the garage door is opening.</p>
-<ol><li>Value1: configure the frequency of blinking for the Alarm LED , there are 10 levels that 1 to10 level, the minimum frequency is level 1 and the max frequency is level 10.</li>
-<li>Value2: configure the alarm sound (there are 4 types sound saved in EEPROM and user also can update it).</li>
-<li>Value3: configure the volume of alarm sound (there are 10 levels, the min volume is 1 level and the max volume is 10 levels).</li>
-<li>Value4=0, disable the alarm prompt. Value4=1, enable the alarm prompt. </li>
-</ol><p>defaults:</p>
-<ol><li>Value1=10</li>
-<li>Value2=1</li>
-<li>Value3=8</li>
-</ol>    !]]></description>
-        <default>0</default>
+alarm LED mode (opening)<br /><h1>Overview</h1><p>Configure the alarm mode for when the garage door is opening.</p>
+<p><br />This is Value1: configure the frequency of blinking for the Alarm<br />LED , there are 10 levels from 1 to 10, the minimum<br />frequency is level 1 and the max frequency is level 10.</p>
+
+<p>Note to maintainer, LSB and MSB are not declared.  The masks may be backward and need adjusting after testing.</p>
+    !]]></description>
+        <default>10</default>
+      </parameter>
+
+      <parameter name="config_37_4_0000FF00" type="integer" groupName="configuration"
+                 min="1" max="4">
+        <label>37: opening alarm choice (value 2)</label>
+        <description><![CDATA[
+alarm mode for when the garage door is opening (value 2)<br /><h1>Overview</h1><p>Value2: configure the alarm sound (there are 4 types sound<br />saved in EEPROM and user also can update it).</p>
+    !]]></description>
+        <default>1</default>
+      </parameter>
+
+      <parameter name="config_37_4_00FF0000" type="integer" groupName="configuration"
+                 min="1" max="10">
+        <label>37: alarm opening volume (value 3)</label>
+        <description><![CDATA[
+alarm opening volume (value 3)<br /><h1>Overview</h1><p>Value3: configure the volume of alarm sound (there are 10<br />levels, the min volume is 1 level and the max volume is 10<br />levels).</p>
+    !]]></description>
+        <default>8</default>
+      </parameter>
+
+      <parameter name="config_37_4_7F000000" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>37: Disable alarm</label>
+        <description><![CDATA[
+Disable alarm<br /><h1>Overview</h1><p>Value4=0, disable the alarm prompt. Value4=1, enable the<br />alarm prompt.</p>
+    !]]></description>
+        <default>1</default>
+        <options>
+          <option value="0">disable alarm prompt</option>
+          <option value="1">enable alarm prompt</option>
+        </options>
       </parameter>
 
       <parameter name="config_38_4" type="integer" groupName="configuration"
@@ -162,7 +189,7 @@ Configuration report for the tamper switch State<br /><h1>Overview</h1><p>Config
       </parameter>
 
       <parameter name="config_42_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+                 min="0" max="16">
         <label>42: battery state</label>
         <description><![CDATA[
 Configuration report for the battery state of Sensor<br /><h1>Overview</h1><p>Configuration report for the battery state of Sensor:<br />1, Value=0x00: battery power is nominal.<br />2, Value=0x0F: battery power of Sensor is in low battery.<br />It will report the battery power state to associated nodes<br />automatically when the battery power is in low battery.</p>
@@ -171,7 +198,7 @@ Configuration report for the battery state of Sensor<br /><h1>Overview</h1><p>Co
       </parameter>
 
       <parameter name="config_43_1" type="integer" groupName="configuration"
-                 min="1" max="64">
+                 min="1" max="255">
         <label>43: Play or Pause ringtone</label>
         <description><![CDATA[
 Start playing or Stop playing the ringtone<br /><h1>Overview</h1><p>Start playing or Stop playing the ringtone:<br />1, Value=0xff, stop playing ringtone.<br />2, Value=0x01~0x64, start playing the ringtone that you<br />selected.</p>
@@ -211,14 +238,18 @@ Define the function of Button- or Button+.<br /><h1>Overview</h1><p>Define the f
       </parameter>
 
       <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="1" max="3">
+                 min="1" max="2">
         <label>80: Hail on change</label>
         <description><![CDATA[
-It will send the Hail CC/configuration report CC when the state of garage door is changed<br /><h1>Overview</h1><p>It will send the Hail CC/configuration report CC when the state<br />of garage door is changed:<br />1, Value=0 , reserved.<br />2, Value=1 , send Hail CC</p>
+send the Hail CC/configuration report on change<br /><h1>Overview</h1><p>It will send the Hail CC/configuration report CC when the state<br />of garage door is changed:<br />1, Value=0 , reserved.<br />2, Value=1 , send Hail CC</p>
 <p>3, Value=2 , send Barrier operator report CC</p>
 
     !]]></description>
         <default>2</default>
+        <options>
+          <option value="1">send hail CC</option>
+          <option value="2">send Barrier operator report CC</option>
+        </options>
       </parameter>
 
       <parameter name="config_241_4" type="integer" groupName="configuration"

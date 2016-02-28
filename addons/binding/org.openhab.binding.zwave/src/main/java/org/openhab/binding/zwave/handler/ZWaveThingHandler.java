@@ -123,6 +123,8 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             Map<String, String> properties = channel.getProperties();
             Configuration configuration = channel.getConfiguration();
 
+            logger.debug("NODE {}: Initialising channel {}", nodeId, channel.getUID());
+
             for (String key : properties.keySet()) {
                 String[] bindingType = key.split(":");
                 if (bindingType.length != 3) {
@@ -147,6 +149,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     for (String arg : arguments) {
                         String[] prop = arg.split("=");
                         argumentMap.put(prop[0], prop[1]);
+                        // logger.debug("Adding Argument {}=={}", prop[0], prop[1]);
                     }
                 }
 
@@ -173,6 +176,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                         logger.warn("NODE {}: Invalid item type defined ({}). Assuming DecimalType", nodeId, dataType);
                     }
 
+                    // logger.debug("Creating - arg map is {} long", argumentMap.size());
                     ZWaveThingChannel chan = new ZWaveThingChannel(channel.getUID(), dataType, ccSplit[0], endpoint,
                             argumentMap);
 
@@ -898,19 +902,22 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         DataType dataType;
         Map<String, String> arguments;
 
-        ZWaveThingChannel(ChannelUID uid, DataType dataType, String commandClass, int endpoint,
+        ZWaveThingChannel(ChannelUID uid, DataType dataType, String commandClassName, int endpoint,
                 Map<String, String> arguments) {
             this.uid = uid;
             this.arguments = arguments;
-            this.commandClass = commandClass;
+            this.commandClass = commandClassName;
             this.endpoint = endpoint;
             this.dataType = dataType;
 
             // Get the converter
-            this.converter = ZWaveCommandClassConverter
-                    .getConverter(ZWaveCommandClass.CommandClass.getCommandClass(commandClass));
+            CommandClass commandClass = ZWaveCommandClass.CommandClass.getCommandClass(commandClassName);
+            if (commandClass == null) {
+                logger.warn("NODE {}: Error finding command class '{}'", nodeId, uid, commandClassName);
+            }
+            this.converter = ZWaveCommandClassConverter.getConverter(commandClass);
             if (this.converter == null) {
-                logger.warn("NODE {}: No converter for {}, class {}", nodeId, uid, commandClass);
+                logger.warn("NODE {}: No converter found for {}, class {}", nodeId, uid, commandClassName);
             }
         }
 
