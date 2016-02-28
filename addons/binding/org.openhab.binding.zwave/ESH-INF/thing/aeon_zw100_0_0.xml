@@ -71,21 +71,24 @@
       </parameter-group>
 
       <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>2: Stay Awake in Battery Mode
-			</label>
-        <description>Stay awake for 10 minutes when re-powering the
-				MultiSensor (battery mode)
-			</description>
+                 min="0" max="1">
+        <label>2: Stay Awake in Battery Mode			</label>
+        <description><![CDATA[
+Stay awake for 10 minutes at power on<br /><h1>Overview</h1><p>Enable/Disable waking up for 10 minutes when re-power on (battery mode) the MultiSensor.<br />1. Value = 0, disable.<br />2. Value =others, enable.</p>
+    !]]></description>
         <default>0</default>
+        <options>
+          <option value="0">disable</option>
+          <option value="1">enable</option>
+        </options>
       </parameter>
 
       <parameter name="config_3_2" type="integer" groupName="configuration"
                  min="5" max="3600">
-        <label>3: Motion Sensor Timeout</label>
+        <label>3: Motion Sensor reset timeout</label>
         <description><![CDATA[
- How long should the device associated to MultiSensor keep state On before sending Off command.<br />
-If the value is bigger than 255, the value would be rounded to next integer in minutes, else to seconds.    !]]></description>
+Motion Sensor reset timeout<br /><h1>Overview</h1><p>1. The default PIR time is 4 minutes. The Multisensor will send BASIC SET CC<br />(0x00) to the associated nodes if no motion is triggered again in 4 minutes.<br />2. Range: 10~3600.<br />Note:<br />(1), The time unit is second if the value range is in 10 to 255.<br />(2), If the value range is in 256 to 3600, the time unit will be minute and its value<br />should follow the below rules:<br />a), Interval time =Value/60, if the interval time can be divided by 60 and<br />without remainder.<br />b), Interval time= (Value/60) +1, if the interval time can be divided by 60 and<br />has remainder.<br />(3), Other values will be ignored.</p>
+    !]]></description>
         <default>240</default>
       </parameter>
 
@@ -117,15 +120,18 @@ If the value is bigger than 255, the value would be rounded to next integer in m
       <parameter name="config_39_1" type="integer" groupName="configuration"
                  min="10" max="50">
         <label>39: Low Battery Report</label>
-        <description>Report Low Battery if below this value. The range of low battery value is 10% to 50%.</description>
+        <description><![CDATA[
+Report Low Battery if below this value<br /><h1>Overview</h1><p>Configure low battery value.<br />Value=10 to 50.(10% to 50%)</p>
+    !]]></description>
         <default>20</default>
       </parameter>
 
       <parameter name="config_40_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+                 min="0" max="1">
         <label>40: Selective Reporting</label>
-        <description>Send reports only when measurements reach a certain threshold or percentage set in parameters 41-44.
-			</description>
+        <description><![CDATA[
+Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selective reporting only when measurements reach a certain<br />threshold or percentage set in 41-44 below. This is used to reduce network<br />traffic. (0 == disable, 1 == enable)</p>
+    !]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -137,17 +143,17 @@ If the value is bigger than 255, the value would be rounded to next integer in m
                  min="0" max="100">
         <label>41: Temperature Threshold</label>
         <description><![CDATA[
- Threshold change in temperature to induce an automatic report.<br />
-The unit is Fahrenheit for US version, Celsius for EU/AU version.<br />
-The value contains one decimal point. E.g. if the value is set to 20, the<br />
-threshold value is 2.0 ? (EU/AU vers    !]]></description>
+Temperature change threshold<br /><h1>Overview</h1><p>Threshold change in temperature to induce an automatic report.<br />Note:<br />1. The unit is Fahrenheit for US version, Celsius for EU/AU version.<br />2. The value contains one decimal point. E.g. if the value is set to 20, the<br />threshold value =2.0<br />°C (EU/AU version) or 2.0 °F (US version). When the<br />current temperature gap is more then 2.0, which will induce a temperature<br />report to be sent out.</p>
+    !]]></description>
         <default>20</default>
       </parameter>
 
-      <parameter name="config_42_1" type="integer" groupName="configuration"
+      <parameter name="config_42_2" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>42: Humidity Threshold</label>
-        <description> Threshold change in humidity to induce an automatic report.The unit is %.If the current humidity gap is larger than this value, sensor will send out a humidity report.</description>
+        <description><![CDATA[
+Humidity percent change threshold<br /><h1>Overview</h1><p>Threshold change in humidity to induce an automatic report.<br />Note:<br />1. The unit is %.<br />2. The default value is 10, which means that if the current humidity gap is<br />more than 10%, it will send out a humidity report.</p>
+    !]]></description>
         <default>10</default>
       </parameter>
 
@@ -155,9 +161,8 @@ threshold value is 2.0 ? (EU/AU vers    !]]></description>
                  min="0" max="1000">
         <label>43: Luminance Threshold</label>
         <description><![CDATA[
- Threshold change in luminance to induce an automatic report.<br />
-The unit is lux.<br />
-If the current luminance gap is larger than this value, sensor will send out a luminance report.    !]]></description>
+ Luminance change threshold<br /><h1>Overview</h1><p>Threshold change in luminance to induce an automatic report.</p>
+    !]]></description>
         <default>100</default>
       </parameter>
 
@@ -165,9 +170,9 @@ If the current luminance gap is larger than this value, sensor will send out a l
                  min="0" max="100">
         <label>44: Battery Threshold</label>
         <description><![CDATA[
- Threshold change in battery level to induce an automatic report.<br />
-The unit is %.<br />
-If the current battery gap is larger than this value, sensor will send out a battery report.    !]]></description>
+Battery level threshold<br /><h1>Overview</h1><p>Threshold change in battery level to induce an automatic report.</p>
+<p>Note:<br />1. The unit is %.<br />2. The default value is 10, which means that if the current battery level gap is<br />more than 10%, it will send out a battery report.</p>
+    !]]></description>
         <default>10</default>
       </parameter>
 
@@ -175,8 +180,8 @@ If the current battery gap is larger than this value, sensor will send out a bat
                  min="0" max="100">
         <label>45: Ultraviolet Threshold</label>
         <description><![CDATA[
-Threshold change in ultraviolet light to induce an automatic report.<br />
-The unit is UV index scale.    !]]></description>
+Ultraviolet change threshold<br /><h1>Overview</h1><p>Threshold change in ultraviolet to induce an automatic report.</p>
+    !]]></description>
         <default>2</default>
       </parameter>
 
@@ -194,15 +199,33 @@ The unit is UV index scale.    !]]></description>
       <parameter name="config_100_1" type="integer" groupName="configuration"
                  min="0" max="1">
         <label>100: Set parameters 101-103 to default.			</label>
-        <description>not sure how exactly this is supposed to work ...</description>
+        <description><![CDATA[
+reset 101-103 to defaults<br /><h1>Overview</h1><p>Set 101-103 to default.</p>
+    !]]></description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_101_4" type="integer" groupName="configuration"
+      <parameter name="config_101_4_000000FF" type="integer" groupName="configuration"
                  min="0" max="65535">
-        <label>101: Group 1 Periodic Reports			</label>
+        <label>101: Group 1 Periodic Reports</label>
         <description><![CDATA[
-This value is a combination number made up of the sum of the values for the individual sensors and battery.<br /><h1>Overview</h1><p>This value is a combination number made up of the sum of the values for the individual sensors and battery. The sensors have these values:</p>
+Periodic reports to send to Group 1<br /><h1>Overview</h1><p>This value is a combination number made up of the sum of the values for the individual sensors and battery. The sensors have these values:</p>
+<ul><li>Battery=1</li>
+<li>Ultraviolet=16</li>
+<li>Temperature=32</li>
+<li>Humidity=64</li>
+<li>Light=128</li>
+</ul><p>1+16+32+64+128 = 241 and is the default value</p>
+
+    !]]></description>
+        <default>241</default>
+      </parameter>
+
+      <parameter name="config_102_4_000000FF" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>102: Group 2 Periodic Reports			</label>
+        <description><![CDATA[
+Periodic reports to send to Group 2<br /><h1>Overview</h1><p>This value is a combination number made up of the sum of the values for the individual sensors and battery. The sensors have these values:</p>
 <ul><li>Battery=1</li>
 <li>Ultraviolet=16</li>
 <li>Temperature=32</li>
@@ -210,30 +233,21 @@ This value is a combination number made up of the sum of the values for the indi
 <li>Light=128</li>
 </ul>
     !]]></description>
-        <default>241</default>
-      </parameter>
-
-      <parameter name="config_102_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
-        <label>102: Group 2 Periodic Reports
-			</label>
-        <description><![CDATA[
- This value is a combination number made up of the sum of the values<br />
-for the individual sensors and battery.	The sensors have these values:<br />
-Battery=1, Ultraviolet=16, Temperature=32, Humidity=64, Light=128.<br />
-So if you want all sensors and th    !]]></description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_103_4" type="integer" groupName="configuration"
+      <parameter name="config_103_4_000000FF" type="integer" groupName="configuration"
                  min="0" max="65535">
-        <label>103: Group 3 Periodic Reports
-			</label>
+        <label>103: Group 3 Periodic Reports			</label>
         <description><![CDATA[
- The value is a combination number made up of the sum of the values<br />
-for the individual sensors and battery. The sensors have these values:<br />
-Battery=1, Ultraviolet=16, Temperature=32, Humidity=64, Light=128.<br />
-So if you want all sensors and the    !]]></description>
+Periodic reports to send to Group 3<br /><h1>Overview</h1><p>This value is a combination number made up of the sum of the values for the individual sensors and battery. The sensors have these values:</p>
+<ul><li>Battery=1</li>
+<li>Ultraviolet=16</li>
+<li>Temperature=32</li>
+<li>Humidity=64</li>
+<li>Light=128</li>
+</ul>
+    !]]></description>
         <default>0</default>
       </parameter>
 
@@ -241,7 +255,7 @@ So if you want all sensors and the    !]]></description>
                  min="0" max="1">
         <label>110: Set parameters 111-113 to default.			</label>
         <description><![CDATA[
-not sure how exactly this is supposed to work ...<br /><h1>Overview</h1><p>Documentation is lacking for this parameter.</p>
+Set parameters 111-113 to default.	<br /><h1>Overview</h1><p>Set parameters 111-113 to default.   </p>
     !]]></description>
         <default>0</default>
       </parameter>
@@ -250,10 +264,8 @@ not sure how exactly this is supposed to work ...<br /><h1>Overview</h1><p>Docum
                  min="5" max="2678400">
         <label>111: Group 1 Report Interval</label>
         <description><![CDATA[
- The unit of interval time is second if USB powered.<br />
-If battery powered, the minimum interval time is 60 minutes by default.<br />
-For example, if the value is set to be more than 5 and less than 3600, the interval<br />
-time is 60 minutes, and if the     !]]></description>
+How often to update Group 1<br /><h1>Overview</h1><p>The interval time of sending reports in Report group 1 (Valid values 0x05-0x28DE80).<br />1. The unit of interval time is second if USB power.<br />2. If battery power, the minimum interval time is 60 minutes by default, for<br />example, if the value is set to be more than 5 and less than 3600, the interval<br />time is 60 minutes, if the value is set to be more than 3600 and less than 7200,<br />the interval time is 120 minutes. You can also change the minimum interval time<br />to 4 minutes via setting the interval value(3 bytes) to 240 in Wake Up Interval Set<br />CC.</p>
+    !]]></description>
         <default>3600</default>
       </parameter>
 
@@ -261,10 +273,8 @@ time is 60 minutes, and if the     !]]></description>
                  min="5" max="2678400">
         <label>112: Group 2 Report Interval</label>
         <description><![CDATA[
- The unit of interval time is second if USB powered.<br />
-If battery powered, the minimum interval time is 60 minutes by default.<br />
-For example, if the value is set to be more than 5 and less than 3600, the interval<br />
-time is 60 minutes, if the valu    !]]></description>
+Group 2 Report Interval<br /><h1>Overview</h1><p>The interval time of sending reports in Report group 2 (Valid values 0x05-<br />0x28DE80).<br />Note:<br />1. The unit of interval time is second if USB power.<br />2. If battery power, the minimum interval time is 60 minutes by default, for<br />example, if the value is set to be more than 5 and less than 3600, the interval<br />time is 60 minutes, if the value is set to be more than 3600 and less than 7200,<br />the interval time is 120 minutes. You can also change the minimum interval time<br />to 4 minutes via setting the interval value(3 bytes) to 240 in Wake Up Interval Set<br />CC.</p>
+    !]]></description>
         <default>3600</default>
       </parameter>
 
@@ -272,10 +282,8 @@ time is 60 minutes, if the valu    !]]></description>
                  min="5" max="2678400">
         <label>113: Group 3 Report Interval</label>
         <description><![CDATA[
- The unit of interval time is second if USB powered.<br />
-If battery powered, the minimum interval time is 60 minutes by default.<br />
-For example, if the value is set to be more than 5 and less than 3600, the interval<br />
-time is 60 minutes, if the valu    !]]></description>
+Group 3 Report Interval<br /><h1>Overview</h1><p>The interval time of sending reports in Report group 3 (Valid values 0x05-0x28DE80).<br />1. The unit of interval time is second if USB power.<br />2. If battery power, the minimum interval time is 60 minutes by default, for<br />example, if the value is set to be more than 5 and less than 3600, the interval<br />time is 60 minutes, if the value is set to be more than 3600 and less than 7200,<br />the interval time is 120 minutes. You can also change the minimum interval time<br />to 4 minutes via setting the interval value(3 bytes) to 240 in Wake Up Interval Set<br />CC.</p>
+    !]]></description>
         <default>3600</default>
       </parameter>
 
@@ -283,10 +291,8 @@ time is 60 minutes, if the valu    !]]></description>
                  min="-100" max="100">
         <label>201: Temperature Calibration</label>
         <description><![CDATA[
- The range of calibration value is -100 to 100 (or -10.0 to +10.0 degrees).<br />
-The value contains one decimal point. E.g. if the value is set to 20, the<br />
-calibration value is 2.0 ? (EU/AU version) or 2.0 ? (US version).<br />
-The calibration value =     !]]></description>
+Temperature calibration (see overview)<br /><h1>Overview</h1><p>Temperature calibration (the available value range is [-100,100] or [-<br />°C ,10 °C ] ).<br />10.0<br />Note:<br />1. The value contains one decimal point. E.g. if the value is set to 20, the<br />calibration value is 2.0<br />°C (EU/AU version) or 2.0 °F (US version)<br />2. The calibration value = standard value - measure value.<br />°C and the standard value = 23.2 °C , so the<br />calibration value= 23.2 °C - 25.3 °C = -2.1 °C (0xEB).<br />If the measure value =30.1 °C and the standard value = 33.2 °C , so the calibration<br />value= 33.2 °C - 30.1 °C =3.1 °C (0x1F).</p>
+    !]]></description>
         <default>0</default>
       </parameter>
 
@@ -294,10 +300,8 @@ The calibration value =     !]]></description>
                  min="-50" max="50">
         <label>202: Humidity Sensor Calibration</label>
         <description><![CDATA[
- The range of calibration value is -50 to 50 (percent).<br />
-The calibration value = standard value - measure value.<br />
-Example: if measured value = 80RH and the standard value = 75RH, then calibration<br />
-value = 75 – 80 = -5 (0xFB).    !]]></description>
+Humidity Sensor Calibration<br /><h1>Overview</h1><p>Humidity sensor calibration (the available value range is [-50, 50]).<br />The calibration value = standard value - measure value.<br />E.g. If measure value =80RH and the standard value = 75RH, so the calibration<br />value= 75RH – 80RH= -5RH (0xFB).<br />If the measure value =85RH and the standard value = 90RH, so the calibration<br />value= 90RH – 85RH=5RH (0x05).</p>
+    !]]></description>
         <default>0</default>
       </parameter>
 
@@ -305,10 +309,8 @@ value = 75 – 80 = -5 (0xFB).    !]]></description>
                  min="-1000" max="1000">
         <label>203: Luminance Sensor Calibration</label>
         <description><![CDATA[
- The range of calibration value is -1000 to 1000 (lux).<br />
-The calibration value = standard value - measure value.<br />
-Example: if measured value = 800 Lux and the standard value = 750 Lux, then<br />
-calibration value= 750 – 800 = -50 (0xFFCE).    !]]></description>
+Luminance Sensor Calibration<br /><h1>Overview</h1><p>Luminance sensor calibration (the available value range is [-1000, 1000]).<br />The calibration value = standard value - measure value.<br />E.g. If measure value =800Lux and the standard value = 750Lux, so the<br />calibration value= 750 – 800= -50 (0xFFCE).<br />If the measure value =850Lux and the standard value = 900Lux, so the calibration<br />value= 900 – 850=50 (0x0032).</p>
+    !]]></description>
         <default>0</default>
       </parameter>
 
@@ -316,18 +318,18 @@ calibration value= 750 – 800 = -50 (0xFFCE).    !]]></description>
                  min="-10" max="10">
         <label>204: Ultraviolet Sensor Calibration</label>
         <description><![CDATA[
- The range of calibration value is -10 to 10 (UV index scale).<br />
-The calibration value = standard value - measure value.<br />
-Example: if measured value = 9 and the standard value = 8, then<br />
-calibration value = 8 – 9 = -1 (0xFE).    !]]></description>
+Ultraviolet Sensor Calibration<br /><h1>Overview</h1><p>Ultraviolet sensor calibration (the available value range is [-10, 10]).<br />The calibration value = standard value - measure value.<br />E.g. If measure value =9 and the standard value = 8, so the calibration value= 8 –<br />9= -1 (0xFE).<br />If the measure value =7 and the standard value = 9, so the calibration value= 9 –<br />7=2 (0x02).</p>
+    !]]></description>
         <default>0</default>
       </parameter>
 
       <parameter name="config_252_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>252: Lock Configuration Parameters
-			</label>
-        <default>1</default>
+                 min="0" max="1">
+        <label>252: Lock Configuration Parameters			</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>Enable/disable Configuration Locked (0 =disable, 1 = enable).</p>
+    !]]></description>
+        <default>0</default>
         <options>
           <option value="0">Disable</option>
           <option value="1">Enable</option>
@@ -339,9 +341,8 @@ calibration value = 8 – 9 = -1 (0xFE).    !]]></description>
         <label>255: Reset to default factory settings</label>
         <default>0</default>
         <options>
-          <option value="1">Resets all configuration parameters to default
-					settings</option>
-          <option value="1431655765">Reset to default factory settings and be excluded from the Z-wave netw</option>
+          <option value="1">Resets all configuration parameters to defaults</option>
+          <option value="1431655765">Reset to default factory settings and be excluded</option>
         </options>
         <advanced>true</advanced>
       </parameter>

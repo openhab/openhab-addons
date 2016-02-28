@@ -178,10 +178,12 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
             numBytes = MAX_STRING_LENGTH;
         }
 
-        // Check for null terminations - ignore anything after the first null
-        for (int c = offset + 2; c < numBytes; c++) {
+        // Check for non-printable characters - ignore anything after the first one!
+        for (int c = 0; c < numBytes; c++) {
             if (serialMessage.getMessagePayloadByte(c + offset + 2) == 0) {
                 numBytes = c;
+                logger.debug("NODE {} : Node name string truncated to {} characters", this.getNode().getNodeId(),
+                        numBytes);
                 break;
             }
         }

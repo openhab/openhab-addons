@@ -107,8 +107,12 @@ public class ZWaveColorCommandClass extends ZWaveCommandClass implements ZWaveCo
 
                 initialiseDone = true;
                 break;
+            case COLOR_SET:
+                logger.debug("NODE {}: Process Color SET", this.getNode().getNodeId());
+                processColorReport(serialMessage, offset, endpoint);
+                break;
             case COLOR_REPORT:
-                logger.debug("NODE {}: Process Color Report", this.getNode().getNodeId());
+                logger.debug("NODE {}: Process Color REPORT", this.getNode().getNodeId());
                 processColorReport(serialMessage, offset, endpoint);
                 break;
             default:
