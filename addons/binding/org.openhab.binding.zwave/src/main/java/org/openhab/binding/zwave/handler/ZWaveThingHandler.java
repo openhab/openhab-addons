@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.internal.converter.ZWaveCommandClassConverter;
@@ -619,7 +620,13 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             return;
         }
 
-        List<SerialMessage> messages = cmdChannel.converter.receiveCommand(cmdChannel, node, command);
+        List<SerialMessage> messages = null;
+        if (command == RefreshType.REFRESH) {
+            messages = cmdChannel.converter.executeRefresh(cmdChannel, node);
+        } else {
+            messages = cmdChannel.converter.receiveCommand(cmdChannel, node, command);
+        }
+
         if (messages == null) {
             logger.warn("NODE {}: No messages returned from converter", nodeId);
             return;
@@ -811,7 +818,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
             // Process the channels to see if we're interested
             for (ZWaveThingChannel channel : thingChannelsState) {
-                logger.warn("NODE {}: Checking channel {}", nodeId, channel.getUID());
+                logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
 
                 if (channel.getEndpoint() != event.getEndpoint()) {
                     continue;
