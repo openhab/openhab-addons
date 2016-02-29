@@ -71,7 +71,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
 
     /**
      * Constructor
-     * 
+     *
      * @param bridge
      *            Bridge object representing a FRITZ!Box
      */
@@ -143,7 +143,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
 
     /**
      * Updates things from device model.
-     * 
+     *
      * @param thing
      *            Thing to be updated.
      * @param device
@@ -153,26 +153,31 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         if (thing == null || device == null) {
             throw new IllegalArgumentException("thing or device null, cannot perform update");
         }
-        logger.debug("about to update " + thing.getUID() + " from " + device.toString());
-        if (device.isTempSensor()) {
-            Channel channel = thing.getChannel(CHANNEL_TEMP);
-            this.updateState(channel.getUID(), new DecimalType(device.getTemperature().getCelsius()));
-        }
-        if (device.isPowermeter()) {
-            Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);
-            this.updateState(channelEnergy.getUID(), new DecimalType(device.getPowermeter().getEnergy()));
-            Channel channelPower = thing.getChannel(CHANNEL_POWER);
-            this.updateState(channelPower.getUID(), new DecimalType(device.getPowermeter().getPower()));
-        }
-        if (device.isSwitchableOutlet()) {
-            Channel channel = thing.getChannel(CHANNEL_SWITCH);
-            if (device.getSwitch().getState().equals(SwitchModel.ON)) {
-                this.updateState(channel.getUID(), OnOffType.ON);
-            } else if (device.getSwitch().getState().equals(SwitchModel.OFF)) {
-                this.updateState(channel.getUID(), OnOffType.OFF);
-            } else {
-                logger.warn("unknown state " + device.getSwitch().getState() + " for channel " + channel.getUID());
+        if (device.getPresent() == 1) {
+            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+            logger.debug("about to update " + thing.getUID() + " from " + device.toString());
+            if (device.isTempSensor()) {
+                Channel channel = thing.getChannel(CHANNEL_TEMP);
+                this.updateState(channel.getUID(), new DecimalType(device.getTemperature().getCelsius()));
             }
+            if (device.isPowermeter()) {
+                Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);
+                this.updateState(channelEnergy.getUID(), new DecimalType(device.getPowermeter().getEnergy()));
+                Channel channelPower = thing.getChannel(CHANNEL_POWER);
+                this.updateState(channelPower.getUID(), new DecimalType(device.getPowermeter().getPower()));
+            }
+            if (device.isSwitchableOutlet()) {
+                Channel channel = thing.getChannel(CHANNEL_SWITCH);
+                if (device.getSwitch().getState().equals(SwitchModel.ON)) {
+                    this.updateState(channel.getUID(), OnOffType.ON);
+                } else if (device.getSwitch().getState().equals(SwitchModel.OFF)) {
+                    this.updateState(channel.getUID(), OnOffType.OFF);
+                } else {
+                    logger.warn("unknown state " + device.getSwitch().getState() + " for channel " + channel.getUID());
+                }
+            }
+        } else {
+            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null));
         }
     }
 
@@ -181,7 +186,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      * the {@link BindingConstants#BINDING_ID} and value of
      * {@link DeviceModel#getProductName()} in which all characters NOT matching
      * the regex [^a-zA-Z0-9_] are replaced by "_".
-     * 
+     *
      * @param device Discovered device model
      * @return ThingUID without illegal characters.
      */
@@ -226,7 +231,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     /**
      * Called from {@link FritzahaWebInterface#authenticate()} to update
      * the bridge status because updateStatus is protected.
-     * 
+     *
      * @param status Bridge status
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
