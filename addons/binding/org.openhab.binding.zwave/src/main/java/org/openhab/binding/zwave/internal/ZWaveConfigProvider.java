@@ -218,45 +218,47 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             return;
         }
 
-        // Get all the thing types
-        Collection<ThingType> thingTypes = thingTypeRegistry.getThingTypes();
-        for (ThingType thingType : thingTypes) {
-            // Is this for our binding?
-            if (ZWaveBindingConstants.BINDING_ID.equals(thingType.getBindingId()) == false) {
-                continue;
-            }
-
-            // Create a list of all things supported by this binding
-            zwaveThingTypeUIDList.add(thingType.getUID());
-
-            // Get the properties
-            Map<String, String> thingProperties = thingType.getProperties();
-
-            if (thingProperties.get("manufacturerRef") == null) {
-                continue;
-            }
-
-            String[] references = thingProperties.get("manufacturerRef").split(",");
-            for (String ref : references) {
-                String[] values = ref.split(":");
-                Integer type;
-                Integer id = null;
-                if (values.length != 2) {
+        synchronized (productIndex) {
+            // Get all the thing types
+            Collection<ThingType> thingTypes = thingTypeRegistry.getThingTypes();
+            for (ThingType thingType : thingTypes) {
+                // Is this for our binding?
+                if (ZWaveBindingConstants.BINDING_ID.equals(thingType.getBindingId()) == false) {
                     continue;
                 }
 
-                type = Integer.parseInt(values[0], 16);
-                if (!values[1].trim().equals("*")) {
-                    id = Integer.parseInt(values[1], 16);
-                }
-                String versionMin = thingProperties.get("versionMin");
-                String versionMax = thingProperties.get("versionMax");
-                productIndex.add(new ZWaveProduct(thingType.getUID(),
-                        Integer.parseInt(thingProperties.get("manufacturerId"), 16), type, id, versionMin, versionMax));
-            }
+                // Create a list of all things supported by this binding
+                zwaveThingTypeUIDList.add(thingType.getUID());
 
+                // Get the properties
+                Map<String, String> thingProperties = thingType.getProperties();
+
+                if (thingProperties.get("manufacturerRef") == null) {
+                    continue;
+                }
+
+                String[] references = thingProperties.get("manufacturerRef").split(",");
+                for (String ref : references) {
+                    String[] values = ref.split(":");
+                    Integer type;
+                    Integer id = null;
+                    if (values.length != 2) {
+                        continue;
+                    }
+
+                    type = Integer.parseInt(values[0], 16);
+                    if (!values[1].trim().equals("*")) {
+                        id = Integer.parseInt(values[1], 16);
+                    }
+                    String versionMin = thingProperties.get("versionMin");
+                    String versionMax = thingProperties.get("versionMax");
+                    productIndex.add(new ZWaveProduct(thingType.getUID(),
+                            Integer.parseInt(thingProperties.get("manufacturerId"), 16), type, id, versionMin,
+                            versionMax));
+                }
+
+            }
         }
-        return;
     }
 
     public static synchronized List<ZWaveProduct> getProductIndex() {
