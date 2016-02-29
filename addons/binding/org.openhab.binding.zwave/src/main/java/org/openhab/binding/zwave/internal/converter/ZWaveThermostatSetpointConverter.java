@@ -105,7 +105,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
      */
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
-        String scaleString = channel.getArguments().get("setpointScale");
+        String scaleString = channel.getArguments().get("config_scale");
         String setpointType = channel.getArguments().get("setpointType");
 
         int scale = 0;
