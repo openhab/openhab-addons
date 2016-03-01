@@ -41,7 +41,8 @@ public class YamahaReceiverHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(YamahaReceiverHandler.class);
     private String host;
-    private int refrehInterval = 0;
+    private int refrehInterval = 1; // Default: Every 1min
+    private float relativeVolumeChangeFactor = 0.5f; // Default: 0.5 percent
     private YamahaReceiverState state = null;
     private ScheduledFuture<?> refreshTimer;
     private ZoneDiscoveryService zoneDiscoveryService;
@@ -69,6 +70,9 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         if (interval_config != null && interval_config != refrehInterval) {
             setupRefreshTimer(60 * 1000);
         }
+
+        relativeVolumeChangeFactor = (Float) thing.getConfiguration()
+                .get(YamahaReceiverBindingConstants.CONFIG_RELVOLUMECHANGE);
     }
 
     /**
@@ -93,7 +97,10 @@ public class YamahaReceiverHandler extends BaseThingHandler {
      * and a communication object.
      */
     private void createCommunicationObject() {
-        String zoneName = thing.getProperties().get(YamahaReceiverBindingConstants.CONFIG_ZONE);
+        relativeVolumeChangeFactor = (Float) thing.getConfiguration()
+                .get(YamahaReceiverBindingConstants.CONFIG_RELVOLUMECHANGE);
+
+        String zoneName = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_ZONE);
         if (zoneName == null) {
             zoneName = YamahaReceiverCommunication.Zone.Main_Zone.name();
         }
@@ -125,12 +132,13 @@ public class YamahaReceiverHandler extends BaseThingHandler {
 
         Integer interval_config = (Integer) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_REFRESH);
 
-        // Default is every 5min
         if (interval_config == null) {
-            interval_config = new Integer(5);
+            interval_config = refrehInterval;
         }
 
-        refreshTimer.cancel(false);
+        if (refreshTimer != null) {
+            refreshTimer.cancel(false);
+        }
         refreshTimer = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -184,8 +192,8 @@ public class YamahaReceiverHandler extends BaseThingHandler {
                     if (command instanceof DecimalType) {
                         state.setVolume(((DecimalType) command).floatValue());
                     } else if (command instanceof IncreaseDecreaseType) {
-                        state.setVolumeRelative(
-                                ((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? 5 : -5);
+                        state.setVolumeRelative(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE
+                                ? relativeVolumeChangeFactor : -relativeVolumeChangeFactor);
                     }
                     break;
                 case YamahaReceiverBindingConstants.CHANNEL_MUTE:
