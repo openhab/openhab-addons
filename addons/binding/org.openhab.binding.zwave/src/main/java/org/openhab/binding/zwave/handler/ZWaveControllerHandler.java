@@ -150,8 +150,8 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             throws ConfigValidationException {
         logger.debug("Controller Configuration update received");
 
-        // Call base implementation to perform checking on the configuration
-        super.handleConfigurationUpdate(configurationParameters);
+        // Perform checking on the configuration
+        validateConfigurationParameters(configurationParameters);
 
         boolean reinitialise = false;
 

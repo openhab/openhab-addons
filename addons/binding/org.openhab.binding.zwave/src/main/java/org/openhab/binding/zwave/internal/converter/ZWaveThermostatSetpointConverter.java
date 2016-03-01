@@ -83,7 +83,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
         String setpointType = channel.getArguments().get("setpointType");
-        String scale = channel.getArguments().get("setpointScale");
+        String setpointScale = channel.getArguments().get("config_scale");
         ZWaveThermostatSetpointValueEvent setpointEvent = (ZWaveThermostatSetpointValueEvent) event;
 
         // Don't trigger event if this item is bound to another setpoint type
@@ -93,17 +93,8 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
 
         BigDecimal value = (BigDecimal) event.getValue();
         // Perform a scale conversion if needed
-        if (scale != null && Integer.parseInt(scale) != setpointEvent.getScale()) {
-            // For temperature, there are only two scales, so we simplify the conversion
-            if (setpointEvent.getScale() == 0) {
-                // Scale is celsius, convert to fahrenheit
-                double c = value.doubleValue();
-                value = new BigDecimal((c * 9.0 / 5.0) + 32.0);
-            } else if (setpointEvent.getScale() == 1) {
-                // Scale is fahrenheit, convert to celsius
-                double f = value.doubleValue();
-                value = new BigDecimal((f - 32.0) * 5.0 / 9.0);
-            }
+        if (setpointScale != null) {
+            value = convertTemperature(setpointEvent.getScale(), Integer.parseInt(setpointScale), value);
         }
 
         return new DecimalType(value);
@@ -114,7 +105,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
      */
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
-        String scaleString = channel.getArguments().get("setpointScale");
+        String scaleString = channel.getArguments().get("config_scale");
         String setpointType = channel.getArguments().get("setpointType");
 
         int scale = 0;
