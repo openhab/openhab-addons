@@ -396,11 +396,6 @@ public class TiVoHandler extends BaseThingHandler implements DiscoveryListener {
                 getThing().getUID(), cfgHost, cfgTcpPort, cfgNumConnRetry, cfgPollInterval, cfgPollChanges,
                 cfgKeepConnOpen);
 
-        addIgnoredChannel(1);
-        addIgnoredChannel(9);
-        addIgnoredChannel(7);
-        addIgnoredChannel(5);
-
         // Initialize our connection to the tivo box
         if (this.setTivoConnectedRetry(true)) {
             updateStatus(ThingStatus.ONLINE); // No reason why we shouldn't be ready to roll now
