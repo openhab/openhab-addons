@@ -9,10 +9,10 @@
 package org.openhab.binding.yamahareceiver.handler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -66,9 +66,10 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         }
 
         // Check if refresh configuration has changed
-        Integer interval_config = (Integer) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_REFRESH);
-        if (interval_config != null && interval_config != refrehInterval) {
-            setupRefreshTimer(60 * 1000);
+        BigDecimal interval_config = (BigDecimal) thing.getConfiguration()
+                .get(YamahaReceiverBindingConstants.CONFIG_REFRESH);
+        if (interval_config != null && interval_config.intValue() != refrehInterval) {
+            setupRefreshTimer(interval_config.intValue());
         }
 
         relativeVolumeChangeFactor = (Float) thing.getConfiguration()
@@ -76,15 +77,13 @@ public class YamahaReceiverHandler extends BaseThingHandler {
     }
 
     /**
-     *
+     * Calls createCommunicationObject if the host name is configured correctly.
      */
     @Override
     public void initialize() {
-        Configuration config = thing.getConfiguration();
-        host = (String) config.get(YamahaReceiverBindingConstants.CONFIG_HOST_NAME);
+        host = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_HOST_NAME);
 
-        // Case: Lost host name somehow. This thing cannot be used any longer.
-        if (host == null) {
+        if (host == null || host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname not set!");
             return;
         }
@@ -97,9 +96,14 @@ public class YamahaReceiverHandler extends BaseThingHandler {
      * and a communication object.
      */
     private void createCommunicationObject() {
-        relativeVolumeChangeFactor = (Float) thing.getConfiguration()
+        // Read the configuration for the relative volume change factor.
+        BigDecimal relVolumeChange = (BigDecimal) thing.getConfiguration()
                 .get(YamahaReceiverBindingConstants.CONFIG_RELVOLUMECHANGE);
+        if (relVolumeChange != null) {
+            relativeVolumeChangeFactor = relVolumeChange.floatValue();
+        }
 
+        // Determine the zone of this thing
         String zoneName = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_ZONE);
         if (zoneName == null) {
             zoneName = YamahaReceiverCommunication.Zone.Main_Zone.name();
@@ -115,7 +119,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             return;
         }
         updateReceiverState();
-        setupRefreshTimer(1000);
+        setupRefreshTimer(0);
 
         // If we are the main zone, detect other zones now.
         if (zone == Zone.Main_Zone) {
@@ -125,6 +129,12 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Sets up a refresh timer (using the scheduler) with the CONFIG_REFRESH interval.
+     *
+     * @param initial_wait_time The delay before the first refresh. Maybe 0 to immediately
+     *            initiate a refresh.
+     */
     private void setupRefreshTimer(int initial_wait_time) {
         if (state == null) {
             return;
@@ -144,11 +154,15 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             public void run() {
                 updateReceiverState();
             }
-        }, initial_wait_time, 1000 * interval_config, TimeUnit.MINUTES);
+        }, initial_wait_time, interval_config, TimeUnit.MINUTES);
 
         refrehInterval = interval_config;
     }
 
+    /**
+     * All channels of this thing will be updated after a response from the Yamaha device.
+     * If the device does not respond it be assumed to be offline.
+     */
     private void updateReceiverState() {
         try {
             state.updateState();

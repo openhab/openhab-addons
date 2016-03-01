@@ -118,7 +118,7 @@ public class YamahaReceiverState {
     public void setVolumeDB(float volume) throws IOException {
         com.setVolume(volume);
         // Compute value in percent
-        this.volume = (volume + YamahaReceiverCommunication.VOLUME_MIN) * 100.0f
+        this.volume = (volume + -YamahaReceiverCommunication.VOLUME_MIN) * 100.0f
                 / YamahaReceiverCommunication.VOLUME_RANGE;
     }
 

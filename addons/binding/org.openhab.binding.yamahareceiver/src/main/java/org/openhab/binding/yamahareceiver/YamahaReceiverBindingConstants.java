@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class YamahaReceiverBindingConstants {
 
-    public static final String BINDING_ID = "yamahareceiver2";
+    public static final String BINDING_ID = "yamahareceiver";
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_YAMAHAAV = new ThingTypeUID(BINDING_ID, "yamahaAV");

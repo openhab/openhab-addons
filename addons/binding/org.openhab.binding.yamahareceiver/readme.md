@@ -35,16 +35,16 @@ The implemented channels are so far:
      Number Yamaha_NetRadio  "Net Radio" <netRadio> 
 	 
 	 # Manually linking
-	 # Replace the UPNP_UDN with the real UDN provided by UPNP discovery.
+	 # Replace the UPNP UDN (here: 9ab0c000_f668_11de_9976_00a0de88ee65) with the real UDN provided by your UPNP discovery.
 	 
     .items
 
-     Switch Yamaha_Power         "Power [%s]"         <tv> {channel="yamahaAV:UPNP_UDN:MAIN_ZONE:power"}
-     Dimmer Yamaha_Volume         "Volume [%.1f %%]"       {channel="yamahaAV:UPNP_UDN:MAIN_ZONE:volume"}
-     Switch Yamaha_Mute             "Mute [%s]"            {channel="yamahaAV:UPNP_UDN:MAIN_ZONE:mute"}
-     String Yamaha_Input         "Input [%s]"              {channel="yamahaAV:UPNP_UDN:MAIN_ZONE:input"}
-     String Yamaha_Surround         "surround [%s]"        {channel="yamahaAV:UPNP_UDN:MAIN_ZONE:surroundProgram"}
-     Number Yamaha_NetRadio  "Net Radio" <netRadio>        {channel="yamahaAV:UPNP_UDN:MAIN_ZONE:netradiotune"}
+     Switch Yamaha_Power         "Power [%s]"         <tv> {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:power"}
+     Dimmer Yamaha_Volume         "Volume [%.1f %%]"       {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:volume"}
+     Switch Yamaha_Mute             "Mute [%s]"            {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:mute"}
+     String Yamaha_Input         "Input [%s]"              {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:input"}
+     String Yamaha_Surround         "surround [%s]"        {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:surroundProgram"}
+     Number Yamaha_NetRadio  "Net Radio" <netRadio>        {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:netradiotune"}
  
      .sitemap
 

@@ -197,7 +197,7 @@ public class YamahaReceiverCommunication {
         node = getNode(basicStatus, "Volume/Lvl/Val");
         value = node != null ? node.getTextContent() : String.valueOf(VOLUME_MIN);
         state.volume = Float.parseFloat(value) * .1f; // in DB
-        state.volume = (state.volume + YamahaReceiverCommunication.VOLUME_MIN) * 100.0f
+        state.volume = (state.volume + -YamahaReceiverCommunication.VOLUME_MIN) * 100.0f
                 / YamahaReceiverCommunication.VOLUME_RANGE; // in percent
 
         node = getNode(basicStatus, "Volume/Mute");
