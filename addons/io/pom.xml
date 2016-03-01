@@ -17,6 +17,18 @@
 
   <modules>
     <module>org.openhab.io.myopenhab</module>
+    <module>org.openhab.io.hueemulation</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <modules>
+        <module>org.openhab.io.homekit</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

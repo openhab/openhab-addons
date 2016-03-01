@@ -181,6 +181,11 @@ The sitemap support can only be used as a starting point for own customizations,
 ### 403 error 
 If you get an 403 - Access Denied error, when you try to open the CometVisu in your browser you have not copied the correct release folder into the \<webFolder\> folder. Please check if there is a subfolder with the exact name "release/", which contains an index.html file and copy the content to the folder defined in the \<webFolder\>-property.
 
+### Hints for development
+For every change in the CometVisu XSD-schema the JAXB auto-generation job must be executed:
+* copy the new visu_config.xsd to src/main/resources/
+* and call `mvn jaxb2:xjc`
+
 ## TODO
 Maybe it is possible to define a general structure (in addition to a sitemap), that maps and groups items based on their context, e.g. which floor/room/subsection the belong to
 ```

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+  <thing-type id="fibaro_fgk101_00_000">
+    <label>FGK101 Door Opening Sensor</label>
+    <description>Door Opening Sensor</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature2" typeId="sensor_temperature">
+        <label>Temperature Sensor</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=TEMPERATURE</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Fibaro System</property>
+      <property name="model">FGK101</property>
+      <property name="manufacturerId">010F</property>
+      <property name="manufacturerRef">0700:1000,0700:2000,0700:3000</property>
+      <property name="DefaultAssociations">3</property>
+    </properties>
+
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>1: IN1 Alarm Cancellation Delay</label>
+        <description>Additional delay
+				after an alarm from input IN1 has ceased. The parameter allows you
+				to specify additional time, after which the input no. 1 alarm is
+				cancelled once its violation has ceased.
+			</description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_2_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>2: Status change signalled by LED</label>
+        <default>1</default>
+        <options>
+          <option value="0">LED turned Off</option>
+          <option value="1">LED turned On</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_3_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>3: Type of input no. 1</label>
+        <description>Type of input no. 1, what the input 1 will report if
+				no contact is made
+			</description>
+        <default>1</default>
+        <options>
+          <option value="0">Normally Open</option>
+          <option value="1">Normally Closed</option>
+          <option value="2">Monostable</option>
+          <option value="3">Bistable</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_5_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>5: Type of transmitted control frame for association
+				group 1
+			</label>
+        <description>Type of transmitted control frame for association
+				group 1, activated via input IN1. The parameter allows to specify
+				the type of alarm frame or to force transmission of control commands
+				(BASIC_SET)
+			</description>
+        <default>-1</default>
+        <options>
+          <option value="-1">BASIC_SET</option>
+          <option value="0">ALARM GENERIC</option>
+          <option value="1">ALARM SMOKE</option>
+          <option value="2">ALARM CO</option>
+          <option value="3">ALARM CO2</option>
+          <option value="4">ALARM HEAT</option>
+          <option value="5">ALARM WATER</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_7_1" type="integer" groupName="configuration"
+                 min="1" max="255">
+        <label>7: Forced Level of Dimming group 1</label>
+        <description><![CDATA[
+Value of the parameter specifying the forced level of
+				dimming / opening sun blinds when comes 'switch on' / 'open' command
+				to devices from association group no. 1.
+				In the case of alarm frames
+				the alarm priority is specified.<br />Possib    !]]></description>
+        <default>255</default>
+      </parameter>
+
+      <parameter name="config_9_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>9: Deactivate transmission of frame cancelling alarm
+			</label>
+        <description>Deactivating transmission of the frame cancelling the
+				alarm or the control frame deactivating the device (Basic). It
+				allows for disabling the deactivation function or the alarm
+				cancellation function for devices associated with the appropria</description>
+        <default>0</default>
+        <options>
+          <option value="0">Groups 1 and 2 sent</option>
+          <option value="1">Group 1 sent, Group 2 not sent.</option>
+          <option value="2">Group 2 sent, Group 1 not sent.</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_12_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>12: Insensitiveness to temperature changes.</label>
+        <description>This is the maximum acceptable difference between the last reported temperature and the current temperature taken from the sensor. If the temperatures differ by the set value or more, then a report with the current temperature value is sent to the device </description>
+        <default>8</default>
+      </parameter>
+
+      <parameter name="config_13_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>13: Transmitting the alarm or control frame broadcast
+				mode
+			</label>
+        <description><![CDATA[
+Transmitting the alarm or control frame in
+				'broadcast' mode (i.e. to all devices within range), information
+				sent in this mode is not repeated by the mesh network.<br /><b>NOTE: If the broadcast mode of information transmission is activ</b>    !]]></description>
+        <default>0</default>
+        <options>
+          <option value="0">IN1 and IN2 Broadcast inactive</option>
+          <option value="1">IN1 broadcast mode active, Sensor 2 broadcast mode
+					inactive
+			</option>
+          <option value="2">IN1 broadcast mode inactive, Sensor 2 broadcast
+					mode active
+			</option>
+          <option value="3">INI and IN2 broadcast mode active</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_14_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>14: Scene activation</label>
+        <description>Enable/Disable scene functionality. The device offers
+				the possibility of sending commands compatible with Command class
+				scene activation. Information is sent to devices assigned to
+				association group no. 3.
+			</description>
+        <default>0</default>
+        <options>
+          <option value="0">Disabled</option>
+          <option value="1">Enabled</option>
+        </options>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+        <label>1: Input IN1</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+        <label>2: TMP Button</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_3" type="text" groupName="association">
+        <label>3: Condition</label>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>

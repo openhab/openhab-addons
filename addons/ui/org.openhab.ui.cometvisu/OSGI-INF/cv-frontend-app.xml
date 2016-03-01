@@ -8,7 +8,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" name="org.openhab.cometvisu">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" immediate="true" name="org.openhab.cometvisu">
    <implementation class="org.openhab.ui.cometvisu.servlet.CometVisuApp"/>
    <service>
       <provide interface="org.openhab.ui.cometvisu.servlet.CometVisuApp"/>
