@@ -26,6 +26,7 @@ import org.eclipse.smarthome.model.sitemap.SitemapProvider;
 import org.eclipse.smarthome.ui.icon.IconProvider;
 import org.eclipse.smarthome.ui.items.ItemUIRegistry;
 import org.openhab.ui.cometvisu.internal.Config;
+import org.openhab.ui.cometvisu.php.PHProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.http.HttpService;
@@ -56,6 +57,8 @@ public class CometVisuApp {
     private EventPublisher eventPublisher;
 
     private CometVisuServlet servlet;
+
+    private PHProvider phpProvider;
 
     static protected Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
 
@@ -139,6 +142,24 @@ public class CometVisuApp {
 
     protected void unsetHttpService(HttpService httpService) {
         this.httpService = null;
+    }
+
+    public void setPHProvider(PHProvider prov) {
+        this.phpProvider = prov;
+        if (servlet != null) {
+            servlet.setPHProvider(prov);
+        }
+    }
+
+    public PHProvider getPHProvider() {
+        return this.phpProvider;
+    }
+
+    public void unsetPHProvider() {
+        this.phpProvider = null;
+        if (servlet != null) {
+            servlet.unsetPHProvider();
+        }
     }
 
     private void readConfiguration(final Map<String, Object> properties) {
