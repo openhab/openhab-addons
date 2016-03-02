@@ -295,11 +295,10 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         // This ensures we get called whenever there's an event we might be interested in
         if (((ZWaveControllerHandler) thingHandler).addEventListener(this) == true) {
             controllerHandler = (ZWaveControllerHandler) thingHandler;
+            updateNeighbours();
         } else {
             logger.warn("NODE {}: Controller failed to register event handler.", nodeId);
         }
-
-        updateNeighbours();
     }
 
     @Override
@@ -913,6 +912,10 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
     }
 
     private void updateNeighbours() {
+        if (controllerHandler == null) {
+            return;
+        }
+
         ZWaveNode node = controllerHandler.getNode(nodeId);
         if (node == null) {
             return;
