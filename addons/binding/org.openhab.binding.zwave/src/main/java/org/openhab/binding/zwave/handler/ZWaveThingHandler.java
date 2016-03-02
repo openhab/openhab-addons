@@ -212,9 +212,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 bridgeHandlerInitialized(handler, bridge);
                 // }
             }
-        } else {
-            // Until we get an update put the Thing into initialisation state
-            updateStatus(ThingStatus.INITIALIZING);
         }
 
         startPolling();
@@ -280,8 +277,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         } else {
             switch (node.getNodeState()) {
                 case INITIALIZING:
-                    updateStatus(ThingStatus.INITIALIZING);
-                    break;
                 case ALIVE:
                     updateStatus(ThingStatus.ONLINE);
                     break;
@@ -880,9 +875,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
             switch (event.getState()) {
                 case INITIALIZING:
-                    logger.debug("NODE {}: Setting INITIALIZING", nodeId);
-                    updateStatus(ThingStatus.INITIALIZING);
-                    break;
                 case ALIVE:
                     logger.debug("NODE {}: Setting ONLINE", nodeId);
                     updateStatus(ThingStatus.ONLINE);
@@ -905,8 +897,8 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     updateStatus(ThingStatus.ONLINE);
                     break;
                 default:
-                    logger.debug("NODE {}: Setting INITIALIZING: {}", nodeId, initEvent.getStage());
-                    updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE, initEvent.getStage().toString());
+                    logger.debug("NODE {}: Setting ONLINE (INITIALIZING): {}", nodeId, initEvent.getStage());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, initEvent.getStage().toString());
                     break;
             }
         }
