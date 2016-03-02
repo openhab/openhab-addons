@@ -159,6 +159,11 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                     configurationParameter.getValue());
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
+                if (controller != null) {
+                    logger.warn("Trying to send controller command, but controller is not initialised");
+                    continue;
+                }
+
                 if (cfg[1].equals("softreset")) {
                     controller.requestSoftReset();
                 } else if (cfg[1].equals("hardreset")) {
