@@ -21,6 +21,25 @@
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
+
+        <config-description>
+            <parameter name="deviceId" type="text" required="true">
+                <label>Device Id</label>
+                <description>Sensor Id. Example 2983</description>
+            </parameter>
+            <parameter name="subType" type="text" required="true">
+                <label>Sub Type</label>
+                <description>Specifies device sub type.</description>
+                <options>
+                    <option value="WIND1">WTGR800</option>
+                    <option value="WIND2">WGR800</option>
+                    <option value="WIND3">STR918, WGR918, WGR928</option>
+                    <option value="WIND4">TFA</option>
+                    <option value="WIND5">UPM WDS500</option>
+                    <option value="WIND6">WS2300</option>
+                </options>
+            </parameter>
+        </config-description>
 	</thing-type>
 
 </thing:thing-descriptions>

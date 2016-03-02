@@ -28,16 +28,16 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
 
     public enum SubType {
         UNDEF(0),
-        THR128_138_THC138(1),
-        THC238_268_THN122_132_THWR288_THRN122_AW129_131(2),
-        THWR800(3),
-        RTHN318(4),
-        LACROSSE_TX2_TX3_TX4_TX17(5),
-        TS15C(6),
-        VIKING_02811(7),
-        LACROSSE_WS2300(8),
-        RUBICSON(9),
-        TFA_30_3133(10),
+        TEMP1(1),
+        TEMP2(2),
+        TEMP3(3),
+        TEMP4(4),
+        TEMP5(5),
+        TEMP6(6),
+        TEMP7(7),
+        TEMP8(8),
+        TEMP9(9),
+        TEMP10(10),
 
         UNKNOWN(255);
 
@@ -61,7 +61,7 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.THR128_138_THC138;
+    public SubType subType = SubType.UNDEF;
     public int sensorId = 0;
     public double temperature = 0;
     public byte signalLevel = 0;
