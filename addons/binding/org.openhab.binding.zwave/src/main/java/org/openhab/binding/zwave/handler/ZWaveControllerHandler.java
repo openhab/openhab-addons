@@ -119,8 +119,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         // And register it as an OSGi service
         discoveryRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
-
-        updateStatus(ThingStatus.INITIALIZING);
     }
 
     @Override
