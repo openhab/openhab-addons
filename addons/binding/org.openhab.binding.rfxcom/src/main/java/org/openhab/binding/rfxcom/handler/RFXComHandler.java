@@ -97,28 +97,41 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     @Override
     public void initialize() {
         config = getConfigAs(RFXComDeviceConfiguration.class);
-
         logger.debug("Initialized RFXCOM device handler for {}, deviceId={}, subType={}", getThing().getUID(),
                 config.deviceId, config.subType);
+
+        if (config.deviceId == null || config.subType == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Initialized RFXCOM device missing deviceId or subType");
+        }
+
+        initializeBridge(getBridge().getHandler(), getBridge());
     }
 
     @Override
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+        initializeBridge(thingHandler, bridge);
+    }
 
-        logger.debug("Bridge initialized");
-
+    private void initializeBridge(ThingHandler thingHandler, Bridge bridge) {
         if (thingHandler != null && bridge != null) {
+
+            logger.debug("Bridge initialized");
+
             bridgeHandler = (RFXComBridgeHandler) thingHandler;
             bridgeHandler.registerDeviceStatusListener(this);
 
-            if (bridge.getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
+            if (config.deviceId == null || config.subType == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "RFXCOM device missing deviceId or subType");
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                if (bridge.getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
             }
         }
-
-        super.bridgeHandlerInitialized(thingHandler, bridge);
     }
 
     @Override
@@ -132,7 +145,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#dispose()
      */
     @Override
@@ -284,7 +297,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
     /**
      * Convert internal signal level (0-15) to system wide signal level (0-4).
-     * 
+     *
      * @param signalLevel Internal signal level
      * @return Signal level in system wide level
      */
@@ -295,9 +308,9 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
         /*
          * RFXCOM signal levels are always between 0-15.
-         * 
+         *
          * Use switch case to make level adaption easier in future if needed.
-         * 
+         *
          * BigDecimal level =
          * ((DecimalType)signalLevel).toBigDecimal().divide(new BigDecimal(4));
          * return new DecimalType(level.setScale(0, RoundingMode.HALF_UP));
@@ -341,7 +354,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
     /**
      * Convert internal battery level (0-9) to system wide battery level (0-100%).
-     * 
+     *
      * @param batteryLevel Internal battery level
      * @return Battery level in system wide level
      */
@@ -349,7 +362,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
         /*
          * RFXCOM signal levels are always between 0-9.
-         * 
+         *
          */
         int level = ((DecimalType) batteryLevel).intValue();
         level = (level + 1) * 10;
@@ -358,7 +371,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
     /**
      * Check if battery level is below low battery threshold level.
-     * 
+     *
      * @param batteryLevel Internal battery level
      * @return OnOffType
      */

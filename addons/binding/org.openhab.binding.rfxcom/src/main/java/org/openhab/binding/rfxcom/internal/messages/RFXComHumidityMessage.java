@@ -30,8 +30,8 @@ public class RFXComHumidityMessage extends RFXComBaseMessage {
 
     public enum SubType {
         UNDEF(0),
-        LACROSSE_TX3(1),
-        LACROSSE_WS2300(2),
+        HUM1(1),
+        HUM2(2),
 
         UNKNOWN(255);
 
@@ -79,7 +79,7 @@ public class RFXComHumidityMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.LACROSSE_TX3;
+    public SubType subType = SubType.UNDEF;
     public int sensorId = 0;
     public byte humidity = 0;
     public HumidityStatus humidityStatus = HumidityStatus.NORMAL;

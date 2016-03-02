@@ -42,6 +42,8 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gnu.io.NoSuchPortException;
+
 /**
  * {@link RFXComBridgeHandler} is the handler for a RFXCOM transceivers. All
  * {@link RFXComHandler}s use the {@link RFXComBridgeHandler} to execute the
@@ -204,6 +206,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 connector.sendMessage(RFXComMessageFactory.CMD_START_RECEIVER);
                 updateStatus(ThingStatus.ONLINE);
             }
+        } catch (NoSuchPortException e) {
+            logger.error("Connection to RFXCOM transceiver failed: invalid port");
         } catch (Exception e) {
             logger.error("Connection to RFXCOM transceiver failed: {}", e.getMessage());
         } catch (UnsatisfiedLinkError e) {
