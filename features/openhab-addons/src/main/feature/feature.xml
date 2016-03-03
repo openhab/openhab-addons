@@ -87,6 +87,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pulseaudio/${project.version}</bundle>
     </feature>
 
+   <feature name="openhab-binding-rme" description="RME Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rme/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-rfxcom" description="RFXCOM Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
