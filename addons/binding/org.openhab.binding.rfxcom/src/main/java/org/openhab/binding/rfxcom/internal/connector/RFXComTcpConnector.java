@@ -15,42 +15,40 @@ import org.slf4j.LoggerFactory;
 
 /**
  * RFXCOM connector for TCP/IP communication.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComTcpConnector implements RFXComConnectorInterface {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(RFXComTcpConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(RFXComTcpConnector.class);
 
-	RFXComTcpConnector() {
-		
-	}
+    RFXComTcpConnector() {
 
-	@Override
-	public void connect(String device) throws Exception {
-		logger.error("connect not implemented");
-	}
+    }
 
-	@Override
-	public void disconnect() {
-		logger.error("disconnect not implemented");
-	}
-	
-	
-	@Override
-	public void sendMessage(byte[] data) throws IOException {
-		logger.error("sendPacket not implemented");
-	}
+    @Override
+    public void connect(String device) throws Exception {
+        logger.error("connect not implemented");
+    }
 
-	@Override
-	public void addEventListener(RFXComEventListener listener) {
-		logger.error("addEventListener not implemented");
-	}
+    @Override
+    public void disconnect() {
+        logger.error("disconnect not implemented");
+    }
 
-	@Override
-	public void removeEventListener(RFXComEventListener listener) {
-		logger.error("removeEventListener not implemented");
-	}
+    @Override
+    public void sendMessage(byte[] data) throws IOException {
+        logger.error("sendPacket not implemented");
+    }
+
+    @Override
+    public void addEventListener(RFXComEventListener listener) {
+        logger.error("addEventListener not implemented");
+    }
+
+    @Override
+    public void removeEventListener(RFXComEventListener listener) {
+        logger.error("removeEventListener not implemented");
+    }
 
 }
