@@ -9,7 +9,6 @@
         <description>This is an Orvibo S20 Smart Wifi Socket</description>
         <channels>
             <channel id="power" typeId="power"/>
-            <!-- <channel id="label" typeId="label"/> -->
         </channels>
         <config-description>
             <parameter name="deviceId" type="text" required="true">
@@ -25,7 +24,7 @@
     <channel-type id="power">
         <item-type>Switch</item-type>
         <label>Power</label>
-        <description>Power on/off your S20 Socket.</description>
+        <description>Switch on/off your S20 Socket.</description>
     </channel-type>
     
     <channel-type id="label">
