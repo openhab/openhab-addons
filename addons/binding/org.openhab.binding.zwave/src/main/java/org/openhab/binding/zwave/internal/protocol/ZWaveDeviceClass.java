@@ -233,7 +233,7 @@ public class ZWaveDeviceClass {
         STATIC_CONTROLLER(0x02, "Static Controller"),
         AV_CONTROL_POINT(0x03, "A/V Control Point"),
         DISPLAY(0x06, "Display"),
-        GARAGE_DOOR(0x07, "Garage Door"),
+        GARAGE_DOOR(0x07, "Garage Door"), // Need to change to NOTIFICATION_SENSOR
         THERMOSTAT(0x08, "Thermostat"),
         WINDOW_COVERING(0x09, "Window Covering"),
         REPEATER_SLAVE(0x0f, "Repeater Slave"),
@@ -393,7 +393,6 @@ public class ZWaveDeviceClass {
         BASIC_REPEATER_SLAVE(1, Generic.REPEATER_SLAVE, "Basic Repeater Slave"),
 
         POWER_SWITCH_BINARY(1, Generic.BINARY_SWITCH, "Binary Power Switch"),
-
         SCENE_SWITCH_BINARY_DISCONTINUED(2, Generic.BINARY_SWITCH, "Binary Scene Switch (Discontinued)"),
         SCENE_SWITCH_BINARY(3, Generic.BINARY_SWITCH, "Binary Scene Switch"),
         SIREN_SWITCH_BINARY(5, Generic.BINARY_SWITCH, "Siren Switch"),
@@ -521,6 +520,8 @@ public class ZWaveDeviceClass {
          */
         public CommandClass[] getMandatoryCommandClasses() {
             switch (this) {
+                case SIREN_SWITCH_BINARY:
+                    return new CommandClass[] { CommandClass.MANUFACTURER_SPECIFIC };
                 case NOT_USED:
                 case PORTABLE_REMOTE_CONTROLLER:
                 case PC_CONTROLLER:
@@ -602,4 +603,136 @@ public class ZWaveDeviceClass {
             }
         }
     }
+
+    /*
+     * public List<CommandClass> getMandatoryCommandClasses() {
+     * Set<CommandClass> classList = new HashSet<CommandClass>();
+     *
+     * switch (genericDeviceClass) {
+     * case REMOTE_CONTROLLER:
+     * switch (specificDeviceClass) {
+     * case PORTABLE_REMOTE_CONTROLLER:
+     * break;
+     * case PORTABLE_SCENE_CONTROLLER:
+     * classList.add(CommandClass.SCENE_CONTROLLER_CONF);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.ASSOCIATION);
+     * break;
+     * case PORTABLE_INSTALLER_TOOL:
+     * classList.add(CommandClass.CONTROLLER_REPLICATION);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.VERSION);
+     * classList.add(CommandClass.MULTI_CMD);
+     * break;
+     * default:
+     * logger.warn("Device class not handled {} {}", genericDeviceClass, specificDeviceClass);
+     * break;
+     * }
+     * break;
+     * case STATIC_CONTROLLER:
+     * switch (specificDeviceClass) {
+     * case PC_CONTROLLER:
+     * break;
+     * case SCENE_CONTROLLER:
+     * classList.add(CommandClass.SCENE_CONTROLLER_CONF);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.ASSOCIATION);
+     * break;
+     * case INSTALLER_TOOL:
+     * classList.add(CommandClass.CONTROLLER_REPLICATION);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.VERSION);
+     * classList.add(CommandClass.MULTI_CMD);
+     * break;
+     * default:
+     * logger.warn("Device class not handled {} {}", genericDeviceClass, specificDeviceClass);
+     * break;
+     * }
+     * break;
+     * case THERMOSTAT:
+     * switch (specificDeviceClass) {
+     * case THERMOSTAT_HEATING:
+     * break;
+     * case THERMOSTAT_GENERAL:
+     * classList.add(CommandClass.THERMOSTAT_MODE);
+     * classList.add(CommandClass.THERMOSTAT_SETPOINT);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * break;
+     * case THERMOSTAT_GENERAL_V2:
+     * classList.add(CommandClass.THERMOSTAT_MODE);
+     * classList.add(CommandClass.THERMOSTAT_SETPOINT);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.ASSOCIATION);
+     * break;
+     * case SETBACK_SCHEDULE_THERMOSTAT:
+     * classList.add(CommandClass.CLIMATE_CONTROL_SCHEDULE);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.ASSOCIATION);
+     * classList.add(CommandClass.MULTI_CMD);
+     * break;
+     * case SETPOINT_THERMOSTAT:
+     * classList.add(CommandClass.THERMOSTAT_SETPOINT);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.ASSOCIATION);
+     * classList.add(CommandClass.MULTI_CMD);
+     * break;
+     * case SETBACK_THERMOSTAT:
+     * classList.add(CommandClass.THERMOSTAT_MODE);
+     * classList.add(CommandClass.THERMOSTAT_SETPOINT);
+     * classList.add(CommandClass.THERMOSTAT_SETBACK);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * classList.add(CommandClass.ASSOCIATION);
+     * break;
+     * default:
+     * logger.warn("Device class not handled {} {}", genericDeviceClass, specificDeviceClass);
+     * break;
+     * }
+     * break;
+     *
+     * case WINDOW_COVERING:
+     * switch (specificDeviceClass) {
+     * case SIMPLE_WINDOW_COVERING:
+     * classList.add(CommandClass.BASIC_WINDOW_COVERING);
+     * break;
+     * default:
+     * logger.warn("Device class not handled {} {}", genericDeviceClass, specificDeviceClass);
+     * break;
+     * }
+     * break;
+     * case BINARY_SWITCH:
+     * classList.add(CommandClass.SWITCH_BINARY);
+     * switch (specificDeviceClass) {
+     * case POWER_SWITCH_BINARY:
+     * classList.add(CommandClass.SWITCH_ALL);
+     * classList.add(CommandClass.MANUFACTURER_SPECIFIC);
+     * break;
+     * case SCENE_SWITCH_BINARY:
+     * classList.add(CommandClass.SCENE_ACTIVATION);
+     * classList.add(CommandClass.SCENE_ACTUATOR_CONF);
+     * break;
+     * case SIREN_SWITCH_BINARY:
+     * break;
+     * case VALVE_SWITCH_BINARY:
+     * break;
+     * default:
+     * logger.warn("Device class not handled {} {}", genericDeviceClass, specificDeviceClass);
+     * break;
+     * }
+     * break;
+     *
+     * case GARAGE_DOOR:
+     * case REPEATER_SLAVE:
+     * case TOGGLE_SWITCH:
+     * case REMOTE_SWITCH:
+     * case REMOTE_SWITCH_2:
+     * case AV_CONTROL_POINT:
+     * classList.add(CommandClass.NO_OPERATION);
+     * classList.add(CommandClass.BASIC);
+     * break;
+     *
+     * }
+     *
+     * return classList;
+     * }
+     */
 }
