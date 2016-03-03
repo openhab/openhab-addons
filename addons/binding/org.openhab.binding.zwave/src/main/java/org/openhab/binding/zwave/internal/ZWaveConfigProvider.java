@@ -195,18 +195,21 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         // If we're DEAD, allow moving to the FAILED list
         if (node.getNodeState() == ZWaveNodeState.DEAD) {
             parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
-                    .withLabel("Set device as FAILed").withAdvanced(true).withGroupName("actions").build());
+                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("Go").withGroupName("actions")
+                    .build());
         }
 
         // If we're FAILED, allow removing from the controller
         if (node.getNodeState() == ZWaveNodeState.FAILED) {
             parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.TEXT)
-                    .withLabel("Remove device from controller").withAdvanced(true).withGroupName("actions").build());
+                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("Go")
+                    .withGroupName("actions").build());
         }
 
         if (node.isInitializationComplete() == true) {
             parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.TEXT)
-                    .withLabel("Reinitialise the device").withAdvanced(true).withGroupName("actions").build());
+                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("Go").withGroupName("actions")
+                    .build());
         }
 
         return new ConfigDescription(uri, parameters, groups);

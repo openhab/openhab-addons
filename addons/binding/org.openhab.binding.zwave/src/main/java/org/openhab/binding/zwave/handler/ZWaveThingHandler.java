@@ -328,8 +328,9 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
         Configuration configuration = editConfiguration();
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
+            Object valueObject = configurationParameter.getValue();
             logger.debug("NODE {}: Configuration update {} to {}", nodeId, configurationParameter.getKey(),
-                    configurationParameter.getValue());
+                    valueObject);
             String[] cfg = configurationParameter.getKey().split("_");
             if ("config".equals(cfg[0])) {
                 if (cfg.length < 3) {
@@ -561,11 +562,14 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
                     controllerHandler.reinitialiseNode(nodeId);
                 }
+
+                // Don't save the value
+                valueObject = "";
             } else {
                 logger.warn("NODE{}: Configuration invalid {}", nodeId, configurationParameter.getKey());
             }
 
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
+            configuration.put(configurationParameter.getKey(), valueObject);
         }
 
         // Persist changes

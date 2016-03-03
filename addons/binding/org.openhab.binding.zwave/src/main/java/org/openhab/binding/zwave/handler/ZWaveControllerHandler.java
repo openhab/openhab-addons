@@ -155,8 +155,8 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
         Configuration configuration = editConfiguration();
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(),
-                    configurationParameter.getValue());
+            Object value = configurationParameter.getValue();
+            logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(), value);
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
                 if (controller != null) {
@@ -171,13 +171,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 } else if (cfg[1].equals("exclude")) {
                     controller.requestRemoveNodesStart();
                 }
+
+                value = "";
             }
 
             if ("port".equals(cfg[0])) {
                 reinitialise = true;
             }
 
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
+            configuration.put(configurationParameter.getKey(), value);
         }
 
         // Persist changes
