@@ -9,47 +9,47 @@ package org.openhab.binding.rfxcom.internal.config;
 
 /**
  * Configuration class for {@link RfxcomBinding} device.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComBridgeConfiguration {
-	
-	// Serial port for manual configuration 
-	public String serialPort;
-	
-	// Configuration for discovered bridge devices
-	public String bridgeId;
-	
-	public String transceiverType;
-	
-	// Won't configure protocols to RFXCOM transceiver
-	public boolean ignoreConfig;
-	
-	public String setMode;
-	
-	// Enabled protocols
-	public boolean enableUndecoded;
-	public boolean enableImagintronixOpus;
-	public boolean enableByronSX;
-	public boolean enableRSL;
-	public boolean enableLighting4;
-	public boolean enableFineOffsetViking;
-	public boolean enableRubicson;
-	public boolean enableAEBlyss;
-	public boolean enableBlindsT1T2T3T4;
-	public boolean enableBlindsT0;
-	public boolean enableProGuard;
-	public boolean enableFS20;
-	public boolean enableLaCrosse;
-	public boolean enableHidekiUPM;
-	public boolean enableADLightwaveRF;
-	public boolean enableMertik;
-	public boolean enableVisonic;
-	public boolean enableATI;
-	public boolean enableOregonScientific;
-	public boolean enableMeiantech;
-	public boolean enableHomeEasyEU;
-	public boolean enableAC;
-	public boolean enableARC;
-	public boolean enableX10;
+
+    // Serial port for manual configuration
+    public String serialPort;
+
+    // Configuration for discovered bridge devices
+    public String bridgeId;
+
+    public String transceiverType;
+
+    // Won't configure protocols to RFXCOM transceiver
+    public boolean ignoreConfig;
+
+    public String setMode;
+
+    // Enabled protocols
+    public boolean enableUndecoded;
+    public boolean enableImagintronixOpus;
+    public boolean enableByronSX;
+    public boolean enableRSL;
+    public boolean enableLighting4;
+    public boolean enableFineOffsetViking;
+    public boolean enableRubicson;
+    public boolean enableAEBlyss;
+    public boolean enableBlindsT1T2T3T4;
+    public boolean enableBlindsT0;
+    public boolean enableProGuard;
+    public boolean enableFS20;
+    public boolean enableLaCrosse;
+    public boolean enableHidekiUPM;
+    public boolean enableADLightwaveRF;
+    public boolean enableMertik;
+    public boolean enableVisonic;
+    public boolean enableATI;
+    public boolean enableOregonScientific;
+    public boolean enableMeiantech;
+    public boolean enableHomeEasyEU;
+    public boolean enableAC;
+    public boolean enableARC;
+    public boolean enableX10;
 }

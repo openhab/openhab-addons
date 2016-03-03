@@ -26,61 +26,59 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link RFXComDeviceDiscoveryService} class is used to discover RFXCOM
  * devices that send messages to RFXCOM bridge.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceMessageListener{
+public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceMessageListener {
 
-	private final static Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
+    private final static Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
 
-	private RFXComBridgeHandler bridgeHandler;
+    private RFXComBridgeHandler bridgeHandler;
 
-	public RFXComDeviceDiscoveryService(RFXComBridgeHandler rfxcomBridgeHandler) {
-		super(null, 1, false);
-		this.bridgeHandler = rfxcomBridgeHandler;
-	}
+    public RFXComDeviceDiscoveryService(RFXComBridgeHandler rfxcomBridgeHandler) {
+        super(null, 1, false);
+        this.bridgeHandler = rfxcomBridgeHandler;
+    }
 
-	public void activate() {
-		bridgeHandler.registerDeviceStatusListener(this);
-	}
+    public void activate() {
+        bridgeHandler.registerDeviceStatusListener(this);
+    }
 
-	public void deactivate() {
-		bridgeHandler.unregisterDeviceStatusListener(this);
-	}
+    @Override
+    public void deactivate() {
+        bridgeHandler.unregisterDeviceStatusListener(this);
+    }
 
-	@Override
-	public Set<ThingTypeUID> getSupportedThingTypes() {
-		return RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
-	}
-	
-	@Override
-	protected void startScan() {
-		// this can be ignored here as we discover devices from received messages
-	}
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
+    }
 
-	@Override
-	public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message) {
-		logger.trace("Received: bridge: {} message: {}", bridge, message);
-		
-		try {
-			RFXComBaseMessage msg = (RFXComBaseMessage) message;
-			String id = message.getDeviceId();
-			ThingTypeUID uid = RFXComBindingConstants.packetTypeThingMap.get(msg.packetType);
-			ThingUID thingUID = new ThingUID(uid, bridge, id.replace(RFXComBaseMessage.ID_DELIMITER, "_"));
-			if (thingUID != null) {
-				logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-				String subType = msg.convertSubType(String.valueOf(msg.subType)).toString();
-				String label = msg.packetType + "-"+ id;
-				DiscoveryResult discoveryResult = DiscoveryResultBuilder
-						.create(thingUID)
-						.withLabel(label)
-						.withProperty(RFXComBindingConstants.DEVICE_ID, id)
-						.withProperty(RFXComBindingConstants.SUB_TYPE, subType)
-						.withBridge(bridge).build();
-				thingDiscovered(discoveryResult);
-			}
-		} catch (Exception e) {
-			logger.debug("Error occured during device discovery", e);
-		} 
-	}
+    @Override
+    protected void startScan() {
+        // this can be ignored here as we discover devices from received messages
+    }
+
+    @Override
+    public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message) {
+        logger.trace("Received: bridge: {} message: {}", bridge, message);
+
+        try {
+            RFXComBaseMessage msg = (RFXComBaseMessage) message;
+            String id = message.getDeviceId();
+            ThingTypeUID uid = RFXComBindingConstants.packetTypeThingMap.get(msg.packetType);
+            ThingUID thingUID = new ThingUID(uid, bridge, id.replace(RFXComBaseMessage.ID_DELIMITER, "_"));
+            if (thingUID != null) {
+                logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
+                String subType = msg.convertSubType(String.valueOf(msg.subType)).toString();
+                String label = msg.packetType + "-" + id;
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
+                        .withProperty(RFXComBindingConstants.DEVICE_ID, id)
+                        .withProperty(RFXComBindingConstants.SUB_TYPE, subType).withBridge(bridge).build();
+                thingDiscovered(discoveryResult);
+            }
+        } catch (Exception e) {
+            logger.debug("Error occured during device discovery", e);
+        }
+    }
 }

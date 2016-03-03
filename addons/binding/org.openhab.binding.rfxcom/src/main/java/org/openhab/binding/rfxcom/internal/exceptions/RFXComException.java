@@ -10,27 +10,27 @@ package org.openhab.binding.rfxcom.internal.exceptions;
 
 /**
  * Exception for RFXCOM errors.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComException extends Exception {
 
-	private static final long serialVersionUID = 2975102966905930260L;
+    private static final long serialVersionUID = 2975102966905930260L;
 
-	public RFXComException() {
-		super();
-	}
+    public RFXComException() {
+        super();
+    }
 
-	public RFXComException(String message) {
-		super(message);
-	}
+    public RFXComException(String message) {
+        super(message);
+    }
 
-	public RFXComException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public RFXComException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public RFXComException(Throwable cause) {
-		super(cause);
-	}
+    public RFXComException(Throwable cause) {
+        super(cause);
+    }
 
 }

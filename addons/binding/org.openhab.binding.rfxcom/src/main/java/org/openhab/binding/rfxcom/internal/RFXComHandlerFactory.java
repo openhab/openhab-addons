@@ -12,13 +12,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.binding.rfxcom.RFXComBindingConstants;
-import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
-import org.openhab.binding.rfxcom.handler.RFXComBridgeHandler;
-import org.openhab.binding.rfxcom.handler.RFXComHandler;
-import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,29 +19,36 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.rfxcom.RFXComBindingConstants;
+import org.openhab.binding.rfxcom.handler.RFXComBridgeHandler;
+import org.openhab.binding.rfxcom.handler.RFXComHandler;
+import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
+import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
 /**
- * The {@link RFXComHandlerFactory} is responsible for creating things and thing 
+ * The {@link RFXComHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComHandlerFactory extends BaseThingHandlerFactory {
-    
-	@SuppressWarnings("unused")
-	private Logger logger = LoggerFactory.getLogger(RFXComHandlerFactory.class);
-	
-	/**
-	 * Service registration map
-	 */
+
+    @SuppressWarnings("unused")
+    private Logger logger = LoggerFactory.getLogger(RFXComHandlerFactory.class);
+
+    /**
+     * Service registration map
+     */
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-	public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(
-			RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS,
-			RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS);
-	
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(
+            RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS,
+            RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
@@ -60,32 +60,31 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-    		RFXComBridgeHandler handler = new RFXComBridgeHandler((Bridge) thing);
-			registerDeviceDiscoveryService(handler);
-			return handler;
-		} else if (supportsThingType(thingTypeUID)) {
-			return new RFXComHandler(thing);
-		}
+            RFXComBridgeHandler handler = new RFXComBridgeHandler((Bridge) thing);
+            registerDeviceDiscoveryService(handler);
+            return handler;
+        } else if (supportsThingType(thingTypeUID)) {
+            return new RFXComHandler(thing);
+        }
 
         return null;
     }
 
-	@Override
-	protected void removeHandler(ThingHandler thingHandler) {
-		if (this.discoveryServiceRegs != null) {
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (this.discoveryServiceRegs != null) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
-		}
-	}
+        }
+    }
 
-	private void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
-		RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
-		discoveryService.activate();
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext.registerService(
-                DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-	}
+    private void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
+        RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
+        discoveryService.activate();
+        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
 }
-
