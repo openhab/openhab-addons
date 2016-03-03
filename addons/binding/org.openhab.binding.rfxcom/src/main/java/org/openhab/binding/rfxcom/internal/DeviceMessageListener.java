@@ -14,19 +14,19 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
 /**
  * The {@link DeviceMessageListener} is notified when a message is received.
  *
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public interface DeviceMessageListener {
 
-	/**
-	 * This method is called whenever the message is received from the bridge.
-	 * 
-	 * @param bridge
-	 *            The RFXCom bridge where message is received.
-	 * @param message
-	 *            The message which received.
-	 */
-	public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message);
+    /**
+     * This method is called whenever the message is received from the bridge.
+     * 
+     * @param bridge
+     *            The RFXCom bridge where message is received.
+     * @param message
+     *            The message which received.
+     */
+    public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message);
 
 }

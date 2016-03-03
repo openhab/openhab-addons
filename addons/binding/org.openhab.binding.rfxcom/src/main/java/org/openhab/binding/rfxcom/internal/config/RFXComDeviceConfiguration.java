@@ -9,16 +9,16 @@ package org.openhab.binding.rfxcom.internal.config;
 
 /**
  * Configuration class for {@link RfxcomBinding} device.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 
 public class RFXComDeviceConfiguration {
-	
-	// Device Id 
-	public String deviceId;
-	
-	// Sub Type
-	public String subType;
+
+    // Device Id
+    public String deviceId;
+
+    // Sub Type
+    public String subType;
 
 }
