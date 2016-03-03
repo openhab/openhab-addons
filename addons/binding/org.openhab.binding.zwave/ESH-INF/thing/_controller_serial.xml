@@ -101,12 +101,14 @@
                 <label>Hard Reset Controller</label>
                 <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!</description>
                 <advanced>true</advanced>
+                <default>Go</default>
             </parameter>
             
             <parameter name="controller_exclude" type="text" groupName="actions">
                 <label>Exclude Devices</label>
                 <description>Puts the controller into Exclusion mode.</description>
                 <advanced>true</advanced>
+                <default>Go</default>
             </parameter>
             
 		</config-description>
