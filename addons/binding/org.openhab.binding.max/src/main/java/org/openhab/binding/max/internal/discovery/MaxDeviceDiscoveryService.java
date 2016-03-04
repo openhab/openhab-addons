@@ -82,9 +82,13 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
                 break;
         }
         if (thingUID != null) {
+            String name = device.getName();
+            if (name.isEmpty()) {
+                name = device.getSerialNumber();
+            }
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                     .withProperty(MaxBinding.PROPERTY_SERIAL_NUMBER, device.getSerialNumber())
-                    .withBridge(bridge.getUID()).withLabel(device.getType() + ": " + device.getName()).build();
+                    .withBridge(bridge.getUID()).withLabel(device.getType() + ": " + name).build();
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Discovered MAX! device is unsupported: type '{}' with id '{}'", device.getType(),
