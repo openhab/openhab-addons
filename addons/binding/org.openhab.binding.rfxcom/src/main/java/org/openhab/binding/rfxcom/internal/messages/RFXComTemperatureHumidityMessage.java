@@ -30,16 +30,19 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
 
     public enum SubType {
         UNDEF(0),
-        THGN122_123_132_THGR122_228_238_268(1),
-        THGN800_THGR810(2),
-        RTGR328(3),
-        THGR328(4),
-        WTGR800(5),
-        THGR918_THGRN228_THGN50(6),
-        TFA_TS34C__CRESTA(7),
-        WT260_WT260H_WT440H_WT450_WT450H(8),
-        VIKING_02035_02038(9),
-        RUBICSON(10),
+        TH1(1),
+        TH2(2),
+        TH3(3),
+        TH4(4),
+        TH5(5),
+        TH6(6),
+        TH7(7),
+        TH8(8),
+        TH9(9),
+        TH10(10),
+        TH11(11),
+        TH12(12),
+        TH13(13),
 
         UNKNOWN(255);
 
@@ -87,7 +90,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.THGN122_123_132_THGR122_228_238_268;
+    public SubType subType = SubType.UNDEF;
     public int sensorId = 0;
     public double temperature = 0;
     public byte humidity = 0;

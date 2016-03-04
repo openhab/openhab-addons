@@ -39,6 +39,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         AC(0),
         HOME_EASY_EU(1),
         ANSLUT(2),
+        KAMBROOK(3),
 
         UNKNOWN(255);
 
@@ -176,7 +177,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
 
     /**
      * Convert a 0-15 scale value to a percent type.
-     * 
+     *
      * @param pt
      *            percent type to convert
      * @return converted value 0-15
@@ -188,7 +189,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
 
     /**
      * Convert a 0-15 scale value to a percent type.
-     * 
+     *
      * @param pt
      *            percent type to convert
      * @return converted value 0-15

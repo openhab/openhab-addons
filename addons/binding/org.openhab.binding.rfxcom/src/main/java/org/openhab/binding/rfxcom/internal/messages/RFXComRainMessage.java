@@ -29,12 +29,12 @@ public class RFXComRainMessage extends RFXComBaseMessage {
 
     public enum SubType {
         UNDEF(0),
-        RGR126_682_918_928(1),
-        PCR800(2),
-        TFA(3),
-        UPM_RG700(4),
-        WS2300(5),
-        LA_CROSSE_TX5(6),
+        RAIN1(1),
+        RAIN2(2),
+        RAIN3(3),
+        RAIN4(4),
+        RAIN5(5),
+        RAIN6(6),
 
         UNKNOWN(255);
 
@@ -59,7 +59,7 @@ public class RFXComRainMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.RGR126_682_918_928;
+    public SubType subType = SubType.UNDEF;
     public int sensorId = 0;
     public double rainRate = 0;
     public double rainTotal = 0;
@@ -102,11 +102,11 @@ public class RFXComRainMessage extends RFXComBaseMessage {
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         rainRate = (short) ((data[6] & 0xFF) << 8 | (data[7] & 0xFF));
-        if (subType == SubType.PCR800) {
+        if (subType == SubType.RAIN2) {
             rainRate *= 0.01;
         }
 
-        if (subType == SubType.LA_CROSSE_TX5) {
+        if (subType == SubType.RAIN6) {
             rainTotal = (short) ((data[10] & 0xFF)) * 0.266;
         } else {
             rainTotal = (short) ((data[8] & 0xFF) << 8 | (data[9] & 0xFF) << 8 | (data[10] & 0xFF)) * 0.1;
