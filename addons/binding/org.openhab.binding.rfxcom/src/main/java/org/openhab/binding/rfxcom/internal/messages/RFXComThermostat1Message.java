@@ -31,8 +31,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComThermostat1Message extends RFXComBaseMessage {
 
     public enum SubType {
-        DIGIMAX_TLX7506(0),
-        DIGIMAX_SHORT_FORMAT(1),
+        DIGIMAX(0),
+        DIGIMAX_SHORT(1),
 
         UNKNOWN(255);
 
@@ -103,7 +103,7 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.DIGIMAX_TLX7506;
+    public SubType subType = SubType.DIGIMAX;
     public int sensorId = 0;
     public byte temperature = 0;
     public byte set = 0;
