@@ -650,7 +650,6 @@ public class SerialMessage {
          */
         @Override
         public int compare(SerialMessage arg0, SerialMessage arg1) {
-
             boolean arg0Awake = false;
             boolean arg0Listening = true;
             boolean arg1Awake = false;
