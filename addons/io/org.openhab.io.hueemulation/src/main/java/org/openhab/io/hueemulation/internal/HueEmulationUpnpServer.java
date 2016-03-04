@@ -10,7 +10,6 @@ package org.openhab.io.hueemulation.internal;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -32,8 +31,7 @@ import org.slf4j.LoggerFactory;
 public class HueEmulationUpnpServer extends Thread {
     private Logger logger = LoggerFactory.getLogger(HueEmulationUpnpServer.class);
 
-    static final private int UPNP_PORT_RECV = 1900;
-    static final private int UPNP_PORT_SEND = 1901;
+    static final private int UPNP_PORT = 1900;
     static final private String MULTI_ADDR = "239.255.255.250";
     private boolean running;
     private String discoPath;
@@ -67,8 +65,7 @@ public class HueEmulationUpnpServer extends Thread {
 
     @Override
     public void run() {
-        MulticastSocket recvSocket = null;
-        DatagramSocket sendSocket = null;
+        MulticastSocket socket = null;
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         while (running) {
@@ -86,12 +83,11 @@ public class HueEmulationUpnpServer extends Thread {
 
                     }
                 }
-                InetSocketAddress socketAddr = new InetSocketAddress(MULTI_ADDR, UPNP_PORT_RECV);
-                recvSocket = new MulticastSocket(UPNP_PORT_RECV);
-                recvSocket.joinGroup(socketAddr, NetworkInterface.getByInetAddress(address));
-                sendSocket = new DatagramSocket(UPNP_PORT_SEND);
+                InetSocketAddress socketAddr = new InetSocketAddress(MULTI_ADDR, UPNP_PORT);
+                socket = new MulticastSocket(UPNP_PORT);
+                socket.joinGroup(socketAddr, NetworkInterface.getByInetAddress(address));
                 while (running) {
-                    recvSocket.receive(recv);
+                    socket.receive(recv);
                     if (recv.getLength() > 0) {
                         String data = new String(recv.getData());
                         logger.trace("Got SSDP Discovery packet from " + recv.getAddress().getHostAddress() + ":"
@@ -106,7 +102,7 @@ public class HueEmulationUpnpServer extends Thread {
                                     recv.getAddress(), recv.getPort());
                             try {
                                 logger.trace("Sending to " + recv.getAddress().getHostAddress() + " : " + msg);
-                                sendSocket.send(response);
+                                socket.send(response);
                             } catch (IOException e) {
                                 logger.error("Could not send UPNP response", e);
                             }
@@ -118,8 +114,7 @@ public class HueEmulationUpnpServer extends Thread {
             } catch (IOException e) {
                 logger.error("IO Error with UPNP server", e);
             } finally {
-                IOUtils.closeQuietly(recvSocket);
-                IOUtils.closeQuietly(sendSocket);
+                IOUtils.closeQuietly(socket);
                 if (running) {
                     try {
                         Thread.sleep(3000);
