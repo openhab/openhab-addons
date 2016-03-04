@@ -151,8 +151,8 @@ public class ZWaveController {
             zWaveResponseTimeout = timeout;
         }
         logger.info("ZWave timeout is set to {}ms. Soft reset is {}.", zWaveResponseTimeout, reset);
-        this.watchdog = new Timer(true);
-        this.watchdog.schedule(new WatchDogTimerTask(""), WATCHDOG_TIMER_PERIOD, WATCHDOG_TIMER_PERIOD);
+        // this.watchdog = new Timer(true);
+        // this.watchdog.schedule(new WatchDogTimerTask(), WATCHDOG_TIMER_PERIOD, WATCHDOG_TIMER_PERIOD);
 
         ioHandler = handler;
 
@@ -505,7 +505,7 @@ public class ZWaveController {
 
         // Add the message to the queue
         this.sendQueue.add(serialMessage);
-        logger.debug("Enqueueing message. Queue length = {}", this.sendQueue.size());
+        logger.debug("Enqueued message. Queue length = {}", this.sendQueue.size());
     }
 
     /**
@@ -1204,7 +1204,6 @@ public class ZWaveController {
     private class WatchDogTimerTask extends TimerTask {
 
         private final Logger logger = LoggerFactory.getLogger(WatchDogTimerTask.class);
-        private final String serialPortName;
 
         /**
          * Creates a new instance of the WatchDogTimerTask class.
@@ -1213,8 +1212,7 @@ public class ZWaveController {
          *            the serial port name to reconnect to in case the serial
          *            threads have died.
          */
-        public WatchDogTimerTask(String serialPortName) {
-            this.serialPortName = serialPortName;
+        public WatchDogTimerTask() {
         }
 
         /**
@@ -1222,7 +1220,7 @@ public class ZWaveController {
          */
         @Override
         public void run() {
-            logger.trace("Watchdog: Checking Serial threads");
+            logger.debug("Watchdog: Checking Serial threads");
             if (
             // (receiveThread != null && !receiveThread.isAlive()) ||
             (sendThread != null && !sendThread.isAlive()) || (inputThread != null && !inputThread.isAlive())) {
