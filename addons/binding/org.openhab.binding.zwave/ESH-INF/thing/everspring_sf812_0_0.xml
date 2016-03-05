@@ -10,6 +10,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="alarm_smoke" typeId="alarm_smoke">
+        <label>Alarm (smoke)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=SMOKE</property>
+        </properties>
+      </channel>
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>
