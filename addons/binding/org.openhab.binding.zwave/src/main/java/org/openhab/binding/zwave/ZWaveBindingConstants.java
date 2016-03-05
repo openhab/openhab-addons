@@ -35,9 +35,8 @@ public class ZWaveBindingConstants {
 
     public final static String UNKNOWN_THING = BINDING_ID + ":unknown";
 
-    public final static String PROPERTY_NODEID = "nodeid";
-
-    public final static String PROPERTY_NEIGHBOURS = "node_neighbours";
+    public final static String PROPERTY_NODEID = "zwave_nodeid";
+    public final static String PROPERTY_NEIGHBOURS = "zwave_neighbours";
 
     public final static String CHANNEL_SERIAL_SOF = "serial_sof";
     public final static String CHANNEL_SERIAL_ACK = "serial_ack";

@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.discovery.ZWaveDiscoveryService;
 import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -33,6 +34,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -226,6 +228,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             }
         }
 
+        if (event instanceof ZWaveNetworkEvent) {
+            ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) event;
+
+            if (networkEvent.getNodeId() == getOwnNodeId()
+                    && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
+                updateNeighbours();
+                logger.warn("");
+            }
+        }
     }
 
     protected void incomingMessage(SerialMessage serialMessage) {
@@ -309,14 +320,44 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     }
 
     public void removeFailedNode(int nodeId) {
+        if (controller == null) {
+            return;
+        }
         controller.requestRemoveFailedNode(nodeId);
     }
 
     public void replaceFailedNode(int nodeId) {
+        if (controller == null) {
+            return;
+        }
         controller.requestRemoveFailedNode(nodeId);
     }
 
     public void reinitialiseNode(int nodeId) {
+        if (controller == null) {
+            return;
+        }
         controller.reinitialiseNode(nodeId);
+    }
+
+    private void updateNeighbours() {
+        if (controller == null) {
+            return;
+        }
+
+        ZWaveNode node = getNode(getOwnNodeId());
+        if (node == null) {
+            return;
+        }
+
+        String neighbours = "";
+        for (Integer neighbour : node.getNeighbors()) {
+            if (neighbours.length() != 0) {
+                neighbours += ',';
+            }
+            neighbours += neighbour;
+        }
+        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
+        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(getOwnNodeId()));
     }
 }
