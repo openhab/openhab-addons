@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.zwave.discovery;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -209,8 +208,20 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
         ThingType thingType = ZWaveConfigProvider.getThingType(foundProduct.getThingTypeUID());
         String label = String.format("Node %d: %s", node.getNodeId(), thingType.getLabel());
 
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(ZWaveBindingConstants.PROPERTY_NODEID, BigDecimal.valueOf(node.getNodeId()));
+        // Add some device properties that might be useful for the system to know
+        Map<String, Object> properties = new HashMap<>(8);
+        properties.put(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
+                node.getDeviceClass().getBasicDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
+                node.getDeviceClass().getGenericDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
+                node.getDeviceClass().getSpecificDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_LISTENING, Boolean.toString(node.isListening()));
+        properties.put(ZWaveBindingConstants.PROPERTY_FREQUENT, Boolean.toString(node.isFrequentlyListening()));
+        properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
+        properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withBridge(bridgeUID).withLabel(label).build();
 
