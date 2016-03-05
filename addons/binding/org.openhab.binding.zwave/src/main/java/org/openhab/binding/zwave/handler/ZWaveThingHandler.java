@@ -94,11 +94,17 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
     public void initialize() {
         logger.debug("Initializing ZWave thing handler.");
 
-        final String nodeParm = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_NODEID);
+        String nodeParm = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_NODEID);
+        if (nodeParm == null) {
+            // Do some backward compatability stuff
+            nodeParm = this.getThing().getProperties().get("nodeid");
+            this.getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, nodeParm);
+        }
         if (nodeParm == null) {
             logger.error("NodeID is not set in {}", this.getThing().getUID());
             return;
         }
+
         try {
             nodeId = Integer.parseInt(nodeParm);
         } catch (final NumberFormatException ex) {
@@ -106,7 +112,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             return;
         }
 
-        // Note that for dynamic channels, it seems that defaults can eitehr be not set, or set with the incorrect
+        // Note that for dynamic channels, it seems that defaults can either be not set, or set with the incorrect
         // type. So, we read back as an Object to avoid casting problems.
         pollingPeriod = POLLING_PERIOD_DEFAULT;
         final Object pollParm = getConfig().get(ZWaveBindingConstants.CONFIGURATION_POLLPERIOD);
@@ -898,6 +904,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 case DONE:
                     logger.debug("NODE {}: Setting ONLINE", nodeId);
                     updateStatus(ThingStatus.ONLINE);
+                    updateNeighbours();
                     break;
                 default:
                     logger.debug("NODE {}: Setting ONLINE (INITIALIZING): {}", nodeId, initEvent.getStage());
@@ -909,7 +916,8 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         if (incomingEvent instanceof ZWaveNetworkEvent) {
             ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) incomingEvent;
 
-            if (networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeNeighborUpdate) {
+            if (networkEvent.getNodeId() == nodeId
+                    && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
                 updateNeighbours();
             }
         }
@@ -926,13 +934,13 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         }
 
         String neighbours = "";
-        for (Integer s : node.getNeighbors()) {
+        for (Integer neighbour : node.getNeighbors()) {
             if (neighbours.length() != 0) {
                 neighbours += ',';
             }
-            neighbours += s;
+            neighbours += neighbour;
         }
-        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, "");
+        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
     }
 
     public class ZWaveThingChannel {
