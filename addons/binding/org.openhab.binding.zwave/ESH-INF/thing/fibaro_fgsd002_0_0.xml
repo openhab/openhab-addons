@@ -15,6 +15,24 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
+      <channel id="alarm_smoke" typeId="alarm_smoke">
+        <label>Alarm (smoke)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=SMOKE</property>
+        </properties>
+      </channel>
+      <channel id="alarm_heat" typeId="alarm_heat">
+        <label>Alarm (heat)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=HEAT</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm (general)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=GENERAL</property>
+        </properties>
+      </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>

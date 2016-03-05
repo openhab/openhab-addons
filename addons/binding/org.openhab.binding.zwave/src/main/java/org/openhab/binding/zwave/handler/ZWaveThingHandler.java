@@ -904,7 +904,29 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 case DONE:
                     logger.debug("NODE {}: Setting ONLINE", nodeId);
                     updateStatus(ThingStatus.ONLINE);
+
                     updateNeighbours();
+
+                    ZWaveNode node = controllerHandler.getNode(nodeId);
+                    if (node == null) {
+                        return;
+                    }
+
+                    // Update property information about this device
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
+                            node.getDeviceClass().getBasicDeviceClass().toString());
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
+                            node.getDeviceClass().getGenericDeviceClass().toString());
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
+                            node.getDeviceClass().getSpecificDeviceClass().toString());
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_LISTENING,
+                            Boolean.toString(node.isListening()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_FREQUENT,
+                            Boolean.toString(node.isFrequentlyListening()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+
                     break;
                 default:
                     logger.debug("NODE {}: Setting ONLINE (INITIALIZING): {}", nodeId, initEvent.getStage());
@@ -916,8 +938,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         if (incomingEvent instanceof ZWaveNetworkEvent) {
             ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) incomingEvent;
 
-            if (networkEvent.getNodeId() == nodeId
-                    && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
+            if (networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
                 updateNeighbours();
             }
         }

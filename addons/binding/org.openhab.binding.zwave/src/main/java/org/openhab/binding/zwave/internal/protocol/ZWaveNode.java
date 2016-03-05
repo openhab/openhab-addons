@@ -824,6 +824,20 @@ public class ZWaveNode {
         this.security = security;
     }
 
+    /**
+     * Gets whether the node supports beaming
+     * 
+     * @return true if the node supports beaming
+     */
+    public boolean isBeaming() {
+        return beaming;
+    }
+
+    /**
+     * Sets whether the node supports beaming.
+     * 
+     * @param beaming true if beaming is supported
+     */
     public void setBeaming(boolean beaming) {
         this.beaming = beaming;
     }

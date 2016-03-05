@@ -93,6 +93,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         // Create config parameters
         Map<String, String> config = new HashMap<String, String>();
         config.put("masterController", isMaster.toString());
+        config.put("isSUC", isSUC ? "true" : "false");
 
         // TODO: Handle soft reset better!
         controller = new ZWaveController(this, config);
