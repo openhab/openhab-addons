@@ -10,6 +10,42 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="alarm_flood" typeId="alarm_flood">
+        <label>Alarm (water)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=FLOOD</property>
+        </properties>
+      </channel>
+      <channel id="alarm_co" typeId="alarm_co">
+        <label>Alarm (CO)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=CARBON_MONOXIDE</property>
+        </properties>
+      </channel>
+      <channel id="alarm_smoke" typeId="alarm_smoke">
+        <label>Alarm (smoke)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=SMOKE</property>
+        </properties>
+      </channel>
+      <channel id="alarm_co2" typeId="alarm_co2">
+        <label>Alarm (CO2)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=CARBON_DIOXIDE</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm (general)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=GENERAL</property>
+        </properties>
+      </channel>
+      <channel id="alarm_heat" typeId="alarm_heat">
+        <label>Alarm (heat)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=HEAT</property>
+        </properties>
+      </channel>
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>

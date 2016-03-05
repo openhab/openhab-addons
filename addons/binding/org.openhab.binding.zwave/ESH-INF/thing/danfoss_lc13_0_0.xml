@@ -14,6 +14,12 @@ Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm (general)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=GENERAL</property>
+        </properties>
+      </channel>
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>

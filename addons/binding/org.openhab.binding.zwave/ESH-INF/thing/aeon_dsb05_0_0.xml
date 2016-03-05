@@ -74,7 +74,9 @@
       <parameter name="config_3_2" type="integer" groupName="configuration"
                  min="1" max="15300">
         <label>3: On time</label>
-        <description>How long should the device associated to multi sensor keep state On before sending it Off command (if the value is bigger than 255, the value would be rounded to next integer in minutes)</description>
+        <description><![CDATA[
+On time before sending off command<br /><h1>Overview</h1><p>How long should the device associated to multi sensor keep state On before sending it Off command (if the value is bigger than 255, the value would be rounded to next integer in minutes)</p>
+    !]]></description>
         <default>240</default>
       </parameter>
 
