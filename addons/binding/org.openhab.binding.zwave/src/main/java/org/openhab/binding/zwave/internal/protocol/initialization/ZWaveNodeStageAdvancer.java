@@ -907,14 +907,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
             }
 
             // If there are messages queued, send one.
-            // If there are none, then it means we're happy that we have all the
-            // data for this stage.
-            // If we have all the data, set stageAdvanced to true to tell the system
-            // that we're starting again, then loop around again.
+            // If there are none, then it means we're happy that we have all the data for this stage.
+            // If we have all the data, set stageAdvanced to true to tell the system that we're starting again, then
+            // loop around again.
             if (currentStage != ZWaveNodeInitStage.DONE && sendMessage() == false) {
-                ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(), currentStage);
-                controller.notifyEventListeners(zEvent);
-
                 // Move on to the next stage
                 setCurrentStage(currentStage.getNextStage());
                 stageAdvanced = true;
@@ -923,6 +919,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                 retryTimer = BACKOFF_TIMER_START;
 
                 logger.debug("NODE {}: Node advancer - advancing to {}", node.getNodeId(), currentStage.toString());
+
+                // Notify listeners
+                ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(), currentStage);
+                controller.notifyEventListeners(zEvent);
             }
         } while (msgQueue.isEmpty());
 
