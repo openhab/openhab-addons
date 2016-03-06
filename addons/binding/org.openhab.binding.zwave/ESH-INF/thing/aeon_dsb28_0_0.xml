@@ -82,6 +82,30 @@
           <property name="binding:*:DecimalType">METER:2,BASIC:2;meterScale=E_KWh</property>
         </properties>
       </channel>
+      <channel id="meter_watts3" typeId="meter_watts">
+        <label>Electric meter (watts) 3</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER:3,BASIC:3;meterScale=E_W</property>
+        </properties>
+      </channel>
+      <channel id="meter_voltage3" typeId="meter_voltage">
+        <label>Electric meter (volts) 3</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER:3,BASIC:3;meterScale=E_V</property>
+        </properties>
+      </channel>
+      <channel id="meter_current3" typeId="meter_current">
+        <label>Electric meter (amps) 3</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER:3,BASIC:3;meterScale=E_A</property>
+        </properties>
+      </channel>
+      <channel id="meter_kwh3" typeId="meter_kwh">
+        <label>Electric meter (kWh) 3</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER:3,BASIC:3;metercale=E_KWh</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->

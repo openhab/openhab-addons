@@ -17,9 +17,9 @@ import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBinarySensorCommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBinarySensorCommandClass.SensorType;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBinarySensorCommandClass.ZWaveBinarySensorValueEvent;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,20 +68,20 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        logger.debug("ZWaveBinarySensorValueEvent 1");
+        // logger.debug("ZWaveBinarySensorValueEvent 1");
 
         String sensorType = channel.getArguments().get("sensorType");
-        logger.debug("ZWaveBinarySensorValueEvent 2");
+        // logger.debug("ZWaveBinarySensorValueEvent 2");
         ZWaveBinarySensorValueEvent sensorEvent = (ZWaveBinarySensorValueEvent) event;
-        logger.debug("ZWaveBinarySensorValueEvent 3");
+        // logger.debug("ZWaveBinarySensorValueEvent 3");
 
         // Don't trigger event if this item is bound to another alarm type
         if (sensorType != null && SensorType.valueOf(sensorType) != sensorEvent.getSensorType()) {
-            logger.debug("ZWaveBinarySensorValueEvent 4");
+            // logger.debug("ZWaveBinarySensorValueEvent 4");
             return null;
         }
 
-        logger.debug("ZWaveBinarySensorValueEvent 5");
+        // logger.debug("ZWaveBinarySensorValueEvent 5");
         return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
     }
 }
