@@ -89,7 +89,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
                 int alarmTypeCode = serialMessage.getMessagePayloadByte(offset + 1);
                 int value = serialMessage.getMessagePayloadByte(offset + 2);
-                int source = 0;
+                int sensor = 0;
                 int event = 0;
                 int status = 0;
 
@@ -102,11 +102,11 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
                 if (version == 1) {
                     logger.debug("NODE {}: Alarm report - {} = {}", this.getNode().getNodeId(), alarmTypeCode, value);
                 } else {
-                    source = serialMessage.getMessagePayloadByte(offset + 3);
+                    sensor = serialMessage.getMessagePayloadByte(offset + 3);
                     event = serialMessage.getMessagePayloadByte(offset + 6);
                     status = serialMessage.getMessagePayloadByte(offset + 4);
-                    logger.debug("NODE {}: Alarm report - {} = {}, source={}, event={}, status={}",
-                            this.getNode().getNodeId(), alarmTypeCode, value, source, event, status);
+                    logger.debug("NODE {}: Alarm report - {} = {}, sensor={}, event={}, status={}",
+                            this.getNode().getNodeId(), alarmTypeCode, value, sensor, event, status);
                 }
 
                 AlarmType alarmType = AlarmType.getAlarmType(alarmTypeCode);

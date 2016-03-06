@@ -822,7 +822,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
             // Process the channels to see if we're interested
             for (ZWaveThingChannel channel : thingChannelsState) {
-                logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
+                // logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
 
                 if (channel.getEndpoint() != event.getEndpoint()) {
                     continue;
@@ -838,7 +838,8 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     return;
                 }
 
-                logger.debug("NODE {}: Processing event as channel {} {}", nodeId, channel.getUID(), channel.dataType);
+                // logger.debug("NODE {}: Processing event as channel {} {}", nodeId, channel.getUID(),
+                // channel.dataType);
                 State state = channel.converter.handleEvent(channel, event);
                 if (state != null) {
                     logger.debug("Updating {} to {}", channel.getUID(), state);

@@ -80,7 +80,9 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
       <parameter name="config_101_1" type="integer" groupName="configuration"
                  min="0" max="1">
         <label>101: Low battery voltage check</label>
-        <description>parameter defines, if battery check function is possible, when battery is below warning voltage</description>
+        <description><![CDATA[
+low battery check when voltage is less than warn voltage<br /><h1>Overview</h1><p>Enable/disable the function of low battery checking, when the current voltage is less than the warning voltage, it will send the Battery Low Warning Report. (00==Disable, 1==Enable)  </p>
+    !]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -89,10 +91,12 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
       </parameter>
 
       <parameter name="config_111_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="4" max="2147483647">
         <label>111: Low battery voltage check time</label>
-        <description>Minimum battery low check Interval time is 4 minutes (240 seconds)</description>
-        <default>112</default>
+        <description><![CDATA[
+Minimum battery low check Interval time is 4 minutes<br /><h1>Overview</h1><p>The Interval time of low battery checking (0~0xFFFFFFFF seconds). The minimum unit of interval time is 4 minutes. If the value is set to 1 minute, the interval time will be 4 minutes. The same is if the value is set to 7 minutes, the interval time will be 8 minutes. Note: 1, This parameter only will be activated after the function of low battery checking (parameter 101) is enabled. 2, Recessed Door Sensor also will check the current battery voltage when it was wake up as other ways (e. g. the Z ‐ Wave button trigger, magnet switch trigger, and the Wake Up Interval Set timeout trigger) after the function of low battery checking (parameter 101) is enabled.</p>
+    !]]></description>
+        <default>86640</default>
       </parameter>
 
       <parameter name="config_121_4_000000FF" type="integer" groupName="configuration"
