@@ -94,11 +94,17 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
     public void initialize() {
         logger.debug("Initializing ZWave thing handler.");
 
-        final String nodeParm = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_NODEID);
+        String nodeParm = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_NODEID);
+        if (nodeParm == null) {
+            // Do some backward compatability stuff
+            nodeParm = this.getThing().getProperties().get("nodeid");
+            this.getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, nodeParm);
+        }
         if (nodeParm == null) {
             logger.error("NodeID is not set in {}", this.getThing().getUID());
             return;
         }
+
         try {
             nodeId = Integer.parseInt(nodeParm);
         } catch (final NumberFormatException ex) {
@@ -106,7 +112,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             return;
         }
 
-        // Note that for dynamic channels, it seems that defaults can eitehr be not set, or set with the incorrect
+        // Note that for dynamic channels, it seems that defaults can either be not set, or set with the incorrect
         // type. So, we read back as an Object to avoid casting problems.
         pollingPeriod = POLLING_PERIOD_DEFAULT;
         final Object pollParm = getConfig().get(ZWaveBindingConstants.CONFIGURATION_POLLPERIOD);
@@ -212,9 +218,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 bridgeHandlerInitialized(handler, bridge);
                 // }
             }
-        } else {
-            // Until we get an update put the Thing into initialisation state
-            updateStatus(ThingStatus.INITIALIZING);
         }
 
         startPolling();
@@ -280,8 +283,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         } else {
             switch (node.getNodeState()) {
                 case INITIALIZING:
-                    updateStatus(ThingStatus.INITIALIZING);
-                    break;
                 case ALIVE:
                     updateStatus(ThingStatus.ONLINE);
                     break;
@@ -300,11 +301,10 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         // This ensures we get called whenever there's an event we might be interested in
         if (((ZWaveControllerHandler) thingHandler).addEventListener(this) == true) {
             controllerHandler = (ZWaveControllerHandler) thingHandler;
+            updateNeighbours();
         } else {
             logger.warn("NODE {}: Controller failed to register event handler.", nodeId);
         }
-
-        updateNeighbours();
     }
 
     @Override
@@ -334,8 +334,9 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
         Configuration configuration = editConfiguration();
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
+            Object valueObject = configurationParameter.getValue();
             logger.debug("NODE {}: Configuration update {} to {}", nodeId, configurationParameter.getKey(),
-                    configurationParameter.getValue());
+                    valueObject);
             String[] cfg = configurationParameter.getKey().split("_");
             if ("config".equals(cfg[0])) {
                 if (cfg.length < 3) {
@@ -567,11 +568,14 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
                     controllerHandler.reinitialiseNode(nodeId);
                 }
+
+                // Don't save the value
+                valueObject = "";
             } else {
                 logger.warn("NODE{}: Configuration invalid {}", nodeId, configurationParameter.getKey());
             }
 
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
+            configuration.put(configurationParameter.getKey(), valueObject);
         }
 
         // Persist changes
@@ -880,9 +884,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
             switch (event.getState()) {
                 case INITIALIZING:
-                    logger.debug("NODE {}: Setting INITIALIZING", nodeId);
-                    updateStatus(ThingStatus.INITIALIZING);
-                    break;
                 case ALIVE:
                     logger.debug("NODE {}: Setting ONLINE", nodeId);
                     updateStatus(ThingStatus.ONLINE);
@@ -903,10 +904,33 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 case DONE:
                     logger.debug("NODE {}: Setting ONLINE", nodeId);
                     updateStatus(ThingStatus.ONLINE);
+
+                    updateNeighbours();
+
+                    ZWaveNode node = controllerHandler.getNode(nodeId);
+                    if (node == null) {
+                        return;
+                    }
+
+                    // Update property information about this device
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
+                            node.getDeviceClass().getBasicDeviceClass().toString());
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
+                            node.getDeviceClass().getGenericDeviceClass().toString());
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
+                            node.getDeviceClass().getSpecificDeviceClass().toString());
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_LISTENING,
+                            Boolean.toString(node.isListening()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_FREQUENT,
+                            Boolean.toString(node.isFrequentlyListening()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
+                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+
                     break;
                 default:
-                    logger.debug("NODE {}: Setting INITIALIZING: {}", nodeId, initEvent.getStage());
-                    updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE, initEvent.getStage().toString());
+                    logger.debug("NODE {}: Setting ONLINE (INITIALIZING): {}", nodeId, initEvent.getStage());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, initEvent.getStage().toString());
                     break;
             }
         }
@@ -914,26 +938,30 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         if (incomingEvent instanceof ZWaveNetworkEvent) {
             ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) incomingEvent;
 
-            if (networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeNeighborUpdate) {
+            if (networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
                 updateNeighbours();
             }
         }
     }
 
     private void updateNeighbours() {
+        if (controllerHandler == null) {
+            return;
+        }
+
         ZWaveNode node = controllerHandler.getNode(nodeId);
         if (node == null) {
             return;
         }
 
         String neighbours = "";
-        for (Integer s : node.getNeighbors()) {
+        for (Integer neighbour : node.getNeighbors()) {
             if (neighbours.length() != 0) {
                 neighbours += ',';
             }
-            neighbours += s;
+            neighbours += neighbour;
         }
-        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, "");
+        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
     }
 
     public class ZWaveThingChannel {

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="rfxcom"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
 
 	<bridge-type id="RFXtrx315">
 		<label>RFXtrx315 USB 315MHz Transceiver</label>
@@ -15,12 +13,15 @@
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
 				<label>Skip transceiver configuration</label>
-				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message configurations are ignored.</description>
+				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
+					preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message
+					configurations are ignored.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
 				<label>RFXCOM transceiver mode</label>
-				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters (14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
+					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
 			</parameter>
 			<parameter name="transceiverType" type="text">
 				<label>RFXCOM transceiver type</label>
@@ -46,7 +47,7 @@
 				<description>Enable X10 messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
-			
+
 		</config-description>
 	</bridge-type>
 

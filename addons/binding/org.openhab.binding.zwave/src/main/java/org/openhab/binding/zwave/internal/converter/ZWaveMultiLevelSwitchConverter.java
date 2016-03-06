@@ -81,9 +81,9 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                     state = new PercentType(value);
                 }
 
-                // If we read 99%, then change it to 100%
+                // If we read greater than 99%, then change it to 100%
                 // This just appears better in OH otherwise you can't get 100%!
-                if (((PercentType) state).intValue() == 99) {
+                if (((PercentType) state).intValue() >= 99) {
                     state = new PercentType(100);
                 }
                 break;
@@ -133,6 +133,10 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                     value = 100 - ((PercentType) command).intValue();
                 } else {
                     value = ((PercentType) command).intValue();
+                }
+                // zwave has a max vale of 99 for percentages.
+                if (value >= 100) {
+                    value = 99;
                 }
             } else if (command instanceof UpDownType) {
                 if ("true".equalsIgnoreCase(channel.getArguments().get("invertState"))) {

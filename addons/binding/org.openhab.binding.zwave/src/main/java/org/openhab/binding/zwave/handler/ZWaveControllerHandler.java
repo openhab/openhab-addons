@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.discovery.ZWaveDiscoveryService;
 import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -33,6 +34,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -91,6 +93,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         // Create config parameters
         Map<String, String> config = new HashMap<String, String>();
         config.put("masterController", isMaster.toString());
+        config.put("isSUC", isSUC ? "true" : "false");
 
         // TODO: Handle soft reset better!
         controller = new ZWaveController(this, config);
@@ -119,8 +122,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         // And register it as an OSGi service
         discoveryRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
-
-        updateStatus(ThingStatus.INITIALIZING);
     }
 
     @Override
@@ -157,10 +158,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
         Configuration configuration = editConfiguration();
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(),
-                    configurationParameter.getValue());
+            Object value = configurationParameter.getValue();
+            logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(), value);
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
+                if (controller != null) {
+                    logger.warn("Trying to send controller command, but controller is not initialised");
+                    continue;
+                }
+
                 if (cfg[1].equals("softreset")) {
                     controller.requestSoftReset();
                 } else if (cfg[1].equals("hardreset")) {
@@ -168,13 +174,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 } else if (cfg[1].equals("exclude")) {
                     controller.requestRemoveNodesStart();
                 }
+
+                value = "";
             }
 
             if ("port".equals(cfg[0])) {
                 reinitialise = true;
             }
 
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
+            configuration.put(configurationParameter.getKey(), value);
         }
 
         // Persist changes
@@ -221,6 +229,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             }
         }
 
+        if (event instanceof ZWaveNetworkEvent) {
+            ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) event;
+
+            if (networkEvent.getNodeId() == getOwnNodeId()
+                    && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
+                updateNeighbours();
+                logger.warn("");
+            }
+        }
     }
 
     protected void incomingMessage(SerialMessage serialMessage) {
@@ -304,14 +321,44 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     }
 
     public void removeFailedNode(int nodeId) {
+        if (controller == null) {
+            return;
+        }
         controller.requestRemoveFailedNode(nodeId);
     }
 
     public void replaceFailedNode(int nodeId) {
+        if (controller == null) {
+            return;
+        }
         controller.requestRemoveFailedNode(nodeId);
     }
 
     public void reinitialiseNode(int nodeId) {
+        if (controller == null) {
+            return;
+        }
         controller.reinitialiseNode(nodeId);
+    }
+
+    private void updateNeighbours() {
+        if (controller == null) {
+            return;
+        }
+
+        ZWaveNode node = getNode(getOwnNodeId());
+        if (node == null) {
+            return;
+        }
+
+        String neighbours = "";
+        for (Integer neighbour : node.getNeighbors()) {
+            if (neighbours.length() != 0) {
+                neighbours += ',';
+            }
+            neighbours += neighbour;
+        }
+        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
+        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(getOwnNodeId()));
     }
 }
