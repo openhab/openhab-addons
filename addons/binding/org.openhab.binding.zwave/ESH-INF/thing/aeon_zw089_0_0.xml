@@ -91,7 +91,7 @@ low battery check when voltage is less than warn voltage<br /><h1>Overview</h1><
       </parameter>
 
       <parameter name="config_111_4" type="integer" groupName="configuration"
-                 min="4" max="2147483647">
+                 min="240" max="2147483647">
         <label>111: Low battery voltage check time</label>
         <description><![CDATA[
 Minimum battery low check Interval time is 4 minutes<br /><h1>Overview</h1><p>The Interval time of low battery checking (0~0xFFFFFFFF seconds). The minimum unit of interval time is 4 minutes. If the value is set to 1 minute, the interval time will be 4 minutes. The same is if the value is set to 7 minutes, the interval time will be 8 minutes. Note: 1, This parameter only will be activated after the function of low battery checking (parameter 101) is enabled. 2, Recessed Door Sensor also will check the current battery voltage when it was wake up as other ways (e. g. the Z ‐ Wave button trigger, magnet switch trigger, and the Wake Up Interval Set timeout trigger) after the function of low battery checking (parameter 101) is enabled.</p>
