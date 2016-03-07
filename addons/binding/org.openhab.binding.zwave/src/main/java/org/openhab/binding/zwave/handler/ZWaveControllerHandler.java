@@ -167,11 +167,11 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                     continue;
                 }
 
-                if (cfg[1].equals("softreset")) {
+                if (cfg[1].equals("softreset") && "GO".equals(value)) {
                     controller.requestSoftReset();
-                } else if (cfg[1].equals("hardreset")) {
+                } else if (cfg[1].equals("hardreset") && "GO".equals(value)) {
                     controller.requestHardReset();
-                } else if (cfg[1].equals("exclude")) {
+                } else if (cfg[1].equals("exclude") && "GO".equals(value)) {
                     controller.requestRemoveNodesStart();
                 }
 
