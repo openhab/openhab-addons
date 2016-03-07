@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 public class HueEmulationUpnpServer extends Thread {
     private Logger logger = LoggerFactory.getLogger(HueEmulationUpnpServer.class);
 
+    // jUPNP shares port 1900, but since this is multicast, we can also bind to it
     static final private int UPNP_PORT_RECV = 1900;
-    static final private int UPNP_PORT_SEND = 1901;
     static final private String MULTI_ADDR = "239.255.255.250";
     private boolean running;
     private String discoPath;
@@ -68,6 +68,7 @@ public class HueEmulationUpnpServer extends Thread {
     @Override
     public void run() {
         MulticastSocket recvSocket = null;
+        // since jupnp shares port 1900, lets use a different port to send UDP packets on just to be safe.
         DatagramSocket sendSocket = null;
         byte[] buf = new byte[1000];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
@@ -89,7 +90,7 @@ public class HueEmulationUpnpServer extends Thread {
                 InetSocketAddress socketAddr = new InetSocketAddress(MULTI_ADDR, UPNP_PORT_RECV);
                 recvSocket = new MulticastSocket(UPNP_PORT_RECV);
                 recvSocket.joinGroup(socketAddr, NetworkInterface.getByInetAddress(address));
-                sendSocket = new DatagramSocket(UPNP_PORT_SEND);
+                sendSocket = new DatagramSocket();
                 while (running) {
                     recvSocket.receive(recv);
                     if (recv.getLength() > 0) {
