@@ -553,13 +553,13 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     startPolling();
                 }
             } else if ("action".equals(cfg[0])) {
-                if ("failed".equals(cfg[1])) {
+                if ("failed".equals(cfg[1]) && "GO".equals(valueObject)) {
                     controllerHandler.replaceFailedNode(nodeId);
                 }
-                if ("remove".equals(cfg[1])) {
+                if ("remove".equals(cfg[1]) && "GO".equals(valueObject)) {
                     controllerHandler.removeFailedNode(nodeId);
                 }
-                if ("reinit".equals(cfg[1])) {
+                if ("reinit".equals(cfg[1]) && "GO".equals(valueObject)) {
                     logger.debug("NODE {}: Re-initialising node!", nodeId);
 
                     // Delete the saved XML
