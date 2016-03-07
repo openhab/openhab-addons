@@ -16,7 +16,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
-import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveDelayedPollEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
  * Handles the Application Status command class.
- * 
+ *
  * @author Chris Jackson
  * @author Dan Cunningham
  */
@@ -45,11 +45,11 @@ public class ZWaveApplicationStatusClass extends ZWaveCommandClass {
     private static final int StatusBusyTryAgainLaterInSeconds = 0x1;
     private static final int StatusBusyQueued = 0x2;
 
-    public static int DEFAULT_RETRY = 2000;
+    public static int DEFAULT_RETRY_SECONDS = 2;
 
     /**
      * Creates a new instance of the ZWaveApplicationStatusClass class.
-     * 
+     *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
@@ -77,25 +77,16 @@ public class ZWaveApplicationStatusClass extends ZWaveCommandClass {
             case ApplicationStatusBusy:
                 logger.trace("NODE {}: Process Application Status Busy status", getNode());
                 int busyStatus = serialMessage.getMessagePayloadByte(offset++);
-                int retry = DEFAULT_RETRY;
+                int retry = DEFAULT_RETRY_SECONDS;
                 switch (busyStatus) {
                     case StatusBusyTryAgainLaterInSeconds:
-                        int seconds = serialMessage.getMessagePayloadByte(offset++);
-                        logger.debug("NODE {}: is busy and wants us to try again in {} seconds", getNode(), seconds);
-                        retry = seconds * 1000;
+                        retry = serialMessage.getMessagePayloadByte(offset++);
+                        logger.debug("NODE {}: is busy and wants us to try again in {} seconds", getNode(), retry);
                     case StatusBusyTryAgainLater:
-                        logger.debug("NODE {}: is busy and wants us to try again later", getNode());
-                        final ZWaveNode node = this.getNode();
-                        final ZWaveController controller = this.getController();
-                        scheduler.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (node == null || node.getNodeState() != ZWaveNodeState.ALIVE)
-                                    return;
-                                controller.pollNode(node);
-
-                            }
-                        }, retry, TimeUnit.MILLISECONDS);
+                        logger.debug("NODE {}: is busy and will be polled in {} seconds", getNode(), retry);
+                        ZWaveDelayedPollEvent event = new ZWaveDelayedPollEvent(getNode().getNodeId(), retry,
+                                TimeUnit.SECONDS);
+                        this.getController().notifyEventListeners(event);
                         break;
                     case StatusBusyQueued:
                         logger.warn("NODE {}: is busy and has queued the request", getNode());
@@ -109,8 +100,8 @@ public class ZWaveApplicationStatusClass extends ZWaveCommandClass {
                 logger.warn("NODE {}: has rejected the request", getNode());
                 break;
             default:
-                logger.warn(String.format("Unsupported status 0x%02X for command class %s (0x%02X).", status, this
-                        .getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                logger.warn(String.format("Unsupported status 0x%02X for command class %s (0x%02X).", status,
+                        this.getCommandClass().getLabel(), this.getCommandClass().getKey()));
         }
     }
 }
