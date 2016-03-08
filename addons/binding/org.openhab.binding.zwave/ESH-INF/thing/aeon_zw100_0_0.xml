@@ -87,8 +87,13 @@ Stay awake for 10 minutes at power on<br /><h1>Overview</h1><p>Enable/Disable wa
                  min="5" max="3600">
         <label>3: Motion Sensor reset timeout</label>
         <description><![CDATA[
-Motion Sensor reset timeout<br /><h1>Overview</h1><p>1. The default PIR time is 4 minutes. The Multisensor will send BASIC SET CC<br />(0x00) to the associated nodes if no motion is triggered again in 4 minutes.<br />2. Range: 10~3600.<br />Note:<br />(1), The time unit is second if the value range is in 10 to 255.<br />(2), If the value range is in 256 to 3600, the time unit will be minute and its value<br />should follow the below rules:<br />a), Interval time =Value/60, if the interval time can be divided by 60 and<br />without remainder.<br />b), Interval time= (Value/60) +1, if the interval time can be divided by 60 and<br />has remainder.<br />(3), Other values will be ignored.</p>
-    !]]></description>
+Motion Sensor reset timeout<br /><h1>Overview</h1><ol><li>The default PIR time is 4 minutes. The Multisensor will send BASIC SET CC (0x00) to the associated nodes if no motion is triggered again in 4 minutes.</li>
+<li>Range: 10~3600.</li>
+</ol><p><strong>Note</strong>:</p>
+<ol><li>The time unit is second if the value range is in 10 to 255.</li>
+<li>If the value range is in 256 to 3600, the time unit will be minute and its value should follow the below rules:<br />a), Interval time =Value/60, if the interval time can be divided by 60 and without remainder.<br />b), Interval time= (Value/60) +1, if the interval time can be divided by 60 and has remainder.</li>
+<li>Other values will be ignored.</li>
+</ol>    !]]></description>
         <default>240</default>
       </parameter>
 
@@ -130,7 +135,7 @@ Report Low Battery if below this value<br /><h1>Overview</h1><p>Configure low ba
                  min="0" max="1">
         <label>40: Selective Reporting</label>
         <description><![CDATA[
-Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selective reporting only when measurements reach a certain<br />threshold or percentage set in 41-44 below. This is used to reduce network<br />traffic. (0 == disable, 1 == enable)</p>
+Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selective reporting only when measurements reach a certain threshold or percentage set in 41-44 below. This is used to reduce network traffic. (0 == disable, 1 == enable)</p>
     !]]></description>
         <default>0</default>
         <options>
@@ -143,8 +148,10 @@ Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selec
                  min="0" max="100">
         <label>41: Temperature Threshold</label>
         <description><![CDATA[
-Temperature change threshold<br /><h1>Overview</h1><p>Threshold change in temperature to induce an automatic report.<br />Note:<br />1. The unit is Fahrenheit for US version, Celsius for EU/AU version.<br />2. The value contains one decimal point. E.g. if the value is set to 20, the<br />threshold value =2.0<br />°C (EU/AU version) or 2.0 °F (US version). When the<br />current temperature gap is more then 2.0, which will induce a temperature<br />report to be sent out.</p>
-    !]]></description>
+Temperature change threshold<br /><h1>Overview</h1><p>Threshold change in temperature to induce an automatic report.<br /><strong>Note</strong>:</p>
+<ol><li>The unit is Fahrenheit for US version, Celsius for EU/AU version.</li>
+<li>The value contains one decimal point. E.g. if the value is set to 20, the threshold value =2.0°C (EU/AU version) or 2.0 °F (US version). When the current temperature gap is more then 2.0, which will induce a temperature report to be sent out.</li>
+</ol>    !]]></description>
         <default>20</default>
       </parameter>
 
@@ -293,7 +300,10 @@ Group 3 Report Interval<br /><h1>Overview</h1><p>The interval time of sending re
                  min="-100" max="100">
         <label>201: Temperature Calibration</label>
         <description><![CDATA[
-Temperature calibration (see overview)<br /><h1>Overview</h1><p>Temperature calibration (the available value range is [-100,100] or [-<br />°C ,10 °C ] ).<br />10.0<br />Note:<br />1. The value contains one decimal point. E.g. if the value is set to 20, the<br />calibration value is 2.0<br />°C (EU/AU version) or 2.0 °F (US version)<br />2. The calibration value = standard value - measure value.<br />°C and the standard value = 23.2 °C , so the<br />calibration value= 23.2 °C - 25.3 °C = -2.1 °C (0xEB).<br />If the measure value =30.1 °C and the standard value = 33.2 °C , so the calibration<br />value= 33.2 °C - 30.1 °C =3.1 °C (0x1F).</p>
+Temperature calibration in 0.1 deg steps<br /><h1>Overview</h1><p>Temperature calibration (the available value range is [-100,100] or [-10°C ,10 °C ] ).<br /><strong>Note</strong>:</p>
+<ol><li>The value contains one decimal point. E.g. if the value is set to 20, the calibration value is 2.0°C (EU/AU version) or 2.0 °F (US version)</li>
+<li>The calibration value = standard value - measure value. °C and the standard value = 23.2 °C , so the calibration value= 23.2 °C - 25.3 °C = -2.1 °C (0xEB).</li>
+</ol><p><br />If the measure value =30.1 °C and the standard value = 33.2 °C , so the calibration value= 33.2 °C - 30.1 °C =3.1 °C (0x1F).</p>
     !]]></description>
         <default>0</default>
       </parameter>
