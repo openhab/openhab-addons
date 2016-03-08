@@ -81,13 +81,13 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
     private Map<Integer, ZWaveConfigSubParameter> subParameters = new HashMap<Integer, ZWaveConfigSubParameter>();
 
     private ScheduledFuture<?> pollingJob = null;
-    private ScheduledFuture<?> delayedPollingJob = null;
 
-    private final int POLLING_PERIOD_MIN = 15;
-    private final int POLLING_PERIOD_MAX = 7200;
-    private final int POLLING_PERIOD_DEFAULT = 1800;
-    private final int DELAYED_POLLING_PERIOD_MAX = 10;
-    private int pollingPeriod = POLLING_PERIOD_DEFAULT;
+    private final long POLLING_PERIOD_MIN = 15;
+    private final long POLLING_PERIOD_MAX = 7200;
+    private final long POLLING_PERIOD_DEFAULT = 1800;
+    private final long DELAYED_POLLING_PERIOD_MAX = 10;
+    private final long REFRESH_POLL_DELAY = 50;
+    private long pollingPeriod = POLLING_PERIOD_DEFAULT;
 
     public ZWaveThingHandler(Thing zwaveDevice) {
         super(zwaveDevice);
@@ -226,7 +226,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         startPolling();
     }
 
-    private void startPolling() {
+    private void startPolling(long initialPeriod) {
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
@@ -246,15 +246,16 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         Runnable pollingRunnable = new Runnable() {
             @Override
             public void run() {
-                // if there is not an active delayed poll request then poll
-                if (delayedPollingJob == null || delayedPollingJob.isDone()) {
-                    pollNode();
-                }
+                pollNode();
             }
         };
 
-        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, pollingPeriod, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, initialPeriod, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("NODE {}: Polling intialised at {} seconds.", nodeId, pollingPeriod);
+    }
+
+    private void startPolling() {
+        startPolling(pollingPeriod);
     }
 
     @Override
@@ -305,10 +306,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
         if (pollingJob != null) {
             pollingJob.cancel(true);
-        }
-
-        if (delayedPollingJob != null) {
-            delayedPollingJob.cancel(true);
         }
     }
 
@@ -580,6 +577,11 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             return;
         }
 
+        if (command == RefreshType.REFRESH) {
+            startPolling(REFRESH_POLL_DELAY);
+            return;
+        }
+
         DataType dataType;
         try {
             dataType = DataType.valueOf(command.getClass().getSimpleName());
@@ -615,11 +617,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         }
 
         List<SerialMessage> messages = null;
-        if (command == RefreshType.REFRESH) {
-            messages = cmdChannel.converter.executeRefresh(cmdChannel, node);
-        } else {
-            messages = cmdChannel.converter.receiveCommand(cmdChannel, node, command);
-        }
+        messages = cmdChannel.converter.receiveCommand(cmdChannel, node, command);
 
         if (messages == null) {
             logger.warn("NODE {}: No messages returned from converter", nodeId);
@@ -943,17 +941,9 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 delay = DELAYED_POLLING_PERIOD_MAX;
                 unit = TimeUnit.SECONDS;
             }
-            if (delayedPollingJob != null) {
-                delayedPollingJob.cancel(true);
-            }
-            delayedPollingJob = scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    pollNode();
-                }
-            }, delay, unit);
-        }
 
+            startPolling(unit.toMillis(delay));
+        }
     }
 
     private void updateNeighbours() {
