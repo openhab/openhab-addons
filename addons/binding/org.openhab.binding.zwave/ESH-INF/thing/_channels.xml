@@ -203,17 +203,32 @@
         </state>
     </channel-type>
 
-    <!-- Door / Window Channel -->
+    <!-- Binary Sensor -->
     <channel-type id="sensor_binary">
         <item-type>Switch</item-type>
+        <label>Binary Sensor</label>
+        <description>Indicates if a sensor has triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="ON">Triggered</option>
+                <option value="OFF">Untriggered</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Door / Window Channel -->
+    <channel-type id="sensor_door">
+        <item-type>Contact</item-type>
         <label>Door Open</label>
         <description>Indicates if the door/window is open or closed
         </description>
         <category>Door</category>
         <state readOnly="true">
             <options>
-                <option value="ON">Open</option>
-                <option value="OFF">Closed</option>
+                <option value="OPEN">Open</option>
+                <option value="CLOSED">Closed</option>
             </options>
         </state>
     </channel-type>
