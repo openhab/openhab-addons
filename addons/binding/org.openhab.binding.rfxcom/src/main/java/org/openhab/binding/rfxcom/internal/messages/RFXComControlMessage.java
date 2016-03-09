@@ -17,76 +17,73 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * RFXCOM data class for control message.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComControlMessage extends RFXComBaseMessage {
 
-	public RFXComControlMessage() {
+    public RFXComControlMessage() {
 
-	}
+    }
 
-	public RFXComControlMessage(byte[] data) {
-		encodeMessage(data);
-	}
+    public RFXComControlMessage(byte[] data) {
+        encodeMessage(data);
+    }
 
-	@Override
-	public byte[] decodeMessage() {
-		return null;
-	}
+    @Override
+    public byte[] decodeMessage() {
+        return null;
+    }
 
-	@Override
-	public void encodeMessage(byte[] data) {
-		super.encodeMessage(data);
-	}
+    @Override
+    public void encodeMessage(byte[] data) {
+        super.encodeMessage(data);
+    }
 
-	@Override
-	public String toString() {
-		String str = "";
+    @Override
+    public String toString() {
+        String str = "";
 
-		str += super.toString();
+        str += super.toString();
 
-		return str;
-	}
+        return str;
+    }
 
-	@Override
-	public State convertToState(RFXComValueSelector valueSelector)
-			throws RFXComException {
-		
-		throw new RFXComException("Not supported");
-	}
+    @Override
+    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-	@Override
-	public void setSubType(Object subType) throws RFXComException {
-		throw new RFXComException("Not supported");
-	}
+        throw new RFXComException("Not supported");
+    }
 
-	@Override
-	public void setDeviceId(String deviceId) throws RFXComException {
-		throw new RFXComException("Not supported");
-	}
+    @Override
+    public void setSubType(Object subType) throws RFXComException {
+        throw new RFXComException("Not supported");
+    }
 
-	@Override
-	public void convertFromState(RFXComValueSelector valueSelector, Type type)
-			throws RFXComException {
-		
-		throw new RFXComException("Not supported");
-	}
+    @Override
+    public void setDeviceId(String deviceId) throws RFXComException {
+        throw new RFXComException("Not supported");
+    }
 
-	@Override
-	public Object convertSubType(String subType) throws RFXComException {
-		
-		throw new RFXComException("Not supported");
-	}
+    @Override
+    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
 
-	@Override
-	public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-		return null;
-	}
+        throw new RFXComException("Not supported");
+    }
 
-	@Override
-	public List<RFXComValueSelector> getSupportedOutputValueSelectors()
-			throws RFXComException {
-		return null;
-	}
+    @Override
+    public Object convertSubType(String subType) throws RFXComException {
+
+        throw new RFXComException("Not supported");
+    }
+
+    @Override
+    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
+        return null;
+    }
+
+    @Override
+    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
+        return null;
+    }
 }

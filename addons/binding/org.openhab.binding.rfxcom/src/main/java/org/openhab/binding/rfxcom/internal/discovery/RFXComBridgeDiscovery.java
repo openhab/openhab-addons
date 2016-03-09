@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import jd2xx.JD2XX;
-
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -26,136 +24,123 @@ import org.openhab.binding.rfxcom.RFXComBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jd2xx.JD2XX;
+
 /**
  * The {@link RFXComBridgeDiscovery} is responsible for discovering new RFXCOM
  * transceivers.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
- * 
+ *
  */
 public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 
-	private final static Logger logger = LoggerFactory
-			.getLogger(RFXComBridgeDiscovery.class);
+    private final static Logger logger = LoggerFactory.getLogger(RFXComBridgeDiscovery.class);
 
-	/** The refresh interval for background discovery */
-	private long refreshInterval = 600;
-	
-	private boolean unsatisfiedLinkErrorLogged = false;
-	
-	private ScheduledFuture<?> discoveryJob;
+    /** The refresh interval for background discovery */
+    private long refreshInterval = 600;
 
-	private Runnable discoverRunnable = new Runnable() {
+    private boolean unsatisfiedLinkErrorLogged = false;
 
-		@Override
-		public void run() {
-			discoverRfxcom();
-		}
-	};
+    private ScheduledFuture<?> discoveryJob;
 
-	public RFXComBridgeDiscovery() {
-		super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10, false);
-	}
+    private Runnable discoverRunnable = new Runnable() {
 
-	@Override
-	public Set<ThingTypeUID> getSupportedThingTypes() {
-		return RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS;
-	}
+        @Override
+        public void run() {
+            discoverRfxcom();
+        }
+    };
 
-	@Override
-	public void startScan() {
-		logger.debug("Start discovery scan for RFXCOM transceivers");
-		discoverRfxcom();
-	}
+    public RFXComBridgeDiscovery() {
+        super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10, false);
+    }
 
-	@Override
-	protected void startBackgroundDiscovery() {
-		logger.debug("Start background discovery for RFXCOM transceivers");
-		discoveryJob = scheduler.scheduleAtFixedRate(discoverRunnable, 0,
-				refreshInterval, TimeUnit.SECONDS);
-	}
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS;
+    }
 
-	@Override
-	protected void stopBackgroundDiscovery() {
-		logger.debug("Stop background discovery for RFXCOM transceivers");
-		if (discoveryJob != null && !discoveryJob.isCancelled()) {
-			discoveryJob.cancel(true);
-			discoveryJob = null;
-		}
-	}
+    @Override
+    public void startScan() {
+        logger.debug("Start discovery scan for RFXCOM transceivers");
+        discoverRfxcom();
+    }
 
-	private synchronized void discoverRfxcom() {
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start background discovery for RFXCOM transceivers");
+        discoveryJob = scheduler.scheduleAtFixedRate(discoverRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+    }
 
-		try {
-			JD2XX jd2xx = new JD2XX();
-			logger.debug(
-					"Discovering RFXCOM transceiver devices by JD2XX version {}",
-					jd2xx.getLibraryVersion());
-			String[] devDescriptions = (String[]) jd2xx
-					.listDevicesByDescription();
-			String[] devSerialNumbers = (String[]) jd2xx
-					.listDevicesBySerialNumber();
-			logger.debug("Discovered {} FTDI device(s)", devDescriptions.length);
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop background discovery for RFXCOM transceivers");
+        if (discoveryJob != null && !discoveryJob.isCancelled()) {
+            discoveryJob.cancel(true);
+            discoveryJob = null;
+        }
+    }
 
-			for (int i = 0; i < devSerialNumbers.length; ++i) {
-				if (devDescriptions != null && devDescriptions.length > 0) {
-					switch (devDescriptions[i]) {
-					case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX433:
-						addBridge(RFXComBindingConstants.BRIDGE_RFXTRX443,
-								devSerialNumbers[i]);
-						break;
-					case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX315:
-						addBridge(RFXComBindingConstants.BRIDGE_RFXTRX315,
-								devSerialNumbers[i]);
-						break;
-					case RFXComBindingConstants.BRIDGE_TYPE_RFXREC433:
-						addBridge(RFXComBindingConstants.BRIDGE_RFXREC443,
-								devSerialNumbers[i]);
-						break;
-					default:
-						logger.trace("Ignore unknown device '{}'",
-								devDescriptions[i]);
-					}
-				}
-			}
+    private synchronized void discoverRfxcom() {
 
-			logger.debug("Discovery done");
+        try {
+            JD2XX jd2xx = new JD2XX();
+            logger.debug("Discovering RFXCOM transceiver devices by JD2XX version {}", jd2xx.getLibraryVersion());
+            String[] devDescriptions = (String[]) jd2xx.listDevicesByDescription();
+            String[] devSerialNumbers = (String[]) jd2xx.listDevicesBySerialNumber();
+            logger.debug("Discovered {} FTDI device(s)", devDescriptions.length);
 
-		} catch (IOException e) {
-			logger.error("Error occured during discovery", e);
-		} catch (UnsatisfiedLinkError e) {
-			if (unsatisfiedLinkErrorLogged) {
-				logger.debug(
-						"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
-						System.getProperty("os.name"),
-						System.getProperty("os.version"),
-						System.getProperty("os.arch"), e);
-			} else {
-				logger.error(
-						"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
-						System.getProperty("os.name"),
-						System.getProperty("os.version"),
-						System.getProperty("os.arch"), e);
-				unsatisfiedLinkErrorLogged = true;
-			}
-		}
-	}
+            for (int i = 0; i < devSerialNumbers.length; ++i) {
+                if (devDescriptions != null && devDescriptions.length > 0) {
+                    switch (devDescriptions[i]) {
+                        case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX433:
+                            addBridge(RFXComBindingConstants.BRIDGE_RFXTRX443, devSerialNumbers[i]);
+                            break;
+                        case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX315:
+                            addBridge(RFXComBindingConstants.BRIDGE_RFXTRX315, devSerialNumbers[i]);
+                            break;
+                        case RFXComBindingConstants.BRIDGE_TYPE_RFXREC433:
+                            addBridge(RFXComBindingConstants.BRIDGE_RFXREC443, devSerialNumbers[i]);
+                            break;
+                        default:
+                            logger.trace("Ignore unknown device '{}'", devDescriptions[i]);
+                    }
+                }
+            }
 
-	private void addBridge(ThingTypeUID bridgeType, String bridgeId) {
-		logger.debug(
-				"Discovered RFXCOM transceiver, bridgeType='{}', bridgeId='{}'",
-				bridgeType, bridgeId);
+            logger.debug("Discovery done");
 
-		Map<String, Object> properties = new HashMap<>(2);
-		properties.put(RFXComBindingConstants.BRIDGE_ID, bridgeId);
+        } catch (IOException e) {
+            logger.error("Error occured during discovery", e);
+        } catch (UnsatisfiedLinkError e) {
+            if (unsatisfiedLinkErrorLogged) {
+                logger.debug(
+                        "Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+                        System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"),
+                        e);
+            } else {
+                logger.error(
+                        "Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+                        System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"),
+                        e);
+                unsatisfiedLinkErrorLogged = true;
+            }
+        }
+    }
 
-		ThingUID uid = new ThingUID(bridgeType, bridgeId);
-		if (uid != null) {
-			DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-					.withProperties(properties).withLabel("RFXCOM transceiver")
-					.build();
-			thingDiscovered(result);
-		}
+    private void addBridge(ThingTypeUID bridgeType, String bridgeId) {
+        logger.debug("Discovered RFXCOM transceiver, bridgeType='{}', bridgeId='{}'", bridgeType, bridgeId);
 
-	}
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put(RFXComBindingConstants.BRIDGE_ID, bridgeId);
+
+        ThingUID uid = new ThingUID(bridgeType, bridgeId);
+        if (uid != null) {
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel("RFXCOM transceiver").build();
+            thingDiscovered(result);
+        }
+
+    }
 }

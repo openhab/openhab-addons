@@ -105,7 +105,6 @@ public class VisuConfig {
     public String getConfigXml(HttpServletRequest req) {
         SchemaPages pagesBean = new SchemaPages();
         pagesBean.setDesign("metal");
-        pagesBean.setEnableColumnAdjustment(true);
         pagesBean.setMaxMobileScreenWidth(new BigDecimal(480));
         pagesBean.setBindClickToWidget(true);
 
@@ -281,8 +280,9 @@ public class VisuConfig {
             Address address = configHelper.addAddress(info, item, transform);
             if (address != null) {
                 address.setMode("read");
-                if (item != null && !skipFormat)
+                if (item != null && !skipFormat) {
                     configHelper.addFormat(info, item.getLabel());
+                }
                 configHelper.addLabel(info, widget);
                 if (Transform.CONTACT.equals(transform)) {
                     info.setMapping("OpenClose");

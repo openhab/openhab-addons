@@ -34,6 +34,12 @@
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
 			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="network">
 				<context>network-address</context>
@@ -80,6 +86,14 @@
 				<default>1000</default>
 				<advanced>true</advanced>
 			</parameter>
+			<!-- Trigger reboot action from habmin menu -->
+			<parameter name="cubeReboot" type="integer" groupName="actions">
+				<label>Restart Cube</label>
+				<description>Restarts the Cube.</description>
+				<default>-1</default>
+				<advanced>false</advanced>
+			</parameter>
+
 		</config-description>
 
 	</bridge-type>

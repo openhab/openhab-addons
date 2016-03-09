@@ -24,6 +24,7 @@
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
+    <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
@@ -31,6 +32,7 @@
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pulseaudio</module>
+    <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.smaenergymeter</module>
@@ -38,6 +40,7 @@
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.orvibo</module>
+    <module>org.openhab.binding.zwave</module>
   </modules>
 
 </project>
