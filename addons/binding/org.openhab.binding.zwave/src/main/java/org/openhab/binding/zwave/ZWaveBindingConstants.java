@@ -35,9 +35,15 @@ public class ZWaveBindingConstants {
 
     public final static String UNKNOWN_THING = BINDING_ID + ":unknown";
 
-    public final static String PROPERTY_NODEID = "nodeid";
-
-    public final static String PROPERTY_NEIGHBOURS = "node_neighbours";
+    public final static String PROPERTY_NODEID = "zwave_nodeid";
+    public final static String PROPERTY_NEIGHBOURS = "zwave_neighbours";
+    public final static String PROPERTY_LISTENING = "zwave_listening";
+    public final static String PROPERTY_FREQUENT = "zwave_frequent";
+    public final static String PROPERTY_BEAMING = "zwave_beaming";
+    public final static String PROPERTY_ROUTING = "zwave_routing";
+    public final static String PROPERTY_CLASS_BASIC = "zwave_class_basic";
+    public final static String PROPERTY_CLASS_GENERIC = "zwave_class_generic";
+    public final static String PROPERTY_CLASS_SPECIFIC = "zwave_class_specific";
 
     public final static String CHANNEL_SERIAL_SOF = "serial_sof";
     public final static String CHANNEL_SERIAL_ACK = "serial_ack";

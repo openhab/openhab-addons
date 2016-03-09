@@ -867,7 +867,9 @@ public class CometVisuServlet extends HttpServlet {
                     return name.endsWith(".png");
                 }
             };
-            for (File iconFile : iconDir.listFiles(filter)) {
+            File[] icons = iconDir.listFiles(filter);
+            Arrays.sort(icons);
+            for (File iconFile : icons) {
                 if (iconFile.isFile()) {
                     String iconName = iconFile.getName().replace(".png", "");
                     DataBean bean = new DataBean();
@@ -879,8 +881,10 @@ public class CometVisuServlet extends HttpServlet {
         } else if (file.getName().equals("list_all_plugins.php")) {
             // all plugins
             // all item names
-            File iconDir = new File(rootFolder, "plugins/");
-            for (File icon : iconDir.listFiles()) {
+            File pluginDir = new File(rootFolder, "plugins/");
+            File[] plugins = pluginDir.listFiles();
+            Arrays.sort(plugins);
+            for (File icon : plugins) {
                 if (icon.isDirectory()) {
                     DataBean bean = new DataBean();
                     bean.label = icon.getName();
@@ -892,7 +896,9 @@ public class CometVisuServlet extends HttpServlet {
         } else if (file.getName().equals("get_designs.php")) {
             // all designs
             File designDir = new File(rootFolder, "designs/");
-            for (File design : designDir.listFiles()) {
+            File[] designs = designDir.listFiles();
+            Arrays.sort(designs);
+            for (File design : designs) {
                 if (design.isDirectory()) {
                     beans.add(design.getName());
                 }

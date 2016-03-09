@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -85,6 +86,8 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
 
     @XStreamOmitField
     private boolean initialiseDone = false;
+
+    private boolean isGetSupported = true;
 
     /**
      * Creates a new instance of the ZWaveWakeUpCommandClass class.
@@ -259,6 +262,11 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      * @return the serial message
      */
     public SerialMessage getIntervalMessage() {
+        if (isGetSupported == false) {
+            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            return null;
+        }
+
         logger.debug("NODE {}: Creating new message for application command WAKE_UP_INTERVAL_GET",
                 this.getNode().getNodeId());
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
@@ -275,6 +283,11 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      * @return the serial message
      */
     public SerialMessage getIntervalCapabilitiesMessage() {
+        if (isGetSupported == false) {
+            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            return null;
+        }
+
         logger.debug("NODE {}: Creating new message for application command WAKE_UP_INTERVAL_CAPABILITIES_GET",
                 this.getNode().getNodeId());
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
@@ -496,6 +509,15 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      */
     public Date getLastWakeup() {
         return lastWakeup;
+    }
+
+    @Override
+    public boolean setOptions(Map<String, String> options) {
+        if ("false".equals(options.get("getSupported"))) {
+            isGetSupported = false;
+        }
+
+        return true;
     }
 
     /**

@@ -193,9 +193,9 @@ public class SerialMessage {
      */
     @Override
     public String toString() {
-        return String.format("Message: class = %s (0x%02X), type = %s (0x%02X), payload = %s",
-                new Object[] { messageClass, messageClass.key, messageType, messageType.ordinal(),
-                        SerialMessage.bb2hex(this.getMessagePayload()) });
+        return String.format("Message: class=%s[0x%02X], type=%s[0x%02X], priority=%s, dest=%d, payload=%s",
+                new Object[] { messageClass, messageClass.key, messageType, messageType.ordinal(), priority,
+                        messageNode, SerialMessage.bb2hex(this.getMessagePayload()) });
     };
 
     /**
@@ -650,7 +650,6 @@ public class SerialMessage {
          */
         @Override
         public int compare(SerialMessage arg0, SerialMessage arg1) {
-
             boolean arg0Awake = false;
             boolean arg0Listening = true;
             boolean arg1Awake = false;

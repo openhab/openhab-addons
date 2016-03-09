@@ -449,6 +449,25 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     }
                     break;
 
+                case APP_VERSION:
+                    ZWaveVersionCommandClass versionCommandClass = (ZWaveVersionCommandClass) node
+                            .getCommandClass(CommandClass.VERSION);
+
+                    if (versionCommandClass == null) {
+                        logger.debug("NODE {}: Node advancer: APP_VERSION - VERSION node supported", node.getNodeId());
+                        break;
+                    }
+
+                    // If we know the library type, then we've got the app version
+                    if (versionCommandClass.getLibraryType() != LibraryType.LIB_UNKNOWN) {
+                        break;
+                    }
+
+                    // Request the version report for this node
+                    logger.debug("NODE {}: Node advancer: APP_VERSION - send VersionMessage", node.getNodeId());
+                    addToQueue(versionCommandClass.getVersionMessage());
+                    break;
+
                 case DISCOVERY_COMPLETE:
                     // At this point we know enough information about the device to advise the discovery
                     // service that there's a new thing.
@@ -486,28 +505,8 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                      * thingType = ZWaveConfigProvider.getThing(thingUID);
                      */
                     if (thingType == null) {
-                        logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - thing not found ({})!",
-                                node.getNodeId());
+                        logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - thing not found!", node.getNodeId());
                     }
-                    break;
-
-                case APP_VERSION:
-                    ZWaveVersionCommandClass versionCommandClass = (ZWaveVersionCommandClass) node
-                            .getCommandClass(CommandClass.VERSION);
-
-                    if (versionCommandClass == null) {
-                        logger.debug("NODE {}: Node advancer: APP_VERSION - VERSION node supported", node.getNodeId());
-                        break;
-                    }
-
-                    // If we know the library type, then we've got the app version
-                    if (versionCommandClass.getLibraryType() != LibraryType.LIB_UNKNOWN) {
-                        break;
-                    }
-
-                    // Request the version report for this node
-                    logger.debug("NODE {}: Node advancer: APP_VERSION - send VersionMessage", node.getNodeId());
-                    addToQueue(versionCommandClass.getVersionMessage());
                     break;
 
                 case VERSION:
@@ -908,14 +907,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
             }
 
             // If there are messages queued, send one.
-            // If there are none, then it means we're happy that we have all the
-            // data for this stage.
-            // If we have all the data, set stageAdvanced to true to tell the system
-            // that we're starting again, then loop around again.
+            // If there are none, then it means we're happy that we have all the data for this stage.
+            // If we have all the data, set stageAdvanced to true to tell the system that we're starting again, then
+            // loop around again.
             if (currentStage != ZWaveNodeInitStage.DONE && sendMessage() == false) {
-                ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(), currentStage);
-                controller.notifyEventListeners(zEvent);
-
                 // Move on to the next stage
                 setCurrentStage(currentStage.getNextStage());
                 stageAdvanced = true;
@@ -924,6 +919,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                 retryTimer = BACKOFF_TIMER_START;
 
                 logger.debug("NODE {}: Node advancer - advancing to {}", node.getNodeId(), currentStage.toString());
+
+                // Notify listeners
+                ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(), currentStage);
+                controller.notifyEventListeners(zEvent);
             }
         } while (msgQueue.isEmpty());
 
@@ -1053,7 +1052,7 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                 // We use this as a trigger to kick things off again if they've stalled
                 // by checking to see if the transmit queue is now empty.
                 // This will allow battery devices stuck in WAIT state to get moving.
-                if (controller.getSendQueueLength() < 2 && currentStage == ZWaveNodeInitStage.WAIT) {
+                if (controller.getSendQueueLength() < 10 && currentStage == ZWaveNodeInitStage.WAIT) {
                     logger.debug("NODE {}: Node advancer - WAIT: The WAIT is over!", node.getNodeId());
 
                     currentStage = currentStage.getNextStage();

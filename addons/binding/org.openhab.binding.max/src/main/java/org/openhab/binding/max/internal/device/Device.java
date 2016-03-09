@@ -55,7 +55,11 @@ public abstract class Device {
     public abstract DeviceType getType();
 
     public String getName() {
-        return config.getName();
+        String deviceName = "";
+        if (config.getName() != null) {
+            deviceName = config.getName();
+        }
+        return deviceName;
     }
 
     private static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
@@ -237,7 +241,11 @@ public abstract class Device {
     }
 
     public final String getRoomName() {
-        return config.getRoomName();
+        String roomName = "";
+        if (config.getRoomName() != null) {
+            roomName = config.getRoomName();
+        }
+        return roomName;
     }
 
     private void setLinkStatusError(boolean linkStatusError) {
