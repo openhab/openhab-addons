@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -125,8 +126,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                 bcReceipt.receive(receivePacket);
 
                 // We have a response
-                String message = new String(receivePacket.getData(), receivePacket.getOffset(),
-                        receivePacket.getLength());
+                byte[] messageBuf = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
+                        receivePacket.getOffset() + receivePacket.getLength());
+                String message = new String(messageBuf);
                 logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
@@ -140,14 +142,14 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                     String rfAddress = "";
                     logger.debug("MAX! Cube found on network");
                     logger.debug("Found at  : {}", maxCubeIP);
-                    logger.debug("Cube State: {}", maxCubeState);
+                    logger.trace("Cube State: {}", maxCubeState);
                     logger.debug("Serial    : {}", serialNumber);
                     logger.trace("Msg Valid : {}", msgValidid);
                     logger.trace("Msg Type  : {}", requestType);
 
                     if (requestType.equals("I")) {
-                        rfAddress = Utils.getHex(message.substring(21, 24).getBytes()).replace(" ", "").toLowerCase();
-                        String firmwareVersion = Utils.getHex(message.substring(24, 26).getBytes()).replace(" ", ".");
+                        rfAddress = Utils.getHex(Arrays.copyOfRange(messageBuf, 21, 24)).replace(" ", "").toLowerCase();
+                        String firmwareVersion = Utils.getHex(Arrays.copyOfRange(messageBuf, 24, 26)).replace(" ", ".");
                         logger.debug("RF Address: {}", rfAddress);
                         logger.debug("Firmware  : {}", firmwareVersion);
                     }
@@ -163,8 +165,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         } finally {
             // Close the port!
             try {
-                if (bcReceipt != null)
+                if (bcReceipt != null) {
                     bcReceipt.close();
+                }
             } catch (Exception e) {
                 logger.debug(e.toString());
             }
@@ -238,8 +241,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
         } finally {
             try {
-                if (bcSend != null)
+                if (bcSend != null) {
                     bcSend.close();
+                }
             } catch (Exception e) {
                 // Ignore
             }

@@ -38,23 +38,25 @@ public final class DeviceConfiguration {
 
     public static DeviceConfiguration create(DeviceInformation di) {
         DeviceConfiguration configuration = new DeviceConfiguration();
-        configuration.setValues(di.getRFAddress(), di.getDeviceType(), di.getSerialNumber(), di.getName());
+        configuration.setValues(di.getRFAddress(), di.getDeviceType(), di.getSerialNumber(), di.getRoomId(),
+                di.getName());
         return configuration;
     }
 
     public void setValues(C_Message message) {
-        setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber());
+        setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber(), message.getRoomID());
     }
 
-    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, String name) {
-        setValues(rfAddress, deviceType, serialNumber);
+    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, int roomId, String name) {
+        setValues(rfAddress, deviceType, serialNumber, roomId);
         this.name = name;
     }
 
-    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber) {
+    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, int roomId) {
         this.rfAddress = rfAddress;
         this.deviceType = deviceType;
         this.serialNumber = serialNumber;
+        this.roomId = roomId;
     }
 
     public String getRFAddress() {
