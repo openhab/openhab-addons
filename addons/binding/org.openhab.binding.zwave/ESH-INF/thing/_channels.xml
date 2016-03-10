@@ -202,6 +202,14 @@
         <state pattern="%.1f" readOnly="true">
         </state>
     </channel-type>
+    
+    <!-- Scene - Number -->
+    <channel-type id="scene_number">
+        <item-type>Number</item-type>
+        <label>Scene Number</label>
+        <description>Triggers when a scene button is pressed</description>
+        <category></category>
+    </channel-type>
 
     <!-- Binary Sensor -->
     <channel-type id="sensor_binary">

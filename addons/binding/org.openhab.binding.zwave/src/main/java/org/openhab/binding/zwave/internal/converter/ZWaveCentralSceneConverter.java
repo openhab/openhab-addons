@@ -20,15 +20,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson
  */
-public class ZWaveSceneConverter extends ZWaveCommandClassConverter {
+public class ZWaveCentralSceneConverter extends ZWaveCommandClassConverter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ZWaveSceneConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZWaveCentralSceneConverter.class);
 
     /**
      * Constructor. Creates a new instance of the {@link ZWaveConverterBase} class.
      *
      */
-    public ZWaveSceneConverter() {
+    public ZWaveCentralSceneConverter() {
         super();
     }
 
