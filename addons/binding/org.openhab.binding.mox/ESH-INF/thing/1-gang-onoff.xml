@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="mox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="1_gang_onoff">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway" />
+		</supported-bridge-type-refs>
+
+		<label>1-Gang ON/OFF Module</label>
+		<description>This is a 1-Gang ON/OFF Module</description>
+
+		<channels>
+			<channel id="state" typeId="switchState" />
+			
+			<channel id="activePower" typeId="activePower" />
+			<channel id="reactivePower" typeId="reactivePower" />
+			<channel id="apparentPower" typeId="apparentPower" />
+			<channel id="activeEnergy" typeId="activeEnergy" />
+			<channel id="powerFactor" typeId="powerFactor" />
+		</channels>
+
+		<config-description>
+			<parameter name="oid" type="decimal" min="1" max="16777215">
+				<label>OID</label>
+				<description>The OID identifier of a certain MOX Module</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="suboid" type="decimal">
+				<label>Sub OID</label>
+				<description>The Sub OID identifies a function on a multi channel device. Normally it is 17.</description>
+				<required>true</required>
+				<default>17</default>
+				<options>
+					<option value="17">Channel 1</option>
+					<option value="18">Channel 2</option>
+					<option value="19">Channel 3</option>
+					<option value="20">Channel 4</option>
+					<option value="21">Channel 5</option>
+					<option value="22">Channel 6</option>
+					<option value="23">Channel 7</option>
+					<option value="24">Channel 8</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+</thing:thing-descriptions>

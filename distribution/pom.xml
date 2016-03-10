@@ -46,6 +46,18 @@
     </build>
 
     <dependencies>
+        <!-- Zoo-Automation add-ons to include -->
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.mox</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.bundles.ui</groupId>
+            <artifactId>org.openhab.ui.zoo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.openhab.products</groupId>
             <artifactId>org.openhab.product.runtime</artifactId>
@@ -60,6 +72,7 @@
             <type>zip</type>
             <classifier>win32.win32.x86</classifier>
         </dependency>
+        
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.sonos</artifactId>

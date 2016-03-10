@@ -1,0 +1,38 @@
+<div>
+  <span class="nav-btn" ng-click="toggleSidebar()">&equiv;</span>
+  <div class="logo-wrap">
+  
+    <span><strong>Zoo</strong></span>
+    <span>Smart Home</span>
+  </div>
+  <div class="container">
+    <form class="search-bar hidden-mobile" ng-submit="search()">
+      <label>
+        <i class="fa fa-search"></i>
+        <input type="text" class="field" ng-model="search">
+      </label>
+    </form>
+  </div>
+ <ul class="user-area">
+ <!--    <li>
+        <span class="notifications wrap">
+          <i class="fa fa-2x fa-bell-o white"></i>
+          <span class="unread">8</span>
+        </span>
+    </li>
+    <li class="hidden-mobile">
+      <a href="#!/profile" class="user wrap">
+        <div class="photo-wrap">
+          <img src="img/bot-logo.png" alt="5x4">
+        </div>
+        <span class="welcome">Welcome back</span>
+        <strong class="user-name">{{user.name}}</strong>
+      </a>
+    </li>-->
+    <li>
+      <a href="login.html" class="wrap logout">
+        <i class="fa fa-2x fa-power-off white"></i>
+      </a>
+    </li>
+  </ul>
+</div>

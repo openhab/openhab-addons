@@ -1,0 +1,326 @@
+<div class="container">
+  <h2>Alerts</h2>
+
+
+  <div class="cd-tabs">
+
+    <nav>
+      <ul class="cd-tabs-navigation">
+        <li><a data-content="1" class="selected" href="#0">Alerts</a></li>
+        <li><a data-content="2" href="#0">Schedules</a></li>
+      </ul>
+    </nav>
+
+    <ul class="cd-tabs-content">
+
+      <li data-content="1" class="selected">
+
+
+        <table class="main-table">
+          <tr>
+            <td>1</td>
+            <td><a class="popup-with-move-anim" href="#dialog">Cost alert</a></td>
+            <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                           href="#confirmation">delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><a class="popup-with-move-anim" href="#dialog">Usage alert</a></td>
+            <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                           href="#confirmation">delete</a>
+            </td>
+          </tr>
+        </table>
+
+        <a class="popup-with-move-anim underline" href="#dialog"><strong>+ Add new alert</strong></a>
+
+        <div id="dialog" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+          <div class="dialog-header">
+            <h3>Alert</h3>
+          </div>
+          <!--popup-header-->
+          <div class="dialog-content">
+            <p class="small-margin"><strong>Lorem ipsum dolar sit?</strong></p>
+            <ul class="no-style-list">
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="alert-type" checked>
+                  <span class="radio"></span>
+                  Cost
+                </label>
+              </li>
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="alert-type">
+                  <span class="radio"></span>
+                  Usage
+                </label>
+              </li>
+            </ul>
+
+            <p class="small-margin"><strong>Lorem ipsum dolar sit?</strong></p>
+            <ul class="no-style-list">
+              <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> <strong>All
+                                                                                                             rooms</strong></label>
+              </li>
+              <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Room 1</label></li>
+              <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Living room</label>
+              </li>
+              <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Dining room</label>
+              </li>
+              <li><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span> Kitchen</label>
+              </li>
+            </ul>
+
+            <label class="group">
+              <p><strong>Warn me</strong></p>
+              <input type="text" class="field">
+            </label>
+
+            <p class="small-margin"><strong>Time frame</strong></p>
+            <ul class="no-style-list">
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame" checked>
+                  <span class="radio"></span>
+                  Daily
+                </label>
+              </li>
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame">
+                  <span class="radio"></span>
+                  Weekly
+                </label>
+              </li>
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame">
+                  <span class="radio"></span>
+                  Monthly
+                </label>
+              </li>
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame">
+                  <span class="radio"></span>
+                  Billing cycle
+                </label>
+              </li>
+            </ul>
+
+          </div>
+          <!--popup-content-->
+          <div class="dialog-footer">
+            <div class="row fixed-row">
+              <div class="col6">
+                <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+              </div>
+              <div class="col6 text-right">
+                <a class="popup-modal-dismiss btn" href="#">Save</a>
+              </div>
+            </div>
+            <!--row-->
+          </div>
+          <!--dialog-footer-->
+        </div>
+        <!--dialog-->
+      </li>
+      <!--tab1-->
+
+      <li data-content="2">
+
+        <table class="main-table">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>From - To</th>
+            <th>Scene</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>1</td>
+            <td><a class="popup-with-move-anim" href="#shedule">5:00pm - 7:00pm</a></td>
+            <td>Sleep</td>
+            <td><a class="popup-with-move-anim" href="#shedule">edit</a> <a class="popup-with-move-anim"
+                                                                            href="#confirmation">delete</a></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><a class="popup-with-move-anim" href="#shedule">7:00pm - 9:00pm</a></td>
+            <td>Sexy time</td>
+            <td><a class="popup-with-move-anim" href="#shedule">edit</a> <a class="popup-with-move-anim"
+                                                                            href="#confirmation">delete</a></td>
+          </tr>
+          </tbody>
+        </table>
+
+        <a class="popup-with-move-anim underline" href="#shedule"><strong>+ Add new shedule</strong></a>
+
+        <div id="shedule" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+
+          <div class="dialog-header">
+            <h3>Shedule</h3>
+          </div>
+          <!--popup-header-->
+
+          <div class="dialog-content">
+            <p class="small-margin"><strong>From</strong></p>
+
+            <div class="select-group">
+              <select class="field">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+                <option>11</option>
+                <option>12</option>
+              </select>
+              <select class="field">
+                <option>00</option>
+                <option>15</option>
+                <option>30</option>
+                <option>45</option>
+              </select>
+              <select class="field">
+                <option>pm</option>
+                <option>am</option>
+              </select>
+            </div>
+            <!--select-group-->
+
+            <p class="small-margin"><strong>To</strong></p>
+
+            <div class="select-group">
+              <select class="field">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+                <option>11</option>
+                <option>12</option>
+              </select>
+              <select class="field">
+                <option>00</option>
+                <option>15</option>
+                <option>30</option>
+                <option>45</option>
+              </select>
+              <select class="field">
+                <option>pm</option>
+                <option>am</option>
+              </select>
+            </div>
+            <!--select-group-->
+
+            <p class="small-margin"><strong>Scene</strong></p>
+            <ul class="no-style-list">
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame" checked="">
+                  <span class="radio"></span>
+                  Out of the home
+                </label>
+              </li>
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame" disabled>
+                  <span class="radio"></span>
+                  Sexy time
+                </label>
+              </li>
+              <li>
+                <label class="radio-wrap">
+                  <input type="radio" name="time-frame" disabled>
+                  <span class="radio"></span>
+                  Sleep
+                </label>
+              </li>
+            </ul>
+          </div>
+          <!--popup-content-->
+
+          <div class="dialog-footer">
+            <div class="row fixed-row">
+              <div class="col6">
+                <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+              </div>
+              <div class="col6 text-right">
+                <a class="popup-modal-dismiss btn" href="#">Save</a>
+              </div>
+            </div>
+            <!--row-->
+          </div>
+          <!--dialog-footer-->
+
+        </div>
+        <!--dialog-->
+
+      </li>
+      <!--tab2-->
+
+    </ul>
+    <!-- cd-tabs-content -->
+
+  </div>
+  <!-- cd-tabs -->
+
+
+  <div id="confirmation" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+    <div class="dialog-header">
+      <h3>Delete?</h3>
+    </div>
+    <!--popup-header-->
+    <div class="dialog-content">
+      Are you sure you want to delete?
+    </div>
+    <!--popup-content-->
+    <div class="dialog-footer">
+      <div class="row fixed-row">
+        <div class="col6">
+          <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+        </div>
+        <div class="col6 text-right">
+          <a class="popup-modal-dismiss btn" href="#">Yes</a>
+        </div>
+      </div>
+      <!--row-->
+    </div>
+    <!--dialog-footer-->
+  </div>
+  <!--confirmation-->
+  <script>
+
+    //popup
+    $('.popup-with-move-anim').magnificPopup({
+      type: 'inline',
+      fixedContentPos: true,
+      fixedBgPos: false,
+      closeBtnInside: true,
+      preloader: false,
+      midClick: true,
+      removalDelay: 300,
+      mainClass: 'my-mfp-slide-bottom'
+    });
+    $(document).on('click', '.popup-modal-dismiss', function (e) {
+      e.preventDefault();
+      $.magnificPopup.close();
+    });
+
+  </script>
+</div><!--container-->

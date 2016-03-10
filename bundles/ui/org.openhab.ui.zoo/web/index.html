@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html ng-app="ZooApp">
+  <head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <base href="/zoo/index.html">
+    <title>Zoo Homeautomation</title>
+
+    <!-- build:css css/app.css -->
+    <link href="bower_components/fontawesome/css/font-awesome.css" rel="stylesheet">
+    <link href="css/electronics-icons.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/magnific-popup.css" rel="stylesheet">
+    <link href="css/flexslider.css" rel="stylesheet">
+    <link href="css/tabs.css" rel="stylesheet">
+    <link href="css/pikaday.css" rel="stylesheet">
+    <link href="css/powerange.css" rel="stylesheet">
+    <link href="css/accordion.css" rel="stylesheet">
+    <!-- endbuild -->
+
+    <!-- build:js js/shims.js -->
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
+    <script src="js/es6shims.js"></script>
+    <script src="js/eventsource-shim.js"></script>
+    <!-- endbuild -->
+
+    <!-- Fonts -->
+
+    <link rel="shortcut icon" href="img/favicon.ico"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!--<link rel="apple-touch-icon" href="img/app-icon.png"/>-->
+    <!--<link rel="apple-touch-startup-image" href="img/splash-ipad-h.png"-->
+          <!--media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)"/>-->
+    <!--<link rel="apple-touch-startup-image" href="img/splash-ipad-v.png"-->
+          <!--media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)"/>-->
+    <!--<link rel="apple-touch-startup-image" href="img/splash-iphone.png"-->
+          <!--media="screen and (max-device-width: 320px)"/>-->
+
+  </head>
+
+  <body ng-class="{'blackout':isBlackout}">
+   
+    <header ng-show="user.isAuthenticated" ng-include="'partials/header.html'"></header>
+    <div ng-show="user.isAuthenticated" ng-include="'partials/notifications-popup.html'"></div>
+    <aside ng-show="user.isAuthenticated" ng-include="'partials/left-sidebar.html'"
+           class="left-sidebar" ng-class="{'left-sidebar-active':leftSidebarOpen}"></aside>
+    <section class="page-content" ui-view></section>
+    <aside ng-show="user.isAuthenticated" ng-include="'partials/right-sidebar.html'" class="right-sidebar"></aside>
+
+
+
+    <!-- build:libs2min js/dependencies.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/Chart.js/Chart.js"></script>
+    <script src="bower_components/magnific-popup/dist/jquery.magnific-popup.js"></script>
+    <script src="bower_components/pikaday/pikaday.js"></script>
+    <script src="bower_components/powerange/dist/powerange.js"></script>
+    <script src="bower_components/tinynav/tinynav.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/spin.js/spin.js"></script>
+    <script src="bower_components/angular-spinner/angular-spinner.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/angular-ui-router-tabs/src/ui-router-tabs.js"></script>
+    <script src="bower_components/pikaday-angular/pikaday-angular.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js(.tmp/) js/app.js -->
+    <script src="js/accordion.min.js"></script>
+
+    <script src="js/services/services.js"></script>
+    <script src="js/services/influxdb.js"></script>
+    <script src="js/services/smarthome.services.datacache.js"></script>
+    <script src="js/services/smarthome.services.rest.js"></script>
+    <script src="js/services/smarthome.services.config.js"></script>
+    <script src="js/services/smarthome.services.repositories.js"></script>
+    <script src="js/services/smarthome.services.event.js"></script>
+    <script src="js/services/iconresolver.js"></script>
+
+    <script src="js/filters/smarthome.filters.js"></script>
+
+    <script src="js/directives/directives.js"></script>
+    <script src="js/directives/masterSwitch.js"></script>
+    <script src="js/directives/dimmerItem.js"></script>
+    <script src="js/directives/switchItem.js"></script>
+    <script src="js/directives/navState.js"></script>
+    <script src="js/directives/weatherWidget.js"></script>
+    <script src="js/directives/usageTable.js"></script>
+    <script src="js/directives/magnificPopup.js"></script>
+
+    <script src="js/controllers/controllers.js"></script>
+    <script src="js/controllers/room.js"></script>
+    <script src="js/controllers/login.js"></script>
+    <script src="js/controllers/settings.js"></script>
+    <script src="js/controllers/access.js"></script>
+    <script src="js/app.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<div>
+  <div class="group horizontal-divider">
+    <h3>Today’s usage of all devices is:</h3>
+
+    <h1><strong>{{data.globalConsumption | consumption:3}}</strong></h1>
+  </div>
+  <h2><strong>Usage</strong></h2>
+  <table class="main-table">
+    <thead>
+    <tr>
+      <th></th>
+      <th>Current</th>
+      <th>Today</th>
+      <th>Weekly</th>
+      <th>Monthly</th>
+      <th>Cost</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="room in data.rooms">
+      <th>{{room.label}}</th>
+      <td><span class="white">{{room.currentPower | consumption:1}}</span></td>
+      <td><span class="green">{{room.consumptionDay | consumption:0}}</span></td>
+      <td><span class="orange">{{room.consumptionWeek | consumption:0}}</span></td>
+      <td><span class="red">{{room.consumptionMonth | consumption:0}}</span></td>
+      <td>{{room.cost | currency:'$':0}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

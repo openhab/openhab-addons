@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.bundles.ui</groupId>
+    <artifactId>pom</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>org.openhab.ui.zoo</bundle.symbolicName>
+    <bundle.namespace>org.openhab.ui.zoo</bundle.namespace>
+  </properties>
+
+  <groupId>org.openhab.bundles.ui</groupId>
+  <artifactId>org.openhab.ui.zoo</artifactId>
+
+  <name>openHAB Zoo Automation UI</name>
+  <packaging>eclipse-plugin</packaging>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+	  		<groupId>com.github.eirslett</groupId>
+	        <artifactId>frontend-maven-plugin</artifactId>
+	        <version>0.0.23</version>
+
+	        <executions>
+	        	<execution>
+	        		<id>Install node and npm</id>
+	        		<goals>
+				        <goal>install-node-and-npm</goal>
+				    </goals>
+				    <!-- optional: default phase is "generate-resources" -->
+				    <phase>generate-resources</phase>
+				    <configuration>
+				        <nodeVersion>v0.10.32</nodeVersion>
+				        <npmVersion>2.3.0</npmVersion>
+				        <!-- optional: where to download node and npm from. Defaults to http://nodejs.org/dist/ -->
+				        <!-- <downloadRoot>http://myproxy.example.org/nodejs/dist/</downloadRoot> -->
+				    </configuration>
+	        	</execution>
+
+                <execution>
+                    <id>npm install</id>
+                    <goals>
+                        <goal>npm</goal>
+                    </goals>
+                    <!-- Optional configuration which provides for running any npm command -->
+                    <configuration>
+                        <arguments>install</arguments>
+                    </configuration>
+                </execution>
+	        	
+	        	<execution>
+				    <id>bower install</id>
+				    <goals>
+				        <goal>bower</goal>
+				    </goals>
+				</execution>
+
+				<execution>
+					<id>grunt build</id>
+					<goals>
+						<goal>grunt</goal>
+					</goals>
+
+					<configuration>
+						<arguments>build</arguments>
+					</configuration>
+				</execution>
+	        </executions>
+  		</plugin>
+  	</plugins>
+  </build>
+
+</project>

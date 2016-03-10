@@ -34,15 +34,27 @@ public class TypeParser {
 	 * @return the corresponding State instance or <code>null</code>
 	 */
 	public static State parseState(List<Class<? extends State>> types, String s) {
-		for(Class<? extends Type> type : types) {
+		for (Class<? extends Type> type : types) {
 			try {									
 				Method valueOf = type.getMethod("valueOf", String.class);
 				State state = (State) valueOf.invoke(type, s);
-				if(state!=null) return state;
+				if (state != null) {
+					return state;
+				}
 			} catch (NoSuchMethodException e) {
 			} catch (IllegalArgumentException e) {
 			} catch (IllegalAccessException e) {
 			} catch (InvocationTargetException e) {
+				// we need this special treatment because UnDefType has
+				// overridden its toString() method and hence valueOf does not 
+				// work anymore (for the values being returned by toString())
+				if (type.equals(org.openhab.core.types.UnDefType.class)) {
+					if (UnDefType.UNDEF.toString().equals(s)) {
+						return UnDefType.UNDEF;
+					} else if (UnDefType.NULL.toString().equals(s)) {
+						return UnDefType.NULL;
+					}
+				}
 			}
 		}
 		return null;

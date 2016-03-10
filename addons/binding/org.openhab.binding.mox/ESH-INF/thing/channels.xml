@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="mox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="switchState">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turns the power on or off</description>
+		<category>Switch</category>
+	</channel-type>
+	
+	<channel-type id="dimmerState">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>The dimmer channel allows to control the brightness of a light.
+            It is also possible to switch the light on and off.Turns the power on or off</description>
+		<category>Dimmer</category>
+	</channel-type>
+	
+	<channel-type id="activePower">
+		<item-type>Number</item-type>
+		<label>Active Power</label>
+		<description>The active power consumption</description>
+		<category>Energy</category>
+		<tags>
+			<tag>active-power</tag>
+		</tags>
+		<state pattern="%.3f W" readOnly="true" min="0" />
+	</channel-type>
+
+	<channel-type id="reactivePower">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The reactive power consumption</description>
+		<category>Energy</category>
+		<tags>
+			<tag>reactive-power</tag>
+		</tags>
+		<state pattern="%.3f var" readOnly="true" min="0" />
+	</channel-type>
+
+	<channel-type id="apparentPower">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>The apparent power consumption</description>
+		<category>Energy</category>
+		<tags>
+			<tag>apparent-power</tag>
+		</tags>
+		<state pattern="%.3f VA" readOnly="true" min="0" />
+	</channel-type>
+
+	<channel-type id="activeEnergy">
+		<item-type>Number</item-type>
+		<label>Active Energy</label>
+		<description>The sum of energy consumed</description>
+		<category>Energy</category>
+		<tags>
+			<tag>active-energy</tag>
+		</tags>
+		<state pattern="%.6f kWh" readOnly="true" min="0" />
+	</channel-type>
+	
+	<channel-type id="powerFactor">
+		<item-type>Number</item-type>
+		<label>Power Factor</label>
+		<description>The power factor</description>
+		<category>Energy</category>
+		<state pattern="%.3f" readOnly="true" min="0" max="1" />
+	</channel-type>
+	
+</thing:thing-descriptions>

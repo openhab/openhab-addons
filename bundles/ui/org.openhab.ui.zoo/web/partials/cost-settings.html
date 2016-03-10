@@ -1,0 +1,487 @@
+<div class="container">
+
+  <div id="dialog" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+    <div class="dialog-header">
+      <h3>Timeframe</h3>
+    </div>
+    <!--dialog-header-->
+    <div class="dialog-content">
+      <p class="small-margin"><strong>From</strong></p>
+      <div class="select-group">
+        <select class="field">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+          <option>9</option>
+          <option>10</option>
+          <option>11</option>
+          <option>12</option>
+        </select>
+        <select class="field">
+          <option>00</option>
+          <option>15</option>
+          <option>30</option>
+          <option>45</option>
+        </select>
+        <select class="field">
+          <option>pm</option>
+          <option>am</option>
+        </select>
+      </div>
+      <!--select-group-->
+      <p class="small-margin"><strong>To</strong></p>
+      <div class="select-group">
+        <select class="field">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option selected>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+          <option>9</option>
+          <option>10</option>
+          <option>11</option>
+          <option>12</option>
+        </select>
+        <select class="field">
+          <option>00</option>
+          <option>15</option>
+          <option selected>30</option>
+          <option>45</option>
+        </select>
+        <select class="field">
+          <option>pm</option>
+          <option>am</option>
+        </select>
+      </div>
+      <!--select-group-->
+      <label class="group">
+        <p class="small-margin"><strong>Price $</strong></p>
+        <input type="text" class="field" value="150">
+      </label>
+      <label class="group">
+        <p class="small-margin"><strong>Price $ / kwh</strong></p>
+        <input type="text" class="field" value="150" disabled>
+      </label>
+    </div>
+    <!--dialog-content-->
+    <div class="dialog-footer">
+      <div class="row fixed-row">
+        <div class="col6">
+          <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+        </div>
+        <div class="col6 text-right">
+          <a class="popup-modal-dismiss btn" href="#">Save</a>
+        </div>
+      </div>
+      <!--row-->
+    </div>
+    <!--dialog-footer-->
+  </div>
+  <!--dialog-->
+
+  <div id="confirmation" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+    <div class="dialog-header">
+      <h3>Delete timeframe?</h3>
+    </div>
+    <!--popup-header-->
+    <div class="dialog-content">
+      Are you sure you want to delete timeframe?
+    </div>
+    <!--popup-content-->
+    <div class="dialog-footer">
+      <div class="row fixed-row">
+        <div class="col6">
+          <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+        </div>
+        <div class="col6 text-right">
+          <a class="popup-modal-dismiss btn" href="#">Yes</a>
+        </div>
+      </div>
+      <!--row-->
+    </div>
+    <!--dialog-footer-->
+  </div>
+  <!--confirmation-->
+
+  <h2>Cost settings</h2>
+
+  <div class="row cols-margin">
+    <div class="col6">
+      <label>
+        Billing from
+        <input type="text" class="field" id="datepicker-from" value="Select a date">
+      </label>
+    </div>
+    <!--col6-->
+    <div class="col6">
+      <label>
+        To
+        <input type="text" class="field" id="datepicker-to" value="Select a date">
+      </label>
+    </div>
+    <!--col6-->
+  </div>
+  <!--row-->
+
+  <div id="tabs">
+
+    <br>
+    <ul class="tabs row cols-margin">
+      <li class="col4">
+        <label class="radio-wrap">
+          <input type="radio" name="tab" value="tab1">
+          <span class="radio"></span>
+          <strong>Single rate</strong>
+        </label>
+      </li>
+      <li class="col4">
+        <label class="radio-wrap">
+          <input type="radio" name="tab" value="tab2">
+          <span class="radio"></span>
+          <strong>Off-Peak</strong>
+        </label>
+      </li>
+      <li class="col4">
+        <label class="radio-wrap">
+          <input type="radio" name="tab" value="tab3">
+          <span class="radio"></span>
+          <strong>Time of use</strong>
+        </label>
+      </li>
+    </ul>
+
+    <br>
+
+    <div class="tab_container">
+
+      <div id="tab1" class="tab_content">
+        <label for="single-rate">$ / kwh</label>
+
+        <div class="row cols-margin">
+          <div class="col8">
+            <input id="single-rate" type="text" class="field" value="150" readonly title="Click edit button to edit">
+          </div>
+          <div class="col4">
+            <a href="" class="btn btn-block">Edit</a>
+          </div>
+        </div>
+        <br>
+
+        <p><a href="" class="btn btn-block">Use this</a></p>
+      </div>
+      <!--tab_content-->
+
+      <div id="tab2" class="tab_content">
+
+        <div class="cd-tabs">
+          <nav>
+            <ul class="cd-tabs-navigation">
+              <li><a data-content="1" class="selected" href="#0">Off-peak times</a></li>
+              <li><a data-content="2" href="#0">Shoulder Time</a></li>
+              <li><a data-content="3" href="#0">Peak times</a></li>
+            </ul>
+          </nav>
+
+          <div class="days-wrap">
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>MON</small>
+                <br>
+                <input type="checkbox"><span class="checkbox"></span>
+              </label>
+            </div>
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>TUE</small>
+                <br>
+                <input type="checkbox" checked><span class="checkbox"></span>
+              </label>
+            </div>
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>WED</small>
+                <br>
+                <input type="checkbox" checked disabled><span class="checkbox"></span>
+              </label>
+            </div>
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>THU</small>
+                <br>
+                <input type="checkbox"><span class="checkbox"></span>
+              </label>
+            </div>
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>FRI</small>
+                <br>
+                <input type="checkbox"><span class="checkbox"></span>
+              </label>
+            </div>
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>SAT</small>
+                <br>
+                <input type="checkbox"><span class="checkbox"></span>
+              </label>
+            </div>
+            <div class="day">
+              <label class="checkbox-wrap">
+                <small>SUN</small>
+                <br>
+                <input type="checkbox"><span class="checkbox"></span>
+              </label>
+            </div>
+          </div>
+          <!--days-wrap-->
+
+          <ul class="cd-tabs-content">
+            <li data-content="1" class="selected">
+              <table class="main-table">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>From - To</th>
+                  <th>$ / kwh</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">5:00pm - 7:00pm</a></td>
+                  <td>150</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                                 href="#confirmation">delete</a></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">8:30pm - 9:45pm</a></td>
+                  <td>210</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                                 href="#confirmation">delete</a></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">10:00pm - 11:15pm</a></td>
+                  <td>51</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                                 href="#confirmation">delete</a></td>
+                </tr>
+                </tbody>
+              </table>
+              <a class="popup-with-move-anim underline" href="#dialog"><strong>+ Add new timeframe</strong></a>
+            </li>
+            <!--tab 1-->
+            <li data-content="2">
+              <table class="main-table">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>From - To</th>
+                  <th>$ / kwh</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">5:00pm - 7:00pm</a></td>
+                  <td>150</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                                 href="#confirmation">delete</a></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">8:30pm - 9:45pm</a></td>
+                  <td>210</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                                 href="#confirmation">delete</a></td>
+                </tr>
+                </tbody>
+              </table>
+              <a class="popup-with-move-anim underline" href="#dialog"><strong>+ Add new timeframe</strong></a>
+            </li>
+            <!--tab 2-->
+            <li data-content="3">
+              <table class="main-table">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>From - To</th>
+                  <th>$ / kwh</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">5:00pm - 7:00pm</a></td>
+                  <td>150</td>
+                  <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                                 href="#confirmation">delete</a></td>
+                </tr>
+                </tbody>
+              </table>
+              <a class="popup-with-move-anim underline" href="#dialog"><strong>+ Add new timeframe</strong></a>
+            </li>
+            <!--tab 3-->
+          </ul>
+          <!-- cd-tabs-content -->
+        </div>
+        <!-- cd-tabs -->
+        <br>
+
+        <p><a href="" class="btn btn-block">Use this</a></p>
+      </div>
+      <!--tab_content-->
+
+      <div id="tab3" class="tab_content">
+        <div class="days-wrap">
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>MON</small>
+              <br>
+              <input type="checkbox"><span class="checkbox"></span>
+            </label>
+          </div>
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>TUE</small>
+              <br>
+              <input type="checkbox" checked><span class="checkbox"></span>
+            </label>
+          </div>
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>WED</small>
+              <br>
+              <input type="checkbox" checked disabled><span class="checkbox"></span>
+            </label>
+          </div>
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>THU</small>
+              <br>
+              <input type="checkbox"><span class="checkbox"></span>
+            </label>
+          </div>
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>FRI</small>
+              <br>
+              <input type="checkbox"><span class="checkbox"></span>
+            </label>
+          </div>
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>SAT</small>
+              <br>
+              <input type="checkbox"><span class="checkbox"></span>
+            </label>
+          </div>
+          <div class="day">
+            <label class="checkbox-wrap">
+              <small>SUN</small>
+              <br>
+              <input type="checkbox"><span class="checkbox"></span>
+            </label>
+          </div>
+        </div>
+        <!--days-wrap-->
+
+        <table class="main-table">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>From - To</th>
+            <th>$ / kwh</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>1</td>
+            <td><a class="popup-with-move-anim" href="#dialog">5:00pm - 7:00pm</a></td>
+            <td>150</td>
+            <td><a class="popup-with-move-anim" href="#dialog">edit</a> <a class="popup-with-move-anim"
+                                                                           href="#confirmation">delete</a></td>
+          </tr>
+          </tbody>
+        </table>
+        <a class="popup-with-move-anim underline" href="#dialog"><strong>+ Add new timeframe</strong></a>
+
+        <br><br><br>
+
+        <p><a href="" class="btn btn-block">Use this</a></p>
+      </div>
+      <!--tab_content-->
+    </div>
+    <!--tab_container-->
+  </div>
+  <!--tabs-->
+  <script>
+
+
+    //radio tabs
+    //Default Action
+    $(".tab_content").hide(); //Hide all content
+    $("ul.tabs li:first").addClass("active").show().find("label input:radio").attr("checked", ""); //Activate first tab
+    $(".tab_content:first").show(); //Show first tab content
+    //On Click Event
+    $("ul.tabs li").click(function () {
+      $("ul.tabs li").removeClass("active");
+      $("ul.tabs li").find("label input:radio").attr("checked", "");
+      $(this).addClass("active").find("label input:radio").attr("checked", "checked");
+      $(".tab_content").hide(); //Hide all tab content
+      var activeTab = $(this).find("label input:radio").val();
+      $('#' + activeTab).show();
+    });
+
+    //datepicker
+    var picker = new Pikaday(
+            {
+              field: document.getElementById('datepicker-from'),
+              firstDay: 1,
+              minDate: new Date('2000-01-01'),
+              maxDate: new Date('2020-12-31'),
+              yearRange: [2000, 2020]
+            });
+
+    //datepicker
+    var picker = new Pikaday(
+            {
+              field: document.getElementById('datepicker-to'),
+              firstDay: 1,
+              minDate: new Date('2000-01-01'),
+              maxDate: new Date('2020-12-31'),
+              yearRange: [2000, 2020]
+            });
+
+    //popup
+    $('.popup-with-move-anim').magnificPopup({
+      type: 'inline',
+      fixedContentPos: true,
+      fixedBgPos: false,
+      closeBtnInside: true,
+      preloader: false,
+      midClick: true,
+      removalDelay: 300,
+      mainClass: 'my-mfp-slide-bottom'
+    });
+    $(document).on('click', '.popup-modal-dismiss', function (e) {
+      e.preventDefault();
+      $.magnificPopup.close();
+    });
+
+  </script>
+</div>
+

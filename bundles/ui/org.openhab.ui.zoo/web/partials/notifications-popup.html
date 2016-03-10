@@ -1,0 +1,64 @@
+<div class="notifications-popup">
+  <table class="main-table">
+    <thead>
+    <tr>
+      <th>Notification</th>
+      <th>Issue</th>
+      <th>Resolved</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Consumption</td>
+      <td>Out</td>
+      <td><label class="checkbox-wrap"><input type="checkbox" checked><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Power</td>
+      <td>Over average</td>
+      <td><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Light on</td>
+      <td>15 hours</td>
+      <td><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Consumption</td>
+      <td>Out</td>
+      <td><label class="checkbox-wrap"><input type="checkbox" checked><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Power</td>
+      <td>Over average</td>
+      <td><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Light on</td>
+      <td>15 hours</td>
+      <td><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Consumption</td>
+      <td>Out</td>
+      <td><label class="checkbox-wrap"><input type="checkbox" checked><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Power</td>
+      <td>Over average</td>
+      <td><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span></label></td>
+    </tr>
+    <tr>
+      <td>Light on</td>
+      <td>15 hours</td>
+      <td><label class="checkbox-wrap"><input type="checkbox"><span class="checkbox"></span></label></td>
+    </tr>
+    </tbody>
+  </table>
+</div><!--notifications-popup-->
+<script>
+  $(".notifications").click(function(){
+    $(".notifications-popup").slideToggle(300);
+    $(this).toggleClass("notifications-active");
+  });
+</script>

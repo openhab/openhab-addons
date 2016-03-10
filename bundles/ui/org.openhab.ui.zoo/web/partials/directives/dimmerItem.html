@@ -1,0 +1,29 @@
+<div>
+  <div class="radio-block-wrap">
+    <i class="electronic icon {{options.cssIconClass}} powerranger" ng-style="{opacity:local.opacity}"></i>
+    <h4 class="up-case no-margin">
+      <small ng-if="item.inRoom">{{item.inRoom}}<br></small>
+      {{item.label}}
+      <br>
+      <small>{{local.stateOnOff}}</small>
+    </h4>
+    <a ng-show="options.cctv" class="popup-with-move-anim" href="#dialog{{item.name}}">View CCTV</a>
+
+    <div ng-if="options.cctv" id="dialog{{item.name}}" class="zoom-anim-dialog dialog mfp-hide">
+      <div class="dialog-header">
+        <h3>Front door cctv</h3>
+      </div><!--popup-header-->
+      <div class="dialog-content">
+        <div style="height:500px;background:#000;"></div>
+      </div><!--popup-content-->
+    </div>
+    <label class="master-switch switch-small" for="switch-item-{{item.name}}">
+      <input id="switch-item-{{item.name}}" type="checkbox" ng-model="local.stateOnOff" ng-true-value="'ON'" ng-false-value="'OFF'" ng-change="handleChangeSwitch()">
+      <span class="switch"></span>
+    </label>
+  </div>
+
+  <div class="slider">
+    <input type="text" class="js-opacity" ng-model="local.dimValue" ng-change="handleChangeSlider()">
+  </div>
+</div>

@@ -1,0 +1,41 @@
+{
+  "name": "openhab-ui-zoo",
+  "version": "1.0.0",
+  "description": "openHAB 2 Zoo Automation UI",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "^1.3.12",
+    "grunt": "^0.4.5",
+    "grunt-autoprefixer": "^2.2.0",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-cssmin": "^0.12.2",
+    "grunt-contrib-htmlmin": "^0.4.0",
+    "grunt-contrib-imagemin": "^0.9.4",
+    "grunt-contrib-jshint": "^0.11.1",
+    "grunt-contrib-uglify": "^0.8.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-filerev": "^2.2.0",
+    "grunt-newer": "^1.1.0",
+    "grunt-ng-annotate": "^0.10.0",
+    "grunt-usemin": "Rauno56/grunt-usemin#5e18300b6647dc3215345794c921768dea1d121c",
+    "grunt-wiredep": "^2.0.0",
+    "jshint-junit-reporter": "^0.1.0",
+    "jshint-stylish": "^1.0.1",
+    "load-grunt-tasks": "^3.1.0"
+  },
+  "scripts": {
+    "test": "echo \"No test infrastructure implemented at the moment.\" && exit 1"
+  },
+  "keywords": [
+    "openhab",
+    "zoo"
+  ],
+  "contributors": [
+    "Sebastian Janzen <sebastian.janzen@innoq.com>"
+  ],
+  "license": "APL"
+}

@@ -1,0 +1,111 @@
+<div>
+
+  <div class="group">
+    <h2>Set devices location</h2>
+    <a href="#" class="btn">Scan the network</a>
+  </div>
+
+  <table class="main-table">
+    <thead>
+    <tr>
+      <th>IP</th>
+      <th>Description</th>
+      <th>Communication</th>
+      <th>Select</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td><a class="popup-with-move-anim" href="#dialog">192.01.01.01</a></td>
+      <td>Not avalaible</td>
+      <td>Live</td>
+      <td>
+        <label class="radio-wrap">
+          <input type="radio" name="select" checked>
+          <span class="radio"></span>
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td><a class="popup-with-move-anim" href="#dialog">192.01.01.01</a></td>
+      <td>Wireles Belkin</td>
+      <td>Live</td>
+      <td>
+        <label class="radio-wrap">
+          <input type="radio" name="select">
+          <span class="radio"></span>
+        </label>
+      </td>
+    </tr>
+    <tr>
+      <td><a class="popup-with-move-anim" href="#dialog">192.01.01.01</a></td>
+      <td>Mox</td>
+      <td>Not live</td>
+      <td>
+        <label class="radio-wrap">
+          <input type="radio" name="select">
+          <span class="radio"></span>
+        </label>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a href="#" class="btn btn-block">Save</a>
+
+  <div id="dialog" class="zoom-anim-dialog mfp-hide dialog dialog-small">
+
+    <div class="dialog-header">
+      <h3>Popup</h3>
+    </div>
+    <!--popup-header-->
+
+    <div class="dialog-content">
+      <p>
+        <strong>IP</strong>
+        <br>
+        192.01.01.01
+      </p>
+
+      <div class="group">
+        <p class="small-margin"><strong>Binding</strong></p>
+        <select class="field">
+          <option>MOX on/off</option>
+          <option>MOX on/off</option>
+          <option>MOX on/off</option>
+        </select>
+      </div>
+
+      <div class="group">
+        <p class="small-margin"><strong>Nickname</strong></p>
+        <input type="text" value="Some nickname" class="field">
+      </div>
+
+      <div class="group">
+        <p class="small-margin"><strong>Group</strong></p>
+        <select class="field">
+          <option>Living room</option>
+          <option>TV room</option>
+          <option>Main room</option>
+        </select>
+      </div>
+    </div>
+    <!--popup-content-->
+
+    <div class="dialog-footer">
+      <div class="row fixed-row">
+        <div class="col6">
+          <a class="popup-modal-dismiss cancel" href="#"><strong>CANCEL</strong></a>
+        </div>
+        <div class="col6 text-right">
+          <a class="popup-modal-dismiss btn" href="#">Save</a>
+        </div>
+      </div>
+      <!--row-->
+    </div>
+    <!--dialog-footer-->
+
+  </div>
+  <!--dialog-->
+
+</div>
