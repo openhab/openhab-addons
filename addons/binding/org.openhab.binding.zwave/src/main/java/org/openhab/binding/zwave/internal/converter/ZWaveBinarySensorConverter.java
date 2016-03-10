@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -81,7 +82,16 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
             return null;
         }
 
-        // logger.debug("ZWaveBinarySensorValueEvent 5");
-        return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+        switch (channel.getDataType()) {
+            case OnOffType:
+                return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OpenClosedType:
+                return sensorEvent.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            default:
+                logger.debug("Unknwon data type {} for BinarySensor", channel.getDataType());
+                break;
+        }
+
+        return null;
     }
 }
