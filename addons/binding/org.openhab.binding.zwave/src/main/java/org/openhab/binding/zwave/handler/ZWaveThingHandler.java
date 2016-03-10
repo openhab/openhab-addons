@@ -1045,6 +1045,9 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         OnOffType,
         OpenClosedType,
         PercentType,
+        StringType,
+        DateTimeType,
+        UpDownType,
         StopMoveType;
     }
 

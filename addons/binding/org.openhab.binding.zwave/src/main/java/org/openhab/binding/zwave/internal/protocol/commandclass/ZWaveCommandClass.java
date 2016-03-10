@@ -266,8 +266,7 @@ public abstract class ZWaveCommandClass {
         int precision = (buffer[offset] & PRECISION_MASK) >> PRECISION_SHIFT;
 
         if ((size + offset) >= buffer.length) {
-            logger.error("Error extracting value - length={}, offset={}, size={}.",
-                    new Object[] { buffer.length, offset, size });
+            logger.error("Error extracting value - length={}, offset={}, size={}.", buffer.length, offset, size);
             throw new NumberFormatException();
         }
 
@@ -421,7 +420,7 @@ public abstract class ZWaveCommandClass {
         CRC_16_ENCAP(0x56, "CRC_16_ENCAP", ZWaveCRC16EncapsulationCommandClass.class),
         ASSOCIATION_GROUP_INFO(0x59, "ASSOCIATION_GROUP_INFO", null),
         DEVICE_RESET_LOCALLY(0x5a, "DEVICE_RESET_LOCALLY", ZWaveDeviceResetLocallyCommandClass.class),
-        CENTRAL_SCENE(0x5b, "CENTRAL_SCENE", null),
+        CENTRAL_SCENE(0x5b, "CENTRAL_SCENE", ZWaveCentralSceneCommandClass.class),
         ZWAVE_PLUS_INFO(0x5e, "ZWAVE_PLUS_INFO", ZWavePlusCommandClass.class),
         MULTI_INSTANCE(0x60, "MULTI_INSTANCE", ZWaveMultiInstanceCommandClass.class),
         DOOR_LOCK(0x62, "DOOR_LOCK", null),
