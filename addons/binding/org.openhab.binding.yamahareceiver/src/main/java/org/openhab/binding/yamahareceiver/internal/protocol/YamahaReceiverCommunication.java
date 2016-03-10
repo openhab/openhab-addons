@@ -141,8 +141,9 @@ public class YamahaReceiverCommunication {
     }
 
     public void setVolume(float volume) throws IOException {
+        int vol = (int) volume * 10;
         postAndGetResponse("<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"PUT\"><" + getZone()
-                + "><Volume><Lvl><Val>" + (int) (volume * 10) + "</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume></"
+                + "><Volume><Lvl><Val>" + String.valueOf(vol) + "</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume></"
                 + getZone() + "></YAMAHA_AV>");
     }
 

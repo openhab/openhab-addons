@@ -72,8 +72,14 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             setupRefreshTimer(interval_config.intValue());
         }
 
-        relativeVolumeChangeFactor = (Float) thing.getConfiguration()
+        // Read the configuration for the relative volume change factor.
+        BigDecimal relVolumeChange = (BigDecimal) thing.getConfiguration()
                 .get(YamahaReceiverBindingConstants.CONFIG_RELVOLUMECHANGE);
+        if (relVolumeChange != null) {
+            relativeVolumeChangeFactor = relVolumeChange.floatValue();
+        } else {
+            relativeVolumeChangeFactor = 0.5f;
+        }
     }
 
     /**
@@ -140,10 +146,14 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             return;
         }
 
-        Integer interval_config = (Integer) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_REFRESH);
+        Object interval_config_o = thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_REFRESH);
+        Integer interval_config;
 
-        if (interval_config == null) {
+        if (interval_config_o == null) {
             interval_config = refrehInterval;
+        } else {
+            interval_config = interval_config_o instanceof Integer ? (Integer) interval_config_o
+                    : ((BigDecimal) interval_config_o).intValue();
         }
 
         if (refreshTimer != null) {
