@@ -198,6 +198,11 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                         thingChannelsCmd.add(chan);
                     }
 
+                    // First time round, then add the polling class
+                    if (first) {
+                        thingChannelsPoll.add(chan);
+                    }
+
                     // Add the state and polling handlers
                     if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
                         thingChannelsState.add(chan);
@@ -226,6 +231,11 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         startPolling();
     }
 
+    /**
+     * Start polling with an initial delay
+     *
+     * @param initialPeriod time to start in milliseconds
+     */
     private void startPolling(long initialPeriod) {
         if (pollingJob != null) {
             pollingJob.cancel(true);
@@ -246,16 +256,38 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         Runnable pollingRunnable = new Runnable() {
             @Override
             public void run() {
-                pollNode();
+                logger.debug("NODE {}: Polling...", nodeId);
+                ZWaveNode node = controllerHandler.getNode(nodeId);
+                if (node == null || node.isInitializationComplete() == false) {
+                    logger.debug("NODE {}: Polling deferred until initialisation complete", nodeId);
+                    return;
+                }
+
+                List<SerialMessage> messages = new ArrayList<SerialMessage>();
+                for (ZWaveThingChannel channel : thingChannelsPoll) {
+                    logger.debug("NODE {}: Polling {}", nodeId, channel.getUID());
+                    if (channel.converter == null) {
+                        logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId, channel.getUID());
+                    } else {
+                        messages.addAll(channel.converter.executeRefresh(channel, node));
+                    }
+                }
+
+                // Send all the messages
+                for (SerialMessage message : messages) {
+                    controllerHandler.sendData(message);
+                }
             }
         };
 
-        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, initialPeriod, pollingPeriod, TimeUnit.SECONDS);
-        logger.debug("NODE {}: Polling intialised at {} seconds.", nodeId, pollingPeriod);
+        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, initialPeriod, pollingPeriod,
+                TimeUnit.MILLISECONDS);
+        logger.debug("NODE {}: Polling intialised at {} seconds - start in {} milliseconds.", nodeId, pollingPeriod,
+                initialPeriod);
     }
 
     private void startPolling() {
-        startPolling(pollingPeriod);
+        startPolling(pollingPeriod * 1000);
     }
 
     @Override
@@ -964,30 +996,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             neighbours += neighbour;
         }
         getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
-    }
-
-    private synchronized void pollNode() {
-        logger.debug("NODE {}: Polling...", nodeId);
-        ZWaveNode node = controllerHandler.getNode(nodeId);
-        if (node == null || node.isInitializationComplete() == false) {
-            logger.debug("NODE {}: Polling deferred until initialisation complete", nodeId);
-            return;
-        }
-
-        List<SerialMessage> messages = new ArrayList<SerialMessage>();
-        for (ZWaveThingChannel channel : thingChannelsPoll) {
-            logger.debug("NODE {}: Polling {}", nodeId, channel.getUID());
-            if (channel.converter == null) {
-                logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId, channel.getUID());
-            } else {
-                messages.addAll(channel.converter.executeRefresh(channel, node));
-            }
-        }
-
-        // Send all the messages
-        for (SerialMessage message : messages) {
-            controllerHandler.sendData(message);
-        }
     }
 
     public class ZWaveThingChannel {
