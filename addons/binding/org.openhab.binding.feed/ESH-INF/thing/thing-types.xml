@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="feed" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Feed Thing Type -->
+	<thing-type id="feed">
+		<label>Feed</label>
+		<description>This thing type represents a web feed.</description>
+
+		<channels>
+			<channel id="news-channel" typeId="news-channel" />		
+		</channels>
+
+		<config-description>
+			<parameter name="URL" type="text" required="true">
+				<label>Feed URL</label>
+				<description>Feed URL is used to localize the feed source.</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in minutes. After the interval expires the bindings checks for new entries.</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="format" type="text">
+				<label>Output format</label>
+				<description>The output format of the feed.</description>
+				<default>"atom_1.0"</default>
+				<options>
+					<option value="rss_0.9">RSS 0.9</option>
+					<option value="rss_0.91">RSS 0.91</option>
+					<option value="rss_0.92">RSS 0.92</option>
+					<option value="rss_0.93">RSS 0.93</option>
+					<option value="rss_0.94">RSS 0.94</option>
+					<option value="rss_1.0">RSS 1.0</option>
+					<option value="rss_2.0">RSS 2.0</option>
+					<option value="atom_0.3">Atom 0.3</option>
+					<option value="atom_1.0">Atom 1.0</option>
+				</options>
+			</parameter>
+			<parameter name="length" type="integer">
+				<label>Number of feeds stored</label>
+				<description>This parameter describes how many entries are stored in the channel</description>
+				<default>20</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="news-channel">
+		<item-type>String</item-type>
+		<label>News channel</label>
+		<description>XML feed data is transfered through this channel</description>
+	</channel-type>
+	
+
+</thing:thing-descriptions>
