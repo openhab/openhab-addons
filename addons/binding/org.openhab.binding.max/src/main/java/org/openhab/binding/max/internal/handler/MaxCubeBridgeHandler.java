@@ -54,6 +54,7 @@ import org.openhab.binding.max.internal.device.DeviceType;
 import org.openhab.binding.max.internal.device.HeatingThermostat;
 import org.openhab.binding.max.internal.device.RoomInformation;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
+import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException;
 import org.openhab.binding.max.internal.message.C_Message;
 import org.openhab.binding.max.internal.message.H_Message;
 import org.openhab.binding.max.internal.message.L_Message;
@@ -185,6 +186,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Exclusive mode  {}.", exclusive);
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
+        updateStatus(ThingStatus.OFFLINE);
         initializeMaxDevices();
         startAutomaticRefresh();
     }
@@ -254,13 +256,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         SendCommand sendCommand = commandQueue.poll();
         if (sendCommand != null) {
             CubeCommand cmd = getCommand(sendCommand);
-            // Actual sending of the data to the Max! Cube Lan Gateway
-            if (sendCubeCommand(cmd)) {
-                logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(),
-                        sendCommand.getKey(), sendCommand.getCommand().toString(), ipAddress);
-            } else {
-                logger.warn("Error sending command {} ({}:{}) to MAX! Cube at IP: {}", sendCommand.getId(),
-                        sendCommand.getKey(), sendCommand.getCommand().toString(), ipAddress);
+            if (cmd != null) {
+                // Actual sending of the data to the Max! Cube Lan Gateway
+                if (sendCubeCommand(cmd)) {
+                    logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(),
+                            sendCommand.getKey(), sendCommand.getCommand().toString(), ipAddress);
+                } else {
+                    logger.warn("Error sending command {} ({}:{}) to MAX! Cube at IP: {}", sendCommand.getId(),
+                            sendCommand.getKey(), sendCommand.getCommand().toString(), ipAddress);
+                }
             }
         }
     }
@@ -304,7 +308,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
 
         } catch (Exception e) {
-            logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
+            logger.debug("Unexpected exception occurred during execution: {}", e.getMessage(), e);
         }
     }
 
@@ -399,6 +403,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                             }
 
                             writer.write(command.getCommandString());
+                            logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
                             writer.flush();
                             readliness(command.getReturnStrings());
                         }
@@ -449,12 +454,21 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     this.messageProcessor.addReceivedLine(raw);
                     if (this.messageProcessor.isMessageAvailable()) {
                         Message message = this.messageProcessor.pull();
-                        message.debug(logger);
                         processMessage(message);
 
                     }
+                } catch (UnprocessableMessageException e) {
+                    if (raw.contentEquals("M:")) {
+                        logger.info("No Rooms information found. Configure your MAX! Cube: {}", ipAddress);
+                        this.messageProcessor.reset();
+                    } else {
+                        logger.info("Message could not be processed: '{}' from MAX! Cube lan gateway: {}:", raw,
+                                ipAddress);
+                        this.messageProcessor.reset();
+                    }
                 } catch (Exception e) {
-                    logger.info("Error while handling response from MAX! Cube lan gateway: {}", e.getMessage(), e);
+                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
+                            ipAddress, e.getMessage(), e);
                     this.messageProcessor.reset();
                 }
                 if (terminator == null || raw.startsWith(terminator)) {

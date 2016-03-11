@@ -164,8 +164,9 @@ public class MessageProcessor {
 
                 if (index + 1 == receivedLines.size()) {
                     String newLine = "";
-                    for (String curLine : receivedLines)
+                    for (String curLine : receivedLines) {
                         newLine += curLine;
+                    }
                     this.currentMessage = new M_Message(newLine);
                     result = true;
                 }
