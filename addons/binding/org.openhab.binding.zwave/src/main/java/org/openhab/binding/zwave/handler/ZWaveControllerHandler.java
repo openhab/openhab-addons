@@ -33,6 +33,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
@@ -60,6 +61,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
     private Boolean isMaster;
     private Boolean isSUC;
+    private String networkKey;
 
     public ZWaveControllerHandler(Bridge bridge) {
         super(bridge);
@@ -79,6 +81,11 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             isSUC = false;
         }
 
+        networkKey = (String) getConfig().get(CONFIGURATION_NETWORKKEY);
+        if (networkKey == null) {
+            networkKey = "";
+        }
+
         super.initialize();
     }
 
@@ -94,6 +101,12 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         Map<String, String> config = new HashMap<String, String>();
         config.put("masterController", isMaster.toString());
         config.put("isSUC", isSUC ? "true" : "false");
+
+        // MAJOR BODGE
+        // The OH1 security class uses a static member to set the key so for now
+        // lets do the same, but it needs to be moved into the network initialisation
+        // so different networks can have different keys
+        ZWaveSecurityCommandClass.setRealNetworkKey(networkKey);
 
         // TODO: Handle soft reset better!
         controller = new ZWaveController(this, config);
@@ -162,7 +175,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(), value);
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
-                if (controller != null) {
+                if (controller == null) {
                     logger.warn("Trying to send controller command, but controller is not initialised");
                     continue;
                 }
@@ -176,6 +189,37 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 }
 
                 value = "";
+            }
+            if ("security".equals(cfg[0])) {
+                if (cfg[1].equals("networkkey")) {
+                    // Format the key here so it's presented nicely and consistently to the user!
+
+                    if (value != null) {
+                        String hexString = (String) value;
+                        hexString = hexString.replace("0x", "");
+                        hexString = hexString.replace(",", "");
+                        hexString = hexString.replace(" ", "");
+                        hexString = hexString.toUpperCase();
+                        if ((hexString.length() % 2) != 0) {
+                            hexString += "0";
+                        }
+
+                        int arrayLength = (int) Math.ceil(((hexString.length() / 2)));
+                        String[] result = new String[arrayLength];
+
+                        int j = 0;
+                        StringBuilder builder = new StringBuilder();
+                        int lastIndex = result.length - 1;
+                        for (int i = 0; i < lastIndex; i++) {
+                            builder.append(hexString.substring(j, j + 2) + " ");
+                            j += 2;
+                        }
+                        builder.append(hexString.substring(j));
+                        value = builder.toString();
+
+                        ZWaveSecurityCommandClass.setRealNetworkKey((String) value);
+                    }
+                }
             }
 
             if ("port".equals(cfg[0])) {

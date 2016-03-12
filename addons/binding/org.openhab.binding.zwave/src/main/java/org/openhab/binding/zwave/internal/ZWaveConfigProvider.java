@@ -192,6 +192,13 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                             .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
         }
 
+        // If we support DOOR_LOCK - add options
+        if (node.getCommandClass(ZWaveCommandClass.CommandClass.DOOR_LOCK) != null) {
+            parameters.add(ConfigDescriptionParameterBuilder.create("doorlock_timeout", Type.TEXT)
+                    .withLabel("Lock Timeout").withDescription("Set the timeout on the lock.").withDefault("30")
+                    .withGroupName("thingcfg").build());
+        }
+
         // If we're DEAD, allow moving to the FAILED list
         if (node.getNodeState() == ZWaveNodeState.DEAD) {
             parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
