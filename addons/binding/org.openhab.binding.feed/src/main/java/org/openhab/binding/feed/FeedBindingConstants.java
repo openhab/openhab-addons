@@ -28,7 +28,7 @@ public class FeedBindingConstants {
     public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "feed");
 
     // List of all Channel IDs
-    public final static String FEED_CHANNEL = "news-channel";
+    public final static String FEED_CHANNEL = "feed-channel";
 
     // Configuration parameters
     public final static String URL = "URL";
@@ -36,11 +36,12 @@ public class FeedBindingConstants {
     public final static String FEED_FORMAT = "format";
     public final static String NUMBER_OF_ENTRIES = "length";
 
+    public final static Set<String> SUPPORTED_FEED_FORMATS = Sets.newHashSet("rss_0.9", "rss_0.91", "rss_0.92",
+            "rss_0.93", "rss_0,94", "rss_1.0", "rss_2.0", "atom_0.3", "atom_1.0");
+
     // Default configuration parameters
-    public final static Set<String> SUPPORTED_FEED_FORMATS = Sets.newHashSet("rss_0.9", "rss_0.91", "rss_0.92", "rss_0.93",
-            "rss_0,94", "rss_1.0", "rss_2.0", "atom_0.3", "atom_1.0");
     public final static String DEFAULT_FEED_FORMAT = "atom_1.0";
-    public final static BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(60);
-    public final static BigDecimal DEFAULT_NUMBER_OF_ENTRIES = new BigDecimal(50);
+    public final static BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
+    public final static BigDecimal DEFAULT_NUMBER_OF_ENTRIES = new BigDecimal(20);
 
 }

@@ -3,28 +3,39 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+	<!-- DEFINITIONS: 
+	    Feed is a document used for providing users with frequently updated content. It is localized with URL. 
+		Entry is a single item in the Feed, that contains reference to content, description and other information. -->
+
 	<!-- Feed Thing Type -->
 	<thing-type id="feed">
 		<label>Feed</label>
-		<description>This thing type represents a web feed.</description>
+		<description>Provides the content of the Feed in XML format.</description>
 
 		<channels>
-			<channel id="news-channel" typeId="news-channel" />		
+			<channel id="feed-channel" typeId="feed-channel" />
 		</channels>
 
 		<config-description>
 			<parameter name="URL" type="text" required="true">
 				<label>Feed URL</label>
-				<description>Feed URL is used to localize the feed source.</description>
+				<description>Feed URL used to localize the Feed.</description>
 			</parameter>
+			
+			<!--After the refresh time interval expires, the bindings checks for updates in the Feed -->
+			
 			<parameter name="refresh" type="integer">
-				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in minutes. After the interval expires the bindings checks for new entries.</description>
+				<label>Refresh time interval</label>
+				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
+			
+			<!-- Feeds are converted to one of the following formats. Comparison between the two most popular formats - RSS 2.0 and 
+				Atom 1.0 can be found here- http://www.intertwingly.net/wiki/pie/Rss20AndAtom10Compared -->
+			
 			<parameter name="format" type="text">
 				<label>Output format</label>
-				<description>The output format of the feed.</description>
+				<description>The output format of the Feed.</description>
 				<default>"atom_1.0"</default>
 				<options>
 					<option value="rss_0.9">RSS 0.9</option>
@@ -38,19 +49,23 @@
 					<option value="atom_1.0">Atom 1.0</option>
 				</options>
 			</parameter>
+			
+			<!-- The user is able to configure the number of entries, that he is going to receive, through this parameter. -->
+			
 			<parameter name="length" type="integer">
-				<label>Number of feeds stored</label>
-				<description>This parameter describes how many entries are stored in the channel</description>
+				<label>Number of Entries</label>
+				<description>Number of Feed Entries stored</description>
 				<default>20</default>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="news-channel">
+
+	<channel-type id="feed-channel">
 		<item-type>String</item-type>
-		<label>News channel</label>
-		<description>XML feed data is transfered through this channel</description>
+		<label>Feed channel</label>
+		<description>Contains meta data about the Feed and Feed Entries.</description>
 	</channel-type>
-	
+
 
 </thing:thing-descriptions>

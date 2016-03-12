@@ -54,7 +54,6 @@ public class FeedHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(FeedHandler.class);
 
-    // Information about the feed
     private String urlString;
     /**
      * The refresh time specifies how often the binding checks for new entries in the feed.
@@ -66,16 +65,18 @@ public class FeedHandler extends BaseThingHandler {
      */
     private String feedFormat;
     /**
-     * Specifies how many feed entries are stored in the state of the thinf.
+     * Specifies how many feed entries are stored in the state of the thing.
      */
     private BigDecimal numberOfEntriesStored;
 
     /**
-     * FeedFetcher is used to fetch data from feed.It supports conditional GET Requests.
+     * FeedFetcher is used to fetch data from feed. It supports conditional GET Requests.
      **/
     private FeedFetcher feedFetcher;
-    ScheduledFuture<?> refreshTask;
-    SyndFeed currentFeedState;
+    // TODO desc
+    private ScheduledFuture<?> refreshTask;
+    // TODO desc
+    private SyndFeed currentFeedState;
 
     public FeedHandler(Thing thing) {
         super(thing);
@@ -154,6 +155,7 @@ public class FeedHandler extends BaseThingHandler {
      *         otherwise
      */
     private synchronized boolean updateFeedIfChanged(SyndFeed newFeedState) {
+        // TODO comment equals
         if (newFeedState != null && !newFeedState.equals(currentFeedState)) {
             currentFeedState = newFeedState;
             logger.debug("Content updated!");
