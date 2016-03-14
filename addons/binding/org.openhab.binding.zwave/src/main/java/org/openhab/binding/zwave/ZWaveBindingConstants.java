@@ -30,6 +30,7 @@ public class ZWaveBindingConstants {
     public final static String CONFIGURATION_PORT = "port";
     public final static String CONFIGURATION_MASTER = "controller_master";
     public final static String CONFIGURATION_SUC = "controller_suc";
+    public final static String CONFIGURATION_NETWORKKEY = "security_networkkey";
 
     public final static String CONFIGURATION_POLLPERIOD = "binding_pollperiod";
 
