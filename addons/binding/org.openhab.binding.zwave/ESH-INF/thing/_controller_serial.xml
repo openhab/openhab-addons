@@ -104,12 +104,19 @@
                 <advanced>true</advanced>
                 <default>GO</default>
             </parameter>
-            
+
             <parameter name="controller_exclude" type="text" groupName="actions">
                 <label>Exclude Devices</label>
                 <description>Puts the controller into Exclusion mode.</description>
                 <advanced>true</advanced>
                 <default>GO</default>
+            </parameter>
+            
+            <parameter name="security_networkkey" type="text" groupName="network">
+                <label>Network Security Key</label>
+                <description>Set the network security key</description>
+                <advanced>true</advanced>
+                <default></default>
             </parameter>
             
 		</config-description>
