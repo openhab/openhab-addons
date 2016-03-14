@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="qubino_zmnhdd_00_000">
+
+  <thing-type id="qubino_zmnhdd_00_000" listed="false">
     <label>ZMNHDD Flush Dimmer Plus</label>
     <description>Flush Dimmer Plus</description>
 
@@ -104,7 +105,7 @@
       <property name="model">ZMNHDD</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0001:0051</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

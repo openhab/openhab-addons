@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="philio_psm02_00_000">
+
+  <thing-type id="philio_psm02_00_000" listed="false">
     <label>PSM-02 Slim Multi-Sensor</label>
     <description>Slim Multi-Sensor</description>
 

@@ -34,6 +34,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
+import org.openhab.binding.zwave.internal.ZWaveConfigProvider;
+import org.openhab.binding.zwave.internal.ZWaveProduct;
 import org.openhab.binding.zwave.internal.converter.ZWaveCommandClassConverter;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociation;
@@ -73,6 +75,8 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
     private ZWaveControllerHandler controllerHandler;
 
+    private boolean finalTypeSet = false;
+
     private int nodeId;
     private List<ZWaveThingChannel> thingChannelsCmd;
     private List<ZWaveThingChannel> thingChannelsState;
@@ -99,11 +103,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
         String nodeParm = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_NODEID);
         if (nodeParm == null) {
-            // Do some backward compatability stuff
-            nodeParm = this.getThing().getProperties().get("nodeid");
-            this.getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, nodeParm);
-        }
-        if (nodeParm == null) {
             logger.error("NodeID is not set in {}", this.getThing().getUID());
             return;
         }
@@ -114,6 +113,8 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             logger.error("NodeID ({}) cannot be parsed in {}", nodeParm, this.getThing().getUID());
             return;
         }
+
+        updateThingType();
 
         // Note that for dynamic channels, it seems that defaults can either be not set, or set with the incorrect
         // type. So, we read back as an Object to avoid casting problems.
@@ -229,6 +230,73 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         }
 
         startPolling();
+    }
+
+    /**
+     * Check the thing type and change it if it's wrong
+     */
+    private void updateThingType() {
+        // If the thing type is still the default, then see if we can change
+        if (getThing().getThingTypeUID().equals(ZWaveBindingConstants.ZWAVE_THING_UID) == false) {
+            finalTypeSet = true;
+            return;
+        }
+
+        // Get the properties for the comparison
+        String parmManufacturer = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_MANUFACTURER);
+        if (parmManufacturer == null) {
+            logger.debug("NODE {}: MANUFACTURER not set {}", nodeId);
+            return;
+        }
+        String parmDeviceType = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICETYPE);
+        if (parmDeviceType == null) {
+            logger.debug("NODE {}: TYPE not set {}", nodeId);
+            return;
+        }
+        String parmDeviceId = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICEID);
+        if (parmDeviceId == null) {
+            logger.debug("NODE {}: ID not set {}", nodeId);
+            return;
+        }
+        String parmVersion = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_VERSION);
+        if (parmVersion == null) {
+            logger.debug("NODE {}: ID not set {}", nodeId);
+            return;
+        }
+
+        int deviceType;
+        int deviceId;
+        int deviceManufacturer;
+
+        try {
+            deviceManufacturer = Integer.parseInt(parmManufacturer);
+            deviceType = Integer.parseInt(parmDeviceType);
+            deviceId = Integer.parseInt(parmDeviceId);
+        } catch (final NumberFormatException ex) {
+            logger.debug("NODE {}: Unable to parse device data", nodeId);
+            return;
+        }
+
+        ZWaveProduct foundProduct = null;
+        for (ZWaveProduct product : ZWaveConfigProvider.getProductIndex()) {
+            if (product == null) {
+                continue;
+            }
+            // logger.debug("Checking {}", product.getThingTypeUID());
+            if (product.match(deviceManufacturer, deviceType, deviceId, parmVersion) == true) {
+                foundProduct = product;
+                break;
+            }
+        }
+
+        // Did we find the thing type?
+        if (foundProduct == null) {
+            return;
+        }
+
+        // We need a change...
+        changeThingType(foundProduct.getThingTypeUID(), getConfig());
+        finalTypeSet = true;
     }
 
     /**
@@ -923,9 +991,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             ZWaveInitializationStateEvent initEvent = (ZWaveInitializationStateEvent) incomingEvent;
             switch (initEvent.getStage()) {
                 case DONE:
-                    logger.debug("NODE {}: Setting ONLINE", nodeId);
-                    updateStatus(ThingStatus.ONLINE);
-
+                    // Update some properties first...
                     updateNeighbours();
 
                     ZWaveNode node = controllerHandler.getNode(nodeId);
@@ -934,24 +1000,37 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     }
 
                     // Update property information about this device
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
+                    Map<String, String> properties = editProperties();
+                    properties.put(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
                             node.getDeviceClass().getBasicDeviceClass().toString());
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
+                    properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
                             node.getDeviceClass().getGenericDeviceClass().toString());
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
+                    properties.put(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
                             node.getDeviceClass().getSpecificDeviceClass().toString());
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_LISTENING,
-                            Boolean.toString(node.isListening()));
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_FREQUENT,
+                    properties.put(ZWaveBindingConstants.PROPERTY_LISTENING, Boolean.toString(node.isListening()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_FREQUENT,
                             Boolean.toString(node.isFrequentlyListening()));
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
-                    getThing().setProperty(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+                    super.updateProperties(properties);
 
+                    // Do we need to change type?
+                    if (finalTypeSet == false) {
+                        updateThingType();
+                    }
+
+                    // Set ourselves online if we have the final thing type set
+                    if (finalTypeSet) {
+                        logger.debug("NODE {}: Setting ONLINE", nodeId);
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                     break;
                 default:
-                    logger.debug("NODE {}: Setting ONLINE (INITIALIZING): {}", nodeId, initEvent.getStage());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, initEvent.getStage().toString());
+                    if (finalTypeSet) {
+                        logger.debug("NODE {}: Setting ONLINE (INITIALIZING): {}", nodeId, initEvent.getStage());
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, initEvent.getStage().toString());
+                    }
                     break;
             }
         }
@@ -995,7 +1074,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             }
             neighbours += neighbour;
         }
-        getThing().setProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
+        updateProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
     }
 
     public class ZWaveThingChannel {

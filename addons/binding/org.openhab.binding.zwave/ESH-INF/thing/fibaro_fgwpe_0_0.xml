@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgwpe_00_000">
+
+  <thing-type id="fibaro_fgwpe_00_000" listed="false">
     <label>FGWPE Metered Wall Plug Switch</label>
     <description>Metered Wall Plug Switch</description>
 
@@ -42,7 +43,7 @@
       <property name="model">FGWPE</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0600:1000</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

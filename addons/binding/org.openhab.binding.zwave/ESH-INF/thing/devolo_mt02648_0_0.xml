@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="devolo_mt02648_00_000">
+
+  <thing-type id="devolo_mt02648_00_000" listed="false">
     <label>MT02648 Door/Window Contact</label>
     <description>Door/Window Contact</description>
 
@@ -47,7 +48,7 @@
       <property name="model">MT02648</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0002:000E</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

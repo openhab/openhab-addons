@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="enerwave_zw20r_00_000">
+
+  <thing-type id="enerwave_zw20r_00_000" listed="false">
     <label>ZW20R 20A Tamper Resistant Duplex Receptacle</label>
     <description><![CDATA[
 20A Tamper Resistant Duplex Receptacle<br /><h2>Inclusion Information</h2><p>When the controller is in inclusion mode and the blue LED blinks on the<br />ZW20R, press the program button of ZW20R, and then the controller will<br />verify the inclusion</p>
