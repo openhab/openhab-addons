@@ -61,6 +61,7 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.THERMOSTAT_MODE, ZWaveThermostatModeConverter.class);
         temp.put(CommandClass.THERMOSTAT_OPERATING_STATE, ZWaveThermostatOperatingStateConverter.class);
         temp.put(CommandClass.THERMOSTAT_SETPOINT, ZWaveThermostatSetpointConverter.class);
+        temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
 
         converterMap = Collections.unmodifiableMap(temp);
     }

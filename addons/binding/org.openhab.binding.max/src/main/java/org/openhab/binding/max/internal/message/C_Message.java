@@ -34,6 +34,7 @@ public final class C_Message extends Message {
     private String rfAddress = null;
     private int length = 0;
     private DeviceType deviceType = null;
+    private int roomId = -1;
     private String serialNumber = null;
     private String tempComfort = null;
     private String tempEco = null;
@@ -77,13 +78,16 @@ public final class C_Message extends Message {
         }
 
         deviceType = DeviceType.create(data[4]);
+        roomId = data[5] & 0xFF;
 
         serialNumber = getSerialNumber(bytes);
         if (deviceType == DeviceType.HeatingThermostatPlus || deviceType == DeviceType.HeatingThermostat
-                || deviceType == DeviceType.WallMountedThermostat)
+                || deviceType == DeviceType.WallMountedThermostat) {
             parseHeatingThermostatData(bytes);
-        if (deviceType == DeviceType.EcoSwitch || deviceType == DeviceType.ShutterContact)
+        }
+        if (deviceType == DeviceType.EcoSwitch || deviceType == DeviceType.ShutterContact) {
             logger.trace("Device {} type {} Data:", rfAddress, deviceType.toString(), parseData(bytes));
+        }
     }
 
     private String getSerialNumber(byte[] bytes) {
@@ -103,8 +107,9 @@ public final class C_Message extends Message {
     }
 
     private String parseData(byte[] bytes) {
-        if (bytes.length <= 18)
+        if (bytes.length <= 18) {
             return "";
+        }
         try {
             int DataStart = 18;
             byte[] sn = new byte[bytes.length - DataStart];
@@ -209,15 +214,20 @@ public final class C_Message extends Message {
         return deviceType;
     }
 
+    public int getRoomID() {
+        return roomId;
+    }
+
     @Override
     public void debug(Logger logger) {
-        logger.trace("=== C_Message === ");
+        logger.debug("=== C_Message === ");
         logger.trace("\tRAW:                    {}", this.getPayload());
-        logger.trace("DeviceType:               {}", deviceType.toString());
-        logger.trace("SerialNumber:             {}", serialNumber);
-        logger.trace("RFAddress:                {}", rfAddress);
+        logger.debug("DeviceType:               {}", deviceType.toString());
+        logger.debug("SerialNumber:             {}", serialNumber);
+        logger.debug("RFAddress:                {}", rfAddress);
+        logger.debug("RoomID:                   {}", roomId);
         for (String key : properties.keySet()) {
-            logger.trace("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+            logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
         }
         logger.trace("ProgramData:          {}", programData);
     }
