@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="leviton_vri06_00_000">
+
+  <thing-type id="leviton_vri06_00_000" listed="false">
     <label>VRI06 Incandescent Scene Capable Dimmer</label>
     <description>Incandescent Scene Capable Dimmer</description>
 
@@ -25,7 +26,7 @@
       <property name="model">VRI06</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">0401:0209,0401:0334</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsc27_00_000">
+
+  <thing-type id="aeon_dsc27_00_000" listed="false">
     <label>DSC27 Micro Illuminator G2</label>
     <description>Micro Illuminator G2</description>
 
@@ -25,7 +26,7 @@
       <property name="model">DSC27</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:001B</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

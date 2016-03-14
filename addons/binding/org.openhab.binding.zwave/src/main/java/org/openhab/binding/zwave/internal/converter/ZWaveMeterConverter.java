@@ -64,6 +64,11 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
                 commandClass.getCommandClass().getLabel(), channel.getEndpoint());
         SerialMessage serialMessage;
 
+        // Don't refresh channels that are the reset button
+        if ("true".equalsIgnoreCase(channel.getArguments().get("meterReset"))) {
+            return null;
+        }
+
         String meterScale = channel.getArguments().get("meterScale");
         logger.debug("NODE {}: Generating poll message for {}, endpoint {}", node.getNodeId(),
                 commandClass.getCommandClass().getLabel(), channel.getEndpoint());
@@ -92,7 +97,7 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
         }
 
         String meterScale = channel.getArguments().get("meterScale");
-        String meterZero = channel.getArguments().get("meterZero");
+        String meterZero = channel.getArguments().get("meterZero"); // needs to be a config setting - not arg
         ZWaveMeterValueEvent meterEvent = (ZWaveMeterValueEvent) event;
 
         // logger.debug("Scale test {} <> {}", meterScale, meterEvent.getMeterScale());
@@ -120,6 +125,10 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
+        // Is this channel a reset button - if not, just return
+        if ("true".equalsIgnoreCase(channel.getArguments().get("meterReset")) == false) {
+            return null;
+        }
 
         // It's not an ON command from a button switch, do not reset
         if (command != OnOffType.ON) {

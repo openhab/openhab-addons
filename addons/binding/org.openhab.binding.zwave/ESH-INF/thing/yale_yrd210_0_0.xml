@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="yale_yrd210_00_000">
+
+  <thing-type id="yale_yrd210_00_000" listed="false">
     <label>YRD210 Push Button Deadbolt</label>
     <description>Push Button Deadbolt</description>
 
@@ -14,6 +15,12 @@
         <label>Alarm</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM,BASIC</property>
+        </properties>
+      </channel>
+      <channel id="lock_door" typeId="lock_door">
+        <label></label>
+        <properties>
+          <property name="binding:*:OnOffType">DOOR_LOCK</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -29,7 +36,7 @@
       <property name="model">YRD210</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0004:0000,0004:AA00</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

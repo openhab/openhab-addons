@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="devolo_mt02646_00_000">
+
+  <thing-type id="devolo_mt02646_00_000" listed="false">
     <label>MT02646 Home Control Metering Plug</label>
     <description>Home Control Metering Plug</description>
 
@@ -60,7 +61,7 @@
       <property name="model">MT02646</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0001:0011</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

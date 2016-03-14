@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="horstmann_scsc17_00_000">
+
+  <thing-type id="horstmann_scsc17_00_000" listed="false">
     <label>SCSC-17 7 Day Room Thermostat</label>
     <description>7 Day Room Thermostat</description>
 
@@ -18,7 +19,7 @@
       <property name="model">SCSC-17</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0004:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

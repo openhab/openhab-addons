@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="homeseer_ezmotionexpress_00_000">
+
+  <thing-type id="homeseer_ezmotionexpress_00_000" listed="false">
     <label>EZMotion Express Wireless 3-in-1 Sensor</label>
     <description>Wireless 3-in-1 Sensor</description>
 
@@ -41,7 +42,7 @@
       <property name="model">EZMotion Express</property>
       <property name="manufacturerId">001E</property>
       <property name="manufacturerRef">0002:0002,0002:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

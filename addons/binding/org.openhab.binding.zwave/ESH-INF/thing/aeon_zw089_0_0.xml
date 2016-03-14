@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_zw089_00_000">
+
+  <thing-type id="aeon_zw089_00_000" listed="false">
     <label>ZW089 Recessed Door Sensor Gen5</label>
     <description><![CDATA[
 Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Sensor Gen5 is a door detector that can detect the state of the door's open/close.</p>
@@ -46,7 +47,7 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
       <property name="model">ZW089</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0059,0102:0059,0202:0059</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

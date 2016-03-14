@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgd211_00_000">
+
+  <thing-type id="fibaro_fgd211_00_000" listed="false">
     <label>FGD211 Universal Dimmer 500W</label>
     <description>Universal Dimmer 500W</description>
 
@@ -26,7 +27,7 @@
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0100:0104,0100:0106,0100:0107,0100:0109,0100:100A,0100:300A</property>
       <property name="versionMax">1.8</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

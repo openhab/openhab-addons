@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="philio_pan04_00_000">
+
+  <thing-type id="philio_pan04_00_000" listed="false">
     <label>PAN04 In Wall Dual Relay(1 Way) Switch Module 2x 1.5kW				with power meter			</label>
     <description>In Wall Dual Relay(1 Way) Switch Module 2x 1.5kW				with power meter			</description>
 
@@ -168,7 +169,7 @@
       <property name="model">PAN04</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0001:0003,0001:0012</property>
-      <property name="DefaultAssociations">2,3</property>
+      <property name="defaultAssociations">2,3</property>
     </properties>
 
     <config-description>

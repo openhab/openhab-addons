@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="popp_004001_00_000">
+
+  <thing-type id="popp_004001_00_000" listed="false">
     <label>004001 Smoke Detector and Siren</label>
     <description>Smoke Detector and Siren</description>
 
@@ -41,7 +42,7 @@
       <property name="model">004001</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0100:0201</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

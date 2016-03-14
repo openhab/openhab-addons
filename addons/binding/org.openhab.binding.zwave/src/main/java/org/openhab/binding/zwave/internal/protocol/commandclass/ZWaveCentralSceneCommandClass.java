@@ -74,7 +74,8 @@ public class ZWaveCentralSceneCommandClass extends ZWaveCommandClass
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SCENE_SET:
-                int sceneId = serialMessage.getMessagePayloadByte(offset + 1);
+                // offset+1 is an incrementing number
+                int sceneId = serialMessage.getMessagePayloadByte(offset + 3);
                 int time = serialMessage.getMessagePayloadByte(offset + 2);
                 if (time > 127) {
                     // Values of 128 and above are in minutes (128 = 1 minute)

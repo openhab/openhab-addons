@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="sensative_1101011_00_000">
+
+  <thing-type id="sensative_1101011_00_000" listed="false">
     <label>11-01-011 Strips-MaZw</label>
     <description>Strips-MaZw</description>
 
@@ -41,7 +42,7 @@
       <property name="model">11-01-011</property>
       <property name="manufacturerId">019A</property>
       <property name="manufacturerRef">0003:0003</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>
