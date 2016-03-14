@@ -58,11 +58,10 @@ import org.openhab.ui.cometvisu.internal.config.VisuConfig;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.DataBean;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.ItemBean;
 import org.openhab.ui.cometvisu.internal.rrs.beans.Feed;
-import org.openhab.ui.cometvisu.servlet.quercus.PHProvider;
+import org.openhab.ui.cometvisu.php.PHProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.caucho.quercus.QuercusEngine;
 import com.google.gson.Gson;
 
 /**
@@ -110,14 +109,25 @@ public class CometVisuServlet extends HttpServlet {
         defaultUserDir = System.getProperty("user.dir");
         this.cometVisuApp = cometVisuApp;
 
+        PHProvider prov = cometVisuApp.getPHProvider();
+        if (prov != null) {
+            this.setPHProvider(prov);
+        }
+    }
+
+    public void setPHProvider(PHProvider prov) {
+        this.engine = prov;
         this.initQuercusEngine();
+    }
+
+    public void unsetPHProvider() {
+        this.engine = null;
+        this.phpEnabled = false;
     }
 
     private void initQuercusEngine() {
         try {
-            // for some reason the QuercusEngine must be created here, because otherwise the modules are not loaded
-            // and quercus is useless
-            engine = new PHProvider(new QuercusEngine());
+            this.engine.createQuercusEngine();
             this.engine.setIni("include_path", ".:" + rootFolder.getAbsolutePath());
             if (_servletContext != null) {
                 this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, _servletContext);

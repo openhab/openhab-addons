@@ -84,6 +84,7 @@ public class ZWaveCentralSceneCommandClass extends ZWaveCommandClass
                 logger.debug("NODE {}: Received scene {} at time {}", this.getNode().getNodeId(), sceneId, time);
                 ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
                         endpoint, this.getCommandClass(), sceneId);
+                this.getController().notifyEventListeners(zEvent);
                 break;
             case SCENE_REPORT:
                 sceneCount = serialMessage.getMessagePayloadByte(offset + 1);
