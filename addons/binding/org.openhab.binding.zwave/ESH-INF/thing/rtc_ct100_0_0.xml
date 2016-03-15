@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="rtc_ct100_00_000">
+
+  <thing-type id="rtc_ct100_00_000" listed="false">
     <label>CT100 Z-Wave Thermostat</label>
     <description>Z-Wave Thermostat</description>
 
@@ -77,7 +78,7 @@
       <property name="model">CT100</property>
       <property name="manufacturerId">0098</property>
       <property name="manufacturerRef">6401:0015,6401:0106,6401:0107,6401:01FD</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

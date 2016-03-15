@@ -374,9 +374,6 @@ public class ZWaveController {
      *            the node number to add
      */
     private void addNode(int nodeId) {
-        if (nodeId < 60) {
-            return;
-        }
         ioHandler.deviceDiscovered(nodeId);
         new ZWaveInitNodeThread(this, nodeId).start();
     }

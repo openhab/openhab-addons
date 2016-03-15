@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsc11_00_000">
+
+  <thing-type id="aeon_dsc11_00_000" listed="false">
     <label>DSC11 Smart Strip</label>
     <description><![CDATA[
 Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: ADD<br />METER:6 :: ADD</p>
@@ -110,7 +111,7 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <property name="model">DSC11</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:000B</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

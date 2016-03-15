@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsc26_00_000">
+
+  <thing-type id="aeon_dsc26_00_000" listed="false">
     <label>DSC26 Micro Switch G2</label>
     <description>Micro Switch G2</description>
 
@@ -24,7 +25,7 @@
       <property name="model">DSC26</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:001A</property>
-      <property name="DefaultAssociations">2</property>
+      <property name="defaultAssociations">2</property>
     </properties>
 
     <config-description>

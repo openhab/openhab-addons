@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="ge_ge12727_00_000">
+
+  <thing-type id="ge_ge12727_00_000" listed="false">
     <label>GE12727 GE 12727 Z-Wave Wireless Lighting Control Smart Toggle Switch</label>
     <description><![CDATA[
 GE 12727 Z-Wave Wireless Lighting Control Smart Toggle Switch<br /><h2>Inclusion Information</h2><p>1. Follow the instructions for your Z-wave certified controller to include a device to the Z-wave network.</p>

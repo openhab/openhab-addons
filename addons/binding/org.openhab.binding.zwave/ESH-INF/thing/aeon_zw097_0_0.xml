@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_zw097_00_000">
+
+  <thing-type id="aeon_zw097_00_000" listed="false">
     <label>ZW097 Dry Contact Sensor</label>
     <description>Dry Contact Sensor</description>
 
@@ -35,7 +36,7 @@
       <property name="model">ZW097</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0061,0102:0061,0202:0061</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

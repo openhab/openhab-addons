@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="nodon_crc3100_00_000">
+
+  <thing-type id="nodon_crc3100_00_000" listed="false">
     <label>CRC-3100 Octon Remote Control</label>
     <description>Octon Remote Control</description>
 
@@ -29,7 +30,7 @@
       <property name="model">CRC-3100</property>
       <property name="manufacturerId">0165</property>
       <property name="manufacturerRef">0002:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

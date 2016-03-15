@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="popp_009303_00_000">
+
+  <thing-type id="popp_009303_00_000" listed="false">
     <label>009303 Wall Controller</label>
     <description>Wall Controller</description>
 
@@ -29,7 +30,7 @@
       <property name="model">009303</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0100:0101</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="tkb_tz08_00_000">
+
+  <thing-type id="tkb_tz08_00_000" listed="false">
     <label>TZ08 Rollershutter Controller</label>
     <description>Rollershutter Controller</description>
 
@@ -67,7 +68,7 @@
       <property name="model">TZ08</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0001:0006</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

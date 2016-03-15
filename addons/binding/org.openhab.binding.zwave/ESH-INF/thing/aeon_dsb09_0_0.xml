@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsb09_00_000">
+
+  <thing-type id="aeon_dsb09_00_000" listed="false">
     <label>DSB09 Home Energy Meter</label>
     <description>Home Energy Meter</description>
 
@@ -95,7 +96,7 @@
       <property name="model">DSB09</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0009</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

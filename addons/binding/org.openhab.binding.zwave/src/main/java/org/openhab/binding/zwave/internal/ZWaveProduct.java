@@ -56,17 +56,21 @@ public class ZWaveProduct {
      * @return true if this product matches the node
      */
     public boolean match(ZWaveNode node) {
-        Version vIn = new Version(node.getApplicationVersion());
+        return match(node.getManufacturer(), node.getDeviceType(), node.getDeviceId(), node.getApplicationVersion());
+    }
 
-        if (manufacturer != node.getManufacturer()) {
+    public boolean match(int testManufacturer, int testType, int testId, String testVersion) {
+        Version vIn = new Version(testVersion);
+
+        if (manufacturer != testManufacturer) {
             return false;
         }
 
-        if (type != null && type != node.getDeviceType()) {
+        if (type != null && type != testType) {
             return false;
         }
 
-        if (id != null && id != node.getDeviceId()) {
+        if (id != null && id != testId) {
             return false;
         }
 

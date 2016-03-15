@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="philio_pan11_00_000">
+
+  <thing-type id="philio_pan11_00_000" listed="false">
     <label>PAN11 Smart Energy Plug In Switch</label>
     <description>Smart Energy Plug In Switch</description>
 
@@ -60,7 +61,7 @@
       <property name="model">PAN11</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0001:0001,0001:0011</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="ge_45609_00_000">
+
+  <thing-type id="ge_45609_00_000" listed="false">
     <label>45609 On/Off Relay Switch</label>
     <description>On/Off Relay Switch</description>
 

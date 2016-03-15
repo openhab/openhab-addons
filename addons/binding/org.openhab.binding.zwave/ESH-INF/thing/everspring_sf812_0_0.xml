@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="everspring_sf812_00_000">
+
+  <thing-type id="everspring_sf812_00_000" listed="false">
     <label>SF812 Smoke Sensor</label>
     <description>Smoke Sensor</description>
 
@@ -35,7 +36,7 @@
       <property name="model">SF812</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">000D:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

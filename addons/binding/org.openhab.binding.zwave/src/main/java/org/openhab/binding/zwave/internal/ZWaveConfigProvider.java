@@ -243,11 +243,11 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                 // Get the properties
                 Map<String, String> thingProperties = thingType.getProperties();
 
-                if (thingProperties.get("manufacturerRef") == null) {
+                if (thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES) == null) {
                     continue;
                 }
 
-                String[] references = thingProperties.get("manufacturerRef").split(",");
+                String[] references = thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES).split(",");
                 for (String ref : references) {
                     String[] values = ref.split(":");
                     Integer type;
@@ -260,11 +260,11 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     if (!values[1].trim().equals("*")) {
                         id = Integer.parseInt(values[1], 16);
                     }
-                    String versionMin = thingProperties.get("versionMin");
-                    String versionMax = thingProperties.get("versionMax");
+                    String versionMin = thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_VERSIONMIN);
+                    String versionMax = thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_VERSIONMAX);
                     productIndex.add(new ZWaveProduct(thingType.getUID(),
-                            Integer.parseInt(thingProperties.get("manufacturerId"), 16), type, id, versionMin,
-                            versionMax));
+                            Integer.parseInt(thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_MANUFACTURER), 16),
+                            type, id, versionMin, versionMax));
                 }
 
             }
