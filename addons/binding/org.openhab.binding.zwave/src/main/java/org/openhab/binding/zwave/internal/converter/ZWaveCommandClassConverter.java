@@ -49,6 +49,7 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
         temp.put(CommandClass.COLOR, ZWaveColorConverter.class);
         temp.put(CommandClass.CONFIGURATION, ZWaveConfigurationConverter.class);
+        temp.put(CommandClass.DOOR_LOCK, ZWaveDoorLockConverter.class);
         temp.put(CommandClass.METER, ZWaveMeterConverter.class);
         temp.put(CommandClass.SCENE_ACTIVATION, ZWaveSceneActivationConverter.class);
         temp.put(CommandClass.SENSOR_ALARM, ZWaveAlarmSensorConverter.class);
