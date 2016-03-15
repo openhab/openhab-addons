@@ -4,9 +4,10 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="yale_ykfcon_00_000">
-    <label>YKFCON Smart Living Keyfree Connected Smart Lock</label>
-    <description>Smart Living Keyfree Connected Smart Lock</description>
+
+  <thing-type id="yale_ykfcon_00_000" listed="false">
+    <label>YKFCON Smart Living Keyfree Smart Lock</label>
+    <description>Smart Living Keyfree Smart Lock</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>

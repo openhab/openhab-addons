@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgs222_00_000">
+
+  <thing-type id="fibaro_fgs222_00_000" listed="false">
     <label>FGS222 Double Relay Switch 2x1.5kW</label>
     <description>Double Relay Switch 2x1.5kW</description>
 
@@ -36,7 +37,7 @@
       <property name="model">FGS222</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0202:1002</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

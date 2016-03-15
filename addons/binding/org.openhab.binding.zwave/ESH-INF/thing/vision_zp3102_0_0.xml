@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="vision_zp3102_00_000">
+
+  <thing-type id="vision_zp3102_00_000" listed="false">
     <label>ZP3102 Motion Sensor</label>
     <description>Motion Sensor</description>
 
@@ -41,7 +42,7 @@
       <property name="model">ZP3102</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2002:0201,2002:0202,2002:0203,2002:0204,2002:0205</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="tkb_tz68_00_000">
+
+  <thing-type id="tkb_tz68_00_000" listed="false">
     <label>TZ68 Wall Plug</label>
     <description><![CDATA[
 Wall Plug<br /><h1>Overview</h1><p>The TKB TZ68 is a switch plug that can be placed between a wall outlet and electric devices, plugged in by cord. It can switch all loads up to 3500 W. The device is IP 20 rated and can therefore only be used in dry environments.</p>

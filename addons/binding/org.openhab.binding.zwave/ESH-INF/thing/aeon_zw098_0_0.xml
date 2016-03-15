@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_zw098_00_000">
+
+  <thing-type id="aeon_zw098_00_000" listed="false">
     <label>ZW098 LED Bulb</label>
     <description><![CDATA[
 LED Bulb<br /><h2>Inclusion Information</h2><p>Non-secure inclusion:<br />1. Power on your LED Bulb.<br />2. Set the primary controller into inclusion mode (If you don’t know how to do this, please refer to its manual).<br />3. Turn off the LED Bulb and then turn on.<br />4. If the inclusion is failed, please repeat the process from step 2. </p>
@@ -46,7 +47,7 @@ LED Bulb<br /><h2>Inclusion Information</h2><p>Non-secure inclusion:<br />1. Pow
       <property name="model">ZW098</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:0062,0103:0062,0203:0062</property>
-      <property name="DefaultAssociations">1,2</property>
+      <property name="defaultAssociations">1,2</property>
     </properties>
 
     <config-description>

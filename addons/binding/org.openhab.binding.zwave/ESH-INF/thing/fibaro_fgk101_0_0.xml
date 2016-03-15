@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgk101_00_000">
+
+  <thing-type id="fibaro_fgk101_00_000" listed="false">
     <label>FGK101 Door Opening Sensor</label>
     <description>Door Opening Sensor</description>
 
@@ -71,7 +72,7 @@
       <property name="model">FGK101</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0700:1000,0700:2000,0700:3000</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

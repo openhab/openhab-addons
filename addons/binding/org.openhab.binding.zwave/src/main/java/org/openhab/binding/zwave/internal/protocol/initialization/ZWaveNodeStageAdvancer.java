@@ -22,6 +22,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.internal.ZWaveConfigProvider;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
@@ -829,7 +830,8 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                         break;
                     }
 
-                    String associations = thingType.getProperties().get("DefaultAssociations");
+                    String associations = thingType.getProperties()
+                            .get(ZWaveBindingConstants.PROPERTY_XML_ASSOCIATIONS);
                     if (associations == null || associations.length() == 0) {
                         logger.debug("NODE {}: Node advancer: SET_ASSOCIATION - no default associations",
                                 node.getNodeId());

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="popp_123665_00_000">
+
+  <thing-type id="popp_123665_00_000" listed="false">
     <label>123665 Wall Plug Meter Switch</label>
     <description>Wall Plug Meter Switch</description>
 
@@ -54,7 +55,7 @@
       <property name="model">123665</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0001:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

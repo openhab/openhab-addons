@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="zwaveme_zme05459_00_000">
+
+  <thing-type id="zwaveme_zme05459_00_000" listed="false">
     <label>ZME_05459 Blinds controller</label>
     <description>Blinds controller</description>
 
@@ -31,7 +32,7 @@
       <property name="model">ZME_05459</property>
       <property name="manufacturerId">0115</property>
       <property name="manufacturerRef">1000:0003</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

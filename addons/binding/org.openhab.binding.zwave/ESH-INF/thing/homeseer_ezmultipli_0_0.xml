@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="homeseer_ezmultipli_00_000">
+
+  <thing-type id="homeseer_ezmultipli_00_000" listed="false">
     <label>EZMultiPli Multi Sensor</label>
     <description>Multi Sensor</description>
 
@@ -36,7 +37,7 @@
       <property name="model">EZMultiPli</property>
       <property name="manufacturerId">001E</property>
       <property name="manufacturerRef">0004:0001</property>
-      <property name="DefaultAssociations">1,2</property>
+      <property name="defaultAssociations">1,2</property>
     </properties>
 
     <config-description>

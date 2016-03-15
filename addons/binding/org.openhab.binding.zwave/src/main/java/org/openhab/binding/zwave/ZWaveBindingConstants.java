@@ -34,7 +34,19 @@ public class ZWaveBindingConstants {
 
     public final static String CONFIGURATION_POLLPERIOD = "binding_pollperiod";
 
-    public final static String UNKNOWN_THING = BINDING_ID + ":unknown";
+    public final static String ZWAVE_THING = BINDING_ID + ":device";
+    public final static ThingTypeUID ZWAVE_THING_UID = new ThingTypeUID(ZWAVE_THING);
+
+    public final static String PROPERTY_XML_MANUFACTURER = "manufacturerId";
+    public final static String PROPERTY_XML_REFERENCES = "manufacturerRef";
+    public final static String PROPERTY_XML_VERSIONMIN = "versionMin";
+    public final static String PROPERTY_XML_VERSIONMAX = "versionMax";
+    public final static String PROPERTY_XML_ASSOCIATIONS = "defaultAssociations";
+
+    public final static String PROPERTY_MANUFACTURER = "zwave_manufacturer";
+    public final static String PROPERTY_DEVICEID = "zwave_deviceid";
+    public final static String PROPERTY_DEVICETYPE = "zwave_devicetype";
+    public final static String PROPERTY_VERSION = "zwave_version";
 
     public final static String PROPERTY_NODEID = "zwave_nodeid";
     public final static String PROPERTY_NEIGHBOURS = "zwave_neighbours";

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="horstmann_sir321_00_000">
+
+  <thing-type id="horstmann_sir321_00_000" listed="false">
     <label>SIR-321 RF Countdown Timer</label>
     <description><![CDATA[
 RF Countdown Timer<br /><h1>Overview</h1><p>Wirelessly controllable 3 KW wall switch timer function</p>
@@ -26,7 +27,7 @@ RF Countdown Timer<br /><h1>Overview</h1><p>Wirelessly controllable 3 KW wall sw
       <property name="model">SIR-321</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0010:0001</property>
-      <property name="DefaultAssociations">1,2</property>
+      <property name="defaultAssociations">1,2</property>
     </properties>
 
     <config-description>

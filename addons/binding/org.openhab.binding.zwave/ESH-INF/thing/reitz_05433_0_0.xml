@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="reitz_05433_00_000">
+
+  <thing-type id="reitz_05433_00_000" listed="false">
     <label>05433 One Paddle Wall Dimmer Insert</label>
     <description>One Paddle Wall Dimmer Insert</description>
 
@@ -25,7 +26,7 @@
       <property name="model">05433</property>
       <property name="manufacturerId">0064</property>
       <property name="manufacturerRef">0001:0000</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

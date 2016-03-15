@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="greenwave_gwpn6_00_000">
+
+  <thing-type id="greenwave_gwpn6_00_000" listed="false">
     <label>GWPN6 Multi-socket PowerNode (6-plug)</label>
     <description><![CDATA[
 Multi-socket PowerNode (6-plug)<br /><h1>Overview</h1><p>This Configuration is for the 6 plug version of the PowerNode.</p>
@@ -157,7 +158,7 @@ Multi-socket PowerNode (6-plug)<br /><h1>Overview</h1><p>This Configuration is f
       <property name="model">GWPN6</property>
       <property name="manufacturerId">0099</property>
       <property name="manufacturerRef">0003:0004</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

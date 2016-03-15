@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="econet_ebv105_00_000">
+
+  <thing-type id="econet_ebv105_00_000" listed="false">
     <label>EBV-105 Wireless Water Shutoff Valve</label>
     <description><![CDATA[
 Wireless Water Shutoff Valve<br /><h1>Overview</h1><p>The EBV105 water shutoff controller is easy to install and configure. No special tools or plumbing required. The included clamp supports installation </p>
@@ -26,7 +27,7 @@ Wireless Water Shutoff Valve<br /><h1>Overview</h1><p>The EBV105 water shutoff c
       <property name="model">EBV-105</property>
       <property name="manufacturerId">0157</property>
       <property name="manufacturerRef">0003:0512</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>
