@@ -195,7 +195,6 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
                         node.getDeviceId(), node.getApplicationVersion());
             }
         } else {
-
             // And create the new thing
             ThingType thingType = ZWaveConfigProvider.getThingType(foundProduct.getThingTypeUID());
             label += String.format(": %s", thingType.getLabel());
