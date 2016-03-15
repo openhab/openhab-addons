@@ -143,6 +143,14 @@
         <category>ColorLight</category>
     </channel-type>
 
+    <!-- Color Temperature Channel -->
+    <channel-type id="lock_door">
+        <item-type>Switch</item-type>
+        <label>Door Lock</label>
+        <description>Lock and unlock the door</description>
+        <category>Door</category>
+    </channel-type>
+
     <!-- Energy - Current Consumption -->
     <channel-type id="meter_current">
         <item-type>Number</item-type>

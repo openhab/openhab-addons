@@ -29,6 +29,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClas
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClassDynamicState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiInstanceCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
@@ -37,6 +38,7 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNodeStatusEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionCompletedEvent;
 import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeSerializer;
+import org.openhab.binding.zwave.internal.protocol.security.SecurityEncapsulatedSerialMessage;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.AddNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.AssignReturnRouteMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.AssignSucReturnRouteMessageClass;
@@ -82,8 +84,8 @@ public class ZWaveController {
     private static final int INITIAL_RX_QUEUE_SIZE = 8;
     private static final long WATCHDOG_TIMER_PERIOD = 10000;
 
-    private static final int TRANSMIT_OPTION_ACK = 0x01;
-    private static final int TRANSMIT_OPTION_AUTO_ROUTE = 0x04;
+    public static final int TRANSMIT_OPTION_ACK = 0x01;
+    public static final int TRANSMIT_OPTION_AUTO_ROUTE = 0x04;
     private static final int TRANSMIT_OPTION_EXPLORE = 0x20;
 
     private final ConcurrentHashMap<Integer, ZWaveNode> zwaveNodes = new ConcurrentHashMap<Integer, ZWaveNode>();
@@ -121,6 +123,11 @@ public class ZWaveController {
     private AtomicInteger timeOutCount = new AtomicInteger(0);
 
     private ZWaveControllerHandler ioHandler;
+
+    /**
+     * This is required for secure pairing. see {@link ZWaveSecurityCommandClass}
+     */
+    private ZWaveInclusionEvent lastIncludeSlaveFoundEvent;
 
     // Constructors
     public ZWaveController(ZWaveControllerHandler handler) {
@@ -367,6 +374,9 @@ public class ZWaveController {
      *            the node number to add
      */
     private void addNode(int nodeId) {
+        if (nodeId < 60) {
+            return;
+        }
         ioHandler.deviceDiscovered(nodeId);
         new ZWaveInitNodeThread(this, nodeId).start();
     }
@@ -486,6 +496,16 @@ public class ZWaveController {
         // class)!
         ZWaveNode node = this.getNode(serialMessage.getMessageNode());
         if (node != null) {
+            // Does this message need to be security encapsulated?
+            if (node.doesMessageRequireSecurityEncapsulation(serialMessage)) {
+                ZWaveSecurityCommandClass securityCommandClass = (ZWaveSecurityCommandClass) node
+                        .getCommandClass(CommandClass.SECURITY);
+                securityCommandClass.queueMessageForEncapsulationAndTransmission(serialMessage);
+                // the above call will call enqueue again with the <b>encapsulated<b/> message,
+                // so we discard this one without putting it on the queue
+                return;
+            }
+
             // Keep track of the number of packets sent to this device
             node.incrementSendCount();
 
@@ -532,7 +552,9 @@ public class ZWaveController {
         if (event instanceof ZWaveInclusionEvent) {
             ZWaveInclusionEvent incEvent = (ZWaveInclusionEvent) event;
             switch (incEvent.getEvent()) {
-                case IncludeDone:
+                case IncludeSlaveFound:
+                    // Use IncludeSlaveFound since security based devices need the
+                    // initial exchange to take place immediately or they will time out
                     logger.debug("NODE {}: Including node.", incEvent.getNodeId());
                     // First make sure this isn't an existing node
                     if (getNode(incEvent.getNodeId()) != null) {
@@ -540,10 +562,22 @@ public class ZWaveController {
                                 incEvent.getNodeId());
                         break;
                     }
-
+                    this.lastIncludeSlaveFoundEvent = incEvent;
                     // Initialise the new node
                     addNode(incEvent.getNodeId());
                     break;
+                // case IncludeDone:
+                // logger.debug("NODE {}: Including node.", incEvent.getNodeId());
+                // First make sure this isn't an existing node
+                // if (getNode(incEvent.getNodeId()) != null) {
+                // logger.debug("NODE {}: Newly included node already exists - not initialising.",
+                // incEvent.getNodeId());
+                // break;
+                // }
+
+                // Initialise the new node
+                // addNode(incEvent.getNodeId());
+                // break;
                 case ExcludeDone:
                     logger.debug("NODE {}: Excluding node.", incEvent.getNodeId());
                     // Remove the node from the controller
@@ -867,7 +901,11 @@ public class ZWaveController {
         // This is required in case the Application Message is received from the SendData ACK
         serialMessage.setAckRequired();
 
-        serialMessage.setTransmitOptions(TRANSMIT_OPTION_ACK | TRANSMIT_OPTION_AUTO_ROUTE | TRANSMIT_OPTION_EXPLORE);
+        // ZWaveSecurityCommandClass needs to set it's own transmit options. Only set them here if not already done
+        if (!serialMessage.areTransmitOptionsSet()) {
+            serialMessage
+                    .setTransmitOptions(TRANSMIT_OPTION_ACK | TRANSMIT_OPTION_AUTO_ROUTE | TRANSMIT_OPTION_EXPLORE);
+        }
         serialMessage.setCallbackId(getCallbackId());
         this.enqueue(serialMessage);
     }
@@ -1138,6 +1176,18 @@ public class ZWaveController {
                     ioHandler.sendPacket(lastSentMessage);
                     lastMessageStartTime = System.currentTimeMillis();
 
+                    if (lastSentMessage instanceof SecurityEncapsulatedSerialMessage) {
+                        // now that we've sent the encapsulated version, replace lastSentMessage with the original
+                        // this is required because a resend requires a new nonce to be requested and a new
+                        // security encapsulated message to be built
+                        ((SecurityEncapsulatedSerialMessage) lastSentMessage).setTransmittedAt();
+                        // Take the callbackid from the encapsulated version and copy it to the original message
+                        int callbackId = lastSentMessage.getCallbackId();
+                        lastSentMessage = ((SecurityEncapsulatedSerialMessage) lastSentMessage)
+                                .getMessageBeingEncapsulated();
+                        lastSentMessage.setCallbackId(callbackId);
+                    }
+
                     // Now wait for the RESPONSE, or REQUEST message FROM the controller
                     // This will terminate when the transactionCompleted flag gets set
                     // So, this might complete on a RESPONSE if there's an error (or no further REQUEST expected) or it
@@ -1243,5 +1293,17 @@ public class ZWaveController {
 
     public UID getUID() {
         return ioHandler.getUID();
+    }
+
+    /**
+     * This is required by {@link ZWaveSecurityCommandClass} for the secure pairing process.
+     * {@link ZWaveSecurityCommandClass} can't use the event handling because the
+     * object won't exist when this occurs, so we hold it here so {@link ZWaveSecurityCommandClass}
+     * can access it
+     *
+     * @return
+     */
+    public ZWaveInclusionEvent getLastIncludeSlaveFoundEvent() {
+        return lastIncludeSlaveFoundEvent;
     }
 }

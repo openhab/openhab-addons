@@ -10,6 +10,9 @@ package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
@@ -35,6 +38,10 @@ public abstract class ZWaveCommandProcessor {
 
     private static HashMap<SerialMessage.SerialMessageClass, Class<? extends ZWaveCommandProcessor>> messageMap = null;
     protected boolean transactionComplete = false;
+    /**
+     * Map of Long (received time) and {@link SerialMessage}. Use TreeMap so it's sorted from oldest to newest
+     */
+    private final Map<Long, SerialMessage> incomingMessageTable = new TreeMap<Long, SerialMessage>();
 
     public ZWaveCommandProcessor() {
     }
@@ -54,24 +61,56 @@ public abstract class ZWaveCommandProcessor {
      * @param lastSentMessage The original message we sent to the controller
      * @param incomingMessage The response from the controller
      */
-    protected void checkTransactionComplete(SerialMessage lastSentMessage, SerialMessage incomingMessage) {
+    protected void checkTransactionComplete(SerialMessage lastSentMessage, SerialMessage latestIncomingMessage) {
+        // Put the message in our table so it will be processed now or later
+        incomingMessageTable.put(System.currentTimeMillis(), latestIncomingMessage);
         // First, check if we're waiting for an ACK from the controller
         // This is used for multi-stage transactions to ensure we get all parts of the
         // transaction before completing.
         if (lastSentMessage.isAckPending()) {
-            logger.trace("Message has Ack Pending");
+            logger.trace("Checking transaction complete: Message has Ack Pending: {}", lastSentMessage);
+            // Return until we get the ack, then come back and compare. This is necessary since, per ZWaveSendThread, we
+            // sometimes
+            // get the response before the ack. See ZWaveSendThreadcomment starting with "A transaction consists of (up
+            // to) 4 parts"
             return;
         }
 
-        logger.debug("Sent message {}", lastSentMessage.toString());
-        logger.debug("Recv message {}", incomingMessage.toString());
-        logger.debug("Checking transaction complete: class={}, expected={}, cancelled={}",
-                incomingMessage.getMessageClass(), lastSentMessage.getExpectedReply(),
-                incomingMessage.isTransactionCanceled());
-        if (incomingMessage.getMessageClass() == lastSentMessage.getExpectedReply()
-                && !incomingMessage.isTransactionCanceled()) {
-            transactionComplete = true;
-            logger.debug("         transaction complete!");
+        logger.debug("Checking transaction complete: Sent message {}", lastSentMessage.toString());
+        final Iterator<Map.Entry<Long, SerialMessage>> iter = incomingMessageTable.entrySet().iterator();
+        final long expired = System.currentTimeMillis() - 10000; // Discard responses from 10 seconds ago or longer
+        while (iter.hasNext()) {
+            final Map.Entry<Long, SerialMessage> entry = iter.next();
+            // Check if it's expired
+            if (entry.getKey() < expired) {
+                iter.remove();
+                continue;
+            }
+            final SerialMessage incomingMessage = entry.getValue();
+            logger.debug("Checking transaction complete: Recv message {}", incomingMessage.toString());
+            final boolean ignoreTransmissionCompleteMismatch = false; // TODO: chagne
+            if (incomingMessage.getMessageClass() == lastSentMessage.getExpectedReply()
+                    && !incomingMessage.isTransactionCanceled()) {
+                logger.debug(
+                        "Checking transaction complete: class={}, callback id={}, expected={}, cancelled={}        transaction complete!",
+                        incomingMessage.getMessageClass(), lastSentMessage.getCallbackId(),
+                        lastSentMessage.getExpectedReply(), incomingMessage.isTransactionCanceled());
+                transactionComplete = true;
+                return;
+            } else if (ignoreTransmissionCompleteMismatch) {
+                logger.debug(
+                        "Checking transaction complete: class={}, callback id={}, expected={}, cancelled={}      MISMATCH IGNORED",
+                        incomingMessage.getMessageClass(), lastSentMessage.getCallbackId(),
+                        lastSentMessage.getExpectedReply(), incomingMessage.isTransactionCanceled());
+                transactionComplete = true; // TODO: this was to test if this was preventing successful security
+                                            // pairing, fix properly and remove
+                return;
+            } else {
+                logger.debug(
+                        "Checking transaction complete: class={}, callback id={}, expected={}, cancelled={}      MISMATCH",
+                        incomingMessage.getMessageClass(), lastSentMessage.getCallbackId(),
+                        lastSentMessage.getExpectedReply(), incomingMessage.isTransactionCanceled());
+            }
         }
     }
 
