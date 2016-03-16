@@ -197,20 +197,19 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     // First time round, and this is a command - then add the command
                     if (first && ("*".equals(bindingType[1]) || "Command".equals(bindingType[1]))) {
                         thingChannelsCmd.add(chan);
+                        logger.debug("NODE {}: Initialising cmd channel {}", nodeId, channel.getUID());
                     }
 
                     // First time round, then add the polling class
                     if (first) {
                         thingChannelsPoll.add(chan);
+                        logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
                     }
 
                     // Add the state and polling handlers
                     if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
+                        logger.debug("NODE {}: Initialising state channel {}", nodeId, channel.getUID());
                         thingChannelsState.add(chan);
-
-                        if (first == true) {
-                            thingChannelsState.add(chan);
-                        }
                     }
 
                     first = false;
@@ -337,7 +336,10 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                     if (channel.converter == null) {
                         logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId, channel.getUID());
                     } else {
-                        messages.addAll(channel.converter.executeRefresh(channel, node));
+                        List<SerialMessage> poll = channel.converter.executeRefresh(channel, node);
+                        if (poll != null) {
+                            messages.addAll(poll);
+                        }
                     }
                 }
 
@@ -348,7 +350,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
             }
         };
 
-        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, initialPeriod, pollingPeriod,
+        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, initialPeriod, pollingPeriod * 1000,
                 TimeUnit.MILLISECONDS);
         logger.debug("NODE {}: Polling intialised at {} seconds - start in {} milliseconds.", nodeId, pollingPeriod,
                 initialPeriod);
@@ -635,6 +637,13 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                         logger.warn("NODE {}: pollingPeriod ({}) cannot be set - using default", nodeId,
                                 configurationParameter.getValue().toString());
                     }
+                    if (pollingPeriod < POLLING_PERIOD_MIN) {
+                        pollingPeriod = POLLING_PERIOD_MIN;
+                    }
+                    if (pollingPeriod > POLLING_PERIOD_MAX) {
+                        pollingPeriod = POLLING_PERIOD_MAX;
+                    }
+                    valueObject = Integer.toString((int) pollingPeriod);
 
                     // Restart polling so we use the new value
                     startPolling();
