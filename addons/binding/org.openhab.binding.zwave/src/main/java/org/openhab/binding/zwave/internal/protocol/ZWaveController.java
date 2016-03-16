@@ -522,7 +522,7 @@ public class ZWaveController {
 
         // Add the message to the queue
         this.sendQueue.add(serialMessage);
-        logger.debug("Message queued. Queue length = {}. Queue={}", this.sendQueue.size(), this.sendQueue);
+        logger.debug("Message queued. Queue length = {}. Queue={}", this.sendQueue.size());// , this.sendQueue);
     }
 
     /**
