@@ -55,7 +55,7 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
     @Override
     public List<SerialMessage> executeRefresh(ZWaveThingChannel channel, ZWaveNode node) {
         ZWaveMeterCommandClass commandClass = (ZWaveMeterCommandClass) node
-                .resolveCommandClass(ZWaveCommandClass.CommandClass.SENSOR_MULTILEVEL, channel.getEndpoint());
+                .resolveCommandClass(ZWaveCommandClass.CommandClass.METER, channel.getEndpoint());
         if (commandClass == null) {
             return null;
         }
