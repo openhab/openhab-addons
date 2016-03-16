@@ -190,6 +190,14 @@
         <state pattern="%.1f" readOnly="true">
         </state>
     </channel-type>
+    
+    <!-- Meter Reset -->
+    <channel-type id="meter_reset">
+        <item-type>Switch</item-type>
+        <label>Meter Reset</label>
+        <description>Reset the meter</description>
+        <category>Energy</category>
+    </channel-type>
 
     <!-- Energy - Voltage -->
     <channel-type id="meter_voltage">

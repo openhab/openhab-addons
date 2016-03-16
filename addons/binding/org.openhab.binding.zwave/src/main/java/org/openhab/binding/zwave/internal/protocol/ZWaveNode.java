@@ -933,7 +933,7 @@ public class ZWaveNode {
             final CommandClass commandClassOfMessage = CommandClass.getCommandClass(commandClassCode);
             if (commandClassOfMessage == null) {
                 // not sure how we would ever get here
-                logger.warn(String.format("NODE %s: CommandClass not found for 0x%02X so treating as INSECURE %s",
+                logger.warn(String.format("NODE %d: CommandClass not found for 0x%02X so treating as INSECURE %s",
                         getNodeId(), commandClassCode, serialMessage));
                 result = false;
             } else if (CommandClass.SECURITY == commandClassOfMessage) {
@@ -947,7 +947,7 @@ public class ZWaveNode {
             } else {
                 result = securedCommandClasses.contains(commandClassOfMessage);
                 if (!result) {
-                    // Certain messages must always be sent securely per the zwave spec
+                    // Certain messages must always be sent securely per the Z-Wave spec
                     if (commandClassOfMessage == CommandClass.DOOR_LOCK
                             || commandClassOfMessage == CommandClass.USER_CODE) { // TODO: DB what else?
                         logger.warn("NODE {}: CommandClass {} is not marked as secure but should be, forcing secure",
