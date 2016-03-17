@@ -21,15 +21,15 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
  */
 public class SerialAvrHandler extends AbstractAvrHandler {
 
-	public SerialAvrHandler(Thing thing) {
-		super(thing);
-	}
+    public SerialAvrHandler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	protected AvrConnection createConnection() {
-		String serialPort = (String) this.getConfig().get(PioneerAvrBindingConstants.SERIAL_PORT_PARAMETER);
+    @Override
+    protected AvrConnection createConnection() {
+        String serialPort = (String) this.getConfig().get(PioneerAvrBindingConstants.SERIAL_PORT_PARAMETER);
 
-		return new SerialAvrConnection(serialPort);
-	}
+        return new SerialAvrConnection(serialPort);
+    }
 
 }

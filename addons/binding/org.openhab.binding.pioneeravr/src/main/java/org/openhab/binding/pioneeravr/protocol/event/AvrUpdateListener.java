@@ -19,9 +19,9 @@ import java.util.EventListener;
  */
 public interface AvrUpdateListener extends EventListener {
 
-	/**
-	 * Procedure for receive status update from Pioneer receiver.
-	 */
-	public void statusUpdateReceived(AvrStatusUpdateEvent event);
+    /**
+     * Procedure for receive status update from Pioneer receiver.
+     */
+    public void statusUpdateReceived(AvrStatusUpdateEvent event);
 
 }
