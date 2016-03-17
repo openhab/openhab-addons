@@ -25,7 +25,7 @@ public class FeedBindingConstants {
     public static final String BINDING_ID = "feed";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "feed");
+    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID("feed", "feed");
 
     // List of all Channel IDs
     public final static String FEED_CHANNEL = "feed-channel";
