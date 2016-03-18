@@ -19,6 +19,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Basic;
@@ -129,9 +130,12 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpointId) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpointId)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received Multi-instance/Multi-channel Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -164,8 +168,10 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      *
      * @param serialMessage the serial message to process.
      * @param offset the offset at which to start processing.
+     * @throws ZWaveSerialMessageException
      */
-    private void handleMultiInstanceReportResponse(SerialMessage serialMessage, int offset) {
+    private void handleMultiInstanceReportResponse(SerialMessage serialMessage, int offset)
+            throws ZWaveSerialMessageException {
         logger.trace("Process Multi-instance Report");
         int commandClassCode = serialMessage.getMessagePayloadByte(offset);
         int instances = serialMessage.getMessagePayloadByte(offset + 1);
@@ -202,8 +208,10 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      *
      * @param serialMessage the serial message to process.
      * @param offset the offset at which to start procesing.
+     * @throws ZWaveSerialMessageException
      */
-    private void handleMultiInstanceEncapResponse(SerialMessage serialMessage, int offset) {
+    private void handleMultiInstanceEncapResponse(SerialMessage serialMessage, int offset)
+            throws ZWaveSerialMessageException {
         logger.trace("Process Multi-instance Encapsulation");
         int instance = serialMessage.getMessagePayloadByte(offset);
         int commandClassCode = serialMessage.getMessagePayloadByte(offset + 1);
@@ -255,8 +263,10 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      *
      * @param serialMessage the serial message to process.
      * @param offset the offset at which to start processing.
+     * @throws ZWaveSerialMessageException
      */
-    private void handleMultiChannelEndpointReportResponse(SerialMessage serialMessage, int offset) {
+    private void handleMultiChannelEndpointReportResponse(SerialMessage serialMessage, int offset)
+            throws ZWaveSerialMessageException {
         logger.debug("Process Multi-channel endpoint Report");
 
         boolean changingNumberOfEndpoints = (serialMessage.getMessagePayloadByte(offset) & 0x80) != 0;
@@ -290,8 +300,10 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      *
      * @param serialMessage the serial message to process.
      * @param offset the offset at which to start processing.
+     * @throws ZWaveSerialMessageException
      */
-    private void handleMultiChannelCapabilityReportResponse(SerialMessage serialMessage, int offset) {
+    private void handleMultiChannelCapabilityReportResponse(SerialMessage serialMessage, int offset)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Process Multi-channel capability Report", this.getNode().getNodeId());
         int receivedEndpointId = serialMessage.getMessagePayloadByte(offset) & 0x7F;
         boolean dynamic = ((serialMessage.getMessagePayloadByte(offset) & 0x80) != 0);
@@ -394,8 +406,10 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      * @param serialMessage The message to get command classes from.
      * @param offset The offset in the message.
      * @param endpoint The endpoint
+     * @throws ZWaveSerialMessageException
      */
-    private void addSupportedCommandClasses(SerialMessage serialMessage, int offset, ZWaveEndpoint endpoint) {
+    private void addSupportedCommandClasses(SerialMessage serialMessage, int offset, ZWaveEndpoint endpoint)
+            throws ZWaveSerialMessageException {
         for (int i = 0; i < serialMessage.getMessagePayload().length - offset - 3; i++) {
             // Get the command class ID
             int data = serialMessage.getMessagePayloadByte(offset + 3 + i);
@@ -433,8 +447,10 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      *
      * @param serialMessage the serial message to process.
      * @param offset the offset at which to start processing.
+     * @throws ZWaveSerialMessageException
      */
-    private void handleMultiChannelEncapResponse(SerialMessage serialMessage, int offset) {
+    private void handleMultiChannelEncapResponse(SerialMessage serialMessage, int offset)
+            throws ZWaveSerialMessageException {
         logger.trace("Process Multi-channel Encapsulation");
 
         if (serialMessage.getMessagePayload().length < offset + 2) {

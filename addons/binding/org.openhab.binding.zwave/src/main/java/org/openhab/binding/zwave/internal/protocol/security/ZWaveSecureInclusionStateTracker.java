@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClassWithInitialization;
@@ -125,7 +126,12 @@ public class ZWaveSecureInclusionStateTracker {
                     "NODE {}: in InclusionStateTracker.setNextRequest() overriding old message which was never sent of {}",
                     node.getNodeId(), message);
         }
-        verifyAndAdvanceState((byte) (message.getMessagePayloadByte(3) & 0xff));
+        try {
+            verifyAndAdvanceState((byte) (message.getMessagePayloadByte(3) & 0xff));
+        } catch (ZWaveSerialMessageException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         synchronized (nextMessageLock) {
             nextRequestMessage = message;
             nextMessageLock.notify();

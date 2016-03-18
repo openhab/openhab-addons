@@ -327,8 +327,13 @@ public class SerialMessage {
      *
      * @param index the index of the byte to return.
      * @return an integer between 0x00 (0) and 0xFF (255).
+     * @throws ZWaveSerialMessageException
      */
-    public int getMessagePayloadByte(int index) {
+    public int getMessagePayloadByte(int index) throws ZWaveSerialMessageException {
+        if (messagePayload.length < index) {
+            throw new ZWaveSerialMessageException(
+                    "Attempt to read message payload out of bounds: " + this.toString() + " (" + index + ")");
+        }
         return messagePayload[index] & 0xFF;
     }
 
