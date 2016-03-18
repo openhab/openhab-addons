@@ -60,6 +60,8 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_S_DISTANCE = 15;
     public static final int MYSENSORS_SUBTYPE_S_LIGHT_LEVEL = 16;
 
+    public static final int MYSENSORS_SUBTYPE_S_HVAC = 29;
+
     public static final int MYSENSORS_SUBTYPE_S_MULTIMETER = 30;
 
     // Subtypes for set, req
