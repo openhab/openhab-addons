@@ -444,7 +444,21 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
 
         CommandClass commandClass;
         ZWaveCommandClass zwaveCommandClass;
-        int endpointId = serialMessage.getMessagePayloadByte(offset);
+        int originatingEndpointId = serialMessage.getMessagePayloadByte(offset);
+
+        {
+            int destinationEndpointId = serialMessage.getMessagePayloadByte(offset + 1);
+
+            if (destinationEndpointId != 1 && originatingEndpointId == 1) {
+                logger.debug(
+                        "NODE {}: Controller has no endpoints. Probably originating ({}) and destination ({}) endpoints should be swapped.",
+                        this.getNode().getNodeId(), originatingEndpointId, destinationEndpointId);
+                // not a full swap. Do not use destinationEndpointId after this line
+                // and leave scope intact.
+                originatingEndpointId = destinationEndpointId;
+            }
+        }
+
         int commandClassCode = serialMessage.getMessagePayloadByte(offset + 2);
         commandClass = CommandClass.getCommandClass(commandClassCode);
 
@@ -456,11 +470,11 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
 
         logger.debug(String.format("NODE %d: Requested Command Class = %s (0x%02x)", this.getNode().getNodeId(),
                 commandClass.getLabel(), commandClassCode));
-        ZWaveEndpoint endpoint = this.endpoints.get(endpointId);
+        ZWaveEndpoint endpoint = this.endpoints.get(originatingEndpointId);
 
         if (endpoint == null) {
             logger.error("NODE {}: Endpoint {} not found. Cannot set command classes.", this.getNode().getNodeId(),
-                    endpointId);
+                    originatingEndpointId);
             return;
         }
 
@@ -469,7 +483,7 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
         if (zwaveCommandClass == null) {
             logger.warn(String.format(
                     "NODE %d: CommandClass %s (0x%02x) not implemented by endpoint %d, fallback to main node.",
-                    this.getNode().getNodeId(), commandClass.getLabel(), commandClassCode, endpointId));
+                    this.getNode().getNodeId(), commandClass.getLabel(), commandClassCode, originatingEndpointId));
             zwaveCommandClass = this.getNode().getCommandClass(commandClass);
         }
 
@@ -480,8 +494,8 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
         }
 
         logger.debug("NODE {}: Endpoint = {}, calling handleApplicationCommandRequest.", this.getNode().getNodeId(),
-                endpointId);
-        zwaveCommandClass.handleApplicationCommandRequest(serialMessage, offset + 3, endpointId);
+                originatingEndpointId);
+        zwaveCommandClass.handleApplicationCommandRequest(serialMessage, offset + 3, originatingEndpointId);
     }
 
     /**
