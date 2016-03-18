@@ -609,7 +609,7 @@ public class ZWaveNode {
      * Initialise the node
      */
     public void initialiseNode() {
-        this.nodeStageAdvancer.startInitialisation();
+        nodeStageAdvancer.startInitialisation();
     }
 
     /**
@@ -929,7 +929,14 @@ public class ZWaveNode {
             // Does this node support security at all?
             result = false;
         } else {
-            final int commandClassCode = (byte) serialMessage.getMessagePayloadByte(2) & 0xFF;
+            int commandClassCode;
+            try {
+                commandClassCode = (byte) serialMessage.getMessagePayloadByte(2) & 0xFF;
+            } catch (ZWaveSerialMessageException e) {
+                logger.error("NODE {}: Exception processing message. Treating as INSECURE %s", getNodeId(),
+                        e.getMessage());
+                return false;
+            }
             final CommandClass commandClassOfMessage = CommandClass.getCommandClass(commandClassCode);
             if (commandClassOfMessage == null) {
                 // not sure how we would ever get here
@@ -937,9 +944,15 @@ public class ZWaveNode {
                         getNodeId(), commandClassCode, serialMessage));
                 result = false;
             } else if (CommandClass.SECURITY == commandClassOfMessage) {
-                // CommandClass.SECURITY is a special case because only <b>some</b> commands get encrypted
-                final Byte messageCode = Byte.valueOf((byte) (serialMessage.getMessagePayloadByte(3) & 0xFF));
-                result = ZWaveSecurityCommandClass.doesCommandRequireSecurityEncapsulation(messageCode);
+                // CommandClass.SECURITY is a special case because only some commands get encrypted
+                try {
+                    final Byte messageCode = Byte.valueOf((byte) (serialMessage.getMessagePayloadByte(3) & 0xFF));
+                    result = ZWaveSecurityCommandClass.doesCommandRequireSecurityEncapsulation(messageCode);
+                } catch (ZWaveSerialMessageException e) {
+                    logger.error("NODE {}: Exception processing message. Treating as INSECURE %s", getNodeId(),
+                            e.getMessage());
+                    return false;
+                }
             } else if (commandClassOfMessage == CommandClass.NO_OPERATION) { // TODO: DB
                 // On controller startup, PING seems to fail whenever it's encrypted, so don't
                 // TODO: DB try again

@@ -9,6 +9,7 @@ import java.util.List;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -29,6 +30,9 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * Handles the secure pairing portion and initialization of the Security command class.
  * See {@link #initialize(boolean)} for a lot of details about
  * how the secure pairing process is inherently different from the other initialization process
+ *
+ * @author Dave Badia
+ * @author Chris Jackson
  *
  */
 @XStreamAlias("securityCommandClassWithInit")
@@ -117,6 +121,8 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
      * During inclusion, {@link ZWaveSecurityCommandClass#ZWaveSecurityEncapsulationThread} is not running
      * so we override this logic and just have the calling thread (typically ZWaveInputThread) execute the
      * security encapsulation logic
+     *
+     * @throws ZWaveSerialMessageException
      */
     @Override
     protected void notifyEncapsulationThread() {
@@ -130,12 +136,15 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         byte command = (byte) serialMessage.getMessagePayloadByte(offset);
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("NODE %s: Received Security Message 0x%02X %s ", this.getNode().getNodeId(),
+            logger.debug(String.format("NODE %d: Received Security Message 0x%02X %s ", this.getNode().getNodeId(),
                     command, commandToString(command)));
         }
         traceHex("payload bytes for incoming security message", serialMessage.getMessagePayload());
@@ -306,6 +315,7 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
      * @return One or more {@link SerialMessage} to be sent OR a zero length collection if we are still waiting for a
      *         response OR
      *         null if the secure pairing process has completed or failed
+     * @throws ZWaveSerialMessageException
      *
      * @see {@link ZWaveNodeStageAdvancer}
      */

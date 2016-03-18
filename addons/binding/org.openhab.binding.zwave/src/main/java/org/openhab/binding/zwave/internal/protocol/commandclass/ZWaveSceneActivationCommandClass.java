@@ -9,6 +9,7 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -54,9 +55,12 @@ public class ZWaveSceneActivationCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug(String.format("Received Scene Activation for Node ID = %d", this.getNode().getNodeId()));
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -77,8 +81,10 @@ public class ZWaveSceneActivationCommandClass extends ZWaveCommandClass {
      * @param serialMessage the incoming message to process.
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processSceneActivationSet(SerialMessage serialMessage, int offset, int endpoint) {
+    protected void processSceneActivationSet(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         int sceneId = serialMessage.getMessagePayloadByte(offset + 1);
         int sceneTime = 0;
 

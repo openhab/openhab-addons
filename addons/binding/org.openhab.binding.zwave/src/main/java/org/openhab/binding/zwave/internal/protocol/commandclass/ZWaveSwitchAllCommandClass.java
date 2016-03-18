@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -114,9 +115,12 @@ public class ZWaveSwitchAllCommandClass extends ZWaveCommandClass implements ZWa
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug(String.format("Received Switch All Request for Node ID = %d", this.getNode().getNodeId()));
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -134,7 +138,8 @@ public class ZWaveSwitchAllCommandClass extends ZWaveCommandClass implements ZWa
         }
     }
 
-    protected void processSwitchAllReport(SerialMessage serialMessage, int offset, int endpoint) {
+    protected void processSwitchAllReport(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         int m = serialMessage.getMessagePayloadByte(offset + 1);
         mode = SwitchAllMode.fromInteger(m);
 
