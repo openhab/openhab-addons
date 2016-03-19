@@ -37,6 +37,8 @@ public class ZWaveBindingConstants {
     public final static String ZWAVE_THING = BINDING_ID + ":device";
     public final static ThingTypeUID ZWAVE_THING_UID = new ThingTypeUID(ZWAVE_THING);
 
+    public final static String NODE_TITLE_FORMAT = "Z-Wave Node %d";
+
     public final static String PROPERTY_XML_MANUFACTURER = "manufacturerId";
     public final static String PROPERTY_XML_REFERENCES = "manufacturerRef";
     public final static String PROPERTY_XML_VERSIONMIN = "versionMin";

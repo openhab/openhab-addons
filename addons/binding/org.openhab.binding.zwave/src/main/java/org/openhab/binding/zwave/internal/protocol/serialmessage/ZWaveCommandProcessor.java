@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,9 +122,10 @@ public abstract class ZWaveCommandProcessor {
      * @param lastSentMessage The original message we sent to the controller
      * @param incomingMessage The response from the controller
      * @return
+     * @throws ZWaveSerialMessageException
      */
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.warn("TODO: {} unsupported RESPONSE.", incomingMessage.getMessageClass().getLabel());
         return false;
     }
@@ -135,9 +137,10 @@ public abstract class ZWaveCommandProcessor {
      * @param lastSentMessage The original message we sent to the controller
      * @param incomingMessage The response from the controller
      * @return
+     * @throws ZWaveSerialMessageException
      */
     public boolean handleRequest(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.warn("TODO: {} unsupported REQUEST.", incomingMessage.getMessageClass().getLabel());
         return false;
     }

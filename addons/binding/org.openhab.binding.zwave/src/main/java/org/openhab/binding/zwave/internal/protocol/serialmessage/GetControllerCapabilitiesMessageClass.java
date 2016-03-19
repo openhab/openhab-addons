@@ -9,17 +9,18 @@
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveController;
-import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceType;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
+import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class processes a serial message from the zwave controller
- * 
+ *
  * @author Chris Jackson
  */
 public class GetControllerCapabilitiesMessageClass extends ZWaveCommandProcessor {
@@ -45,7 +46,7 @@ public class GetControllerCapabilitiesMessageClass extends ZWaveCommandProcessor
 
     @Override
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.trace("Handle Message Get Controller Capabilities - Length {}",
                 incomingMessage.getMessagePayload().length);
 
@@ -92,10 +93,11 @@ public class GetControllerCapabilitiesMessageClass extends ZWaveCommandProcessor
         if (isSecondary) {
             return ZWaveDeviceType.SECONDARY;
         } else {
-            if (isSUC)
+            if (isSUC) {
                 return ZWaveDeviceType.SUC;
-            else
+            } else {
                 return ZWaveDeviceType.PRIMARY;
+            }
         }
     }
 }

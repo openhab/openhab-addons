@@ -229,6 +229,9 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         }
 
         synchronized (productIndex) {
+            zwaveThingTypeUIDList = new HashSet<ThingTypeUID>();
+            productIndex = new ArrayList<ZWaveProduct>();
+
             // Get all the thing types
             Collection<ThingType> thingTypes = thingTypeRegistry.getThingTypes();
             for (ThingType thingType : thingTypes) {
@@ -272,16 +275,16 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
     }
 
     public static synchronized List<ZWaveProduct> getProductIndex() {
-        if (productIndex.size() == 0) {
-            initialiseZWaveThings();
-        }
+        // if (productIndex.size() == 0) {
+        initialiseZWaveThings();
+        // }
         return productIndex;
     }
 
     public static Set<ThingTypeUID> getSupportedThingTypes() {
-        if (zwaveThingTypeUIDList.size() == 0) {
-            initialiseZWaveThings();
-        }
+        // if (zwaveThingTypeUIDList.size() == 0) {
+        initialiseZWaveThings();
+        // }
         return zwaveThingTypeUIDList;
     }
 
