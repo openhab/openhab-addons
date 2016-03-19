@@ -558,6 +558,34 @@
 			</parameter>
 		</config-description>
     </thing-type>
+    
+    <thing-type id="hvacThermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge-ser" />
+            <bridge-type-ref id="bridge-eth" />
+        </supported-bridge-type-refs>
+        
+        <label>Thermostat</label>
+        <description>Thermostat</description>
+
+        <channels>
+            <channel id="temp" typeId="temp-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="nodeId" type="text" required="true">
+                <label>NodeId</label>
+                <description>The ID of the node in the MySensors network
+                </description>
+            </parameter>
+            <parameter name="childId" type="text" required="true">
+                <label>ChildId</label>
+                <description>The ID of the child of a node in the MySensors network
+                </description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
     <!--  CHANNELS -->
 
     <channel-type id="hum-channel">
