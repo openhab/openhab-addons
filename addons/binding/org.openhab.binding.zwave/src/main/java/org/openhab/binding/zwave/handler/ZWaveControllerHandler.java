@@ -35,6 +35,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveInitializationStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
 import org.osgi.framework.ServiceRegistration;
@@ -71,18 +72,25 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     public void initialize() {
         logger.debug("Initializing ZWave Controller.");
 
-        isMaster = (Boolean) getConfig().get(CONFIGURATION_MASTER);
-        if (isMaster == null) {
+        Object param;
+        param = getConfig().get(CONFIGURATION_MASTER);
+        if (param instanceof Boolean && param != null) {
+            isMaster = (Boolean) param;
+        } else {
             isMaster = true;
         }
 
-        isSUC = (Boolean) getConfig().get(CONFIGURATION_SUC);
-        if (isSUC == null) {
+        param = getConfig().get(CONFIGURATION_SUC);
+        if (param instanceof Boolean && param != null) {
+            isSUC = (Boolean) param;
+        } else {
             isSUC = false;
         }
 
         networkKey = (String) getConfig().get(CONFIGURATION_NETWORKKEY);
-        if (networkKey == null) {
+        if (param instanceof String && param != null) {
+            networkKey = (String) param;
+        } else {
             networkKey = "";
         }
 
@@ -280,6 +288,23 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                     && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
                 updateNeighbours();
                 logger.warn("");
+            }
+        }
+
+        if (event instanceof ZWaveInitializationStateEvent) {
+            ZWaveInitializationStateEvent initEvent = (ZWaveInitializationStateEvent) event;
+            switch (initEvent.getStage()) {
+                case DISCOVERY_COMPLETE:
+                    // At this point we know enough information about the device to advise the discovery
+                    // service that there's a new thing.
+                    // We need to do this here as we needed to know the device information such as manufacturer,
+                    // type, id and version
+                    ZWaveNode node = controller.getNode(initEvent.getNodeId());
+                    if (node != null) {
+                        deviceAdded(node);
+                    }
+                default:
+                    break;
             }
         }
     }

@@ -29,6 +29,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -368,10 +369,12 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
-
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         byte command = (byte) serialMessage.getMessagePayloadByte(offset);
         traceHex("payload bytes for incoming security message", serialMessage.getMessagePayload());
         lastReceivedMessageTimestamp = System.currentTimeMillis();
@@ -435,7 +438,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
         receivedSecurityCommandsSupportedReport = true;
     }
 
-    public void sendNonceReport() {
+    public void sendNonceReport() throws ZWaveSerialMessageException {
         SerialMessage nonceReportMessage = nonceGeneration.generateAndBuildNonceReport();
         if (nonceReportMessage == null) {
             logger.error("NODE {}: generateAndBuildNonceReport returned null");
@@ -549,6 +552,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
      *
      * @param message
      *            the unencrypted message to be transmitted
+     * @throws ZWaveSerialMessageException
      */
     public void queueMessageForEncapsulationAndTransmission(SerialMessage serialMessage) {
         checkInit();
@@ -641,6 +645,8 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
      * transmits
      * Invoked by {@link ZWaveSecurityEncapsulationThread}. This method must only be called by
      * {@link ZWaveSecurityEncapsulationThread}
+     *
+     * @throws ZWaveSerialMessageException
      */
     protected void sendNextMessageUsingDeviceNonce() {
         checkInit();

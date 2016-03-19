@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
@@ -31,7 +32,7 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.trace("Handle Message Send Data Response");
         if (incomingMessage.getMessagePayloadByte(0) != 0x00) {
             logger.debug("NODE {}: Sent Data successfully placed on stack.", lastSentMessage.getMessageNode());
@@ -52,7 +53,7 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleRequest(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.trace("Handle Message Send Data Request");
 
         int callbackId = incomingMessage.getMessagePayloadByte(0);

@@ -99,12 +99,11 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
         String meterScale = channel.getArguments().get("meterScale");
         String meterZero = channel.getArguments().get("meterZero"); // needs to be a config setting - not arg
         ZWaveMeterValueEvent meterEvent = (ZWaveMeterValueEvent) event;
-
-        // logger.debug("Scale test {} <> {}", meterScale, meterEvent.getMeterScale());
+        // logger.debug("Meter converter: scale {} <> {}", meterScale, meterEvent.getMeterScale());
 
         // Don't trigger event if this item is bound to another sensor type
         if (meterScale != null && MeterScale.getMeterScale(meterScale) != meterEvent.getMeterScale()) {
-            // logger.debug("Not the right scale {} <> {}", meterScale, meterEvent.getMeterScale());
+            logger.debug("Not the right scale {} <> {}", meterScale, meterEvent.getMeterScale());
             return null;
         }
 

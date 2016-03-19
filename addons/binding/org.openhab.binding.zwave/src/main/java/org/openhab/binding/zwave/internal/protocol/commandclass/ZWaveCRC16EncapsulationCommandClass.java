@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -59,9 +60,12 @@ public class ZWaveCRC16EncapsulationCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpointId) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpointId)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received CRC 16 Encapsulation Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -79,8 +83,9 @@ public class ZWaveCRC16EncapsulationCommandClass extends ZWaveCommandClass {
      *            The received message
      * @param offset
      *            The starting offset into the payload
+     * @throws ZWaveSerialMessageException
      */
-    private void handleCRC16EncapResponse(SerialMessage serialMessage, int offset) {
+    private void handleCRC16EncapResponse(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
         logger.trace("Process CRC16 Encapsulation");
 
         // calculate CRC

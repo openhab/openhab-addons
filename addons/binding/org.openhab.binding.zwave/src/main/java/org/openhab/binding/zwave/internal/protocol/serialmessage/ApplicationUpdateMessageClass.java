@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
@@ -36,7 +37,7 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleRequest(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         int nodeId;
         boolean result = true;
         UpdateState updateState = UpdateState.getUpdateState(incomingMessage.getMessagePayloadByte(0));

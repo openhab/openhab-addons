@@ -17,6 +17,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -29,8 +30,9 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
  * Handles the DoorLock command class.
- * 
+ *
  * @author Dave Badia
+ * @author Chris Jackson
  */
 @XStreamAlias("doorLockCommandClass")
 public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
@@ -62,7 +64,7 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
 
     /**
      * Creates a new instance of the ZWaveDoorLockCommandClass class.
-     * 
+     *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
@@ -81,9 +83,12 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug(String.format("NODE %d: Received DoorLock Request", this.getNode().getNodeId()));
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -125,7 +130,7 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
 
     /**
      * Gets a SerialMessage with the DOORLOCK_GET command
-     * 
+     *
      * @return the serial message
      */
     @Override
@@ -202,7 +207,7 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
         /**
          * Lookup function based on the fan mode type code.
          * Returns null if the code does not exist.
-         * 
+         *
          * @param i the code to lookup
          * @return enumeration value of the fan mode type.
          */
@@ -240,7 +245,7 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
     public class ZWaveDoorLockValueEvent extends ZWaveCommandClassValueEvent {
         /**
          * Constructor. Creates a instance of the ZWaveAlarmValueEvent class.
-         * 
+         *
          * @param nodeId the nodeId of the event
          * @param endpoint the endpoint of the event.
          * @param value the value for the event.

@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -68,9 +69,12 @@ public class ZWaveApplicationStatusClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Application Status message", getNode());
         int status = serialMessage.getMessagePayloadByte(offset++);
         switch (status) {

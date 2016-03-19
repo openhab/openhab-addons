@@ -15,6 +15,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -26,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Handles the Lock command class.
- * 
+ *
  * @author Dave Badia
  */
 @XStreamAlias("lockCommandClass")
@@ -46,7 +47,7 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
 
     /**
      * Creates a new instance of the ZWaveAlarmCommandClass class.
-     * 
+     *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
@@ -65,9 +66,12 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.trace("Handle Message Lock Request");
         logger.debug(String.format("NODE %d: Received Lock Request", this.getNode().getNodeId()));
         int command = serialMessage.getMessagePayloadByte(offset);
@@ -96,7 +100,7 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
 
     /**
      * Gets a SerialMessage with the LOCK_GET command
-     * 
+     *
      * @return the serial message
      */
     @Override
@@ -149,7 +153,7 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
         /**
          * Lookup function based on the fan mode type code.
          * Returns null if the code does not exist.
-         * 
+         *
          * @param i the code to lookup
          * @return enumeration value of the fan mode type.
          */
@@ -187,7 +191,7 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
     public class ZWaveLockValueEvent extends ZWaveCommandClassValueEvent {
         /**
          * Constructor. Creates a instance of the ZWaveAlarmValueEvent class.
-         * 
+         *
          * @param nodeId the nodeId of the event
          * @param endpoint the endpoint of the event.
          * @param value the value for the event.

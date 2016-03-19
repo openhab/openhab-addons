@@ -27,6 +27,7 @@ import org.openhab.binding.zwave.internal.ZWaveConfigProvider;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociation;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
@@ -178,7 +179,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
         // Set an event callback so we get notification of events
         controller.addEventListener(this);
 
-        // Get things moving...
         advanceNodeStage(null);
     }
 
@@ -186,8 +186,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
      * Handles the removal of frames from the send queue. This gets called after we have an ACK for our packet, but
      * before we get the response. The actual sending of frames, and the advancing is carried out in the
      * advanceNodeStage method.
+     *
+     * @throws ZWaveSerialMessageException
      */
-    public void handleNodeQueue(SerialMessage incomingMessage) {
+    private void handleNodeQueue(SerialMessage incomingMessage) {
         // If initialisation is complete, then just return.
         // This probably shouldn't be necessary since we remove the event
         // handler when we're done, but just to be sure...
@@ -253,6 +255,8 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
      * This method also handles the sending of frames. Since the initialisation phase is a busy one we try and only have
      * one outstanding request. Again though, we can't be sure that a response is aligned with the node advancer request
      * so it is possible that more than one packet can be released at once, but it will constrain things.
+     *
+     * @throws ZWaveSerialMessageException
      */
     public void advanceNodeStage(SerialMessageClass eventClass) {
         // If initialisation is complete, then just return.
@@ -553,14 +557,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     addToQueue(versionCommandClass.getVersionMessage());
                     break;
 
-                case DISCOVERY_COMPLETE:
-                    // At this point we know enough information about the device to advise the discovery
-                    // service that there's a new thing.
-                    // We need to do this here as we needed to know the device information such as manufacturer,
-                    // type, id and version
-                    controller.nodeDiscoveryComplete(node);
-                    break;
-
                 case DISCOVERY_WAIT:
                     // At this point, we've discovered the device, alerted the system, and are waiting for the
                     // system to create the thing. We need to wait for this to properly configure the device
@@ -574,21 +570,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     }
 
                     thingType = ZWaveConfigProvider.getThingType(node);
-                    /*
-                     * thingType.
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - type {}", node.getNodeId(), thingType);
-                     * ThingUID bridge = (ThingUID) controller.getUID();
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - bridge {}", node.getNodeId(), bridge);
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - part 1 {}", node.getNodeId(),
-                     * thingType.getUID());
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - part 2 {}", node.getNodeId(),
-                     * bridge.getId());
-                     * ThingUID thingUID = new ThingUID(thingType.getUID(), "node" + node.getNodeId(), bridge.getId());
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - looking for {}", node.getNodeId(),
-                     * thingUID);
-                     *
-                     * thingType = ZWaveConfigProvider.getThing(thingUID);
-                     */
                     if (thingType == null) {
                         logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - thing not found!", node.getNodeId());
                     }
@@ -956,6 +937,7 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                             msgQueue.size());
                     break;
 
+                case DISCOVERY_COMPLETE:
                 case STATIC_END:
                 case DONE:
                     // Save the node information to file
@@ -1011,7 +993,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                 controller.notifyEventListeners(zEvent);
             }
         } while (msgQueue.isEmpty());
-
     }
 
     /**

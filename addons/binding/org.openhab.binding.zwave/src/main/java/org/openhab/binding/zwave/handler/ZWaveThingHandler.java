@@ -721,7 +721,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
         }
 
         if (cmdChannel.converter == null) {
-            logger.warn("NODE {}: No converter set for {}", nodeId, channelUID);
+            logger.warn("NODE {}: No converter set for command {} {}", nodeId, channelUID, dataType);
             return;
         }
 
@@ -931,7 +931,7 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
                 }
 
                 if (channel.converter == null) {
-                    logger.warn("NODE {}: No converter set for {}", nodeId, channel.getUID());
+                    logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
                     return;
                 }
 
@@ -1010,7 +1010,6 @@ public class ZWaveThingHandler extends BaseThingHandler implements ZWaveEventLis
 
                     // Update property information about this device
                     Map<String, String> properties = editProperties();
-                    properties.put(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(node.getNodeId()));
                     properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
                             node.getDeviceClass().getBasicDeviceClass().toString());
                     properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,

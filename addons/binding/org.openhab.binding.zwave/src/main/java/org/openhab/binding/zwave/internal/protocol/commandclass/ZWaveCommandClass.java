@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -194,7 +195,8 @@ public abstract class ZWaveCommandClass {
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
      */
-    public abstract void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint);
+    public abstract void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException;
 
     /**
      * Gets an instance of the right command class.
