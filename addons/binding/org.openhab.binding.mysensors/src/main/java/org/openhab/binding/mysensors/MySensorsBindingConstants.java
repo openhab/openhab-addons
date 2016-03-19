@@ -182,6 +182,16 @@ public class MySensorsBindingConstants {
     public final static String CHANNEL_LIGHT_LEVEL = "light-level";
     public final static String CHANNEL_VERSION = "version";
     public final static String CHANNEL_BATTERY = "battery";
+    public final static String CHANNEL_HVAC_FLOW_STATE = "hvac-flow-state";
+    public final static String CHANNEL_HVAC_FLOW_MODE = "hvac-flow-mode";
+    public final static String CHANNEL_HVAC_SETPOINT_HEAT = "hvac-setPoint-heat";
+    public final static String CHANNEL_HVAC_SETPOINT_COOL = "hvac-setPoint-cool";
+    public final static String CHANNEL_HVAC_SPEED = "hvac-speed";
+    public final static String CHANNEL_VAR1 = "var1";
+    public final static String CHANNEL_VAR2 = "var2";
+    public final static String CHANNEL_VAR3 = "var3";
+    public final static String CHANNEL_VAR4 = "var4";
+    public final static String CHANNEL_VAR5 = "var5";
 
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
         {
@@ -208,6 +218,16 @@ public class MySensorsBindingConstants {
             put(MYSENSORS_SUBTYPE_V_DISTANCE, CHANNEL_DISTANCE);
             put(MYSENSORS_SUBTYPE_V_LIGHT_LEVEL, CHANNEL_LIGHT_LEVEL);
             put(MYSENSORS_SUBTYPE_V_CURRENT, CHANNEL_CURRENT);
+            put(MYSENSORS_SUBTYPE_V_HVAC_FLOW_STATE, CHANNEL_HVAC_FLOW_STATE);
+            put(MYSENSORS_SUBTYPE_V_HVAC_SPEED, CHANNEL_HVAC_SPEED);
+            put(MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_COOL, CHANNEL_HVAC_SETPOINT_COOL);
+            put(MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_HEAT, CHANNEL_HVAC_SETPOINT_HEAT);
+            put(MYSENSORS_SUBTYPE_V_HVAC_FLOW_MODE, CHANNEL_HVAC_FLOW_MODE);
+            put(MYSENSORS_SUBTYPE_V_VAR1, CHANNEL_VAR1);
+            put(MYSENSORS_SUBTYPE_V_VAR2, CHANNEL_VAR2);
+            put(MYSENSORS_SUBTYPE_V_VAR3, CHANNEL_VAR3);
+            put(MYSENSORS_SUBTYPE_V_VAR4, CHANNEL_VAR4);
+            put(MYSENSORS_SUBTYPE_V_VAR5, CHANNEL_VAR5);
         }
     };
 
