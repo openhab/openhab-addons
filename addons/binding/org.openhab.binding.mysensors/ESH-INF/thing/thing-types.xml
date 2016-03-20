@@ -580,7 +580,6 @@
             <channel id = "var3" typeId="var3-channel"/>
             <channel id = "var4" typeId="var4-channel"/>
             <channel id = "var5" typeId="var5-channel"/>
-            
         </channels>
         
         <config-description>
@@ -772,7 +771,7 @@
         <category>Heating</category>
     </channel-type>
         <channel-type id="var1-channel">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>Variable</label>
         <description>MySensors var1 Channel</description>
         <category>Variable</category>
@@ -784,19 +783,19 @@
         <category>Variable</category>
     </channel-type>
     <channel-type id="var3-channel">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>Variable</label>
         <description>MySensors var3 Channel</description>
         <category>Variable</category>
     </channel-type>
     <channel-type id="var4-channel">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>Variable</label>
         <description>MySensors var4 Channel</description>
         <category>Variable</category>
     </channel-type>
     <channel-type id="var5-channel">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>Variable</label>
         <description>MySensors var5 Channel</description>
         <category>Variable</category>

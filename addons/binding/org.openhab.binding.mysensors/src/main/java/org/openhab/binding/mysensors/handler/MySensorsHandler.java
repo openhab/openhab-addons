@@ -190,6 +190,10 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                             } else if (msg.getMsg().equals(MYSENSORS_SUBTYPE_V_DOWN)) {
                                 updateState(channel, UpDownType.DOWN);
                             }
+                        } else if (channel.equals(CHANNEL_HVAC_FLOW_STATE)) {
+                            updateState(channel, new StringType(msg.getMsg()));
+                        } else if (channel.equals(CHANNEL_HVAC_FLOW_MODE)) {
+                            updateState(channel, new StringType(msg.getMsg()));
                         } else {
                             updateState(channel, new DecimalType(msg.getMsg()));
                         }
