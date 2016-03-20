@@ -14,37 +14,37 @@
       <channel id="alarm_flood" typeId="alarm_flood">
         <label>Alarm (water)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=FLOOD</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=FLOOD</property>
         </properties>
       </channel>
       <channel id="alarm_co" typeId="alarm_co">
         <label>Alarm (CO)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=CARBON_MONOXIDE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=CARBON_MONOXIDE</property>
         </properties>
       </channel>
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=SMOKE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=SMOKE</property>
         </properties>
       </channel>
       <channel id="alarm_co2" typeId="alarm_co2">
         <label>Alarm (CO2)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=CARBON_DIOXIDE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=CARBON_DIOXIDE</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="alarm_heat" typeId="alarm_heat">
         <label>Alarm (heat)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=HEAT</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=HEAT</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -61,7 +61,7 @@
       <channel id="sensor_temperature2" typeId="sensor_temperature">
         <label>Temperature Sensor</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=TEMPERATURE</property>
         </properties>
       </channel>
     </channels>

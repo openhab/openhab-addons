@@ -20,13 +20,13 @@
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="sensor_flood" typeId="sensor_flood">
         <label>Alarm (water)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=FLOOD</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=FLOOD</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -43,7 +43,7 @@
       <channel id="sensor_temperature2" typeId="sensor_temperature">
         <label>Sensor (temperature) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=TEMPERATURE</property>
         </properties>
       </channel>
     </channels>

@@ -92,12 +92,12 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
         // We ignore any meter reports for item bindings configured with 'meter_reset=true'
         // since we don't want to be updating the 'reset' switch
-        if ("true".equalsIgnoreCase(channel.getArguments().get("meterReset"))) {
+        if ("true".equalsIgnoreCase(channel.getArguments().get("reset"))) {
             return null;
         }
 
-        String meterScale = channel.getArguments().get("meterScale");
-        String meterZero = channel.getArguments().get("meterZero"); // needs to be a config setting - not arg
+        String meterScale = channel.getArguments().get("type");
+        String meterZero = channel.getArguments().get("zero"); // needs to be a config setting - not arg
         ZWaveMeterValueEvent meterEvent = (ZWaveMeterValueEvent) event;
         // logger.debug("Meter converter: scale {} <> {}", meterScale, meterEvent.getMeterScale());
 
@@ -125,7 +125,7 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
         // Is this channel a reset button - if not, just return
-        if ("true".equalsIgnoreCase(channel.getArguments().get("meterReset")) == false) {
+        if ("true".equalsIgnoreCase(channel.getArguments().get("reset")) == false) {
             return null;
         }
 

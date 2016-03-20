@@ -87,10 +87,11 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             isSUC = false;
         }
 
-        networkKey = (String) getConfig().get(CONFIGURATION_NETWORKKEY);
+        param = getConfig().get(CONFIGURATION_NETWORKKEY);
         if (param instanceof String && param != null) {
             networkKey = (String) param;
         } else {
+            // TODO: Create random network key
             networkKey = "";
         }
 
@@ -111,10 +112,12 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         config.put("isSUC", isSUC ? "true" : "false");
 
         // MAJOR BODGE
-        // The OH1 security class uses a static member to set the key so for now
+        // The security class uses a static member to set the key so for now
         // lets do the same, but it needs to be moved into the network initialisation
         // so different networks can have different keys
-        ZWaveSecurityCommandClass.setRealNetworkKey(networkKey);
+        if (networkKey.length() > 0) {
+            ZWaveSecurityCommandClass.setRealNetworkKey(networkKey);
+        }
 
         // TODO: Handle soft reset better!
         controller = new ZWaveController(this, config);
