@@ -20,7 +20,6 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
     public int sendDelay = 0;
 
     private NRSerialPort serialConnection = null;
-    // private SerialPort serialConnection = null;
 
     private MySensorsSerialWriter mysConWriter = null;
     private MySensorsSerialReader mysConReader = null;
@@ -52,44 +51,10 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
             mysConReader = new MySensorsSerialReader(serialConnection.getInputStream(), this);
             mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this, sendDelay);
 
-            mysConReader.startReader();
-            mysConWriter.startWriter();
-
-            connected = true;
+            connected = startReaderWriterThread(mysConReader, mysConWriter);
         } else {
             logger.error("Can't connect to serial port. Wrong port?");
         }
-
-        // try {
-        // CommPortIdentifier serialPortIdentifier = CommPortIdentifier.getPortIdentifier(serialPort);
-        // if (serialPortIdentifier != null) {
-        // if (!serialPortIdentifier.isCurrentlyOwned()) {
-        // CommPort c = serialPortIdentifier.open(this.getClass().getName(), 2000);
-        // if (c != null && c instanceof SerialPort) {
-        // serialConnection = (SerialPort) c;
-        // serialConnection.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-        // SerialPort.PARITY_NONE);
-        //
-        // mysConReader = new MySensorsSerialReader(serialConnection.getInputStream(), this);
-        // mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this);
-        //
-        // mysConReader.startReader();
-        // mysConWriter.startWriter();
-        //
-        // connected = true;
-        //
-        // } else {
-        // logger.error("ComPort is not an instance of serial port");
-        // }
-        // } else {
-        // logger.error("Port " + serialPort + " is already in use");
-        // }
-        // }
-        // } catch (Exception e) {
-        // logger.error(
-        // "Failed to connect to port: " + serialPort + " " + e.getClass() + ", message: " + e.getMessage());
-        // e.getStackTrace();
-        // }
 
         return connected;
     }
@@ -109,22 +74,6 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         if (serialConnection != null && serialConnection.isConnected()) {
             serialConnection.disconnect();
         }
-
-        // // Close is blocking...
-        // new Thread() {
-        // @Override
-        // public void run() {
-        // if (serialConnection != null) {
-        // try {
-        // serialConnection.getInputStream().close();
-        // serialConnection.getOutputStream().close();
-        // serialConnection.removeEventListener();
-        // serialConnection.close();
-        // } catch (IOException e) {
-        // }
-        // }
-        // };
-        // }.start();
 
     }
 

@@ -8,6 +8,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
+import org.openhab.binding.mysensors.protocol.MySensorsReader;
+import org.openhab.binding.mysensors.protocol.MySensorsWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,15 +20,12 @@ public abstract class MySensorsBridgeConnection {
     public List<MySensorsUpdateListener> updateListeners;
     public boolean pauseWriter = false;
 
-    // FIXME must be replaced with a blocking queue
-    /*
-     * public List<MySensorsMessage> MySensorsMessageOutboundQueue = Collections
-     * .synchronizedList(new LinkedList<MySensorsMessage>());
-     */
-
     private BlockingQueue<MySensorsMessage> outboundMessageQueue = null;
 
     protected boolean connected = false;
+
+    private Object holdingThread = null;
+    private boolean iVersionResponse = false;
 
     public MySensorsBridgeConnection() {
         outboundMessageQueue = new LinkedBlockingQueue<MySensorsMessage>();
@@ -46,6 +45,37 @@ public abstract class MySensorsBridgeConnection {
      * @return
      */
     public abstract void disconnect();
+
+    /**
+     * Start thread managing the incoming/outgoing messages. It also have the task to test the connection to gateway by
+     * sending a special message (I_VERSION) to it
+     *
+     * @return true if the gateway test pass successfully
+     */
+    protected boolean startReaderWriterThread(MySensorsReader reader, MySensorsWriter writer) {
+
+        reader.startReader();
+        writer.startWriter();
+
+        holdingThread = this;
+
+        synchronized (holdingThread) {
+            try {
+                if (!iVersionResponse) {
+                    this.wait(2 * 1000); // wait 2s the reply for the I_VERSION message
+                }
+            } catch (Exception e) {
+                logger.error("Exception on waiting for I_VERSION message", e);
+            }
+        }
+
+        if (!iVersionResponse) {
+            logger.error("Cannot start reading/writing thread, probably sync message (I_VERSION) not received");
+            disconnect();
+        }
+
+        return iVersionResponse;
+    }
 
     /**
      * @param listener An Object, that wants to listen on status updates
@@ -69,39 +99,21 @@ public abstract class MySensorsBridgeConnection {
     }
 
     public void addMySensorsOutboundMessage(MySensorsMessage msg) {
-        // Is there already are message in the queue for this nodeId & childId? --> Remove it first!
-        // We don't want to stack messages
+        addMySensorsOutboundMessage(msg, 1);
+    }
 
-        Iterator<MySensorsMessage> iterator = outboundMessageQueue.iterator();
-
-        while (iterator.hasNext()) {
-            MySensorsMessage msgInQueue = iterator.next();
-            if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()) {
-                iterator.remove();
-            }
-        }
-
+    public void addMySensorsOutboundMessage(MySensorsMessage msg, int copy) {
         try {
-            outboundMessageQueue.put(msg);
+            for (int i = 0; i < copy; i++) {
+                outboundMessageQueue.put(msg);
+            }
         } catch (InterruptedException e) {
             logger.error("Interrupted message while ruuning");
         }
     }
 
     public void removeMySensorsOutboundMessage(MySensorsMessage msg) {
-        // Pause the writer, so the msg we will try to remove is not blocked by the writer
-        pauseWriter = true;
-
-        // Give the writer some time to settle
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
         Iterator<MySensorsMessage> iterator = outboundMessageQueue.iterator();
-
         while (iterator.hasNext()) {
             MySensorsMessage msgInQueue = iterator.next();
             if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()
@@ -110,7 +122,13 @@ public abstract class MySensorsBridgeConnection {
                 iterator.remove();
             }
         }
+    }
 
-        pauseWriter = false;
+    public void iVersionMessageReceived(String msg) {
+        iVersionResponse = true;
+        synchronized (holdingThread) {
+            holdingThread.notify();
+        }
+        logger.debug("Good,Gateway is up and running! (Ver:{})", msg);
     }
 }

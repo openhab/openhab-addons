@@ -38,7 +38,7 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
         while (!stopReader) {
             // Is there something to read?
-            // String line = buffRead.readLine();
+
             try {
                 line = reads.readLine();
 
@@ -114,4 +114,5 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
     public void disconnectEvent() {
         stopReader();
     }
+
 }

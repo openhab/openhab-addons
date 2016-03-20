@@ -28,13 +28,18 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     protected ExecutorService executor = Executors.newSingleThreadExecutor();
     protected Future<?> future = null;
 
+    private static final MySensorsMessage I_VERSION_MESSAGE = new MySensorsMessage(0, 0, 3, 0, 2, "");
+
     protected int sendDelay = 0;
 
     public void startWriter() {
         future = executor.submit(this);
+
+        // Send the I_VERSION message
+        mysCon.addMySensorsOutboundMessage(I_VERSION_MESSAGE);
     }
 
-    @Override
+@Override
     public void run() {
 
         while (!stopWriting) {
