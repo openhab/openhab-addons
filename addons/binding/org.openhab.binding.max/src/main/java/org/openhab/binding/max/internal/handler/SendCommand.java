@@ -10,6 +10,7 @@ package org.openhab.binding.max.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.max.internal.command.CubeCommand;
 
 /**
  * Class for sending a command.
@@ -24,8 +25,10 @@ public final class SendCommand {
 
     private ChannelUID channelUID;
     private Command command;
+    private CubeCommand cubeCommand = null;
     private String serialNumber;
     private String key;
+    private String commandText;
 
     public SendCommand(String serialNumber, ChannelUID channelUID, Command command) {
         commandId += 1;
@@ -33,15 +36,35 @@ public final class SendCommand {
         this.serialNumber = serialNumber;
         this.channelUID = channelUID;
         this.command = command;
-        setKey();
+        key = getKey(serialNumber, channelUID);
+        this.setCommandText(command.toString());
+    }
+
+    public SendCommand(String serialNumber, CubeCommand cubeCommand, String commandText) {
+        commandId += 1;
+        id = commandId;
+        this.serialNumber = serialNumber;
+        this.cubeCommand = cubeCommand;
+        key = getKey(serialNumber, cubeCommand);
+        this.setCommandText(commandText);
     }
 
     /**
-     * Sets the key based on the serial and channel
+     * Get the key based on the serial and channel
      * This is can be used to find duplicated commands in the queue
      */
-    private void setKey() {
-        key = serialNumber + "-" + channelUID.getId();
+    private static String getKey(String serialNumber, ChannelUID channelUID) {
+        String key = serialNumber + "-" + channelUID.getId();
+        return key;
+    }
+
+    /**
+     * Get the key based on the serial and channel
+     * This is can be used to find duplicated commands in the queue
+     */
+    private static String getKey(String serialNumber, CubeCommand cubeCommand) {
+        String key = serialNumber + "-" + cubeCommand.getClass().getSimpleName();
+        return key;
     }
 
     /**
@@ -71,7 +94,7 @@ public final class SendCommand {
      */
     public void setChannelUID(ChannelUID channelUID) {
         this.channelUID = channelUID;
-        setKey();
+        key = getKey(serialNumber, channelUID);
     }
 
     /**
@@ -89,6 +112,13 @@ public final class SendCommand {
     }
 
     /**
+     * @return the {@link CubeCommand}
+     */
+    public CubeCommand getCubeCommand() {
+        return cubeCommand;
+    }
+
+    /**
      * @return the device
      */
     public String getDeviceSerial() {
@@ -100,7 +130,21 @@ public final class SendCommand {
      */
     public void setDeviceSerial(String device) {
         this.serialNumber = device;
-        setKey();
+        key = getKey(serialNumber, channelUID);
+    }
+
+    /**
+     * @return the commandText
+     */
+    public String getCommandText() {
+        return commandText;
+    }
+
+    /**
+     * @param commandText the commandText to set
+     */
+    public void setCommandText(String commandText) {
+        this.commandText = commandText;
     }
 
 }

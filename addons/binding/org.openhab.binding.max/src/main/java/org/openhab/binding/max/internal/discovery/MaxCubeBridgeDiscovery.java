@@ -43,13 +43,14 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
+    private final static int SEARCH_TIME = 15;
 
     private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
 
     /** The refresh interval for discovery of MAX! Cubes */
-    private long refreshInterval = 600;
+    private final static long SEARCH_INTERVAL = 600;
     private ScheduledFuture<?> cubeDiscoveryJob;
     private Runnable cubeDiscoveryRunnable = new Runnable() {
         @Override
@@ -59,7 +60,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     };
 
     public MaxCubeBridgeDiscovery() {
-        super(MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
+        super(SEARCH_TIME);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     public void startScan() {
         logger.debug("Start MAX! Cube discovery");
-        scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+        discoverCube();
     }
 
     /*
@@ -96,7 +97,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Start MAX! Cube background discovery");
         if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
-            cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval,
+            cubeDiscoveryJob = scheduler.scheduleWithFixedDelay(cubeDiscoveryRunnable, 0, SEARCH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }
@@ -185,6 +186,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             ThingUID uid = new ThingUID(MaxBinding.CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
             if (uid != null) {
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER)
                         .withLabel("MAX! Cube LAN Gateway").build();
                 thingDiscovered(result);
             }

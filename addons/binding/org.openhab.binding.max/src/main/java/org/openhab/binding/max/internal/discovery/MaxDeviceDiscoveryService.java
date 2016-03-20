@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.max.internal.discovery;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -31,12 +32,13 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
+    private final static int SEARCH_TIME = 60;
     private final static Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
 
     private MaxCubeBridgeHandler maxCubeBridgeHandler;
 
     public MaxDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
-        super(MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10, true);
+        super(MaxBinding.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME, true);
         this.maxCubeBridgeHandler = maxCubeBridgeHandler;
     }
 
@@ -47,6 +49,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
     @Override
     public void deactivate() {
         maxCubeBridgeHandler.unregisterDeviceStatusListener(this);
+        removeOlderResults(new Date().getTime());
     }
 
     @Override
@@ -88,7 +91,8 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
             }
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                     .withProperty(MaxBinding.PROPERTY_SERIAL_NUMBER, device.getSerialNumber())
-                    .withBridge(bridge.getUID()).withLabel(device.getType() + ": " + name).build();
+                    .withBridge(bridge.getUID()).withLabel(device.getType() + ": " + name)
+                    .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER).build();
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Discovered MAX! device is unsupported: type '{}' with id '{}'", device.getType(),
@@ -100,6 +104,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
     protected void startScan() {
         if (maxCubeBridgeHandler != null) {
             maxCubeBridgeHandler.clearDeviceList();
+            maxCubeBridgeHandler.deviceInclusion();
         }
     }
 

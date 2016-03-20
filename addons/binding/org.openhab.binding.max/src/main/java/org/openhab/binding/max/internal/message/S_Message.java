@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The S message contains information about Command execution results
+ * The {@link S_Message} contains information about Command execution results
  *
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de)
  * @author Marcel Verpaalen - OH2 version + parsing of the message

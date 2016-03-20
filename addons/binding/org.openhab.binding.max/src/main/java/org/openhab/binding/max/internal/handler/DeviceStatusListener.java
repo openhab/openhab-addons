@@ -23,7 +23,6 @@ public interface DeviceStatusListener {
 
     /**
      * This method is called whenever the state of the given device has changed.
-     * The new state can be obtained by {@link FullLight#getState()}.
      *
      * @param bridge
      *            The MAX! Cube bridge the changed device is connected to.
