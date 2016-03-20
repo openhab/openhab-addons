@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="toon"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+                  
+
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current room temperature</description>
+        <category>temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="setpoint">
+        <item-type>Number</item-type>
+        <label>Setpoint</label>
+        <description>Thermostat setpoint</description>
+        <category>heating</category>
+        <state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false"/>
+    </channel-type>
+    
+    <channel-type id="setpointMode">
+        <item-type>String</item-type>
+        <label>Setpoint Mode</label>
+        <description>Chosen setpoint mode (comfort, active, sleep, away)</description>
+        <category>heating</category>
+        <state readOnly="false">
+            <options>
+                <option value="-1">override`</option>
+                <option value="0">comfort</option>
+                <option value="1">active</option>
+                <option value="2">sleep</option>
+                <option value="3">away</option>
+                <option value="4">holiday</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="gasMeterReading">
+        <item-type>Number</item-type>
+        <label>Current gas meter reading</label>
+        <description>Current Gas Meter reading in L</description>
+        <category>gas</category>
+        <state readOnly="true" pattern="%d"/>
+    </channel-type>
+
+    <channel-type id="currentMeterReading">
+        <item-type>Number</item-type>
+        <label>Current energy meter reading</label>
+        <description>Current energy meter reading in Wh</description>
+        <category>energy</category>
+        <state readOnly="true" pattern="%d"/>
+    </channel-type>
+        
+    <channel-type id="powerConsumption">
+        <item-type>Number</item-type>
+        <label>Power</label>
+        <description>Current power consumption</description>
+        <category>energy</category>
+        <state pattern="%.1f W" readOnly="true"/>
+    </channel-type>
+    
+    
+    <channel-type id="modulationLevel">
+        <item-type>Number</item-type>
+        <label>Modulation Level</label>
+        <description>Current burner modulation level</description>
+        <category>heating</category>
+        <state readOnly="true" pattern="%d %%"/>
+    </channel-type>
+
+    <channel-type id="heating">
+        <item-type>Switch</item-type>
+        <label>Heating</label>
+        <description>Indicates if the boiler is burning</description>
+        <category>fire</category>
+        <state readOnly="true">
+            <options>
+                <option value="ON">On</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>                                                                                                                                 
+    
+    <channel-type id="tapwater">
+        <item-type>Switch</item-type>
+        <label>Tapwater</label>
+        <description>Indicates if the boiler is burning</description>
+        <category>fire</category>
+        <state readOnly="true">
+            <options>
+                <option value="ON">On</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>
+                                                                                                                   
+    <channel-type id="preheat">
+        <item-type>Switch</item-type>
+        <label>Preheat</label>
+        <description>Indicates if the boiler is burning</description>
+        <category>fire</category>
+        <state readOnly="true">
+            <options>
+                <option value="ON">On</option>
+                <option value="OFF">Off</option>
+            </options>
+        </state>
+    </channel-type>                                                                                                                                 
+
+    <!-- Switch Channel -->
+    <channel-type id="switch_binary">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Switch the plug on and off</description>
+        <category>poweroutlet</category>
+    </channel-type>
+        
+</thing:thing-descriptions>
