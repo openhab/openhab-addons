@@ -14,7 +14,7 @@
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="switch_binary" typeId="switch_binary">
@@ -26,13 +26,13 @@
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="sensor_binary1" typeId="sensor_binary">

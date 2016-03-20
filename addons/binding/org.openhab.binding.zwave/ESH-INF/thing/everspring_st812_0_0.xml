@@ -25,7 +25,7 @@
       <channel id="alarm_flood" typeId="alarm_flood">
         <label>Alarm (flood)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=FLOOD</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=FLOOD</property>
         </properties>
       </channel>
     </channels>

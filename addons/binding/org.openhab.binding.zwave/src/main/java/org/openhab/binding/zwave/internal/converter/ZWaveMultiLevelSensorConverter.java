@@ -69,7 +69,7 @@ public class ZWaveMultiLevelSensorConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        String sensorType = channel.getArguments().get("sensorType");
+        String sensorType = channel.getArguments().get("type");
         String sensorScale = channel.getArguments().get("config_scale");
         ZWaveMultiLevelSensorValueEvent sensorEvent = (ZWaveMultiLevelSensorValueEvent) event;
 
