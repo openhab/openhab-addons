@@ -18,13 +18,13 @@ Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;setpointType=HEATING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">

@@ -18,7 +18,7 @@ Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -26,10 +26,10 @@ Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p>
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;setpointType=HEATING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
     </channels>
