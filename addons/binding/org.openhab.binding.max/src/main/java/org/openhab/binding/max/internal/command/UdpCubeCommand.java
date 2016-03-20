@@ -29,6 +29,7 @@ import com.google.common.base.Strings;
  * Cube LAN gateway.
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @since 2.0
  *
  */
 public class UdpCubeCommand {
@@ -70,7 +71,7 @@ public class UdpCubeCommand {
      */
     public synchronized boolean send() {
         String commandString;
-        if (serialNumber.isEmpty() || serialNumber == null) {
+        if (serialNumber == null || serialNumber.isEmpty()) {
             serialNumber = "**********";
         }
         if (commandType.equals(udpCommandType.RESET)) {

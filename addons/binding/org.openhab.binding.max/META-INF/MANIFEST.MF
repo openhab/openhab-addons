@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: com.google.common.base;version="10.0.1",
  com.google.common.collect,
+ org.apache.commons.lang;version="2.6.0",
  org.apache.commons.net.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,

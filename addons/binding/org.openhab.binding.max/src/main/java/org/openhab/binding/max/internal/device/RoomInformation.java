@@ -9,9 +9,10 @@
 package org.openhab.binding.max.internal.device;
 
 /**
- * Room information provided b the M message meta information.
+ * Room information provided by the M message meta information.
  *
  * @author Andreas Heil (info@aheil.de)
+ * @author Marcel Verpaalen (marcel@verpaalen.com)
  * @since 1.4.0
  */
 public class RoomInformation {
@@ -47,5 +48,10 @@ public class RoomInformation {
 
     public void setRFAddress(String rfAddress) {
         this.rfAddress = rfAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "Room " + position + " (" + rfAddress + ") ='" + name + "'";
     }
 }
