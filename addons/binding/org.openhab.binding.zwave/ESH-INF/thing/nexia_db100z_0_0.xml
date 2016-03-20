@@ -14,7 +14,7 @@
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">

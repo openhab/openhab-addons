@@ -80,7 +80,7 @@ public class ZWaveAlarmSensorConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        String alarmType = channel.getArguments().get("alarmType");
+        String alarmType = channel.getArguments().get("type");
         ZWaveAlarmSensorValueEvent alarmEvent = (ZWaveAlarmSensorValueEvent) event;
 
         // Don't trigger event if this item is bound to another alarm type

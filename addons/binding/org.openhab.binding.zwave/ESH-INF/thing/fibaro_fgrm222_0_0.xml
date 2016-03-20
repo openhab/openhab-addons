@@ -21,7 +21,7 @@
       <channel id="sensor_power" typeId="sensor_power">
         <label>Sensor (power)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
       <channel id="switch_binary" typeId="switch_binary">

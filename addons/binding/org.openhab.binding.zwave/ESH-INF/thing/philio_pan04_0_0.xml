@@ -20,31 +20,31 @@
       <channel id="meter_powerfactor" typeId="meter_powerfactor">
         <label>Electric meter (power factor)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_Power_Factor</property>
+          <property name="binding:*:DecimalType">METER;type=E_Power_Factor</property>
         </properties>
       </channel>
       <channel id="meter_current" typeId="meter_current">
         <label>Electric meter (amps)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_voltage" typeId="meter_voltage">
         <label>Electric meter (volts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary" typeId="switch_binary">
@@ -56,31 +56,31 @@
       <channel id="meter_powerfactor1" typeId="meter_powerfactor">
         <label>Electric meter (power factor) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_Power_Factor</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_Power_Factor</property>
         </properties>
       </channel>
       <channel id="meter_current1" typeId="meter_current">
         <label>Electric meter (amps) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_kwh1" typeId="meter_kwh">
         <label>Electric meter (kWh) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_voltage1" typeId="meter_voltage">
         <label>Electric meter (volts) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_V</property>
         </properties>
       </channel>
       <channel id="meter_watts1" typeId="meter_watts">
         <label>Electric meter (watts) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary1" typeId="switch_binary">
@@ -92,31 +92,31 @@
       <channel id="meter_powerfactor2" typeId="meter_powerfactor">
         <label>Electric meter (power factor) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_Power_Factor</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_Power_Factor</property>
         </properties>
       </channel>
       <channel id="meter_current2" typeId="meter_current">
         <label>Electric meter (amps) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_kwh2" typeId="meter_kwh">
         <label>Electric meter (kWh) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_voltage2" typeId="meter_voltage">
         <label>Electric meter (volts) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_V</property>
         </properties>
       </channel>
       <channel id="meter_watts2" typeId="meter_watts">
         <label>Electric meter (watts) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary2" typeId="switch_binary">
@@ -128,31 +128,31 @@
       <channel id="meter_powerfactor3" typeId="meter_powerfactor">
         <label>Electric meter (power factor) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_Power_Factor</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_Power_Factor</property>
         </properties>
       </channel>
       <channel id="meter_current3" typeId="meter_current">
         <label>Electric meter (amps) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_kwh3" typeId="meter_kwh">
         <label>Electric meter (kWh) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_voltage3" typeId="meter_voltage">
         <label>Electric meter (volts) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_V</property>
         </properties>
       </channel>
       <channel id="meter_watts3" typeId="meter_watts">
         <label>Electric meter (watts) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary3" typeId="switch_binary">
