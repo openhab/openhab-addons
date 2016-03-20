@@ -42,13 +42,13 @@ Door/Windows Sensor<br /><h1>Overview</h1><p>Linear Z-Wave products are easy to 
       <channel id="alarm_entry" typeId="alarm_entry">
         <label>Door Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC;alarmType=BURGLAR, alarmEvent=2</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC;type=BURGLAR, event=2</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Tamper Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC;alarmType=BURGLAR, alarmEvent=3</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC;type=BURGLAR, event=3</property>
         </properties>
       </channel>
     </channels>

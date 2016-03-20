@@ -61,7 +61,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
         logger.debug("NODE {}: Generating poll message for {}, endpoint {}", node.getNodeId(),
                 commandClass.getCommandClass().getLabel(), channel.getEndpoint());
 
-        String setpointType = channel.getArguments().get("setpointType");
+        String setpointType = channel.getArguments().get("type");
 
         SerialMessage serialMessage;
         if (setpointType != null) {
@@ -82,7 +82,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        String setpointType = channel.getArguments().get("setpointType");
+        String setpointType = channel.getArguments().get("type");
         String setpointScale = channel.getArguments().get("config_scale");
         ZWaveThermostatSetpointValueEvent setpointEvent = (ZWaveThermostatSetpointValueEvent) event;
 
@@ -106,7 +106,7 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
         String scaleString = channel.getArguments().get("config_scale");
-        String setpointType = channel.getArguments().get("setpointType");
+        String setpointType = channel.getArguments().get("type");
 
         int scale = 0;
         if (scaleString != null) {

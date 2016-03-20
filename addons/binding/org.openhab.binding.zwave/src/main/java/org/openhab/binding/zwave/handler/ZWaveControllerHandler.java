@@ -91,6 +91,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (param instanceof String && param != null) {
             networkKey = (String) param;
         } else {
+            // TODO: Create random network key
             networkKey = "";
         }
 
