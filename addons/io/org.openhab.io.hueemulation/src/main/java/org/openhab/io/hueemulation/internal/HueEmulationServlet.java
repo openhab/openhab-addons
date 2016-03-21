@@ -41,7 +41,9 @@ import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.TypeParser;
 import org.openhab.io.hueemulation.internal.api.HueCreateUser;
 import org.openhab.io.hueemulation.internal.api.HueDataStore;
 import org.openhab.io.hueemulation.internal.api.HueDevice;
@@ -252,15 +254,17 @@ public class HueEmulationServlet extends HttpServlet {
         }
         try {
             // will throw exception if not found
-            itemRegistry.getItem(id);
+            Item item = itemRegistry.getItem(id);
             HueState state = gson.fromJson(req.getReader(), HueState.class);
             logger.debug("State " + state);
+            String value;
             if (state.bri > -1) {
-                eventPublisher.post(ItemEventFactory.createCommandEvent(id,
-                        new DecimalType((int) Math.round(state.bri / 255.0 * 100))));
+                value = String.valueOf(Math.round(state.bri / 255.0 * 100));
             } else {
-                eventPublisher.post(ItemEventFactory.createCommandEvent(id, state.on ? OnOffType.ON : OnOffType.OFF));
+                value = state.on ? "ON" : "OFF";
             }
+            Command command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), value);
+            eventPublisher.post(ItemEventFactory.createCommandEvent(id, command));
             PrintWriter out = resp.getWriter();
             out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
             out.close();
