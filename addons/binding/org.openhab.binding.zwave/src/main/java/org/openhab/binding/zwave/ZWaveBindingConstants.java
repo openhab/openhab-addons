@@ -32,6 +32,15 @@ public class ZWaveBindingConstants {
     public final static String CONFIGURATION_SUC = "controller_suc";
     public final static String CONFIGURATION_NETWORKKEY = "security_networkkey";
 
+    public final static String CONFIGURATION_SWITCHALLMODE = "switchall_mode";
+    public final static String CONFIGURATION_WAKEUPNODE = "wakeup_node";
+    public final static String CONFIGURATION_WAKEUPINTERVAL = "wakeup_interval";
+
+    public final static String CONFIGURATION_NODENAME = "nodename_name";
+    public final static String CONFIGURATION_NODELOCATION = "nodename_location";
+
+    public final static String CONFIGURATION_DOORLOCKTIMEOUT = "doorlock_timeout";
+
     public final static String CONFIGURATION_POLLPERIOD = "binding_pollperiod";
 
     public final static String ZWAVE_THING = BINDING_ID + ":device";

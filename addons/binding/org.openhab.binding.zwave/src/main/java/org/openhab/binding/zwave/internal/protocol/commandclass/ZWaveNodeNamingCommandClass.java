@@ -17,10 +17,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +44,11 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("nodeNamingCommandClass")
 public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZWaveCommandClassDynamicState {
+
+    public enum Type {
+        NODENAME_NAME,
+        NODENAME_LOCATION
+    }
 
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveNodeNamingCommandClass.class);
@@ -105,7 +110,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -120,7 +125,6 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
                 processNameReport(serialMessage, offset, endpoint);
                 initialiseName = true;
                 break;
-
             case LOCATION_REPORT:
                 logger.trace("NODE {}: Process Location Report", this.getNode().getNodeId());
                 processLocationReport(serialMessage, offset, endpoint);
@@ -229,7 +233,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         this.name = name;
         logger.debug("NODE {}: Node name: {}", this.getNode().getNodeId(), name);
         ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
-                this.getCommandClass(), name);
+                this.getCommandClass(), name, Type.NODENAME_NAME);
         this.getController().notifyEventListeners(zEvent);
     }
 
@@ -251,7 +255,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         this.location = location;
         logger.debug("NODE {}: Node location: {}", this.getNode().getNodeId(), location);
         ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
-                this.getCommandClass(), location);
+                this.getCommandClass(), location, Type.NODENAME_LOCATION);
         this.getController().notifyEventListeners(zEvent);
     }
 
