@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Osman Basha - Initial contribution
+ * @author Patrick Hofmann - Introduce power state channel
  */
 public class WiFiLEDBindingConstants {
 
@@ -28,6 +29,7 @@ public class WiFiLEDBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WIFILED);
 
     // List of all Channel IDs
+    public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_WHITE = "white";
     public static final String CHANNEL_PROGRAM = "program";

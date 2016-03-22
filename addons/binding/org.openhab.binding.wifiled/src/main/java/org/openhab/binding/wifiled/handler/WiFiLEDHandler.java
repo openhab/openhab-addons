@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.wifiled.WiFiLEDBindingConstants;
 import org.openhab.binding.wifiled.configuration.WiFiLEDConfig;
-import org.openhab.binding.wifiled.handler.WiFiLEDDriver.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
         WiFiLEDConfig config = getConfigAs(WiFiLEDConfig.class);
 
         int port = (config.getPort() == null) ? WiFiLEDDriver.DEFAULT_PORT : config.getPort();
-        driver = new WiFiLEDDriver(config.getIp(), port, Protocol.valueOf(config.getProtocol()));
+        driver = new WiFiLEDDriver(config.getIp(), port, config.getProtocol());
         try {
             driver.getLEDState();
 
@@ -75,11 +74,6 @@ public class WiFiLEDHandler extends BaseThingHandler {
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
     }
 
-    @Override
-    public void postInitialize() {
-        super.postInitialize();
-        update();
-    }
 
     @Override
     public void dispose() {
@@ -108,9 +102,22 @@ public class WiFiLEDHandler extends BaseThingHandler {
                 driver.setProgram((StringType) command);
             } else if (channelUID.getId().equals(WiFiLEDBindingConstants.CHANNEL_PROGRAM_SPEED)) {
                 handleProgramSpeedCommand(command);
+            } else if (channelUID.getId().equals(WiFiLEDBindingConstants.CHANNEL_POWER)) {
+                handlePowerCommand(command);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void handlePowerCommand(Command command) throws IOException {
+        if (command instanceof OnOffType) {
+            OnOffType onOffCommand = (OnOffType) command;
+            if (onOffCommand.equals(OnOffType.ON)) {
+                driver.setOn();
+            } else {
+                driver.setOff();
+            }
         }
     }
 
@@ -119,13 +126,6 @@ public class WiFiLEDHandler extends BaseThingHandler {
             driver.setColor((HSBType) command);
         } else if (command instanceof PercentType) {
             driver.setBrightness((PercentType) command);
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
-            if (onOffCommand.equals(OnOffType.ON)) {
-                driver.setOn();
-            } else {
-                driver.setOff();
-            }
         } else if (command instanceof IncreaseDecreaseType) {
             IncreaseDecreaseType increaseDecreaseType = (IncreaseDecreaseType) command;
             if (increaseDecreaseType.equals(IncreaseDecreaseType.INCREASE)) {
@@ -182,6 +182,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
         try {
             LEDStateDTO ledState = driver.getLEDState();
             HSBType color = new HSBType(ledState.getHue(), ledState.getSaturation(), ledState.getBrightness());
+            updateState(WiFiLEDBindingConstants.CHANNEL_POWER, ledState.getPowerState());
             updateState(WiFiLEDBindingConstants.CHANNEL_COLOR, color);
             updateState(WiFiLEDBindingConstants.CHANNEL_WHITE, ledState.getWhite());
             updateState(WiFiLEDBindingConstants.CHANNEL_PROGRAM, ledState.getProgram());

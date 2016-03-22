@@ -7,17 +7,20 @@
  */
 package org.openhab.binding.wifiled.configuration;
 
+import org.openhab.binding.wifiled.handler.WiFiLEDDriver.Protocol;
+
 /**
  * The {@link WiFiLEDConfig} class holds the configuration properties of the thing.
  *
  * @author Osman Basha - Initial contribution
+ * @author Patrick Hofmann - change type of protocol String -> Protocol
  */
 public class WiFiLEDConfig {
 
     private String ip;
     private Integer port;
     private Integer pollingPeriod;
-    private String protocol;
+    private Protocol protocol;
 
     public String getIp() {
         return ip;
@@ -43,11 +46,11 @@ public class WiFiLEDConfig {
         this.pollingPeriod = pollingPeriod;
     }
 
-    public String getProtocol() {
+    public Protocol getProtocol() {
         return protocol;
     }
 
-    public void setProtocol(String protocol) {
+    public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 

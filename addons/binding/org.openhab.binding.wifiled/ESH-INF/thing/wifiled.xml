@@ -9,6 +9,7 @@
 		<description>WiFi LED Device</description>
 
 		<channels>
+		    <channel id="power" typeId="power" />
 			<channel id="color" typeId="color" />
 			<channel id="white" typeId="white" />
 			<channel id="program" typeId="program" />
@@ -46,7 +47,12 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
+	
+	<channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <category>Switch</category>
+    </channel-type>
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>

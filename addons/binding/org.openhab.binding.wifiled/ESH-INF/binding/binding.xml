@@ -5,6 +5,6 @@
 
 	<name>WiFi LED Binding</name>
 	<description>Binding for WiFi LED devices. These are known as Magic Home RGBW LED, UFO LED, LED NET controller etc.</description>
-	<author>Osman Basha</author>
+	<author>Osman Basha, Patrick Hofmann</author>
 
 </binding:binding>

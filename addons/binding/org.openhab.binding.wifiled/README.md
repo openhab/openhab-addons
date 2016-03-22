@@ -22,6 +22,7 @@ The binding supports newer controllers also known as v3 or LD382A (default) and 
 
 ## Channels
 
+- **power** Power state of the RGB(W) device
 - **color** Color of the RGB LEDs expressed as values of hue, saturation and brightness
 - **white** The brightness of the (warm) white LEDs
 - **program** The program to be automatically run by the controller (i.e. color cross fade, strobe, etc.)
