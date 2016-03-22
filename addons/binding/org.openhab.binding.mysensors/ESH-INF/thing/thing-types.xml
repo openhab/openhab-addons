@@ -777,7 +777,7 @@
         <category>Variable</category>
     </channel-type>
     <channel-type id="var2-channel">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>Variable</label>
         <description>MySensors var2 Channel</description>
         <category>Variable</category>
