@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.feed.FeedBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,28 +100,53 @@ public class FeedHandler extends BaseThingHandler {
      */
     private void checkConfiguration() {
         logger.debug("Start reading Feed Thing configuration.");
-        Configuration configuration = this.thing.getConfiguration();
+        Configuration configuration = editConfiguration();
         // It is not necessary to check if the URL is valid, this will be done in fetchFeedData() method
+
+        // TODO NullPointerException is not resolved.
         urlString = (String) configuration.get(URL);
+
+        if (urlString == null) {
+            logger.debug("Null value is not allowed. URL will be considered as empty!");
+            urlString = "";
+            configuration.put(FeedBindingConstants.URL, urlString);
+        }
+
         try {
             refreshTime = (BigDecimal) configuration.get(REFRESH_TIME);
+            if (refreshTime.intValue() <= 0) {
+                throw new IllegalArgumentException("Refresh time must be positive number!");
+            }
         } catch (Exception e) {
+            logger.warn("Refresh time [{}] is not valid. Falling back to default value: {}. {}", refreshTime,
+                    DEFAULT_REFRESH_TIME, e.getMessage());
             refreshTime = DEFAULT_REFRESH_TIME;
-            logger.debug("Can't read refresh time value. Falling back to default value: {}", REFRESH_TIME);
+            configuration.put(FeedBindingConstants.REFRESH_TIME, DEFAULT_REFRESH_TIME);
+
         }
 
         feedFormat = (String) configuration.get(FEED_FORMAT);
         if (!SUPPORTED_FEED_FORMATS.contains(feedFormat)) {
+            logger.warn("Format [{}] is not supported. Falling back to default value: {}.", feedFormat,
+                    DEFAULT_FEED_FORMAT);
             feedFormat = DEFAULT_FEED_FORMAT;
-            logger.debug("This format is not supported. Falling back to default value: {}", DEFAULT_FEED_FORMAT);
+            configuration.put(FeedBindingConstants.FEED_FORMAT, DEFAULT_FEED_FORMAT);
         }
 
         try {
             numberOfEntriesStored = (BigDecimal) configuration.get(NUMBER_OF_ENTRIES);
+            if (numberOfEntriesStored.intValue() <= 0) {
+                throw new IllegalArgumentException("Number of entries must be positive number!");
+            }
         } catch (Exception e) {
+            logger.warn("Number of entries [{}] is invalid. Falling back to default value: {}. {}",
+                    numberOfEntriesStored, DEFAULT_NUMBER_OF_ENTRIES, e.getMessage());
+
             numberOfEntriesStored = DEFAULT_NUMBER_OF_ENTRIES;
-            logger.debug("Can't read number of entries. Falling back to default value: {}", DEFAULT_NUMBER_OF_ENTRIES);
+            configuration.put(FeedBindingConstants.NUMBER_OF_ENTRIES, DEFAULT_NUMBER_OF_ENTRIES);
         }
+
+        updateConfiguration(configuration);
     }
 
     private void startAutomaticRefresh() {
@@ -128,6 +154,7 @@ public class FeedHandler extends BaseThingHandler {
         Runnable refresher = new Runnable() {
             @Override
             public void run() {
+
                 refresh();
             }
         };
@@ -137,6 +164,7 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     private void refresh() {
+
         SyndFeed feed = fetchFeedData(urlString);
         boolean feedUpdated = updateFeedIfChanged(feed);
 
@@ -144,6 +172,7 @@ public class FeedHandler extends BaseThingHandler {
             String content = getFeedContent(currentFeedState, numberOfEntriesStored.intValue());
             updateState(FEED_CHANNEL, new StringType(content));
         }
+
     }
 
     /**
@@ -183,9 +212,7 @@ public class FeedHandler extends BaseThingHandler {
             SyndFeed feed = null;
             feed = feedFetcher.retrieveFeed(url);
             logger.debug("Connection to feed successful");
-            if (this.thing.getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
             return feed;
         } catch (MalformedURLException e) {
             logger.warn("Url '{}' is not valid: {}", urlString, e);
@@ -200,7 +227,7 @@ public class FeedHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (FeedException e) {
-            logger.warn("Feed is not valid: " + urlString, e);
+            logger.warn("Feed content is not valid: " + urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (FetcherException e) {
@@ -246,6 +273,15 @@ public class FeedHandler extends BaseThingHandler {
     private String getFeedContent(SyndFeed feed) {
         feed.setFeedType(feedFormat);
 
+        if (feedFormat.equals("rss_0.91N") || feedFormat.equals("rss_0.91U")) {
+            // RSS 0.91 has required language attribute. Default value is assigned, because if this value is missing,
+            // the
+            // conversion to RSS 0.91 will fail
+            if (feed.getLanguage() == null) {
+                feed.setLanguage("en-us");
+            }
+        }
+
         SyndFeedOutput outputBuilder = new SyndFeedOutput();
         String content = null;
         try {
@@ -272,6 +308,9 @@ public class FeedHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        if (refreshTask.isDone()) {
+            logger.error("Refresh task is not terminated properly");
+        }
         refreshTask.cancel(true);
     }
 }

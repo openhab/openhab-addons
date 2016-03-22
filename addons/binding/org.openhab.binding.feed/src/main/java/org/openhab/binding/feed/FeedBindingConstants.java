@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.common.collect.Sets;
 
 /**
- * The {@link RSSBinding} class defines common constants, which are
+ * The {@link FeedBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Svilen Valkanov - Initial contribution
@@ -36,8 +36,8 @@ public class FeedBindingConstants {
     public final static String FEED_FORMAT = "format";
     public final static String NUMBER_OF_ENTRIES = "length";
 
-    public final static Set<String> SUPPORTED_FEED_FORMATS = Sets.newHashSet("rss_0.9", "rss_0.91", "rss_0.92",
-            "rss_0.93", "rss_0,94", "rss_1.0", "rss_2.0", "atom_0.3", "atom_1.0");
+    public final static Set<String> SUPPORTED_FEED_FORMATS = Sets.newHashSet("rss_0.9", "rss_0.92", "rss_0.93",
+            "rss_0.94", "rss_1.0", "rss_2.0", "atom_0.3", "atom_1.0", "rss_0.91N", "rss_0.91U");
 
     // Default configuration parameters
     public final static String DEFAULT_FEED_FORMAT = "atom_1.0";

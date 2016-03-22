@@ -3,9 +3,10 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- DEFINITIONS: 
+	<!-- DEFINITIONS of terms used in the binding:
 	    Feed is a document used for providing users with frequently updated content. It is localized with URL. 
-		Entry is a single item in the Feed, that contains reference to content, description and other information. -->
+		Entry is a single item in the Feed, that contains reference (link), short description and other information like images, 
+		comments and etc. -->
 
 	<!-- Feed Thing Type -->
 	<thing-type id="feed">
@@ -21,25 +22,27 @@
 				<label>Feed URL</label>
 				<description>Feed URL used to localize the Feed.</description>
 			</parameter>
-			
-			<!--After the refresh time interval expires, the bindings checks for updates in the Feed -->
-			
+
+			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not 
+				up to date, updates the feed content stored in the channel -->
+
 			<parameter name="refresh" type="integer">
 				<label>Refresh time interval</label>
 				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
-			
+
 			<!-- Feeds are converted to one of the following formats. Comparison between the two most popular formats - RSS 2.0 and 
 				Atom 1.0 can be found here- http://www.intertwingly.net/wiki/pie/Rss20AndAtom10Compared -->
-			
+
 			<parameter name="format" type="text">
 				<label>Output format</label>
 				<description>The output format of the Feed.</description>
 				<default>"atom_1.0"</default>
 				<options>
 					<option value="rss_0.9">RSS 0.9</option>
-					<option value="rss_0.91">RSS 0.91</option>
+					<option value="rss_0.91U">RSS 0.91 Userland</option>
+					<option value="rss_0.91N">RSS 0.91 Netscape</option>
 					<option value="rss_0.92">RSS 0.92</option>
 					<option value="rss_0.93">RSS 0.93</option>
 					<option value="rss_0.94">RSS 0.94</option>
@@ -49,9 +52,9 @@
 					<option value="atom_1.0">Atom 1.0</option>
 				</options>
 			</parameter>
-			
-			<!-- The user is able to configure the number of entries, that he is going to receive, through this parameter. -->
-			
+
+			<!-- The user is able to configure the number of Entries, that the binding tracks and stores, through this parameter. -->
+
 			<parameter name="length" type="integer">
 				<label>Number of Entries</label>
 				<description>Number of Feed Entries stored</description>
@@ -64,7 +67,7 @@
 	<channel-type id="feed-channel">
 		<item-type>String</item-type>
 		<label>Feed channel</label>
-		<description>Contains meta data about the Feed and Feed Entries.</description>
+		<description>Contains the latest feed content.</description>
 	</channel-type>
 
 
