@@ -558,6 +558,44 @@
 			</parameter>
 		</config-description>
     </thing-type>
+    
+    <thing-type id="hvacThermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge-ser" />
+            <bridge-type-ref id="bridge-eth" />
+        </supported-bridge-type-refs>
+        
+        <label>Thermostat</label>
+        <description>Thermostat</description>
+
+        <channels>
+            <channel id="temp" typeId="temp-channel"/>
+            <channel id = "hvac-flow-state" typeId="hvac-flow-state-channel"/>
+            <channel id = "hvac-flow-mode" typeId="hvac-flow-mode-channel"/>
+            <channel id = "hvac-setPoint-heat" typeId="hvac-setPoint-heat-channel"/>
+            <channel id = "hvac-setPoint-cool" typeId="hvac-setPoint-cool-channel"/>
+            <channel id = "hvac-speed" typeId="hvac-speed-channel"/>
+            <channel id = "var1" typeId="var1-channel"/>
+            <channel id = "var2" typeId="var2-channel"/>
+            <channel id = "var3" typeId="var3-channel"/>
+            <channel id = "var4" typeId="var4-channel"/>
+            <channel id = "var5" typeId="var5-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="nodeId" type="text" required="true">
+                <label>NodeId</label>
+                <description>The ID of the node in the MySensors network
+                </description>
+            </parameter>
+            <parameter name="childId" type="text" required="true">
+                <label>ChildId</label>
+                <description>The ID of the child of a node in the MySensors network
+                </description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
     <!--  CHANNELS -->
 
     <channel-type id="hum-channel">
@@ -624,7 +662,8 @@
 	<channel-type id="armed-channel">
 		<item-type>Contact</item-type>
 		<label>Armed Status</label>
-		<description>Armed Status</description><state readOnly="true"></state>
+		<description>Armed Status</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="dimmer-channel">
 		<item-type>Dimmer</item-type>
@@ -701,5 +740,64 @@
         <category>Energy</category>
         <state pattern="%d %%" readOnly="true"></state>
     </channel-type>
-
+    <channel-type id="hvac-setPoint-heat-channel">
+        <item-type>Number</item-type>
+        <label>Set point heat</label>
+        <description>MySensors Set point Heat Channel</description>
+        <category>Heating</category>
+    </channel-type>
+    <channel-type id="hvac-setPoint-cool-channel">
+        <item-type>Number</item-type>
+        <label>Set point cool</label>
+        <description>MySensors Set point Cool Channel</description>
+        <category>Heating</category>
+    </channel-type>
+    <channel-type id="hvac-flow-state-channel">
+        <item-type>String</item-type>
+        <label>Flow state</label>
+        <description>MySensors HVAC Flow State Channel</description>
+        <category>Heating</category>
+    </channel-type>
+    <channel-type id="hvac-speed-channel">
+        <item-type>String</item-type>
+        <label>Speed</label>
+        <description>MySensors HVAC Speed Channel</description>
+        <category>Heating</category>
+    </channel-type>
+    <channel-type id="hvac-flow-mode-channel">
+        <item-type>String</item-type>
+        <label>Flow mode</label>
+        <description>MySensors HVAC Flow Mode Channel</description>
+        <category>Heating</category>
+    </channel-type>
+        <channel-type id="var1-channel">
+        <item-type>Number</item-type>
+        <label>Variable</label>
+        <description>MySensors var1 Channel</description>
+        <category>Variable</category>
+    </channel-type>
+    <channel-type id="var2-channel">
+        <item-type>Number</item-type>
+        <label>Variable</label>
+        <description>MySensors var2 Channel</description>
+        <category>Variable</category>
+    </channel-type>
+    <channel-type id="var3-channel">
+        <item-type>Number</item-type>
+        <label>Variable</label>
+        <description>MySensors var3 Channel</description>
+        <category>Variable</category>
+    </channel-type>
+    <channel-type id="var4-channel">
+        <item-type>Number</item-type>
+        <label>Variable</label>
+        <description>MySensors var4 Channel</description>
+        <category>Variable</category>
+    </channel-type>
+    <channel-type id="var5-channel">
+        <item-type>Number</item-type>
+        <label>Variable</label>
+        <description>MySensors var5 Channel</description>
+        <category>Variable</category>
+    </channel-type>
 </thing:thing-descriptions>
