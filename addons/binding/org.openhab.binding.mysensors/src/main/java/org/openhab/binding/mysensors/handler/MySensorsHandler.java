@@ -131,6 +131,38 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                 msg = "1";
 
             }
+        } else if (channelUID.getId().equals(CHANNEL_HVAC_SETPOINT_HEAT)) {
+            subType = MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_HEAT;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_HVAC_SETPOINT_COOL)) {// Unverified
+            subType = MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_COOL;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_HVAC_FLOW_STATE)) {// Unverified
+            subType = MYSENSORS_SUBTYPE_V_HVAC_FLOW_STATE;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_HVAC_FLOW_MODE)) {
+            subType = MYSENSORS_SUBTYPE_V_HVAC_FLOW_MODE;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_HVAC_SPEED)) {// Unverified
+            subType = MYSENSORS_SUBTYPE_V_HVAC_SPEED;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_VAR1)) {// Unverified
+            subType = MYSENSORS_SUBTYPE_V_VAR1;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_VAR2)) {// Unverified
+            subType = MYSENSORS_SUBTYPE_V_VAR2;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_VAR3)) {
+            subType = MYSENSORS_SUBTYPE_V_VAR3;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_VAR4)) {
+            subType = MYSENSORS_SUBTYPE_V_VAR4;
+            msg = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_VAR5)) {
+            subType = MYSENSORS_SUBTYPE_V_VAR5;
+            msg = command.toString();
+        } else {
+            msg = "";
         }
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack, subType,
@@ -190,6 +222,12 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                             } else if (msg.getMsg().equals(MYSENSORS_SUBTYPE_V_DOWN)) {
                                 updateState(channel, UpDownType.DOWN);
                             }
+                        } else if (channel.equals(CHANNEL_HVAC_FLOW_STATE)) {
+                            updateState(channel, new StringType(msg.getMsg()));
+                        } else if (channel.equals(CHANNEL_HVAC_FLOW_MODE)) {
+                            updateState(channel, new StringType(msg.getMsg()));
+                        } else if (channel.equals(CHANNEL_HVAC_SPEED)) {
+                            updateState(channel, new StringType(msg.getMsg()));
                         } else {
                             updateState(channel, new DecimalType(msg.getMsg()));
                         }

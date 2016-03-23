@@ -60,6 +60,7 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_S_DISTANCE = 15;
     public static final int MYSENSORS_SUBTYPE_S_LIGHT_LEVEL = 16;
 
+    public static final int MYSENSORS_SUBTYPE_S_HVAC = 29;
     public static final int MYSENSORS_SUBTYPE_S_MULTIMETER = 30;
 
     // Subtypes for set, req
@@ -152,6 +153,8 @@ public class MySensorsBindingConstants {
     public final static ThingTypeUID THING_TYPE_DISTANCE = new ThingTypeUID(BINDING_ID, "distance");
     public final static ThingTypeUID THING_TYPE_LIGHT_LEVEL = new ThingTypeUID(BINDING_ID, "light-level");
 
+    public final static ThingTypeUID THING_TYPE_HVAC = new ThingTypeUID(BINDING_ID, "hvacThermostat");
+
     public final static ThingTypeUID THING_TYPE_BRIDGE_SER = new ThingTypeUID(BINDING_ID, "bridge-ser");
     public final static ThingTypeUID THING_TYPE_BRIDGE_ETH = new ThingTypeUID(BINDING_ID, "bridge-eth");
 
@@ -179,6 +182,16 @@ public class MySensorsBindingConstants {
     public final static String CHANNEL_LIGHT_LEVEL = "light-level";
     public final static String CHANNEL_VERSION = "version";
     public final static String CHANNEL_BATTERY = "battery";
+    public final static String CHANNEL_HVAC_FLOW_STATE = "hvac-flow-state";
+    public final static String CHANNEL_HVAC_FLOW_MODE = "hvac-flow-mode";
+    public final static String CHANNEL_HVAC_SETPOINT_HEAT = "hvac-setPoint-heat";
+    public final static String CHANNEL_HVAC_SETPOINT_COOL = "hvac-setPoint-cool";
+    public final static String CHANNEL_HVAC_SPEED = "hvac-speed";
+    public final static String CHANNEL_VAR1 = "var1";
+    public final static String CHANNEL_VAR2 = "var2";
+    public final static String CHANNEL_VAR3 = "var3";
+    public final static String CHANNEL_VAR4 = "var4";
+    public final static String CHANNEL_VAR5 = "var5";
 
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
         {
@@ -205,6 +218,16 @@ public class MySensorsBindingConstants {
             put(MYSENSORS_SUBTYPE_V_DISTANCE, CHANNEL_DISTANCE);
             put(MYSENSORS_SUBTYPE_V_LIGHT_LEVEL, CHANNEL_LIGHT_LEVEL);
             put(MYSENSORS_SUBTYPE_V_CURRENT, CHANNEL_CURRENT);
+            put(MYSENSORS_SUBTYPE_V_HVAC_FLOW_STATE, CHANNEL_HVAC_FLOW_STATE);
+            put(MYSENSORS_SUBTYPE_V_HVAC_SPEED, CHANNEL_HVAC_SPEED);
+            put(MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_COOL, CHANNEL_HVAC_SETPOINT_COOL);
+            put(MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_HEAT, CHANNEL_HVAC_SETPOINT_HEAT);
+            put(MYSENSORS_SUBTYPE_V_HVAC_FLOW_MODE, CHANNEL_HVAC_FLOW_MODE);
+            put(MYSENSORS_SUBTYPE_V_VAR1, CHANNEL_VAR1);
+            put(MYSENSORS_SUBTYPE_V_VAR2, CHANNEL_VAR2);
+            put(MYSENSORS_SUBTYPE_V_VAR3, CHANNEL_VAR3);
+            put(MYSENSORS_SUBTYPE_V_VAR4, CHANNEL_VAR4);
+            put(MYSENSORS_SUBTYPE_V_VAR5, CHANNEL_VAR5);
         }
     };
 
@@ -219,7 +242,8 @@ public class MySensorsBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_HUMIDITY,
             THING_TYPE_TEMPERATURE, THING_TYPE_LIGHT, THING_TYPE_MULTIMETER, THING_TYPE_POWER, THING_TYPE_BARO,
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
-            THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL);
+            THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
+            THING_TYPE_HVAC);
     /** Supported bridges */
     public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_BRIDGE_SER,
             THING_TYPE_BRIDGE_ETH);
@@ -229,5 +253,5 @@ public class MySensorsBindingConstants {
             THING_TYPE_TEMPERATURE, THING_TYPE_LIGHT, THING_TYPE_MULTIMETER, THING_TYPE_POWER, THING_TYPE_BARO,
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
-            THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
+            THING_TYPE_HVAC, THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
 }
