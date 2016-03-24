@@ -91,8 +91,16 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (param instanceof String && param != null) {
             networkKey = (String) param;
         } else {
-            // TODO: Create random network key
+            // Create random network key
             networkKey = "";
+            for (int cnt = 0; cnt < 16; cnt++) {
+                int value = (int) Math.floor((Math.random() * 255));
+                networkKey += String.format("%02X ", value);
+            }
+            // Persist the value
+            Configuration configuration = editConfiguration();
+            configuration.put(ZWaveBindingConstants.CONFIGURATION_NETWORKKEY, networkKey);
+            updateConfiguration(configuration);
         }
 
         super.initialize();
