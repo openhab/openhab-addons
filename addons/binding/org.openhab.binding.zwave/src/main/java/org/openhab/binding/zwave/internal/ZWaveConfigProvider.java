@@ -39,6 +39,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveUserCodeCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,11 +204,17 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .build());
         }
 
-        // If we're DEAD, allow moving to the FAILED list
-        if (node.getNodeState() == ZWaveNodeState.DEAD) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
-                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("GO").withGroupName("actions")
-                    .build());
+        ZWaveUserCodeCommandClass userCodeClass = (ZWaveUserCodeCommandClass) node
+                .getCommandClass(ZWaveCommandClass.CommandClass.USER_CODE);
+        if (userCodeClass != null && userCodeClass.getNumberOfSupportedCodes() > 0) {
+            groups.add(new ConfigDescriptionParameterGroup("usercode", "lock", false, "User Code", null));
+
+            for (int code = 1; code <= userCodeClass.getNumberOfSupportedCodes(); code++) {
+                parameters.add(ConfigDescriptionParameterBuilder
+                        .create(ZWaveBindingConstants.CONFIGURATION_USERCODE + code, Type.TEXT)
+                        .withLabel("Code " + code).withDescription("Set the user code (4 to 10 numbers)")
+                        .withDefault("").withGroupName("usercode").build());
+            }
         }
 
         // If we're FAILED, allow removing from the controller
@@ -215,6 +222,11 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.TEXT)
                     .withLabel("Remove device from controller").withAdvanced(true).withDefault("GO")
                     .withGroupName("actions").build());
+        } else {
+            // Otherwise, allow us to put this on the failed list
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
+                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("GO").withGroupName("actions")
+                    .build());
         }
 
         if (node.isInitializationComplete() == true) {
@@ -224,6 +236,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         }
 
         return new ConfigDescription(uri, parameters, groups);
+
     }
 
     private static void initialiseZWaveThings() {
