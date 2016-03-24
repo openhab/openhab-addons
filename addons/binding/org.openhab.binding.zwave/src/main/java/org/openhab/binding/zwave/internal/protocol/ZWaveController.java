@@ -477,24 +477,22 @@ public class ZWaveController {
         }
 
         // First try and get the node
-        // If we're sending to a node, then this obviously isn't to the
-        // controller, and we should
-        // queue anything to a battery node (ie a node supporting the WAKEUP
-        // class)!
+        // If we're sending to a node, then this obviously isn't to the controller, and we should
+        // queue anything to a battery node (ie a node supporting the WAKEUP class)!
         ZWaveNode node = this.getNode(serialMessage.getMessageNode());
         if (node != null) {
+            // Keep track of the number of packets sent to this device
+            node.incrementSendCount();
+
             // Does this message need to be security encapsulated?
             if (node.doesMessageRequireSecurityEncapsulation(serialMessage)) {
                 ZWaveSecurityCommandClass securityCommandClass = (ZWaveSecurityCommandClass) node
                         .getCommandClass(CommandClass.SECURITY);
                 securityCommandClass.queueMessageForEncapsulationAndTransmission(serialMessage);
-                // the above call will call enqueue again with the encapsulated message,
+                // The above call will call enqueue again with the encapsulated message,
                 // so we discard this one without putting it on the queue
                 return;
             }
-
-            // Keep track of the number of packets sent to this device
-            node.incrementSendCount();
 
             // If the device isn't listening, queue the message if it supports
             // the wakeup class
@@ -1175,11 +1173,11 @@ public class ZWaveController {
                     lastMessageStartTime = System.currentTimeMillis();
 
                     if (lastSentMessage instanceof SecurityEncapsulatedSerialMessage) {
-                        // now that we've sent the encapsulated version, replace lastSentMessage with the original
-                        // this is required because a resend requires a new nonce to be requested and a new
+                        // Now that we've sent the encapsulated version, replace lastSentMessage with the original.
+                        // This is required because a resend requires a new nonce to be requested and a new
                         // security encapsulated message to be built
                         ((SecurityEncapsulatedSerialMessage) lastSentMessage).setTransmittedAt();
-                        // Take the callbackid from the encapsulated version and copy it to the original message
+                        // Take the callbackId from the encapsulated version and copy it to the original message
                         int callbackId = lastSentMessage.getCallbackId();
                         lastSentMessage = ((SecurityEncapsulatedSerialMessage) lastSentMessage)
                                 .getMessageBeingEncapsulated();

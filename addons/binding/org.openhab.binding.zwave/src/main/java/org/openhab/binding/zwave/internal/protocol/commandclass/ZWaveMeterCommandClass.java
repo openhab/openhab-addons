@@ -22,10 +22,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +101,7 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -114,6 +114,7 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
 
         switch (command) {
             case METER_REPORT:
+                // Sanity check
                 if (serialMessage.getMessagePayload().length < offset + 3) {
                     logger.error("NODE {}: Meter Report: Buffer too short: length={}, required={}",
                             this.getNode().getNodeId(), serialMessage.getMessagePayload().length, offset + 3);
@@ -127,10 +128,16 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
                 }
 
                 meterType = MeterType.getMeterType(meterTypeIndex);
-
                 int scaleIndex = (serialMessage.getMessagePayloadByte(offset + 2) & 0x18) >> 0x03;
 
-                if (this.getVersion() > 2) {
+                int delta = 0;
+                if (getVersion() > 1) {
+                    int size = serialMessage.getMessagePayloadByte(offset + 2) & 0x07;
+                    delta = (serialMessage.getMessagePayloadByte(offset + 3 + size) << 8)
+                            + serialMessage.getMessagePayloadByte(offset + 4 + size);
+                }
+
+                if (getVersion() > 2) {
                     // In version 3, an extra scale bit is stored in the meter type byte.
                     scaleIndex |= ((serialMessage.getMessagePayloadByte(offset + 1) & 0x80) >> 0x05);
                 }
@@ -148,8 +155,9 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
 
                 try {
                     BigDecimal value = extractValue(serialMessage.getMessagePayload(), offset + 2);
-                    logger.debug("NODE {}: Meter: Type={}({}), Scale={}({}), Value={}", this.getNode().getNodeId(),
-                            meterType.getLabel(), meterTypeIndex, scale.getUnit(), scale.getScale(), value);
+                    logger.debug("NODE {}: Meter: Type={}({}), Scale={}({}), Value={}, Delta={}",
+                            this.getNode().getNodeId(), meterType.getLabel(), meterTypeIndex, scale.getUnit(),
+                            scale.getScale(), value, delta);
 
                     ZWaveMeterValueEvent zEvent = new ZWaveMeterValueEvent(this.getNode().getNodeId(), endpoint,
                             meterType, scale, value);

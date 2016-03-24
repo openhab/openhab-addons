@@ -90,7 +90,7 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        // We ignore any meter reports for item bindings configured with 'meter_reset=true'
+        // We ignore any meter reports for item bindings configured with 'reset=true'
         // since we don't want to be updating the 'reset' switch
         if ("true".equalsIgnoreCase(channel.getArguments().get("reset"))) {
             return null;

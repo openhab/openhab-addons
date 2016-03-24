@@ -12,8 +12,8 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,30 +55,30 @@ public class ReplaceFailedNodeMessageClass extends ZWaveCommandProcessor {
 
         switch (incomingMessage.getMessagePayloadByte(0)) {
             case FAILED_NODE_REMOVE_STARTED:
-                logger.debug("NODE {}: Remove failed node successfully placed on stack.", nodeId);
+                logger.debug("NODE {}: Replace failed node successfully placed on stack.", nodeId);
                 break;
             case FAILED_NODE_NOT_PRIMARY_CONTROLLER:
-                logger.error("NODE {}: Remove failed node failed as not Primary Controller for node!", nodeId);
+                logger.error("NODE {}: Replace failed node failed as not Primary Controller for node!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_NO_CALLBACK_FUNCTION:
-                logger.error("NODE {}: Remove failed node failed as no callback function!", nodeId);
+                logger.error("NODE {}: Replace failed node failed as no callback function!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_NOT_FOUND:
-                logger.error("NODE {}: Remove failed node failed as node not found", nodeId);
+                logger.error("NODE {}: Replace failed node failed as node not found", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_REMOVE_PROCESS_BUSY:
-                logger.error("NODE {}: Remove failed node failed as Controller Busy!", nodeId);
+                logger.error("NODE {}: Replace failed node failed as Controller Busy!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_REMOVE_FAIL:
-                logger.error("NODE {}: Remove failed node failed!", nodeId);
+                logger.error("NODE {}: Replace failed node failed!", nodeId);
                 transactionComplete = true;
                 break;
             default:
-                logger.error("NODE {}: Remove failed node not placed on stack due to error 0x{}.", nodeId,
+                logger.error("NODE {}: Replace failed node not placed on stack due to error 0x{}.", nodeId,
                         Integer.toHexString(incomingMessage.getMessagePayloadByte(0)));
                 transactionComplete = true;
                 break;
@@ -93,7 +93,7 @@ public class ReplaceFailedNodeMessageClass extends ZWaveCommandProcessor {
         int nodeId = lastSentMessage.getMessagePayloadByte(0);
 
         logger.debug("NODE {}: Got ReplaceFailedNode request.", nodeId);
-        switch (incomingMessage.getMessagePayloadByte(0)) {
+        switch (incomingMessage.getMessagePayloadByte(1)) {// TODO: Should this be (&& 0x0f)?
             case FAILED_NODE_OK:
                 logger.error("NODE {}: Unable to remove failed node as it is not a failed node!", nodeId);
                 transactionComplete = true;
@@ -107,8 +107,8 @@ public class ReplaceFailedNodeMessageClass extends ZWaveCommandProcessor {
                 transactionComplete = true;
                 break;
             default:
-                logger.error("NODE {}: Remove failed node failed with error 0x{}.", nodeId,
-                        Integer.toHexString(incomingMessage.getMessagePayloadByte(0)));
+                logger.error("NODE {}: Replace failed node returned with response 0x{}.", nodeId,
+                        Integer.toHexString(incomingMessage.getMessagePayloadByte(1)));
                 transactionComplete = true;
                 break;
         }
