@@ -74,8 +74,8 @@ Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
 
 Switch maxBattery "Battery Low" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:battery_low"}
 String maxMode    "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
-Number maxActual  "Actual measured room temperature  [%.1f °C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
-Number maxSetTemp "Thermostat temperature setpoint [%.1f °C]"  (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
+Number maxActual  "Actual measured room temperature  [%.1f ï¿½C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
+Number maxSetTemp "Thermostat temperature setpoint [%.1f ï¿½C]"  (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
 
 
 ```
@@ -96,5 +96,23 @@ sitemap demo label="Main Menu"
 
 ## Actual Temperature Update
 
-Please be aware that the actual temperature measure for thermostats is only updated after the valve moved position or the thermostats mode has changed. Hence the temperature you see may be hours old. In that case you can update the temperature by changing the mode, wait approx 2 minutes and change the mode back. (note: Future versions of the binding may automate this.)
+Please be aware that the actual temperature measure for thermostats is only updated after the valve moved position or the thermostats mode has changed. Hence the temperature you see may be hours old. In that case you can update the temperature by changing the mode, wait approx 2 minutes and change the mode back. 
+There is an experimental mode that does this automatically. This can be enabled by showing the "advanced settings"(e.g. in Habmin UI. Than the "Actual Temperature Refresh Rate" can be set. Minimum refresh rate once/10 minutes, recommended 60min to avoid excessive battery drain.
 
+
+## New Device Inclusion
+When clicking the discovery button for MAX! devices manually in the UI, you  will start New Device Inclusion mode for 60s. During this time holding the _boost_ button on your device will link it to the Cube.
+
+## Device configuration
+In the _Configuration Parameters_ section of the device things you can update some of the device configuration parameters. Currently the following parameters can be updated: 
+* _Name_ Name of the thermostat stored in the Cube (also used by the eq3 software).
+
+## Action Buttons (visible in Habmin)
+In the Habmin thing configuration screen several action buttons are available to trigger special actions on the Cube
+* _Reset Cube Configuration_. This resets the MAX! Cube room and device information. Devices will need to be included again! To use this button you need to enable 'Advanced settings'
+* _Restart Cube_, triggers the reboot of a Cube.
+
+On the MAX! devices you can trigger the following action
+* _Delete Device from Cube_. Deletes the device from the MAX! Cube. Device will need to be included again! To use this button you need to enable 'Advanced settings'
+
+Note: In PaperUI there are no action buttons. You can trigger these actions by setting the value to 0

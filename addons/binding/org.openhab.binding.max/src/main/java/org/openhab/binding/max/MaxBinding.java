@@ -61,8 +61,14 @@ public class MaxBinding {
     public final static String PROPERTY_VENDOR_NAME = "eQ-3 AG";
     public final static String PROPERTY_RFADDRESS = "rfAddress";
     public final static String PROPERTY_ROOMNAME = "room";
+    public final static String PROPERTY_ROOMID = "roomId";
     public final static String PROPERTY_DEVICENAME = "name";
     public final static String PROPERTY_REFRESH_ACTUAL_RATE = "refreshActualRate";
+
+    // List of actions
+    public final static String ACTION_CUBE_REBOOT = "action-cubeReboot";
+    public final static String ACTION_CUBE_RESET = "action-cubeReset";
+    public final static String ACTION_DEVICE_DELETE = "action-deviceDelete";
 
     public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
             HEATINGTHERMOSTAT_THING_TYPE, HEATINGTHERMOSTATPLUS_THING_TYPE, WALLTHERMOSTAT_THING_TYPE,

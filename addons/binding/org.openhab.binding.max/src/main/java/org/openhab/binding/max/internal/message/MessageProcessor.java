@@ -122,6 +122,12 @@ public class MessageProcessor {
             case M:
                 result = handle_M_MessageLine(line);
                 break;
+            case N:
+                this.currentMessage = new N_Message(line);
+                break;
+            case A:
+                this.currentMessage = new A_Message(line);
+                break;
             default:
         }
 

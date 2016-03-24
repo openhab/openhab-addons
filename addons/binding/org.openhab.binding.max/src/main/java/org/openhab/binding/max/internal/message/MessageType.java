@@ -19,5 +19,7 @@ public enum MessageType {
     M,
     C,
     L,
-    S
+    S,
+    N,
+    A
 }

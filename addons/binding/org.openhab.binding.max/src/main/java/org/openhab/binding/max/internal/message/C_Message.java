@@ -9,6 +9,10 @@
 package org.openhab.binding.max.internal.message;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,9 +25,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 
 /**
- * The C message contains configuration about a MAX! device.
+ * The {@link C_Message} contains configuration about a MAX! device.
  *
- * @author Andreas Heil (info@aheil.de)
+ * @author Andreas Heil (info@aheil.de) - Initial version
  * @author Marcel Verpaalen - Detailed parsing, OH2 Update
  * @since 1.4.0
  */
@@ -85,8 +89,12 @@ public final class C_Message extends Message {
                 || deviceType == DeviceType.WallMountedThermostat) {
             parseHeatingThermostatData(bytes);
         }
+
+        if (deviceType == DeviceType.Cube) {
+            parseCubeData(bytes);
+        }
         if (deviceType == DeviceType.EcoSwitch || deviceType == DeviceType.ShutterContact) {
-            logger.trace("Device {} type {} Data:", rfAddress, deviceType.toString(), parseData(bytes));
+            logger.trace("Device {} type {} Data: '{}'", rfAddress, deviceType.toString(), parseData(bytes));
         }
     }
 
@@ -129,6 +137,43 @@ public final class C_Message extends Message {
         }
 
         return "";
+    }
+
+    private void parseCubeData(byte[] bytes) {
+        if (bytes.length != 238) {
+            logger.debug("Unexpected lenght for Cube message {}, expected: 238", bytes.length);
+        }
+        try {
+            properties.put("Portal Enabled", Integer.toString(bytes[0x18] & 0xFF));
+            properties.put("Portal URL", new String(Arrays.copyOfRange(bytes, 0x55, 0xD5), "UTF-8").trim());
+            properties.put("TimeZone (Winter)", new String(Arrays.copyOfRange(bytes, 0xD6, 0xDA), "UTF-8").trim());
+            properties.put("TimeZone (Daylight)",
+                    new String(Arrays.copyOfRange(bytes, 0x00E2, 0x00E6), "UTF-8").trim());
+
+            properties.put("Unknown1", Utils.getHex(Arrays.copyOfRange(bytes, 0x13, 0x33))); // Pushbutton Up config 0=auto, 1=eco, 2=comfort
+            properties.put("Unknown2", Utils.getHex(Arrays.copyOfRange(bytes, 0x34, 0x54))); // Pushbutton down  config 0=auto, 1=eco, 2=comfort
+            properties.put("Winter Time", parseTimeInfo(Arrays.copyOfRange(bytes, 0xDB, 0xE2), "Winter").toString()); // Date of wintertime
+            properties.put("Summer Time", parseTimeInfo(Arrays.copyOfRange(bytes, 0xE7, 0xEF), "Summer").toString()); // Date of summertime
+
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("Cannot encode device string from C message due to encoding issues.");
+        } catch (Exception e) {
+            logger.debug("Exception occurred during parsing: {}", e.getMessage(), e);
+        }
+    }
+
+    private Date parseTimeInfo(byte[] bytes, String suffix) {
+        int month = bytes[0] & 0xFF;
+        int weekDay = bytes[1] & 0xFF;
+        int hour = bytes[2] & 0xFF;
+        int utcOffset = new BigInteger(Arrays.copyOfRange(bytes, 0x03, 0x07)).intValue();
+        suffix = " (" + suffix + ")";
+        properties.put("Utc Offset" + suffix, utcOffset);
+        Calendar pCal = Calendar.getInstance();
+        pCal.set(Calendar.getInstance().get(Calendar.YEAR), month - 1, 15, hour, 0, 0);
+        pCal.set(Calendar.DAY_OF_WEEK, weekDay + 1);
+        pCal.set(Calendar.DAY_OF_WEEK_IN_MONTH, -1);
+        return pCal.getTime();
     }
 
     private void parseHeatingThermostatData(byte[] bytes) {
@@ -214,6 +259,10 @@ public final class C_Message extends Message {
         return deviceType;
     }
 
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
     public int getRoomID() {
         return roomId;
     }
@@ -227,8 +276,14 @@ public final class C_Message extends Message {
         logger.debug("RFAddress:                {}", rfAddress);
         logger.debug("RoomID:                   {}", roomId);
         for (String key : properties.keySet()) {
-            logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+            if (!key.startsWith("Unknown")) {
+                logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+            } else {
+                logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
+            }
         }
-        logger.trace("ProgramData:          {}", programData);
+        if (programData != null) {
+            logger.trace("ProgramData:          {}", programData);
+        }
     }
 }
