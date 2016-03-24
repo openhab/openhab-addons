@@ -15,6 +15,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +34,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.internal.command.Q_Command;
+import org.openhab.binding.max.internal.command.S_ConfigCommand;
+import org.openhab.binding.max.internal.command.S_ConfigCommand.ConfigCommandType;
+import org.openhab.binding.max.internal.command.Z_Command;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.openhab.binding.max.internal.device.EcoSwitch;
@@ -121,8 +126,9 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     @Override
     public void dispose() {
         logger.debug("Disposing MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
-        if (refreshingActuals)
+        if (refreshingActuals) {
             refreshActualsRestore();
+        }
         if (refreshActualsJob != null && !refreshActualsJob.isCancelled()) {
             refreshActualsJob.cancel(true);
             refreshActualsJob = null;
@@ -133,6 +139,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             bridgeHandler.unregisterDeviceStatusListener(this);
             bridgeHandler = null;
         }
+        updateStatus(ThingStatus.OFFLINE);
         logger.debug("Disposed MAX! device {} {}.", getThing().getUID(), maxDeviceSerial);
         super.dispose();
     }
@@ -150,6 +157,85 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         configSet = false;
         forceRefresh = true;
         super.thingUpdated(thing);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        logger.debug("MAX! Device {}: Configuration update received", getThing().getThingTypeUID());
+
+        Configuration configuration = editConfiguration();
+        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
+            logger.debug("MAX! Device {}: Configuration update {} to {}", getThing().getThingTypeUID(),
+                    configurationParameter.getKey(), configurationParameter.getValue());
+            if (configurationParameter.getKey().equals(PROPERTY_DEVICENAME)
+                    || configurationParameter.getKey().equals(PROPERTY_ROOMID)) {
+                updateDeviceName(configurationParameter);
+            }
+            if (configurationParameter.getKey().startsWith("action-")) {
+                if (configurationParameter.getValue().toString().equals("0")) {
+                    configurationParameter.setValue(BigDecimal.valueOf(-1));
+                    if (configurationParameter.getKey().equals(ACTION_DEVICE_DELETE)) {
+                        deviceDelete();
+                    }
+                }
+            }
+            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
+        }
+
+        // Persist changes and restart with new parameters
+        updateConfiguration(configuration);
+    }
+
+    /**
+     * sends the T command to the Cube to disassociate the device from the MAX! Cube.
+     */
+    private void deviceDelete() {
+        MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
+        if (maxCubeBridge != null) {
+            maxCubeBridge.sendDeviceDelete(maxDeviceSerial);
+            dispose();
+        }
+    }
+
+    /**
+     * @param configurationParameter
+     */
+    private void updateDeviceName(Entry<String, Object> configurationParameter) {
+        MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
+        if (maxCubeBridge != null) {
+            Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
+            String name = configurationParameter.getValue().toString();
+            if (device != null && configurationParameter.getKey().equals(PROPERTY_DEVICENAME)
+                    && !(name.equals(device.getName()))) {
+                logger.info("Updating device name for {} to {}", getThing().getUID().getAsString(), name);
+                device.setName(name);
+                getMaxCubeBridgeHandler().sendDeviceAndRoomNameUpdate(name);
+                SendCommand sendCommand = new SendCommand(maxDeviceSerial, new Q_Command(), "Reload Data");
+                maxCubeBridge.queueCommand(sendCommand);
+            }
+
+            if (device != null && configurationParameter.getKey().equals(PROPERTY_ROOMID)) {
+                int roomId = ((BigDecimal) configurationParameter.getValue()).intValue();
+                if (roomId != device.getRoomId()) {
+                    logger.info("Updating room for {} to {}", getThing().getUID().getAsString(), roomId);
+                    device.setRoomId(roomId);
+                    //TODO: handle if a room has no more devices, probably should be deleted
+                    getMaxCubeBridgeHandler().sendDeviceAndRoomNameUpdate(name);
+                    SendCommand sendCommand = new SendCommand(maxDeviceSerial,
+                            Z_Command.wakeupDevice(device.getRFAddress()),
+                            "WakeUp device" + getThing().getUID().getAsString());
+                    maxCubeBridge.queueCommand(sendCommand);
+                    sendCommand = new SendCommand(maxDeviceSerial,
+                            new S_ConfigCommand(device.getRFAddress(), roomId, ConfigCommandType.SetRoom), "Set Room");
+                    maxCubeBridge.queueCommand(sendCommand);
+
+                    sendCommand = new SendCommand(maxDeviceSerial, new Q_Command(), "Reload Data");
+                    maxCubeBridge.queueCommand(sendCommand);
+                }
+            }
+        } else {
+            logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
+        }
     }
 
     private synchronized MaxCubeBridgeHandler getMaxCubeBridgeHandler() {
@@ -208,19 +294,24 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     public void onDeviceStateChanged(ThingUID bridge, Device device) {
         if (device.getSerialNumber().equals(maxDeviceSerial)) {
             if (!device.isLinkStatusError()) {
-                if (!refreshingActuals)
+                if (!refreshingActuals) {
                     updateStatus(ThingStatus.ONLINE);
-                else
+                } else {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Updating Actual Temperature");
-            } else
+                }
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-            if (!propertiesSet)
+            }
+            if (!propertiesSet) {
                 setProperties(device);
-            if (!configSet)
+            }
+            if (!configSet) {
                 setDeviceConfiguration(device);
+            }
             if (refreshActualRate >= REFRESH_ACTUAL_MIN_RATE && (device.getType() == DeviceType.HeatingThermostat
-                    || device.getType() == DeviceType.HeatingThermostatPlus))
+                    || device.getType() == DeviceType.HeatingThermostatPlus)) {
                 refreshActualCheck((HeatingThermostat) device);
+            }
             if (device.isUpdated() || forceRefresh) {
                 logger.debug("Updating states of {} {} ({}) id: {}", device.getType(), device.getName(),
                         device.getSerialNumber(), getThing().getUID());
@@ -260,9 +351,10 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 }
                 forceRefresh = false;
                 device.setUpdated(false);
-            } else
+            } else {
                 logger.debug("No changes for {} {} ({}) id: {}", device.getType(), device.getName(),
                         device.getSerialNumber(), getThing().getUID());
+            }
         }
     }
 
@@ -310,9 +402,10 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             }
             logger.debug("Actual Refresh in progress for {} {} ({}) id: {}", device.getType(), device.getName(),
                     device.getSerialNumber(), getThing().getUID());
-        } else
+        } else {
             logger.trace("Actual date for {} {} ({}) : {}", device.getType(), device.getName(),
                     device.getSerialNumber(), dateFormat.format(device.getActualTempLastUpdated().getTime()));
+        }
 
     }
 
@@ -394,6 +487,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             logger.debug("MAX! {} {} configuration update", device.getType().toString(), device.getSerialNumber());
             Configuration configuration = editConfiguration();
             configuration.put(MaxBinding.PROPERTY_ROOMNAME, device.getRoomName());
+            configuration.put(MaxBinding.PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
             configuration.put(MaxBinding.PROPERTY_DEVICENAME, device.getName());
             configuration.put(MaxBinding.PROPERTY_RFADDRESS, device.getRFAddress());
             updateConfiguration(configuration);
