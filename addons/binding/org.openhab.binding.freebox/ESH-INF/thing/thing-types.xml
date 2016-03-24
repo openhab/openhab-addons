@@ -245,7 +245,7 @@
 	</channel-type>
 	
 	<channel-type id="call_timestamp">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Call creation timestamp</description>
 		<state readOnly="true" />

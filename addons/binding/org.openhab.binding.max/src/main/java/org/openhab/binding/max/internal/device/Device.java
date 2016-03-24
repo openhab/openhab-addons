@@ -55,7 +55,11 @@ public abstract class Device {
     public abstract DeviceType getType();
 
     public String getName() {
-        return config.getName();
+        String deviceName = "";
+        if (config.getName() != null) {
+            deviceName = config.getName();
+        }
+        return deviceName;
     }
 
     private static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
@@ -122,7 +126,7 @@ public abstract class Device {
         device.setLinkStatusError(bits2[6]);
         device.setBatteryLow(bits2[7]);
 
-        logger.trace("Device {} type {} L Message length: {} content: {}", rfAddress, device.getType().toString(),
+        logger.trace("Device {} ({}): L Message length: {} content: {}", rfAddress, device.getType().toString(),
                 raw.length, Utils.getHex(raw));
 
         // TODO move the device specific readings into the sub classes
@@ -141,7 +145,7 @@ public abstract class Device {
                 } else if (bits2[1] == true && bits2[0] == true) {
                     heatingThermostat.setMode(ThermostatModeType.BOOST);
                 } else {
-                    logger.debug("Device {}: Unknown mode", rfAddress);
+                    logger.debug("Device {} ({}): Unknown mode", rfAddress, device.getType().toString());
                 }
 
                 heatingThermostat.setValvePosition(raw[6] & 0xFF);
@@ -165,26 +169,29 @@ public abstract class Device {
                             && heatingThermostat.getMode() != ThermostatModeType.BOOST) {
                         actualTemp = (raw[8] & 0xFF) * 256 + (raw[9] & 0xFF);
                     } else {
-                        logger.debug("Device {}: No temperature reading in {} mode", rfAddress,
-                                heatingThermostat.getMode());
+                        logger.debug("Device {} ({}): No temperature reading in {} mode", rfAddress,
+                                device.getType().toString(), heatingThermostat.getMode());
                     }
                 }
-                logger.trace("Device {}: Actual Temperature : {}", rfAddress, (double) actualTemp / 10);
+                logger.debug("Device {} ({}): Actual Temperature : {}", rfAddress, device.getType().toString(),
+                        (double) actualTemp / 10);
                 heatingThermostat.setTemperatureActual((double) actualTemp / 10);
                 break;
             case EcoSwitch:
                 String eCoSwitchData = Utils.toHex(raw[3] & 0xFF, raw[4] & 0xFF, raw[5] & 0xFF);
-                logger.trace("EcoSwitch Device {} status bytes : {}", rfAddress, eCoSwitchData);
+                logger.trace("Device {} ({}): Status bytes : {}", rfAddress, device.getType().toString(),
+                        eCoSwitchData);
                 EcoSwitch ecoswitch = (EcoSwitch) device;
                 // xxxx xx10 = shutter open, xxxx xx00 = shutter closed
                 if (bits2[1] == true && bits2[0] == false) {
                     ecoswitch.setEcoMode(OnOffType.ON);
-                    logger.trace("Device {} status: ON", rfAddress);
+                    logger.trace("Device {} ({}): status: ON", rfAddress, device.getType().toString());
                 } else if (bits2[1] == false && bits2[0] == false) {
                     ecoswitch.setEcoMode(OnOffType.OFF);
-                    logger.trace("Device {} status: OFF", rfAddress);
+                    logger.trace("Device {} ({}): Status: OFF", rfAddress, device.getType().toString());
                 } else {
-                    logger.trace("Device {} status switch status Unknown (true-true)", rfAddress);
+                    logger.trace("Device {} ({}): Status switch status Unknown (true-true)", rfAddress,
+                            device.getType().toString());
                 }
                 break;
             case ShutterContact:
@@ -192,12 +199,13 @@ public abstract class Device {
                 // xxxx xx10 = shutter open, xxxx xx00 = shutter closed
                 if (bits2[1] == true && bits2[0] == false) {
                     shutterContact.setShutterState(OpenClosedType.OPEN);
-                    logger.trace("Device {} status: Open", rfAddress);
+                    logger.debug("Device {} ({}): Status: Open", rfAddress, device.getType().toString());
                 } else if (bits2[1] == false && bits2[0] == false) {
                     shutterContact.setShutterState(OpenClosedType.CLOSED);
-                    logger.trace("Device {} status: Closed", rfAddress);
+                    logger.debug("Device {} ({}): Status: Closed", rfAddress, device.getType().toString());
                 } else {
-                    logger.trace("Device {} status switch status Unknown (true-true)", rfAddress);
+                    logger.trace("Device {} ({}): Status switch status Unknown (true-true)", rfAddress,
+                            device.getType().toString());
                 }
 
                 break;
@@ -237,7 +245,11 @@ public abstract class Device {
     }
 
     public final String getRoomName() {
-        return config.getRoomName();
+        String roomName = "";
+        if (config.getRoomName() != null) {
+            roomName = config.getRoomName();
+        }
+        return roomName;
     }
 
     private void setLinkStatusError(boolean linkStatusError) {

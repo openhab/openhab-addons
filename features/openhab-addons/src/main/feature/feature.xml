@@ -47,6 +47,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-kostalinverter" description="Kostal Inverter Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle
+        start-level="80">mvn:org.openhab.binding/org.openhab.binding.kostalinverter/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lutron/${project.version}</bundle>
@@ -63,6 +69,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-opensprinkler" description="OpenSprinkler Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.opensprinkler/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-pioneeravr" description="PioneerAVR Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
@@ -74,6 +85,12 @@
         <feature>openhab-transport-mdns</feature>
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pulseaudio/${project.version}</bundle>
+    </feature>
+
+   <feature name="openhab-binding-rme" description="RME Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rme/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-rfxcom" description="RFXCOM Binding" version="${project.version}">
@@ -109,6 +126,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.vitotronic/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-zwave" description="Z-Wave Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
+    </feature>
+
     <!-- misc -->
 
     <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
@@ -116,6 +139,17 @@
         <feature>esh-model-script</feature>
         <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.myopenhab/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.hueemulation/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
     <!-- ui -->
@@ -129,6 +163,13 @@
         <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/cometvisu</configfile>
+    </feature>
+
+    <feature name="openhab-ui-cometvisu-php" description="PHP support for CometVisu" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-ui-cometvisu</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>
 
 </features>

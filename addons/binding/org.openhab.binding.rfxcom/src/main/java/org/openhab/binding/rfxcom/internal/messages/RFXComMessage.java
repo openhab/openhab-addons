@@ -17,87 +17,87 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * This interface defines interface which every message class should implement.
- * 
+ *
  * @author Pauli Anttila - Initial contribution
  */
 public interface RFXComMessage {
 
-	/**
-	 * Procedure for present class information in string format. Used for
-	 * logging purposes.
-	 * 
-	 */
-	String toString();
+    /**
+     * Procedure for present class information in string format. Used for
+     * logging purposes.
+     * 
+     */
+    @Override
+    String toString();
 
-	/**
-	 * Procedure for encode raw data.
-	 * 
-	 * @param data
-	 *            Raw data.
-	 */
-	void encodeMessage(byte[] data);
+    /**
+     * Procedure for encode raw data.
+     * 
+     * @param data
+     *            Raw data.
+     */
+    void encodeMessage(byte[] data);
 
-	/**
-	 * Procedure for decode object to raw data.
-	 * 
-	 * @return raw data.
-	 */
-	byte[] decodeMessage();
+    /**
+     * Procedure for decode object to raw data.
+     * 
+     * @return raw data.
+     */
+    byte[] decodeMessage();
 
-	/**
-	 * Procedure for converting RFXCOM value to Openhab state.
-	 * 
-	 * @param valueSelector
-	 * 
-	 * @return Openhab state.
-	 */
-	State convertToState(RFXComValueSelector valueSelector)
-			throws RFXComException;
+    /**
+     * Procedure for converting RFXCOM value to Openhab state.
+     * 
+     * @param valueSelector
+     * 
+     * @return Openhab state.
+     */
+    State convertToState(RFXComValueSelector valueSelector) throws RFXComException;
 
-	/**
-	 * Procedure for converting Openhab state to RFXCOM object.
-	 * 
-	 */
-	void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException;
+    /**
+     * Procedure for converting Openhab state to RFXCOM object.
+     * 
+     */
+    void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException;
 
-	/**
-	 * Procedure for converting sub type as string to sub type object.
-	 * 
-	 * @return sub type object.
-	 */
-	Object convertSubType(String subType) throws RFXComException;
+    /**
+     * Procedure for converting sub type as string to sub type object.
+     * 
+     * @return sub type object.
+     */
+    Object convertSubType(String subType) throws RFXComException;
 
-	/**
-	 * Procedure to set sub type.
-	 * 
-	 */
-	void setSubType(Object subType) throws RFXComException;
+    /**
+     * Procedure to set sub type.
+     * 
+     */
+    void setSubType(Object subType) throws RFXComException;
 
-	/**
-	 * Procedure to get device id.
-	 * 
-	 * @return device Id.
-	 */
-	String getDeviceId() throws RFXComException;
+    /**
+     * Procedure to get device id.
+     * 
+     * @return device Id.
+     */
+    String getDeviceId() throws RFXComException;
 
-	/**
-	 * Procedure to set device id.
-	 * 
-	 */
-	void setDeviceId(String deviceId) throws RFXComException;
+    /**
+     * Procedure to set device id.
+     * 
+     */
+    void setDeviceId(String deviceId) throws RFXComException;
 
-	/**
-	 * Procedure for get supported value selector list for input values.
-	 * 
-	 * @return List of supported value selectors.
-	 */
-	List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException;
+    /**
+     * Procedure for get supported value selector list for input values.
+     * 
+     * @return List of supported value selectors.
+     */
+    List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException;
 
-	/**
-	 * Procedure for get supported value selector list for output values.
-	 * 
-	 * @return List of supported value selectors.
-	 */
-	List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException;
+    /**
+     * Procedure for get supported value selector list for output values.
+     * 
+     * @return List of supported value selectors.
+     */
+    List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException;
 
 }

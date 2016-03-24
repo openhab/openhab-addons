@@ -4,12 +4,10 @@ Documentation of the CometVisu Backend for openHAB2
 
 This adds a backend for the web based visualization CometVisu (http://www.cometvisu.org). The CometVisu is a highly customizable visualization, that runs in any browser. Despite the existing browser based UI´s in openHAB, the CometVisu does not rely on sitemaps (although they can be used). The layout is defined with an XML-based configuration file, which allows a multi column layout.
 
-This is just a short overview, more details will be added soon!
-
 ## Requirements
 
 * openHAB 2.0 or greater<br>
-* CometVisu >=0.8.6? (not released yet) or greater (https://github.com/CometVisu/CometVisu/releases).<br>
+* CometVisu 0.8.6 or greater (https://github.com/CometVisu/CometVisu/releases).<br>
 
 ## Installation
 
@@ -180,6 +178,11 @@ The sitemap support can only be used as a starting point for own customizations,
 
 ### 403 error 
 If you get an 403 - Access Denied error, when you try to open the CometVisu in your browser you have not copied the correct release folder into the \<webFolder\> folder. Please check if there is a subfolder with the exact name "release/", which contains an index.html file and copy the content to the folder defined in the \<webFolder\>-property.
+
+### Hints for development
+For every change in the CometVisu XSD-schema the JAXB auto-generation job must be executed:
+* copy the new visu_config.xsd to src/main/resources/
+* and call `mvn jaxb2:xjc`
 
 ## TODO
 Maybe it is possible to define a general structure (in addition to a sitemap), that maps and groups items based on their context, e.g. which floor/room/subsection the belong to
