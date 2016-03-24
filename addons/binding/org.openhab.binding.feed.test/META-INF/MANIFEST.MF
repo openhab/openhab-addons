@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FeedHandler Test Binding
+Bundle-Name: Feed Binding Tests
 Bundle-SymbolicName: org.openhab.binding.feed.test;singleton:=true
 Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.feed
@@ -24,9 +24,9 @@ Import-Package: groovy.json,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
- org.junit,
- org.junit.matchers,
- org.junit.runner,
+ org.junit;version="4.0.0",
+ org.junit.matchers;version="4.0.0",
+ org.junit.runner;version="4.0.0",
  org.osgi.framework,
  org.osgi.service.http,
  org.apache.commons.httpclient,

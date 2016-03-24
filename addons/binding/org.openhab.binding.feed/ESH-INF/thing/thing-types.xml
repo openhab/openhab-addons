@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- DEFINITIONS of terms used in the binding:
-	    Feed is a document used for providing users with frequently updated content. It is localized with URL. 
-		Entry is a single item in the Feed, that contains reference (link), short description and other information like images, 
-		comments and etc. -->
+	    Feed is a XML document used for providing users with frequently updated content. It is located at URL. The most popular feed formats are RSS and Atom. 
+		Entry is a single element in the Feed, that contains reference (link), short description and other information like images, 
+		comments and etc. Entry in this binding is abstraction for RSS item element and Atom entry element. -->
 
 	<!-- Feed Thing Type -->
 	<thing-type id="feed">
@@ -53,7 +53,7 @@
 				</options>
 			</parameter>
 
-			<!-- The user is able to configure the number of Entries, that the binding tracks and stores, through this parameter. -->
+			<!-- The user is able to configure the number of Entries, that the binding tracks and stores, with this parameter. -->
 
 			<parameter name="length" type="integer">
 				<label>Number of Entries</label>
@@ -69,6 +69,5 @@
 		<label>Feed channel</label>
 		<description>Contains the latest feed content.</description>
 	</channel-type>
-
 
 </thing:thing-descriptions>

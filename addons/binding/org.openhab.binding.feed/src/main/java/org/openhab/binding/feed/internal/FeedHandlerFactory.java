@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.feed.internal;
 
-import static org.openhab.binding.feed.FeedBindingConstants.THING_TYPE_SAMPLE;
+import static org.openhab.binding.feed.FeedBindingConstants.FEED_THING_TYPE_UID;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,7 +26,7 @@ import org.openhab.binding.feed.handler.FeedHandler;
  */
 public class FeedHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FEED_THING_TYPE_UID);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,7 +38,7 @@ public class FeedHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(FEED_THING_TYPE_UID)) {
             return new FeedHandler(thing);
         }
 

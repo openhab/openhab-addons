@@ -2,6 +2,8 @@
 
 This binding allows you to integrate frequently updated Web feed content in the Openhab environment.
 The Feed binding downloads the content, track for changes and transform the data into one output format (RSS or Atom).
+It can be used in combination with openHAB rules to provide XML feed data to different devices.
+It supports a wide range of popular feed formats.
 
 ## Supported Things
 
@@ -36,10 +38,10 @@ The binding supports  one channel
 
 Things:
 ```
-feed:feed:7news  [ URL="http://24news.com/news/rss.xml?edition=int"]
+feed:feed:24news  [ URL="http://24news.com/news/rss.xml?edition=int"]
 feed:feed:technews1 [ URL="http://techgeek.de/feed", format="rss_2.0", refresh=60, length=60] 
 ```
 Items:
 ```
-String Feed_7news                "Feed content[%-10s.10]"      {channel="feed:feed:7news:feed-channel"}
+String Feed_24news                "Feed content[%-10s.10]"      {channel="feed:feed:24news:feed-channel"}
 ```

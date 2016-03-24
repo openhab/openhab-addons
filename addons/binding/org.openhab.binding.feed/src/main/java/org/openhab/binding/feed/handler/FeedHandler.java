@@ -41,10 +41,6 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedOutput;
 
 /**
- * Feed binding integrates Web Feed functionality with openHAB.
- * It fetches Feed Data from given URL and regularly updates the data.
- * The binding can be used in combination with openHAB rules to provide XML feed data to different devices.
- * It supports a wide range of popular feed formats.
  *
  * The {@link FeedHandler } is responsible for handling commands, which are
  * sent to one of the channels and for the regular updates of the feed data.
@@ -56,27 +52,18 @@ public class FeedHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(FeedHandler.class);
 
     private String urlString;
-    /**
-     * The refresh time specifies how often the binding checks for new entries in the feed.
-     */
     private BigDecimal refreshTime;
     /**
-     * Represents the output Feed format. All Feeds are converted to this format. Supported formats are
-     * {@link #SUPPORTED_FEED_FORMATS}
+     * All Feeds are converted to this format. Supported formats are {@link #SUPPORTED_FEED_FORMATS}
      */
-    private String feedFormat;
-    /**
-     * Specifies how many feed entries are stored in the state of the thing.
-     */
+    private String outputFeedFormat;
     private BigDecimal numberOfEntriesStored;
 
     /**
      * FeedFetcher is used to fetch data from feed. It supports conditional GET Requests.
      **/
     private FeedFetcher feedFetcher;
-    // TODO desc
     private ScheduledFuture<?> refreshTask;
-    // TODO desc
     private SyndFeed currentFeedState;
 
     public FeedHandler(Thing thing) {
@@ -101,16 +88,9 @@ public class FeedHandler extends BaseThingHandler {
     private void checkConfiguration() {
         logger.debug("Start reading Feed Thing configuration.");
         Configuration configuration = editConfiguration();
+
         // It is not necessary to check if the URL is valid, this will be done in fetchFeedData() method
-
-        // TODO NullPointerException is not resolved.
         urlString = (String) configuration.get(URL);
-
-        if (urlString == null) {
-            logger.debug("Null value is not allowed. URL will be considered as empty!");
-            urlString = "";
-            configuration.put(FeedBindingConstants.URL, urlString);
-        }
 
         try {
             refreshTime = (BigDecimal) configuration.get(REFRESH_TIME);
@@ -125,11 +105,11 @@ public class FeedHandler extends BaseThingHandler {
 
         }
 
-        feedFormat = (String) configuration.get(FEED_FORMAT);
-        if (!SUPPORTED_FEED_FORMATS.contains(feedFormat)) {
-            logger.warn("Format [{}] is not supported. Falling back to default value: {}.", feedFormat,
+        outputFeedFormat = (String) configuration.get(FEED_FORMAT);
+        if (!SUPPORTED_FEED_FORMATS.contains(outputFeedFormat)) {
+            logger.warn("Format [{}] is not supported. Falling back to default value: {}.", outputFeedFormat,
                     DEFAULT_FEED_FORMAT);
-            feedFormat = DEFAULT_FEED_FORMAT;
+            outputFeedFormat = DEFAULT_FEED_FORMAT;
             configuration.put(FeedBindingConstants.FEED_FORMAT, DEFAULT_FEED_FORMAT);
         }
 
@@ -154,8 +134,7 @@ public class FeedHandler extends BaseThingHandler {
         Runnable refresher = new Runnable() {
             @Override
             public void run() {
-
-                refresh();
+                refreshFeedState();
             }
         };
 
@@ -163,7 +142,7 @@ public class FeedHandler extends BaseThingHandler {
 
     }
 
-    private void refresh() {
+    private void refreshFeedState() {
 
         SyndFeed feed = fetchFeedData(urlString);
         boolean feedUpdated = updateFeedIfChanged(feed);
@@ -171,6 +150,7 @@ public class FeedHandler extends BaseThingHandler {
         if (feedUpdated) {
             String content = getFeedContent(currentFeedState, numberOfEntriesStored.intValue());
             updateState(FEED_CHANNEL, new StringType(content));
+            logger.debug("Content updated !");
         }
 
     }
@@ -184,10 +164,10 @@ public class FeedHandler extends BaseThingHandler {
      *         otherwise
      */
     private synchronized boolean updateFeedIfChanged(SyndFeed newFeedState) {
-        // TODO comment equals
+        // SyndFeed class has implementation of equals ()
         if (newFeedState != null && !newFeedState.equals(currentFeedState)) {
             currentFeedState = newFeedState;
-            logger.debug("Content updated!");
+            logger.debug("New content available!");
             return true;
         }
         logger.debug("Content is up to date!");
@@ -253,7 +233,7 @@ public class FeedHandler extends BaseThingHandler {
             /*
              * The entries are stored in the SyndFeed object in the following order -
              * the newest entry has index 0. The order is determined from the time the entry was posted, not the
-             * published date of the entry.
+             * published time of the entry.
              */
             allEntries = allEntries.subList(0, numberOfEntries);
             feed.setEntries(allEntries);
@@ -268,12 +248,13 @@ public class FeedHandler extends BaseThingHandler {
      * {@link #SUPPORTED_FEED_FORMATS}.This method sets the Feed format as well.
      *
      * @param feed
-     * @return <code>String</code> containing the XML data or <code>null</code> if XML can not be created
+     * @return <code>String</code> containing the XML data or <code>null</code> if XML is invalid for the selected
+     *         {@link #outputFeedFormat}
      */
     private String getFeedContent(SyndFeed feed) {
-        feed.setFeedType(feedFormat);
+        feed.setFeedType(outputFeedFormat);
 
-        if (feedFormat.equals("rss_0.91N") || feedFormat.equals("rss_0.91U")) {
+        if (outputFeedFormat.equals("rss_0.91N") || outputFeedFormat.equals("rss_0.91U")) {
             // RSS 0.91 has required language attribute. Default value is assigned, because if this value is missing,
             // the
             // conversion to RSS 0.91 will fail
@@ -296,7 +277,7 @@ public class FeedHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             if (channelUID.getId().equals(FEED_CHANNEL)) {
-                refresh();
+                refreshFeedState();
             } else {
                 logger.debug("Command received for an unknown channel: {}", channelUID.getId());
             }

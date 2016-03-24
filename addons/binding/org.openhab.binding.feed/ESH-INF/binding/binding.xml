@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Feed Binding</name>
-	<description>The Feed Binding requests Feed data from URL, 
+	<description>The Feed Binding downloads Feed data from URL, 
 	   transforms it according to the user preferences (format, number of Entries)
 	   and tracks for changes in the source Feed at intervals.</description>
 	<author>Svilen Valkanov</author>

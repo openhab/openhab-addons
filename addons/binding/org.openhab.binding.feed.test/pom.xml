@@ -35,26 +35,7 @@
 	</repositories>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>${build.helper.maven.plugin.version}</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/main/groovy</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+		<plugins>			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.version}</version>
@@ -85,12 +66,8 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho-version}</version>
-				<configuration>
-					<includes>
-						<include>**/*</include>
-					</includes>
-					<excludes>
-						<exclude>**/*.xml</exclude>
+				<configuration>					
+					<excludes>						
 						<exclude>**/*.groovy</exclude>
 					</excludes>
 					<defaultStartLevel>
@@ -98,6 +75,7 @@
 						<autoStart>true</autoStart>
 					</defaultStartLevel>
 					<dependencies>
+					    <!-- Equinox Bundles-->
 						<dependency>
 							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
@@ -134,7 +112,7 @@
 							<artifactId>ch.qos.logback.slf4j</artifactId>
 							<version>0.0.0</version>
 						</dependency>
-						<!-- Required Bundles to for HTTP -->
+						<!-- Required Bundles to for HTTP service -->
 						<dependency>
                             <type>eclipse-plugin</type>
                             <artifactId>org.eclipse.equinox.http.jetty</artifactId>
@@ -145,6 +123,7 @@
                             <artifactId>org.eclipse.equinox.http.servlet</artifactId>
                             <version>0.0.0</version>
                         </dependency> 
+                        <!-- Smarthome core bundles -->
                         <dependency>
                             <type>eclipse-plugin</type>
                             <artifactId>org.eclipse.smarthome.config.xml</artifactId>
