@@ -21,19 +21,6 @@ public class MySensorsMessageParser {
 
             int nodeId = Integer.parseInt(splitMessage[0]);
 
-            /*
-             * It's a message from the gateway (ourself).
-             * We only want the "Gateway startup complete"
-             */
-            if (nodeId == 0) {
-                if (!splitMessage[5].equals(MySensorsMessage.GATEWAY_STARTUP_NOTIFICATION)
-                        && !(Integer.parseInt(splitMessage[2]) == MySensorsBindingConstants.MYSENSORS_MSG_TYPE_INTERNAL
-                                && Integer.parseInt(
-                                        splitMessage[4]) == MySensorsBindingConstants.MYSENSORS_SUBTYPE_I_VERSION)) {
-                    return null;
-                }
-            }
-
             mysensorsmessage.setNodeId(nodeId);
             mysensorsmessage.setChildId(Integer.parseInt(splitMessage[1]));
             mysensorsmessage.setMsgType(Integer.parseInt(splitMessage[2]));
