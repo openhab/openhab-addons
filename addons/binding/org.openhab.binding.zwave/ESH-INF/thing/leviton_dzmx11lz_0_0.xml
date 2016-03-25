@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="leviton_dzmx11lz_00_000">
+
+  <thing-type id="leviton_dzmx11lz_00_000" listed="false">
     <label>DZMX1-1LZ Scene Capable Push On/Off</label>
     <description>Scene Capable Push On/Off</description>
 

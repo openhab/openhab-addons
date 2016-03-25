@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="eco_pir1_00_000">
+
+  <thing-type id="eco_pir1_00_000" listed="false">
     <label>Ecolink PIR Z-Wave PIR Motion Sensor</label>
     <description>Z-Wave PIR Motion Sensor</description>
 
@@ -35,7 +36,7 @@
       <property name="model">Ecolink PIR</property>
       <property name="manufacturerId">014A</property>
       <property name="manufacturerRef">0001:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

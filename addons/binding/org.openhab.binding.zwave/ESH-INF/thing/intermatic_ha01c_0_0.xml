@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="intermatic_ha01c_00_000">
+
+  <thing-type id="intermatic_ha01c_00_000" listed="false">
     <label>HA-01C In-Wall Dual Receptacle</label>
     <description><![CDATA[
 In-Wall Dual Receptacle<br /><h1>Overview</h1><p>The Intermatic HA01C Wall Receptacle is an in­-wall Z-­Wave switch that can be controlled to automatically and wirelessly to replace an existing receptacle to control lamps, or small appliances. It also works as a range extender for your other Z-­Wave devices. This In-Wall receptacle features two plug receptacles, both of which provide standard power operation, only the bottom plug in the outlet is controllable by Z-Wave. Ratings: 15 A, 125 VAC, 50/60 Hz Operating Temperature Range: 32°F to 104°F / 0°C to 40°C Radio Operating Frequency: 908.42 MHz RF (wireless) Range: 50-100 ft. under normal operating conditions</p>

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgfs101_00_000">
+
+  <thing-type id="fibaro_fgfs101_00_000" listed="false">
     <label>FGFS101 Flood Sensor</label>
     <description>Flood Sensor</description>
 
@@ -19,13 +20,13 @@
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="sensor_flood" typeId="sensor_flood">
         <label>Alarm (water)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=FLOOD</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=FLOOD</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -42,7 +43,7 @@
       <channel id="sensor_temperature2" typeId="sensor_temperature">
         <label>Sensor (temperature) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=TEMPERATURE</property>
         </properties>
       </channel>
     </channels>
@@ -53,7 +54,7 @@
       <property name="model">FGFS101</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0B00:1001,0B00:2001,0B00:3001</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

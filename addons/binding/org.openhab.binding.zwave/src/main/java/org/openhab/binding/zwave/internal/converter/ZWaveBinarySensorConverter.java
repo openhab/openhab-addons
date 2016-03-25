@@ -71,7 +71,7 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
         // logger.debug("ZWaveBinarySensorValueEvent 1");
 
-        String sensorType = channel.getArguments().get("sensorType");
+        String sensorType = channel.getArguments().get("type");
         // logger.debug("ZWaveBinarySensorValueEvent 2");
         ZWaveBinarySensorValueEvent sensorEvent = (ZWaveBinarySensorValueEvent) event;
         // logger.debug("ZWaveBinarySensorValueEvent 3");

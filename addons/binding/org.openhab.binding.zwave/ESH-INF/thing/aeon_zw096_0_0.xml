@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_zw096_00_000">
+
+  <thing-type id="aeon_zw096_00_000" listed="false">
     <label>ZW096 Smart Switch 6</label>
     <description><![CDATA[
 Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power binary switch device based on Z-Wave enhanced 232 slave library V6.51.06.</p>
@@ -37,25 +38,31 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_current" typeId="meter_current">
         <label>Electric meter (amps)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_voltage" typeId="meter_voltage">
         <label>Electric meter (volts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
+        </properties>
+      </channel>
+      <channel id="meter_reset" typeId="meter_reset">
+        <label>Reset Meter</label>
+        <properties>
+          <property name="binding:*:OnOffType">METER;event=true</property>
         </properties>
       </channel>
       <channel id="switch_binary" typeId="switch_binary">
@@ -72,7 +79,7 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
       <property name="model">ZW096</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:0060,0103:0060,0203:0060,1D03:0060</property>
-      <property name="DefaultAssociations">1,2</property>
+      <property name="defaultAssociations">1,2</property>
     </properties>
 
     <config-description>

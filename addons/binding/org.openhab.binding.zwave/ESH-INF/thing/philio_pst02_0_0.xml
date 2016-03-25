@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="philio_pst02_00_000">
+
+  <thing-type id="philio_pst02_00_000" listed="false">
     <label>PST-02 Slim Multi-Sensor</label>
     <description>Slim Multi-Sensor</description>
 
@@ -30,13 +31,13 @@
       <channel id="sensor_luminance" typeId="sensor_luminance">
         <label>Sensor (luminance)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=LUMINANCE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=LUMINANCE</property>
         </properties>
       </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
         </properties>
       </channel>
     </channels>
@@ -47,7 +48,7 @@
       <property name="model">PST-02</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0002:000C,0002:000D,0002:000E</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

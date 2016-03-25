@@ -46,9 +46,12 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.ALARM, ZWaveAlarmConverter.class);
         temp.put(CommandClass.BASIC, ZWaveBasicConverter.class);
         temp.put(CommandClass.BATTERY, ZWaveBatteryConverter.class);
+        temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
         temp.put(CommandClass.COLOR, ZWaveColorConverter.class);
         temp.put(CommandClass.CONFIGURATION, ZWaveConfigurationConverter.class);
+        temp.put(CommandClass.DOOR_LOCK, ZWaveDoorLockConverter.class);
         temp.put(CommandClass.METER, ZWaveMeterConverter.class);
+        temp.put(CommandClass.SCENE_ACTIVATION, ZWaveSceneActivationConverter.class);
         temp.put(CommandClass.SENSOR_ALARM, ZWaveAlarmSensorConverter.class);
         temp.put(CommandClass.SENSOR_BINARY, ZWaveBinarySensorConverter.class);
         temp.put(CommandClass.SENSOR_MULTILEVEL, ZWaveMultiLevelSensorConverter.class);
@@ -59,6 +62,7 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.THERMOSTAT_MODE, ZWaveThermostatModeConverter.class);
         temp.put(CommandClass.THERMOSTAT_OPERATING_STATE, ZWaveThermostatOperatingStateConverter.class);
         temp.put(CommandClass.THERMOSTAT_SETPOINT, ZWaveThermostatSetpointConverter.class);
+        temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
 
         converterMap = Collections.unmodifiableMap(temp);
     }

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="homeseer_ezmultipli_00_000">
+
+  <thing-type id="homeseer_ezmultipli_00_000" listed="false">
     <label>EZMultiPli Multi Sensor</label>
     <description>Multi Sensor</description>
 
@@ -13,13 +14,13 @@
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
         <label>Sensor (luminance)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=LUMINANCE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
@@ -36,7 +37,7 @@
       <property name="model">EZMultiPli</property>
       <property name="manufacturerId">001E</property>
       <property name="manufacturerRef">0004:0001</property>
-      <property name="DefaultAssociations">1,2</property>
+      <property name="defaultAssociations">1,2</property>
     </properties>
 
     <config-description>

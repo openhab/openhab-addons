@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="tkb_tz65d_00_000">
+
+  <thing-type id="tkb_tz65d_00_000" listed="false">
     <label>TZ65D Dual Paddle Wall Dimmer</label>
     <description>Dual Paddle Wall Dimmer</description>
 
@@ -25,7 +26,7 @@
       <property name="model">TZ65D</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0808:0808</property>
-      <property name="DefaultAssociations">4</property>
+      <property name="defaultAssociations">4</property>
     </properties>
 
     <config-description>

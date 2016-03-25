@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="vision_zw4001_00_000">
+
+  <thing-type id="vision_zw4001_00_000" listed="false">
     <label>ZW4101 Drapery controller (up/stop/down)</label>
     <description><![CDATA[
 Drapery controller (up/stop/down)<br /><h1>Overview</h1><p>Drapery controller, supports up/stop/down commands.</p>

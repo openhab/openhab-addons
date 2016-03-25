@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="linear_wadwaz1_00_000">
+
+  <thing-type id="linear_wadwaz1_00_000" listed="false">
     <label>WADWAZ-1 Door/Windows Sensor</label>
     <description><![CDATA[
 Door/Windows Sensor<br /><h1>Overview</h1><p>Linear Z-Wave products are easy to install, and allow dealers to create an integrated wireless network with nearly limitless expansion and interoperability with security and health monitoring systems, energy management, home entertainment, appliances, and more.</p>
@@ -41,13 +42,13 @@ Door/Windows Sensor<br /><h1>Overview</h1><p>Linear Z-Wave products are easy to 
       <channel id="alarm_entry" typeId="alarm_entry">
         <label>Door Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC;alarmType=BURGLAR, alarmEvent=2</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC;type=BURGLAR, event=2</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Tamper Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC;alarmType=BURGLAR, alarmEvent=3</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC;type=BURGLAR, event=3</property>
         </properties>
       </channel>
     </channels>
@@ -58,7 +59,7 @@ Door/Windows Sensor<br /><h1>Overview</h1><p>Linear Z-Wave products are easy to 
       <property name="model">WADWAZ-1</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">2001:0102</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

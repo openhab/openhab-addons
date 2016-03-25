@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="everspring_st814_00_000">
+
+  <thing-type id="everspring_st814_00_000" listed="false">
     <label>ST814 Temperature and Humidity Sensor</label>
     <description>Temperature and Humidity Sensor</description>
 
@@ -13,25 +14,25 @@
       <channel id="alarm_co2" typeId="alarm_co2">
         <label>Alarm (CO2)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;sensorType=CARBON_MONOXIDE</property>
+          <property name="binding:*:OnOffType">ALARM;type=CARBON_MONOXIDE</property>
         </properties>
       </channel>
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;sensorType=SMOKE</property>
+          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
         <label>Sensor (relative humidity)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=RELATIVE_HUMIDITY</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=RELATIVE_HUMIDITY</property>
         </properties>
       </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -42,13 +43,13 @@
       <channel id="sensor_temperature1" typeId="sensor_temperature">
         <label>Sensor (temperature) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1,BASIC:1;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1,BASIC:1;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity2" typeId="sensor_relhumidity">
         <label>Sensor (relative humidity) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=RELATIVE_HUMIDITY</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=RELATIVE_HUMIDITY</property>
         </properties>
       </channel>
     </channels>
@@ -59,7 +60,7 @@
       <property name="model">ST814</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0006:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

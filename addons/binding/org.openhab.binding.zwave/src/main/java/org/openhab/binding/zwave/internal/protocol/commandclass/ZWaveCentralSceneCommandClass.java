@@ -15,6 +15,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -67,14 +68,18 @@ public class ZWaveCentralSceneCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received central scene command (v{})", this.getNode().getNodeId(), this.getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SCENE_SET:
-                int sceneId = serialMessage.getMessagePayloadByte(offset + 1);
+                // offset+1 is an incrementing number
+                int sceneId = serialMessage.getMessagePayloadByte(offset + 3);
                 int time = serialMessage.getMessagePayloadByte(offset + 2);
                 if (time > 127) {
                     // Values of 128 and above are in minutes (128 = 1 minute)
@@ -83,6 +88,7 @@ public class ZWaveCentralSceneCommandClass extends ZWaveCommandClass
                 logger.debug("NODE {}: Received scene {} at time {}", this.getNode().getNodeId(), sceneId, time);
                 ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
                         endpoint, this.getCommandClass(), sceneId);
+                this.getController().notifyEventListeners(zEvent);
                 break;
             case SCENE_REPORT:
                 sceneCount = serialMessage.getMessagePayloadByte(offset + 1);

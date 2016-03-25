@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="mcohome_mhs411_00_000">
+
+  <thing-type id="mcohome_mhs411_00_000" listed="false">
     <label>MH-S411 Touch Panel Switch (Single)</label>
     <description>Touch Panel Switch (Single)</description>
 
@@ -24,7 +25,7 @@
       <property name="model">MH-S411</property>
       <property name="manufacturerId">015F</property>
       <property name="manufacturerRef">4102:0201</property>
-      <property name="DefaultAssociations">2</property>
+      <property name="defaultAssociations">2</property>
     </properties>
 
     <config-description>

@@ -27,30 +27,30 @@ import com.google.common.collect.Sets;
  */
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
-	private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(PioneerAvrBindingConstants.IP_AVR_THING_TYPE,
-			PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+            .newHashSet(PioneerAvrBindingConstants.IP_AVR_THING_TYPE, PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE);
 
-	protected void activate(ComponentContext componentContext, Map<String, Object> configProps) {
-		super.activate(componentContext);
+    protected void activate(ComponentContext componentContext, Map<String, Object> configProps) {
+        super.activate(componentContext);
 
-	}
+    }
 
-	@Override
-	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-	}
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
 
-	@Override
-	protected ThingHandler createHandler(Thing thing) {
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
 
-		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-		if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)) {
-			return new IpAvrHandler(thing);
-		} else if (thingTypeUID.equals(PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)) {
-			return new SerialAvrHandler(thing);
-		}
+        if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)) {
+            return new IpAvrHandler(thing);
+        } else if (thingTypeUID.equals(PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)) {
+            return new SerialAvrHandler(thing);
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

@@ -17,21 +17,21 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
  *
  */
 public class AvrDisconnectionEvent {
-	
-	private AvrConnection connection;
-	private Throwable cause;
-	
-	public AvrDisconnectionEvent(AvrConnection connection, Throwable cause) {
-		this.connection = connection;
-		this.cause = cause;
-	}
 
-	public AvrConnection getConnection() {
-		return connection;
-	}
+    private AvrConnection connection;
+    private Throwable cause;
 
-	public Throwable getCause() {
-		return cause;
-	}
-	
+    public AvrDisconnectionEvent(AvrConnection connection, Throwable cause) {
+        this.connection = connection;
+        this.cause = cause;
+    }
+
+    public AvrConnection getConnection() {
+        return connection;
+    }
+
+    public Throwable getCause() {
+        return cause;
+    }
+
 }

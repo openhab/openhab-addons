@@ -10,7 +10,6 @@ package org.openhab.binding.pioneeravr.protocol.event;
 
 import org.openhab.binding.pioneeravr.protocol.AvrConnection;
 
-
 /**
  * The event fired when a status is received from the AVR.
  * 
@@ -18,20 +17,20 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
  */
 public class AvrStatusUpdateEvent {
 
-	private AvrConnection connection;
-	private String data;
+    private AvrConnection connection;
+    private String data;
 
-	public AvrStatusUpdateEvent(AvrConnection connection, String data) {
-		this.connection = connection;
-		this.data = data;
-	}
+    public AvrStatusUpdateEvent(AvrConnection connection, String data) {
+        this.connection = connection;
+        this.data = data;
+    }
 
-	public AvrConnection getConnection() {
-		return connection;
-	}
+    public AvrConnection getConnection() {
+        return connection;
+    }
 
-	public String getData() {
-		return data;
-	}
+    public String getData() {
+        return data;
+    }
 
 }

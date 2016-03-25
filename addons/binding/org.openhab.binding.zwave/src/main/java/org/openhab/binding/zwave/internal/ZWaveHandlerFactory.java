@@ -32,6 +32,10 @@ public class ZWaveHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        if (thingTypeUID.equals(ZWaveBindingConstants.ZWAVE_THING_UID)) {
+            return true;
+        }
+
         return ZWaveBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
     }
 

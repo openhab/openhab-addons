@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsb29_00_000">
+
+  <thing-type id="aeon_dsb29_00_000" listed="false">
     <label>DSB29 Door/Window sensor Gen2</label>
     <description>Door/Window sensor Gen2</description>
 
@@ -13,7 +14,7 @@
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">ALARM;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -35,7 +36,7 @@
       <property name="model">DSB29</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0004,0002:001D</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

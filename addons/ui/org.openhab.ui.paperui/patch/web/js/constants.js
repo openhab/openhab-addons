@@ -2,7 +2,7 @@
 angular.module('PaperUI.constants', [])
 .constant('globalConfig', {
    'advancedDefault': true,
-   'defaultRoute': '/setup/wizard'
+   'defaultRoute': '/inbox/search'
 }).constant('restConfig', {
   'restPath': '/rest',
   'eventPath': $('#authentication').data('access-token') != '{{ACCESS_TOKEN}}' ? '/rest/events?access_token=' + $('#authentication').data('access-token') : '/rest/events'

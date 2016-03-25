@@ -21,16 +21,16 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
  */
 public class IpAvrHandler extends AbstractAvrHandler {
 
-	public IpAvrHandler(Thing thing) {
-		super(thing);
-	}
+    public IpAvrHandler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	protected AvrConnection createConnection() {
-		String host = (String) this.getConfig().get(PioneerAvrBindingConstants.HOST_PARAMETER);
-		Integer tcpPort = ((Number) this.getConfig().get(PioneerAvrBindingConstants.TCP_PORT_PARAMETER)).intValue();
+    @Override
+    protected AvrConnection createConnection() {
+        String host = (String) this.getConfig().get(PioneerAvrBindingConstants.HOST_PARAMETER);
+        Integer tcpPort = ((Number) this.getConfig().get(PioneerAvrBindingConstants.TCP_PORT_PARAMETER)).intValue();
 
-		return new IpAvrConnection(host, tcpPort);
-	}
+        return new IpAvrConnection(host, tcpPort);
+    }
 
 }

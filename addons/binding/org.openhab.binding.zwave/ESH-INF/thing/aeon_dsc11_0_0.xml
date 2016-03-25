@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsc11_00_000">
+
+  <thing-type id="aeon_dsc11_00_000" listed="false">
     <label>DSC11 Smart Strip</label>
     <description><![CDATA[
 Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: ADD<br />METER:6 :: ADD</p>
@@ -21,13 +22,13 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh) entire strip</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts) entire strip</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary1" typeId="switch_binary">
@@ -39,13 +40,13 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <channel id="meter_kwh1" typeId="meter_kwh">
         <label>Electric meter (kWh) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts1" typeId="meter_watts">
         <label>Electric meter (watts) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary2" typeId="switch_binary">
@@ -57,13 +58,13 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <channel id="meter_kwh2" typeId="meter_kwh">
         <label>Electric meter (kWh) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts2" typeId="meter_watts">
         <label>Electric meter (watts) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary3" typeId="switch_binary">
@@ -75,13 +76,13 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <channel id="meter_kwh3" typeId="meter_kwh">
         <label>Electric meter (kWh) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts3" typeId="meter_watts">
         <label>Electric meter (watts) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_binary4" typeId="switch_binary">
@@ -93,13 +94,13 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <channel id="meter_kwh4" typeId="meter_kwh">
         <label>Electric meter (kWh) 4</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:4;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:4;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts4" typeId="meter_watts">
         <label>Electric meter (watts) 4</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:4;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:4;type=E_W</property>
         </properties>
       </channel>
     </channels>
@@ -110,7 +111,7 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
       <property name="model">DSC11</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:000B</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

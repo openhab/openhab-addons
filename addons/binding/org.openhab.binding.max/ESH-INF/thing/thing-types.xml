@@ -36,6 +36,12 @@
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
 			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
 
 			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
@@ -63,6 +69,14 @@
 				</description>
 				<default>0</default>
 			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 
@@ -99,6 +113,12 @@
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
 			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
 
 			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
@@ -126,6 +146,14 @@
                 </description>
 				<default>0</default>
 			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 
@@ -162,6 +190,12 @@
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
 			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
 
 			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
@@ -179,6 +213,13 @@
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
                 </description>
+			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<default>-1</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -210,6 +251,12 @@
 				<label>Binding Settings</label>
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
+			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
 			</parameter-group>
 
 			<parameter name="room" type="text" required="false" groupName="identification">
@@ -262,6 +309,12 @@
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
 			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
 
 			<parameter name="room" type="text" required="false" groupName="identification">
 				<label>Room</label>
@@ -279,6 +332,13 @@
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
                 </description>
+			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<default>-1</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 

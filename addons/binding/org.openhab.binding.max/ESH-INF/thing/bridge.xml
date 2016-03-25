@@ -34,6 +34,7 @@
 				<description>Binding settings for this device</description>
 				<advanced>false</advanced>
 			</parameter-group>
+
 			<!-- Trigger actions from habmin -->
 			<parameter-group name="actions">
 				<context></context>
@@ -86,8 +87,16 @@
 				<default>1000</default>
 				<advanced>true</advanced>
 			</parameter>
+
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-cubeReset" type="integer" groupName="actions">
+				<label>Reset Cube Configuration</label>
+				<description>Reset the MAX! Cube room and device information. Devices will need to be included again!</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
 			<!-- Trigger reboot action from habmin menu -->
-			<parameter name="cubeReboot" type="integer" groupName="actions">
+			<parameter name="action-cubeReboot" type="integer" groupName="actions">
 				<label>Restart Cube</label>
 				<description>Restarts the Cube.</description>
 				<default>-1</default>

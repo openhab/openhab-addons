@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="vision_zd2102_00_000">
+
+  <thing-type id="vision_zd2102_00_000" listed="false">
     <label>ZD2102 Door Window Sensor</label>
     <description>Door Window Sensor</description>
 
@@ -18,7 +19,7 @@
       <channel id="alarm_burglar" typeId="alarm_burglar">
         <label>Alarm (burglar)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;sensorType=BURGLAR</property>
+          <property name="binding:*:OnOffType">ALARM;type=BURGLAR</property>
         </properties>
       </channel>
     </channels>
@@ -29,7 +30,7 @@
       <property name="model">ZD2102</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2001:0102,2001:0105,2001:0106</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

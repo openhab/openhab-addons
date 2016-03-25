@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgd212_00_000">
+
+  <thing-type id="fibaro_fgd212_00_000" listed="false">
     <label>FGD212 Fibaro Dimmer 2</label>
     <description>Fibaro Dimmer 2</description>
 
@@ -26,19 +27,19 @@
       <channel id="sensor_power" typeId="sensor_power">
         <label>Sensor (power)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="alarm_general1" typeId="alarm_general">
@@ -50,11 +51,11 @@
       <channel id="sensor_power1" typeId="sensor_power">
         <label>Sensor (power) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;type=POWER</property>
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">
-        <label>Dimmer 1</label>
+        <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:1</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1</property>
@@ -63,17 +64,17 @@
       <channel id="meter_kwh1" typeId="meter_kwh">
         <label>Electric meter (kWh) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts1" typeId="meter_watts">
         <label>Electric meter (watts) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_W</property>
         </properties>
       </channel>
       <channel id="switch_dimmer2" typeId="switch_dimmer">
-        <label>Dimmer 2</label>
+        <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:2,BASIC:2</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2</property>
@@ -87,7 +88,7 @@
       <property name="model">FGD212</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0102:1000,0102:3000</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

@@ -122,6 +122,12 @@ public class MessageProcessor {
             case M:
                 result = handle_M_MessageLine(line);
                 break;
+            case N:
+                this.currentMessage = new N_Message(line);
+                break;
+            case A:
+                this.currentMessage = new A_Message(line);
+                break;
             default:
         }
 
@@ -164,8 +170,9 @@ public class MessageProcessor {
 
                 if (index + 1 == receivedLines.size()) {
                     String newLine = "";
-                    for (String curLine : receivedLines)
+                    for (String curLine : receivedLines) {
                         newLine += curLine;
+                    }
                     this.currentMessage = new M_Message(newLine);
                     result = true;
                 }

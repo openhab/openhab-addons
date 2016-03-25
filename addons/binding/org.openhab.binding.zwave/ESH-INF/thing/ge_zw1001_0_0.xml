@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="ge_zw1001_00_000">
+
+  <thing-type id="ge_zw1001_00_000" listed="false">
     <label>ZW1001 Smart Outlet</label>
     <description>Smart Outlet</description>
 

@@ -33,7 +33,9 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveInitializationStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
 import org.osgi.framework.ServiceRegistration;
@@ -60,6 +62,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
     private Boolean isMaster;
     private Boolean isSUC;
+    private String networkKey;
 
     public ZWaveControllerHandler(Bridge bridge) {
         super(bridge);
@@ -69,14 +72,35 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     public void initialize() {
         logger.debug("Initializing ZWave Controller.");
 
-        isMaster = (Boolean) getConfig().get(CONFIGURATION_MASTER);
-        if (isMaster == null) {
+        Object param;
+        param = getConfig().get(CONFIGURATION_MASTER);
+        if (param instanceof Boolean && param != null) {
+            isMaster = (Boolean) param;
+        } else {
             isMaster = true;
         }
 
-        isSUC = (Boolean) getConfig().get(CONFIGURATION_SUC);
-        if (isSUC == null) {
+        param = getConfig().get(CONFIGURATION_SUC);
+        if (param instanceof Boolean && param != null) {
+            isSUC = (Boolean) param;
+        } else {
             isSUC = false;
+        }
+
+        param = getConfig().get(CONFIGURATION_NETWORKKEY);
+        if (param instanceof String && param != null) {
+            networkKey = (String) param;
+        } else {
+            // Create random network key
+            networkKey = "";
+            for (int cnt = 0; cnt < 16; cnt++) {
+                int value = (int) Math.floor((Math.random() * 255));
+                networkKey += String.format("%02X ", value);
+            }
+            // Persist the value
+            Configuration configuration = editConfiguration();
+            configuration.put(ZWaveBindingConstants.CONFIGURATION_NETWORKKEY, networkKey);
+            updateConfiguration(configuration);
         }
 
         super.initialize();
@@ -94,6 +118,14 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         Map<String, String> config = new HashMap<String, String>();
         config.put("masterController", isMaster.toString());
         config.put("isSUC", isSUC ? "true" : "false");
+
+        // MAJOR BODGE
+        // The security class uses a static member to set the key so for now
+        // lets do the same, but it needs to be moved into the network initialisation
+        // so different networks can have different keys
+        if (networkKey.length() > 0) {
+            ZWaveSecurityCommandClass.setRealNetworkKey(networkKey);
+        }
 
         // TODO: Handle soft reset better!
         controller = new ZWaveController(this, config);
@@ -162,7 +194,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(), value);
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
-                if (controller != null) {
+                if (controller == null) {
                     logger.warn("Trying to send controller command, but controller is not initialised");
                     continue;
                 }
@@ -176,6 +208,37 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 }
 
                 value = "";
+            }
+            if ("security".equals(cfg[0])) {
+                if (cfg[1].equals("networkkey")) {
+                    // Format the key here so it's presented nicely and consistently to the user!
+
+                    if (value != null) {
+                        String hexString = (String) value;
+                        hexString = hexString.replace("0x", "");
+                        hexString = hexString.replace(",", "");
+                        hexString = hexString.replace(" ", "");
+                        hexString = hexString.toUpperCase();
+                        if ((hexString.length() % 2) != 0) {
+                            hexString += "0";
+                        }
+
+                        int arrayLength = (int) Math.ceil(((hexString.length() / 2)));
+                        String[] result = new String[arrayLength];
+
+                        int j = 0;
+                        StringBuilder builder = new StringBuilder();
+                        int lastIndex = result.length - 1;
+                        for (int i = 0; i < lastIndex; i++) {
+                            builder.append(hexString.substring(j, j + 2) + " ");
+                            j += 2;
+                        }
+                        builder.append(hexString.substring(j));
+                        value = builder.toString();
+
+                        ZWaveSecurityCommandClass.setRealNetworkKey((String) value);
+                    }
+                }
             }
 
             if ("port".equals(cfg[0])) {
@@ -236,6 +299,23 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                     && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
                 updateNeighbours();
                 logger.warn("");
+            }
+        }
+
+        if (event instanceof ZWaveInitializationStateEvent) {
+            ZWaveInitializationStateEvent initEvent = (ZWaveInitializationStateEvent) event;
+            switch (initEvent.getStage()) {
+                case DISCOVERY_COMPLETE:
+                    // At this point we know enough information about the device to advise the discovery
+                    // service that there's a new thing.
+                    // We need to do this here as we needed to know the device information such as manufacturer,
+                    // type, id and version
+                    ZWaveNode node = controller.getNode(initEvent.getNodeId());
+                    if (node != null) {
+                        deviceAdded(node);
+                    }
+                default:
+                    break;
             }
         }
     }

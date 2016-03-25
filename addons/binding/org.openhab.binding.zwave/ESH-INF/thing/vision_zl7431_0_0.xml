@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="vision_zl7431_00_000">
+
+  <thing-type id="vision_zl7431_00_000" listed="false">
     <label>ZL7431 In Wall Relay Switch</label>
     <description>In Wall Relay Switch</description>
 
@@ -24,7 +25,7 @@
       <property name="model">ZL7431</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2016:1616,200C:0C02</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

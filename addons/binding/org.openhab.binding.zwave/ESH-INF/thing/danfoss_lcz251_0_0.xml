@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="danfoss_lcz251_00_000">
+
+  <thing-type id="danfoss_lcz251_00_000" listed="false">
     <label>LCZ251 Living Connect Z Thermostat 2.51</label>
     <description>Living Connect Z Thermostat 2.51</description>
 
@@ -15,10 +16,10 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT,BASIC;setpointType=HEATING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT,BASIC;type=HEATING</property>
         </properties>
       </channel>
     </channels>
@@ -29,7 +30,7 @@
       <property name="model">LCZ251</property>
       <property name="manufacturerId">0002</property>
       <property name="manufacturerRef">0005:0003</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="dragontech_ws100_00_000">
+
+  <thing-type id="dragontech_ws100_00_000" listed="false">
     <label>WS-100 Wall On/Off Switch</label>
     <description>Wall On/Off Switch</description>
 
@@ -24,7 +25,7 @@
       <property name="model">WS-100</property>
       <property name="manufacturerId">0184</property>
       <property name="manufacturerRef">4447:3033</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

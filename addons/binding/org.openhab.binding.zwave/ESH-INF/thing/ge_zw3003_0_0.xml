@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="ge_zw3003_00_000">
+
+  <thing-type id="ge_zw3003_00_000" listed="false">
     <label>ZW3003, GE 12724 In-Wall Dimmer</label>
     <description><![CDATA[
 In-Wall Dimmer<br /><h1>Overview</h1><p>Also goes by GE / Jasco catalog number 12724.</p>
