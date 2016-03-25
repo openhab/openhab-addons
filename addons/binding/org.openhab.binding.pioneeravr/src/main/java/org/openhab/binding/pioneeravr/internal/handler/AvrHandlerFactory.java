@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 
 /**
  * The {@link AvrHandlerFactory} is responsible for creating things and thing handlers.
- * 
+ *
  * @author Antoine Besnard - Initial contribution
  */
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
@@ -45,7 +45,8 @@ public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)) {
+        if (thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_THING_TYPE)
+                || thingTypeUID.equals(PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE)) {
             return new IpAvrHandler(thing);
         } else if (thingTypeUID.equals(PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)) {
             return new SerialAvrHandler(thing);

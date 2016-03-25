@@ -24,7 +24,7 @@
 				<label>Address</label>
 				<description>The address of the Pioneer AVR to control.</description>
 			</parameter>
-			<parameter name="tcpPort" type="decimal" max="65535" min="1">
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
 				<default>8102</default>
 				<label>TCP Port</label>
 				<description>The TCP port number used to connect to the AVR.</description>
@@ -52,7 +52,7 @@
 				<label>Address</label>
 				<description>The address of the Pioneer AVR to control.</description>
 			</parameter>
-			<parameter name="tcpPort" type="decimal" max="65535" min="1">
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
 				<default>8102</default>
 				<label>TCP Port</label>
 				<description>The TCP port number used to connect to the AVR.</description>
@@ -63,7 +63,7 @@
 	<!-- AVR control over Serial -->
 	<thing-type id="serialAvr">
 		<label>Pioneer AVR over Serial</label>
-		<description>Control a Pioneer AVR over a Serial port (RS-232)</description>
+		<description>Control a Pioneer AVR over a Serial port (RS-232).</description>
 
 		<channels>
 			<channel id="power" typeId="powerChannel" />
@@ -77,7 +77,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port name</label>
-				<description>The Serial port name to use to connect to the AVR (Mandatory if Serial Protocol)</description>
+				<description>The Serial port name to use to connect to the AVR.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
