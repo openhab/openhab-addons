@@ -39,6 +39,8 @@ public class ZWaveBindingConstants {
     public final static String CONFIGURATION_NODENAME = "nodename_name";
     public final static String CONFIGURATION_NODELOCATION = "nodename_location";
 
+    public final static String CONFIGURATION_USERCODE = "usercode_";
+
     public final static String CONFIGURATION_DOORLOCKTIMEOUT = "doorlock_timeout";
 
     public final static String CONFIGURATION_POLLPERIOD = "binding_pollperiod";
