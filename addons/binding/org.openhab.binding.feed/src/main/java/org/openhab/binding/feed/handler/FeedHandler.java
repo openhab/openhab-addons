@@ -75,7 +75,6 @@ public class FeedHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         checkConfiguration();
 
         startAutomaticRefresh();
@@ -102,7 +101,6 @@ public class FeedHandler extends BaseThingHandler {
                     DEFAULT_REFRESH_TIME, e.getMessage());
             refreshTime = DEFAULT_REFRESH_TIME;
             configuration.put(FeedBindingConstants.REFRESH_TIME, DEFAULT_REFRESH_TIME);
-
         }
 
         outputFeedFormat = (String) configuration.get(FEED_FORMAT);
@@ -139,11 +137,9 @@ public class FeedHandler extends BaseThingHandler {
         };
 
         refreshTask = scheduler.scheduleAtFixedRate(refresher, 0, refreshTime.intValue(), TimeUnit.MINUTES);
-
     }
 
     private void refreshFeedState() {
-
         SyndFeed feed = fetchFeedData(urlString);
         boolean feedUpdated = updateFeedIfChanged(feed);
 
@@ -152,7 +148,6 @@ public class FeedHandler extends BaseThingHandler {
             updateState(FEED_CHANNEL, new StringType(content));
             logger.debug("Content updated !");
         }
-
     }
 
     /**
@@ -172,7 +167,6 @@ public class FeedHandler extends BaseThingHandler {
         }
         logger.debug("Content is up to date!");
         return false;
-
     }
 
     /**
@@ -192,7 +186,9 @@ public class FeedHandler extends BaseThingHandler {
             SyndFeed feed = null;
             feed = feedFetcher.retrieveFeed(url);
             logger.debug("Connection to feed successful");
-            updateStatus(ThingStatus.ONLINE);
+            if (this.thing.getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             return feed;
         } catch (MalformedURLException e) {
             logger.warn("Url '{}' is not valid: {}", urlString, e);
@@ -225,7 +221,6 @@ public class FeedHandler extends BaseThingHandler {
      * @param feed
      * @return <code>String</code> containing the XML data or <code>null</code> if XML can not be created
      */
-
     private String getFeedContent(SyndFeed feed, int numberOfEntries) {
         List<SyndEntry> allEntries = feed.getEntries();
 
@@ -240,7 +235,6 @@ public class FeedHandler extends BaseThingHandler {
             logger.debug("Content will be generated from the first {} feed entries.", numberOfEntries);
         }
         return getFeedContent(feed);
-
     }
 
     /**
@@ -256,8 +250,7 @@ public class FeedHandler extends BaseThingHandler {
 
         if (outputFeedFormat.equals("rss_0.91N") || outputFeedFormat.equals("rss_0.91U")) {
             // RSS 0.91 has required language attribute. Default value is assigned, because if this value is missing,
-            // the
-            // conversion to RSS 0.91 will fail
+            // theconversion to RSS 0.91 will fail
             if (feed.getLanguage() == null) {
                 feed.setLanguage("en-us");
             }

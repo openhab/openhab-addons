@@ -30,6 +30,6 @@ Import-Package: groovy.json,
  org.osgi.framework,
  org.osgi.service.http,
  org.apache.commons.httpclient,
- org.osgi.service.event
-
-
+ org.osgi.service.event,
+ com.google.common.base
+ 
