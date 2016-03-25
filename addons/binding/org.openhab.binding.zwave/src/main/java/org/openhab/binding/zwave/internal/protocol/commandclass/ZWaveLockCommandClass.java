@@ -8,17 +8,14 @@
  */
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Handles the Lock command class.
  *
+ * @author Chris Jackson
  * @author Dave Badia
  */
 @XStreamAlias("lockCommandClass")
@@ -66,29 +64,21 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.trace("Handle Message Lock Request");
-        logger.debug(String.format("NODE %d: Received Lock Request", this.getNode().getNodeId()));
+        logger.debug("NODE {}: Received Lock Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
-            case LOCK_GET:
-            case LOCK_SET:
-                logger.warn(String.format("Command 0x%02X not implemented.", command));
-                return;
             case LOCK_REPORT:
-                logger.trace("Process Lock Report");
-
                 int lockState = serialMessage.getMessagePayloadByte(offset + 1);
+                logger.debug("NODE {}: Lock report - lockState={}", this.getNode().getNodeId(), lockState);
 
-                logger.debug(String.format("NODE %d: Lock report - lockState = 0x%02x,", this.getNode().getNodeId(),
-                        lockState));
-
-                ZWaveLockValueEvent zEvent = new ZWaveLockValueEvent(this.getNode().getNodeId(), endpoint, lockState);
+                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
+                        endpoint, CommandClass.LOCK, lockState);
                 this.getController().notifyEventListeners(zEvent);
                 break;
             default:
@@ -124,80 +114,5 @@ public class ZWaveLockCommandClass extends ZWaveCommandClass implements ZWaveGet
                 (byte) value };
         result.setMessagePayload(newPayload);
         return result;
-    }
-
-    /**
-     * Z-Wave LockState enumeration. The lock state type indicates
-     * the state of the lock that is reported.
-     */
-    @XStreamAlias("lockState")
-    enum LockStateType {
-        UNLOCKED(0x00, "Unlocked"),
-        LOCKED(0xFF, "Locked"),;
-        /**
-         * A mapping between the integer code and its corresponding door
-         * lock state type to facilitate lookup by code.
-         */
-        private static Map<Integer, LockStateType> codeToLockStateTypeMapping;
-
-        private int key;
-        private String label;
-
-        private static void initMapping() {
-            codeToLockStateTypeMapping = new ConcurrentHashMap<Integer, LockStateType>();
-            for (LockStateType d : values()) {
-                codeToLockStateTypeMapping.put(d.key, d);
-            }
-        }
-
-        /**
-         * Lookup function based on the fan mode type code.
-         * Returns null if the code does not exist.
-         *
-         * @param i the code to lookup
-         * @return enumeration value of the fan mode type.
-         */
-        public static LockStateType getLockStateType(int i) {
-            if (codeToLockStateTypeMapping == null) {
-                initMapping();
-            }
-            return codeToLockStateTypeMapping.get(i);
-        }
-
-        LockStateType(int key, String label) {
-            this.key = key;
-            this.label = label;
-        }
-
-        /**
-         * @return the key
-         */
-        public int getKey() {
-            return key;
-        }
-
-        /**
-         * @return the label
-         */
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
-     * Z-Wave Door Lock Event class. Indicates that a door lcok value
-     * changed.
-     */
-    public class ZWaveLockValueEvent extends ZWaveCommandClassValueEvent {
-        /**
-         * Constructor. Creates a instance of the ZWaveAlarmValueEvent class.
-         *
-         * @param nodeId the nodeId of the event
-         * @param endpoint the endpoint of the event.
-         * @param value the value for the event.
-         */
-        private ZWaveLockValueEvent(int nodeId, int endpoint, Object value) {
-            super(nodeId, endpoint, CommandClass.LOCK, value);
-        }
     }
 }

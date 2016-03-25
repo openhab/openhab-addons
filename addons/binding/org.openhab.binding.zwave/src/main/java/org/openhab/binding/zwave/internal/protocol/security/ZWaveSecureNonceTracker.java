@@ -31,12 +31,13 @@ import org.slf4j.LoggerFactory;
  * Nonces (one time use tokens) are used quite heavily in zwave secure encapsulated messages.
  * This class is in charge of storing:
  * 1) The nonces we generate and send to the device so it can encapsulate incoming messages
- * 2) The nonces we receive from the device to encapsulate outgoig messages
+ * 2) The nonces we receive from the device to encapsulate outgoing messages
  *
  * Temporary storage is required in both cases. Each nonce also has suggested timeouts per the
  * zwave spec, those timeouts are also tracked in this class
  *
  * @author Dave Badia
+ * @author Chris Jackson
  *
  */
 public class ZWaveSecureNonceTracker {
@@ -202,10 +203,11 @@ public class ZWaveSecureNonceTracker {
                     NonceTimerType.REQUESTED.validityInMillis);
             // The ZWaveSecurityEncapsulationThread will request a new one for us
             return;
+        } else {
+            logger.debug("NODE {}: receivedNonceFromDevice nonce received. Stopping requestNonceTimer",
+                    node.getNodeId());
+            requestNonceTimer = null;
         }
-        logger.debug("NODE {}: receivedNonceFromDevice nonce received setting requestNonceTimer to null",
-                node.getNodeId());
-        requestNonceTimer = null;
         deviceNonceTable.addNonceFromDevice(nonceBytes);
     }
 
@@ -340,7 +342,7 @@ public class ZWaveSecureNonceTracker {
             boolean expired = getTimeLeft() < 0;
             if (logger.isTraceEnabled()) {
                 DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-                logger.trace("NODE {}: expiresAt={} now={}, expired={}", nodeId, dateFormatter.format(expiresAt),
+                logger.trace("NODE {}: expiresAt={}, now={}, expired={}", nodeId, dateFormatter.format(expiresAt),
                         dateFormatter.format(now), expired);
             }
             return expired;
@@ -349,8 +351,8 @@ public class ZWaveSecureNonceTracker {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            builder.append("NonceTimer [type=").append(type).append("  expired=").append(isExpired())
-                    .append("  getTimeLeft=").append(getTimeLeft()).append("]");
+            builder.append("NonceTimer [type=").append(type).append(" expired=").append(isExpired())
+                    .append(" getTimeLeft=").append(getTimeLeft()).append("]");
             return builder.toString();
         }
     }
@@ -446,7 +448,7 @@ public class ZWaveSecureNonceTracker {
      */
     private class NonceTable {
         /**
-         * Store nonces that we generated but have not been retreived yet here
+         * Store nonces that we generated but have not been retrieved yet here
          */
         private Map<Byte, Nonce> table = new ConcurrentHashMap<Byte, Nonce>();
 
@@ -478,8 +480,8 @@ public class ZWaveSecureNonceTracker {
                         && !expiredNonceIdList.contains(nonceBytes[0]);
             }
             Nonce nonce = new Nonce(nonceBytes, new NonceTimer(NonceTimerType.GENERATED, node));
-            logger.debug(String.format("NODE %d: Generated new nonce for device: %s", node.getNodeId(),
-                    SerialMessage.bb2hex(nonce.getNonceBytes())));
+            logger.debug("NODE {}: Generated new nonce for device: {}", node.getNodeId(),
+                    SerialMessage.bb2hex(nonce.getNonceBytes()));
             table.put(nonce.getNonceId(), nonce);
             return nonce;
         }
@@ -535,6 +537,7 @@ public class ZWaveSecureNonceTracker {
             for (Nonce nonce : table.values()) {
                 buf.append(nonce.toString()).append("    ");
             }
+            buf.append("]");
             return buf.toString();
         }
     }
@@ -605,6 +608,7 @@ public class ZWaveSecureNonceTracker {
             for (Nonce nonce : table.values()) {
                 buf.append(nonce.toString()).append("    ");
             }
+            buf.append("]");
             return buf.toString();
         }
     }

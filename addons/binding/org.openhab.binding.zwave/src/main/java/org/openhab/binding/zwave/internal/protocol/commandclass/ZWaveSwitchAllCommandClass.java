@@ -13,10 +13,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +115,7 @@ public class ZWaveSwitchAllCommandClass extends ZWaveCommandClass implements ZWa
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -150,8 +150,8 @@ public class ZWaveSwitchAllCommandClass extends ZWaveCommandClass implements ZWa
             return;
         }
 
-        ZWaveSwitchAllModeEvent zEvent = new ZWaveSwitchAllModeEvent(this.getNode().getNodeId(), endpoint,
-                new Integer(m));
+        ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
+                CommandClass.SWITCH_ALL, new Integer(m));
         this.getController().notifyEventListeners(zEvent);
     }
 
@@ -247,26 +247,6 @@ public class ZWaveSwitchAllCommandClass extends ZWaveCommandClass implements ZWa
      */
     public SwitchAllMode getMode() {
         return mode;
-    }
-
-    /**
-     * ZWave Switch All mode received event. Sent from the Switch All Command
-     * Class to the binding when the switch all mode is received.
-     *
-     * @author Pedro Paixao
-     */
-    public class ZWaveSwitchAllModeEvent extends ZWaveCommandClassValueEvent {
-
-        /**
-         * Constructor. Creates a new instance of the ZWaveSwitchAllModeEvent
-         * class.
-         *
-         * @param nodeId
-         *            the nodeId of the event
-         */
-        public ZWaveSwitchAllModeEvent(int nodeId, int endpoint, Integer mode) {
-            super(nodeId, endpoint, CommandClass.SWITCH_ALL, mode);
-        }
     }
 
     @Override

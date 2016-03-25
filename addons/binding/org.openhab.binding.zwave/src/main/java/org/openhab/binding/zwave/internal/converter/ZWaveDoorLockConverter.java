@@ -63,8 +63,11 @@ public class ZWaveDoorLockConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
+        if (event.getType() != ZWaveDoorLockCommandClass.Type.DOORLOCK_STATE) {
+            return null;
+        }
+
         State state = null;
-        int value = (int) event.getValue();
         switch (channel.getDataType()) {
             case OnOffType:
                 state = (Integer) event.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;

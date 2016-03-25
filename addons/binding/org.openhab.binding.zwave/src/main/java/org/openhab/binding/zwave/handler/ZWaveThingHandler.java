@@ -50,8 +50,10 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClas
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass.ZWaveConfigurationParameterEvent;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveDoorLockCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNodeNamingCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSwitchAllCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveUserCodeCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass.ZWaveWakeUpEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveAssociationEvent;
@@ -586,7 +588,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         .getCommandClass(CommandClass.WAKE_UP);
                 if (wakeupCommandClass == null) {
                     logger.error("NODE {}: Error getting wakeupCommandClass", nodeId);
-                    return;
+                    continue;
                 }
 
                 Integer value;
@@ -612,14 +614,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         .getCommandClass(CommandClass.NODE_NAMING);
                 if (nameCommandClass == null) {
                     logger.error("NODE {}: Error getting NodeNamingCommandClass", nodeId);
-                    return;
+                    continue;
                 }
 
                 if ("name".equals(cfg[1])) {
-                    nameCommandClass.setNameMessage(configurationParameter.getValue().toString());
+                    controllerHandler
+                            .sendData(nameCommandClass.setNameMessage(configurationParameter.getValue().toString()));
                 }
                 if ("location".equals(cfg[1])) {
-                    nameCommandClass.setLocationMessage(configurationParameter.getValue().toString());
+                    controllerHandler.sendData(
+                            nameCommandClass.setLocationMessage(configurationParameter.getValue().toString()));
                 }
                 pendingCfg.put(configurationParameter.getKey(), valueObject);
             } else if ("switchall".equals(cfg[0])) {
@@ -627,14 +631,59 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         .getCommandClass(CommandClass.SWITCH_ALL);
                 if (switchallCommandClass == null) {
                     logger.error("NODE {}: Error getting SwitchAllCommandClass", nodeId);
-                    return;
+                    continue;
                 }
 
                 if ("mode".equals(cfg[1])) {
-                    switchallCommandClass
-                            .setValueMessage(Integer.parseInt(configurationParameter.getValue().toString()));
+                    controllerHandler.sendData(switchallCommandClass
+                            .setValueMessage(Integer.parseInt(configurationParameter.getValue().toString())));
                 }
                 pendingCfg.put(configurationParameter.getKey(), valueObject);
+            } else if ("doorlock".equals(cfg[0])) {
+                ZWaveDoorLockCommandClass commandClass = (ZWaveDoorLockCommandClass) node
+                        .getCommandClass(CommandClass.DOOR_LOCK);
+                if (commandClass == null) {
+                    logger.error("NODE {}: Error getting ZWaveDoorLockCommandClass", nodeId);
+                    continue;
+                }
+
+                if ("timeout".equals(cfg[1])) {
+                    boolean timeoutEnabled;
+
+                    try {
+                        int value = Integer.parseInt((String) valueObject);
+                        if (value == 0) {
+                            timeoutEnabled = false;
+                        } else {
+                            timeoutEnabled = true;
+                        }
+                        controllerHandler.sendData(commandClass.setConfigMessage(timeoutEnabled, value));
+                        controllerHandler.sendData(commandClass.getConfigMessage());
+                        pendingCfg.put(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, valueObject);
+                    } catch (NumberFormatException e) {
+                        logger.error("Number format exception parsing doorlock_timeout '{}'", valueObject);
+                    }
+                }
+            } else if ("usercode".equals(cfg[0])) {
+                ZWaveUserCodeCommandClass commandClass = (ZWaveUserCodeCommandClass) node
+                        .getCommandClass(CommandClass.USER_CODE);
+                if (commandClass == null) {
+                    logger.error("NODE {}: Error getting ZWaveUserCodeCommandClass", nodeId);
+                    continue;
+                }
+
+                try {
+                    int code = Integer.parseInt(cfg[1]);
+                    if (code == 0 || code > commandClass.getNumberOfSupportedCodes()) {
+                        logger.error("NODE {}: Attempt to set code ID outside of range", nodeId);
+                        continue;
+                    }
+                    controllerHandler.sendData(commandClass.setUserCode(code, (String) valueObject));
+                    controllerHandler.sendData(commandClass.getUserCode(code));
+                    pendingCfg.put(configurationParameter.getKey(), valueObject);
+                } catch (NumberFormatException e) {
+                    logger.error("Number format exception parsing user code ID '{}'", configurationParameter.getKey());
+                }
             } else if ("binding".equals(cfg[0])) {
                 if ("pollperiod".equals(cfg[1])) {
                     pollingPeriod = POLLING_PERIOD_DEFAULT;
@@ -656,11 +705,12 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     startPolling();
                 }
             } else if ("action".equals(cfg[0])) {
-                if ("failed".equals(cfg[1]) && "GO".equals(valueObject)) {
+                if ("failed".equals(cfg[1])) {// && "GO".equals(valueObject)) {
                     controllerHandler.replaceFailedNode(nodeId);
                 }
-                if ("remove".equals(cfg[1]) && "GO".equals(valueObject)) {
+                if ("remove".equals(cfg[1])) {// && "GO".equals(valueObject)) {
                     controllerHandler.removeFailedNode(nodeId);
+                    controllerHandler.checkNodeFailed(nodeId);
                 }
                 if ("reinit".equals(cfg[1]) && "GO".equals(valueObject)) {
                     logger.debug("NODE {}: Re-initialising node!", nodeId);
@@ -929,8 +979,14 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     break;
 
                 case DOOR_LOCK:
-                    configuration.put(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, event.getValue());
-                    pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT);
+                    switch ((ZWaveDoorLockCommandClass.Type) event.getType()) {
+                        case DOORLOCK_TIMEOUT:
+                            configuration.put(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, event.getValue());
+                            pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
 
                 default:
