@@ -9,11 +9,11 @@ import java.util.List;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionCompletedEvent;
 import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeStageAdvancer;
@@ -155,7 +155,6 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
         }
 
         switch (command) {
-
             case SECURITY_SCHEME_REPORT:
                 // Should be received during inclusion only
                 if (!wasThisNodeJustIncluded() || inclusionStateTracker == null) {
@@ -268,7 +267,7 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
                 return;
             default:
                 logger.warn(String.format(
-                        "NODE %s: Unsupported Command 0x%02X for command class %s (0x%02X) for message %s.",
+                        "NODE %d: Unsupported Command 0x%02X for command class %s (0x%02X) for message %s.",
                         this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
                         this.getCommandClass().getKey(), serialMessage));
         }
@@ -453,7 +452,7 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
     @Override
     public void ZWaveIncomingEvent(ZWaveEvent event) {
         if (event instanceof ZWaveTransactionCompletedEvent && event.getNodeId() == getNode().getNodeId()) {
-            logger.trace("NODE {}: updating  lasSentMessageTimestamp", this.getNode().getNodeId());
+            logger.trace("NODE {}: updating lastSentMessageTimestamp", this.getNode().getNodeId());
             lastSentMessageTimestamp = System.currentTimeMillis();
         }
     }
