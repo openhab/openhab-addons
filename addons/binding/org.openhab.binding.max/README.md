@@ -115,4 +115,4 @@ In the Habmin thing configuration screen several action buttons are available to
 On the MAX! devices you can trigger the following action
 * _Delete Device from Cube_. Deletes the device from the MAX! Cube. Device will need to be included again! To use this button you need to enable 'Advanced settings'
 
-Note: In PaperUI there are no action buttons. You can trigger these actions by setting the value to 0
+Note: In PaperUI there are no action buttons. You can trigger these actions changing from 'No Action' in the dropdown to the action value. 
