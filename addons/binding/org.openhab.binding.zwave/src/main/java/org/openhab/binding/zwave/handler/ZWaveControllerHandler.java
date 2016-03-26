@@ -10,6 +10,7 @@ package org.openhab.binding.zwave.handler;
 
 import static org.openhab.binding.zwave.ZWaveBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -105,7 +106,12 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             // Persist the value
             Configuration configuration = editConfiguration();
             configuration.put(ZWaveBindingConstants.CONFIGURATION_NETWORKKEY, networkKey);
-            updateConfiguration(configuration);
+            try {
+                // If the thing is defined statically, then this will fail and we will never start!
+                updateConfiguration(configuration);
+            } catch (IllegalStateException e) {
+                // Eat it for now...
+            }
         }
 
         super.initialize();
@@ -204,11 +210,14 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                     continue;
                 }
 
-                if (cfg[1].equals("softreset") && "GO".equals(value)) {
+                if (cfg[1].equals("softreset") && value instanceof BigDecimal
+                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
                     controller.requestSoftReset();
-                } else if (cfg[1].equals("hardreset") && "GO".equals(value)) {
+                } else if (cfg[1].equals("hardreset") && value instanceof BigDecimal
+                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
                     controller.requestHardReset();
-                } else if (cfg[1].equals("exclude")) {// && "GO".equals(value)) {
+                } else if (cfg[1].equals("exclude") && value instanceof BigDecimal
+                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
                     controller.requestRemoveNodesStart();
                 }
 
@@ -217,7 +226,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             if ("security".equals(cfg[0])) {
                 if (cfg[1].equals("networkkey")) {
                     // Format the key here so it's presented nicely and consistently to the user!
-
                     if (value != null) {
                         String hexString = (String) value;
                         hexString = hexString.replace("0x", "");

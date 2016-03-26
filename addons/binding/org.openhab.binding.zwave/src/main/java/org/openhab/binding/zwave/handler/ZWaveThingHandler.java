@@ -705,14 +705,17 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     startPolling();
                 }
             } else if ("action".equals(cfg[0])) {
-                if ("failed".equals(cfg[1])) {// && "GO".equals(valueObject)) {
+                if ("failed".equals(cfg[1]) && valueObject instanceof BigDecimal
+                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
                     controllerHandler.replaceFailedNode(nodeId);
                 }
-                if ("remove".equals(cfg[1])) {// && "GO".equals(valueObject)) {
+                if ("remove".equals(cfg[1]) && valueObject instanceof BigDecimal
+                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
                     controllerHandler.removeFailedNode(nodeId);
                     controllerHandler.checkNodeFailed(nodeId);
                 }
-                if ("reinit".equals(cfg[1]) && "GO".equals(valueObject)) {
+                if ("reinit".equals(cfg[1]) && valueObject instanceof BigDecimal
+                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
                     logger.debug("NODE {}: Re-initialising node!", nodeId);
 
                     // Delete the saved XML
@@ -1107,7 +1110,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                             Boolean.toString(node.isFrequentlyListening()));
                     properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
                     properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
-                    super.updateProperties(properties);
+                    updateProperties(properties);
 
                     // Do we need to change type?
                     if (finalTypeSet == false) {
@@ -1274,8 +1277,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         // Loop through the pending list
         // TODO: Do we want to handle other states?????
         for (String config : pendingCfg.keySet()) {
-            configStatus
-                    .add(ConfigStatusMessage.Builder.pending(config).withMessageKey("CONFIG_STATUS_PENDING").build());
+            configStatus.add(ConfigStatusMessage.Builder.pending(config).build());
         }
 
         return configStatus;
