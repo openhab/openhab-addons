@@ -330,7 +330,7 @@ public class SerialMessage {
      * @throws ZWaveSerialMessageException
      */
     public int getMessagePayloadByte(int index) throws ZWaveSerialMessageException {
-        if (messagePayload.length < index) {
+        if (index >= messagePayload.length) {
             throw new ZWaveSerialMessageException(
                     "Attempt to read message payload out of bounds: " + this.toString() + " (" + index + ")");
         }
