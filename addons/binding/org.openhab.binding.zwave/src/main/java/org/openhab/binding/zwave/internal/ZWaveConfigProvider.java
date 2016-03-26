@@ -219,20 +219,20 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
 
         // If we're FAILED, allow removing from the controller
         if (node.getNodeState() == ZWaveNodeState.FAILED) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.TEXT)
-                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("GO")
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.INTEGER)
+                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("-232323")
                     .withGroupName("actions").build());
         } else {
             // Otherwise, allow us to put this on the failed list
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
-                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("GO").withGroupName("actions")
-                    .build());
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.INTEGER)
+                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("-232323")
+                    .withGroupName("actions").build());
         }
 
         if (node.isInitializationComplete() == true) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.TEXT)
-                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("GO").withGroupName("actions")
-                    .build());
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.INTEGER)
+                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("-232323")
+                    .withGroupName("actions").build());
         }
 
         return new ConfigDescription(uri, parameters, groups);

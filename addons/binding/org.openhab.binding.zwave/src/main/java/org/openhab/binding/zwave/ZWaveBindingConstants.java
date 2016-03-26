@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zwave;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -79,6 +80,8 @@ public class ZWaveBindingConstants {
 
     public final static String CHANNEL_CFG_BINDING = "binding";
     public final static String CHANNEL_CFG_COMMANDCLASS = "commandClass";
+
+    public final static BigDecimal ACTION_CHECK_VALUE = new BigDecimal(-232323);
 
     public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(CONTROLLER_SERIAL);
 }
