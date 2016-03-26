@@ -172,8 +172,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 updateDeviceName(configurationParameter);
             }
             if (configurationParameter.getKey().startsWith("action-")) {
-                if (configurationParameter.getValue().toString().equals("0")) {
-                    configurationParameter.setValue(BigDecimal.valueOf(-1));
+                if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
+                    configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
                     if (configurationParameter.getKey().equals(ACTION_DEVICE_DELETE)) {
                         deviceDelete();
                     }

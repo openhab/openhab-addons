@@ -214,8 +214,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             logger.debug("MAX! Cube {}: Configuration update {} to {}", getThing().getThingTypeUID(),
                     configurationParameter.getKey(), configurationParameter.getValue());
             if (configurationParameter.getKey().startsWith("action-")) {
-                if (configurationParameter.getValue().toString().equals("0")) {
-                    configurationParameter.setValue(BigDecimal.valueOf(-1));
+                if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
+                    configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
                     if (configurationParameter.getKey().equals(ACTION_CUBE_REBOOT)) {
                         cubeReboot();
                     }
@@ -653,7 +653,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 message.getSerialNumber(), message.getRfAddress());
         // Send C command to get the configuration so it will be added to discovery
         String newSerial = message.getSerialNumber();
-        queueCommand(new SendCommand(newSerial, new C_Command(message.getRfAddress()), "Refresh" + newSerial));
+        queueCommand(new SendCommand(newSerial, new C_Command(message.getRfAddress()), "Refresh " + newSerial));
     }
 
     /**

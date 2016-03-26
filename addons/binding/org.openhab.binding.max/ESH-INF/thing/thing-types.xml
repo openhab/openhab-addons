@@ -73,6 +73,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -150,6 +154,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -218,6 +226,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -337,6 +349,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
