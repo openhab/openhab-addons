@@ -91,25 +91,34 @@
                 <description></description>
             </parameter-group>
            
-            <parameter name="controller_softreset" type="text" groupName="actions">
+            <parameter name="controller_softreset" type="integer" groupName="actions">
                 <label>Soft Reset Controller</label>
                 <description>Resets the Z-Wave stick - similar to removing the stick from the USB.</description>
                 <advanced>true</advanced>
-                <default>GO</default>
+                <default></default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
             </parameter>
 
-            <parameter name="controller_hardreset" type="text" groupName="actions">
+            <parameter name="controller_hardreset" type="integer" groupName="actions">
                 <label>Hard Reset Controller</label>
                 <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!</description>
                 <advanced>true</advanced>
-                <default>GO</default>
+                <default></default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
             </parameter>
 
-            <parameter name="controller_exclude" type="text" groupName="actions">
+            <parameter name="controller_exclude" type="integer" groupName="actions">
                 <label>Exclude Devices</label>
                 <description>Puts the controller into Exclusion mode.</description>
                 <advanced>true</advanced>
-                <default>GO</default>
+                <default></default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
             </parameter>
             
             <parameter name="security_networkkey" type="text" groupName="network">
