@@ -69,6 +69,8 @@ public class MaxBinding {
     public final static String ACTION_CUBE_REBOOT = "action-cubeReboot";
     public final static String ACTION_CUBE_RESET = "action-cubeReset";
     public final static String ACTION_DEVICE_DELETE = "action-deviceDelete";
+    public final static String BUTTON_ACTION_VALUE = "1234";
+    public final static int BUTTON_NOACTION_VALUE = -1;
 
     public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
             HEATINGTHERMOSTAT_THING_TYPE, HEATINGTHERMOSTATPLUS_THING_TYPE, WALLTHERMOSTAT_THING_TYPE,
