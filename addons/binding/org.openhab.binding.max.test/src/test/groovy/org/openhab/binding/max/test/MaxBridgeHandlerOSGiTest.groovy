@@ -52,8 +52,8 @@ class MaxBridgeHandlerOSGiTest extends OSGiTest {
         assertThat maxBridgeHandler, is(nullValue())
 
         Configuration configuration = new Configuration().with {
-            put(MaxBinding.SERIAL_NUMBER, "KEQ0565026")
-            put(MaxBinding.IP_ADDRESS, "192.168.3.100")
+            put(MaxBinding.PROPERTY_SERIAL_NUMBER, "KEQ0565026")
+            put(MaxBinding.PROPERTY_IP_ADDRESS, "192.168.3.100")
             it
         }
 
@@ -64,6 +64,7 @@ class MaxBridgeHandlerOSGiTest extends OSGiTest {
         Bridge maxBridge = managedThingProvider.createThing(
                 BRIDGE_THING_TYPE_UID,
                 cubeUid,
+                null,
                 null, configuration)
 
         assertThat maxBridge, is(notNullValue())
