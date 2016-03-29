@@ -9,7 +9,7 @@
 package org.openhab.binding.max.internal.command;
 
 /**
- * The {@link C_CubeCommand} to request configurationof a new MAX! device after inclusion.
+ * The {@link C_CubeCommand} to request configuration of a new MAX! device after inclusion.
  *
  * @author Marcel Verpaalen - Initial Contribution
  * @since 2.0
