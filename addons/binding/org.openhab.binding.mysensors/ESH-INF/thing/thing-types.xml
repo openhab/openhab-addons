@@ -570,16 +570,17 @@
 
         <channels>
             <channel id="temp" typeId="temp-channel"/>
-            <channel id = "hvac-flow-state" typeId="hvac-flow-state-channel"/>
-            <channel id = "hvac-flow-mode" typeId="hvac-flow-mode-channel"/>
-            <channel id = "hvac-setPoint-heat" typeId="hvac-setPoint-heat-channel"/>
-            <channel id = "hvac-setPoint-cool" typeId="hvac-setPoint-cool-channel"/>
-            <channel id = "hvac-speed" typeId="hvac-speed-channel"/>
-            <channel id = "var1" typeId="var1-channel"/>
-            <channel id = "var2" typeId="var2-channel"/>
-            <channel id = "var3" typeId="var3-channel"/>
-            <channel id = "var4" typeId="var4-channel"/>
-            <channel id = "var5" typeId="var5-channel"/>
+            <channel id="hvac-flow-state" typeId="hvac-flow-state-channel"/>
+            <channel id="hvac-flow-mode" typeId="hvac-flow-mode-channel"/>
+            <channel id="hvac-setPoint-heat" typeId="hvac-setPoint-heat-channel"/>
+            <channel id="hvac-setPoint-cool" typeId="hvac-setPoint-cool-channel"/>
+            <channel id="hvac-speed" typeId="hvac-speed-channel"/>
+            <channel id="var1" typeId="var1-channel"/>
+            <channel id="var2" typeId="var2-channel"/>
+            <channel id="var3" typeId="var3-channel"/>
+            <channel id="var4" typeId="var4-channel"/>
+            <channel id="var5" typeId="var5-channel"/>
+            <channel id="battery" typeId="battery-channel"/>
         </channels>
         
         <config-description>

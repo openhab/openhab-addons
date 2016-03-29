@@ -181,6 +181,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
      */
     @Override
     public void handleUpdate(ChannelUID channelUID, org.eclipse.smarthome.core.types.State newState) {
+        logger.debug("handleUpdate called");
     }
 
     /*
@@ -196,7 +197,16 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
         // or is this an update message?
         if (nodeId == msg.getNodeId()) { // is this message for me?
-            if (msg.getMsgType() == MYSENSORS_MSG_TYPE_SET) {
+            if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) { // INTERNAL MESSAGE?
+                if (CHANNEL_MAP_INTERNAL.containsKey(msg.getSubType())) {
+                    String channel = CHANNEL_MAP_INTERNAL.get(msg.getSubType());
+                    if (channel.equals(CHANNEL_VERSION)) {
+                        updateState(channel, new StringType(msg.getMsg()));
+                    } else if (channel.equals(CHANNEL_BATTERY)) {
+                        updateState(channel, new DecimalType(msg.getMsg()));
+                    }
+                }
+            } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_SET) {
                 if (childId == msg.getChildId()) { // which child should be updated?
                     if (CHANNEL_MAP.containsKey(msg.getSubType())) {
                         String channel = CHANNEL_MAP.get(msg.getSubType());
@@ -205,7 +215,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                         } else if (channel.equals(CHANNEL_STATUS)) {
                             if (msg.getMsg().equals("1")) {
                                 updateState(channel, OnOffType.ON);
-                            } else {
+                            } else if (msg.getMsg().equals("0")) {
                                 updateState(channel, OnOffType.OFF);
                             }
                         } else if (channel.equals(CHANNEL_ARMED) || channel.equals(CHANNEL_TRIPPED)) {
@@ -234,18 +244,20 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                         oldMsgContent = msg.getMsg();
                     }
                 }
-            } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) { // INTERNAL MESSAGE?
-                if (CHANNEL_MAP_INTERNAL.containsKey(msg.getSubType())) {
-                    String channel = CHANNEL_MAP_INTERNAL.get(msg.getSubType());
-                    if (channel.equals(CHANNEL_VERSION)) {
-                        updateState(channel, new StringType(msg.getMsg()));
-                    } else if (channel.equals(CHANNEL_BATTERY)) {
-                        updateState(channel, new DecimalType(msg.getMsg()));
+            } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_REQ) {
+                if (childId == msg.getChildId()) {
+                    logger.debug("Reqeust received!");
+                    msg.setMsgType(MYSENSORS_MSG_TYPE_SET);
+                    if (oldMsgContent.equals("")) {
+                        msg.setMsg("0");
+                    } else {
+                        msg.setMsg(oldMsgContent);
                     }
+                    getBridgeHandler().getBridgeConnection().addMySensorsOutboundMessage(msg);
                 }
             }
-        }
 
+        }
     }
 
     /**

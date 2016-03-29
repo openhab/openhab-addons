@@ -39,7 +39,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
         mysCon.addMySensorsOutboundMessage(I_VERSION_MESSAGE);
     }
 
-@Override
+    @Override
     public void run() {
 
         while (!stopWriting) {
@@ -74,7 +74,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                                 }
                             }
                             String output = MySensorsMessageParser.generateAPIString(msg);
-                            logger.debug("Sending to MySensors: {}", output);
+                            logger.debug("Sending to MySensors: {}", output.trim());
 
                             sendMessage(output);
                             lastSend = System.currentTimeMillis();
