@@ -118,18 +118,12 @@ public abstract class MySensorsBridgeConnection {
 
         Iterator<MySensorsMessage> iterator = outboundMessageQueue.iterator();
         if (iterator != null) {
-            if (!iterator.hasNext()) {
-                logger.debug("Nothing to remove");
-            } else {
-                logger.debug("Doing remove");
-            }
             while (iterator.hasNext()) {
                 MySensorsMessage msgInQueue = iterator.next();
                 if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()
                         && msgInQueue.getMsgType() == msg.getMsgType() && msgInQueue.getSubType() == msg.getSubType()
                         && msgInQueue.getAck() == msg.getAck() && msgInQueue.getMsg().equals(msg.getMsg())) {
                     iterator.remove();
-                    logger.debug("Message removed");
                 } else {
                     logger.debug("Message NOT removed");
                 }
@@ -137,7 +131,6 @@ public abstract class MySensorsBridgeConnection {
         }
 
         pauseWriter = false;
-        logger.debug("Writer unpaused");
     }
 
     public void iVersionMessageReceived(String msg) {
