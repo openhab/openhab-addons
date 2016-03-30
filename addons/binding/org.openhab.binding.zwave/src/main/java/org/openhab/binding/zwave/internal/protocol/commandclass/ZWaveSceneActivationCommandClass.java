@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -21,9 +22,8 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
  * Handles scene activation messages
- * 
+ *
  * @author Chris Jackson
- * @since 1.4.0
  */
 
 @XStreamAlias("sceneActivationCommandClass")
@@ -36,7 +36,7 @@ public class ZWaveSceneActivationCommandClass extends ZWaveCommandClass {
 
     /**
      * Creates a new instance of the ZWaveSceneActivationCommandClass class.
-     * 
+     *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
@@ -55,9 +55,12 @@ public class ZWaveSceneActivationCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug(String.format("Received Scene Activation for Node ID = %d", this.getNode().getNodeId()));
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -67,19 +70,21 @@ public class ZWaveSceneActivationCommandClass extends ZWaveCommandClass {
                 processSceneActivationSet(serialMessage, offset, endpoint);
                 break;
             default:
-                logger.warn(String.format("Unsupported Command %d for command class %s (0x%02X).", command, this
-                        .getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                logger.warn(String.format("Unsupported Command %d for command class %s (0x%02X).", command,
+                        this.getCommandClass().getLabel(), this.getCommandClass().getKey()));
         }
     }
 
     /**
      * Processes a SCENEACTIVATION_SET message.
-     * 
+     *
      * @param serialMessage the incoming message to process.
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processSceneActivationSet(SerialMessage serialMessage, int offset, int endpoint) {
+    protected void processSceneActivationSet(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         int sceneId = serialMessage.getMessagePayloadByte(offset + 1);
         int sceneTime = 0;
 

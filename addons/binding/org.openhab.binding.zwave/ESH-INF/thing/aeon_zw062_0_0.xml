@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_zw062_00_000">
+
+  <thing-type id="aeon_zw062_00_000" listed="false">
     <label>ZW062 Aeon Labs Garage Door Controller  Gen5 </label>
     <description><![CDATA[
 Aeon Labs Garage Door Controller  Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage Door Controller is a smart and wireless Garage Door Control system, you can control the garage door to open, close, or stop moving via wireless signal on your gateway client or phone application.</p>
@@ -41,7 +42,7 @@ Aeon Labs Garage Door Controller  Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garag
       <property name="model">ZW062</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0103:003E</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

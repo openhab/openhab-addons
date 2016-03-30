@@ -4,12 +4,19 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsa03202_00_000">
+
+  <thing-type id="aeon_dsa03202_00_000" listed="false">
     <label>DSA03202 Minimote 4 button remote control</label>
     <description>Minimote 4 button remote control</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="scene_number" typeId="scene_number">
+        <label>Scene Number</label>
+        <properties>
+          <property name="binding:*:DecimalType">SCENE_ACTIVATION,BASIC</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
@@ -18,6 +25,7 @@
       <property name="model">DSA03202</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0006:0002,0001:0003</property>
+      <property name="commandClass:WAKE_UP">getSupported=false</property>
     </properties>
 
     <config-description>

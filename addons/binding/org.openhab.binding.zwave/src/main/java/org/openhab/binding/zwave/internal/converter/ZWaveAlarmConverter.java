@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,7 +55,7 @@ public class ZWaveAlarmConverter extends ZWaveCommandClassConverter {
             return null;
         }
 
-        String alarmType = channel.getArguments().get("alarmType");
+        String alarmType = channel.getArguments().get("type");
         logger.debug("NODE {}: Generating poll message for {}, endpoint {}, alarm {}", node.getNodeId(),
                 commandClass.getCommandClass().getLabel(), channel.getEndpoint(), alarmType);
 
@@ -81,8 +81,8 @@ public class ZWaveAlarmConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        String alarmType = channel.getArguments().get("alarmType");
-        String alarmEvent = channel.getArguments().get("alarmEvent");
+        String alarmType = channel.getArguments().get("type");
+        String alarmEvent = channel.getArguments().get("event");
         ZWaveAlarmValueEvent eventAlarm = (ZWaveAlarmValueEvent) event;
 
         // Don't trigger event if this item is bound to another alarm type

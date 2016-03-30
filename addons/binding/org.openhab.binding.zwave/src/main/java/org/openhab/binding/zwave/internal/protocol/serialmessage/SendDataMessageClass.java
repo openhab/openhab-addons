@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.trace("Handle Message Send Data Response");
         if (incomingMessage.getMessagePayloadByte(0) != 0x00) {
             logger.debug("NODE {}: Sent Data successfully placed on stack.", lastSentMessage.getMessageNode());
@@ -52,7 +53,7 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleRequest(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.trace("Handle Message Send Data Request");
 
         int callbackId = incomingMessage.getMessagePayloadByte(0);
@@ -127,6 +128,10 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
     public boolean handleFailedSendDataRequest(ZWaveController zController, SerialMessage originalMessage) {
 
         ZWaveNode node = zController.getNode(originalMessage.getMessageNode());
+        if (node == null) {
+            logger.error("Unknown node in handleFailedSendDataRequest");
+            return false;
+        }
 
         logger.trace("NODE {}: Handling failed message.", node.getNodeId());
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,7 +39,7 @@ public final class M_Message extends Message {
 
         String[] tokens = this.getPayload().split(Message.DELIMETER);
 
-        if (tokens.length > 1)
+        if (tokens.length > 1) {
             try {
                 byte[] bytes = Base64.decodeBase64(tokens[2].getBytes());
 
@@ -105,7 +105,7 @@ public final class M_Message extends Message {
                 logger.info("Unknown error parsing the M Message: {}", e.getMessage(), e);
                 logger.debug("\tRAW : {}", this.getPayload());
             }
-        else {
+        } else {
             logger.info("No rooms defined. Configure your Max! Cube");
             hasConfiguration = false;
         }
@@ -113,22 +113,22 @@ public final class M_Message extends Message {
 
     @Override
     public void debug(Logger logger) {
-        logger.trace("=== M_Message === ");
+        logger.debug("=== M_Message === ");
         if (hasConfiguration) {
             logger.trace("\tRAW : {}", this.getPayload());
             for (RoomInformation room : rooms) {
-                logger.trace("\t=== Rooms ===");
-                logger.trace("\tRoom Pos   : {}", room.getPosition());
-                logger.trace("\tRoom Name  : {}", room.getName());
-                logger.trace("\tRoom RF Adr: {}", room.getRFAddress());
+                logger.debug("\t=== Rooms ===");
+                logger.debug("\tRoom Pos   : {}", room.getPosition());
+                logger.debug("\tRoom Name  : {}", room.getName());
+                logger.debug("\tRoom RF Adr: {}", room.getRFAddress());
                 for (DeviceInformation device : devices) {
                     if (room.getPosition() == device.getRoomId()) {
-                        logger.trace("\t=== Devices ===");
-                        logger.trace("\tDevice Type    : {}", device.getDeviceType());
-                        logger.trace("\tDevice Name    : {}", device.getName());
-                        logger.trace("\tDevice Serialnr: {}", device.getSerialNumber());
-                        logger.trace("\tDevice RF Adr  : {}", device.getRFAddress());
-                        logger.trace("\tRoom Id        : {}", device.getRoomId());
+                        logger.debug("\t=== Devices ===");
+                        logger.debug("\tDevice Type    : {}", device.getDeviceType());
+                        logger.debug("\tDevice Name    : {}", device.getName());
+                        logger.debug("\tDevice Serialnr: {}", device.getSerialNumber());
+                        logger.debug("\tDevice RF Adr  : {}", device.getRFAddress());
+                        logger.debug("\tRoom Id        : {}", device.getRoomId());
                     }
                 }
 

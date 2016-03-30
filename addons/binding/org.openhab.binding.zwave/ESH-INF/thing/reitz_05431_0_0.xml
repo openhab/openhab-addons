@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="reitz_05431_00_000">
+
+  <thing-type id="reitz_05431_00_000" listed="false">
     <label>Reitz 05431 Duewi ZW BJ ES 1000 / Reitz 05431 / ZWave.me 05457 Single button wall switch</label>
     <description>Duewi ZW BJ ES 1000 / Reitz 05431 / ZWave.me 05457 Single button wall switch</description>
 

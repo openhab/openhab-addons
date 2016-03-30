@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="nexia_db100z_00_000">
+
+  <thing-type id="nexia_db100z_00_000" listed="false">
     <label>DB100Z Doorbell</label>
     <description>Doorbell</description>
 
@@ -13,7 +14,7 @@
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">

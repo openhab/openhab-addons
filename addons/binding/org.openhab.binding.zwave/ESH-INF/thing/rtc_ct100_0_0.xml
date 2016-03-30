@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="rtc_ct100_00_000">
+
+  <thing-type id="rtc_ct100_00_000" listed="false">
     <label>CT100 Z-Wave Thermostat</label>
     <description>Z-Wave Thermostat</description>
 
@@ -15,16 +16,16 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;setpointType=HEATING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_cooling" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (cooling)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;setpointType=COOLING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=COOLING</property>
         </properties>
       </channel>
       <channel id="thermostat_fanstate" typeId="rtc_ct100_00_000_thermostat_fanstate">
@@ -48,7 +49,7 @@
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="thermostat_fanmode" typeId="rtc_ct100_00_000_thermostat_fanmode">
@@ -60,13 +61,13 @@
       <channel id="sensor_temperature1" typeId="sensor_temperature">
         <label>Sensor (temperature) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1,BASIC:1;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1,BASIC:1;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity2" typeId="sensor_relhumidity">
         <label>Relative Humidity</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=RELATIVE_HUMIDITY</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=RELATIVE_HUMIDITY</property>
         </properties>
       </channel>
     </channels>
@@ -77,7 +78,7 @@
       <property name="model">CT100</property>
       <property name="manufacturerId">0098</property>
       <property name="manufacturerRef">6401:0015,6401:0106,6401:0107,6401:01FD</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

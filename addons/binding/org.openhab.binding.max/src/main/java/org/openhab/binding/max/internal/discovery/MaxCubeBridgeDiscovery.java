@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,13 +43,14 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
+    private final static int SEARCH_TIME = 15;
 
     private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
 
     /** The refresh interval for discovery of MAX! Cubes */
-    private long refreshInterval = 600;
+    private final static long SEARCH_INTERVAL = 600;
     private ScheduledFuture<?> cubeDiscoveryJob;
     private Runnable cubeDiscoveryRunnable = new Runnable() {
         @Override
@@ -58,7 +60,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     };
 
     public MaxCubeBridgeDiscovery() {
-        super(MaxBinding.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
+        super(SEARCH_TIME);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     public void startScan() {
         logger.debug("Start MAX! Cube discovery");
-        scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+        discoverCube();
     }
 
     /*
@@ -95,7 +97,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Start MAX! Cube background discovery");
         if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
-            cubeDiscoveryJob = scheduler.scheduleAtFixedRate(cubeDiscoveryRunnable, 0, refreshInterval,
+            cubeDiscoveryJob = scheduler.scheduleWithFixedDelay(cubeDiscoveryRunnable, 0, SEARCH_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }
@@ -125,8 +127,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                 bcReceipt.receive(receivePacket);
 
                 // We have a response
-                String message = new String(receivePacket.getData(), receivePacket.getOffset(),
-                        receivePacket.getLength());
+                byte[] messageBuf = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
+                        receivePacket.getOffset() + receivePacket.getLength());
+                String message = new String(messageBuf);
                 logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
@@ -140,14 +143,14 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                     String rfAddress = "";
                     logger.debug("MAX! Cube found on network");
                     logger.debug("Found at  : {}", maxCubeIP);
-                    logger.debug("Cube State: {}", maxCubeState);
+                    logger.trace("Cube State: {}", maxCubeState);
                     logger.debug("Serial    : {}", serialNumber);
                     logger.trace("Msg Valid : {}", msgValidid);
                     logger.trace("Msg Type  : {}", requestType);
 
                     if (requestType.equals("I")) {
-                        rfAddress = Utils.getHex(message.substring(21, 24).getBytes()).replace(" ", "").toLowerCase();
-                        String firmwareVersion = Utils.getHex(message.substring(24, 26).getBytes()).replace(" ", ".");
+                        rfAddress = Utils.getHex(Arrays.copyOfRange(messageBuf, 21, 24)).replace(" ", "").toLowerCase();
+                        String firmwareVersion = Utils.getHex(Arrays.copyOfRange(messageBuf, 24, 26)).replace(" ", ".");
                         logger.debug("RF Address: {}", rfAddress);
                         logger.debug("Firmware  : {}", firmwareVersion);
                     }
@@ -163,8 +166,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
         } finally {
             // Close the port!
             try {
-                if (bcReceipt != null)
+                if (bcReceipt != null) {
                     bcReceipt.close();
+                }
             } catch (Exception e) {
                 logger.debug(e.toString());
             }
@@ -182,6 +186,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             ThingUID uid = new ThingUID(MaxBinding.CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
             if (uid != null) {
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER)
                         .withLabel("MAX! Cube LAN Gateway").build();
                 thingDiscovered(result);
             }
@@ -238,8 +243,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
         } finally {
             try {
-                if (bcSend != null)
+                if (bcSend != null) {
                     bcSend.close();
+                }
             } catch (Exception e) {
                 // Ignore
             }

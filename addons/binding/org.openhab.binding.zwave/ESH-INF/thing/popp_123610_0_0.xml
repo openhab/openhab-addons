@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="popp_123610_00_000">
+
+  <thing-type id="popp_123610_00_000" listed="false">
     <label>123610 Wall Plug Switch</label>
     <description>Wall Plug Switch</description>
 
@@ -24,7 +25,7 @@
       <property name="model">123610</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">1100:0001</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

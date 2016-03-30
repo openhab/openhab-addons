@@ -4,73 +4,74 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgrgbw_00_000">
+
+  <thing-type id="fibaro_fgrgbw_00_000" listed="false">
     <label>FGRGBW Fibaro RGBW Controller</label>
     <description>Fibaro RGBW Controller</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
       <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label>Dimmer</label>
+        <label></label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;setpointType=HEATING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="sensor_power" typeId="sensor_power">
         <label>Sensor (power)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">
-        <label>Dimmer 1</label>
+        <label></label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:1,BASIC:1</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1</property>
         </properties>
       </channel>
       <channel id="switch_dimmer2" typeId="switch_dimmer">
-        <label>Dimmer 2</label>
+        <label></label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:2,BASIC:2</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2</property>
         </properties>
       </channel>
       <channel id="switch_dimmer3" typeId="switch_dimmer">
-        <label>Dimmer 3</label>
+        <label></label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:3,BASIC:3</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:3</property>
         </properties>
       </channel>
       <channel id="switch_dimmer4" typeId="switch_dimmer">
-        <label>Dimmer 4</label>
+        <label></label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:4,BASIC:4</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:4</property>
         </properties>
       </channel>
       <channel id="switch_dimmer5" typeId="switch_dimmer">
-        <label>Dimmer 5</label>
+        <label></label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:5,BASIC:5</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:5</property>
@@ -89,7 +90,7 @@
       <property name="commandClass:SWITCH_MULTILEVEL:3">getSupported=false</property>
       <property name="commandClass:SWITCH_MULTILEVEL:4">getSupported=false</property>
       <property name="commandClass:SWITCH_MULTILEVEL:5">getSupported=false</property>
-      <property name="DefaultAssociations">5</property>
+      <property name="defaultAssociations">5</property>
     </properties>
 
     <config-description>

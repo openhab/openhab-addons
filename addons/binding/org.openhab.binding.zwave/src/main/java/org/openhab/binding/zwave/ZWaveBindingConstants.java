@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zwave;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -30,10 +31,36 @@ public class ZWaveBindingConstants {
     public final static String CONFIGURATION_PORT = "port";
     public final static String CONFIGURATION_MASTER = "controller_master";
     public final static String CONFIGURATION_SUC = "controller_suc";
+    public final static String CONFIGURATION_NETWORKKEY = "security_networkkey";
+
+    public final static String CONFIGURATION_SWITCHALLMODE = "switchall_mode";
+    public final static String CONFIGURATION_WAKEUPNODE = "wakeup_node";
+    public final static String CONFIGURATION_WAKEUPINTERVAL = "wakeup_interval";
+
+    public final static String CONFIGURATION_NODENAME = "nodename_name";
+    public final static String CONFIGURATION_NODELOCATION = "nodename_location";
+
+    public final static String CONFIGURATION_USERCODE = "usercode_";
+
+    public final static String CONFIGURATION_DOORLOCKTIMEOUT = "doorlock_timeout";
 
     public final static String CONFIGURATION_POLLPERIOD = "binding_pollperiod";
 
-    public final static String UNKNOWN_THING = BINDING_ID + ":unknown";
+    public final static String ZWAVE_THING = BINDING_ID + ":device";
+    public final static ThingTypeUID ZWAVE_THING_UID = new ThingTypeUID(ZWAVE_THING);
+
+    public final static String NODE_TITLE_FORMAT = "Z-Wave Node %d";
+
+    public final static String PROPERTY_XML_MANUFACTURER = "manufacturerId";
+    public final static String PROPERTY_XML_REFERENCES = "manufacturerRef";
+    public final static String PROPERTY_XML_VERSIONMIN = "versionMin";
+    public final static String PROPERTY_XML_VERSIONMAX = "versionMax";
+    public final static String PROPERTY_XML_ASSOCIATIONS = "defaultAssociations";
+
+    public final static String PROPERTY_MANUFACTURER = "zwave_manufacturer";
+    public final static String PROPERTY_DEVICEID = "zwave_deviceid";
+    public final static String PROPERTY_DEVICETYPE = "zwave_devicetype";
+    public final static String PROPERTY_VERSION = "zwave_version";
 
     public final static String PROPERTY_NODEID = "zwave_nodeid";
     public final static String PROPERTY_NEIGHBOURS = "zwave_neighbours";
@@ -53,6 +80,8 @@ public class ZWaveBindingConstants {
 
     public final static String CHANNEL_CFG_BINDING = "binding";
     public final static String CHANNEL_CFG_COMMANDCLASS = "commandClass";
+
+    public final static BigDecimal ACTION_CHECK_VALUE = new BigDecimal(-232323);
 
     public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(CONTROLLER_SERIAL);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageCl
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociationGroup;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -82,9 +83,12 @@ public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received Multi Association Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -111,8 +115,9 @@ public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
      *            the incoming message to process.
      * @param offset
      *            the offset position from which to start message processing.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processAssociationReport(SerialMessage serialMessage, int offset) {
+    protected void processAssociationReport(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
         // Extract the group index
         int group = serialMessage.getMessagePayloadByte(offset + 1);
         // The max associations supported (0 if the requested group is not supported)
@@ -226,8 +231,9 @@ public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
      *            the incoming message to process.
      * @param offset
      *            the offset position from which to start message processing.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processGroupingsReport(SerialMessage serialMessage, int offset) {
+    protected void processGroupingsReport(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
         maxGroups = serialMessage.getMessagePayloadByte(offset + 1);
         logger.debug("NODE {} processGroupingsReport number of groups {}", getNode(), maxGroups);
         // Start the process to query these nodes

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgk101_00_000">
+
+  <thing-type id="fibaro_fgk101_00_000" listed="false">
     <label>FGK101 Door Opening Sensor</label>
     <description>Door Opening Sensor</description>
 
@@ -13,37 +14,37 @@
       <channel id="alarm_flood" typeId="alarm_flood">
         <label>Alarm (water)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=FLOOD</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=FLOOD</property>
         </properties>
       </channel>
       <channel id="alarm_co" typeId="alarm_co">
         <label>Alarm (CO)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=CARBON_MONOXIDE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=CARBON_MONOXIDE</property>
         </properties>
       </channel>
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=SMOKE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=SMOKE</property>
         </properties>
       </channel>
       <channel id="alarm_co2" typeId="alarm_co2">
         <label>Alarm (CO2)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=CARBON_DIOXIDE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=CARBON_DIOXIDE</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=GENERAL</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="alarm_heat" typeId="alarm_heat">
         <label>Alarm (heat)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;sensorType=HEAT</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=HEAT</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -51,16 +52,16 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="sensor_temperature2" typeId="sensor_temperature">
         <label>Temperature Sensor</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=TEMPERATURE</property>
         </properties>
       </channel>
     </channels>
@@ -71,7 +72,7 @@
       <property name="model">FGK101</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0700:1000,0700:2000,0700:3000</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

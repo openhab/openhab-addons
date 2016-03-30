@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="everspring_an1812_00_000">
+
+  <thing-type id="everspring_an1812_00_000" listed="false">
     <label>AN1812 Switch Meter mini Plugin</label>
     <description><![CDATA[
 Switch Meter mini Plugin<br /><h1>Overview</h1><p>The Metering Plug is designed to control the on/off status appliances load in your house. For metering the unit can detect up to 10485.75kW*h and can support wattage, voltage, ampere, and PF detection. The unit can also detect overload upon which the unit will switch off relay and keep LED flashing until power is off and re-applied. At 220-240V voltage, this Plug can support up to 2500W resistive. </p>
@@ -17,31 +18,31 @@ Switch Meter mini Plugin<br /><h1>Overview</h1><p>The Metering Plug is designed 
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="meter_current" typeId="meter_current">
         <label>Electric meter (amps)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_powerfactor" typeId="meter_powerfactor">
         <label>Electric meter (power factor)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_Power_Factor</property>
+          <property name="binding:*:DecimalType">METER;type=E_Power_Factor</property>
         </properties>
       </channel>
       <channel id="meter_voltage" typeId="meter_voltage">
         <label>Electric meter (volts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
       <channel id="switch_binary" typeId="switch_binary">
@@ -64,7 +65,7 @@ Switch Meter mini Plugin<br /><h1>Overview</h1><p>The Metering Plug is designed 
       <property name="model">AN1812</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0004:0006</property>
-      <property name="DefaultAssociations">2</property>
+      <property name="defaultAssociations">2</property>
     </properties>
 
     <config-description>

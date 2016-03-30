@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,9 +9,10 @@
 package org.openhab.binding.max.internal.device;
 
 /**
- * Room information provided b the M message meta information.
+ * Room information provided by the M message meta information.
  *
  * @author Andreas Heil (info@aheil.de)
+ * @author Marcel Verpaalen (marcel@verpaalen.com)
  * @since 1.4.0
  */
 public class RoomInformation {
@@ -47,5 +48,10 @@ public class RoomInformation {
 
     public void setRFAddress(String rfAddress) {
         this.rfAddress = rfAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "Room " + position + " (" + rfAddress + ") ='" + name + "'";
     }
 }

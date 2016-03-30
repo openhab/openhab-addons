@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,13 +51,14 @@ public class SerialMessage {
     private SerialMessagePriority priority;
     private SerialMessageClass expectedReply;
 
-    private int messageNode = 255;
+    protected int messageNode = 255;
 
-    private int transmitOptions = 0;
+    public static final int TRANSMIT_OPTIONS_NOT_SET = 0;
+    private int transmitOptions = TRANSMIT_OPTIONS_NOT_SET;
     private int callbackId = 0;
 
     private boolean transactionCanceled = false;
-    private boolean ackPending = false;
+    protected boolean ackPending = false;
 
     /**
      * Indicates whether the serial message is valid.
@@ -170,6 +172,10 @@ public class SerialMessage {
             result.append(String.format("%02X ", bb[i]));
         }
         return result.toString();
+    }
+
+    public static String b2hex(byte b) {
+        return String.format("%02X ", b);
     }
 
     /**
@@ -321,8 +327,13 @@ public class SerialMessage {
      *
      * @param index the index of the byte to return.
      * @return an integer between 0x00 (0) and 0xFF (255).
+     * @throws ZWaveSerialMessageException
      */
-    public int getMessagePayloadByte(int index) {
+    public int getMessagePayloadByte(int index) throws ZWaveSerialMessageException {
+        if (index >= messagePayload.length) {
+            throw new ZWaveSerialMessageException(
+                    "Attempt to read message payload out of bounds: " + this.toString() + " (" + index + ")");
+        }
         return messagePayload[index] & 0xFF;
     }
 
@@ -351,6 +362,15 @@ public class SerialMessage {
      */
     public void setTransmitOptions(int transmitOptions) {
         this.transmitOptions = transmitOptions;
+    }
+
+    /**
+     * Identifies if transmit options have been set yet for this SendData Req
+     *
+     * @return true if they were set
+     */
+    public boolean areTransmitOptionsSet() {
+        return transmitOptions != TRANSMIT_OPTIONS_NOT_SET;
     }
 
     /**
@@ -453,7 +473,6 @@ public class SerialMessage {
     /**
      * Serial message type enumeration. Indicates whether the message is a request or a response.
      *
-     * @author Jan-Willem Spuij
      */
     public enum SerialMessageType {
         Request, // 0x00
@@ -476,8 +495,6 @@ public class SerialMessage {
      * the lowest so they don't cause any impact on the system.
      * </ul>
      *
-     * @author Chris Jackson
-     * @author Jan-Willem Spuij
      */
     public enum SerialMessagePriority {
         Immediate,
@@ -491,7 +508,6 @@ public class SerialMessage {
     /**
      * Serial message class enumeration. Enumerates the different messages that can be exchanged with the controller.
      *
-     * @author Jan-Willem Spuij
      */
     public enum SerialMessageClass {
         SerialApiGetInitData(0x02, "SerialApiGetInitData"), // Request initial information about devices in network
@@ -650,6 +666,15 @@ public class SerialMessage {
          */
         @Override
         public int compare(SerialMessage arg0, SerialMessage arg1) {
+            // ZWaveSecurityCommandClass.SECURITY_NONCE_REPORT trumps all
+            final boolean arg0NonceReport = ZWaveSecurityCommandClass.isSecurityNonceReportMessage(arg0);
+            final boolean arg1NonceReport = ZWaveSecurityCommandClass.isSecurityNonceReportMessage(arg1);
+            if (arg0NonceReport && !arg1NonceReport) {
+                return -1;
+            } else if (arg1NonceReport && !arg0NonceReport) {
+                return 1;
+            } // they both are or both aren't, continue to logic below
+
             boolean arg0Awake = false;
             boolean arg0Listening = true;
             boolean arg1Awake = false;

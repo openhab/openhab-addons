@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -70,7 +71,7 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
         // logger.debug("ZWaveBinarySensorValueEvent 1");
 
-        String sensorType = channel.getArguments().get("sensorType");
+        String sensorType = channel.getArguments().get("type");
         // logger.debug("ZWaveBinarySensorValueEvent 2");
         ZWaveBinarySensorValueEvent sensorEvent = (ZWaveBinarySensorValueEvent) event;
         // logger.debug("ZWaveBinarySensorValueEvent 3");
@@ -81,7 +82,16 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
             return null;
         }
 
-        // logger.debug("ZWaveBinarySensorValueEvent 5");
-        return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+        switch (channel.getDataType()) {
+            case OnOffType:
+                return sensorEvent.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+            case OpenClosedType:
+                return sensorEvent.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            default:
+                logger.debug("Unknwon data type {} for BinarySensor", channel.getDataType());
+                break;
+        }
+
+        return null;
     }
 }

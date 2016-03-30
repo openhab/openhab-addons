@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="horstmann_hrt4zw_00_000">
+
+  <thing-type id="horstmann_hrt4zw_00_000" listed="false">
     <label>HRT4-ZW Battery Powered Wall Thermostat</label>
     <description><![CDATA[
 Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: This device is also sold as Secure SRT321</p>
@@ -15,7 +16,7 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="thermostat_mode" typeId="horstmann_hrt4zw_00_000_thermostat_mode">
@@ -30,10 +31,10 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;setpointType=HEATING</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -49,7 +50,7 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
       <property name="model">HRT4-ZW</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0001:0003</property>
-      <property name="DefaultAssociations">1,2,3,4,5</property>
+      <property name="defaultAssociations">1,2,3,4,5</property>
     </properties>
 
     <config-description>

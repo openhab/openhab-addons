@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
@@ -17,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class processes a serial message from the zwave controller
- * 
+ *
  * @author Chris Jackson
  */
 public class GetRoutingInfoMessageClass extends ZWaveCommandProcessor {
@@ -42,7 +43,7 @@ public class GetRoutingInfoMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         int nodeId = lastSentMessage.getMessagePayloadByte(0);
 
         logger.debug("NODE {}: Got NodeRoutingInfo request.", nodeId);
@@ -78,8 +79,8 @@ public class GetRoutingInfoMessageClass extends ZWaveCommandProcessor {
             logger.debug("NODE {}: {}", nodeId, neighbors);
         }
 
-        zController.notifyEventListeners(new ZWaveNetworkEvent(ZWaveNetworkEvent.Type.NodeRoutingInfo, nodeId,
-                ZWaveNetworkEvent.State.Success));
+        zController.notifyEventListeners(
+                new ZWaveNetworkEvent(ZWaveNetworkEvent.Type.NodeRoutingInfo, nodeId, ZWaveNetworkEvent.State.Success));
 
         checkTransactionComplete(lastSentMessage, incomingMessage);
         return true;

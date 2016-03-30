@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,21 +17,21 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
  *
  */
 public class AvrDisconnectionEvent {
-	
-	private AvrConnection connection;
-	private Throwable cause;
-	
-	public AvrDisconnectionEvent(AvrConnection connection, Throwable cause) {
-		this.connection = connection;
-		this.cause = cause;
-	}
 
-	public AvrConnection getConnection() {
-		return connection;
-	}
+    private AvrConnection connection;
+    private Throwable cause;
 
-	public Throwable getCause() {
-		return cause;
-	}
-	
+    public AvrDisconnectionEvent(AvrConnection connection, Throwable cause) {
+        this.connection = connection;
+        this.cause = cause;
+    }
+
+    public AvrConnection getConnection() {
+        return connection;
+    }
+
+    public Throwable getCause() {
+        return cause;
+    }
+
 }

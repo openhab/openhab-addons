@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -68,9 +69,12 @@ public class ZWaveBinaryToggleSwitchCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received binary toggle switch command (v{})", this.getNode().getNodeId(),
                 this.getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
@@ -93,8 +97,10 @@ public class ZWaveBinaryToggleSwitchCommandClass extends ZWaveCommandClass
      * @param serialMessage the incoming message to process.
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processSwitchBinaryToggleReport(SerialMessage serialMessage, int offset, int endpoint) {
+    protected void processSwitchBinaryToggleReport(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         int value = serialMessage.getMessagePayloadByte(offset + 1);
         logger.debug(String.format("NODE %d: Switch binary toggle report, value = 0x%02X", this.getNode().getNodeId(),
                 value));

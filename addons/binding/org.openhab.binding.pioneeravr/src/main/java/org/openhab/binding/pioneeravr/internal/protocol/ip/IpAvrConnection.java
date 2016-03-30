@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,85 +19,89 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * A class that wraps the communication to a Pioneer AVR devices using an IP connection.
- * 
+ *
  * @author Antoine Besnard
  */
 public class IpAvrConnection extends StreamAvrConnection {
 
-	private static final Logger logger = LoggerFactory.getLogger(IpAvrConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(IpAvrConnection.class);
 
-	/** default port for IP communication **/
-	public static final int DEFAULT_IPCONTROL_PORT = 8102;
+    /** default port for IP communication **/
+    public static final int DEFAULT_IPCONTROL_PORT = 8102;
 
-	/** Connection timeout in milliseconds **/
-	private static final int CONNECTION_TIMEOUT = 3000;
+    /** Connection timeout in milliseconds **/
+    private static final int CONNECTION_TIMEOUT = 3000;
 
-	/** Socket read timeout in milliseconds **/
-	private static final int SOCKET_READ_TIMEOUT = 1000;
+    /** Socket read timeout in milliseconds **/
+    private static final int SOCKET_READ_TIMEOUT = 1000;
 
-	private int receiverPort;
-	private String receiverHost;
+    private int receiverPort;
+    private String receiverHost;
 
-	private Socket ipControlSocket;
+    private Socket ipControlSocket;
 
-	public IpAvrConnection(String receiverHost) {
-		this(receiverHost, null);
-	}
+    public IpAvrConnection(String receiverHost) {
+        this(receiverHost, null);
+    }
 
-	public IpAvrConnection(String receiverHost, Integer ipControlPort) {
-		this.receiverHost = receiverHost;
-		this.receiverPort = ipControlPort != null && ipControlPort >= 1 ? ipControlPort : DEFAULT_IPCONTROL_PORT;
-	}
+    public IpAvrConnection(String receiverHost, Integer ipControlPort) {
+        this.receiverHost = receiverHost;
+        this.receiverPort = ipControlPort != null && ipControlPort >= 1 ? ipControlPort : DEFAULT_IPCONTROL_PORT;
+    }
 
-	@Override
-	protected void openConnection() throws IOException {
-		ipControlSocket = new Socket();
+    @Override
+    protected void openConnection() throws IOException {
+        ipControlSocket = new Socket();
 
-		// Set this timeout to unblock a blocking read when no data is received. It is useful to check if the
-		// reading thread has to be stopped (it implies a latency of SOCKET_READ_TIMEOUT at most before the
-		// thread is really stopped)
-		ipControlSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
+        // Set this timeout to unblock a blocking read when no data is received. It is useful to check if the
+        // reading thread has to be stopped (it implies a latency of SOCKET_READ_TIMEOUT at most before the
+        // thread is really stopped)
+        ipControlSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
 
-		// Connect to the AVR with a connection timeout.
-		ipControlSocket.connect(new InetSocketAddress(receiverHost, receiverPort), CONNECTION_TIMEOUT);
+        // Enable tcpKeepAlive to detect premature disconnection
+        // and prevent disconnection because of inactivity
+        ipControlSocket.setKeepAlive(true);
 
-		logger.debug("Connected to {}:{}", receiverHost, receiverPort);
-	}
+        // Connect to the AVR with a connection timeout.
+        ipControlSocket.connect(new InetSocketAddress(receiverHost, receiverPort), CONNECTION_TIMEOUT);
 
-	@Override
-	public boolean isConnected() {
-		return ipControlSocket != null && ipControlSocket.isConnected() && !ipControlSocket.isClosed();
-	}
+        logger.debug("Connected to {}:{}", receiverHost, receiverPort);
+    }
 
-	@Override
-	public void close() {
-		super.close();
-		try {
-			if (ipControlSocket != null) {
-				ipControlSocket.close();
-				ipControlSocket = null;
-				logger.debug("Closed socket!");
-			}
-		} catch (IOException ioException) {
-			logger.error("Closing connection throws an exception!", ioException);
-		}
-	}
+    @Override
+    public boolean isConnected() {
+        return ipControlSocket != null && ipControlSocket.isConnected() && !ipControlSocket.isClosed();
+    }
 
-	@Override
-	public String getConnectionName() {
-		return receiverHost + ":" + receiverPort;
-	}
+    @Override
+    public void close() {
+        super.close();
+        try {
+            if (ipControlSocket != null) {
+                ipControlSocket.close();
+                ipControlSocket = null;
+                logger.debug("Closed socket!");
+            }
+        } catch (IOException ioException) {
+            logger.error("Closing connection throws an exception!", ioException);
+        }
+    }
 
-	@Override
-	protected InputStream getInputStream() throws IOException {
-		return ipControlSocket.getInputStream();
-	}
+    @Override
+    public String getConnectionName() {
+        return receiverHost + ":" + receiverPort;
+    }
 
-	@Override
-	protected OutputStream getOutputStream() throws IOException {
-		return ipControlSocket.getOutputStream();
-	}
+    @Override
+    protected InputStream getInputStream() throws IOException {
+        return ipControlSocket.getInputStream();
+    }
+
+    @Override
+    protected OutputStream getOutputStream() throws IOException {
+        return ipControlSocket.getOutputStream();
+    }
 
 }

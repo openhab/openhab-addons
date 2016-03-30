@@ -16,20 +16,20 @@ if the OpenHAB auto-discovery is disabled, the PioneerAVR auto-discovery is disa
 
 In the things folder, create a file called pioneeravr.things (or any other name) and configure your AVRs inside.
 
-The binding can control AVRs through the local network (ipAvr thing type) or through a Serial connection (serailAvr) if the AVR is directly connected to your computer.
+The binding can control AVRs through the local network (ipAvr/ipAvrUnsupported thing type) or through a Serial connection (serialAvr) if the AVR is directly connected to your computer.
 
 
-Configuration of ipAvr:
-host: the hostname/ipAddress of the AVR on the local network. (mandatory)
-port: the port number to use to connect to the AVR. (optional, default to 23)
+Configuration of ipAvr/ipAvrUnsupported:
+* address: the hostname/ipAddress of the AVR on the local network. (mandatory)
+* tcpPort: the port number to use to connect to the AVR. (optional, default to 23)
 
 
 Configuration of serialAvr:
-serialPort: the name of the serial port on your computer. (mandatory)
+* serialPort: the name of the serial port on your computer. (mandatory)
 
 Example:
 ```
-pioneeravr:ipAvr:vsx921IP [ host="192.168.1.25", port="23" ]
+pioneeravr:ipAvr:vsx921IP [ address="192.168.1.25", tcpPort="23" ]
 pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ] 
 ```
 
@@ -76,7 +76,7 @@ Here after are the ID values of the input sources:
 
 *demo.things:
 ```
-pioneeravr:ipAvr:vsx921 [ host="192.168.188.89" ]
+pioneeravr:ipAvr:vsx921 [ address="192.168.188.89" ]
 ```
 
 *demo.items:

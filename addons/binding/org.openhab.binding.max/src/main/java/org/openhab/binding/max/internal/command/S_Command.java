@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,7 +21,9 @@ import org.openhab.binding.max.internal.device.ThermostatModeType;
  */
 public class S_Command extends CubeCommand {
 
-    private String baseString = "000440000000";
+    private String baseStringS = "000040000000"; // for single devices
+    private String baseStringG = "000440000000"; // for group/room devices
+
     private boolean[] bits = null;
 
     private String rfAddress = null;
@@ -83,6 +85,13 @@ public class S_Command extends CubeCommand {
      */
     @Override
     public String getCommandString() {
+
+        String baseString = "";
+        if (roomId == 0) {
+            baseString = baseStringS;
+        } else {
+            baseString = baseStringG;
+        }
 
         String commandString = baseString + rfAddress + Utils.toHex(roomId) + Utils.toHex(bits);
 

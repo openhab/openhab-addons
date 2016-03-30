@@ -48,10 +48,11 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
 
     <properties>
-        <esh.version>0.8.0.b2</esh.version>
+        <esh.version>0.8.0-SNAPSHOT</esh.version>
         <shk.version>1.2</shk.version>
-        <ohc.version>2.0.0.b1</ohc.version>
-        <ohdr.version>1.0.0</ohdr.version>
+        <ohc.version>2.0.0-SNAPSHOT</ohc.version>
+        <ohcp2.version>2.0.0.x</ohcp2.version>
+        <ohdr.version>1.0.3</ohdr.version>
         <karaf.version>4.0.3</karaf.version>
         <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
         <karaf.features.version>4.0.3</karaf.features.version>
@@ -164,7 +165,7 @@
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <properties>
-                            <year>2015</year>
+                            <year>2016</year>
                         </properties>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -374,7 +375,7 @@
         <!-- openHAB core p2 repository -->
         <repository>
             <id>p2-openhab-core</id>
-            <url>https://dl.bintray.com/kaikreuzer/openhab-core/p2/${ohc.version}</url>
+            <url>https://dl.bintray.com/openhab/p2/openhab-core/${ohcp2.version}</url>
             <layout>p2</layout>
         </repository>
 

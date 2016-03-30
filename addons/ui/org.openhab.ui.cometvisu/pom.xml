@@ -15,13 +15,6 @@
 
 
   <packaging>eclipse-plugin</packaging>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.openhab</groupId>
-  		<artifactId>com.caucho.quercus</artifactId>
-  		<version>4.0.45</version>
-  	</dependency>
-  </dependencies>
   
   <build>
     <plugins>

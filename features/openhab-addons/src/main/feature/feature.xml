@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+    Copyright (c) 2014-2016 by the respective copyright holders.
 
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -56,7 +56,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-kostalinverter" description="Kostal Inverter Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle
@@ -150,7 +150,7 @@
         <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.myopenhab/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.io/org.openhab.io.hueemulation/${project.version}</bundle>
@@ -172,8 +172,14 @@
         <feature>esh-ui-icon</feature>
         <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
         <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/cometvisu</configfile>
+    </feature>
+
+    <feature name="openhab-ui-cometvisu-php" description="PHP support for CometVisu" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-ui-cometvisu</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>
 
 </features>

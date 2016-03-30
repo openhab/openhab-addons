@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageTy
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,11 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 @XStreamAlias("nodeNamingCommandClass")
 public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZWaveCommandClassDynamicState {
+
+    public enum Type {
+        NODENAME_NAME,
+        NODENAME_LOCATION
+    }
 
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveNodeNamingCommandClass.class);
@@ -104,9 +110,12 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received NodeNaming Command Class Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -116,7 +125,6 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
                 processNameReport(serialMessage, offset, endpoint);
                 initialiseName = true;
                 break;
-
             case LOCATION_REPORT:
                 logger.trace("NODE {}: Process Location Report", this.getNode().getNodeId());
                 processLocationReport(serialMessage, offset, endpoint);
@@ -135,8 +143,9 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @param serialMessage
      * @param offset
      * @return String
+     * @throws ZWaveSerialMessageException
      */
-    protected String getString(SerialMessage serialMessage, int offset) {
+    protected String getString(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
         int charPresentation = serialMessage.getMessagePayloadByte(offset + 1);
 
         // First 5 bits are reserved so 0 them
@@ -212,8 +221,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @param serialMessage the incoming message to process.
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processNameReport(SerialMessage serialMessage, int offset, int endpoint) {
+    protected void processNameReport(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         String name = getString(serialMessage, offset);
         if (name == null) {
             return;
@@ -222,7 +233,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         this.name = name;
         logger.debug("NODE {}: Node name: {}", this.getNode().getNodeId(), name);
         ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
-                this.getCommandClass(), name);
+                this.getCommandClass(), name, Type.NODENAME_NAME);
         this.getController().notifyEventListeners(zEvent);
     }
 
@@ -232,8 +243,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @param serialMessage the incoming message to process.
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
+     * @throws ZWaveSerialMessageException
      */
-    protected void processLocationReport(SerialMessage serialMessage, int offset, int endpoint) {
+    protected void processLocationReport(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         String location = getString(serialMessage, offset);
         if (name == null) {
             return;
@@ -242,7 +255,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         this.location = location;
         logger.debug("NODE {}: Node location: {}", this.getNode().getNodeId(), location);
         ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
-                this.getCommandClass(), location);
+                this.getCommandClass(), location, Type.NODENAME_LOCATION);
         this.getController().notifyEventListeners(zEvent);
     }
 

@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="tkb_tz67_00_000">
+
+  <thing-type id="tkb_tz67_00_000" listed="false">
     <label>TZ67 Wall Plug Dimmer</label>
     <description>Wall Plug Dimmer</description>
 

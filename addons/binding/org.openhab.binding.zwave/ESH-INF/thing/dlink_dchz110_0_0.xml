@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="dlink_dchz110_00_000">
+
+  <thing-type id="dlink_dchz110_00_000" listed="false">
     <label>DCH-Z110 Door &amp; Window Sensor</label>
     <description>Door &amp; Window Sensor</description>
 
@@ -13,13 +14,13 @@
       <channel id="sensor_luminance" typeId="sensor_luminance">
         <label>Sensor (luminance)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=LUMINANCE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
@@ -33,10 +34,10 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door / Window Status</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
         </properties>
       </channel>
     </channels>
@@ -47,7 +48,7 @@
       <property name="model">DCH-Z110</property>
       <property name="manufacturerId">0108</property>
       <property name="manufacturerRef">0002:000E</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>
@@ -156,7 +157,7 @@ Bit7: unused for Z110 Model
 <p>Comments / Tips for this device from the community:</p>
 <ul><li>Setting this Parameter to <strong>20</strong> is from user side wanted as this enables Binary Sensor to report OPEN / CLOSE status by changing Bit 4</li>
 </ul>
-<p>The calculation from the recommended column is:  Bit7 to Bit0 = 000100100 Binary which is euqal to 20 decimal</p>
+<p>The calculation from the recommended column is:  Bit7 to Bit0 = 00010100 Binary which is euqal to 20 decimal</p>
 
     !]]></description>
         <default>4</default>

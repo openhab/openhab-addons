@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="popp_123580_00_000">
+
+  <thing-type id="popp_123580_00_000" listed="false">
     <label>123580 Wall Plug Dimmer</label>
     <description>Wall Plug Dimmer</description>
 

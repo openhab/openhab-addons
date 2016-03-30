@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="fibaro_fgs211_00_000">
+
+  <thing-type id="fibaro_fgs211_00_000" listed="false">
     <label>FGS211 Relay Switch 1x3kW</label>
     <description>Relay Switch 1x3kW</description>
 
@@ -36,7 +37,7 @@
       <property name="model">FGS211</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0400:0102,0400:0104,0400:0105,0400:0106,0400:0107,0400:0108,0400:0109,0400:100A,0400:300A</property>
-      <property name="DefaultAssociations">3</property>
+      <property name="defaultAssociations">3</property>
     </properties>
 
     <config-description>

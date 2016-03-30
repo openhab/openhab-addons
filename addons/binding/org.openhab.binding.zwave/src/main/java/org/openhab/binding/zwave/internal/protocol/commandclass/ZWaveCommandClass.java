@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -194,7 +195,8 @@ public abstract class ZWaveCommandClass {
      * @param offset the offset position from which to start message processing.
      * @param endpoint the endpoint or instance number this message is meant for.
      */
-    public abstract void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint);
+    public abstract void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException;
 
     /**
      * Gets an instance of the right command class.
@@ -243,15 +245,12 @@ public abstract class ZWaveCommandClass {
             Constructor<? extends ZWaveCommandClass> constructor = commandClassClass.getConstructor(ZWaveNode.class,
                     ZWaveController.class, ZWaveEndpoint.class);
             return constructor.newInstance(new Object[] { node, controller, endpoint });
-        } catch (InstantiationException e) {
-        } catch (IllegalAccessException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (InvocationTargetException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (SecurityException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            logger.error(String.format("NODE %d: Error instantiating command class 0x%02x", node.getNodeId(), classId));
+            e.printStackTrace();
+            return null;
         }
-        logger.error(String.format("NODE %d: Error instantiating command class 0x%02x", node.getNodeId(), classId));
-        return null;
     }
 
     /**
@@ -266,8 +265,7 @@ public abstract class ZWaveCommandClass {
         int precision = (buffer[offset] & PRECISION_MASK) >> PRECISION_SHIFT;
 
         if ((size + offset) >= buffer.length) {
-            logger.error("Error extracting value - length={}, offset={}, size={}.",
-                    new Object[] { buffer.length, offset, size });
+            logger.error("Error extracting value - length={}, offset={}, size={}.", buffer.length, offset, size);
             throw new NumberFormatException();
         }
 
@@ -421,17 +419,17 @@ public abstract class ZWaveCommandClass {
         CRC_16_ENCAP(0x56, "CRC_16_ENCAP", ZWaveCRC16EncapsulationCommandClass.class),
         ASSOCIATION_GROUP_INFO(0x59, "ASSOCIATION_GROUP_INFO", null),
         DEVICE_RESET_LOCALLY(0x5a, "DEVICE_RESET_LOCALLY", ZWaveDeviceResetLocallyCommandClass.class),
-        CENTRAL_SCENE(0x5b, "CENTRAL_SCENE", null),
+        CENTRAL_SCENE(0x5b, "CENTRAL_SCENE", ZWaveCentralSceneCommandClass.class),
         ZWAVE_PLUS_INFO(0x5e, "ZWAVE_PLUS_INFO", ZWavePlusCommandClass.class),
         MULTI_INSTANCE(0x60, "MULTI_INSTANCE", ZWaveMultiInstanceCommandClass.class),
-        DOOR_LOCK(0x62, "DOOR_LOCK", null),
+        DOOR_LOCK(0x62, "DOOR_LOCK", ZWaveDoorLockCommandClass.class),
         USER_CODE(0x63, "USER_CODE", ZWaveUserCodeCommandClass.class),
         CONFIGURATION(0x70, "CONFIGURATION", ZWaveConfigurationCommandClass.class),
         ALARM(0x71, "ALARM", ZWaveAlarmCommandClass.class),
         MANUFACTURER_SPECIFIC(0x72, "MANUFACTURER_SPECIFIC", ZWaveManufacturerSpecificCommandClass.class),
         POWERLEVEL(0x73, "POWERLEVEL", ZWavePowerLevelCommandClass.class),
         PROTECTION(0x75, "PROTECTION", ZWaveProtectionCommandClass.class),
-        LOCK(0x76, "LOCK", null),
+        LOCK(0x76, "LOCK", ZWaveLockCommandClass.class),
         NODE_NAMING(0x77, "NODE_NAMING", ZWaveNodeNamingCommandClass.class),
         FIRMWARE_UPDATE_MD(0x7A, "FIRMWARE_UPDATE_MD", null),
         GROUPING_NAME(0x7B, "GROUPING_NAME", null),
@@ -463,7 +461,7 @@ public abstract class ZWaveCommandClass {
         AV_CONTENT_DIRECTORY_MD(0x95, "AV_CONTENT_DIRECTORY_MD", null),
         AV_RENDERER_STATUS(0x96, "AV_RENDERER_STATUS", null),
         AV_CONTENT_SEARCH_MD(0x97, "AV_CONTENT_SEARCH_MD", null),
-        SECURITY(0x98, "SECURITY", null),
+        SECURITY(0x98, "SECURITY", ZWaveSecurityCommandClassWithInitialization.class),
         AV_TAGGING_MD(0x99, "AV_TAGGING_MD", null),
         IP_CONFIGURATION(0x9A, "IP_CONFIGURATION", null),
         ASSOCIATION_COMMAND_CONFIGURATION(0x9B, "ASSOCIATION_COMMAND_CONFIGURATION", null),

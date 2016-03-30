@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="aeon_dsb09_00_000">
+
+  <thing-type id="aeon_dsb09_00_000" listed="false">
     <label>DSB09 Home Energy Meter</label>
     <description>Home Energy Meter</description>
 
@@ -18,73 +19,73 @@
       <channel id="sensor_power" typeId="sensor_power">
         <label>Sensor (power)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="sensor_power1" typeId="sensor_power">
         <label>Sensor (power) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh1" typeId="meter_kwh">
         <label>Electric meter (kWh) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts1" typeId="meter_watts">
         <label>Electric meter (watts) 1</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:1;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:1;type=E_W</property>
         </properties>
       </channel>
       <channel id="sensor_power2" typeId="sensor_power">
         <label>Sensor (power) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh2" typeId="meter_kwh">
         <label>Electric meter (kWh) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts2" typeId="meter_watts">
         <label>Electric meter (watts) 2</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:2;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:2;type=E_W</property>
         </properties>
       </channel>
       <channel id="sensor_power3" typeId="sensor_power">
         <label>Sensor (power) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:3;sensorType=POWER</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:3;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh3" typeId="meter_kwh">
         <label>Electric meter (kWh) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_watts3" typeId="meter_watts">
         <label>Electric meter (watts) 3</label>
         <properties>
-          <property name="binding:*:DecimalType">METER:3;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER:3;type=E_W</property>
         </properties>
       </channel>
     </channels>
@@ -95,7 +96,7 @@
       <property name="model">DSB09</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0009</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

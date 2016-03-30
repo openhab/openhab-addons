@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,30 +20,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson
  */
-public class ZWaveSceneConverter extends ZWaveCommandClassConverter {
+public class ZWaveCentralSceneConverter extends ZWaveCommandClassConverter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ZWaveSceneConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZWaveCentralSceneConverter.class);
 
     /**
      * Constructor. Creates a new instance of the {@link ZWaveConverterBase} class.
      *
      */
-    public ZWaveSceneConverter() {
+    public ZWaveCentralSceneConverter() {
         super();
     }
 
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        if (channel.getArguments().get("scene") == null) {
-            return null;
-        }
-
-        int scene = Integer.parseInt(channel.getArguments().get("scene"));
-        if (scene != (Integer) event.getValue()) {
-            return null;
-        }
-        Integer state = Integer.parseInt(channel.getArguments().get("state"));
-
-        return new DecimalType(state);
+        return new DecimalType((Integer) event.getValue());
     }
 }

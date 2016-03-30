@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -374,6 +374,8 @@ public class ZWaveDeviceClass {
         PC_CONTROLLER(1, Generic.STATIC_CONTROLLER, "PC Controller"),
         SCENE_CONTROLLER(2, Generic.STATIC_CONTROLLER, "Scene Controller"),
         INSTALLER_TOOL(3, Generic.STATIC_CONTROLLER, "Static Installer Tool"),
+        AV_REMOTE_CONTROLLER(4, Generic.STATIC_CONTROLLER, "AV Remote Controller"),
+        SIMPLE_REMOTE_CONTROLLER(6, Generic.STATIC_CONTROLLER, "Simple Remote Controller"),
 
         SATELLITE_RECEIVER(4, Generic.AV_CONTROL_POINT, "Satellite Receiver"),
         SATELLITE_RECEIVER_V2(17, Generic.AV_CONTROL_POINT, "Satellite Receiver V2"),
@@ -435,6 +437,7 @@ public class ZWaveDeviceClass {
         DOOR_LOCK(1, Generic.ENTRY_CONTROL, "Door Lock"),
         ADVANCED_DOOR_LOCK(2, Generic.ENTRY_CONTROL, "Advanced Door Lock"),
         SECURE_KEYPAD_DOOR_LOCK(3, Generic.ENTRY_CONTROL, "Secure Keypad Door Lock"),
+        SECURE_BARRIER(7, Generic.ENTRY_CONTROL, "Secure Barrier Add-on"),
 
         ENERGY_PRODUCTION(1, Generic.SEMI_INTEROPERABLE, "Energy Production"),
 
@@ -597,6 +600,10 @@ public class ZWaveDeviceClass {
                 case SMOKE_SENSOR_ZENSOR:
                     return new CommandClass[] { CommandClass.SENSOR_ALARM, CommandClass.MANUFACTURER_SPECIFIC,
                             CommandClass.BATTERY, CommandClass.VERSION };
+
+                case SECURE_KEYPAD_DOOR_LOCK:
+                    return new CommandClass[] { CommandClass.SECURITY, CommandClass.MANUFACTURER_SPECIFIC,
+                            CommandClass.DOOR_LOCK, CommandClass.USER_CODE, CommandClass.VERSION };
 
                 default:
                     return new CommandClass[0];

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,10 +22,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.internal.ZWaveConfigProvider;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociation;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
@@ -40,6 +42,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurati
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveManufacturerSpecificCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiInstanceCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNoOperationCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClassWithInitialization;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveVersionCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveVersionCommandClass.LibraryType;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
@@ -139,6 +142,11 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
     private ZWaveNodeInitStage currentStage;
 
     /**
+     * Used only by {@link ZWaveNodeInitStage#SECURITY_REPORT}
+     */
+    private SerialMessage securityLastSentMessage;
+
+    /**
      * Constructor. Creates a new instance of the ZWaveNodeStageAdvancer class.
      *
      * @param node
@@ -171,7 +179,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
         // Set an event callback so we get notification of events
         controller.addEventListener(this);
 
-        // Get things moving...
         advanceNodeStage(null);
     }
 
@@ -179,8 +186,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
      * Handles the removal of frames from the send queue. This gets called after we have an ACK for our packet, but
      * before we get the response. The actual sending of frames, and the advancing is carried out in the
      * advanceNodeStage method.
+     *
+     * @throws ZWaveSerialMessageException
      */
-    public void handleNodeQueue(SerialMessage incomingMessage) {
+    private void handleNodeQueue(SerialMessage incomingMessage) {
         // If initialisation is complete, then just return.
         // This probably shouldn't be necessary since we remove the event
         // handler when we're done, but just to be sure...
@@ -200,6 +209,10 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
             freeToSend = true;
 
             // We've sent a frame, let's process the stage...
+            advanceNodeStage(incomingMessage.getMessageClass());
+        } else if (msgQueue.isEmpty() && currentStage == ZWaveNodeInitStage.SECURITY_REPORT) {
+            logger.debug("NODE {}: Node advancer - In Security stage, going to advanceNodeStage to get next request.",
+                    node.getNodeId());
             advanceNodeStage(incomingMessage.getMessageClass());
         }
     }
@@ -242,6 +255,8 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
      * This method also handles the sending of frames. Since the initialisation phase is a busy one we try and only have
      * one outstanding request. Again though, we can't be sure that a response is aligned with the node advancer request
      * so it is possible that more than one packet can be released at once, but it will constrain things.
+     *
+     * @throws ZWaveSerialMessageException
      */
     public void advanceNodeStage(SerialMessageClass eventClass) {
         // If initialisation is complete, then just return.
@@ -410,6 +425,80 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     }
                     break;
 
+                case SECURITY_REPORT:
+                    // For devices that use security. When invoked during secure inclusion, this
+                    // method will go through all steps to give the device our zwave:networkKey from
+                    // the config. This requires multiple steps as defined in
+                    // ZWaveSecurityCommandClassWithInitialization.
+                    // SECURITY_REPORT has different semantics than the other stages such that:
+                    // 1. It cannot generate all of the request messages during the first pass
+                    // 2. It handles stage advancement manually, as this code path is most typically called
+                    // by the ZWaveInputThread which needs to return from this call to receive more messages
+                    // 3. It will sometimes return an empty message list, but this just means it's
+                    // waiting for another response to come back
+                    if (node.supportsCommandClass(CommandClass.SECURITY)) {
+                        ZWaveSecurityCommandClassWithInitialization securityCommandClass = (ZWaveSecurityCommandClassWithInitialization) this.node
+                                .getCommandClass(CommandClass.SECURITY);
+                        // For a node restored from a config file, this may or may not return a message
+                        Collection<SerialMessage> messageList = securityCommandClass.initialize(stageAdvanced);
+
+                        // Speed up retry timer as we use this to fetch outgoing messages instead of just retries
+                        retryTimer = 400;
+                        if (messageList == null) { // This means we're waiting for a reply or we are done
+                            if (isRestoredFromConfigfile()) {
+                                // Since we were restored from a config file, redo from the dynamic node stage.
+                                logger.debug(
+                                        "NODE {}: Node advancer: Restored from file - skipping static initialisation",
+                                        node.getNodeId());
+                                currentStage = ZWaveNodeInitStage.SESSION_START;
+                                securityCommandClass.startSecurityEncapsulationThread();
+                                break;
+                            } else {
+                                // This node was just included, check for success or failure
+                                if (securityCommandClass.wasSecureInclusionSuccessful()) {
+                                    logger.debug("NODE {}: Secure inclusion complete, continuing with inclusion",
+                                            node.getNodeId());
+                                    securityCommandClass.startSecurityEncapsulationThread();
+                                    nodeSerializer.SerializeNode(node); // TODO: DB remove
+                                    // retryTimer will be reset to a normal value below
+                                    break;
+                                } else {
+                                    // securityCommandClass output a message about the failure
+                                    logger.debug(
+                                            "NODE {}: Since secure inclusion failed, the node must be manually excluded via habmin",
+                                            node.getNodeId());
+                                    // Stop the retry timer
+                                    resetIdleTimer();
+                                    // Remove the security command class since without a key, it's unusable
+                                    node.removeCommandClass(CommandClass.SECURITY);
+                                    // We remove the event listener to reduce loading now that we're done
+                                    controller.removeEventListener(this);
+                                    return;
+                                }
+                            }
+                        } else if (messageList.isEmpty()) {
+                            return; // Let ZWaveInputThread go back and wait for an incoming message
+                        } else { // Add one or more messages to the queue
+                            addToQueue(messageList);
+                            SerialMessage nextSecurityMessageToSend = messageList.iterator().next();
+                            if (!nextSecurityMessageToSend.equals(securityLastSentMessage)) {
+                                // Reset our retry count since this is a different message
+                                retryCount = 0;
+                                securityLastSentMessage = nextSecurityMessageToSend;
+                            }
+                        }
+                    } else { // !node.supportsCommandClass(CommandClass.SECURITY)
+                        if (isRestoredFromConfigfile()) {
+                            // Since we were restored from a config file, redo from the dynamic node stage.
+                            logger.debug("NODE {}: Node advancer: Restored from file - skipping static initialisation",
+                                    node.getNodeId());
+                            currentStage = ZWaveNodeInitStage.SESSION_START;
+                        }
+                        logger.info("NODE {}: SECURITY_REPORT not supported, proceeding to next stage.",
+                                node.getNodeId());
+                    }
+                    break;
+
                 case DETAILS:
                     // If restored from a config file, jump to the dynamic node stage.
                     if (isRestoredFromConfigfile()) {
@@ -468,14 +557,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     addToQueue(versionCommandClass.getVersionMessage());
                     break;
 
-                case DISCOVERY_COMPLETE:
-                    // At this point we know enough information about the device to advise the discovery
-                    // service that there's a new thing.
-                    // We need to do this here as we needed to know the device information such as manufacturer,
-                    // type, id and version
-                    controller.nodeDiscoveryComplete(node);
-                    break;
-
                 case DISCOVERY_WAIT:
                     // At this point, we've discovered the device, alerted the system, and are waiting for the
                     // system to create the thing. We need to wait for this to properly configure the device
@@ -489,21 +570,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     }
 
                     thingType = ZWaveConfigProvider.getThingType(node);
-                    /*
-                     * thingType.
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - type {}", node.getNodeId(), thingType);
-                     * ThingUID bridge = (ThingUID) controller.getUID();
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - bridge {}", node.getNodeId(), bridge);
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - part 1 {}", node.getNodeId(),
-                     * thingType.getUID());
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - part 2 {}", node.getNodeId(),
-                     * bridge.getId());
-                     * ThingUID thingUID = new ThingUID(thingType.getUID(), "node" + node.getNodeId(), bridge.getId());
-                     * logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - looking for {}", node.getNodeId(),
-                     * thingUID);
-                     *
-                     * thingType = ZWaveConfigProvider.getThing(thingUID);
-                     */
                     if (thingType == null) {
                         logger.debug("NODE {}: Node advancer: DISCOVERY_WAIT - thing not found!", node.getNodeId());
                     }
@@ -745,7 +811,8 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                         break;
                     }
 
-                    String associations = thingType.getProperties().get("DefaultAssociations");
+                    String associations = thingType.getProperties()
+                            .get(ZWaveBindingConstants.PROPERTY_XML_ASSOCIATIONS);
                     if (associations == null || associations.length() == 0) {
                         logger.debug("NODE {}: Node advancer: SET_ASSOCIATION - no default associations",
                                 node.getNodeId());
@@ -870,6 +937,7 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                             msgQueue.size());
                     break;
 
+                case DISCOVERY_COMPLETE:
                 case STATIC_END:
                 case DONE:
                     // Save the node information to file
@@ -925,7 +993,6 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                 controller.notifyEventListeners(zEvent);
             }
         } while (msgQueue.isEmpty());
-
     }
 
     /**

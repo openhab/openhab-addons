@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,6 +39,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveUserCodeCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,28 +154,31 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.WAKE_UP) != null) {
             groups.add(new ConfigDescriptionParameterGroup("wakeup", "sleep", false, "Wakeup Configuration", null));
 
-            parameters.add(
-                    ConfigDescriptionParameterBuilder.create("wakeup_interval", Type.TEXT).withLabel("Wakeup Interval")
-                            .withDescription("Sets the number of seconds that the device will wakeup<BR/>"
-                                    + "Setting a shorter time will allow openHAB to configure the device more regularly, but may use more battery power.<BR>"
-                                    + "<B>Note:</B> This setting does not impact device notifications such as alarms.")
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, Type.TEXT).withLabel("Wakeup Interval")
+                    .withDescription("Sets the number of seconds that the device will wakeup<BR/>"
+                            + "Setting a shorter time will allow openHAB to configure the device more regularly, but may use more battery power.<BR>"
+                            + "<B>Note:</B> This setting does not impact device notifications such as alarms.")
                     .withDefault("").withGroupName("wakeup").build());
 
-            parameters.add(ConfigDescriptionParameterBuilder.create("wakeup_node", Type.TEXT).withLabel("Wakeup Node")
-                    .withAdvanced(true)
-                    .withDescription("Sets the wakeup node to which the device will send notifications.<BR/>"
-                            + "This should normally be set to the openHAB controller - "
-                            + "if it isn't, openHAB will not receive notifications when the device wakes up, "
-                            + "and will not be able to configure the device.")
-                    .withDefault("").withGroupName("wakeup").build());
+            parameters.add(
+                    ConfigDescriptionParameterBuilder.create(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, Type.TEXT)
+                            .withLabel("Wakeup Node").withAdvanced(true)
+                            .withDescription("Sets the wakeup node to which the device will send notifications.<BR/>"
+                                    + "This should normally be set to the openHAB controller - "
+                                    + "if it isn't, openHAB will not receive notifications when the device wakes up, "
+                                    + "and will not be able to configure the device.")
+                            .withDefault("").withGroupName("wakeup").build());
         }
 
         // If we support the node name class, then add the configuration
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.NODE_NAMING) != null) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("nodename_name", Type.TEXT).withLabel("Node Name")
-                    .withDescription("Sets a string for the device name").withGroupName("thingcfg").withDefault("")
-                    .build());
-            parameters.add(ConfigDescriptionParameterBuilder.create("nodename_location", Type.TEXT)
+            parameters.add(
+                    ConfigDescriptionParameterBuilder.create(ZWaveBindingConstants.CONFIGURATION_NODENAME, Type.TEXT)
+                            .withLabel("Node Name").withDescription("Sets a string for the device name")
+                            .withGroupName("thingcfg").withDefault("").build());
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_NODELOCATION, Type.TEXT)
                     .withDescription("Sets a string for the device location").withLabel("Node Location").withDefault("")
                     .withGroupName("thingcfg").build());
         }
@@ -186,33 +190,53 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             options.add(new ParameterOption("1", "Include in All On group"));
             options.add(new ParameterOption("2", "Include in All Off group"));
             options.add(new ParameterOption("255", "Include in All On and All Off groups"));
-            parameters.add(
-                    ConfigDescriptionParameterBuilder.create("switchall_mode", Type.TEXT).withLabel("Switch All Mode")
-                            .withDescription("Set the mode for the switch when receiving SWITCH ALL commands.")
-                            .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, Type.TEXT).withLabel("Switch All Mode")
+                    .withDescription("Set the mode for the switch when receiving SWITCH ALL commands.").withDefault("0")
+                    .withGroupName("thingcfg").withOptions(options).build());
         }
 
-        // If we're DEAD, allow moving to the FAILED list
-        if (node.getNodeState() == ZWaveNodeState.DEAD) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
-                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("GO").withGroupName("actions")
+        // If we support DOOR_LOCK - add options
+        if (node.getCommandClass(ZWaveCommandClass.CommandClass.DOOR_LOCK) != null) {
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, Type.TEXT).withLabel("Lock Timeout")
+                    .withDescription("Set the timeout on the lock.").withDefault("30").withGroupName("thingcfg")
                     .build());
+        }
+
+        ZWaveUserCodeCommandClass userCodeClass = (ZWaveUserCodeCommandClass) node
+                .getCommandClass(ZWaveCommandClass.CommandClass.USER_CODE);
+        if (userCodeClass != null && userCodeClass.getNumberOfSupportedCodes() > 0) {
+            groups.add(new ConfigDescriptionParameterGroup("usercode", "lock", false, "User Code", null));
+
+            for (int code = 1; code <= userCodeClass.getNumberOfSupportedCodes(); code++) {
+                parameters.add(ConfigDescriptionParameterBuilder
+                        .create(ZWaveBindingConstants.CONFIGURATION_USERCODE + code, Type.TEXT)
+                        .withLabel("Code " + code).withDescription("Set the user code (4 to 10 numbers)")
+                        .withDefault("").withGroupName("usercode").build());
+            }
         }
 
         // If we're FAILED, allow removing from the controller
         if (node.getNodeState() == ZWaveNodeState.FAILED) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.TEXT)
-                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("GO")
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.INTEGER)
+                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("-232323")
+                    .withGroupName("actions").build());
+        } else {
+            // Otherwise, allow us to put this on the failed list
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.INTEGER)
+                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("-232323")
                     .withGroupName("actions").build());
         }
 
         if (node.isInitializationComplete() == true) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.TEXT)
-                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("GO").withGroupName("actions")
-                    .build());
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.INTEGER)
+                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("-232323")
+                    .withGroupName("actions").build());
         }
 
         return new ConfigDescription(uri, parameters, groups);
+
     }
 
     private static void initialiseZWaveThings() {
@@ -222,6 +246,9 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         }
 
         synchronized (productIndex) {
+            zwaveThingTypeUIDList = new HashSet<ThingTypeUID>();
+            productIndex = new ArrayList<ZWaveProduct>();
+
             // Get all the thing types
             Collection<ThingType> thingTypes = thingTypeRegistry.getThingTypes();
             for (ThingType thingType : thingTypes) {
@@ -236,11 +263,11 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                 // Get the properties
                 Map<String, String> thingProperties = thingType.getProperties();
 
-                if (thingProperties.get("manufacturerRef") == null) {
+                if (thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES) == null) {
                     continue;
                 }
 
-                String[] references = thingProperties.get("manufacturerRef").split(",");
+                String[] references = thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES).split(",");
                 for (String ref : references) {
                     String[] values = ref.split(":");
                     Integer type;
@@ -253,11 +280,11 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     if (!values[1].trim().equals("*")) {
                         id = Integer.parseInt(values[1], 16);
                     }
-                    String versionMin = thingProperties.get("versionMin");
-                    String versionMax = thingProperties.get("versionMax");
+                    String versionMin = thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_VERSIONMIN);
+                    String versionMax = thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_VERSIONMAX);
                     productIndex.add(new ZWaveProduct(thingType.getUID(),
-                            Integer.parseInt(thingProperties.get("manufacturerId"), 16), type, id, versionMin,
-                            versionMax));
+                            Integer.parseInt(thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_MANUFACTURER), 16),
+                            type, id, versionMin, versionMax));
                 }
 
             }
@@ -265,16 +292,16 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
     }
 
     public static synchronized List<ZWaveProduct> getProductIndex() {
-        if (productIndex.size() == 0) {
-            initialiseZWaveThings();
-        }
+        // if (productIndex.size() == 0) {
+        initialiseZWaveThings();
+        // }
         return productIndex;
     }
 
     public static Set<ThingTypeUID> getSupportedThingTypes() {
-        if (zwaveThingTypeUIDList.size() == 0) {
-            initialiseZWaveThings();
-        }
+        // if (zwaveThingTypeUIDList.size() == 0) {
+        initialiseZWaveThings();
+        // }
         return zwaveThingTypeUIDList;
     }
 

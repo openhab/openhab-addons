@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,10 +9,11 @@
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent.State;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent.Type;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class processes a serial message from the zwave controller
- * 
+ *
  * @author Chris Jackson
  */
 public class RemoveFailedNodeMessageClass extends ZWaveCommandProcessor {
@@ -51,11 +52,11 @@ public class RemoveFailedNodeMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.debug("Got RemoveFailedNode response.");
         int nodeId = lastSentMessage.getMessagePayloadByte(0);
 
-        switch (incomingMessage.getMessagePayloadByte(0)) {
+        switch (incomingMessage.getMessagePayloadByte(0)) { // TODO: Should this be (&& 0x0f)?
             case FAILED_NODE_REMOVE_STARTED:
                 logger.debug("NODE {}: Remove failed node successfully placed on stack.", nodeId);
                 break;
@@ -91,17 +92,17 @@ public class RemoveFailedNodeMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleRequest(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         int nodeId = lastSentMessage.getMessagePayloadByte(0);
 
         logger.debug("NODE {}: Got RemoveFailedNode request.", nodeId);
-        switch (incomingMessage.getMessagePayloadByte(0)) {
+        switch (incomingMessage.getMessagePayloadByte(1)) {
             case FAILED_NODE_OK:
                 logger.error("NODE {}: Unable to remove failed node as it is not a failed node!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_REMOVED:
-                logger.debug("NODE {}: Successfully removed node from controller database!", nodeId);
+                logger.debug("NODE {}: Successfully removed node from controller!", nodeId);
                 zController.notifyEventListeners(new ZWaveNetworkEvent(Type.DeleteNode, nodeId, State.Success));
                 transactionComplete = true;
                 break;
@@ -110,8 +111,8 @@ public class RemoveFailedNodeMessageClass extends ZWaveCommandProcessor {
                 transactionComplete = true;
                 break;
             default:
-                logger.error("NODE {}: Remove failed node failed with error 0x{}.", nodeId,
-                        Integer.toHexString(incomingMessage.getMessagePayloadByte(0)));
+                logger.error("NODE {}: Remove failed node failed with response 0x{}.", nodeId,
+                        Integer.toHexString(incomingMessage.getMessagePayloadByte(1)));
                 transactionComplete = true;
                 break;
         }

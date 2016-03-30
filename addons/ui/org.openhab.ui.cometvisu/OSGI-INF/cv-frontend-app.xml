@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+    Copyright (c) 2014-2016 by the respective copyright holders.
+
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -20,5 +21,6 @@
    <reference bind="addIconProvider" cardinality="1..n" interface="org.eclipse.smarthome.ui.icon.IconProvider" name="IconProvider" policy="dynamic" unbind="removeIconProvider"/>
    <reference bind="addPersistenceService" cardinality="0..n" interface="org.eclipse.smarthome.core.persistence.PersistenceService" name="PersistenceService" policy="dynamic" unbind="removePersistenceService"/>
    <reference bind="setEventPublisher" cardinality="1..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="static" unbind="unsetEventPublisher"/>
+   <reference bind="setPHProvider" cardinality="0..1" interface="org.openhab.ui.cometvisu.php.PHProvider" name="PHProvider" policy="static" unbind="unsetPHProvider"/>
    <property name="service.pid" type="String" value="org.openhab.cometvisu"/>
 </scr:component>

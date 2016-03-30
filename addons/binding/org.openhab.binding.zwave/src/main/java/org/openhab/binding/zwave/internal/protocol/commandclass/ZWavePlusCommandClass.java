@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -81,9 +82,12 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpointId) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpointId)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received ZWave Plus Request", this.getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -101,8 +105,9 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
      *            The received message
      * @param offset
      *            The starting offset into the payload
+     * @throws ZWaveSerialMessageException
      */
-    private void handleZWavePlusReport(SerialMessage serialMessage, int offset) {
+    private void handleZWavePlusReport(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
 
         zwPlusVersion = serialMessage.getMessagePayloadByte(offset + 0);
         zwPlusRole = serialMessage.getMessagePayloadByte(offset + 1);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,42 +15,42 @@ package org.openhab.binding.pioneeravr.protocol;
  *
  */
 public interface AvrCommand {
-	
-	/**
-	 * Represent a CommandType of command requests
-	 * 
-	 * @author Antoine Besnard
-	 *
-	 */
-	public interface CommandType {
-		
-		/**
-		 * Return the command of this command type
-		 * 
-		 * @return
-		 */
-		public String getCommand();
-		
-		/**
-		 * Return the name of the command type
-		 * 
-		 * @return
-		 */
-		public String name();
-	}
 
-	/**
-	 * Return the command to send to the AVR.
-	 * 
-	 * @return
-	 */
-	public String getCommand();
+    /**
+     * Represent a CommandType of command requests
+     * 
+     * @author Antoine Besnard
+     *
+     */
+    public interface CommandType {
 
-	/**
-	 * Return the the command type of this command.
-	 * 
-	 * @return
-	 */
-	public CommandType getCommandType();
+        /**
+         * Return the command of this command type
+         * 
+         * @return
+         */
+        public String getCommand();
+
+        /**
+         * Return the name of the command type
+         * 
+         * @return
+         */
+        public String name();
+    }
+
+    /**
+     * Return the command to send to the AVR.
+     * 
+     * @return
+     */
+    public String getCommand();
+
+    /**
+     * Return the the command type of this command.
+     * 
+     * @return
+     */
+    public CommandType getCommandType();
 
 }

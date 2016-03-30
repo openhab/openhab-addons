@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,23 +38,25 @@ public final class DeviceConfiguration {
 
     public static DeviceConfiguration create(DeviceInformation di) {
         DeviceConfiguration configuration = new DeviceConfiguration();
-        configuration.setValues(di.getRFAddress(), di.getDeviceType(), di.getSerialNumber(), di.getName());
+        configuration.setValues(di.getRFAddress(), di.getDeviceType(), di.getSerialNumber(), di.getRoomId(),
+                di.getName());
         return configuration;
     }
 
     public void setValues(C_Message message) {
-        setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber());
+        setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber(), message.getRoomID());
     }
 
-    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, String name) {
-        setValues(rfAddress, deviceType, serialNumber);
+    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, int roomId, String name) {
+        setValues(rfAddress, deviceType, serialNumber, roomId);
         this.name = name;
     }
 
-    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber) {
+    private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, int roomId) {
         this.rfAddress = rfAddress;
         this.deviceType = deviceType;
         this.serialNumber = serialNumber;
+        this.roomId = roomId;
     }
 
     public String getRFAddress() {
@@ -71,6 +73,10 @@ public final class DeviceConfiguration {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getRoomId() {

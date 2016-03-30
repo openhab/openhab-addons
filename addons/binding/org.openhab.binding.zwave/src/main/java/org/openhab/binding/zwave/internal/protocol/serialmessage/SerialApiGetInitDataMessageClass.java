@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,16 +11,17 @@ package org.openhab.binding.zwave.internal.protocol.serialmessage;
 import java.util.ArrayList;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
+import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class processes a serial message from the zwave controller
- * 
+ *
  * @author Chris Jackson
  */
 public class SerialApiGetInitDataMessageClass extends ZWaveCommandProcessor {
@@ -37,7 +38,7 @@ public class SerialApiGetInitDataMessageClass extends ZWaveCommandProcessor {
 
     @Override
     public boolean handleResponse(ZWaveController zController, SerialMessage lastSentMessage,
-            SerialMessage incomingMessage) {
+            SerialMessage incomingMessage) throws ZWaveSerialMessageException {
         logger.debug("Got MessageSerialApiGetInitData response.");
         int nodeBytes = incomingMessage.getMessagePayloadByte(2);
 
@@ -64,8 +65,8 @@ public class SerialApiGetInitDataMessageClass extends ZWaveCommandProcessor {
             }
         }
 
-        logger.info("ZWave Controller using {} API", ((incomingMessage.getMessagePayloadByte(1) & 0x01) == 1) ? "Slave"
-                : "Controller");
+        logger.info("ZWave Controller using {} API",
+                ((incomingMessage.getMessagePayloadByte(1) & 0x01) == 1) ? "Slave" : "Controller");
         logger.info("ZWave Controller is {} Controller",
                 ((incomingMessage.getMessagePayloadByte(1) & 0x04) == 1) ? "Secondary" : "Primary");
         logger.info("------------Number of Nodes Found Registered to ZWave Controller------------");

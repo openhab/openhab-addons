@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="eco_tiltzwave2_00_000">
+
+  <thing-type id="eco_tiltzwave2_00_000" listed="false">
     <label>TILTZWAVE2 Z-Wave Garage Door Sensor</label>
     <description>Z-Wave Garage Door Sensor</description>
 
@@ -35,7 +36,7 @@
       <property name="model">TILTZWAVE2</property>
       <property name="manufacturerId">014A</property>
       <property name="manufacturerRef">0001:0003</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

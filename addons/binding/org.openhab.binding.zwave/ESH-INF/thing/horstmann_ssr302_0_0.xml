@@ -4,8 +4,9 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="horstmann_ssr302_00_000">
-    <label>SSR302 Two Channel Boiler Actuator</label>
+
+  <thing-type id="horstmann_ssr302_00_000" listed="false">
+    <label>SSR-302 Two Channel Boiler Actuator</label>
     <description>Two Channel Boiler Actuator</description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -51,7 +52,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">SSR302</property>
+      <property name="model">SSR-302</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0003:0002</property>
     </properties>

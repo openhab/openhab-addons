@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,322 +42,327 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * A class that wraps the communication to Pioneer AVR devices by using Input/Ouptut streams.
- * 
+ *
  * see {@link http ://www.pioneerelectronics.com/StaticFiles/PUSA/Files/Home%20Custom %20Install/VSX-1120-K-RS232.PDF}
  * for the protocol specs
- * 
+ *
  * @author Antoine Besnard
  * @author Rainer Ostendorf
  * @author based on the Onkyo binding by Pauli Anttila and others
  */
 public abstract class StreamAvrConnection implements AvrConnection {
 
-	private static final Logger logger = LoggerFactory.getLogger(StreamAvrConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(StreamAvrConnection.class);
 
-	// The maximum time to wait incoming messages.
-	private static final Integer READ_TIMEOUT = 1000;
+    // The maximum time to wait incoming messages.
+    private static final Integer READ_TIMEOUT = 1000;
 
-	private List<AvrUpdateListener> updateListeners;
-	private List<AvrDisconnectionListener> disconnectionListeners;
+    private List<AvrUpdateListener> updateListeners;
+    private List<AvrDisconnectionListener> disconnectionListeners;
 
-	private IpControlInputStreamReader inputStreamReader;
-	private DataOutputStream outputStream;
+    private IpControlInputStreamReader inputStreamReader;
+    private DataOutputStream outputStream;
 
-	public StreamAvrConnection() {
-		this.updateListeners = new ArrayList<>();
-		this.disconnectionListeners = new ArrayList<>();
-	}
+    public StreamAvrConnection() {
+        this.updateListeners = new ArrayList<>();
+        this.disconnectionListeners = new ArrayList<>();
+    }
 
-	@Override
-	public void addUpdateListener(AvrUpdateListener listener) {
-		synchronized (updateListeners) {
-			updateListeners.add(listener);
-		}
-	}
+    @Override
+    public void addUpdateListener(AvrUpdateListener listener) {
+        synchronized (updateListeners) {
+            updateListeners.add(listener);
+        }
+    }
 
-	@Override
-	public void addDisconnectionListener(AvrDisconnectionListener listener) {
-		synchronized (disconnectionListeners) {
-			disconnectionListeners.add(listener);
-		}
-	}
+    @Override
+    public void addDisconnectionListener(AvrDisconnectionListener listener) {
+        synchronized (disconnectionListeners) {
+            disconnectionListeners.add(listener);
+        }
+    }
 
-	@Override
-	public boolean connect() {
+    @Override
+    public boolean connect() {
 
-		if (!isConnected()) {
-			try {
-				openConnection();
+        if (!isConnected()) {
+            try {
+                openConnection();
 
-				// Start the inputStream reader.
-				inputStreamReader = new IpControlInputStreamReader(getInputStream());
-				inputStreamReader.start();
+                // Start the inputStream reader.
+                inputStreamReader = new IpControlInputStreamReader(getInputStream());
+                inputStreamReader.start();
 
-				// Get Output stream
-				outputStream = new DataOutputStream(getOutputStream());
+                // Get Output stream
+                outputStream = new DataOutputStream(getOutputStream());
 
-			} catch (IOException ioException) {
-				logger.debug("Can't connect to {}. Cause: {}", getConnectionName(), ioException.getMessage());
-			}
+            } catch (IOException ioException) {
+                logger.debug("Can't connect to {}. Cause: {}", getConnectionName(), ioException.getMessage());
+            }
 
-		}
-		return isConnected();
-	}
+        }
+        return isConnected();
+    }
 
-	/**
-	 * Open the connection to the AVR.
-	 * 
-	 * @throws IOException
-	 */
-	protected abstract void openConnection() throws IOException;
+    /**
+     * Open the connection to the AVR.
+     * 
+     * @throws IOException
+     */
+    protected abstract void openConnection() throws IOException;
 
-	/**
-	 * Return the inputStream to read responses.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	protected abstract InputStream getInputStream() throws IOException;
+    /**
+     * Return the inputStream to read responses.
+     * 
+     * @return
+     * @throws IOException
+     */
+    protected abstract InputStream getInputStream() throws IOException;
 
-	/**
-	 * Return the outputStream to send commands.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	protected abstract OutputStream getOutputStream() throws IOException;
+    /**
+     * Return the outputStream to send commands.
+     * 
+     * @return
+     * @throws IOException
+     */
+    protected abstract OutputStream getOutputStream() throws IOException;
 
-	@Override
-	public void close() {
-		if (inputStreamReader != null) {
-			// This method block until the reader is really stopped.
-			inputStreamReader.stopReader();
-			inputStreamReader = null;
-			logger.debug("Stream reader stopped!");
-		}
-	}
+    @Override
+    public void close() {
+        if (inputStreamReader != null) {
+            // This method block until the reader is really stopped.
+            inputStreamReader.stopReader();
+            inputStreamReader = null;
+            logger.debug("Stream reader stopped!");
+        }
+    }
 
-	/**
-	 * Sends to command to the receiver. It does not wait for a reply.
-	 * 
-	 * @param ipControlCommand
-	 *            the command to send.
-	 **/
-	protected boolean sendCommand(AvrCommand ipControlCommand) {
-		boolean isSent = false;
-		if (connect()) {
-			String command = ipControlCommand.getCommand();
-			try {
-				if (logger.isTraceEnabled()) {
-					logger.trace("Sending {} bytes: {}", command.length(), DatatypeConverter.printHexBinary(command.getBytes()));
-				}
-				outputStream.writeBytes(command);
-				outputStream.flush();
-				isSent = true;
+    /**
+     * Sends to command to the receiver. It does not wait for a reply.
+     * 
+     * @param ipControlCommand
+     *            the command to send.
+     **/
+    protected boolean sendCommand(AvrCommand ipControlCommand) {
+        boolean isSent = false;
+        if (connect()) {
+            String command = ipControlCommand.getCommand();
+            try {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Sending {} bytes: {}", command.length(),
+                            DatatypeConverter.printHexBinary(command.getBytes()));
+                }
+                outputStream.writeBytes(command);
+                outputStream.flush();
+                isSent = true;
 
-			} catch (IOException ioException) {
-				logger.error("Error occured when sending command", ioException);
-			}
+            } catch (IOException ioException) {
+                logger.error("Error occured when sending command", ioException);
+                // If an error occurs, close the connection
+                close();
+            }
 
-			logger.debug("Command sent to AVR @{}: {}", getConnectionName(), command);
-		}
+            logger.debug("Command sent to AVR @{}: {}", getConnectionName(), command);
+        }
 
-		return isSent;
-	}
+        return isSent;
+    }
 
-	@Override
-	public boolean sendPowerQuery() {
-		return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_QUERY));
-	}
+    @Override
+    public boolean sendPowerQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_QUERY));
+    }
 
-	@Override
-	public boolean sendVolumeQuery() {
-		return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_QUERY));
-	}
+    @Override
+    public boolean sendVolumeQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_QUERY));
+    }
 
-	@Override
-	public boolean sendMuteQuery() {
-		return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_QUERY));
-	}
+    @Override
+    public boolean sendMuteQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_QUERY));
+    }
 
-	@Override
-	public boolean sendSourceInputQuery() {
-		return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_QUERY));
-	}
+    @Override
+    public boolean sendSourceInputQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_QUERY));
+    }
 
-	@Override
-	public boolean sendPowerCommand(Command command) throws CommandTypeNotSupportedException {
-		AvrCommand commandToSend = null;
+    @Override
+    public boolean sendPowerCommand(Command command) throws CommandTypeNotSupportedException {
+        AvrCommand commandToSend = null;
 
-		if (command == OnOffType.ON) {
-			commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_ON);
-			// Send the first Power ON command.
-			sendCommand(commandToSend);
+        if (command == OnOffType.ON) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_ON);
+            // Send the first Power ON command.
+            sendCommand(commandToSend);
 
-			// According to the Pioneer Specs, the first request only wakeup the
-			// AVR CPU, the second one Power ON the AVR. Still according to the Pioneer Specs, the second
-			// request has to be delayed of 100 ms.
-			try {
-				TimeUnit.MILLISECONDS.sleep(100);
-			} catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
+            // According to the Pioneer Specs, the first request only wakeup the
+            // AVR CPU, the second one Power ON the AVR. Still according to the Pioneer Specs, the second
+            // request has to be delayed of 100 ms.
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
 
-		} else if (command == OnOffType.OFF) {
-			commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_OFF);
-		} else {
-			throw new CommandTypeNotSupportedException("Command type not supported.");
-		}
+        } else if (command == OnOffType.OFF) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_OFF);
+        } else {
+            throw new CommandTypeNotSupportedException("Command type not supported.");
+        }
 
-		return sendCommand(commandToSend);
-	}
+        return sendCommand(commandToSend);
+    }
 
-	@Override
-	public boolean sendVolumeCommand(Command command) throws CommandTypeNotSupportedException {
-		boolean commandSent = false;
+    @Override
+    public boolean sendVolumeCommand(Command command) throws CommandTypeNotSupportedException {
+        boolean commandSent = false;
 
-		// The OnOffType for volume is equal to the Mute command
-		if (command instanceof OnOffType) {
-			commandSent = sendMuteCommand(command);
-		} else {
-			AvrCommand commandToSend = null;
+        // The OnOffType for volume is equal to the Mute command
+        if (command instanceof OnOffType) {
+            commandSent = sendMuteCommand(command);
+        } else {
+            AvrCommand commandToSend = null;
 
-			if (command == IncreaseDecreaseType.DECREASE) {
-				commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_DOWN);
-			} else if (command == IncreaseDecreaseType.INCREASE) {
-				commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP);
-			} else if (command instanceof PercentType) {
-				String ipControlVolume = VolumeConverter.convertFromPercentToIpControlVolume(((PercentType) command).doubleValue());
-				commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET).setParameter(
-						ipControlVolume);
-			} else if (command instanceof DecimalType) {
-				String ipControlVolume = VolumeConverter.convertFromDbToIpControlVolume(((DecimalType) command).doubleValue());
-				commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET).setParameter(
-						ipControlVolume);
-			} else {
-				throw new CommandTypeNotSupportedException("Command type not supported.");
-			}
+            if (command == IncreaseDecreaseType.DECREASE) {
+                commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_DOWN);
+            } else if (command == IncreaseDecreaseType.INCREASE) {
+                commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP);
+            } else if (command instanceof PercentType) {
+                String ipControlVolume = VolumeConverter
+                        .convertFromPercentToIpControlVolume(((PercentType) command).doubleValue());
+                commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET)
+                        .setParameter(ipControlVolume);
+            } else if (command instanceof DecimalType) {
+                String ipControlVolume = VolumeConverter
+                        .convertFromDbToIpControlVolume(((DecimalType) command).doubleValue());
+                commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET)
+                        .setParameter(ipControlVolume);
+            } else {
+                throw new CommandTypeNotSupportedException("Command type not supported.");
+            }
 
-			commandSent = sendCommand(commandToSend);
-		}
-		return commandSent;
-	}
+            commandSent = sendCommand(commandToSend);
+        }
+        return commandSent;
+    }
 
-	@Override
-	public boolean sendInputSourceCommand(Command command) throws CommandTypeNotSupportedException {
-		AvrCommand commandToSend = null;
+    @Override
+    public boolean sendInputSourceCommand(Command command) throws CommandTypeNotSupportedException {
+        AvrCommand commandToSend = null;
 
-		if (command == IncreaseDecreaseType.INCREASE) {
-			commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_CYCLIC);
-		} else if (command == IncreaseDecreaseType.DECREASE) {
-			commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_REVERSE);
-		} else if (command instanceof StringType) {
-			String inputSourceValue = ((StringType) command).toString();
-			commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET).setParameter(
-					inputSourceValue);
-		} else {
-			throw new CommandTypeNotSupportedException("Command type not supported.");
-		}
+        if (command == IncreaseDecreaseType.INCREASE) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_CYCLIC);
+        } else if (command == IncreaseDecreaseType.DECREASE) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_REVERSE);
+        } else if (command instanceof StringType) {
+            String inputSourceValue = ((StringType) command).toString();
+            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET)
+                    .setParameter(inputSourceValue);
+        } else {
+            throw new CommandTypeNotSupportedException("Command type not supported.");
+        }
 
-		return sendCommand(commandToSend);
-	}
+        return sendCommand(commandToSend);
+    }
 
-	@Override
-	public boolean sendMuteCommand(Command command) throws CommandTypeNotSupportedException {
-		AvrCommand commandToSend = null;
+    @Override
+    public boolean sendMuteCommand(Command command) throws CommandTypeNotSupportedException {
+        AvrCommand commandToSend = null;
 
-		if (command == OnOffType.ON) {
-			commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_ON);
-		} else if (command == OnOffType.OFF) {
-			commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_OFF);
-		} else {
-			throw new CommandTypeNotSupportedException("Command type not supported.");
-		}
+        if (command == OnOffType.ON) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_ON);
+        } else if (command == OnOffType.OFF) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_OFF);
+        } else {
+            throw new CommandTypeNotSupportedException("Command type not supported.");
+        }
 
-		return sendCommand(commandToSend);
-	}
+        return sendCommand(commandToSend);
+    }
 
-	/**
-	 * Read incoming data from the AVR and notify listeners for dataReceived and disconnection.
-	 * 
-	 * @author Antoine Besnard
-	 *
-	 */
-	private class IpControlInputStreamReader extends Thread {
+    /**
+     * Read incoming data from the AVR and notify listeners for dataReceived and disconnection.
+     * 
+     * @author Antoine Besnard
+     *
+     */
+    private class IpControlInputStreamReader extends Thread {
 
-		private BufferedReader bufferedReader = null;
+        private BufferedReader bufferedReader = null;
 
-		private volatile boolean stopReader;
+        private volatile boolean stopReader;
 
-		// This latch is used to block the stop method until the reader is really stopped.
-		private CountDownLatch stopLatch;
+        // This latch is used to block the stop method until the reader is really stopped.
+        private CountDownLatch stopLatch;
 
-		/**
-		 * Construct a reader that read the given inputStream
-		 * 
-		 * @param ipControlSocket
-		 * @throws IOException
-		 */
-		public IpControlInputStreamReader(InputStream inputStream) {
-			this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-			this.stopLatch = new CountDownLatch(1);
+        /**
+         * Construct a reader that read the given inputStream
+         * 
+         * @param ipControlSocket
+         * @throws IOException
+         */
+        public IpControlInputStreamReader(InputStream inputStream) {
+            this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            this.stopLatch = new CountDownLatch(1);
 
-			this.setDaemon(true);
-			this.setName("IpControlInputStreamReader-" + getConnectionName());
-		}
+            this.setDaemon(true);
+            this.setName("IpControlInputStreamReader-" + getConnectionName());
+        }
 
-		@Override
-		public void run() {
-			try {
+        @Override
+        public void run() {
+            try {
 
-				while (!stopReader && !Thread.currentThread().isInterrupted()) {
+                while (!stopReader && !Thread.currentThread().isInterrupted()) {
 
-					String receivedData = null;
-					try {
-						receivedData = bufferedReader.readLine();
-					} catch (SocketTimeoutException e) {
-						// Do nothing. Just happen to allow the thread to check if it has to stop.
-					}
+                    String receivedData = null;
+                    try {
+                        receivedData = bufferedReader.readLine();
+                    } catch (SocketTimeoutException e) {
+                        // Do nothing. Just happen to allow the thread to check if it has to stop.
+                    }
 
-					if (receivedData != null) {
-						logger.debug("Data received from AVR @{}: {}", getConnectionName(), receivedData);
-						AvrStatusUpdateEvent event = new AvrStatusUpdateEvent(StreamAvrConnection.this, receivedData);
-						synchronized (updateListeners) {
-							for (AvrUpdateListener pioneerAvrEventListener : updateListeners) {
-								pioneerAvrEventListener.statusUpdateReceived(event);
-							}
-						}
-					}
-				}
+                    if (receivedData != null) {
+                        logger.debug("Data received from AVR @{}: {}", getConnectionName(), receivedData);
+                        AvrStatusUpdateEvent event = new AvrStatusUpdateEvent(StreamAvrConnection.this, receivedData);
+                        synchronized (updateListeners) {
+                            for (AvrUpdateListener pioneerAvrEventListener : updateListeners) {
+                                pioneerAvrEventListener.statusUpdateReceived(event);
+                            }
+                        }
+                    }
+                }
 
-			} catch (IOException e) {
-				logger.warn("The AVR @{} is disconnected.", getConnectionName(), e);
-				AvrDisconnectionEvent event = new AvrDisconnectionEvent(StreamAvrConnection.this, e);
-				for (AvrDisconnectionListener pioneerAvrDisconnectionListener : disconnectionListeners) {
-					pioneerAvrDisconnectionListener.onDisconnection(event);
-				}
-			}
+            } catch (IOException e) {
+                logger.warn("The AVR @{} is disconnected.", getConnectionName(), e);
+                AvrDisconnectionEvent event = new AvrDisconnectionEvent(StreamAvrConnection.this, e);
+                for (AvrDisconnectionListener pioneerAvrDisconnectionListener : disconnectionListeners) {
+                    pioneerAvrDisconnectionListener.onDisconnection(event);
+                }
+            }
 
-			// Notify the stopReader method caller that the reader is stopped.
-			this.stopLatch.countDown();
-		}
+            // Notify the stopReader method caller that the reader is stopped.
+            this.stopLatch.countDown();
+        }
 
-		/**
-		 * Stop this reader. Block until the reader is really stopped.
-		 */
-		public void stopReader() {
-			this.stopReader = true;
-			try {
-				this.stopLatch.await(READ_TIMEOUT, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// Do nothing. The timeout is just here for safety and to be sure that the call to this method will not
-				// block the caller indefinitely.
-				// This exception should never happen.
-			}
-		}
+        /**
+         * Stop this reader. Block until the reader is really stopped.
+         */
+        public void stopReader() {
+            this.stopReader = true;
+            try {
+                this.stopLatch.await(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                // Do nothing. The timeout is just here for safety and to be sure that the call to this method will not
+                // block the caller indefinitely.
+                // This exception should never happen.
+            }
+        }
 
-	}
+    }
 
 }

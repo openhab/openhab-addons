@@ -4,7 +4,8 @@
   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
-  <thing-type id="devolo_mt02646_00_000">
+
+  <thing-type id="devolo_mt02646_00_000" listed="false">
     <label>MT02646 Home Control Metering Plug</label>
     <description>Home Control Metering Plug</description>
 
@@ -25,31 +26,31 @@
       <channel id="meter_watts" typeId="meter_watts">
         <label>Electric meter (watts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_W</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
       <channel id="meter_powerfactor" typeId="meter_powerfactor">
         <label>Electric meter (power factor)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_Power_Factor</property>
+          <property name="binding:*:DecimalType">METER;type=E_Power_Factor</property>
         </properties>
       </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_KWh</property>
+          <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
       <channel id="meter_current" typeId="meter_current">
         <label>Electric meter (amps)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_A</property>
+          <property name="binding:*:DecimalType">METER;type=E_A</property>
         </properties>
       </channel>
       <channel id="meter_voltage" typeId="meter_voltage">
         <label>Electric meter (volts)</label>
         <properties>
-          <property name="binding:*:DecimalType">METER;meterScale=E_V</property>
+          <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
     </channels>
@@ -60,7 +61,7 @@
       <property name="model">MT02646</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0001:0011</property>
-      <property name="DefaultAssociations">1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <config-description>

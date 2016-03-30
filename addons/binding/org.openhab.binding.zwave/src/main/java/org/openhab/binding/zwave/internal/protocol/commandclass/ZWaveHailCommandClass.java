@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -22,7 +23,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 /**
  * Handles the Hail command class. Some devices handle state changes by 'hailing' the controller and asking it to
  * request the device values
- * 
+ *
  * @author Chris Jackson
  * @author Ben Jones
  */
@@ -36,7 +37,7 @@ public class ZWaveHailCommandClass extends ZWaveCommandClass {
 
     /**
      * Creates a new instance of the ZWaveHailCommandClass class.
-     * 
+     *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
@@ -55,9 +56,12 @@ public class ZWaveHailCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
+     * 
+     * @throws ZWaveSerialMessageException
      */
     @Override
-    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint) {
+    public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
+            throws ZWaveSerialMessageException {
         logger.debug("NODE {}: Received Hail command (v{})", this.getNode().getNodeId(), this.getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
@@ -74,9 +78,9 @@ public class ZWaveHailCommandClass extends ZWaveCommandClass {
 
                 break;
             default:
-                logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).", this
-                        .getNode().getNodeId(), command, this.getCommandClass().getLabel(), this.getCommandClass()
-                        .getKey()));
+                logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
+                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
+                        this.getCommandClass().getKey()));
         }
     }
 }

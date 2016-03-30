@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.ui.cometvisu.servlet.quercus;
 
 import java.io.File;
@@ -10,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openhab.ui.cometvisu.php.PHProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,24 +58,17 @@ import com.caucho.vfs.WriteStream;
  * @link http://quercus.caucho.com/
  *
  */
-public class PHProvider {
+public class PHProviderImpl implements PHProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(PHProvider.class);
-    private static final L10N L = new L10N(PHProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(PHProviderImpl.class);
+    private static final L10N L = new L10N(PHProviderImpl.class);
 
     protected QuercusEngine engine;
     protected String defaultUserDir;
     protected ServletContext _servletContext;
 
-    /**
-     * Constructor creates the QuercusEngine
-     * as the com.caucho.quercus bundle is an optional import
-     * the QuercusEngine class might not be available and a ClassNotFoundException is thrown
-     *
-     * @throws ClassNotFoundException
-     */
-    public PHProvider(QuercusEngine engine) throws NoClassDefFoundError {
-        this.engine = engine;
+    public void createQuercusEngine() {
+        this.engine = new QuercusEngine();
     }
 
     /**
@@ -75,6 +77,7 @@ public class PHProvider {
      * @param name - name of the ini parameter
      * @param value - value of the ini parameter
      */
+    @Override
     public void setIni(String name, String value) {
         engine.getQuercus().setIni(name, value);
     }
@@ -86,6 +89,7 @@ public class PHProvider {
      * @param userDir - default user directory
      * @param context - servlet context
      */
+    @Override
     public void init(String path, String userDir, ServletContext context) {
         checkServletAPIVersion(context);
 
@@ -117,6 +121,7 @@ public class PHProvider {
      * @throws ServletException
      * @throws IOException
      */
+    @Override
     public final void phpService(File file, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Env env = null;
