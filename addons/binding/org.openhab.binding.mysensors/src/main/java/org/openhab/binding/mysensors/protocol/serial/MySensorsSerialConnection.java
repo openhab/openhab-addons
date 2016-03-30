@@ -48,6 +48,12 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         serialConnection = new NRSerialPort(serialPort, baudRate);
         if (serialConnection.connect()) {
             logger.debug("Successfully connected to serial port.");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             mysConReader = new MySensorsSerialReader(serialConnection.getInputStream(), this);
             mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this, sendDelay);
 
