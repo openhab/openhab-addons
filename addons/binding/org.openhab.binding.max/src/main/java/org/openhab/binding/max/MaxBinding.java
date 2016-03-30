@@ -64,6 +64,8 @@ public class MaxBinding {
     public final static String PROPERTY_ROOMID = "roomId";
     public final static String PROPERTY_DEVICENAME = "name";
     public final static String PROPERTY_REFRESH_ACTUAL_RATE = "refreshActualRate";
+    public final static String PROPERTY_NTP_SERVER1 = "ntpServer1";
+    public final static String PROPERTY_NTP_SERVER2 = "ntpServer2";
 
     // List of actions
     public final static String ACTION_CUBE_REBOOT = "action-cubeReboot";

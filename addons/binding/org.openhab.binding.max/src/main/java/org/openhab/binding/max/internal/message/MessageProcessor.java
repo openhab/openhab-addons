@@ -125,6 +125,9 @@ public class MessageProcessor {
             case N:
                 this.currentMessage = new N_Message(line);
                 break;
+            case F:
+                this.currentMessage = new F_Message(line);
+                break;
             case A:
                 this.currentMessage = new A_Message(line);
                 break;

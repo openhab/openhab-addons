@@ -50,4 +50,11 @@ public class MaxCubeBridgeConfiguration {
     public Integer maxRequestsPerConnection;
 
     public Integer cubeReboot;
+
+    /** NTP Server 1 hostname */
+    public String ntpServer1;
+
+    /** NTP Server 2 hostname */
+    public String ntpServer2;
+
 }
