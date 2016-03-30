@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -90,7 +90,7 @@ public class ZWaveMeterConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        // We ignore any meter reports for item bindings configured with 'meter_reset=true'
+        // We ignore any meter reports for item bindings configured with 'reset=true'
         // since we don't want to be updating the 'reset' switch
         if ("true".equalsIgnoreCase(channel.getArguments().get("reset"))) {
             return null;

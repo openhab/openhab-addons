@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -374,6 +374,8 @@ public class ZWaveDeviceClass {
         PC_CONTROLLER(1, Generic.STATIC_CONTROLLER, "PC Controller"),
         SCENE_CONTROLLER(2, Generic.STATIC_CONTROLLER, "Scene Controller"),
         INSTALLER_TOOL(3, Generic.STATIC_CONTROLLER, "Static Installer Tool"),
+        AV_REMOTE_CONTROLLER(4, Generic.STATIC_CONTROLLER, "AV Remote Controller"),
+        SIMPLE_REMOTE_CONTROLLER(6, Generic.STATIC_CONTROLLER, "Simple Remote Controller"),
 
         SATELLITE_RECEIVER(4, Generic.AV_CONTROL_POINT, "Satellite Receiver"),
         SATELLITE_RECEIVER_V2(17, Generic.AV_CONTROL_POINT, "Satellite Receiver V2"),

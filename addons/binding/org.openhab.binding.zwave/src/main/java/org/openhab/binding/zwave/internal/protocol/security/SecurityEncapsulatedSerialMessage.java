@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.zwave.internal.protocol.security;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -66,14 +74,16 @@ public class SecurityEncapsulatedSerialMessage extends SerialMessage {
         boolean result = hasBeenTransmitted();
         if (result) {
             result = securityTransactionComplete.get();
-            // TODO: DB set isCOmpleted to true on door lock set
+            // TODO: set isCompleted to true on door lock set
             // boolean isDoorLockSetMessage = bytesAreEqual(securityPayload.getMessageBytes()[0],
             // ZWaveCommandClass.CommandClass.DOOR_LOCK.getKey())
             // && bytesAreEqual(securityPayload.getMessageBytes()[1], ZWaveDoorLockCommandClass.DOORLOCK_SET);
         }
-        logger.debug("NODE {}: securityTransactionComplete={}, payload=({}), transmitted={}, msSinceTransmitted={}",
-                super.messageNode, result, SerialMessage.bb2hex(messageBeingEncapsulated.getMessagePayload()),
-                hasBeenTransmitted(), hasBeenTransmitted() ? (System.currentTimeMillis() - getTransmittedAt()) : "");
+        logger.debug(
+                "NODE {}: securityTransactionComplete={}, payload=({}), transmitted={}, msSinceTransmitted={}, acked={}",
+                messageNode, result, SerialMessage.bb2hex(messageBeingEncapsulated.getMessagePayload()),
+                hasBeenTransmitted(), hasBeenTransmitted() ? (System.currentTimeMillis() - getTransmittedAt()) : "",
+                ackPending);
         return result;
     }
 
@@ -83,10 +93,10 @@ public class SecurityEncapsulatedSerialMessage extends SerialMessage {
      */
     public void securityReponseReceived(byte[] payloadBytes) {
         if (isSecurityTransactionComplete()) {
-            logger.trace("NODE {}: securityReponseReceived is already true, nothing to check", getMessageNode());
+            logger.debug("NODE {}: securityReponseReceived is already true, nothing to check", getMessageNode());
             return;
         }
-        // TODO: DB boolean appCommandHandler = ZWaveSecurityCommandClass.bytesAreEqual(payloadBytes[1],
+        // TODO: boolean appCommandHandler = ZWaveSecurityCommandClass.bytesAreEqual(payloadBytes[1],
         // SerialMessageClass.ApplicationCommandHandler.getKey());
         boolean result = payloadBytes[1] == transactionCompleteCommandClass;
         if (result && transactionCompleteCommand != UNSET) {

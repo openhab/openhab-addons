@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="yale_yrd220_00_000" listed="false">
+    <label>YRD220 Yale Real Living Touchscreen Deadbolt</label>
+    <description><![CDATA[
+Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To include the lock in a Z-Wave Network (taken from the installation manual:</p>
+<ol><li>Touch the lock screen to activate</li>
+<li>Enter the master pin and press #</li>
+<li>Press 7, then #</li>
+<li>Press 1, then #</li>
+</ol><p>The lock will now be in inclusion mode.</p>
+<br /><h2>Exclusion Information</h2><p>To exclude the lock from a Z-Wave Network (taken from the installation manual:</p>
+<ol><li>Touch the lock screen to activate</li>
+<li>Enter the master pin and press #</li>
+<li>Press 7, then #</li>
+<li>Press 3, then #</li>
+</ol><p>The lock will now be in exclusion mode.</p>
+    !]]></description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="lock_door" typeId="lock_door">
+        <label>Door Lock</label>
+        <properties>
+          <property name="binding:*:OnOffType">DOOR_LOCK</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Yale Locks</property>
+      <property name="model">YRD220</property>
+      <property name="manufacturerId">0129</property>
+      <property name="manufacturerRef">0002:AA00</property>
+    </properties>
+
+  </thing-type>
+</thing:thing-descriptions>
