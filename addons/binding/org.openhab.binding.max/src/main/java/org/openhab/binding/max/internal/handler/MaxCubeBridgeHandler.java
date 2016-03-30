@@ -47,6 +47,7 @@ import org.openhab.binding.max.config.MaxCubeBridgeConfiguration;
 import org.openhab.binding.max.internal.command.A_Command;
 import org.openhab.binding.max.internal.command.C_Command;
 import org.openhab.binding.max.internal.command.CubeCommand;
+import org.openhab.binding.max.internal.command.F_Command;
 import org.openhab.binding.max.internal.command.L_Command;
 import org.openhab.binding.max.internal.command.M_Command;
 import org.openhab.binding.max.internal.command.N_Command;
@@ -63,6 +64,7 @@ import org.openhab.binding.max.internal.device.RoomInformation;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
 import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException;
 import org.openhab.binding.max.internal.message.C_Message;
+import org.openhab.binding.max.internal.message.F_Message;
 import org.openhab.binding.max.internal.message.H_Message;
 import org.openhab.binding.max.internal.message.L_Message;
 import org.openhab.binding.max.internal.message.M_Message;
@@ -82,9 +84,10 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution OH2 version
  * @author Andreas Heil (info@aheil.de) - OH1 version
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
+ * @param <updateNtpConfigData>
  *
  */
-public class MaxCubeBridgeHandler extends BaseBridgeHandler {
+public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler {
 
     public MaxCubeBridgeHandler(Bridge br) {
         super(br);
@@ -121,6 +124,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private int port;
     private boolean exclusive;
     private int maxRequestsPerConnection;
+    private String ntpServer1;
+    private String ntpServer2;
     private int requestCount = 0;
     private boolean propertiesSet = false;
     private boolean roomPropertiesSet = false;
@@ -193,6 +198,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         refreshInterval = configuration.refreshInterval;
         exclusive = configuration.exclusive;
         maxRequestsPerConnection = configuration.maxRequestsPerConnection;
+        ntpServer1 = configuration.ntpServer1;
+        ntpServer2 = configuration.ntpServer2;
         logger.debug("Cube IP         {}.", ipAddress);
         logger.debug("Port            {}.", port);
         logger.debug("RefreshInterval {}.", refreshInterval);
@@ -213,6 +220,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
             logger.debug("MAX! Cube {}: Configuration update {} to {}", getThing().getThingTypeUID(),
                     configurationParameter.getKey(), configurationParameter.getValue());
+            if (configurationParameter.getKey().startsWith("ntp")) {
+                sendNtpUpdate(configurationParameters);
+                if (configurationParameters.size() == 1) {
+                    refresh = false;
+                }
+            }
             if (configurationParameter.getKey().startsWith("action-")) {
                 if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
                     configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
@@ -254,6 +267,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
         }
         clearDeviceList();
+        propertiesSet = false;
+        roomPropertiesSet = false;
+
     }
 
     /**
@@ -325,8 +341,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
             if (cmd != null) {
                 // Actual sending of the data to the Max! Cube Lan Gateway
+                logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(),
+                        sendCommand.getKey(), sendCommand.getCommandText(), ipAddress);
+
                 if (sendCubeCommand(cmd)) {
-                    logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(),
+                    logger.trace("Command {} ({}:{}) completed for MAX! Cube at IP: {}", sendCommand.getId(),
                             sendCommand.getKey(), sendCommand.getCommandText(), ipAddress);
                 } else {
                     logger.warn("Error sending command {} ({}:{}) to MAX! Cube at IP: {}", sendCommand.getId(),
@@ -575,6 +594,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 }
                 if (!propertiesSet) {
                     setProperties((H_Message) message);
+                    queueCommand(new SendCommand("Cube(" + getThing().getUID().getId() + ")", new F_Command(),
+                            "Request NTP info"));
                 }
 
             }
@@ -641,6 +662,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 if (((N_Message) message).getRfAddress() != null) {
                     newInclusionDeviceFound((N_Message) message);
                 }
+            } else if (message.getType() == MessageType.F) {
+                setProperties((F_Message) message);
             }
         }
     }
@@ -688,7 +711,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /**
      * Set the properties for this device
      *
-     * @param H_Message
+     * @param M_Message
      */
     private void setProperties(M_Message message) {
         Configuration configuration = editConfiguration();
@@ -699,6 +722,21 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         updateConfiguration(configuration);
         logger.debug("Room properties updated");
         roomPropertiesSet = true;
+    }
+
+    /**
+     * Set the properties for this device
+     *
+     * @param F_Message
+     */
+    private void setProperties(F_Message message) {
+        ntpServer1 = message.getNtpServer1();
+        ntpServer2 = message.getNtpServer2();
+        Configuration configuration = editConfiguration();
+        configuration.put(PROPERTY_NTP_SERVER1, ntpServer1);
+        configuration.put(PROPERTY_NTP_SERVER2, ntpServer2);
+        updateConfiguration(configuration);
+        logger.debug("NTP properties updated");
     }
 
     private Device getDevice(String serialNumber, ArrayList<Device> devices) {
@@ -826,7 +864,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      */
     public void sendDeviceAndRoomNameUpdate(String comment) {
         if (devices.size() > 0) {
-            SendCommand sendCommand = new SendCommand("Cube" + getThing().getThingTypeUID().getAsString(),
+            SendCommand sendCommand = new SendCommand("Cube(" + getThing().getUID().getId() + ")",
                     new M_Command(devices, rooms), comment);
             queueCommand(sendCommand);
         } else {
@@ -850,6 +888,22 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             sendCommand = new SendCommand(maxDeviceSerial, new Q_Command(), "Reload Data");
             queueCommand(sendCommand);
         }
+    }
+
+    private void sendNtpUpdate(Map<String, Object> configurationParameters) {
+        String ntpServer1 = this.ntpServer1;
+        String ntpServer2 = this.ntpServer2;
+        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
+            if (configurationParameter.getKey().equals(PROPERTY_NTP_SERVER1)) {
+                ntpServer1 = (String) configurationParameter.getValue();
+            }
+            if (configurationParameter.getKey().equals(PROPERTY_NTP_SERVER2)) {
+                ntpServer2 = (String) configurationParameter.getValue();
+            }
+        }
+        queueCommand(new SendCommand("Cube(" + getThing().getUID().getId() + ")", new F_Command(ntpServer1, ntpServer2),
+                "Update NTP info"));
+
     }
 
     private boolean socketConnect() throws UnknownHostException, IOException {
