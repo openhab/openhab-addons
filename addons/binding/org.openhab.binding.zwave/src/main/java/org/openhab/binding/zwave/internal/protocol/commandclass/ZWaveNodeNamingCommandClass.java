@@ -9,6 +9,8 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -300,12 +302,15 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
                 str);
 
         byte[] nameBuffer = null;
-        try {
-            nameBuffer = str.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
+        byte encoding = ENCODING_ASCII;
+
+        // First we want to see if this can be encoded in ASCII
+        CharsetEncoder asciiEncoder = StandardCharsets.US_ASCII.newEncoder();
+        if (asciiEncoder.canEncode(str) == true) {
+            nameBuffer = str.getBytes(StandardCharsets.US_ASCII);
+        } else {
+            nameBuffer = str.getBytes(StandardCharsets.UTF_16);
+            encoding = ENCODING_UTF16;
         }
 
         int len = nameBuffer.length;
@@ -316,7 +321,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
         byte[] newPayload = { (byte) this.getNode().getNodeId(), (byte) ((byte) len + 3),
-                (byte) getCommandClass().getKey(), (byte) command, (byte) ENCODING_UTF16 };
+                (byte) getCommandClass().getKey(), (byte) command, encoding };
 
         byte[] msg = new byte[newPayload.length + len];
         System.arraycopy(newPayload, 0, msg, 0, newPayload.length);
