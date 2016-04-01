@@ -67,6 +67,21 @@ public class MaxBinding {
     public final static String PROPERTY_NTP_SERVER1 = "ntpServer1";
     public final static String PROPERTY_NTP_SERVER2 = "ntpServer2";
 
+    // Thermostat settings properties
+    public final static String PROPERTY_THERMO_COMFORT_TEMP = "comfortTemp";
+    public final static String PROPERTY_THERMO_ECO_TEMP = "ecoTemp";
+    public final static String PROPERTY_THERMO_MAX_TEMP_SETPOINT = "maxTempSetpoint";
+    public final static String PROPERTY_THERMO_MIN_TEMP_SETPOINT = "minTempSetpoint";
+    public final static String PROPERTY_THERMO_OFFSET_TEMP = "offsetTemp";
+    public final static String PROPERTY_THERMO_WINDOW_OPEN_TEMP = "windowOpenTemp";
+    public final static String PROPERTY_THERMO_WINDOW_OPEN_DURATION = "windowOpenDuration";
+    public final static String PROPERTY_THERMO_DECALCIFICATION = "decalcification";
+    public final static String PROPERTY_THERMO_VALVE_MAX = "valveMaximum";
+    public final static String PROPERTY_THERMO_VALVE_OFFSET = "valveOffset";
+    public final static String PROPERTY_THERMO_BOOST_DURATION = "boostDuration";
+    public final static String PROPERTY_THERMO_BOOST_VALVEPOS = "boostValvePos";
+    public final static String PROPERTY_THERMO_PROGRAM_DATA = "programData";
+
     // List of actions
     public final static String ACTION_CUBE_REBOOT = "action-cubeReboot";
     public final static String ACTION_CUBE_RESET = "action-cubeReset";
