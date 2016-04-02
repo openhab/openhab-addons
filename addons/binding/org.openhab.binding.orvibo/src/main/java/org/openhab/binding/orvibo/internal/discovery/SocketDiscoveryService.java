@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.tavalin.s20.S20Client;
 import com.github.tavalin.s20.S20Client.SocketDiscoveryListener;
-import com.github.tavalin.s20.socket.Socket;
+import com.github.tavalin.s20.Socket;
 
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
@@ -56,7 +56,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
         logger.debug("starting manual scan");
         s20Client.addSocketDiscoveryListener(this);
         s20Client.globalDiscovery();
-        for (Socket socket : s20Client.getAllSocketsCollection().values()) {
+        for (final Socket socket : s20Client.getAllSockets().values()) {
             doThingDiscovered(socket);
         }
     }

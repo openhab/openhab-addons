@@ -25,9 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.tavalin.s20.S20Client;
+import com.github.tavalin.s20.Socket;
+import com.github.tavalin.s20.Socket.SocketStateListener;
 import com.github.tavalin.s20.entities.Types.PowerState;
-import com.github.tavalin.s20.socket.Socket;
-import com.github.tavalin.s20.socket.Socket.SocketStateListener;
 
 /**
  * The {@link S20Handler} is responsible for handling commands, which are
@@ -39,7 +39,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
 
     private Logger logger = LoggerFactory.getLogger(S20Handler.class);
     private Socket socket;
-    private S20Client s20Client;
+    private S20Client client;
     private ScheduledFuture<?> subscribeHandler;
     private long refreshInterval = 15;
     private Runnable subscribeTask = new Runnable() {
@@ -47,7 +47,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
         public void run() {
             if (socket != null) {
                 socket.subscribe();
-                socket.getSocketData();
+                // socket.getSocketData();
                 // socket.getTableData();
             }
         }
@@ -71,19 +71,23 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_S20_SWITCH)) {
-            if (command == OnOffType.ON) {
-                socket.on();
-            } else if (command == OnOffType.OFF) {
-                socket.off();
+            try {
+                if (command == OnOffType.ON) {
+                    socket.on();
+                } else if (command == OnOffType.OFF) {
+                    socket.off();
+                }
+            } catch (SocketException e) {
+                logger.error("Error issuing command {} to socket {}", command, channelUID.getId());
             }
         }
     }
 
     private void configure() {
         try {
-            s20Client = S20Client.getInstance();
+            client = S20Client.getInstance();
             String deviceId = thing.getUID().getId();
-            socket = s20Client.socketWithDeviceID(deviceId);
+            socket = client.socketWithDeviceId(deviceId);
             socket.addSocketStateListener(this);
             socket.findOnNetwork();
             subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
