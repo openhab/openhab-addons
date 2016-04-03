@@ -39,6 +39,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -81,11 +82,8 @@
                  min="0" max="17">
         <label>121: command class to use for open/close</label>
         <description><![CDATA[
-parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p>
-<p>Set to 1 for BATTERY report</p>
-<p>Set to 16 for SENSOR_BINARY report</p>
-<p>Set to 17 for SENSOR_BINARY and BATTERY</p>
-    !]]></description>
+parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p> <p>Set to 1 for BATTERY report</p> <p>Set to 16 for SENSOR_BINARY report</p> <p>Set to 17 for SENSOR_BINARY and BATTERY</p>
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">not set</option>
@@ -99,10 +97,8 @@ parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p>
                  min="0" max="1">
         <label>121: command class to use for open/close</label>
         <description><![CDATA[
-see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p>
-<p>set to 1 for BASIC report (default)</p>
-
-    !]]></description>
+see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p> <p>set to 1 for BASIC report (default)</p>
+        !]]></description>
         <default>1</default>
         <options>
           <option value="0">not set</option>
@@ -116,7 +112,7 @@ see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

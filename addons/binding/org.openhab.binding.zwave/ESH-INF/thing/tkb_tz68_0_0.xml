@@ -8,9 +8,7 @@
   <thing-type id="tkb_tz68_00_000" listed="false">
     <label>TZ68 Wall Plug</label>
     <description><![CDATA[
-Wall Plug<br /><h1>Overview</h1><p>The TKB TZ68 is a switch plug that can be placed between a wall outlet and electric devices, plugged in by cord. It can switch all loads up to 3500 W. The device is IP 20 rated and can therefore only be used in dry environments.</p>
-<br /><h2>Inclusion Information</h2><p>To confirm Inclusion hit the button on the device.</p>
-<br /><h2>Exclusion Information</h2><p>To confirm Exclusion hit the button on the device.</p>
+Wall Plug<br /><h1>Overview</h1><p>The TKB TZ68 is a switch plug that can be placed between a wall outlet and electric devices, plugged in by cord. It can switch all loads up to 3500 W. The device is IP 20 rated and can therefore only be used in dry environments.</p> <br /><h2>Inclusion Information</h2><p>To confirm Inclusion hit the button on the device.</p> <br /><h2>Exclusion Information</h2><p>To confirm Exclusion hit the button on the device.</p>
     !]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -31,6 +29,7 @@ Wall Plug<br /><h1>Overview</h1><p>The TKB TZ68 is a switch plug that can be pla
       <property name="manufacturerRef">0101:0103</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->

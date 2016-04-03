@@ -9,10 +9,10 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass {
     private static final int CLOCK_REPORT = 6;
 
     /**
-     * Creates a new instance of the ZWaveUserCodeCommandClass class.
+     * Creates a new instance of the ZWaveClockCommandClass class.
      *
      * @param node the node this command class belongs to
      * @param controller the controller to use
@@ -55,7 +55,7 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override

@@ -32,6 +32,7 @@
       <property name="manufacturerRef">0001:0001</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -140,7 +141,7 @@
       <parameter name="config_15_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>15: Calibration status</label>
-        <description>The calibration progress is calculated as (value[1] - 65 + value[2] / value[3]) * 25. The calibration is finished successfully when value[0]  =  2 and value[2] = value[3]. The calibration has failed if value[0] != 1 OR (value[0] = 2 AND value[2] != value[</description>
+        <description>The calibration progress is calculated as (value[1] - 65 + value[2] / value[3]) * 25. The calibration is finished successfully when value[0] = 2 and value[2] = value[3]. The calibration has failed if value[0] != 1 OR (value[0] = 2 AND value[2] != value[</description>
         <default>0</default>
       </parameter>
 

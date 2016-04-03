@@ -64,6 +64,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -137,7 +138,7 @@
         <options>
           <option value="1">The LED follows the state of the switch.</option>
           <option value="2">Night Mode - When the switch is On, the LED is Off, and when the switc</option>
-          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on </option>
+          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on</option>
         </options>
       </parameter>
 

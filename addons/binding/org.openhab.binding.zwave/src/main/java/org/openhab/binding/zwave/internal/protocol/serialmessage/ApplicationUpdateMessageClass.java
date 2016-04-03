@@ -12,16 +12,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveDelayedPollEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStage;
 import org.slf4j.Logger;
@@ -80,7 +82,9 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                         // re-get the current node values
                         logger.debug("NODE {}: Application update request. Requesting node state.", nodeId);
 
-                        zController.pollNode(node);
+                        // Send delayed poll event
+                        zController
+                                .notifyEventListeners(new ZWaveDelayedPollEvent(nodeId, 0, 75, TimeUnit.MILLISECONDS));
                     }
                 } else {
                     List<Integer> nif = new ArrayList<Integer>();

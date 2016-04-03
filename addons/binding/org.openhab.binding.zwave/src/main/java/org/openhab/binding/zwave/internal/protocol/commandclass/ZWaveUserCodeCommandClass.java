@@ -184,7 +184,7 @@ public class ZWaveUserCodeCommandClass extends ZWaveCommandClass
 
         if (codeIsZeros || userCodeIsValid(code)) {
             logger.debug("NODE {}: {} user code for {}", this.getNode().getNodeId(),
-                    codeIsZeros ? "Removing" : "Sending");
+                    codeIsZeros ? "Removing" : "Setting", id);
             SerialMessage message = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                     SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Get);
             ByteArrayOutputStream outputData = new ByteArrayOutputStream();

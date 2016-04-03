@@ -20,14 +20,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.smarthome.core.thing.UID;
-import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClassDynamicState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiInstanceCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
@@ -124,7 +121,7 @@ public class ZWaveController {
 
     private AtomicInteger timeOutCount = new AtomicInteger(0);
 
-    private ZWaveControllerHandler ioHandler;
+    private ZWaveIoHandler ioHandler;
 
     /**
      * This is required for secure pairing. see {@link ZWaveSecurityCommandClass}
@@ -132,20 +129,19 @@ public class ZWaveController {
     private ZWaveInclusionEvent lastIncludeSlaveFoundEvent;
 
     // Constructors
-    public ZWaveController(ZWaveControllerHandler handler) {
+    public ZWaveController(ZWaveIoHandler handler) {
         this(handler, new HashMap<String, String>());
     }
 
     /**
      * Constructor. Creates a new instance of the ZWave controller class.
      *
-     * @param serialPortName
-     *            the serial port name to use for communication with the ZWave
-     *            controller stick.
+     * @param handler the io handler to use for communication with the ZWave controller stick.
+     * @param config a map of configuration parameters
      * @throws SerialInterfaceException
      *             when a connection error occurs.
      */
-    public ZWaveController(ZWaveControllerHandler handler, Map<String, String> config) {
+    public ZWaveController(ZWaveIoHandler handler, Map<String, String> config) {
         final boolean masterController = "true".equals(config.get("masterController"));
         final boolean isSUC = "true".equals(config.get("isSUC"));
         final Integer timeout = config.containsKey("timeout") ? Integer.parseInt(config.get("timeout")) : 0;
@@ -385,6 +381,7 @@ public class ZWaveController {
                 return;
             }
 
+            boolean serializedOk = false;
             ZWaveNode node = null;
             try {
                 ZWaveNodeSerializer nodeSerializer = new ZWaveNodeSerializer();
@@ -404,6 +401,7 @@ public class ZWaveController {
                 } else {
                     // The restore was ok, but we have some work to set up the links that aren't
                     // made as the deserialiser doesn't call the constructor
+                    serializedOk = true;
                     logger.debug("NODE {}: Restore from config: Ok.", nodeId);
                     node.setRestoredFromConfigfile(controller);
 
@@ -434,11 +432,6 @@ public class ZWaveController {
                             }
                         }
                     }
-
-                    // We need to add this to the discovery since we bypass the initial discovery phases
-                    ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(),
-                            ZWaveNodeInitStage.DISCOVERY_COMPLETE);
-                    controller.notifyEventListeners(zEvent);
                 }
             }
 
@@ -458,6 +451,16 @@ public class ZWaveController {
 
             // Place nodes in the local ZWave Controller
             controller.zwaveNodes.putIfAbsent(nodeId, node);
+
+            // If we loaded from file, then we need to add this to the discovery since we bypass the initial discovery
+            // phases
+            if (serializedOk == true) {
+                ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(),
+                        ZWaveNodeInitStage.DISCOVERY_COMPLETE);
+                controller.notifyEventListeners(zEvent);
+            }
+
+            // Kick off the initialisation
             node.initialiseNode();
 
             logger.debug("NODE {}: Init node thread finished", nodeId);
@@ -551,18 +554,6 @@ public class ZWaveController {
                     // Initialise the new node
                     addNode(incEvent.getNodeId());
                     break;
-                // case IncludeDone:
-                // logger.debug("NODE {}: Including node.", incEvent.getNodeId());
-                // First make sure this isn't an existing node
-                // if (getNode(incEvent.getNodeId()) != null) {
-                // logger.debug("NODE {}: Newly included node already exists - not initialising.",
-                // incEvent.getNodeId());
-                // break;
-                // }
-
-                // Initialise the new node
-                // addNode(incEvent.getNodeId());
-                // break;
                 case ExcludeDone:
                     logger.debug("NODE {}: Excluding node.", incEvent.getNodeId());
                     // Remove the node from the controller
@@ -659,49 +650,51 @@ public class ZWaveController {
      * @param node
      *
      */
-    public void pollNode(ZWaveNode node) {
-        for (ZWaveCommandClass zwaveCommandClass : node.getCommandClasses()) {
-            logger.trace("NODE {}: Inspecting command class {}", node.getNodeId(),
-                    zwaveCommandClass.getCommandClass().getLabel());
-            if (zwaveCommandClass instanceof ZWaveCommandClassDynamicState) {
-                logger.debug("NODE {}: Found dynamic state command class {}", node.getNodeId(),
-                        zwaveCommandClass.getCommandClass().getLabel());
-                ZWaveCommandClassDynamicState zdds = (ZWaveCommandClassDynamicState) zwaveCommandClass;
-                int instances = zwaveCommandClass.getInstances();
-                if (instances == 1) {
-                    Collection<SerialMessage> dynamicQueries = zdds.getDynamicValues(true);
-                    for (SerialMessage serialMessage : dynamicQueries) {
-                        sendData(serialMessage);
-                    }
-                } else {
-                    for (int i = 1; i <= instances; i++) {
-                        Collection<SerialMessage> dynamicQueries = zdds.getDynamicValues(true);
-                        for (SerialMessage serialMessage : dynamicQueries) {
-                            sendData(node.encapsulate(serialMessage, zwaveCommandClass, i));
-                        }
-                    }
-                }
-            } else if (zwaveCommandClass instanceof ZWaveMultiInstanceCommandClass) {
-                ZWaveMultiInstanceCommandClass multiInstanceCommandClass = (ZWaveMultiInstanceCommandClass) zwaveCommandClass;
-                for (ZWaveEndpoint endpoint : multiInstanceCommandClass.getEndpoints()) {
-                    for (ZWaveCommandClass endpointCommandClass : endpoint.getCommandClasses()) {
-                        logger.trace("NODE {}: Inspecting command class {} for endpoint {}", node.getNodeId(),
-                                endpointCommandClass.getCommandClass().getLabel(), endpoint.getEndpointId());
-                        if (endpointCommandClass instanceof ZWaveCommandClassDynamicState) {
-                            logger.debug("NODE {}: Found dynamic state command class {}", node.getNodeId(),
-                                    endpointCommandClass.getCommandClass().getLabel());
-                            ZWaveCommandClassDynamicState zdds2 = (ZWaveCommandClassDynamicState) endpointCommandClass;
-                            Collection<SerialMessage> dynamicQueries = zdds2.getDynamicValues(true);
-                            for (SerialMessage serialMessage : dynamicQueries) {
-                                sendData(node.encapsulate(serialMessage, endpointCommandClass,
-                                        endpoint.getEndpointId()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    /*
+     * public void pollNode(ZWaveNode node) {
+     * for (ZWaveCommandClass zwaveCommandClass : node.getCommandClasses()) {
+     * logger.trace("NODE {}: Inspecting command class {}", node.getNodeId(),
+     * zwaveCommandClass.getCommandClass().getLabel());
+     * if (zwaveCommandClass instanceof ZWaveCommandClassDynamicState) {
+     * logger.debug("NODE {}: Found dynamic state command class {}", node.getNodeId(),
+     * zwaveCommandClass.getCommandClass().getLabel());
+     * ZWaveCommandClassDynamicState zdds = (ZWaveCommandClassDynamicState) zwaveCommandClass;
+     * int instances = zwaveCommandClass.getInstances();
+     * if (instances == 1) {
+     * Collection<SerialMessage> dynamicQueries = zdds.getDynamicValues(true);
+     * for (SerialMessage serialMessage : dynamicQueries) {
+     * sendData(serialMessage);
+     * }
+     * } else {
+     * for (int i = 1; i <= instances; i++) {
+     * Collection<SerialMessage> dynamicQueries = zdds.getDynamicValues(true);
+     * for (SerialMessage serialMessage : dynamicQueries) {
+     * sendData(node.encapsulate(serialMessage, zwaveCommandClass, i));
+     * }
+     * }
+     * }
+     * } else if (zwaveCommandClass instanceof ZWaveMultiInstanceCommandClass) {
+     * ZWaveMultiInstanceCommandClass multiInstanceCommandClass = (ZWaveMultiInstanceCommandClass) zwaveCommandClass;
+     * for (ZWaveEndpoint endpoint : multiInstanceCommandClass.getEndpoints()) {
+     * for (ZWaveCommandClass endpointCommandClass : endpoint.getCommandClasses()) {
+     * logger.trace("NODE {}: Inspecting command class {} for endpoint {}", node.getNodeId(),
+     * endpointCommandClass.getCommandClass().getLabel(), endpoint.getEndpointId());
+     * if (endpointCommandClass instanceof ZWaveCommandClassDynamicState) {
+     * logger.debug("NODE {}: Found dynamic state command class {}", node.getNodeId(),
+     * endpointCommandClass.getCommandClass().getLabel());
+     * ZWaveCommandClassDynamicState zdds2 = (ZWaveCommandClassDynamicState) endpointCommandClass;
+     * Collection<SerialMessage> dynamicQueries = zdds2.getDynamicValues(true);
+     * for (SerialMessage serialMessage : dynamicQueries) {
+     * sendData(node.encapsulate(serialMessage, endpointCommandClass,
+     * endpoint.getEndpointId()));
+     * }
+     * }
+     * }
+     * }
+     * }
+     * }
+     * }
+     */
 
     /**
      * Request the node routing information.
@@ -733,6 +726,7 @@ public class ZWaveController {
      */
     public void requestAddNodesStart() {
         this.enqueue(new AddNodeMessageClass().doRequestStart(true));
+        logger.debug("ZWave controller start inclusion");
     }
 
     /**
@@ -741,6 +735,7 @@ public class ZWaveController {
      */
     public void requestAddNodesStop() {
         this.enqueue(new AddNodeMessageClass().doRequestStop());
+        logger.debug("ZWave controller end inclusion");
     }
 
     /**
@@ -749,6 +744,7 @@ public class ZWaveController {
      */
     public void requestRemoveNodesStart() {
         this.enqueue(new RemoveNodeMessageClass().doRequestStart(true));
+        logger.debug("ZWave controller start exclusion");
     }
 
     /**
@@ -757,6 +753,7 @@ public class ZWaveController {
      */
     public void requestRemoveNodesStop() {
         this.enqueue(new RemoveNodeMessageClass().doRequestStop());
+        logger.debug("ZWave controller end exclusion");
     }
 
     /**
@@ -773,6 +770,7 @@ public class ZWaveController {
         SerialMessage msg = new SerialApiSoftResetMessageClass().doRequest();
         msg.attempts = 1;
         this.enqueue(msg);
+        logger.debug("ZWave controller soft reset");
     }
 
     /**
@@ -793,6 +791,7 @@ public class ZWaveController {
         // Clear all the nodes and we'll reinitialise
         this.zwaveNodes.clear();
         this.enqueue(new SerialApiGetInitDataMessageClass().doRequest());
+        logger.debug("ZWave controller hard reset");
     }
 
     /**
@@ -913,8 +912,13 @@ public class ZWaveController {
      *            the event listener to add.
      */
     public void addEventListener(ZWaveEventListener eventListener) {
-        synchronized (this.zwaveEventListeners) {
-            this.zwaveEventListeners.add(eventListener);
+        synchronized (zwaveEventListeners) {
+            // First, check if this listener is already registered
+            if (zwaveEventListeners.contains(eventListener)) {
+                logger.debug("Event Listerener {} already registered", eventListener);
+                return;
+            }
+            zwaveEventListeners.add(eventListener);
         }
     }
 
@@ -925,8 +929,8 @@ public class ZWaveController {
      *            the event listener to remove.
      */
     public void removeEventListener(ZWaveEventListener eventListener) {
-        synchronized (this.zwaveEventListeners) {
-            this.zwaveEventListeners.remove(eventListener);
+        synchronized (zwaveEventListeners) {
+            zwaveEventListeners.remove(eventListener);
         }
     }
 
@@ -1051,6 +1055,10 @@ public class ZWaveController {
      * @author Chris Jackson
      */
     private class ZWaveInputThread extends Thread {
+        ZWaveInputThread() {
+            super("ZWaveInputThread");
+        }
+
         /**
          * Run method. Runs the actual receiving process.
          */
@@ -1097,6 +1105,10 @@ public class ZWaveController {
     private class ZWaveSendThread extends Thread {
 
         private final Logger logger = LoggerFactory.getLogger(ZWaveSendThread.class);
+
+        ZWaveSendThread() {
+            super("ZWaveSendThread");
+        }
 
         /**
          * Run method. Runs the actual sending process.
@@ -1285,10 +1297,6 @@ public class ZWaveController {
     public void incomingPacket(SerialMessage packet) {
         // Add the packet to the receive queue
         recvQueue.add(packet);
-    }
-
-    public UID getUID() {
-        return ioHandler.getUID();
     }
 
     /**

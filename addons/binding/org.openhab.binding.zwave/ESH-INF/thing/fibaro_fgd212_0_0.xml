@@ -91,6 +91,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -616,22 +617,22 @@
         <label>1: Lifeline - Controller Updates</label>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Sends BASIC SET command class frame according to the state of the devi</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Sends BASIC SET command class frame according to the state of the devi</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Sends BASIC SET command class frame according to the state of the devi</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Sends BASIC SET command class frame according to the state of the devi</label>
         <multipleLimit>10</multipleLimit>
       </parameter>

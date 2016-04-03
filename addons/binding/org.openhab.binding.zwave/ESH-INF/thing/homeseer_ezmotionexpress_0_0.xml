@@ -45,6 +45,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -57,24 +58,22 @@
                  min="0" max="255">
         <label>1: Sensitivity</label>
         <description><![CDATA[
-Sensitivity sets the amount of motion required for EZMotion to detect motion. A higher value makes it more sensitive and a lower value makes it less sensitive. Note that values above 200 are not recommended when EZMotion is battery operated.<br />
-			Reco    !]]></description>
+Sensitivity sets the amount of motion required for EZMotion to detect motion. A higher value makes it more sensitive and a lower value makes it less sensitive. Note that values above 200 are not recommended when EZMotion is battery operated.<br /> Reco
+        !]]></description>
         <default>200</default>
       </parameter>
 
       <parameter name="config_2_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>2: On Time</label>
-        <description>On Time sets the number of minutes that the lights stay on when motion has not been detected.
-A value of 0 On Time is a special mode where the lights are constantly sent a command to turn them on whenever motion is detected. EZMotion will NOT turn the li</description>
+        <description>On Time sets the number of minutes that the lights stay on when motion has not been detected. A value of 0 On Time is a special mode where the lights are constantly sent a command to turn them on whenever motion is detected. EZMotion will NOT turn the li</description>
         <default>20</default>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>3: LED On/Off</label>
-        <description>LED ON/OFF turns the LED on or off. A slight improvement in battery life is obtained by turning the LED off.
-			</description>
+        <description>LED ON/OFF turns the LED on or off. A slight improvement in battery life is obtained by turning the LED off.</description>
         <default>255</default>
         <options>
           <option value="0">Off</option>
@@ -93,8 +92,8 @@ A value of 0 On Time is a special mode where the lights are constantly sent a co
                  min="0" max="255">
         <label>5: Stay Awake</label>
         <description><![CDATA[
-Setting Stay Awake to a non-zero value will cause EZMotion to always be awake. NOTE: this mode should NOT be used when EZMotion is battery powered! Batteries will only last a few days in this mode.<br />
-Stay Awake is NOT set to the factory default (0) wh    !]]></description>
+Setting Stay Awake to a non-zero value will cause EZMotion to always be awake. NOTE: this mode should NOT be used when EZMotion is battery powered! Batteries will only last a few days in this mode.<br /> Stay Awake is NOT set to the factory default (0) wh
+        !]]></description>
         <default>0</default>
       </parameter>
 
@@ -102,10 +101,8 @@ Stay Awake is NOT set to the factory default (0) wh    !]]></description>
                  min="0" max="255">
         <label>6: On Value</label>
         <description><![CDATA[
-On Value is the value sent by the Z-Wave BASIC_SET command when motion is detected.<br />
-A value of 0 will turn the lights off (not recommended).<br />
-A value between 1 and 100 will set the dim level to between 1% and 100%.<br />
-A value of 255 will tur    !]]></description>
+On Value is the value sent by the Z-Wave BASIC_SET command when motion is detected.<br /> A value of 0 will turn the lights off (not recommended).<br /> A value between 1 and 100 will set the dim level to between 1% and 100%.<br /> A value of 255 will tur
+        !]]></description>
         <default>255</default>
       </parameter>
 
@@ -115,7 +112,7 @@ A value of 255 will tur    !]]></description>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Association Group</label>
         <multipleLimit>4</multipleLimit>
       </parameter>

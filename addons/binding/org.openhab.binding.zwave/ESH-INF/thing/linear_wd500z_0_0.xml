@@ -28,6 +28,7 @@
       <property name="manufacturerRef">4457:3034</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -39,10 +40,7 @@
       <parameter name="config_1_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>1: Dim Start Level</label>
-        <description>A dimmer receiving this command will start dimming
-				from that start level if this bit is set to 0. If the bit is set to
-				1, the dimmer will ignore the start level and instead start dimming
-				from its current level.</description>
+        <description>A dimmer receiving this command will start dimming from that start level if this bit is set to 0. If the bit is set to 1, the dimmer will ignore the start level and instead start dimming from its current level.</description>
         <default>1</default>
         <options>
           <option value="0">Use Start Level</option>
@@ -64,11 +62,10 @@
       <parameter name="config_4_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>4: Invert Switch</label>
-        <description>To change the top of the switch to OFF and the bottom
-				to ON change parameter to 1.</description>
+        <description>To change the top of the switch to OFF and the bottom to ON change parameter to 1.</description>
         <default>0</default>
         <options>
-          <option value="0">Top-ON, Bottom-OFF </option>
+          <option value="0">Top-ON, Bottom-OFF</option>
           <option value="1">Bottom-ON, Top-OFF</option>
         </options>
       </parameter>
@@ -76,8 +73,7 @@
       <parameter name="config_14_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>14: Enable Shade Control Group 2</label>
-        <description>The switch can control shade control devices if this
-				parameter is set to 1</description>
+        <description>The switch can control shade control devices if this parameter is set to 1</description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -88,8 +84,7 @@
       <parameter name="config_15_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>15: Enable Shade Control Group 3</label>
-        <description>The switch can control shade control devices if this
-				parameter is set to 1.</description>
+        <description>The switch can control shade control devices if this parameter is set to 1.</description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -100,10 +95,7 @@
       <parameter name="config_19_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>19: LED Transmission Indication</label>
-        <description>The WD500Z-1 will flicker its LED when it is
-				transmitting to any of its groups. Parameter set to 0 = not flicker
-				Parameter set to 1 = flicker the entire time of transmitting
-				Parameter set to 2 = flicker for only 1 second.</description>
+        <description>The WD500Z-1 will flicker its LED when it is transmitting to any of its groups. Parameter set to 0 = not flicker Parameter set to 1 = flicker the entire time of transmitting Parameter set to 2 = flicker for only 1 second.</description>
         <default>2</default>
         <options>
           <option value="0">Disable Flicker</option>
@@ -118,17 +110,17 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: UNKNOWN!!!</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Double Tap</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Triple Tap</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

@@ -27,6 +27,7 @@
       <property name="manufacturerRef">5246:3133</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
