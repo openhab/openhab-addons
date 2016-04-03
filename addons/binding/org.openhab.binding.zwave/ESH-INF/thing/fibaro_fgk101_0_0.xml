@@ -75,6 +75,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -86,11 +87,7 @@
       <parameter name="config_1_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>1: IN1 Alarm Cancellation Delay</label>
-        <description>Additional delay
-				after an alarm from input IN1 has ceased. The parameter allows you
-				to specify additional time, after which the input no. 1 alarm is
-				cancelled once its violation has ceased.
-			</description>
+        <description>Additional delay after an alarm from input IN1 has ceased. The parameter allows you to specify additional time, after which the input no. 1 alarm is cancelled once its violation has ceased.</description>
         <default>0</default>
       </parameter>
 
@@ -107,9 +104,7 @@
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>3: Type of input no. 1</label>
-        <description>Type of input no. 1, what the input 1 will report if
-				no contact is made
-			</description>
+        <description>Type of input no. 1, what the input 1 will report if no contact is made</description>
         <default>1</default>
         <options>
           <option value="0">Normally Open</option>
@@ -121,14 +116,8 @@
 
       <parameter name="config_5_1" type="integer" groupName="configuration"
                  min="0" max="255">
-        <label>5: Type of transmitted control frame for association
-				group 1
-			</label>
-        <description>Type of transmitted control frame for association
-				group 1, activated via input IN1. The parameter allows to specify
-				the type of alarm frame or to force transmission of control commands
-				(BASIC_SET)
-			</description>
+        <label>5: Type of transmitted control frame for association group 1</label>
+        <description>Type of transmitted control frame for association group 1, activated via input IN1. The parameter allows to specify the type of alarm frame or to force transmission of control commands (BASIC_SET)</description>
         <default>-1</default>
         <options>
           <option value="-1">BASIC_SET</option>
@@ -145,22 +134,15 @@
                  min="1" max="255">
         <label>7: Forced Level of Dimming group 1</label>
         <description><![CDATA[
-Value of the parameter specifying the forced level of
-				dimming / opening sun blinds when comes 'switch on' / 'open' command
-				to devices from association group no. 1.
-				In the case of alarm frames
-				the alarm priority is specified.<br />Possib    !]]></description>
+Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1. In the case of alarm frames the alarm priority is specified.<br />Possib
+        !]]></description>
         <default>255</default>
       </parameter>
 
       <parameter name="config_9_1" type="integer" groupName="configuration"
                  min="0" max="255">
-        <label>9: Deactivate transmission of frame cancelling alarm
-			</label>
-        <description>Deactivating transmission of the frame cancelling the
-				alarm or the control frame deactivating the device (Basic). It
-				allows for disabling the deactivation function or the alarm
-				cancellation function for devices associated with the appropria</description>
+        <label>9: Deactivate transmission of frame cancelling alarm</label>
+        <description>Deactivating transmission of the frame cancelling the alarm or the control frame deactivating the device (Basic). It allows for disabling the deactivation function or the alarm cancellation function for devices associated with the appropria</description>
         <default>0</default>
         <options>
           <option value="0">Groups 1 and 2 sent</option>
@@ -172,28 +154,21 @@ Value of the parameter specifying the forced level of
       <parameter name="config_12_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>12: Insensitiveness to temperature changes.</label>
-        <description>This is the maximum acceptable difference between the last reported temperature and the current temperature taken from the sensor. If the temperatures differ by the set value or more, then a report with the current temperature value is sent to the device </description>
+        <description>This is the maximum acceptable difference between the last reported temperature and the current temperature taken from the sensor. If the temperatures differ by the set value or more, then a report with the current temperature value is sent to the device</description>
         <default>8</default>
       </parameter>
 
       <parameter name="config_13_1" type="integer" groupName="configuration"
                  min="0" max="255">
-        <label>13: Transmitting the alarm or control frame broadcast
-				mode
-			</label>
+        <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
-Transmitting the alarm or control frame in
-				'broadcast' mode (i.e. to all devices within range), information
-				sent in this mode is not repeated by the mesh network.<br /><b>NOTE: If the broadcast mode of information transmission is activ</b>    !]]></description>
+Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE: If the broadcast mode of information transmission is activ</b>
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">IN1 and IN2 Broadcast inactive</option>
-          <option value="1">IN1 broadcast mode active, Sensor 2 broadcast mode
-					inactive
-			</option>
-          <option value="2">IN1 broadcast mode inactive, Sensor 2 broadcast
-					mode active
-			</option>
+          <option value="1">IN1 broadcast mode active, Sensor 2 broadcast mode inactive</option>
+          <option value="2">IN1 broadcast mode inactive, Sensor 2 broadcast mode active</option>
           <option value="3">INI and IN2 broadcast mode active</option>
         </options>
       </parameter>
@@ -201,11 +176,7 @@ Transmitting the alarm or control frame in
       <parameter name="config_14_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>14: Scene activation</label>
-        <description>Enable/Disable scene functionality. The device offers
-				the possibility of sending commands compatible with Command class
-				scene activation. Information is sent to devices assigned to
-				association group no. 3.
-			</description>
+        <description>Enable/Disable scene functionality. The device offers the possibility of sending commands compatible with Command class scene activation. Information is sent to devices assigned to association group no. 3.</description>
         <default>0</default>
         <options>
           <option value="0">Disabled</option>
@@ -219,12 +190,12 @@ Transmitting the alarm or control frame in
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Input IN1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: TMP Button</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

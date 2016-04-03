@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Openhab ZWave Binding Tests
+Bundle-SymbolicName: org.openhab.binding.zwave.test;singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Vendor: Openhab
+Fragment-Host: org.openhab.binding.zwave;bundle-version="2.0.0.qualifier"
+Import-Package: org.slf4j,
+ groovy.json,
+ groovy.lang,
+ org.codehaus.groovy.reflection,
+ org.codehaus.groovy.runtime,
+ org.codehaus.groovy.runtime.callsite,
+ org.codehaus.groovy.runtime.typehandling,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.thing.setup,
+ org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.osgi.service.device
+Require-Bundle: org.junit;bundle-version="4.11.0"
+Export-Package: org.openhab.binding.zwave.internal.protocol;x-internal:=true

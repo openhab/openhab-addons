@@ -39,6 +39,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -94,9 +95,8 @@
                  min="0" max="4294967295">
         <label>121: Send those commands to associated devices on open/close/tamper events</label>
         <description><![CDATA[
-Available Configurations<br />
-				16 -&gt; Sensor binary report<br />
-				256 -&gt; Basic Set      !]]></description>
+Available Configurations<br /> 16 -&gt; Sensor binary report<br /> 256 -&gt; Basic Set
+        !]]></description>
         <default>256</default>
       </parameter>
 
@@ -125,7 +125,7 @@ Available Configurations<br />
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

@@ -9,10 +9,10 @@
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
@@ -65,6 +65,7 @@ public class ApplicationCommandMessageClass extends ZWaveCommandProcessor {
 
                 // Intercept security encapsulated messages here and decrypt them.
                 // TODO: Decide if this should be here, or treated like other encapsulation classes........
+                // TODO: It just feels a bit wrong as it breaks protocol layers (which may be needed of course!)
                 ZWaveSecurityCommandClass zwaveSecurityCommandClass = (ZWaveSecurityCommandClass) zwaveCommandClass;
                 logger.debug("NODE {}: Preparing to decrypt security encapsulated message, messagePayload={}", nodeId,
                         SerialMessage.bb2hex(incomingMessage.getMessagePayload()));
@@ -83,7 +84,7 @@ public class ApplicationCommandMessageClass extends ZWaveCommandProcessor {
                             incomingMessage.getPriority());
                     decryptedMessage.setMessagePayload(decryptedBytes);
                     // Get the new command class with the decrypted contents
-                    zwaveCommandClass = resolveZWaveCommandClass(node, decryptedBytes[1] & 0xFF, zController);
+                    zwaveCommandClass = resolveZWaveCommandClass(node, decryptedBytes[1], zController);
                     boolean failed = false; // Use a flag bc we need to handle isEncapNonceGet either way
                     if (zwaveCommandClass == null) {
                         failed = true; // Error message was logged in resolveZWaveCommandClass

@@ -8,8 +8,7 @@
   <thing-type id="vision_zw4001_00_000" listed="false">
     <label>ZW4101 Drapery controller (up/stop/down)</label>
     <description><![CDATA[
-Drapery controller (up/stop/down)<br /><h1>Overview</h1><p>Drapery controller, supports up/stop/down commands.</p>
-<p>Devices is OEMed as Monoprice 11993.</p>
+Drapery controller (up/stop/down)<br /><h1>Overview</h1><p>Drapery controller, supports up/stop/down commands.</p> <p>Devices is OEMed as Monoprice 11993.</p>
     !]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -37,6 +36,7 @@ Drapery controller (up/stop/down)<br /><h1>Overview</h1><p>Drapery controller, s
       <property name="manufacturerRef">200D:0D03</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -50,7 +50,7 @@ Drapery controller (up/stop/down)<br /><h1>Overview</h1><p>Drapery controller, s
         <label>1: Up output time</label>
         <description><![CDATA[
 Up output time<br /><h1>Overview</h1><p>Time to hold the "up" output button closed (shorted) when unit receives an "up" z-wave command.</p>
-    !]]></description>
+        !]]></description>
         <default>1</default>
       </parameter>
 
@@ -58,9 +58,8 @@ Up output time<br /><h1>Overview</h1><p>Time to hold the "up" output button clos
                  min="1" max="255">
         <label>2: Stop output time</label>
         <description><![CDATA[
-Stop output time<br /><h1>Overview</h1><p>Time to hold the "stop" output button closed (shorted) when unit receives a "stop" z-wave command.</p>
-<p>Note that the unit will automatically execute STOP, UP or STOP, DOWN when receiving an up or down command.</p>
-    !]]></description>
+Stop output time<br /><h1>Overview</h1><p>Time to hold the "stop" output button closed (shorted) when unit receives a "stop" z-wave command.</p> <p>Note that the unit will automatically execute STOP, UP or STOP, DOWN when receiving an up or down command.</p>
+        !]]></description>
         <default>1</default>
       </parameter>
 
@@ -69,7 +68,7 @@ Stop output time<br /><h1>Overview</h1><p>Time to hold the "stop" output button 
         <label>3: Down output time</label>
         <description><![CDATA[
 Down output time<br /><h1>Overview</h1><p>Time to hold the "down" output button closed (shorted) when unit receives a "down" z-wave command.</p>
-    !]]></description>
+        !]]></description>
         <default>1</default>
       </parameter>
 

@@ -8,21 +8,7 @@
   <thing-type id="ge_zw4002_00_000" listed="false">
     <label>ZW4002 In-Wall Smart Fan Control</label>
     <description><![CDATA[
-In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</strong></p>
-<p>Note: Before starting, fan must be set to ‘HIGH’ position using pull chain. The connected fan can then be turned ON/OFF and adjust speed levels in two ways:</p>
-<ol><li>Manually from the front panel rocker of the In-wall Fan Control</li>
-<li>Remotely with a Z-Wave controller</li>
-</ol><p><strong>Manual Control</strong></p>
-<p>To turn the connected fan ON: Press and release the top of the rocker. Note: Fan will return to last speed setting of Fan Control. Default setting – HIGH.</p>
-<p>To turn the fan OFF: Press and release the bottom of the rocker.</p>
-<p><strong>Adjust fan speed</strong></p>
-<p>To decrease fan speed: Press and hold lower rocker.</p>
-<p>To increase fan speed: Press and hold upper rocker.</p>
-<p>The LED indicator confirms fan speed settings by flashing patterns</p>
-<ul><li>LOW – LED will blink every 2 seconds for 10 seconds</li>
-<li>MEDIUM – LED will blink every second for 10 seconds</li>
-<li>HIGH – LED will blink every half second for 10 seconds</li>
-</ul><br /><h2>Inclusion Information</h2><p>Once the controller is ready to include your device, press and release the top or bottom of the smart fan control switch (rocker) to include it in the network.</p>
+In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</strong></p> <p>Note: Before starting, fan must be set to ‘HIGH’ position using pull chain. The connected fan can then be turned ON/OFF and adjust speed levels in two ways:</p> <ol><li>Manually from the front panel rocker of the In-wall Fan Control</li> <li>Remotely with a Z-Wave controller</li> </ol><p><strong>Manual Control</strong></p> <p>To turn the connected fan ON: Press and release the top of the rocker. Note: Fan will return to last speed setting of Fan Control. Default setting – HIGH.</p> <p>To turn the fan OFF: Press and release the bottom of the rocker.</p> <p><strong>Adjust fan speed</strong></p> <p>To decrease fan speed: Press and hold lower rocker.</p> <p>To increase fan speed: Press and hold upper rocker.</p> <p>The LED indicator confirms fan speed settings by flashing patterns</p> <ul><li>LOW – LED will blink every 2 seconds for 10 seconds</li> <li>MEDIUM – LED will blink every second for 10 seconds</li> <li>HIGH – LED will blink every half second for 10 seconds</li> </ul><br /><h2>Inclusion Information</h2><p>Once the controller is ready to include your device, press and release the top or bottom of the smart fan control switch (rocker) to include it in the network.</p>
     !]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -44,6 +30,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
       <property name="manufacturerRef">4944:3034</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -57,7 +44,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
         <label>3: Night Light</label>
         <description><![CDATA[
 Defines the behavior of the blue LED<br /><h1>Overview</h1><p>Default is Night Light mode where LED is on when switch is off.</p>
-    !]]></description>
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">LED on when switch is OFF</option>
@@ -71,7 +58,7 @@ Defines the behavior of the blue LED<br /><h1>Overview</h1><p>Default is Night L
         <label>4: Invert Switch</label>
         <description><![CDATA[
 Invert the ON/OFF Switch State<br /><h1>Overview</h1><p>Setting this parameter to Yes will change the top of the switch to OFF and the bottom to ON.  Note: If you invert the switches and also install the product upside down, the load will now be control.</p>
-    !]]></description>
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">No</option>

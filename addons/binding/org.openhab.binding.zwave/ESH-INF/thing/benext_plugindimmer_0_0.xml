@@ -41,6 +41,7 @@
       <property name="defaultAssociations">2</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -91,28 +92,28 @@
       <parameter name="config_11_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>11: Auto meter report: percentage</label>
-        <description>A percentage that an energy value must be different compared to a previous sent value before an unsolicited meter report is sent. Minimum value = 1%  Maximum value = 100%</description>
+        <description>A percentage that an energy value must be different compared to a previous sent value before an unsolicited meter report is sent. Minimum value = 1% Maximum value = 100%</description>
         <default>1</default>
       </parameter>
 
       <parameter name="config_12_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>12: Auto meter report: watt</label>
-        <description>A watt value that an energy value must be different compared to a previous sent value before an unsolicited meter report is sent. Minimum value = 5 watt  Maximum value = 255 watt</description>
+        <description>A watt value that an energy value must be different compared to a previous sent value before an unsolicited meter report is sent. Minimum value = 5 watt Maximum value = 255 watt</description>
         <default>5</default>
       </parameter>
 
       <parameter name="config_13_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>13: Auto meter report: time</label>
-        <description>A time value that has to be passed compared to a previous sent value before a unsolicited meter report is sent. Minimum value = 10 seconds  Maximum value = 255 seconds</description>
+        <description>A time value that has to be passed compared to a previous sent value before a unsolicited meter report is sent. Minimum value = 10 seconds Maximum value = 255 seconds</description>
         <default>10</default>
       </parameter>
 
       <parameter name="config_14_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>14: Last known status</label>
-        <description>What to do with lamp status when power applied. If 0x00: Always switch light off when power applied. If > 0x00: Switch lamp on/off depending on last known lampstatus before power was disconnected.</description>
+        <description>What to do with lamp status when power applied. If 0x00: Always switch light off when power applied. If &gt; 0x00: Switch lamp on/off depending on last known lampstatus before power was disconnected.</description>
         <default>0</default>
       </parameter>
 
@@ -129,7 +130,7 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <description>Receives BASIC SET commands</description>
         <multipleLimit>8</multipleLimit>

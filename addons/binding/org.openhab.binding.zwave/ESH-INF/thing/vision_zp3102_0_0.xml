@@ -25,7 +25,7 @@
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
@@ -45,6 +45,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -76,7 +77,7 @@
         <label>3: Infrared sensor sensitivity adjustment,</label>
         <description><![CDATA[
 1 is most sensitive, 7 is least<br /><h1>Overview</h1><p>(Parameter 3) Infrared sensor sensitivity adjustment, 7 levels sensitivity, 1 = most<br />sensitive, 7 = most insensitive, default values= 4</p>
-    !]]></description>
+        !]]></description>
         <default>4</default>
       </parameter>
 
@@ -86,7 +87,7 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Control Command</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

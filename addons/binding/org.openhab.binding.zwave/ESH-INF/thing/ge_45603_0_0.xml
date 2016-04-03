@@ -27,6 +27,7 @@
       <property name="manufacturerRef">5052:3031,5250:3030</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -39,8 +40,8 @@
                  min="0" max="255">
         <label>3: Night Light</label>
         <description><![CDATA[
-Defines the behavior of the blue LED. <br />
-			 Default is Night Light mode where LED is on when switch is off.    !]]></description>
+Defines the behavior of the blue LED. <br /> Default is Night Light mode where LED is on when switch is off.
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">LED on when switch is OFF</option>
@@ -53,10 +54,8 @@ Defines the behavior of the blue LED. <br />
                  min="0" max="255">
         <label>4: Invert Switch</label>
         <description><![CDATA[
-Change the top of the switch to OFF and <br />
-			the bottom of the switch to ON. <br />
-			Note: If you invert the switches and also install the product upside down, <br />
-			remember the load will now be controlled by the right, not the left switch.    !]]></description>
+Change the top of the switch to OFF and <br /> the bottom of the switch to ON. <br /> Note: If you invert the switches and also install the product upside down, <br /> remember the load will now be controlled by the right, not the left switch.
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">No</option>

@@ -64,6 +64,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -75,18 +76,14 @@
       <parameter name="config_1_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>1: W meter report period</label>
-        <description>If the setting is configured for 1 hour (value = 720),
-							the device will report its instant power consumption every 1 hour to Z-Wave Controller.
-							Unit: 5 seconds</description>
+        <description>If the setting is configured for 1 hour (value = 720), the device will report its instant power consumption every 1 hour to Z-Wave Controller. Unit: 5 seconds</description>
         <default>720</default>
       </parameter>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>2: kWh meter report period</label>
-        <description>If the setting is configured for 1 hour (value = 6),
-							the device will report its total power consumption every 1 hour to Z-Wave Controller.
-							Unit: 10 minutes</description>
+        <description>If the setting is configured for 1 hour (value = 6), the device will report its total power consumption every 1 hour to Z-Wave Controller. Unit: 10 minutes</description>
         <default>6</default>
       </parameter>
 

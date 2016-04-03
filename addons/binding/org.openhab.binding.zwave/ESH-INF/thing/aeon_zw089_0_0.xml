@@ -8,16 +8,7 @@
   <thing-type id="aeon_zw089_00_000" listed="false">
     <label>ZW089 Recessed Door Sensor Gen5</label>
     <description><![CDATA[
-Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Sensor Gen5 is a door detector that can detect the state of the door's open/close.</p>
-<br /><h2>Inclusion Information</h2><ol><li>Power on the Recessed Door Sensor Gen5.</li>
-<li>Let the primary controller into inclusion mode (If you don’t know how to do this, refer to its manual).</li>
-<li>Press the Z‐Wave button.</li>
-<li>If the inclusion is success, Recessed Door Sensor Gen5’s LED will be kept turning on for 10 minutes. If the LED still blinks slowly, in which you need to repeat the process from step 2.  </li>
-</ol><br /><h2>Exclusion Information</h2><ol><li>Power on the Recessed Door Sensor Gen5.</li>
-<li>Let the primary controller into exclusion mode (If you don’t know how to do this, refer to its manual).</li>
-<li>Press the Z‐Wave button.</li>
-<li>If the exclusion is success, Recessed Door Sensor Gen5’s LED will blink slowly. If LED still be solid status for 3 seconds after you short press the Z‐Wave button, in which you need to repeat the process from step 2</li>
-</ol><br /><h2>Wakeup Information</h2><p>Press and hold the Z‐wave Button for 6 seconds. It will sleep after you released the z‐wave button for 10 seconds, or sleep right away when received the Wake Up No More Information and then the led will turn off.   </p>
+Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Sensor Gen5 is a door detector that can detect the state of the door's open/close.</p> <br /><h2>Inclusion Information</h2><ol><li>Power on the Recessed Door Sensor Gen5.</li> <li>Let the primary controller into inclusion mode (If you don’t know how to do this, refer to its manual).</li> <li>Press the Z‐Wave button.</li> <li>If the inclusion is success, Recessed Door Sensor Gen5’s LED will be kept turning on for 10 minutes. If the LED still blinks slowly, in which you need to repeat the process from step 2.  </li> </ol><br /><h2>Exclusion Information</h2><ol><li>Power on the Recessed Door Sensor Gen5.</li> <li>Let the primary controller into exclusion mode (If you don’t know how to do this, refer to its manual).</li> <li>Press the Z‐Wave button.</li> <li>If the exclusion is success, Recessed Door Sensor Gen5’s LED will blink slowly. If LED still be solid status for 3 seconds after you short press the Z‐Wave button, in which you need to repeat the process from step 2</li> </ol><br /><h2>Wakeup Information</h2><p>Press and hold the Z‐wave Button for 6 seconds. It will sleep after you released the z‐wave button for 10 seconds, or sleep right away when received the Wake Up No More Information and then the led will turn off.   </p>
     !]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -50,6 +41,7 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -83,7 +75,7 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
         <label>101: Low battery voltage check</label>
         <description><![CDATA[
 low battery check when voltage is less than warn voltage<br /><h1>Overview</h1><p>Enable/disable the function of low battery checking, when the current voltage is less than the warning voltage, it will send the Battery Low Warning Report. (00==Disable, 1==Enable)  </p>
-    !]]></description>
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -96,7 +88,7 @@ low battery check when voltage is less than warn voltage<br /><h1>Overview</h1><
         <label>111: Low battery voltage check time</label>
         <description><![CDATA[
 Minimum battery low check Interval time is 4 minutes<br /><h1>Overview</h1><p>The Interval time of low battery checking (0~0xFFFFFFFF seconds). The minimum unit of interval time is 4 minutes. If the value is set to 1 minute, the interval time will be 4 minutes. The same is if the value is set to 7 minutes, the interval time will be 8 minutes. Note: 1, This parameter only will be activated after the function of low battery checking (parameter 101) is enabled. 2, Recessed Door Sensor also will check the current battery voltage when it was wake up as other ways (e. g. the Z ‐ Wave button trigger, magnet switch trigger, and the Wake Up Interval Set timeout trigger) after the function of low battery checking (parameter 101) is enabled.</p>
-    !]]></description>
+        !]]></description>
         <default>86640</default>
       </parameter>
 
@@ -104,9 +96,8 @@ Minimum battery low check Interval time is 4 minutes<br /><h1>Overview</h1><p>Th
                  min="0" max="255">
         <label>121: Configuration Value 4(LSB) SENSOR BINARY</label>
         <description><![CDATA[
-Configuration Value 4(LSB) SENSOR BINARY<br /><h1>Overview</h1><p>set to 16 for sensor binary (recommended)</p>
-<p>set to 0 for factory default</p>
-    !]]></description>
+Configuration Value 4(LSB) SENSOR BINARY<br /><h1>Overview</h1><p>set to 16 for sensor binary (recommended)</p> <p>set to 0 for factory default</p>
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">disable SENSOR BINARY (factory)</option>
@@ -118,9 +109,8 @@ Configuration Value 4(LSB) SENSOR BINARY<br /><h1>Overview</h1><p>set to 16 for 
                  min="0" max="255">
         <label>121: Config value 3 - BASIC SET</label>
         <description><![CDATA[
-Set BASIC SET reporting<br /><h1>Overview</h1><p>Set to 1 for BASIC SET report (factory default)</p>
-<p>Set to 0 to disable BASIC SET report</p>
-    !]]></description>
+Set BASIC SET reporting<br /><h1>Overview</h1><p>Set to 1 for BASIC SET report (factory default)</p> <p>Set to 0 to disable BASIC SET report</p>
+        !]]></description>
         <default>1</default>
         <options>
           <option value="0">do not send BASIC SET</option>
@@ -159,12 +149,12 @@ Set BASIC SET reporting<br /><h1>Overview</h1><p>Set to 1 for BASIC SET report (
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: State Updates</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Battery Warnings</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

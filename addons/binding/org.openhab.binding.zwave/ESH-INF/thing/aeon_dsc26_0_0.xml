@@ -28,6 +28,7 @@
       <property name="defaultAssociations">2</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -94,27 +95,21 @@
       <parameter name="config_101_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>101: Which reports need to send automatically in timing intervals for group 1</label>
-        <description>The value is a combination number made up of the sum of the values for the individual parameters.
-                                                        The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1.
-                           </description>
+        <description>The value is a combination number made up of the sum of the values for the individual parameters. The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1.</description>
         <default>4</default>
       </parameter>
 
       <parameter name="config_102_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>102: Which reports need to send automatically in timing intervals for group 2</label>
-        <description>The value is a combination number made up of the sum of the values for the individual parameters.
-                                                        The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1.
-                           </description>
+        <description>The value is a combination number made up of the sum of the values for the individual parameters. The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1.</description>
         <default>8</default>
       </parameter>
 
       <parameter name="config_103_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>103: Which reports need to send automatically in timing intervals for group 3</label>
-        <description>The value is a combination number made up of the sum of the values for the individual parameters.
-                                                        The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1.
-                           </description>
+        <description>The value is a combination number made up of the sum of the values for the individual parameters. The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1.</description>
         <default>0</default>
       </parameter>
 
@@ -154,12 +149,12 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Target for automatic meter reports</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Target for automatic reports</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

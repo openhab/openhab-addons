@@ -30,6 +30,7 @@ Wireless Water Shutoff Valve<br /><h1>Overview</h1><p>The EBV105 water shutoff c
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- ASSOCIATION DEFINITIONS -->
@@ -38,7 +39,7 @@ Wireless Water Shutoff Valve<br /><h1>Overview</h1><p>The EBV105 water shutoff c
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

@@ -76,6 +76,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -130,13 +131,13 @@
         <description>Type of transmitted control frame for association group 1, activated via input IN1. The parameter allows to specify the type of alarm frame or to force transmission of control commands (BASIC_SET)</description>
         <default>255</default>
         <options>
-          <option value="-1">BASIC_SET</option>
           <option value="0">ALARM GENERIC</option>
           <option value="1">ALARM SMOKE</option>
           <option value="2">ALARM CO</option>
           <option value="3">ALARM CO2</option>
           <option value="4">ALARM HEAT</option>
           <option value="5">ALARM WATER</option>
+          <option value="255">BASIC_SET</option>
         </options>
       </parameter>
 
@@ -146,13 +147,13 @@
         <description>Type of transmitted control frame for association group 2, activated via input IN2. The parameter allows to specify the type of alarm frame or to force transmission of control commands (BASIC_SET)</description>
         <default>255</default>
         <options>
-          <option value="-1">BASIC_SET</option>
           <option value="0">ALARM GENERIC</option>
           <option value="1">ALARM SMOKE</option>
           <option value="2">ALARM CO</option>
           <option value="3">ALARM CO2</option>
           <option value="4">ALARM HEAT</option>
           <option value="5">ALARM WATER</option>
+          <option value="255">BASIC_SET</option>
         </options>
       </parameter>
 
@@ -160,8 +161,8 @@
                  min="1" max="255">
         <label>7: Forced Level of Dimming group 1</label>
         <description><![CDATA[
-Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1.<br />
-In the case of alarm frames the alarm priority is specified. Possible parameter setti    !]]></description>
+Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1.<br /> In the case of alarm frames the alarm priority is specified. Possible parameter setti
+        !]]></description>
         <default>255</default>
       </parameter>
 
@@ -169,8 +170,8 @@ In the case of alarm frames the alarm priority is specified. Possible parameter 
                  min="1" max="255">
         <label>8: Forced Level of Dimming group 2</label>
         <description><![CDATA[
-Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 2.<br />
-In the case of alarm frames the alarm priority is specified. Possible parameter setti    !]]></description>
+Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 2.<br /> In the case of alarm frames the alarm priority is specified. Possible parameter setti
+        !]]></description>
         <default>255</default>
       </parameter>
 
@@ -203,7 +204,7 @@ In the case of alarm frames the alarm priority is specified. Possible parameter 
       <parameter name="config_12_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>12: Insensitiveness to temperature changes.</label>
-        <description>This is the maximum acceptable difference between the last reported temperature and the current temperature taken from the sensor. If the temperatures differ by the set value or more, then a report with the current temperature value is sent to the device </description>
+        <description>This is the maximum acceptable difference between the last reported temperature and the current temperature taken from the sensor. If the temperatures differ by the set value or more, then a report with the current temperature value is sent to the device</description>
         <default>8</default>
       </parameter>
 
@@ -211,7 +212,8 @@ In the case of alarm frames the alarm priority is specified. Possible parameter 
                  min="0" max="255">
         <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
-Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given     !]]></description>
+Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
+        !]]></description>
         <default>0</default>
         <options>
           <option value="0">IN1 and IN2 Broadcast inactive</option>
@@ -238,12 +240,12 @@ Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Input 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Input 2</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

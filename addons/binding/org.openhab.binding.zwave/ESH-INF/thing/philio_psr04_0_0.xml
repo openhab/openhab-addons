@@ -33,6 +33,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -46,7 +47,7 @@
         <label>1: Basic Set OFF level</label>
         <description><![CDATA[
 Control the value represented by the left-side in area D.<br /><h1>Overview</h1><p> E.g. Setting this configuration to 0x0F means range of Command Basic Set value start from 0x0F.</p>
-    !]]></description>
+        !]]></description>
         <default>0</default>
       </parameter>
 
@@ -55,7 +56,7 @@ Control the value represented by the left-side in area D.<br /><h1>Overview</h1>
         <label>2: Basic Set ON level</label>
         <description><![CDATA[
 Control the value represented by the right-side in area D.<br /><h1>Overview</h1><p> E.g. Setting this configuration to 0x1E means range of Command Basic Set value start from 0x1E.</p>
-    !]]></description>
+        !]]></description>
         <default>99</default>
       </parameter>
 
@@ -63,9 +64,8 @@ Control the value represented by the right-side in area D.<br /><h1>Overview</h1
                  min="0" max="127">
         <label>10: Auto Report Battery Time</label>
         <description><![CDATA[
-The interval time for auto reporting the Battery level.<br /><h1>Overview</h1><p>0: Function is disabled.<br />1 - 127: Define the time interval.</p>
-<p>0 means turn off auto report battery. The default value of 12 is equivalent to 6 hours.</p>
-    !]]></description>
+The interval time for auto reporting the Battery level.<br /><h1>Overview</h1><p>0: Function is disabled.<br />1 - 127: Define the time interval.</p> <p>0 means turn off auto report battery. The default value of 12 is equivalent to 6 hours.</p>
+        !]]></description>
         <default>12</default>
       </parameter>
 
@@ -93,13 +93,13 @@ The interval time for auto reporting the Battery level.<br /><h1>Overview</h1><p
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Controller updates</label>
         <description>For receiving the report message, like the battery level.</description>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Light control</label>
         <description>For light control. The device will send Basic Set command to this group.</description>
         <multipleLimit>8</multipleLimit>

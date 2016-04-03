@@ -31,7 +31,7 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
@@ -53,6 +53,7 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
       <property name="defaultAssociations">1,2,3,4,5</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -96,27 +97,27 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Thermostat Mode Set</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Binary Switch Set</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Unsolicited Battery Level Reports</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Thermostat Set Point Reports</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Unsolicited Sensor Multilevel Reports</label>
         <multipleLimit>4</multipleLimit>
       </parameter>

@@ -23,13 +23,13 @@
           <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint_cooling" typeId="thermostat_setpoint">
         <label>Setpoint (cooling)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=COOLING</property>

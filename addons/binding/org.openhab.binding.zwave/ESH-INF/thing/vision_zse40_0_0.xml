@@ -50,6 +50,7 @@
       <property name="manufacturerRef">2021:2101</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->

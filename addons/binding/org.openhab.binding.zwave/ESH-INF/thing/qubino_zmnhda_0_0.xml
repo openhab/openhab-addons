@@ -65,6 +65,7 @@
       <property name="defaultAssociations">4</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -109,8 +110,7 @@
       <parameter name="config_10_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>10: Activate / deactivate functions ALL ON/ALL OFF</label>
-        <description>Flush 1 relay module responds to commands ALL ON / ALL OFF 
-				that may be sent by the main controller or by other controller belonging to the system.</description>
+        <description>Flush 1 relay module responds to commands ALL ON / ALL OFF that may be sent by the main controller or by other controller belonging to the system.</description>
         <default>255</default>
         <options>
           <option value="0">ALL ON is not active ALL OFF is not active</option>
@@ -127,7 +127,7 @@
         <default>0</default>
         <options>
           <option value="0">Flush dimmer module saves its state before power failure (it returns t</option>
-          <option value="1">Flush dimmer module does not save the state after a power failure, it </option>
+          <option value="1">Flush dimmer module does not save the state after a power failure, it</option>
         </options>
       </parameter>
 
@@ -135,9 +135,8 @@
                  min="0" max="255">
         <label>40: Power reporting in Watts on power change for Q1</label>
         <description><![CDATA[
-Set value means percentage, set value from 0-100 = 0%-100%.
-				Power report is sent (pushed) only when actual power in Watts in real time changed for more than set
-				percentage comparing to previous actual power in Watts, step is 1%.<br />    !]]></description>
+Set value means percentage, set value from 0-100 = 0%-100%. Power report is sent (pushed) only when actual power in Watts in real time changed for more than set percentage comparing to previous actual power in Watts, step is 1%.<br />
+        !]]></description>
         <default>5</default>
       </parameter>
 
@@ -145,9 +144,8 @@ Set value means percentage, set value from 0-100 = 0%-100%.
                  min="0" max="65535">
         <label>42: Power reporting in Watts by time interval</label>
         <description><![CDATA[
-Set value means time interval (0 – 65535) in seconds, when power report is sent. 
-				Default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li>
-				<li>1–65535 = 1 second – 65535 seconds. Reporting enab</li></ul>    !]]></description>
+Set value means time interval (0 – 65535) in seconds, when power report is sent. Default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li> <li>1–65535 = 1 second – 65535 seconds. Reporting enab</li></ul>
+        !]]></description>
         <default>300</default>
       </parameter>
 
@@ -155,10 +153,8 @@ Set value means time interval (0 – 65535) in seconds, when power report is sen
                  min="0" max="255">
         <label>60: Minimum dimming value</label>
         <description><![CDATA[
-Range is 1% – 98%, step is 1%.<br />
-				Default value is 1 (Minimum dimming value is 1%)<br />
-				NOTE: The maximum level may not be lower than the minimum level!<br /> 
-				1% min. dimming value is defined by Z-Wave multilevel device class.    !]]></description>
+Range is 1% – 98%, step is 1%.<br /> Default value is 1 (Minimum dimming value is 1%)<br /> NOTE: The maximum level may not be lower than the minimum level!<br /> 1% min. dimming value is defined by Z-Wave multilevel device class.
+        !]]></description>
         <default>1</default>
       </parameter>
 
@@ -166,10 +162,8 @@ Range is 1% – 98%, step is 1%.<br />
                  min="0" max="255">
         <label>61: Maximum dimming value</label>
         <description><![CDATA[
-Range is 2% – 99%, step is 1%.<br />
-				Default value 99 (Maximum dimming value is 99 %)<br />
-				NOTE: The maximum level may not be lower than the minimum level!<br /> 
-				99% max. dimming value is defined by Z-Wave multilevel device class.    !]]></description>
+Range is 2% – 99%, step is 1%.<br /> Default value 99 (Maximum dimming value is 99 %)<br /> NOTE: The maximum level may not be lower than the minimum level!<br /> 99% max. dimming value is defined by Z-Wave multilevel device class.
+        !]]></description>
         <default>99</default>
       </parameter>
 
@@ -177,10 +171,8 @@ Range is 2% – 99%, step is 1%.<br />
                  min="0" max="255">
         <label>65: Dimming time (soft on/off)</label>
         <description><![CDATA[
-Set value means time of moving the Dimmer between min. and max. 
-				dimming values by short press of push button I1 or controlled through UI.<br />
-				Range is 1-255 = 10-2550ms (2.55s), step is 10ms.<br />
-				Default value 100 (Dimming time between m    !]]></description>
+Set value means time of moving the Dimmer between min. and max. dimming values by short press of push button I1 or controlled through UI.<br /> Range is 1-255 = 10-2550ms (2.55s), step is 10ms.<br /> Default value 100 (Dimming time between m
+        !]]></description>
         <default>100</default>
       </parameter>
 
@@ -188,10 +180,8 @@ Set value means time of moving the Dimmer between min. and max.
                  min="0" max="255">
         <label>66: Dimming time when key pressed</label>
         <description><![CDATA[
-Time of moving the Dimmer between min. and max dimming values by continues 
-				hold of push button I1.<br />
-				Range is 1-255 = 1-255s, step is 1s.<br />
-				Default value 3 (Dimming time between min. and max. dimming values is 3s)    !]]></description>
+Time of moving the Dimmer between min. and max dimming values by continues hold of push button I1.<br /> Range is 1-255 = 1-255s, step is 1s.<br /> Default value 3 (Dimming time between min. and max. dimming values is 3s)
+        !]]></description>
         <default>3</default>
       </parameter>
 
@@ -201,22 +191,22 @@ Time of moving the Dimmer between min. and max dimming values by continues
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: multilevel (triggered at changes of state/value of the Flush dimmer)</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: basic on/off (triggered at change of the input I2 state and reflecting</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: basic on/off (triggered at change of the input I3 state and reflecting</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Controller updates</label>
         <multipleLimit>4</multipleLimit>
       </parameter>

@@ -27,6 +27,7 @@
       <property name="manufacturerRef">2001:0000</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -57,7 +58,7 @@
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>3: Function of RF off command</label>
-        <description>Defines how to interpret RF Off command. Can be used in conjunction with Auto Off function: Ignore - to switch on the light by motion detectors and switch it off after some amount of time: in case of multiple motion detectors each would try to switch the </description>
+        <description>Defines how to interpret RF Off command. Can be used in conjunction with Auto Off function: Ignore - to switch on the light by motion detectors and switch it off after some amount of time: in case of multiple motion detectors each would try to switch the</description>
         <default>0</default>
         <options>
           <option value="0">Switch OFF</option>
@@ -93,7 +94,8 @@
                  min="1" max="100">
         <label>10: Typical click timeout</label>
         <description><![CDATA[
-Typical time used to differentiate click, hold, double and triple clicks<br />Defined in 10ms ticks.    !]]></description>
+Typical time used to differentiate click, hold, double and triple clicks<br />Defined in 10ms ticks.
+        !]]></description>
         <default>50</default>
       </parameter>
 
@@ -137,7 +139,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
       <parameter name="config_14_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>14: Action on button double press or hold</label>
-        <description>Defines which command should be sent on button double press or press-hold. Basic commands are sent to Association group. Switch All commands are sent broadcast. If not disabled, the device will wait for a click timeout to see if the second click would be </description>
+        <description>Defines which command should be sent on button double press or press-hold. Basic commands are sent to Association group. Switch All commands are sent broadcast. If not disabled, the device will wait for a click timeout to see if the second click would be</description>
         <default>0</default>
         <options>
           <option value="0">Disabled (Default)</option>
@@ -177,17 +179,17 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Group 2</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Group 3</label>
         <multipleLimit>8</multipleLimit>
       </parameter>

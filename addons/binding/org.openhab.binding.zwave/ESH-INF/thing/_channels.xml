@@ -99,7 +99,22 @@
     <channel-type id="alarm_heat">
         <item-type>Switch</item-type>
         <label>Heat alarm</label>
-        <description>Indicates if a heat is triggered
+        <description>Indicates if a heat alarm is triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="OFF">Ok</option>
+                <option value="ON">Alarm</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Motion Alarm Channel -->
+    <channel-type id="alarm_motion">
+        <item-type>Switch</item-type>
+        <label>Motion alarm</label>
+        <description>Indicates if a motion alarm is triggered
         </description>
         <category>Door</category>
         <state readOnly="true">
@@ -218,7 +233,7 @@
         <state pattern="%.1f" readOnly="true">
         </state>
     </channel-type>
-    
+
     <!-- Scene - Number -->
     <channel-type id="scene_number">
         <item-type>Number</item-type>
@@ -348,6 +363,12 @@
         <label>Switch</label>
         <description>Switch the light on and off</description>
         <category>Light</category>
+        <state>
+            <options>
+                <option value="On">On</option>
+                <option value="Off">Off</option>
+            </options>
+        </state>
     </channel-type>
 
     <!-- Brightness (Dimmer) Channel -->

@@ -8,9 +8,7 @@
   <thing-type id="danfoss_mt02650_00_000" listed="false">
     <label>MT02650 Devolo Thermostat (09356)</label>
     <description><![CDATA[
-Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p>
-<br /><h2>Inclusion Information</h2><p>Short push middle button</p>
-<br /><h2>Wakeup Information</h2><p>Short push middle button</p>
+Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br /><h2>Inclusion Information</h2><p>Short push middle button</p> <br /><h2>Wakeup Information</h2><p>Short push middle button</p>
     !]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -21,7 +19,7 @@ Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p>
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
@@ -43,6 +41,7 @@ Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p>
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- ASSOCIATION DEFINITIONS -->
