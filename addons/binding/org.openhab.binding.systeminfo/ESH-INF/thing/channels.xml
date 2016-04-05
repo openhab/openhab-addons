@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="systeminfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- OS parameters -->
+	<channel-group-type id="osParameters">
+		<label>OS parameters</label>
+		<description>OS parameters</description>
+		<channels>
+			<channel id="family" typeId="family" />
+			<channel id="manufacturer" typeId="manufacturer" />
+			<channel id="version" typeId="version" />
+		</channels>
+		
+	</channel-group-type>
+
+	<channel-type id="family">
+		<item-type>String</item-type>
+		<label>Family</label>
+		<description>OS family</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="Windows">Windows</option>
+				<option value="Linux">Linux</option>
+				<option value="OS X">OS X</option>
+			</options>
+		</state>
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<channel-type id="manufacturer">
+		<item-type>String</item-type>
+		<label>Manufacturer</label>
+		<description>Manufacturer of the OS</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<channel-type id="version">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>Version of the OS</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<!-- Memory parameters -->
+	<channel-group-type id="memoryParameters">
+		<label>Memory</label>
+		<description>Size of physical memory in MB</description>
+		<channels>
+			<channel id="total" typeId="memory" />
+			<channel id="available" typeId="memory" />
+			<channel id="used" typeId="memory" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="memory">
+		<item-type>Number</item-type>
+		<label>Memory size in MB</label>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+
+	<!-- Storage parameters -->
+	<channel-group-type id="storageParameters">
+		<label>Memory</label>
+		<description>Size of physical memory in MB</description>
+		<channels>
+			<channel id="total" typeId="memory" />
+			<channel id="available" typeId="memory" />
+			<channel id="used" typeId="memory" />
+			<channel id="name" typeId="name" />
+			<channel id="description" typeId="description" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Network parameters -->
+	<channel-group-type id="networkParameters">
+		<label>Network</label>
+		<description>Network parameters</description>
+		<channels>
+			<channel id="ip" typeId="ip" />
+			<channel id="name" typeId="name" />
+			<channel id="adapterName" typeId="name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="ip">
+		<item-type>String</item-type>
+		<label>IP address</label>
+		<description>IP address of the network adapter</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>The display name.</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<!-- Display parameters -->
+	<channel-group-type id="displayParameters">
+		<label>Display</label>
+		<description>Display parameters</description>
+		<channels>
+			<channel id="edid" typeId="description" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Detailed description about the device</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<!-- Sensor parameters -->
+	<channel-group-type id="sensorsParameters">
+		<label>Sensor</label>
+		<description>Sensor parameters</description>
+		<channels>
+			<channel id="cpuTemp" typeId="temp" />
+			<channel id="cpuVoltage" typeId="voltage" />
+			<channel id="fanSpeed" typeId="speed" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="temp">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Temperature Celsius degrees</description>
+		<state readOnly="true" pattern="%.1f °" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number</item-type>
+		<label>Voltage</label>
+		<description>Voltage in V</description>
+		<state readOnly="true" pattern="%.1f V" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<channel-type id="speed">
+		<item-type>Number</item-type>
+		<label>Speed</label>
+		<state readOnly="true" pattern="%d rpm" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<!-- Battery parameters -->
+	<channel-group-type id="batteryParameters">
+		<label>Battery</label>
+		<description>Battery parameters</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="remainingCapacity" typeId="percentage" />
+			<channel id="remainingTime" typeId="time" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="time">
+		<item-type>Number</item-type>
+		<label>Time</label>
+		<description>Time in hours and minutes</description>
+		<state readOnly="true" pattern="%d Minutes" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<!-- CPU parameters -->
+	<channel-group-type id="cpuParameters">
+		<label>CPU</label>
+		<description>CPU parameters</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="description" typeId="description" />
+			<channel id="logicalProcCount" typeId="number" />
+			<channel id="physicalProcCount" typeId="number" />
+			<channel id="load" typeId="percentage" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<state readOnly="true" pattern="%d" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+
+	<channel-type id="percentage">
+		<item-type>Percentage</item-type>
+		<label>Percentage</label>
+		<description>Percentage value</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description uri="thing-type:systeminfo:channelConfig"/>
+	</channel-type>
+</thing:thing-descriptions>

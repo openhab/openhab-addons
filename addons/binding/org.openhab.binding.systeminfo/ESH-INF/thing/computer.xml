@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="systeminfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="computer">
+		<label>systeminfo Binding Thing</label>
+		<description>Sample thing for systeminfo Binding</description>
+
+		<channel-groups>
+			<channel-group id="os" typeId="osParameters" />
+			<channel-group id="network" typeId="networkParameters" />
+			<channel-group id="memory" typeId="memoryParameters" />
+			<channel-group id="storage" typeId="storageParameters" />
+			<channel-group id="display" typeId="displayParameters" />
+			<channel-group id="sensors" typeId="sensorsParameters" />
+			<channel-group id="battery" typeId="batteryParameters" />
+			<channel-group id="cpu" typeId="cpuParameters" />
+		</channel-groups>
+		<channel-type id="test">
+			<item-type>String</item-type>
+			<label>Manufacturer</label>
+			<description>Manufacturer of the OS</description>
+			<state readOnly="true" pattern="%s" />
+			<config-description uri="thing-type:systeminfo:channelConfig" />
+		</channel-type>
+		<config-description-ref uri="thing-type:systeminfo:computerConfig" />
+	</thing-type>
+
+
+</thing:thing-descriptions>
