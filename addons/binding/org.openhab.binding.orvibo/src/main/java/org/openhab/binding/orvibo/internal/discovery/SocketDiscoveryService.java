@@ -53,20 +53,27 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     protected void startScan() {
-        logger.debug("starting manual scan");
-        s20Client.addSocketDiscoveryListener(this);
-        s20Client.globalDiscovery();
-        for (final Socket socket : s20Client.getAllSockets().values()) {
-            doThingDiscovered(socket);
+        if (s20Client != null) {
+            logger.debug("starting manual scan");
+            s20Client.addSocketDiscoveryListener(this);
+            s20Client.globalDiscovery();
+            for (final Socket socket : s20Client.getAllSockets().values()) {
+                doThingDiscovered(socket);
+            }
+        } else {
+            logger.debug("Client not initialised");
         }
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("starting automatic background scan");
-        s20Client.addSocketDiscoveryListener(this);
-        s20Client.globalDiscovery();
-
+        if (s20Client != null) {
+            logger.debug("starting automatic background scan");
+            s20Client.addSocketDiscoveryListener(this);
+            s20Client.globalDiscovery();
+        } else {
+            logger.debug("Client not initialised");
+        }
     }
 
     @Override

@@ -91,6 +91,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
             socket.addSocketStateListener(this);
             socket.findOnNetwork();
             subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.ONLINE);
         } catch (SocketException ex) {
             logger.error("Error occured while initializing S20 handler: " + ex.getMessage(), ex);
         }
