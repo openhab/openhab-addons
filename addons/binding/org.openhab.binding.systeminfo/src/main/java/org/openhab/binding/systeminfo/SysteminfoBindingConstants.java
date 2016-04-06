@@ -7,11 +7,7 @@
  */
 package org.openhab.binding.systeminfo;
 
-import java.util.Set;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link systeminfoBinding} class defines common constants, which are
@@ -27,48 +23,42 @@ public class SysteminfoBindingConstants {
     public final static ThingTypeUID THING_TYPE_COMPUTER = new ThingTypeUID(BINDING_ID, "computer");
 
     // List of all Channel Groups Type IDs
-    // TODO add descriptions
-    public final static String CHANNEL_GROUP_OS = "os";
-    public final static String CHANNEL_GROUP_NETWORK = "network";
-    public final static String CHANNEL_GROUP_DISPLAY = "display";
-    public final static String CHANNEL_GROUP_SENSORS = "sensors";
-    public final static String CHANNEL_GROUP_CPU = "cpu";
-    public final static String CHANNEL_GROUP_STORAGE = "storage";
-    public final static String CHANNEL_GROUP_MEMORY = "memory";
-    public final static String CHANNEL_GROUP_BATTERY = "battery";
 
     // List of all Channel IDs
-    public final static String CHANNEL_FAMILY = "family";
-    public final static String CHANNEL_MANUFACTURER = "manufacturer";
-    public final static String CHANNEL_VERSION = "version";
+    public final static String CHANNEL_OS_FAMILY = "os_family";
+    public final static String CHANNEL_OS_MANUFACTURER = "os_manufacturer";
+    public final static String CHANNEL_OS_VERSION = "os_version";
 
-    public final static String CHANNEL_AVAILABLE = "available";
-    public final static String CHANNEL_USED = "used";
-    public final static String CHANNEL_TOTAL = "total";
+    public final static String CHANNEL_MEMORY_AVAILABLE = "memory_available";
+    public final static String CHANNEL_MEMORY_USED = "memory_used";
+    public final static String CHANNEL_MEMORY_TOTAL = "memory_total";
 
-    public final static String CHANNEL_CPU_TEMPERATURE = "cpuTemp";
-    public final static String CHANNEL_CPU_VOLTAGE = "cpuVoltage";
-    public final static String CHANNEL_FAN_SPEED = "fanSpeed";
+    public final static String CHANNEL_STORAGE_NAME = "storage_name";
+    public final static String CHANNEL_STORAGE_DESCRIPTION = "storage_description";
+    public final static String CHANNEL_STORAGE_AVAILABLE = "storage_available";
+    public final static String CHANNEL_STORAGE_USED = "storage_used";
+    public final static String CHANNEL_STORAGE_TOTAL = "storage_total";
 
-    public final static String CHANNEL_NAME = "name";
-    public final static String CHANNEL_REMAINING_CAPACITY = "remainingCapacity";
-    public final static String CHANNEL_REMAINING_TIME = "remainingTime";
+    public final static String CHANNEL_SENSORS_CPU_TEMPERATURE = "sensors_cpu_temperature";
+    public final static String CHANNEL_SENOSRS_CPU_VOLTAGE = "sensors_cpu_voltage";
+    public final static String CHANNEL_SENSORS_FAN_SPEED = "sensors_fan_speed";
 
-    public final static String CHANNEL_DESCRIPTION = "description";
-    public final static String CHANNEL_CPU_LOGICAL_CORES = "logicalProcCount";
-    public final static String CHANNEL_CPU_PHYSICAL_CORES = "physicalProcCount";
-    public final static String CHANNEL_CPU_LOAD = "load";
+    public final static String CHANNEL_BATTERY_NAME = "battery_name";
+    public final static String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery_remaining_capacity";
+    public final static String CHANNEL_BATTERY_REMAINING_TIME = "battery_remaining_time";
 
-    public final static String CHANNEL_EDID = "edid";
+    public final static String CHANNEL_CPU_DESCRIPTION = "cpu_description";
+    public final static String CHANNEL_CPU_LOGICAL_CORES = "cpu_logical_cores";
+    public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu_phisycal_cores";
+    public final static String CHANNEL_CPU_LOAD = "cpu_load";
+    public final static String CHANNEL_CPU_NAME = "cpu_name";
 
-    public final static String CHANNEL_IP = "ip";
-    public final static String CHANNEL_ADAPTER_NAME = "adapterName";
-    // List of supported channels for every channel group type
-    public final static Set<String> SUPPORTED_CHANNELS_FOR_GROUP_OS = ImmutableSet.of(CHANNEL_FAMILY,
-            CHANNEL_MANUFACTURER, CHANNEL_VERSION);
-    public final static Set<String> SUPPORTED_CHANNELS_FOR_GROUP_MEMORY = ImmutableSet.of(CHANNEL_AVAILABLE,
-            CHANNEL_USED, CHANNEL_TOTAL);
+    public final static String CHANNEL_DISPLAY_INFORMATION = "display_information";
 
-    // List of all Channel Type IDs
+    public final static String CHANNEL_NETWORK_IP = "network_ip";
+    public final static String CHANNEL_NETWORK_ADAPTER_NAME = "network_adapter_name";
+    public final static String CHANNEL_NETWORK_NAME = "network_name";
 
+    public final static String HIGH_PRIORITY_REFRESH_TIME = "interval_high";
+    public final static String MEDIUM_PRIORITY_REFRESH_TIME = "interval_medium";
 }

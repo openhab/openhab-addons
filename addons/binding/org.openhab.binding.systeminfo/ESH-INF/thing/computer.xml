@@ -8,23 +8,36 @@
 		<label>systeminfo Binding Thing</label>
 		<description>Sample thing for systeminfo Binding</description>
 
-		<channel-groups>
-			<channel-group id="os" typeId="osParameters" />
-			<channel-group id="network" typeId="networkParameters" />
-			<channel-group id="memory" typeId="memoryParameters" />
-			<channel-group id="storage" typeId="storageParameters" />
-			<channel-group id="display" typeId="displayParameters" />
-			<channel-group id="sensors" typeId="sensorsParameters" />
-			<channel-group id="battery" typeId="batteryParameters" />
-			<channel-group id="cpu" typeId="cpuParameters" />
-		</channel-groups>
-		<channel-type id="test">
-			<item-type>String</item-type>
-			<label>Manufacturer</label>
-			<description>Manufacturer of the OS</description>
-			<state readOnly="true" pattern="%s" />
-			<config-description uri="thing-type:systeminfo:channelConfig" />
-		</channel-type>
+		<channels>
+			<channel id="os_manufacturer" typeId="os_manufacturer"></channel>
+			<channel id="os_version" typeId="os_version"></channel>
+			<channel id="os_family" typeId="os_family"></channel>
+			<channel id="memory_available" typeId="memory_available"></channel>
+			<channel id="memory_used" typeId="memory_used"></channel>
+			<channel id="memory_total" typeId="memory_total"></channel>
+			<channel id="storage_name" typeId="storage_name"></channel>
+			<channel id="storage_description" typeId="storage_description"></channel>
+			<channel id="storage_available" typeId="storage_available"></channel>
+			<channel id="storage_used" typeId="storage_used"></channel>
+			<channel id="storage_total" typeId="storage_total"></channel>
+			<channel id="sensors_cpu_temperature" typeId="cpu_temperature"></channel>
+			<channel id="sensors_cpu_voltage" typeId="cpu_voltage"></channel>
+			<channel id="sensors_fan_speed" typeId="fan_speed"></channel>
+			<channel id="battery_name" typeId="battery_name"></channel>
+			<channel id="battery_remaining_capacity" typeId="battery_capacity"></channel>
+			<channel id="battery_remaining_time" typeId="battery_time"></channel>
+			<channel id="cpu_name" typeId="cpu_name"></channel>
+			<channel id="cpu_description" typeId="cpu_description"></channel>
+			<channel id="cpu_logical_cores" typeId="cpu_logical_cores"></channel>
+			<channel id="cpu_phisycal_cores" typeId="cpu_phisycal_cores"></channel>
+			<channel id="cpu_load" typeId="cpu_load"></channel>
+			<channel id="display_information" typeId="display_information"></channel>
+			<channel id="display_information1" typeId="display_information"></channel>
+			<channel id="network_ip" typeId="network_ip"></channel>
+			<channel id="network_adapter_name" typeId="network_adapter_name"></channel>
+			<channel id="network_name" typeId="network_name"></channel>
+		</channels>
+
 		<config-description-ref uri="thing-type:systeminfo:computerConfig" />
 	</thing-type>
 

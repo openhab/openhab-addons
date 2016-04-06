@@ -4,7 +4,9 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:systeminfo:channelConfig">
+    <!-- Description why is this needed-->
+
+	<config-description uri="systeminfo:channels:lowpriority">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>
@@ -17,4 +19,30 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="systeminfo:channels:mediumpriority">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Medium</default>
+		</parameter>
+	</config-description>
+	
+	<config-description uri="systeminfo:channels:highpriority">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>High</default>
+		</parameter>
+	</config-description>
+	
 </config-description:config-descriptions>
