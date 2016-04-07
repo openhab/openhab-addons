@@ -1,49 +1,137 @@
+# Systeminfo Binding
+
+System information Binding provides operating system and hardware information including:
+
+ - Operating system name, version and manufacturer
+ - CPU average load, name, description, number of physical and logical cores
+ - Free, total and available memory
+ - Free, total, available storage space
+ - Battery information - estimated remaining time, capacity, name
+ - Sensors information - CPU voltage and temperature, fan speeds 
+ - Display information
+ - Network IP,name and adapter name
+ 
+ The binding uses [oshi](https://github.com/dblock/oshi) API to access this information regardless of the underlying platform and does not need any native parts.
+ 
 ## Supported Things
 
-* **thing** `computer`
-    * **group** `hardware`
-        * **group** `display` 
-            * **channel** `edid`
-        * **group** `filestore` 
-            * **channel** `description,name,totalSpace,usableSpace,`
-        * **group** `memory`
-            * **channel** `available, total`
-        * **group** `battery`
-            * **channel** `name, remainingCapacity,remainingTime`
-        * **group** `cpu`
-            * **channel** `family, model, name , identifier, vendor, is64bit, logProcCount,physProcCount,load,avg1min,avg5min,avg15min`
-        * **group** `sensors`
-            * **channel** `cpuTemp, cpuVoltage, fanSpeed`
-    * **group** `os`
-        * **channel** `family, manufacturer, version ` (String)
-    * **group** `network`
-        * **channel** `IP, adapter name, adapter display name` (String)
+The binding supports only one thing type - **computer**. This thing represents a system with one storage volume, one display device and one network adapter.
 
-    - formating 
-    - REFRESH Tasks
-    - JSON
+## Discovery
 
-processes ?
-swap ?
-Disc read/writes ?
+Discovery is not necessary.
 
+## Binding configuration
 
-------------HardwareAbstractionLayer-------  
-DISPLAY - *
-FILE STORES - *
-MEMORY - 1
-POWER SPURCE/battery/ - 1
-CPU - * /1
-CPU temp - *
------------OperatingSystem-----------      
-Family, manufacturer, version - 1
+No binding configuration required.
 
+## Thing configuration
+The configuration of the Thing gives the user the possibility to update channels at different intervals.
 
--------------JDK-----------
-IP - 1
-display name - 1 
-name - 1
+The thing has two configuration parameters:
+   * **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
+   * **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
-thing computer
-channel group hardware
-    channel
+That means that by default configuration, channels with priority set to 'High' are updated every second, channels with priority set to 'Medium' - every minute, channels with priority set to 'Low' only at initializing.
+
+## Channels
+The binding introduces the following channel types:
+
+| Chnanel Type | Channel Description | Supported item type | Default priority | Device index |
+| ------------- | ------------- |------------|----------| -------- |
+| os_manufacturer  | The manufacturer of the operating system  | String | Low | No |
+| os_version  | The version of the operating system  | String | Low | No |
+| os_family  | The family of the operating system | String | Low | No |
+| cpu_load  | CPU load in percents  | Number | High | No |
+| cpu_name  | CPU name  | String | Low | No |
+| cpu_description  | Processor model, family, SN, identifier, vendor, architecture  | String | Low | No |
+| cpu_logical_cores  | Number of CPU logical cores  | Number | Low | No |
+| cpu_phisycal_cores  | Number of CPU physical cores<  | Number | Low | No |
+| memory_available  | Available memory size in MB  | Number | High | No |
+| memory_used  | Used memory size in MB  | Number | High | No |
+| memory_total  | Total memory size in MB  | Number | Low | No |
+| memory_available_percent  | Available memory size in %  | Number | High | No |
+| storage_name  | Storage name  | String | Low | Yes |
+| storage_description  | Storage description  | String | Low | Yes |
+| storage_used  | Used storage size in MB  | Number | Medium | Yes |
+| storage_available  | Available storage size in MB  | Number | Medium | Yes |
+| storage_available_percent  | Available storage size in percents  | Number | Medium | Yes |
+| storage_total  | Total storage size in MB  | Number | Low | Yes |
+| cpu_temperature  | Temperature of the CPI in Celsius degrees  | Number | High | No |
+| cpu_voltage  | Voltage of the CPU in V  | Number | Medium | No |
+| fan_speed  | Speed of the cpu fan in rpm  | String | Low | Yes |
+| battery_name  | Battery name  | String | Low | Yes |
+| battery_time  | Remaining time of the battery in minutes | Number | Medium | Yes |
+| battery_capacity  | Percentage of capacity left  | Number | Medium | Yes |
+| display_information  | Product, manufacturer, SN, width and height of the display  | String | Low | Yes |
+| network_ip  | Host IP address of the network  | String | Low | Yes |
+| network_name  | Network name  | String | Low | Yes |
+| network_adapter_name  | Network adapter name  | String | Low | Yes |
+
+Some of the channels may have device index attached to the Channel Type.
+ - channel_ID  ::= Chnanel_Type & (deviceIndex) 
+ - deviceIndex ::= number
+ - (e.g. *storage_available1*)
+ 
+ The binding uses this index to get information about a specific device from a list of devices.
+ (e.g on a single computer could be installed several local disks with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 ant etc).
+
+##Channel configuration
+
+Each of the channels has a default configuration parameter - priority. It has the following options:
+ - **High**
+ - **Medium**
+ - **Low**
+ 
+## Full example
+
+Things:
+```
+systeminfo:computer:work [interval_high=3, interval_medium=60] 
+```
+Items:
+```
+/* Operating system */
+String OS_Family                    { channel="systeminfo:computer:work:os_family" }
+String OS_Manufacturer              { channel="systeminfo:computer:work:os_manufacturer" }
+String OS_Version                   { channel="systeminfo:computer:work:os_version" }
+
+/* Network information*/
+String Network_AdapterName          { channel="systeminfo:computer:work:network_adapter_name" }
+String Network_Name                 { channel="systeminfo:computer:work:network_name" }
+String Network_IP                   { channel="systeminfo:computer:work:network_ip" }
+
+/* CPU information*/
+String CPU_Name                     { channel="systeminfo:computer:work:cpu_name" }
+String CPU_Description              { channel="systeminfo:computer:work:cpu_description" }
+Number CPU_Load                     { channel="systeminfo:computer:work:cpu_load"} 
+Number CPU_LogicalProcCount         { channel="systeminfo:computer:work:cpu_logical_cores" }
+Number CPU_PhysicalProcCount        { channel="systeminfo:computer:work:cpu_phisycal_cores" }
+
+/* Storage information*/
+String Storage_Name                  { channel="systeminfo:computer:work:storage_name" }
+String Storage_Description           { channel="systeminfo:computer:work:storage_description" }
+Number Storage_Available             { channel="systeminfo:computer:work:storage_available" }
+Number Storage_Used                  { channel="systeminfo:computer:work:storage_used" }
+Number Storage_Total                 { channel="systeminfo:computer:work:storage_total" }
+Number Storage_Available_Percent     { channel="systeminfo:computer:work:storage_available_percent" }
+
+/* Memory information*/
+Number Memory_Available              { channel="systeminfo:computer:work:memory_available" }
+Number Memory_Used                   { channel="systeminfo:computer:work:memory_used" }
+Number Memory_Total                  { channel="systeminfo:computer:work:memory_total" }
+Number Memory_Available_Percent      { channel="systeminfo:computer:work:memory_available_percent" }
+
+/* Battery information*/
+String Battery_Name                  { channel="systeminfo:computer:work:battery_name" }
+Number Battery_RemainingCapacity     { channel="systeminfo:computer:work:battery_remaining_capacity" }
+Number Battery_RemainingTime         { channel="systeminfo:computer:work:battery_remaining_time" }
+
+/* Display information*/
+String Display_Description           { channel="systeminfo:computer:work:display_information" }
+
+/* Sensors information*/
+Number Sensor_CPUTemp                { channel="systeminfo:computer:work:sensors_cpu_temperature" }
+Number Sensor_CPUVoltage             { channel="systeminfo:computer:work:sensors_cpu_voltage" }
+Number Sensor_FanSpeed               { channel="systeminfo:computer:work:sensors_fan_speed" }
+```

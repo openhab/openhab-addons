@@ -10,6 +10,7 @@ package org.openhab.binding.systeminfo.handler;
 import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.net.SocketException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,12 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SysteminfoHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link SysteminfoHandler} is responsible for providing real time information about the system
+ * (CPU,Memory,Storage,Display and others).
  *
  * @author Svilen Valkanov - Initial contribution
  */
-// TODO javadoc to all public methods
 
 public class SysteminfoHandler extends BaseThingHandler {
     /**
@@ -50,35 +50,34 @@ public class SysteminfoHandler extends BaseThingHandler {
     private BigDecimal refreshIntervalMediumPriority;
 
     /**
-     * {@link #highPriorityChannels} are channels that usually need frequent update of the state like CPU load, or
-     * information
-     * about the free and used memory.
+     * Channels with high priority usually need frequent update of the state like CPU load, or
+     * information about the free and used memory.
      * They are updated periodically at {@link #refreshIntervalHighPriority}.
      */
     private Set<ChannelUID> highPriorityChannels = new HashSet<ChannelUID>();
 
     /**
-     * Medium priority channels are channels that usually need update of the state not so oft like battery capacity,
+     * Channels with medium priority are channels that usually need update of the state not so oft like battery
+     * capacity,
      * storage used and etc.
      * They are updated periodically at {@link #refreshIntervalMediumPriority}.
      */
     private Set<ChannelUID> mediumPriorityChannels = new HashSet<ChannelUID>();
 
     /**
-     * Low priority channels usually need update only once. They represent static information or information that is
-     * updated rare- e.g. CPU name, storage name and etc.
+     * Channels with medium priority usually need update only once. They represent static information or information
+     * that is updated rare- e.g. CPU name, storage name and etc.
      * They are updated only at {@link #initialize()}.
      */
     private Set<ChannelUID> lowPriorityChannels = new HashSet<ChannelUID>();
 
     /**
-     * Wait time for the creation of Item channel links in seconds. This delay is needed - if the links are not created
-     * before the channel
-     * state is updated, item state will not be updated.
+     * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
+     * links have to be created before the thing state is updated, otherwise item state will not be updated.
      */
     private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
-    private SysteminfoInterface system;
+    private SysteminfoInterface systeminfo;
 
     private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
@@ -88,35 +87,37 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing !");
+        logger.debug("Start initializing!");
 
-        // TODO Exceptions might occur here ! The binding might go to OFFLINE
-        logger.debug("Start loading system libraries !");
-        this.system = new SysteminfoImpl();
+        try {
+            this.systeminfo = new SysteminfoImpl();
+        } catch (SocketException e) {
+            logger.error("Network information is not availble ! I/O error occured {e}", e);
+        }
 
         if (isConfigurationValid()) {
-            sortChannelsByPriority();
-            refresh();
-            // TODO message
+            groupChannelsByPriority();
+            scheduleUpdates();
+            logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is invalid !");
         }
 
     }
 
     private boolean isConfigurationValid() {
+        logger.debug("Start reading Thing configuration.");
         Configuration config = getConfig();
         try {
             refreshIntervalMediumPriority = (BigDecimal) config.get(MEDIUM_PRIORITY_REFRESH_TIME);
-            logger.debug("Refresh time for medium priority channels set to {}", refreshIntervalMediumPriority);
-
             refreshIntervalHighPriority = (BigDecimal) config.get(HIGH_PRIORITY_REFRESH_TIME);
-            logger.debug("Refresh time for high priority channels set to {}", refreshIntervalHighPriority);
 
             if (refreshIntervalHighPriority.intValue() <= 0 || refreshIntervalMediumPriority.intValue() <= 0) {
                 throw new IllegalArgumentException("Refresh time must be positive value !");
             }
+            logger.debug("Refresh time for medium priority channels set to {} s", refreshIntervalMediumPriority);
+            logger.debug("Refresh time for high priority channels set to {} s", refreshIntervalHighPriority);
             return true;
         } catch (Exception e) {
             logger.error("Refresh time value is invalid!. Please change the thing configuration!", e);
@@ -124,13 +125,9 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Channels are sorted according to their priority set in the configuration.
-     */
-    private void sortChannelsByPriority() {
+    private void groupChannelsByPriority() {
         for (Channel channel : getThing().getChannels()) {
             String priority = (String) channel.getConfiguration().get("priority");
-
             switch (priority) {
                 case "High":
                     highPriorityChannels.add(channel.getUID());
@@ -145,12 +142,11 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
-    private void refresh() {
+    private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
         scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                // TODO rename, javadoc
                 publishData(highPriorityChannels);
             }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
@@ -163,7 +159,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
-        logger.debug("Schedule low priority tasks.");
+        logger.debug("Schedule single update for low priority tasks.");
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
@@ -176,154 +172,159 @@ public class SysteminfoHandler extends BaseThingHandler {
     private void publishData(Set<ChannelUID> channels) {
         Iterator<ChannelUID> iter = channels.iterator();
         while (iter.hasNext()) {
-            ChannelUID channeUlID = iter.next();
-            updateChannelState(system, channeUlID);
+            ChannelUID channeUID = iter.next();
+            if (isLinked(channeUID.getId())) {
+                publishDataForChannel(channeUID);
+            }
         }
     }
 
-    /**
-     * What is this method doing and why it is needed ?
-     * This method is responsible for choosing the correct method from {@link SysteminfoInterface}}. In order to do that
-     * the method has to check if
-     *
-     * @param system
-     * @param channelUID
-     */
-    private void updateChannelState(SysteminfoInterface system, ChannelUID channelUID) {
-        State state = null;
-        int deviceIndex = 0;
-        // TODO example + dynamic channels do not exist +link to issue
+    private void publishDataForChannel(ChannelUID channelUID) {
+        State state = getInfoForChannel(channelUID);
         String channelID = channelUID.getId();
-        // The convention used here is - if the last character is a digit, this digit represents the index of the device
-        // (in case of multiple devices possible)
-        char lastChar = channelID.charAt(channelID.length() - 1);
-        // TODO bug when number 10 is reached
-        if (Character.isDigit(lastChar)) {
-            deviceIndex = Character.getNumericValue(lastChar);
-            channelID = channelID.substring(0, channelID.length() - 1);
+        if (state != null) {
+            updateState(channelID, state);
+        } else {
+            logger.warn("Channel with ID {} can not be updated!. No information available for the selected device.",
+                    channelID);
+        }
+    }
+
+    // TODO example + dynamic channels do not exist +link to issue
+    /**
+     * This method gets the information for specific channel through the {@link SysteminfoInterface}. It uses the
+     * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
+     * multiple devices, for reference see {@link #getDeviceIndex(String)}})
+     *
+     * @param channelUID - the UID of the channel
+     * @return State object or null, if there is no information for device with this index
+     */
+    private State getInfoForChannel(ChannelUID channelUID) {
+        State state = null;
+        String channelID = channelUID.getId();
+        int deviceIndex = getDeviceIndex(channelID);
+        if (deviceIndex > 0) {
+            // All digits are deleted from the ID
+            channelID = channelID.replaceAll("\\d+", "");
         }
 
         switch (channelID) {
             case CHANNEL_OS_FAMILY:
-                state = system.getOsFamily();
+                state = systeminfo.getOsFamily();
                 break;
             case CHANNEL_OS_MANUFACTURER:
-                state = system.getOsManufacturer();
+                state = systeminfo.getOsManufacturer();
                 break;
             case CHANNEL_OS_VERSION:
-                state = system.getOsVersion();
+                state = systeminfo.getOsVersion();
                 break;
             case CHANNEL_DISPLAY_INFORMATION:
-                state = system.getDisplayInformation(deviceIndex);
+                state = systeminfo.getDisplayInformation(deviceIndex);
                 break;
             case CHANNEL_BATTERY_NAME:
-                state = system.getBatteryName(deviceIndex);
+                state = systeminfo.getBatteryName(deviceIndex);
                 break;
             case CHANNEL_BATTERY_REMAINING_CAPACITY:
-                state = system.getBatteryRemainingCapacity(deviceIndex);
+                state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
                 break;
             case CHANNEL_BATTERY_REMAINING_TIME:
-                state = system.getBatteryRemainingTime(deviceIndex);
+                state = systeminfo.getBatteryRemainingTime(deviceIndex);
                 break;
             case CHANNEL_SENSORS_CPU_TEMPERATURE:
-                state = system.getSensorsCpuTemperature();
+                state = systeminfo.getSensorsCpuTemperature();
                 break;
             case CHANNEL_SENOSRS_CPU_VOLTAGE:
-                state = system.getSensorsCpuVoltage();
+                state = systeminfo.getSensorsCpuVoltage();
                 break;
             case CHANNEL_SENSORS_FAN_SPEED:
-                state = system.getSensorsFanSpeed(deviceIndex);
+                state = systeminfo.getSensorsFanSpeed(deviceIndex);
                 break;
             case CHANNEL_CPU_LOAD:
-                state = system.getCpuLoad();
+                state = systeminfo.getCpuLoad();
                 break;
             case CHANNEL_CPU_PHYSICAL_CORES:
-                state = system.getCpuPhysicalCores();
+                state = systeminfo.getCpuPhysicalCores();
                 break;
             case CHANNEL_CPU_LOGICAL_CORES:
-                state = system.getCpuLogicalCores();
+                state = systeminfo.getCpuLogicalCores();
                 break;
             case CHANNEL_CPU_DESCRIPTION:
-                state = system.getCpuDescription();
+                state = systeminfo.getCpuDescription();
                 break;
             case CHANNEL_CPU_NAME:
-                state = system.getCpuName();
+                state = systeminfo.getCpuName();
                 break;
             case CHANNEL_MEMORY_AVAILABLE:
-                state = system.getMemoryAvailable();
+                state = systeminfo.getMemoryAvailable();
                 break;
             case CHANNEL_MEMORY_USED:
-                state = system.getMemoryUsed();
+                state = systeminfo.getMemoryUsed();
                 break;
             case CHANNEL_MEMORY_TOTAL:
-                state = system.getMemoryTotal();
+                state = systeminfo.getMemoryTotal();
+                break;
+            case CHANNEL_MEMORY_AVAILABLE_PERCENT:
+                state = systeminfo.getMemoryAvailablePercent();
                 break;
             case CHANNEL_STORAGE_NAME:
-                state = system.getStorageName(deviceIndex);
+                state = systeminfo.getStorageName(deviceIndex);
                 break;
             case CHANNEL_STORAGE_DESCRIPTION:
-                state = system.getStorageDescription(deviceIndex);
+                state = systeminfo.getStorageDescription(deviceIndex);
                 break;
             case CHANNEL_STORAGE_AVAILABLE:
-                state = system.getStorageAvailable(deviceIndex);
+                state = systeminfo.getStorageAvailable(deviceIndex);
                 break;
             case CHANNEL_STORAGE_USED:
-                state = system.getStorageUsed(deviceIndex);
+                state = systeminfo.getStorageUsed(deviceIndex);
                 break;
             case CHANNEL_STORAGE_TOTAL:
-                state = system.getStorageTotal(deviceIndex);
+                state = systeminfo.getStorageTotal(deviceIndex);
+                break;
+            case CHANNEL_STORAGE_AVAILABLE_PERCENT:
+                state = systeminfo.getStorageAvailablePercent(deviceIndex);
                 break;
             case CHANNEL_NETWORK_IP:
-                state = system.getNetworkIp(deviceIndex);
+                state = systeminfo.getNetworkIp(deviceIndex);
                 break;
             case CHANNEL_NETWORK_ADAPTER_NAME:
-                state = system.getNetworkAdapterName(deviceIndex);
+                state = systeminfo.getNetworkAdapterName(deviceIndex);
                 break;
             case CHANNEL_NETWORK_NAME:
-                state = system.getNetworkName(deviceIndex);
+                state = systeminfo.getNetworkName(deviceIndex);
                 break;
         }
-        if (state != null) {
-            updateState(channelID, state);
-        } else {
-            logger.debug("Channel update failed ID {} state {}", channelID, state);
+        return state;
+    }
+
+    /**
+     * The device index is an optional part of the channelID - the last characters. It is used to identify unique
+     * device, when more than one devices are available (e.g. local disks with names C:\, D:\, E"\ - the first will have
+     * deviceIndex=0, the second deviceIndex=1 ant etc).
+     * When no device index is specified, default value of 0 (first device in the list) is returned.
+     *
+     * @param channelID - the ID of the channel
+     * @return index >= 0
+     */
+    private int getDeviceIndex(String channelID) {
+        int deviceIndex = 0;
+        char lastChar = channelID.charAt(channelID.length() - 1);
+        if (Character.isDigit(lastChar)) {
+            // All non-digits are deleted from the ID
+            String deviceIndexPart = channelID.replaceAll("\\D+", "");
+            deviceIndex = Integer.parseInt(deviceIndexPart);
         }
+        return deviceIndex;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO what happens with concurrency ?
         if (command instanceof RefreshType) {
-            logger.debug("Refreshing channel {} !", channelUID);
-            // FIXME Final variable is needed
-            final ChannelUID channUID = channelUID;
-            scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    updateChannelState(system, channUID);
-                }
-            }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
+            logger.debug("Refresh command received for channel {}!", channelUID);
+            publishDataForChannel(channelUID);
         } else {
             logger.debug("Unsuported command {}! Supported commands: REFRESH", command);
         }
     }
 
-    /**
-     * private void addNewChannel(String group, String channel, int channelNumber, String channelType) {
-     * try {
-     * String channelIDString = "%s#%s";
-     * String channelID = String.format(channelIDString, group, channel);
-     * ChannelTypeUID channelTypeUID = getThing().getChannel(channelID).getChannelTypeUID();
-     * ThingBuilder thingBuilder = editThing();
-     * ThingUID thingUID = getThing().getUID();
-     * ChannelUID channelUID = new ChannelUID(thingUID, channelID + channelNumber);
-     * Channel newChannel = ChannelBuilder.create(channelUID, channelType).withType(channelTypeUID).build();
-     * thingBuilder.withChannels(newChannel);
-     * updateThing(thingBuilder.build());
-     * } catch (Exception e) {
-     * logger.debug("Could not add channels to device ", e);
-     * }
-     *
-     * }
-     **/
 }

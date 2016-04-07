@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.bidning.systeminfo.model;
 
 import java.net.InetAddress;
@@ -5,6 +12,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -21,10 +29,10 @@ import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
 
 /**
- * This implementation is using the open source library Oshi to provide all information except the network information,
- * that is provided from JDK.
+ * This implementation of {@link SysteminfoInterface} is using the open source library Oshi to provide all information
+ * except the network information, which is provided from JDK.
  *
- * @author svilen.valkanov
+ * @author Svilen Valkanov
  *
  */
 public class SysteminfoImpl implements SysteminfoInterface {
@@ -35,9 +43,14 @@ public class SysteminfoImpl implements SysteminfoInterface {
     private GlobalMemory memory;
     private PowerSource[] powerSources;
     private CentralProcessor cpu;
+
     private Sensors sensors;
 
-    public SysteminfoImpl() {
+    /**
+     *
+     * @throws SocketException when it is not able to access the network information.
+     */
+    public SysteminfoImpl() throws SocketException {
         SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hal = systemInfo.getHardware();
         operatingSystem = systemInfo.getOperatingSystem();
@@ -47,13 +60,11 @@ public class SysteminfoImpl implements SysteminfoInterface {
         powerSources = hal.getPowerSources();
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
-
-        try {
-            networks = Collections.list(NetworkInterface.getNetworkInterfaces());
-        } catch (SocketException e) {
-            // TODO Action is needed !The binding needs to know that no networks are found!
-            e.printStackTrace();
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        if (networkInterfaces != null) {
+            networks = Collections.list(networkInterfaces);
         }
+
     }
 
     @Override
@@ -189,7 +200,7 @@ public class SysteminfoImpl implements SysteminfoInterface {
 
     @Override
     public StringType getNetworkIp(int index) {
-        if (networks.size() <= index) {
+        if (networks != null && networks.size() <= index) {
             return null;
         }
         NetworkInterface netInterface = networks.get(index);
@@ -199,7 +210,7 @@ public class SysteminfoImpl implements SysteminfoInterface {
 
     @Override
     public StringType getNetworkName(int index) {
-        if (networks.size() <= index) {
+        if (networks != null && networks.size() <= index) {
             return null;
         }
         NetworkInterface netInterface = networks.get(index);
@@ -209,7 +220,7 @@ public class SysteminfoImpl implements SysteminfoInterface {
 
     @Override
     public StringType getNetworkAdapterName(int index) {
-        if (networks.size() <= index) {
+        if (networks != null && networks.size() <= index) {
             return null;
         }
         NetworkInterface netInterface = networks.get(index);
@@ -264,11 +275,11 @@ public class SysteminfoImpl implements SysteminfoInterface {
             return null;
         }
         double remainingTime = powerSources[index].getTimeRemaining();
-        // TODO add comments
+        // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited
         if (remainingTime > 0) {
             remainingTime = getTimeInMinutes(remainingTime);
         } else if (remainingTime == -2 || remainingTime == -1) {
-            remainingTime = 9999;
+            remainingTime = 999;
         }
 
         return new DecimalType(remainingTime);
@@ -303,6 +314,27 @@ public class SysteminfoImpl implements SysteminfoInterface {
 
     private double getTimeInMinutes(double timeInSeconds) {
         return timeInSeconds / 100;
+    }
+
+    @Override
+    public DecimalType getMemoryAvailablePercent() {
+        long availableMemory = memory.getAvailable();
+        long totalMemory = memory.getTotal();
+        double freePercentDecimal = (double) availableMemory / (double) totalMemory;
+        double freePercent = getPercentsValue(freePercentDecimal);
+        return new DecimalType(freePercent);
+    }
+
+    @Override
+    public DecimalType getStorageAvailablePercent(int deviceIndex) {
+        if (fileStores.length <= deviceIndex) {
+            return null;
+        }
+        long freeStorage = fileStores[deviceIndex].getUsableSpace();
+        long totalStorage = fileStores[deviceIndex].getTotalSpace();
+        double freePercentDecimal = (double) freeStorage / (double) totalStorage;
+        double freePercent = getPercentsValue(freePercentDecimal);
+        return new DecimalType(freePercent);
     }
 
 }

@@ -3,7 +3,9 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-<!-- comment for priorities-->
+	<!-- This file contains channel specific information and describes how the different channel types should be rendered.
+	   Each channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
+
 	<channel-type id="os_manufacturer">
 		<item-type>String</item-type>
 		<label>OS manufacturer</label>
@@ -51,7 +53,15 @@
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
-
+    
+    <channel-type id="memory_available_percent">
+        <item-type>Number</item-type>
+        <label>Memory available</label>
+        <description>Available memory size in %</description>
+        <state readOnly="true" pattern="%.1f %%" />
+        <config-description uri="systeminfo:channels:highpriority" />
+    </channel-type>
+    
 	<channel-type id="storage_name">
 		<item-type>String</item-type>
 		<label>Storage name</label>
@@ -83,15 +93,23 @@
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
+
+	<channel-type id="storage_available">
+		<item-type>Number</item-type>
+		<label>Storage available</label>
+		<description>Available storage size in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
 	
-    <channel-type id="storage_available">
+	<channel-type id="storage_available_percent">
         <item-type>Number</item-type>
         <label>Storage available</label>
-        <description>Available storage size in MB</description>
-        <state readOnly="true" pattern="%d MB" />
+        <description>Available storage size in percents</description>
+        <state readOnly="true" pattern="%.1f %%" />
         <config-description uri="systeminfo:channels:mediumpriority" />
     </channel-type>
-    
+
 	<channel-type id="cpu_temperature">
 		<item-type>Number</item-type>
 		<label>CPU vemperature</label>
@@ -153,14 +171,14 @@
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
-	
-    <channel-type id="cpu_description">
-        <item-type>String</item-type>
-        <label>CPU description</label>
-        <description>Processor model, family, SN, identifier, vendor, architecture</description>
-        <state readOnly="true" pattern="%s " />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
+
+	<channel-type id="cpu_description">
+		<item-type>String</item-type>
+		<label>CPU description</label>
+		<description>Processor model, family, SN, identifier, vendor, architecture</description>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
 
 	<channel-type id="cpu_logical_cores">
 		<item-type>Number</item-type>
@@ -169,40 +187,40 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-    <channel-type id="cpu_phisycal_cores">
-        <item-type>Number</item-type>
-        <label>Number of CPU physical cores</label>
-        <state readOnly="true" pattern="%d" />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
-    
+	<channel-type id="cpu_phisycal_cores">
+		<item-type>Number</item-type>
+		<label>Number of CPU physical cores</label>
+		<state readOnly="true" pattern="%d" />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
 	<channel-type id="display_information">
-        <item-type>String</item-type>
-        <label>Display information</label>
-        <description>Product, manufacturer, SN, width and height of the display </description>
-        <state readOnly="true" pattern="%s " />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
-    
-    <channel-type id="network_ip">
-        <item-type>String</item-type>
-        <label>IP address </label>
-        <description>Host IP address of the network</description>
-        <state readOnly="true" pattern="%s " />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
-    
-    <channel-type id="network_name">
-        <item-type>String</item-type>
-        <label>Network name</label>
-        <state readOnly="true" pattern="%s " />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
-    
-    <channel-type id="network_adapter_name">
-        <item-type>String</item-type>
-        <label>Network adapter name</label>
-        <state readOnly="true" pattern="%s " />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
+		<item-type>String</item-type>
+		<label>Display information</label>
+		<description>Product, manufacturer, SN, width and height of the display </description>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="network_ip">
+		<item-type>String</item-type>
+		<label>IP address </label>
+		<description>Host IP address of the network</description>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="network_name">
+		<item-type>String</item-type>
+		<label>Network name</label>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="network_adapter_name">
+		<item-type>String</item-type>
+		<label>Network adapter name</label>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
 </thing:thing-descriptions>

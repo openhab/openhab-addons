@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.bidning.systeminfo.model;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -6,41 +13,48 @@ import org.eclipse.smarthome.core.library.types.StringType;
 /**
  * {@link SysteminfoInterface} defines the methods needed to provide this binding with the required system information.
  *
- * @author svilen.valkanov
+ * @author Svilen Valkanov
  *
  */
-// TODO javadoc
 public interface SysteminfoInterface {
-    // Os info
 
+    // Operating system info
+    /**
+     * Get the Family of the operating system /e.g. Windows,Unix,.../
+     */
     public StringType getOsFamily();
 
+    /**
+     * Get the manufacturer of the operating system
+     */
     public StringType getOsManufacturer();
 
+    /**
+     * Get the version of the operating system
+     *
+     * @return
+     */
     public StringType getOsVersion();
 
     // CPU info
+    /**
+     * Get the name of the CPU
+     */
     public StringType getCpuName();
 
     /**
      * Get description about the CPU e.g(model,family, vendor, serial number, identifier, architecture(32bit or
      * 64bit)";)
-     * 
-     * @return
      */
     public StringType getCpuDescription();
 
     /**
      * Get the number of logical CPUs/cores available for processing.
-     *
-     * @return
      */
     public DecimalType getCpuLogicalCores();
 
     /**
      * Get the number of physical CPUs/cores available for processing.
-     *
-     * @return
      */
     public DecimalType getCpuPhysicalCores();
 
@@ -52,50 +66,84 @@ public interface SysteminfoInterface {
     public DecimalType getCpuLoad();
 
     // Memory info
-    // TODO maybe methods for free amount as percentage should be added
     /**
-     * Returns the total size of RAM memory installed on the machine.
+     * Returns the total size of memory installed on the machine.
      *
      * @return memory size in MB
      */
     public DecimalType getMemoryTotal();
 
     /**
-     * Returns the available size of RAM memory installed on the machine.
+     * Returns the available size of memory installed on the machine.
      *
      * @return memory size in MB
      */
     public DecimalType getMemoryAvailable();
 
     /**
-     * Returns the used size of RAM memory installed on the machine.
+     * Returns the used size of memory installed on the machine.
      *
      * @return memory size in MB
      */
     public DecimalType getMemoryUsed();
 
+    /**
+     * Returns the percent of available memory on the machine
+     *
+     * @return percent of available memory
+     */
+    public DecimalType getMemoryAvailablePercent();
+
     // Storage info
     /**
-     * Returns the total space of the storage device.
+     * Returns the total space of the logical storage volume.
      *
-     * @param deviceIndex - the index of the physical device if more than one exist.
+     * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
      */
     public DecimalType getStorageTotal(int deviceIndex);
 
+    /**
+     * Returns the available storage space on the logical storage volume
+     *
+     * @param deviceIndex - the index of the logical volume
+     * @return storage size in MB
+     */
     public DecimalType getStorageAvailable(int deviceIndex);
 
+    /**
+     * Gets the used storage space on the logical storage volume
+     *
+     * @param deviceIndex - the index of the logical volume
+     * @return storage size in MB
+     */
     public DecimalType getStorageUsed(int deviceIndex);
 
+    /**
+     * Gets the percent of available storage on the logical volume
+     *
+     * @param deviceIndex - the index of the logical volume
+     * @return percent of available storage
+     */
+    public DecimalType getStorageAvailablePercent(int deviceIndex);
+
+    /**
+     * Gets the name of the logical storage volume
+     */
     public StringType getStorageName(int deviceIndex);
 
+    /**
+     * Gets additional information about the logical storage volume
+     *
+     * @param deviceIndex - the index of the logical volume
+     */
     public StringType getStorageDescription(int deviceIndex);
 
     // Network info
     /**
      * Get the Host IP address of the network.
      *
-     * @param networkIndex
+     * @param networkIndex - the index of the network
      * @return 32-bit IPv4 address
      */
     public StringType getNetworkIp(int networkIndex);
@@ -103,16 +151,14 @@ public interface SysteminfoInterface {
     /**
      * Get the name of this network.
      *
-     * @param networkIndex
-     * @return
+     * @param networkIndex - the index of the network
      */
     public StringType getNetworkName(int networkIndex);
 
     /**
      * Get human readable description of the network device.
      *
-     * @param networkIndex
-     * @return
+     * @param networkIndex- the index of the network
      */
     public StringType getNetworkAdapterName(int networkIndex);
 
@@ -120,8 +166,7 @@ public interface SysteminfoInterface {
     /**
      * Get information about the display device as product number, manufacturer, serial number, width and height in cm";
      *
-     * @param deviceIndex
-     * @return
+     * @param deviceIndex - the index of the display device
      */
     public StringType getDisplayInformation(int deviceIndex);
 
@@ -129,14 +174,14 @@ public interface SysteminfoInterface {
     /**
      * Get the information from the CPU temperature sensors.
      *
-     * @return CPU Temperature in degrees Celsius if available, 0 otherwise.
+     * @return Temperature in degrees Celsius if available, 0 otherwise.
      */
     public DecimalType getSensorsCpuTemperature();
 
     /**
      * Get the information for the CPU voltage.
      *
-     * @return CPU Voltage in Volts if available, 0 otherwise.
+     * @return Voltage in Volts if available, 0 otherwise.
      */
     public DecimalType getSensorsCpuVoltage();
 
@@ -152,7 +197,7 @@ public interface SysteminfoInterface {
      * Get estimated time remaining on the power source.
      *
      * @param deviceIndex
-     * @return minutes remaining charge
+     * @return minutes remaining charge or 999, if the time is estimated as unlimited
      */
     public DecimalType getBatteryRemainingTime(int deviceIndex);
 
@@ -164,6 +209,11 @@ public interface SysteminfoInterface {
      */
     public DecimalType getBatteryRemainingCapacity(int deviceIndex);
 
+    /**
+     * Get battery name
+     *
+     * @param deviceIndex
+     */
     public StringType getBatteryName(int deviceIndex);
 
 }
