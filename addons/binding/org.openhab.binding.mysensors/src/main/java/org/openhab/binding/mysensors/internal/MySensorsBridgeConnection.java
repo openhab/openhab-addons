@@ -62,7 +62,7 @@ public abstract class MySensorsBridgeConnection {
         synchronized (holdingThread) {
             try {
                 if (!iVersionResponse) {
-                    this.wait(2 * 1000); // wait 2s the reply for the I_VERSION message
+                    this.wait(5 * 1000); // wait 2s the reply for the I_VERSION message
                 }
             } catch (Exception e) {
                 logger.error("Exception on waiting for I_VERSION message", e);
