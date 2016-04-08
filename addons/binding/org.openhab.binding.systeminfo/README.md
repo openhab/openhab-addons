@@ -17,6 +17,8 @@ System information Binding provides operating system and hardware information in
 
 The binding supports only one thing type - **computer**. This thing represents a system with one storage volume, one display device and one network adapter.
 
+If multiple storage or display devices support is needed, new thing type has to be defined. This is workaround until [this issue] (https://github.com/eclipse/smarthome/issues/588) is resolved and it is possible to add dynamically channels to DSL defined thing.
+
 ## Discovery
 
 Discovery is not necessary.
@@ -33,6 +35,7 @@ The thing has two configuration parameters:
    * **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
 That means that by default configuration, channels with priority set to 'High' are updated every second, channels with priority set to 'Medium' - every minute, channels with priority set to 'Low' only at initializing.
+
 
 ## Channels
 The binding introduces the following channel types:
@@ -57,9 +60,9 @@ The binding introduces the following channel types:
 | storage_available  | Available storage size in MB  | Number | Medium | Yes |
 | storage_available_percent  | Available storage size in percents  | Number | Medium | Yes |
 | storage_total  | Total storage size in MB  | Number | Low | Yes |
-| cpu_temperature  | Temperature of the CPI in Celsius degrees  | Number | High | No |
+| cpu_temperature  | Temperature of the CPU in Celsius degrees  | Number | High | No |
 | cpu_voltage  | Voltage of the CPU in V  | Number | Medium | No |
-| fan_speed  | Speed of the cpu fan in rpm  | String | Low | Yes |
+| fan_speed  | Speed of the CPU fan in rpm  | String | Low | Yes |
 | battery_name  | Battery name  | String | Low | Yes |
 | battery_time  | Remaining time of the battery in minutes | Number | Medium | Yes |
 | battery_capacity  | Percentage of capacity left  | Number | Medium | Yes |

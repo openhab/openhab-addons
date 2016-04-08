@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.systeminfo.test
 
 import static org.hamcrest.CoreMatchers.*
@@ -32,7 +39,12 @@ import org.junit.Before
 import org.junit.Test
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
-
+/**
+ * OSGi tests for the {@link SysteminfoHandler}
+ *
+ * @author Svilen Valkanov
+ *
+ */
 class SysteminfoOSGiTest extends OSGiTest{
     def thingName = "work";
     def ITEM_NAME = "test"
@@ -42,8 +54,15 @@ class SysteminfoOSGiTest extends OSGiTest{
     ThingRegistry thingRegistry;
     ItemRegistry itemRegistry;
 
-    //comments
+    /**
+     * Refresh time in seconds for tasks with priority High.
+     * Default value for the parameter interval_high in the thing configuration
+     */
     int DEFAULT_TEST_INTERVAL_HIGH = 1
+    /**
+     * Refresh time in seconds for tasks with priority Medium.
+     * Default value for the parameter interval_medium in the thing configuration
+     */
     int DEFAULT_TEST_INTERVAL_MEDIUM = 60
 
     @Before
@@ -81,14 +100,16 @@ class SysteminfoOSGiTest extends OSGiTest{
         waitForAssert({
             SysteminfoHandler thingHandler = getService(ThingHandler,SysteminfoHandler)
             assertThat thingHandler, is(notNullValue())
-        },1000)
+        },2000)
 
         intializeItem(channelUID,acceptedItemType)
     }
 
     private void testItemStateIsUpdated(String acceptedItemType) {
         waitForAssert({
-            assertThat systemInfoThing.getStatus(), is(equalTo(ThingStatus.ONLINE));
+            def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
+            def description = systemInfoThing.getStatusInfo().getDescription();
+            assertThat  "Thing status detail is {$thingStatusDetail} with description {$description}",systemInfoThing.getStatus(), is(equalTo(ThingStatus.ONLINE))
         })
 
         def Items = itemRegistry.getItems();
@@ -252,7 +273,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sorage_description is updated' () {
+    public void 'assert channel storage_description is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_DESCRIPTION
         String acceptedItemType = "String";
 
@@ -261,7 +282,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sorage_available is updated' () {
+    public void 'assert channel storage_available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE
         String acceptedItemType = "Number";
 
@@ -270,7 +291,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sorage_used is updated' () {
+    public void 'assert channel storage_used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_USED
         String acceptedItemType = "Number";
 

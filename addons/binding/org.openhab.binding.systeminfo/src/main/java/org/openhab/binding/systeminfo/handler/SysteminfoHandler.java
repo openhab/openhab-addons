@@ -36,7 +36,7 @@ import oshi.SystemInfo;
 
 /**
  * The {@link SysteminfoHandler} is responsible for providing real time information about the system
- * (CPU,Memory,Storage,Display and others).
+ * (CPU, Memory, Storage, Display and others).
  *
  * @author Svilen Valkanov - Initial contribution
  */
@@ -53,22 +53,21 @@ public class SysteminfoHandler extends BaseThingHandler {
     private BigDecimal refreshIntervalMediumPriority;
 
     /**
-     * Channels with high priority usually need frequent update of the state like CPU load, or
-     * information about the free and used memory.
+     * Channels with priority configuration parameter set to High. They usually need frequent update of the state like
+     * CPU load, or information about the free and used memory.
      * They are updated periodically at {@link #refreshIntervalHighPriority}.
      */
     private Set<ChannelUID> highPriorityChannels = new HashSet<ChannelUID>();
 
     /**
-     * Channels with medium priority are channels that usually need update of the state not so oft like battery
-     * capacity,
-     * storage used and etc.
+     * Channels with priority configuration parameter set to Medium. These channels usually need update of the
+     * state not so oft like battery capacity, storage used and etc.
      * They are updated periodically at {@link #refreshIntervalMediumPriority}.
      */
     private Set<ChannelUID> mediumPriorityChannels = new HashSet<ChannelUID>();
 
     /**
-     * Channels with medium priority usually need update only once. They represent static information or information
+     * Channels with priority configuration parameter set to Low. They represent static information or information
      * that is updated rare- e.g. CPU name, storage name and etc.
      * They are updated only at {@link #initialize()}.
      */
@@ -166,7 +165,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
-        logger.debug("Schedule single update for low priority tasks.");
+        logger.debug("Schedule one time update for low priority tasks.");
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
@@ -192,25 +191,26 @@ public class SysteminfoHandler extends BaseThingHandler {
         if (state != null) {
             updateState(channelID, state);
         } else {
-            logger.warn("Channel with ID {} can not be updated!. No information available for the selected device.",
+            logger.warn("Channel with ID {} can not be updated! No information available for the selected device.",
                     channelID);
         }
     }
 
-    // TODO example + dynamic channels do not exist +link to issue
     /**
      * This method gets the information for specific channel through the {@link SysteminfoInterface}. It uses the
      * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
      * multiple devices, for reference see {@link #getDeviceIndex(String)}})
      *
      * @param channelUID - the UID of the channel
-     * @return State object or null, if there is no information for device with this index
+     * @return State object or null, if there is no information for the device with this index
      */
     private State getInfoForChannel(ChannelUID channelUID) {
         State state = null;
         String channelID = channelUID.getId();
         int deviceIndex = getDeviceIndex(channelID);
         if (deviceIndex > 0) {
+            // The channelID contains deviceIndex. It must be deleted from the channelID, because otherwise the method
+            // will not find the correct method below.
             // All digits are deleted from the ID
             channelID = channelID.replaceAll("\\d+", "");
         }

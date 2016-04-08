@@ -53,9 +53,10 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_MEMORY_TOTAL = "memory_total";
 
     /**
-     * Percent of the available memory
+     * Percents of the available memory
      */
     public final static String CHANNEL_MEMORY_AVAILABLE_PERCENT = "memory_available_percent";
+
     /**
      * Name of the logical volume storage
      */
@@ -82,9 +83,10 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_STORAGE_TOTAL = "storage_total";
 
     /**
-     * Percent of the available storage space
+     * Percents of the available storage space
      */
     public final static String CHANNEL_STORAGE_AVAILABLE_PERCENT = "storage_available_percent";
+
     /**
      * Temperature of the CPU measured from the sensors.
      */
@@ -161,14 +163,12 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_NETWORK_NAME = "network_name";
 
     /**
-     * Name of the configuration parameter of the thing used to describe how often High priority channels will be
-     * updated
+     * Name of the configuration parameter of the thing that defines refresh time for High priority channels
      */
     public final static String HIGH_PRIORITY_REFRESH_TIME = "interval_high";
 
     /**
-     * Name of the configuration parameter of the thing used to describe how often Medium priority channels will be
-     * updated
+     * Name of the configuration parameter of the thing that defines refresh time for Medium priority channels
      */
     public final static String MEDIUM_PRIORITY_REFRESH_TIME = "interval_medium";
 }

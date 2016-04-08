@@ -67,28 +67,28 @@ public interface SysteminfoInterface {
 
     // Memory info
     /**
-     * Returns the total size of memory installed on the machine.
+     * Returns total size of memory
      *
      * @return memory size in MB
      */
     public DecimalType getMemoryTotal();
 
     /**
-     * Returns the available size of memory installed on the machine.
+     * Returns available size of memory
      *
      * @return memory size in MB
      */
     public DecimalType getMemoryAvailable();
 
     /**
-     * Returns the used size of memory installed on the machine.
+     * Returns used size of memory
      *
      * @return memory size in MB
      */
     public DecimalType getMemoryUsed();
 
     /**
-     * Returns the percent of available memory on the machine
+     * Percents of available memory on the machine
      *
      * @return percent of available memory
      */
@@ -186,15 +186,16 @@ public interface SysteminfoInterface {
     public DecimalType getSensorsCpuVoltage();
 
     /**
-     *
+     * Get fan speed
+     * 
      * @param deviceIndex
-     * @return Speed in rpm for the device or 0 if unable to measure fan speed
+     * @return Speed in rpm or 0 if unable to measure fan speed
      */
     public DecimalType getSensorsFanSpeed(int deviceIndex);
 
     // Battery info
     /**
-     * Get estimated time remaining on the power source.
+     * Get estimated time remaining for the power source.
      *
      * @param deviceIndex
      * @return minutes remaining charge or 999, if the time is estimated as unlimited
