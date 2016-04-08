@@ -411,8 +411,8 @@ public class TeslaHandler extends BaseThingHandler {
             if (response != null && response.getStatus() == 200) {
                 try {
                     JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
-                    logger.trace("Request : {}:{}:{} yields {}",
-                            new Object[] { command, payLoad, target.getUri(), jsonObject.get("response").toString() });
+                    logger.trace("Request : {}:{}:{} yields {}", new Object[] { command, payLoad, target.toString(),
+                            jsonObject.get("response").toString() });
                     return jsonObject.get("response").toString();
                 } catch (Exception e) {
                     logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
