@@ -50,8 +50,7 @@ public class SysteminfoImpl implements SysteminfoInterface {
      *
      * @throws SocketException when it is not able to access the network information.
      */
-    public SysteminfoImpl() throws SocketException {
-        SystemInfo systemInfo = new SystemInfo();
+    public SysteminfoImpl(SystemInfo systemInfo) throws SocketException {
         HardwareAbstractionLayer hal = systemInfo.getHardware();
         operatingSystem = systemInfo.getOperatingSystem();
         displays = hal.getDisplays();

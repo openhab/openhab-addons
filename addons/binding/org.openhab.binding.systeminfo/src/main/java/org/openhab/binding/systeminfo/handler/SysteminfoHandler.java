@@ -14,6 +14,7 @@ import java.net.SocketException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -30,6 +31,8 @@ import org.openhab.bidning.systeminfo.model.SysteminfoImpl;
 import org.openhab.bidning.systeminfo.model.SysteminfoInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import oshi.SystemInfo;
 
 /**
  * The {@link SysteminfoHandler} is responsible for providing real time information about the system
@@ -79,6 +82,9 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private SysteminfoInterface systeminfo;
 
+    ScheduledFuture<?> highPriorityTasks;
+    ScheduledFuture<?> mediumPriorityTasks;
+
     private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
     public SysteminfoHandler(Thing thing) {
@@ -90,7 +96,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
 
         try {
-            this.systeminfo = new SysteminfoImpl();
+            this.systeminfo = new SysteminfoImpl(new SystemInfo());
         } catch (SocketException e) {
             logger.error("Network information is not availble ! I/O error occured {e}", e);
         }
@@ -144,7 +150,8 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-        scheduler.scheduleAtFixedRate(new Runnable() {
+
+        highPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 publishData(highPriorityChannels);
@@ -152,7 +159,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
         logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
-        scheduler.scheduleAtFixedRate(new Runnable() {
+        mediumPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 publishData(mediumPriorityChannels);
@@ -324,6 +331,16 @@ public class SysteminfoHandler extends BaseThingHandler {
             publishDataForChannel(channelUID);
         } else {
             logger.debug("Unsuported command {}! Supported commands: REFRESH", command);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (highPriorityTasks != null) {
+            highPriorityTasks.cancel(true);
+        }
+        if (mediumPriorityTasks != null) {
+            mediumPriorityTasks.cancel(true);
         }
     }
 

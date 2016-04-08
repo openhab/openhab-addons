@@ -34,7 +34,6 @@
 			<channel id="cpu_phisycal_cores" typeId="cpu_phisycal_cores"></channel>
 			<channel id="cpu_load" typeId="cpu_load"></channel>
 			<channel id="display_information" typeId="display_information"></channel>
-			<channel id="display_information1" typeId="display_information"></channel>
 			<channel id="network_ip" typeId="network_ip"></channel>
 			<channel id="network_adapter_name" typeId="network_adapter_name"></channel>
 			<channel id="network_name" typeId="network_name"></channel>
