@@ -5,8 +5,8 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="zwaveme_zme054313_00_000" listed="false">
-    <label>ZME_054313 Flush mountable switch</label>
+  <thing-type id="zwaveme_zme05431_00_000" listed="false">
+    <label>ZME_05431 Flush mountable switch</label>
     <description>Flush mountable switch</description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">ZWave.me</property>
-      <property name="model">ZME_054313</property>
+      <property name="model">ZME_05431</property>
       <property name="manufacturerId">0115</property>
       <property name="manufacturerRef">1000:0001</property>
     </properties>
@@ -95,7 +95,7 @@
         <label>10: Typical click timeout</label>
         <description><![CDATA[
 Typical time used to differentiate click, hold, double and triple clicks<br />Defined in 10ms ticks.
-        !]]></description>
+        ]]></description>
         <default>50</default>
       </parameter>
 

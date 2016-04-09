@@ -113,12 +113,6 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>5: Lock &amp; Leave</label>
-        <default>0</default>
-      </parameter>
-
       <parameter name="config_6_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>6: Mode of switch off function</label>

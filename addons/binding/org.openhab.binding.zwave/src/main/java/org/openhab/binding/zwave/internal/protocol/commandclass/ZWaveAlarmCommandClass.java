@@ -45,7 +45,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
     private static final int ALARM_GET = 0x04;
     private static final int ALARM_REPORT = 0x05;
-    private static final int ALARM_GET_SUPPORTED = 0x06;
+    private static final int ALARM_SUPPORTED_GET = 0x06;
     private static final int ALARM_SUPPORTED_REPORT = 0x07;
 
     private final Map<AlarmType, Alarm> alarms = new HashMap<AlarmType, Alarm>();
@@ -224,7 +224,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
         SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.High);
         byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
-                (byte) ALARM_GET_SUPPORTED };
+                (byte) ALARM_SUPPORTED_GET };
         result.setMessagePayload(newPayload);
         return result;
     }

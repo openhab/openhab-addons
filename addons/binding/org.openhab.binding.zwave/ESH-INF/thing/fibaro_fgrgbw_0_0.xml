@@ -145,7 +145,7 @@
         <label>9: Step value (relevant for MODE1)</label>
         <description><![CDATA[
 Step value (relevant for MODE1).<br /> Default setting: 1<br /> Available settings: 1 - 255.
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -154,7 +154,7 @@ Step value (relevant for MODE1).<br /> Default setting: 1<br /> Available settin
         <label>10: Time between steps (relevant for MODE1)</label>
         <description><![CDATA[
 Time between steps (relevant for MODE1).<br /> Default setting: 10 ms<br /> 0 - immediate change of state<br /> Available settings: 1 - 60000 ms.<br />
-        !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 
@@ -163,7 +163,7 @@ Time between steps (relevant for MODE1).<br /> Default setting: 10 ms<br /> 0 - 
         <label>11: Time for changing from start to end value</label>
         <description><![CDATA[
 Step value (relevant for MODE1).<br /> Default setting: 67 (3s)<br /> 0: immediate change<br /> 1-63: 20-126 [ms] value*20ms<br /> 65-127: 1-63 [s] (value-64)*1s<br /> 129-191: 10-630 [s] (value-128)*10s
-        !]]></description>
+        ]]></description>
         <default>67</default>
       </parameter>
 
@@ -172,7 +172,7 @@ Step value (relevant for MODE1).<br /> Default setting: 67 (3s)<br /> 0: immedia
         <label>12: Maximum Brightening level</label>
         <description><![CDATA[
 Maximum Brightening level.<br /> Default setting: 255<br /> Available settings: 3 - 255.
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -181,7 +181,7 @@ Maximum Brightening level.<br /> Default setting: 255<br /> Available settings: 
         <label>13: Minimum dim level</label>
         <description><![CDATA[
 Minimum dim level.<br /> Default setting: 2<br /> Available settings: 3 - 255.
-        !]]></description>
+        ]]></description>
         <default>2</default>
       </parameter>
 
@@ -190,7 +190,7 @@ Minimum dim level.<br /> Default setting: 2<br /> Available settings: 3 - 255.
         <label>14: Inputs/Outputs configuration - relevant for main controllers other than Home Center 2 only</label>
         <description><![CDATA[
 Inputs/Outputs configuration - relevant for main controllers other than Home Center 2 only.<br /> Default setting: 4369<br /> Controlled device: RGBW, toggle switch inputs (NORMAL MODE).<br />
-        !]]></description>
+        ]]></description>
         <default>4369</default>
       </parameter>
 
@@ -223,7 +223,7 @@ Inputs/Outputs configuration - relevant for main controllers other than Home Cen
         <label>38: Alarm sequence program</label>
         <description><![CDATA[
 Alarm sequence program.<br /> Default setting: 10<br /> 1-10 specifies alarm program number.
-        !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 
@@ -232,7 +232,7 @@ Alarm sequence program.<br /> Default setting: 10<br /> 1-10 specifies alarm pro
         <label>39: Active PROGRAM alarm time</label>
         <description><![CDATA[
 IActive PROGRAM alarm time.<br /> Default setting: 600s<br /> 1-65534 specifies alarm time in seconds.
-        !]]></description>
+        ]]></description>
         <default>600</default>
       </parameter>
 
@@ -253,7 +253,7 @@ IActive PROGRAM alarm time.<br /> Default setting: 600s<br /> 1-65534 specifies 
         <label>43: Reporting 0-10v analog inputs change threshold</label>
         <description><![CDATA[
 Parameter defines a value by which input voltage must change in order to be reported to the main controller.<br /> New value is calculated based on last reported value.<br /> Default setting: 5<br />
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 
@@ -262,7 +262,7 @@ Parameter defines a value by which input voltage must change in order to be repo
         <label>44: Power load reporting frequency</label>
         <description><![CDATA[
 Parameter defines Time between reports. The report will be sent if last reported value differs from the current value, else reports will also be sent in case of polling.<br /> Default setting: 3 600 (s)<br />
-        !]]></description>
+        ]]></description>
         <default>30</default>
       </parameter>
 
@@ -271,7 +271,7 @@ Parameter defines Time between reports. The report will be sent if last reported
         <label>45: Reporting Changes in energy consumed by controlled devices</label>
         <description><![CDATA[
 Defines the required change in power to generate an unsolicited power report.<br /> New, reported energy value is calculated based on last reported value.<br /> Default setting: 10 (0,1 kWh).<br />
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -291,7 +291,7 @@ Defines the required change in power to generate an unsolicited power report.<br
         <label>72: Starting animation programm</label>
         <description><![CDATA[
 Starting animation programm.<br /> Starting predefined program when device set to work in RGB/RGBW mode (parameter 14) - relevant for main controllers other than Home Center 2 only.<br /> Default setting: 1<br />
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 

@@ -102,7 +102,7 @@
         <label>7: Forced Level of Dimming group 1</label>
         <description><![CDATA[
 Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1.<br /> In the case of alarm frames the alarm priority is specified. Possible parameter setti
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -136,7 +136,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <label>13: Alarm BROADCAST</label>
         <description><![CDATA[
 Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Broadcast inactive</option>
@@ -151,7 +151,7 @@ Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices
         <label>50: Low temperature alarm threshold</label>
         <description><![CDATA[
 The parameter stores a temperature value (def. 15C), below which LED indicator blinks with a colour determined by a Parameter 61 settings. By default the LED indicator blinks blue.<br /><b>NOTE:</b> The main controller does not interpret negative numbers a
-        !]]></description>
+        ]]></description>
         <default>1500</default>
       </parameter>
 
@@ -167,7 +167,7 @@ The parameter stores a temperature value (def. 15C), below which LED indicator b
         <label>61: Low temperature alarm indicator colour</label>
         <description><![CDATA[
 Default is blue (0x000000FF).<br /><b>NOTE:</b> A main controller interprets colours as a sum of it component colours value. Each colours value is a number from 0 to 255. Eg: Indicated colour = 65536 * RED value + 256 * GREEN value + BLUE value
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -176,7 +176,7 @@ Default is blue (0x000000FF).<br /><b>NOTE:</b> A main controller interprets col
         <label>62: High temperature alarm indicator colour</label>
         <description><![CDATA[
 Default is red (0x00FF0000).<br /><b>NOTE:</b> A main controller interprets colours as a sum of it component colours value. Each colours value is a number from 0 to 255. Eg: Indicated colour = 65536 * RED value + 256 * GREEN value + BLUE value
-        !]]></description>
+        ]]></description>
         <default>16711680</default>
       </parameter>
 
@@ -224,7 +224,7 @@ Default is red (0x00FF0000).<br /><b>NOTE:</b> A main controller interprets colo
         <label>76: Visual and audible alarms duration</label>
         <description><![CDATA[
 Parameter determines a time period after which an alarm frame will be retransmitted. The value of 0 cancels an alarm frame retransmission. The value of 65535 means 'each 1 second'.<br /><b>NOTE:</b> In case a time period set in this parameter is shorter th
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 

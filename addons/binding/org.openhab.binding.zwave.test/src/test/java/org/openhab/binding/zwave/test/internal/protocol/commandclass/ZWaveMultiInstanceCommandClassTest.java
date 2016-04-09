@@ -48,7 +48,7 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
  */
 public class ZWaveMultiInstanceCommandClassTest extends ZWaveCommandClassTest {
 
-    List<ZWaveEvent> processMessage(byte[] packetData) {
+    protected List<ZWaveEvent> processMessage(byte[] packetData) {
         SerialMessage msg = new SerialMessage(packetData);
 
         // Check the packet is not corrupted and is a command class request

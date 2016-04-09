@@ -53,7 +53,7 @@
         <label>1: Audio Volume</label>
         <description><![CDATA[
 Sets the volume level of the beeps and voice prompts<br /><h1>Overview</h1><p>1 = Silent</p> <p>2 = Low</p> <p>3 = High</p>
-        !]]></description>
+        ]]></description>
         <default>3</default>
         <options>
           <option value="1">Silent</option>
@@ -67,7 +67,7 @@ Sets the volume level of the beeps and voice prompts<br /><h1>Overview</h1><p>1 
         <label>2: Auto Re-lock</label>
         <description><![CDATA[
 When enabled, the unit will automatically re-lock<br /><h1>Overview</h1><p>0 = Off</p> <p>255 = On</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Off</option>
@@ -94,7 +94,7 @@ When enabled, the unit will automatically re-lock<br /><h1>Overview</h1><p>0 = O
         <label>5: Language</label>
         <description><![CDATA[
 Language used by the voice prompts<br /><h1>Overview</h1><p>1 = English</p> <p>2 = Spanish</p> <p>3 = French</p>
-        !]]></description>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="1">English</option>
@@ -115,7 +115,7 @@ Language used by the voice prompts<br /><h1>Overview</h1><p>1 = English</p> <p>2
         <label>8: Operating Mode</label>
         <description><![CDATA[
 Sets if the unit operates normal, or disables keypad and Z-Wave lock/unlock<br /><h1>Overview</h1><p>0 = Normal</p> <p>1 = Vacation Mode (User Codes Disabled)</p> <p>2 = Privacy Mode (User Codes and ZWave Codes Disabled</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Normal</option>

@@ -61,7 +61,7 @@
         <label>4: Delta T</label>
         <description><![CDATA[
 Defines the temperature steps of the heating control value is 0.1 °С.<br />1 0.1 ̊C / ̊F - 50 0.1 ̊C / ̊F
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 

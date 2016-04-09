@@ -9,7 +9,7 @@
     <label>MT02650 Devolo Thermostat (09356)</label>
     <description><![CDATA[
 Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br /><h2>Inclusion Information</h2><p>Short push middle button</p> <br /><h2>Wakeup Information</h2><p>Short push middle button</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>

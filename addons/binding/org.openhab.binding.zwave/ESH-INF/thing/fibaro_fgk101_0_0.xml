@@ -135,7 +135,7 @@
         <label>7: Forced Level of Dimming group 1</label>
         <description><![CDATA[
 Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1. In the case of alarm frames the alarm priority is specified.<br />Possib
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -163,7 +163,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
 Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE: If the broadcast mode of information transmission is activ</b>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">IN1 and IN2 Broadcast inactive</option>

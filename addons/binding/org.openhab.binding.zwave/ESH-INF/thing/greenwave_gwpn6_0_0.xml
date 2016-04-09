@@ -9,7 +9,7 @@
     <label>GWPN6 Multi-socket PowerNode (6-plug)</label>
     <description><![CDATA[
 Multi-socket PowerNode (6-plug)<br /><h1>Overview</h1><p>This Configuration is for the 6 plug version of the PowerNode.</p> <p>It should work for both NP210 and NP310 devices (except <em>NP210</em>-G-EN which is 5-port UK version).</p> <br /><h2>Inclusion Information</h2><p>On the PowerNode, press and hold the <strong>Sync</strong> button for approximately one second until the activity indicator displays a clockwise rotating pattern. This indicates the PowerNode is attempting inclusion. During this process, verify that the Gateway activity indicator still displays a clockwise rotating pattern.</p> <p>After a few seconds, the rotating pattern on both the PowerNode and the Gateway stops. All bars turn green forming a circle for several seconds. This indicates a successful inclusion.</p> <p>If all bars on the activity indicator start flashing instead of forming a solid circle, then the PowerNode inclusion process has failed, and you must start the sync process again. If syncing continually fails even though the PowerNode is close to the Gateway, then it may be an indication of a hardware fault, and the PowerNode might need replacing.</p> <br /><h2>Exclusion Information</h2><p>On the PowerNode, press and hold the <strong>Sync</strong> button for approximately one second until the PowerNode activity indicator begins to display a counter-clockwise rotating pattern. The PowerNode is attempting exclusion.</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -239,7 +239,7 @@ Multi-socket PowerNode (6-plug)<br /><h1>Overview</h1><p>This Configuration is f
         <label>3: Power level change</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>The new power reading is sent if the delta of the change is greater than the defined minimum variation.</p>
-        !]]></description>
+        ]]></description>
       </parameter>
 
       <parameter name="group_4" type="text" groupName="association">

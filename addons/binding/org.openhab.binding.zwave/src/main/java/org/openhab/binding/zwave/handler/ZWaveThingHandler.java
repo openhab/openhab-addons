@@ -133,7 +133,6 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
             }
         }
-
     }
 
     void initialiseNode() {
@@ -412,7 +411,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             }
         }
 
-        if (controllerHandler != null) {// || controllerHandler.getOwnNodeId() == 0) {
+        if (controllerHandler != null) {
             return;
         }
 
@@ -421,12 +420,93 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
         // Add the listener for ZWave events.
         // This ensures we get called whenever there's an event we might be interested in
-        if (bridgeHandler.addEventListener(this) == true) {
-            controllerHandler = bridgeHandler;
-            updateNeighbours();
-        } else {
+        if (bridgeHandler.addEventListener(this) == false) {
             logger.warn("NODE {}: Controller failed to register event handler.", nodeId);
+            return;
         }
+
+        controllerHandler = bridgeHandler;
+
+        if (node == null) {
+            return;
+        }
+
+        updateNeighbours();
+
+        // We need to synchronise the configuration between the ZWave library and ESH.
+        // This is especially important when the device is first added as the ESH representation of the config
+        // will be set to defaults. We will also not have any defaults for association groups, wakeup etc.
+        Configuration config = editConfiguration();
+
+        // Process CONFIGURATION
+        ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
+                .getCommandClass(CommandClass.CONFIGURATION);
+        if (configurationCommandClass != null) {
+            // Iterate over all parameters and process
+            for (int paramId : configurationCommandClass.getParameters().keySet()) {
+                ZWaveConfigurationParameter parameter = configurationCommandClass.getParameter(paramId);
+                updateConfigurationParameter(config, parameter.getIndex(), parameter.getSize(), parameter.getValue());
+            }
+        }
+
+        // Process ASSOCIATION
+        ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
+                .getCommandClass(CommandClass.ASSOCIATION);
+        if (associationCommandClass != null) {
+            for (int groupId : associationCommandClass.getAssociations().keySet()) {
+                List<String> group = new ArrayList<String>();
+
+                // Build the configuration value
+                for (ZWaveAssociation groupMember : associationCommandClass.getGroupMembers(groupId)
+                        .getAssociations()) {
+                    logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, groupId,
+                            groupMember.getNode(), groupMember.getEndpoint());
+                    group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
+                }
+
+                config.put("group_" + groupId, group);
+            }
+        }
+
+        // Process WAKE_UP
+        ZWaveWakeUpCommandClass wakeupCommandClass = (ZWaveWakeUpCommandClass) node
+                .getCommandClass(CommandClass.WAKE_UP);
+        if (wakeupCommandClass != null) {
+            config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, wakeupCommandClass.getInterval());
+            config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, wakeupCommandClass.getTargetNodeId());
+        }
+
+        // Process SWITCH_ALL
+        ZWaveSwitchAllCommandClass switchallCommandClass = (ZWaveSwitchAllCommandClass) node
+                .getCommandClass(CommandClass.SWITCH_ALL);
+        if (switchallCommandClass != null) {
+            config.put(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, switchallCommandClass.getMode());
+        }
+
+        // Process NODE_NAMING
+        ZWaveNodeNamingCommandClass nodenamingCommandClass = (ZWaveNodeNamingCommandClass) node
+                .getCommandClass(CommandClass.NODE_NAMING);
+        if (nodenamingCommandClass != null) {
+            config.put(ZWaveBindingConstants.CONFIGURATION_NODELOCATION, nodenamingCommandClass.getLocation());
+            config.put(ZWaveBindingConstants.CONFIGURATION_NODENAME, nodenamingCommandClass.getName());
+        }
+
+        // Only update if configuration has changed
+        Configuration originalConfig = editConfiguration();
+
+        boolean update = false;
+        for (String property : config.getProperties().keySet()) {
+            if (config.get(property).equals(originalConfig.get(property)) == false) {
+                update = true;
+                break;
+            }
+        }
+
+        if (update == true) {
+            updateConfiguration(config);
+        }
+
+        controllerHandler = bridgeHandler;
     }
 
     @Override
@@ -864,6 +944,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     if (parameter == null) {
                         return;
                     }
+
                     logger.debug("NODE {}: Update CONFIGURATION {}/{} to {}", nodeId, parameter.getIndex(),
                             parameter.getSize(), parameter.getValue());
 
@@ -873,6 +954,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     // this here, update the value and send the request...
                     // Do this first so we only process the data if we're not waiting to send
                     ZWaveConfigSubParameter subParameter = subParameters.get(parameter.getIndex());
+
                     if (subParameter != null) {
                         // Get the new value based on the sub-parameter bitmask
                         int value = subParameter.getValue(parameter.getValue());
@@ -907,77 +989,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         break;
                     }
 
-                    logger.debug("NODE {}: Config about to update {} parameters...", nodeId,
-                            configuration.keySet().size());
-                    for (String key : configuration.keySet()) {
-                        logger.debug("NODE {}: Processing {}", nodeId, key);
-                        String[] cfg = key.split("_");
-                        // Check this is a config parameter
-                        if (!"config".equals(cfg[0])) {
-                            continue;
-                        }
-                        logger.debug("NODE {}: Processing {} len={}", nodeId, key, cfg.length);
-
-                        if (cfg.length < 3) {
-                            logger.warn("NODE {}: Configuration invalid {}", nodeId, key);
-                            continue;
-                        }
-
-                        logger.debug("NODE {}: Processing {} - id = '{}'", nodeId, key, cfg[1]);
-
-                        // Check this is for the right parameter
-                        if (Integer.parseInt(cfg[1]) != parameter.getIndex()) {
-                            continue;
-                        }
-
-                        logger.debug("NODE {}: Processing {} - size = '{}'", nodeId, key, cfg[2]);
-
-                        // Get the size
-                        int size = Integer.parseInt(cfg[2]);
-                        if (size != parameter.getSize()) {
-                            logger.error("NODE {}: Size error {}<>{} from {}", nodeId, size, parameter.getSize(), key);
-                            continue;
-                        }
-
-                        // Get the bitmask
-                        int bitmask = 0xffffffff;
-                        if (cfg.length >= 4) {
-                            logger.debug("NODE {}: Processing {} - bitmask = '{}'", nodeId, key, cfg[3]);
-                            try {
-                                bitmask = Integer.parseInt(cfg[3], 16);
-                                logger.debug("NODE {}: Processing {} - dec = '{}'", nodeId, key, bitmask);
-
-                            } catch (NumberFormatException e) {
-                                logger.error("NODE {}: Error parsing bitmask for {}", nodeId, key);
-                            }
-                        }
-
-                        int value = parameter.getValue() & bitmask;
-                        logger.debug("NODE {}: Sub-parameter {} is {}", nodeId, key, String.format("%08X", value));
-
-                        logger.debug("NODE {}: Pre-processing  {}>>{}", nodeId, String.format("%08X", value),
-                                String.format("%08X", bitmask));
-
-                        // Shift the value
-                        int bits = bitmask;
-                        while ((bits & 0x01) == 0) {
-                            value = value >> 1;
-                            bits = bits >> 1;
-                        }
-
-                        // And the bitmask to get rid of any sign extension
-                        // value &= bits;
-
-                        logger.debug("NODE {}: Post-processing {}>>{}", nodeId, String.format("%08X", value),
-                                String.format("%08X", bitmask));
-
-                        logger.debug("NODE {}: Sub-parameter setting {} is {} [{}]", nodeId, key,
-                                String.format("%08X", value), value);
-
-                        cfgUpdated = true;
-                        configuration.put(key, value);
-                        pendingCfg.remove(key);
-                    }
+                    updateConfigurationParameter(configuration, parameter.getIndex(), parameter.getSize(),
+                            parameter.getValue());
                     break;
 
                 case ASSOCIATION:
@@ -1246,6 +1259,85 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             neighbours += neighbour;
         }
         updateProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
+    }
+
+    private boolean updateConfigurationParameter(Configuration configuration, int paramIndex, int paramSize,
+            int paramValue) {
+
+        boolean cfgUpdated = false;
+
+        logger.debug("NODE {}: Config about to update {} parameters...", nodeId, configuration.keySet().size());
+        for (String key : configuration.keySet()) {
+            logger.debug("NODE {}: Processing {}", nodeId, key);
+            String[] cfg = key.split("_");
+            // Check this is a config parameter
+            if (!"config".equals(cfg[0])) {
+                continue;
+            }
+            logger.debug("NODE {}: Processing {} len={}", nodeId, key, cfg.length);
+
+            if (cfg.length < 3) {
+                logger.warn("NODE {}: Configuration invalid {}", nodeId, key);
+                continue;
+            }
+
+            logger.debug("NODE {}: Processing {} - id = '{}'", nodeId, key, cfg[1]);
+
+            // Check this is for the right parameter
+            if (Integer.parseInt(cfg[1]) != paramIndex) {
+                continue;
+            }
+
+            logger.debug("NODE {}: Processing {} - size = '{}'", nodeId, key, cfg[2]);
+
+            // Get the size
+            int size = Integer.parseInt(cfg[2]);
+            if (size != paramSize) {
+                logger.error("NODE {}: Size error {}<>{} from {}", nodeId, size, paramSize, key);
+                continue;
+            }
+
+            // Get the bitmask
+            int bitmask = 0xffffffff;
+            if (cfg.length >= 4) {
+                logger.debug("NODE {}: Processing {} - bitmask = '{}'", nodeId, key, cfg[3]);
+                try {
+                    bitmask = Integer.parseInt(cfg[3], 16);
+                    logger.debug("NODE {}: Processing {} - dec = '{}'", nodeId, key, bitmask);
+
+                } catch (NumberFormatException e) {
+                    logger.error("NODE {}: Error parsing bitmask for {}", nodeId, key);
+                }
+            }
+
+            int value = paramValue & bitmask;
+            logger.debug("NODE {}: Sub-parameter {} is {}", nodeId, key, String.format("%08X", value));
+
+            logger.debug("NODE {}: Pre-processing  {}>>{}", nodeId, String.format("%08X", value),
+                    String.format("%08X", bitmask));
+
+            // Shift the value
+            int bits = bitmask;
+            while ((bits & 0x01) == 0) {
+                value = value >> 1;
+                bits = bits >> 1;
+            }
+
+            // And the bitmask to get rid of any sign extension
+            // value &= bits;
+
+            logger.debug("NODE {}: Post-processing {}>>{}", nodeId, String.format("%08X", value),
+                    String.format("%08X", bitmask));
+
+            logger.debug("NODE {}: Sub-parameter setting {} is {} [{}]", nodeId, key, String.format("%08X", value),
+                    value);
+
+            cfgUpdated = true;
+            configuration.put(key, value);
+            pendingCfg.remove(key);
+        }
+
+        return cfgUpdated;
     }
 
     private class ZWaveConfigSubParameter {

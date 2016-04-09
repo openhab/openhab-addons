@@ -96,7 +96,7 @@
         <label>7: Forced Level of Dimming group 1</label>
         <description><![CDATA[
 Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1.<br /> In the case of alarm frames the alarm priority is specified. Possible parameter setti
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -118,7 +118,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
 Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Broadcast inactive</option>
@@ -133,7 +133,7 @@ Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices
         <label>73: Temperature measurement compensation</label>
         <description><![CDATA[
 Temperature value to be added to or deducted from the current measured temperature<br /> -1000 0,1°C - 1000 0,1°C
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -142,7 +142,7 @@ Temperature value to be added to or deducted from the current measured temperatu
         <label>80: Z-Wave range test interval</label>
         <description><![CDATA[
 Time period between the consecutive Z-Wave network range tests.<br /> 0 10min[10min-24h] - 17 10min[10min-24h] -&gt; 0 – Z-Wave network range test inactive
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -151,7 +151,7 @@ Time period between the consecutive Z-Wave network range tests.<br /> 0 10min[10
         <label>81: Temperature alarm threshold</label>
         <description><![CDATA[
 0 -&gt; 0 – temperature alarm inactive<br /> 2 °C - 100 °C -&gt; Temperature
-        !]]></description>
+        ]]></description>
         <default>54</default>
       </parameter>
 
@@ -184,7 +184,7 @@ Time period between the consecutive Z-Wave network range tests.<br /> 0 10min[10
         <label>84: Malfunction alarm</label>
         <description><![CDATA[
 Time interval in which malfuntion alarm, if detected, is repeated using visual and acoustic alarms.<br /> -126 100ms[100ms-25,5s] - 127 100ms[100ms-25,5s]
-        !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 
@@ -193,7 +193,7 @@ Time interval in which malfuntion alarm, if detected, is repeated using visual a
         <label>85: Temperature alarm</label>
         <description><![CDATA[
 Time interval in which temperature alarm, if detected, is repeated using visual and acoustic alarms.<br /> -126 100ms[100ms-25,5s] - 127 100ms[100ms-25,5s] -&gt; 5 means 500ms
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 
@@ -202,7 +202,7 @@ Time interval in which temperature alarm, if detected, is repeated using visual 
         <label>86: Lack of the Z-Wave range alarm</label>
         <description><![CDATA[
 Time interval in which lack of the Z-Wave network alarm, if detected, is repeated using visual and acoustic alarms.<br /> 1 5s [5s-24h] - 17280 5s [5s-24h] -&gt; 360 means 30min
-        !]]></description>
+        ]]></description>
         <default>360</default>
       </parameter>
 
@@ -211,7 +211,7 @@ Time interval in which lack of the Z-Wave network alarm, if detected, is repeate
         <label>87: Low battery alarm</label>
         <description><![CDATA[
 Time interval in which low battery alarm, if detected, is repeated using visual and acoustic alarms.<br /> 1 5s [5s-24h] - 17280 5s [5s-24h] -&gt; 360 means 30min
-        !]]></description>
+        ]]></description>
         <default>360</default>
       </parameter>
 

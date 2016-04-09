@@ -136,7 +136,7 @@
         <label>40: Power reporting in Watts on power change for Q1</label>
         <description><![CDATA[
 Set value means percentage, set value from 0-100 = 0%-100%. Power report is sent (pushed) only when actual power in Watts in real time changed for more than set percentage comparing to previous actual power in Watts, step is 1%.<br />
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 
@@ -145,7 +145,7 @@ Set value means percentage, set value from 0-100 = 0%-100%. Power report is sent
         <label>42: Power reporting in Watts by time interval</label>
         <description><![CDATA[
 Set value means time interval (0 – 65535) in seconds, when power report is sent. Default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li> <li>1–65535 = 1 second – 65535 seconds. Reporting enab</li></ul>
-        !]]></description>
+        ]]></description>
         <default>300</default>
       </parameter>
 
@@ -154,7 +154,7 @@ Set value means time interval (0 – 65535) in seconds, when power report is sen
         <label>60: Minimum dimming value</label>
         <description><![CDATA[
 Range is 1% – 98%, step is 1%.<br /> Default value is 1 (Minimum dimming value is 1%)<br /> NOTE: The maximum level may not be lower than the minimum level!<br /> 1% min. dimming value is defined by Z-Wave multilevel device class.
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -163,7 +163,7 @@ Range is 1% – 98%, step is 1%.<br /> Default value is 1 (Minimum dimming value
         <label>61: Maximum dimming value</label>
         <description><![CDATA[
 Range is 2% – 99%, step is 1%.<br /> Default value 99 (Maximum dimming value is 99 %)<br /> NOTE: The maximum level may not be lower than the minimum level!<br /> 99% max. dimming value is defined by Z-Wave multilevel device class.
-        !]]></description>
+        ]]></description>
         <default>99</default>
       </parameter>
 
@@ -172,7 +172,7 @@ Range is 2% – 99%, step is 1%.<br /> Default value 99 (Maximum dimming value i
         <label>65: Dimming time (soft on/off)</label>
         <description><![CDATA[
 Set value means time of moving the Dimmer between min. and max. dimming values by short press of push button I1 or controlled through UI.<br /> Range is 1-255 = 10-2550ms (2.55s), step is 10ms.<br /> Default value 100 (Dimming time between m
-        !]]></description>
+        ]]></description>
         <default>100</default>
       </parameter>
 
@@ -181,7 +181,7 @@ Set value means time of moving the Dimmer between min. and max. dimming values b
         <label>66: Dimming time when key pressed</label>
         <description><![CDATA[
 Time of moving the Dimmer between min. and max dimming values by continues hold of push button I1.<br /> Range is 1-255 = 1-255s, step is 1s.<br /> Default value 3 (Dimming time between min. and max. dimming values is 3s)
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 

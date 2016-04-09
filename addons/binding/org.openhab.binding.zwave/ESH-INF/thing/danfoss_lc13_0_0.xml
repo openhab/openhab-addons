@@ -9,7 +9,7 @@
     <label>LC-13 Living Connect Z Thermostat</label>
     <description><![CDATA[
 Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br /><h2>Inclusion Information</h2><p>Short push middle button</p> <br /><h2>Wakeup Information</h2><p>Short push middle button</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -37,7 +37,7 @@ Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br
       <property name="vendor">Danfoss</property>
       <property name="model">LC-13</property>
       <property name="manufacturerId">0002</property>
-      <property name="manufacturerRef">0005:0004,8005:0001</property>
+      <property name="manufacturerRef">0005:0004,8005:0001,8005:0002</property>
       <property name="defaultAssociations">1</property>
     </properties>
 

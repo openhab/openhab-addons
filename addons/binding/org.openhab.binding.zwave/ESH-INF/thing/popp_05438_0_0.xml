@@ -66,7 +66,7 @@
         <label>2: Automatically switch off after x seconds.</label>
         <description><![CDATA[
 If not zero, automatically switch device off after a user defined time.<br /> 0 -&gt; Disabled<br /> 1-65535 -&gt; Enabled, seconds
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -75,7 +75,7 @@ If not zero, automatically switch device off after a user defined time.<br /> 0 
         <label>3: What to do on RF off command.</label>
         <description><![CDATA[
 Defines how to interpret RF Off command.<br /> Can be used in conjunction with Auto Off function:<br /> Ignore - to switch on the light by motion detectors and switch it off after some amount of time:<br /> in case of multiple motion detectors ea
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Switch off (default)</option>
@@ -90,7 +90,7 @@ Defines how to interpret RF Off command.<br /> Can be used in conjunction with A
         <label>5: Restore switch state after power cycle.</label>
         <description><![CDATA[
 Defines if the switch should restore switch state to the last state prior<br /> to device power off (power cycle).
-        !]]></description>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">No, turn off</option>
@@ -103,7 +103,7 @@ Defines if the switch should restore switch state to the last state prior<br /> 
         <label>20: Specify the consumption of the load in watts, for the calculation of power consumption.</label>
         <description><![CDATA[
 Max load 3500 W.<br /><h1>Overview</h1><ul><li>0 -&gt; Disabled</li> <li>1 - 3500 -&gt; Watts</li> </ul>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 

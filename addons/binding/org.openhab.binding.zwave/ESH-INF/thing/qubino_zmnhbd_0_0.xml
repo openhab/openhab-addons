@@ -125,7 +125,7 @@
         <label>11: Automatic turning off output Q1 after set time</label>
         <description><![CDATA[
 When relay Q1 is ON it goes automatically OFF after time defined by this parameter. Timer is reset to zero each time the module receive ON command regardless from where it comes (push button, associated module, controller,..).<br />
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -134,7 +134,7 @@ When relay Q1 is ON it goes automatically OFF after time defined by this paramet
         <label>12: Automatic turning on output Q1 after set time</label>
         <description><![CDATA[
 When relay Q1 is OFF it goes automatically ON after time defined by this parameter. Timer is reset to zero each time the module receive OFF command regardless from where it comes (push button, associated module, controller,..).<br />
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -143,7 +143,7 @@ When relay Q1 is OFF it goes automatically ON after time defined by this paramet
         <label>13: Automatic turning off relay Q2 after set time</label>
         <description><![CDATA[
 When relay Q2 is ON it goes automatically OFF after time defined by this parameter. Timer is reset to zero each time the module receive ON command regardless from where it comes (push button, associated module, controller,..).<br />
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -152,7 +152,7 @@ When relay Q2 is ON it goes automatically OFF after time defined by this paramet
         <label>14: Automatic turning on output Q2 after set time</label>
         <description><![CDATA[
 When relay Q2 is OFF it goes automatically ON after time defined by this parameter. Timer is reset to zero each time the module receive OFF command regardless from where it comes (push button, associated module, controller,..).<br />
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -161,7 +161,7 @@ When relay Q2 is OFF it goes automatically ON after time defined by this paramet
         <label>15: Automatic turning off / on seconds or milliseconds selection</label>
         <description><![CDATA[
 Available configuration parameters:<br /><ul><li>0 – seconds selected</li> <li>1 – milliseconds selected</li></ul><br /> NOTE: Parameter is valid for both outputs Q1, Q2 and is the same for turning off or on.
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -181,7 +181,7 @@ Available configuration parameters:<br /><ul><li>0 – seconds selected</li> <li
         <label>40: Power reporting in Watts on power change for Q1</label>
         <description><![CDATA[
 Power report is sent (pushed) only when actual power in Watts in real time changed for more than set percentage comparing to previous actual power in Watts, step is 1%.<br /><ul><li>0 = Reporting Disabled</li> <li>1–100 = 1% - 100% Reporti</li></ul>
-        !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 
@@ -190,7 +190,7 @@ Power report is sent (pushed) only when actual power in Watts in real time chang
         <label>41: Power reporting in Watts on power change for Q2</label>
         <description><![CDATA[
 Power report is sent (pushed) only when actual power in Watts in real time changed for more than set percentage comparing to previous actual power in Watts, step is 1%.<br /><ul><li>0 = Reporting Disabled</li> <li>1–100 = 1% - 100% Reporti</li></ul>
-        !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 
@@ -199,7 +199,7 @@ Power report is sent (pushed) only when actual power in Watts in real time chang
         <label>42: Power reporting in Watts by time interval for Q1</label>
         <description><![CDATA[
 default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li> <li>1–32535 = 1 second – 32535 seconds. Reporting enabled. Power report is sent with time interval set by entered value.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>300</default>
       </parameter>
 
@@ -208,7 +208,7 @@ default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = 
         <label>43: Power reporting in Watts by time interval for Q2</label>
         <description><![CDATA[
 default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li> <li>1–32535 = 1 second – 32535 seconds. Reporting enabled. Power report is sent with time interval set by entered value.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>300</default>
       </parameter>
 
@@ -237,7 +237,7 @@ default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = 
         <label>110: Temperature sensor offset settings</label>
         <description><![CDATA[
 Set value result in adding or subtracting that value to actual measured value by sensor<br /><ul><li>32536 – offset is 0.0 °C</li> <li>From 1 to 1000 – value from 0.1 °C to 10.0 °C is added to actual measured temperature.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>32536</default>
       </parameter>
 
@@ -246,7 +246,7 @@ Set value result in adding or subtracting that value to actual measured value by
         <label>120: Digital temperature sensor reporting</label>
         <description><![CDATA[
 If digital temperature sensor is connected, module reports measured temperature on temperature change defined by this parameter.<br /><ul><li>0 – Reporting disabled</li> <li>1-127 = 0,1°C – 12,7°C, step is 0,1°C</li></ul>
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 

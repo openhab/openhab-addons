@@ -60,7 +60,7 @@
         <label>1: Always on function</label>
         <description><![CDATA[
 Once activated, Wall Plug will keep a connected device constantly ON, will stop reacting to alarm frames and B-button push.<br /> 'Always on' function turns the Plug into a power and energy meter. Also, connected device will not be turned off upon receivi
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Activated</option>
@@ -73,7 +73,7 @@ Once activated, Wall Plug will keep a connected device constantly ON, will stop 
         <label>16: Remember device status after power failure</label>
         <description><![CDATA[
 Define how will the Plug react after the power supply is back on.<br /> Default setting: 1<br /> Available settings:<br /> 0 - Wall Plug does not memorize its state after a power failure. Connected device will be off after the power supply is reconnected.
-        !]]></description>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">Do not remember state</option>
@@ -86,7 +86,7 @@ Define how will the Plug react after the power supply is back on.<br /> Default 
         <label>34: Reaction to alarms</label>
         <description><![CDATA[
 Define Z-Wave network alarms to which the Wall Plug will respond.<br /> Default setting: 63<br /> Available settings: 0 - 63.<br /> 1 - general alarm<br /> 2 - smoke alarm<br /> 4 - CO alarm<br /> 8 - CO2 alarm<br /> 16 - high temperature alarm<br /> 32 -
-        !]]></description>
+        ]]></description>
         <default>63</default>
       </parameter>
 
@@ -95,7 +95,7 @@ Define Z-Wave network alarms to which the Wall Plug will respond.<br /> Default 
         <label>35: Response to alarms</label>
         <description><![CDATA[
 Parameter defines how the Wall Plug will respond to alarms (device's status change).<br /> Available settings:<br /> 0 - no reaction<br /> 1 - turn on connected device. LED ring signals an alarm through defined time period (parameter 39) or untill the ala
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">No reaction</option>
@@ -110,7 +110,7 @@ Parameter defines how the Wall Plug will respond to alarms (device's status chan
         <label>39: Alarm duration</label>
         <description><![CDATA[
 Wall Plug's alarm mode duration. If a device sending an alarm frame through the Z-Wave network sets alarm duration as well, this parameter's settings are ignored.<br /> Default setting: 600 (seconds).<br />Available settings: 1 - 65535 (seconds)
-        !]]></description>
+        ]]></description>
         <default>600</default>
       </parameter>
 
@@ -119,7 +119,7 @@ Wall Plug's alarm mode duration. If a device sending an alarm frame through the 
         <label>40: Immediate power report</label>
         <description><![CDATA[
 Parameter defines by how much power load must change, in percents, to be reported to the main controller, with the highest priority in the Z-Wave network. By default, Fibaro Wall Plug immediately sends power report if the power load changes by 80%.<br />
-        !]]></description>
+        ]]></description>
         <default>80</default>
       </parameter>
 
@@ -135,7 +135,7 @@ Parameter defines by how much power load must change, in percents, to be reporte
         <label>43: Power reporting frequency</label>
         <description><![CDATA[
 This parameter defines how frequently standard power reports (parameter 42) will be sent. By default Wall Plug sends up to 5 reports each 30 seconds, provided the power load changes by 15%.<br /> Default seting: 30 (s)<br /> Available settings: 1 - 254
-        !]]></description>
+        ]]></description>
         <default>30</default>
       </parameter>
 
@@ -144,7 +144,7 @@ This parameter defines how frequently standard power reports (parameter 42) will
         <label>45: Reporting Changes in energy consumed by controlled devices</label>
         <description><![CDATA[
 Defines the required change in power to generate an unsolicited power report.<br /> New, reported energy value is calculated based on last reported value. Default setting: 10 (0,1 kWh).<br /> Available settings: 1 - 254 (0,01kWh - 2,54kWh).<br /> Value
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -160,7 +160,7 @@ Defines the required change in power to generate an unsolicited power report.<br
         <label>49: Metering energy consumed by the Wall Plug itself.</label>
         <description><![CDATA[
 This parameter determines whether energy metering should include the amount of energy consumed by the Wall Plug itself.<br /> Results are being added to energy consumed by controlled device.<br /> Default setting: INACTIVE
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Inactive</option>
@@ -173,7 +173,7 @@ This parameter determines whether energy metering should include the amount of e
         <label>50: DOWN value</label>
         <description><![CDATA[
 Lower power threshold, used in parameter 52.<br /> Default setting: 300 (30 W)<br /> Available settings: 0 - 25 000 (0,0W - 2 500W)<br /> DOWN value cannot be higher than a value specified in parameter 51.
-        !]]></description>
+        ]]></description>
         <default>300</default>
       </parameter>
 
@@ -182,7 +182,7 @@ Lower power threshold, used in parameter 52.<br /> Default setting: 300 (30 W)<b
         <label>51: UP value</label>
         <description><![CDATA[
 Upper power threshold, used in parameter 52.<br /> Default setting: 500 (50 W)<br /> Available settings: 0 - 25 000 (0,0W - 2 500W)<br /> UP value cannot be lower than a value specified in parameter 510
-        !]]></description>
+        ]]></description>
         <default>500</default>
       </parameter>
 
@@ -191,7 +191,7 @@ Upper power threshold, used in parameter 52.<br /> Default setting: 500 (50 W)<b
         <label>52: Action in case defined power values exceeded</label>
         <description><![CDATA[
 Parameter defines the way 2nd association group devices are controlled, depending on the current power load.<br /> Values are defined in parameters 50 and 51.<br /> Available settings:<br /> 0 - function inactive<br /> 1 - turn the associated devices on
-        !]]></description>
+        ]]></description>
         <default>6</default>
         <options>
           <option value="0">Function inactive</option>
@@ -209,7 +209,7 @@ Parameter defines the way 2nd association group devices are controlled, dependin
         <label>60: Power load to make red ring flash violet</label>
         <description><![CDATA[
 Function is active only when parameter 61 is set to 0 or 1.<br /> Default setting: 25 000 (2 500W)<br /> Available settings: 1 000 - 32 000 (100W - 3200W).
-        !]]></description>
+        ]]></description>
         <default>25000</default>
       </parameter>
 
@@ -271,7 +271,7 @@ Function is active only when parameter 61 is set to 0 or 1.<br /> Default settin
         <label>70: Overload safety switch</label>
         <description><![CDATA[
 This function allows for turning off the controlled device in case of exceeding the defined power. Controlled device will be turned off even if 'always on' function is active (parameter 1).<br /> Controlled device can be turned back on via B-button or sen
-        !]]></description>
+        ]]></description>
         <default>65535</default>
       </parameter>
 

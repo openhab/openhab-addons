@@ -77,55 +77,56 @@
         <label>1: Basic Set Level</label>
         <description><![CDATA[
 Set basic set value to be on or off<br /><h1>Overview</h1><p>0=Disable</p> <p>1-99=Use Value</p>
-        !]]></description>
+        ]]></description>
         <default>99</default>
         <options>
           <option value="0">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="-20" max="99">
+                 min="-20" max="50">
         <label>2: Temperature Trigger ON value</label>
         <description>Temperature level when a ON command is sent out. Set to 99 to disable.</description>
         <default>99</default>
         <options>
           <option value="99">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="-20" max="99">
+                 min="-20" max="50">
         <label>3: Temperature Trigger OFF value</label>
         <description>Temperature level when a OFF command is sent out. Set to 99 to disable.</description>
         <default>99</default>
         <options>
           <option value="99">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="20" max="99">
+                 min="20" max="90">
         <label>4: Humidity Trigger ON value</label>
-        <description><![CDATA[
-Humidity level when a ON command is sent out. Set to 99 to disable.<br />Interval in seconds.
-        !]]></description>
+        <description>Humidity level when a ON command is sent out. Set to 99 to disable.</description>
         <default>99</default>
         <options>
           <option value="99">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_5_1" type="integer" groupName="configuration"
                  min="20" max="99">
         <label>5: Humidity Trigger OFF value</label>
-        <description><![CDATA[
-Humidity level when a OFF command is sent out. Set to 99 to disable.<br />Interval in seconds.
-        !]]></description>
+        <description>Humidity level when a OFF command is sent out. Set to 99 to disable.</description>
         <default>99</default>
         <options>
           <option value="99">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_6_2" type="integer" groupName="configuration"
@@ -133,35 +134,38 @@ Humidity level when a OFF command is sent out. Set to 99 to disable.<br />Interv
         <label>6: Auto report time</label>
         <description><![CDATA[
 Sets the time interval when a sensor report is sent<br /><h1>Overview</h1><p>0 = Disable</p> <p>1 min - 1439 min = Auto report periodically</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_7_1" type="integer" groupName="configuration"
                  min="0" max="70">
         <label>7: Auto report temperature</label>
         <description><![CDATA[
-Sets the temperature change causing a sensor report.<br />0 = Disable<br /> 1 - 70 = Auto report on temperature change
-        !]]></description>
+Sets the temperature change causing a sensor report.<br /><h1>Overview</h1><p>0 = Disable</p> <p>1 - 70 = Auto report on temperature change</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_8_1" type="integer" groupName="configuration"
-                 min="0" max="70">
+                 min="5" max="70">
         <label>8: Auto report humidity</label>
         <description><![CDATA[
-Sets the humidity change causing a sensor report.<br />0 = Disable<br /> 5 - 70 = Auto report on humidity change
-        !]]></description>
+Sets the humidity change causing a sensor report.<br /><h1>Overview</h1><p>0 = Disable</p> <p>5 - 70 = Auto report on humidity change</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->

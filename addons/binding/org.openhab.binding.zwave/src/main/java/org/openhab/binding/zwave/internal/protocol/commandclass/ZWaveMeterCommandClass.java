@@ -107,7 +107,7 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Meter Request", getNode().getNodeId());
+        logger.debug("NODE {}: Received Meter Request V", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         MeterScale scale;
         int meterTypeIndex;

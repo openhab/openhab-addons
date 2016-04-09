@@ -42,7 +42,7 @@
         <label>3: Night Light</label>
         <description><![CDATA[
 Defines the behavior of the blue LED.<br /><h1>Overview</h1><p>Default is Night Light mode where LED is on when switch is off.</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">LED on when switch is OFF</option>
@@ -56,7 +56,7 @@ Defines the behavior of the blue LED.<br /><h1>Overview</h1><p>Default is Night 
         <label>4: Invert Switch</label>
         <description><![CDATA[
 Change the top of the switch to OFF and the bottom of the switch to ON.<br /><h1>Overview</h1><p>Note: If you invert the switches and also install the product upside down, remember the load will now be controlled by the right, not the left switch.</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">No</option>
@@ -87,7 +87,7 @@ Change the top of the switch to OFF and the bottom of the switch to ON.<br /><h1
         <label>8: On/Off Command Dim Rate</label>
         <description><![CDATA[
 Sets the rate at which the dimmer changes the light level.<br /><h1>Overview</h1><p>This value indicates in 10 millisecond resolution, how often the dim level will change. For example, if you set this parameter to 1, then every 10ms the dim level will change. If you set it to 255, then every 2.55 seconds</p>
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
@@ -103,7 +103,7 @@ Sets the rate at which the dimmer changes the light level.<br /><h1>Overview</h1
         <label>10: Local Control Dim Rate</label>
         <description><![CDATA[
 Sets the dim rate<br /><h1>Overview</h1><p>This value indicates in 10 millisecond resolution, how often the dim level will change. For example, if you set this parameter to 1, then every 10ms the dim level will change. If you set it to 255, then every 2.55 seconds the dimmer will change.</p>
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
@@ -119,7 +119,7 @@ Sets the dim rate<br /><h1>Overview</h1><p>This value indicates in 10 millisecon
         <label>12: ALL ON/ALL OFF Dim Rate</label>
         <description><![CDATA[
 Sets the dim rate for the all on/off command<br /><h1>Overview</h1><p>This value indicates in 10 millisecond resolution, how often the dim level will change. For example, if you set this parameter to 1, then every 10ms the dim level will change. If you set it to 255, then every 2.55 seconds the dimmer will change.</p>
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
