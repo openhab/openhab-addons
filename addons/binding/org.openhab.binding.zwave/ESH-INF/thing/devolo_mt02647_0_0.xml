@@ -71,7 +71,7 @@
         <label>2: Basic Set Level</label>
         <description><![CDATA[
 Setting the BASIC command value to turn on the light.<br /><h1>Overview</h1><ul><li>0: Turn off the light.</li> <li>1 - 100: For dimmers 1 to 100 means the light level.</li> <li>255: Turns on the light. (Default) </li> </ul>
-        !]]></description>
+        ]]></description>
         <default>255</default>
         <options>
           <option value="0">Off</option>
@@ -85,7 +85,7 @@ Setting the BASIC command value to turn on the light.<br /><h1>Overview</h1><ul>
         <label>3: PIR Sensitivity</label>
         <description><![CDATA[
 Set the sensitivity for the PIR (Passive Infrared Sensor).<br /><h1>Overview</h1><ul><li>0 = Disable the PIR motion detection.</li> <li>1 - 99 = 1 means the lowest sensitivity, 99 means the highest sensitivity</li> </ul><p>High sensitivity means de</p>
-        !]]></description>
+        ]]></description>
         <default>70</default>
         <options>
           <option value="0">Disable</option>
@@ -98,7 +98,7 @@ Set the sensitivity for the PIR (Passive Infrared Sensor).<br /><h1>Overview</h1
         <label>4: Light Threshold</label>
         <description><![CDATA[
 Set the illumination threshold to turn on the light. <br /><h1>Overview</h1><p>When the event triggers and the environment illumination is lower than the threshold, the device will turn on the light.</p> <ul><li>0 = Turn off illumination detected function and never turn</li> </ul>
-        !]]></description>
+        ]]></description>
         <default>100</default>
         <options>
           <option value="0">Disable</option>
@@ -125,7 +125,7 @@ Set the illumination threshold to turn on the light. <br /><h1>Overview</h1><p>W
         <label>7: Customer Function</label>
         <description><![CDATA[
 Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Parameter 7 Customer Function. </strong></p> <strong>Available_Bits_for_Z110_Model</strong> <strong>Default </strong> <strong>Recommended</strong> Bit0: unused for Z110 Model 0 0 Bit1: unused for Z110 Model 0 0 Bit2: unused for Z110 Model 1 1 Bit3: Disable send out BASIC OFF after door closed. (1:Disable, 0:Enable) 0 0 Bit4: Notification Type, 0: Using Notification Report. 1: Using Sensor Binary Report.  0 1 Bit5: Disable Multi CC in auto report. (1:Disable, 0:Enable). 0 0 Bit6: Disable to report battery state when the device triggered. (1:Disable, 10 0:Enable). 0 0 Bit7: unused for Z110 Model 0 0 <p>Comments / Tips for this device from the community:</p> <ul><li>Setting this Parameter to <strong>20</strong> is from user side wanted as this enables Binary Sensor to report OPEN / CLOSE status by changing Bit 4</li> </ul> <p>The calculation from the recommended column is:  Bit7 to Bit0 = 000100100 Binary which is euqal to 20 decimal</p>
-        !]]></description>
+        ]]></description>
         <default>4</default>
       </parameter>
 

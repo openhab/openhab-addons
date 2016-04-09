@@ -9,7 +9,7 @@
     <label>ZW20R 20A Tamper Resistant Duplex Receptacle</label>
     <description><![CDATA[
 20A Tamper Resistant Duplex Receptacle<br /><h2>Inclusion Information</h2><p>When the controller is in inclusion mode and the blue LED blinks on the<br />ZW20R, press the program button of ZW20R, and then the controller will<br />verify the inclusion</p> <br /><h2>Exclusion Information</h2><p>When the controller is in exclusion mode, press the<br />program button of ZW20R, and then the controller will remove it from the<br />current Z-Wave network, and the LED will blink on the receptacle.</p> <br /><h2>Wakeup Information</h2><p>mains device</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>

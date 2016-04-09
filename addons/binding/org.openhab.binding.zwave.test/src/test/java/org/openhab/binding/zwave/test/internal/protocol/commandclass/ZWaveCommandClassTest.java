@@ -48,7 +48,7 @@ public class ZWaveCommandClassTest {
      * @param packetData byte array containing the full Z-Wave frame
      * @return List of ZWaveEvent(s)
      */
-    List<ZWaveEvent> processCommandClassMessage(byte[] packetData) {
+    protected List<ZWaveEvent> processCommandClassMessage(byte[] packetData) {
         SerialMessage msg = new SerialMessage(packetData);
 
         // Check the packet is not corrupted and is a command class request

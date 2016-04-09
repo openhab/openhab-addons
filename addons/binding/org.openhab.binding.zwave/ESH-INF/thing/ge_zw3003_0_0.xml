@@ -9,7 +9,7 @@
     <label>ZW3003, GE 12724 In-Wall Dimmer</label>
     <description><![CDATA[
 In-Wall Dimmer<br /><h1>Overview</h1><p>Also goes by GE / Jasco catalog number 12724.</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -44,7 +44,7 @@ In-Wall Dimmer<br /><h1>Overview</h1><p>Also goes by GE / Jasco catalog number 1
         <label>3: Night Light</label>
         <description><![CDATA[
 Defines the behavior of the blue LED. <br /> Default is Night Light mode where LED is on when switch is off.
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">LED on when switch is OFF</option>
@@ -58,7 +58,7 @@ Defines the behavior of the blue LED. <br /> Default is Night Light mode where L
         <label>4: Invert Switch</label>
         <description><![CDATA[
 Invert the ON/OFF Switch State. <br /> Setting this parameter to Yes will change the top of the switch to OFF and the bottom to ON. <br /> Note: If you invert the switches and also install the product upside down, the load will now be control
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">No</option>
@@ -89,7 +89,7 @@ Invert the ON/OFF Switch State. <br /> Setting this parameter to Yes will change
         <label>8: On/Off Command Dim Rate</label>
         <description><![CDATA[
 This value indicates in 10 millisecond resolution. <br /> This sets how often the dim level will change. For example, if you set this parameter to 1, then every 10ms the dim level will change. If you set it to 255, then every 2.55 seconds the
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
@@ -105,7 +105,7 @@ This value indicates in 10 millisecond resolution. <br /> This sets how often th
         <label>10: Local Control Dim Rate</label>
         <description><![CDATA[
 This value indicates in 10 millisecond resolution. <br /> This sets how often the dim level will change. For example, if you set this parameter to 1, then every 10ms the dim level will change. If you set it to 255, then every 2.55 seconds the
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
@@ -121,7 +121,7 @@ This value indicates in 10 millisecond resolution. <br /> This sets how often th
         <label>12: ALL ON/ALL OFF Dim Rate</label>
         <description><![CDATA[
 This value indicates in 10 millisecond resolution. <br /> This sets how often the dim level will change. For example, if you set this parameter to 1, then every 10ms the dim level will change. If you set it to 255, then every 2.55 seconds the
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 

@@ -76,7 +76,7 @@
         <label>2: Blinking Behaviour</label>
         <description><![CDATA[
 The LSB defines the total time the device need to blink.<br /> The value if set in seconds. 1 - 255 The MSB defines the on/off interval of the blinking.<br /> The unit is 0.1 s. This is a double byte value.
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -85,7 +85,7 @@ The LSB defines the total time the device need to blink.<br /> The value if set 
         <label>3: Current Overload Protection</label>
         <description><![CDATA[
 Load will be closed when the Current over runs<br /> (US: 15.5A, other country: 16.2A) for more than 2 minutes.
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disabled</option>
@@ -110,7 +110,7 @@ Load will be closed when the Current over runs<br /> (US: 15.5A, other country: 
         <label>80: Notification on Status Change</label>
         <description><![CDATA[
 Enable device to send notification to associated devices (Group 1)<br /> when the state of Micro Smart Switch's load changed. DEFAULT is Disable
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -124,7 +124,7 @@ Enable device to send notification to associated devices (Group 1)<br /> when th
         <label>81: Configure the state of red LED</label>
         <description><![CDATA[
 Enable the device to send notification to associated devices (Group 1)<br /> when the state of the Micro Smart Switch's load changed
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">The LED will follow the status of its load</option>
@@ -137,7 +137,7 @@ Enable the device to send notification to associated devices (Group 1)<br /> whe
         <label>90: Enables/disables parameter 91/92</label>
         <description><![CDATA[
 Parameter to Enable/Disable automated sending of a Report <br /> triggered by minimal change of value.
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -150,7 +150,7 @@ Parameter to Enable/Disable automated sending of a Report <br /> triggered by mi
         <label>91: Minimum Change to send Report (Watt)</label>
         <description><![CDATA[
 The value represents the minimum change in Wattage <br /> for a Report to be sent. Range is 0 - 32000
-        !]]></description>
+        ]]></description>
         <default>25</default>
       </parameter>
 
@@ -159,7 +159,7 @@ The value represents the minimum change in Wattage <br /> for a Report to be sen
         <label>92: Minimum Change to send Report (%)</label>
         <description><![CDATA[
 The value represents the minimum change in Wattage <br /> Percent for a report to be sent. Range is 0 to 100%
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 
@@ -168,7 +168,7 @@ The value represents the minimum change in Wattage <br /> Percent for a report t
         <label>100: Set 101‐103 to default</label>
         <description><![CDATA[
 Parameter to Enable/Disable automated sending of a Report <br /> triggered by minimal change of value.
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Set to Default</option>
@@ -181,7 +181,7 @@ Parameter to Enable/Disable automated sending of a Report <br /> triggered by mi
         <label>101: Report type to send to Group 1</label>
         <description><![CDATA[
 The value is a combination number <br /> made up of the sum of the values for the individual parameters. <br /> The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1. <br /> Therefore if you want all parameters sending regular r
-        !]]></description>
+        ]]></description>
         <default>4</default>
       </parameter>
 
@@ -190,7 +190,7 @@ The value is a combination number <br /> made up of the sum of the values for th
         <label>102: Report type to send to Group 2</label>
         <description><![CDATA[
 The value is a combination number <br /> made up of the sum of the values for the individual parameters. <br /> The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1. <br /> Therefore if you want all parameters sending regular re
-        !]]></description>
+        ]]></description>
         <default>8</default>
       </parameter>
 
@@ -199,7 +199,7 @@ The value is a combination number <br /> made up of the sum of the values for th
         <label>103: Report type to send to Group 3</label>
         <description><![CDATA[
 The value is a combination number <br /> made up of the sum of the values for the individual parameters. <br /> The parameters have the values: KWH=8, Wattage=4, Current=2, Voltage=1. <br /> Therefore if you want all parameters sending regular re
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -208,7 +208,7 @@ The value is a combination number <br /> made up of the sum of the values for th
         <label>111: Interval to send out reports to Group 1</label>
         <description><![CDATA[
 Defines the time interval when the defined report of Reporting Group 1 is sent out. <br /> 0 s - 65535 s - Interval
-        !]]></description>
+        ]]></description>
         <default>720</default>
       </parameter>
 
@@ -217,7 +217,7 @@ Defines the time interval when the defined report of Reporting Group 1 is sent o
         <label>112: Interval to send out reports of group 2</label>
         <description><![CDATA[
 Defines the time interval when the defined report of Reporting Group 1 is sent out. <br /> 0 s - 65535 s - Interval
-        !]]></description>
+        ]]></description>
         <default>720</default>
       </parameter>
 
@@ -226,7 +226,7 @@ Defines the time interval when the defined report of Reporting Group 1 is sent o
         <label>113: Interval to send out reports of group 3</label>
         <description><![CDATA[
 Defines the time interval when the defined report of Reporting Group 1 is sent out. <br /> 0 s - 65535 s - Interval
-        !]]></description>
+        ]]></description>
         <default>65535</default>
       </parameter>
 

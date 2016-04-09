@@ -59,7 +59,7 @@
         <label>1: Re-trigger Wait Time</label>
         <description><![CDATA[
 Re-trigger Wait Time<br /><h1>Overview</h1><p>By default, to conserve battery life, after the WAPIRZ-1 detects motion it cannotbe re-triggered by motion again for 3 minutes. Each time motion is detected(even during this wait time) the 3 minute timer starts over.</p>
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 

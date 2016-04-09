@@ -126,7 +126,7 @@
         <label>11: Automatic turning off relay Q1 after set time</label>
         <description><![CDATA[
 Auto OFF enabled with define time, step is 10 mseconds<br /><ul><li>0 = Auto OFF disabled</li> <li>1–65535 = 0,01 second – 655,35 seconds</li></ul>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -135,7 +135,7 @@ Auto OFF enabled with define time, step is 10 mseconds<br /><ul><li>0 = Auto OFF
         <label>12: Automatic turning off relay Q2 after set time</label>
         <description><![CDATA[
 Auto OFF enabled with define time, step is 10 mseconds<br /><ul><li>0 = Auto OFF disabled</li> <li>1–65535 = 0,01 second – 655,35 seconds</li></ul>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -155,7 +155,7 @@ Auto OFF enabled with define time, step is 10 mseconds<br /><ul><li>0 = Auto OFF
         <label>40: Power reporting in Watts on power change for Q1</label>
         <description><![CDATA[
 Power report is sent (pushed) only when actual power in Watts in real time changed for more than set percentage comparing to previous actual power in Watts, step is 1%.<br /><ul><li>0 = Reporting Disabled</li> <li>1–100 = 1% - 100% Reporti</li></ul>
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -164,7 +164,7 @@ Power report is sent (pushed) only when actual power in Watts in real time chang
         <label>41: Power reporting in Watts on power change for Q2</label>
         <description><![CDATA[
 Power report is sent (pushed) only when actual power in Watts in real time changed for more than set percentage comparing to previous actual power in Watts, step is 1%.<br /><ul><li>0 = Reporting Disabled</li> <li>1–100 = 1% - 100% Reporti</li></ul>
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -173,7 +173,7 @@ Power report is sent (pushed) only when actual power in Watts in real time chang
         <label>42: Power reporting in Watts by time interval for Q1</label>
         <description><![CDATA[
 default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li> <li>1–65535 = 1 second – 65535 seconds. Reporting enabled. Power report is sent with time interval set by entered value.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>300</default>
       </parameter>
 
@@ -182,7 +182,7 @@ default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = 
         <label>43: Power reporting in Watts by time interval for Q2</label>
         <description><![CDATA[
 default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = Reporting Disabled</li> <li>1–65535 = 1 second – 65535 seconds. Reporting enabled. Power report is sent with time interval set by entered value.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>300</default>
       </parameter>
 

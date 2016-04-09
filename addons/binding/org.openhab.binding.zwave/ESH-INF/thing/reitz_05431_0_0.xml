@@ -95,7 +95,7 @@
         <label>10: Typical click timeout</label>
         <description><![CDATA[
 Typical time used to differentiate click, hold, double and triple clicks<br />Defined in 10ms ticks.
-        !]]></description>
+        ]]></description>
         <default>50</default>
       </parameter>
 

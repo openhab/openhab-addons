@@ -9,7 +9,7 @@
     <label>ZW096 Smart Switch 6</label>
     <description><![CDATA[
 Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power binary switch device based on Z-Wave enhanced 232 slave library V6.51.06.</p> <p>Its surface has the Smart RGB LEDs on, which can be used for indicating the output load status, the strength of wireless signal. You can also configure its indication colour according to your favour.</p> <p>It can be included and operated in any Z-wave network with other Z-wave certified devices from other manufacturers and/or other applications. All non-battery operated nodes within the network will act as repeaters regardless of vendor to increase reliability of the network.</p> <p>It is also a security Z-wave device and supports the Over The Air (OTA) feature for the product’s firmware upgrade.<br />As soon as Smart Switch is removed from a z-wave network it will be restored into default factory setting.</p> <p>Reset Smart Switch to factory Default:</p> <ol><li>Make sure the Smart Switch has been connected to the power supply.</li> <li>Press and hold the Z-wave button for 20 seconds.</li> <li>If holding time more than one second, the LED will blink faster and faster. If holding time more than 20seconds, the green LED will be on for 2 seconds and then remain colorful gradient status, it indicates reset success, otherwise please repeat step 2.</li> </ol><p>Note:</p> <ol><li>This procedure should only be used when the primary controller is inoperable.</li> <li>Reset Smart Switch to factory default settings will: sets the Smart Switch to not in Z-Wave network state; delete the Association setting, power measure value, Scene Configuration Settings and restore the Configuration setting to the default</li> </ol><br /><h2>Inclusion Information</h2><p>Add Smart Switch into a z-wave network:</p> <ol><li>Insert the Smart Switch to power socket, The purple LED will be colorful gradient status.</li> <li>Let the primary controller into inclusion mode (If you don’t know how to do this, refer to its manual).</li> <li>Press the Action button.</li> <li>If the inclusion success, Smart Switch LED will be solid. Otherwise, the LED will remain colorful gradient status, in which you need to repeat the process from step 2.</li> </ol><br /><h2>Exclusion Information</h2><p>Remove Smart Switch from a z-wave network:</p> <ol><li>Insert the Smart Switch to power socket, The Smart Switch LED will be solid.</li> <li>Let the primary controller into remove mode (If you don’t know how to do this, refer to its manual).</li> <li>Press the Action button.</li> <li>If the remove is successful, Smart Switch LED will blink slowly. If Smart Switch LED still be solid, please repeat the process from step 2.</li> </ol><br /><h2>Wakeup Information</h2><p>mains device</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -74,7 +74,7 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
         <label>3: Current overload protection enable</label>
         <description><![CDATA[
 Current overload protection enable<br /><h1>Overview</h1><p>Current Overload Protection. Load will be closed when the Current overrun (US: 15.5A, other country: 16.2A) and the time more than 2 minutes (0=disabled, 1=enabled).</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">disabled</option>
@@ -87,7 +87,7 @@ Current overload protection enable<br /><h1>Overview</h1><p>Current Overload Pro
         <label>20: Output load after re-power</label>
         <description><![CDATA[
 Configure the output load status after re‐power<br /><h1>Overview</h1><p>Configure the output load status after re-power on<br />(0=last status, 1=always on, 2=always off)</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">last status</option>
@@ -101,7 +101,7 @@ Configure the output load status after re‐power<br /><h1>Overview</h1><p>Confi
         <label>80: Enable send to associated devices</label>
         <description><![CDATA[
 Enable to send notifications to Group 1<br /><h1>Overview</h1><p>Enable to send notifications to associated devices (Group 1) when the state of Micro Switch’s load changed (0=nothing, 1=hail CC, 2=basic CC report).</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">nothing</option>
@@ -115,7 +115,7 @@ Enable to send notifications to Group 1<br /><h1>Overview</h1><p>Enable to send 
         <label>81: Configure LED state</label>
         <description><![CDATA[
 Configure the state of the LED<br /><h1>Overview</h1><p>Configure the state of LED when it is in 3 modes below:</p> <ul><li>0= The LED will follow the status (on/off) of its load (Energy mode).</li> <li>1= When the state of Switch’s load changed, The LED will follow the status (on/off) of its load, but the red LED will turn off after 5 seconds if there is no any switch action (momentary indicate mode).</li> <li>2= Night light mode.</li> </ul>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">LED follows load</option>
@@ -129,7 +129,7 @@ Configure the state of the LED<br /><h1>Overview</h1><p>Configure the state of L
         <label>83: Red night light color value</label>
         <description><![CDATA[
 Configure the RGB value when it is in Night light mode<br /><h1>Overview</h1><p>Configure the RGB value when it is in Night light mode.<br />Value1: Red color value<br />Value2: Green color value<br />Value3: Blue color value</p> <p>defaults:</p> <p>Value1=0xDD<br />Value2=0xA0<br />Value3=0xDD</p>
-        !]]></description>
+        ]]></description>
         <default>221</default>
       </parameter>
 
@@ -138,7 +138,7 @@ Configure the RGB value when it is in Night light mode<br /><h1>Overview</h1><p>
         <label>83: Green night light color value</label>
         <description><![CDATA[
 Green night light color value<br /><h1>Overview</h1><p>Green color value for parameter 83, night light mode.</p>
-        !]]></description>
+        ]]></description>
         <default>160</default>
       </parameter>
 
@@ -147,7 +147,7 @@ Green night light color value<br /><h1>Overview</h1><p>Green color value for par
         <label>83: Blue night light color value</label>
         <description><![CDATA[
 Blue night light color value<br /><h1>Overview</h1><p>Value for parameter 83, night light blue color</p>
-        !]]></description>
+        ]]></description>
         <default>221</default>
       </parameter>
 
@@ -156,7 +156,7 @@ Blue night light color value<br /><h1>Overview</h1><p>Value for parameter 83, ni
         <label>84: Green brightness in energy mode (%)</label>
         <description><![CDATA[
 Green brightness in energy mode (%)<br /><h1>Overview</h1><p>Configure the brightness level of RGB LED (0%-100%) when<br />it is in Energy Mode/momentary indicate mode.<br />Value1: green color value.<br />Value2: yellow color value.<br />Value3: red color value.</p>
-        !]]></description>
+        ]]></description>
         <default>50</default>
       </parameter>
 
@@ -179,7 +179,7 @@ Green brightness in energy mode (%)<br /><h1>Overview</h1><p>Configure the brigh
         <label>90: Enable items 91 and 92</label>
         <description><![CDATA[
 Enables/disables parameter 91 and 92<br /><h1>Overview</h1><p>Enables/disables parameter 91 and 92 below (1=enabled, 0=disabled).</p>
-        !]]></description>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">disabled</option>
@@ -192,7 +192,7 @@ Enables/disables parameter 91 and 92<br /><h1>Overview</h1><p>Enables/disables p
         <label>91: Wattage Threshold</label>
         <description><![CDATA[
 minimum change in wattage to trigger<br /><h1>Overview</h1><p>The value here represents minimum change in wattage (in<br />terms of wattage) for a REPORT to be sent (Valid values 0-<br />60000).</p>
-        !]]></description>
+        ]]></description>
         <default>25</default>
       </parameter>
 
@@ -201,7 +201,7 @@ minimum change in wattage to trigger<br /><h1>Overview</h1><p>The value here rep
         <label>92: Wattage Percent Change</label>
         <description><![CDATA[
 minimum change in wattage percent<br /><h1>Overview</h1><p>The value here represents minimum change in wattage<br />percent (in terms of percentage) for a REPORT to be sent<br />(Valid values 0-100).</p>
-        !]]></description>
+        ]]></description>
         <default>5</default>
       </parameter>
 
@@ -217,7 +217,7 @@ minimum change in wattage percent<br /><h1>Overview</h1><p>The value here repres
         <label>101: Values to send to group 1</label>
         <description><![CDATA[
 Which reports need to send in Report group 1<br /><h1>Overview</h1><p>Add the values below together to arrive at the desired combination:</p> <p>0  nothing</p> <p>1  Auto send Meter REPORT for voltage at the group time interval</p> <p>2  Auto send Meter REPORT for current at the group time interval</p> <p>4  Auto send Meter REPORT for wattage at the group time interval</p> <p>8  Auto send Meter REPORT for kWh at the group time interval</p> <p>eg.  To send all report set this value to 15.  Default is 4</p>
-        !]]></description>
+        ]]></description>
         <default>4</default>
       </parameter>
 
@@ -225,8 +225,8 @@ Which reports need to send in Report group 1<br /><h1>Overview</h1><p>Add the va
                  min="0" max="15">
         <label>102: Values to send to group 2</label>
         <description><![CDATA[
-Which reports need to send in Report group 2<br /><h1>Overview</h1><p>Add the values below together to arrive at the desired combination:</p> <p>0  nothing</p> <p>1  Auto send Meter REPORT for voltage at the group time interval</p> <p>2  Auto send Meter REPORT for current at the group time interval</p> <p>4  Auto send Meter REPORT for wattage at the group time interval</p> <p>8  Auto send Meter REPORT for kWh at the group time interval</p> <p>eg.  To send all report set this value to 15.  Default is 4</p>
-        !]]></description>
+Which reports need to send in Report group 2<br /><h1>Overview</h1><p>Add the values below together to arrive at the desired combination:</p> <p>0  nothing</p> <p>1  Auto send Meter REPORT for voltage at the group time interval</p> <p>2  Auto send Meter REPORT for current at the group time interval</p> <p>4  Auto send Meter REPORT for wattage at the group time interval</p> <p>8  Auto send Meter REPORT for kWh at the group time interval</p> <p>eg.  To send all report set this value to 15.  Default is 8</p>
+        ]]></description>
         <default>8</default>
       </parameter>
 
@@ -235,7 +235,7 @@ Which reports need to send in Report group 2<br /><h1>Overview</h1><p>Add the va
         <label>111: Time interval for sending to group 1</label>
         <description><![CDATA[
 Group 1 automatic update interval<br /><h1>Overview</h1><p>The time interval of sending Report group 1 (Valid values 0x01-0xFFFFFFFF).</p> <p>Default value is 3</p> <p>Note: Only up to 0x7fffffff is currently supported</p>
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
@@ -244,7 +244,7 @@ Group 1 automatic update interval<br /><h1>Overview</h1><p>The time interval of 
         <label>112: Time interval for sending to group 2</label>
         <description><![CDATA[
 Group 2 automatic update interval<br /><h1>Overview</h1><p>The time interval of sending Report group 1 (Valid values 0x01-0xFFFFFFFF).</p> <p>Default value is 600</p> <p>Note: Only up to 0x7fffffff is currently supported</p>
-        !]]></description>
+        ]]></description>
         <default>600</default>
       </parameter>
 
@@ -253,7 +253,7 @@ Group 2 automatic update interval<br /><h1>Overview</h1><p>The time interval of 
         <label>252: Configuration Locked</label>
         <description><![CDATA[
 Enable/disable Configuration Locked (0 =disable, 1 = enable). <br /><h1>Overview</h1><p>Enable/disable Configuration Locked (0 =disable, 1 =enable).</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">disabled</option>
@@ -266,7 +266,7 @@ Enable/disable Configuration Locked (0 =disable, 1 = enable). <br /><h1>Overview
         <label>255: RESET</label>
         <description><![CDATA[
 Reset the device to defaults<br /><h1>Overview</h1><p>Reset configuration set up to default setting.</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <advanced>true</advanced>
       </parameter>
@@ -281,7 +281,7 @@ Reset the device to defaults<br /><h1>Overview</h1><p>Reset configuration set up
         <label>1: Group 1</label>
         <description><![CDATA[
 load notification type<br /><h1>Overview</h1><p>When the state of Smart Switch (turn on/off the load ) is changed:</p> <ol><li>Set Configuration parameter 80 to 0 Reserved (Default).</li> <li>Set Configuration parameter 80 to 1 Send Hail CC.</li> <li>Set Configuration parameter 80 to 2: Send the Basic Report.</li> </ol>
-        !]]></description>
+        ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
@@ -289,7 +289,7 @@ load notification type<br /><h1>Overview</h1><p>When the state of Smart Switch (
         <label>2: Group 2</label>
         <description><![CDATA[
 forwarding basic set<br /><h1>Overview</h1><p>Forward the Basic Set, Switch Binary Set to associated nodes in Group 2 when the Smart Switch receives the Basic Set, Switch Binary Set commands from main controller.</p>
-        !]]></description>
+        ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 

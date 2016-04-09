@@ -62,11 +62,17 @@
       </parameter-group>
 
       <parameter name="group_1" type="text" groupName="association">
-        <label>1: Alarm notifications</label>
+        <label>1: Power applied and Sensor Alarm</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>The Detector will send ALARM_REPORT command to the nodes of Group 1 to inform the devices that the Detector is powered up.</p> <p>ALARM_REPORT Command: [Command Class Alarm, Alarm Type = 0x02, Alarm Level = 0x01]</p> <p>The second type for Group 1 is SENSOR_ALARM_REPORT.  255 = Alarm, 00 = Event clear.</p> <p>The third type for Group 1 is ALARM_REPORT type 0x01, Low battery</p>
+        ]]></description>
       </parameter>
 
       <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Device control</label>
+        <description><![CDATA[
+Group to send trigger value to<br /><h1>Overview</h1><p>Will send values of 0-99 to devices in Group 2.  Set the value to send in Parameter 1.</p>
+        ]]></description>
         <multipleLimit>3</multipleLimit>
       </parameter>
 

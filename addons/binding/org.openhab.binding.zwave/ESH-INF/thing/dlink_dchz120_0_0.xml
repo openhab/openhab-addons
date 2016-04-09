@@ -65,7 +65,7 @@
         <label>2: Basic Set Level</label>
         <description><![CDATA[
 Setting the BASIC command value to turn on the light.<br /><h1>Overview</h1><ul><li>0: Turn off the light.</li> <li>1 - 100: For dimmers 1 to 100 means the light level.</li> <li>255: Turns on the light. (Default) </li> </ul>
-        !]]></description>
+        ]]></description>
         <default>255</default>
         <options>
           <option value="0">Off</option>
@@ -78,7 +78,7 @@ Setting the BASIC command value to turn on the light.<br /><h1>Overview</h1><ul>
         <label>2: </label>
         <description><![CDATA[
 Basic Set Level<br /><h1>Overview</h1><ul><li>0: Turn off the light.</li> <li>1 - 100: For dimmers 1 to 100 means the light level.</li> <li>255: Turns on the light. (Default) </li> </ul>
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -87,7 +87,7 @@ Basic Set Level<br /><h1>Overview</h1><ul><li>0: Turn off the light.</li> <li>1 
         <label>3: PIR Sensitivity</label>
         <description><![CDATA[
 Set the sensitivity for the PIR (Passive Infrared Sensor).<br /><h1>Overview</h1><ul><li>0 = Disable the PIR motion detection.</li> <li>1 - 99 = 1 means the lowest sensitivity, 99 means the highest sensitivity</li> </ul><p>High sensitivity means de</p>
-        !]]></description>
+        ]]></description>
         <default>70</default>
         <options>
           <option value="0">Disable</option>
@@ -99,7 +99,7 @@ Set the sensitivity for the PIR (Passive Infrared Sensor).<br /><h1>Overview</h1
         <label>4: Light Threshold</label>
         <description><![CDATA[
 Set the illumination threshold to turn on the light. <br /><h1>Overview</h1><p>When the event triggers and the environment illumination is lower than the threshold, the device will turn on the light.</p> <ul><li>0 = Turn off illumination detected function and never turn</li> </ul>
-        !]]></description>
+        ]]></description>
         <default>100</default>
         <options>
           <option value="0">Disable</option>
@@ -111,7 +111,7 @@ Set the illumination threshold to turn on the light. <br /><h1>Overview</h1><p>W
         <label>5: Operation Mode</label>
         <description><![CDATA[
 Parameter to set the Operation Mode.<br /><ul><li>Bit 0: Reserved.</li> <li>Bit 1: 1 means enable test mode; 0 means normal mode. Notice: Ignored if DIP Switch is not set to Customer Mode.</li> <li>Bit 2: Disable the door/window function. 1</li></ul>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -120,7 +120,7 @@ Parameter to set the Operation Mode.<br /><ul><li>Bit 0: Reserved.</li> <li>Bit 
         <label>6: Multi-Sensor Function Switch</label>
         <description><![CDATA[
 Parameter to set the sensor functions.<br /><ul><li>Bit 0: Disable magnetic integrate illumination to turn on the lighting nodes in the association group 2. 1: Disable, 0: Enable</li> <li>Bit 1: Disable PIR integrate Illumination to turn on the </li></ul>
-        !]]></description>
+        ]]></description>
         <default>4</default>
       </parameter>
 
@@ -129,7 +129,7 @@ Parameter to set the sensor functions.<br /><ul><li>Bit 0: Disable magnetic inte
         <label>7: Customer Function</label>
         <description><![CDATA[
 Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Parameter 7 Customer Function. </strong></p> <strong>Available_Bits_for_Z110_Model</strong> <strong>Default </strong> <strong>Recommended</strong> Bit0: unused for Z110 Model 0 0 Bit1: unused for Z110 Model 0 0 Bit2: unused for Z110 Model 1 1 Bit3: Disable send out BASIC OFF after door closed. (1:Disable, 0:Enable) 0 0 Bit4: Notification Type, 0: Using Notification Report. 1: Using Sensor Binary Report.  0 1 Bit5: Disable Multi CC in auto report. (1:Disable, 0:Enable). 0 0 Bit6: Disable to report battery state when the device triggered. (1:Disable, 10 0:Enable). 0 0 Bit7: unused for Z110 Model 0 0 <p>Comments / Tips for this device from the community:</p> <ul><li>Setting this Parameter to <strong>20</strong> is from user side wanted as this enables Binary Sensor to report OPEN / CLOSE status by changing Bit 4</li> </ul> <p>The calculation from the recommended column is:  Bit7 to Bit0 = 000100100 Binary which is euqal to 20 decimal</p>
-        !]]></description>
+        ]]></description>
         <default>4</default>
         <advanced>true</advanced>
       </parameter>
@@ -179,7 +179,7 @@ Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Paramet
         <label>8: PIR Re-Detect Interval Time</label>
         <description><![CDATA[
 In the normal mode, after the PIR motion detected, setting the re-detect time. 8 seconds per tick, default is 3 (24 seconds).<br /><ul><li>1 - 127 = Number of ticks. 8 seconds per tick, default value is 3 (24 seconds).</li></ul>
-        !]]></description>
+        ]]></description>
         <default>3</default>
       </parameter>
 
@@ -188,7 +188,7 @@ In the normal mode, after the PIR motion detected, setting the re-detect time. 8
         <label>9: Turn Off Light Time</label>
         <description><![CDATA[
 After turn on the light, setting the delay time to turn off the light when the PIR motion is not detected.<br /><ul><li>0 = Never send turn off light command.</li> <li>1 - 127 = Number of ticks. 8 seconds per tick, default value is 4 (32 seconds</li></ul>
-        !]]></description>
+        ]]></description>
         <default>4</default>
       </parameter>
 
@@ -197,7 +197,7 @@ After turn on the light, setting the delay time to turn off the light when the P
         <label>10: Auto Report Battery Time</label>
         <description><![CDATA[
 The interval time for auto reporting the battery level.<br /><ul><li>0 = Turn off auto report battery.</li> <li>1-127 = Number of ticks. The default value is 12. The tick time can be set by configuration No. 20.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>12</default>
       </parameter>
 
@@ -206,7 +206,7 @@ The interval time for auto reporting the battery level.<br /><ul><li>0 = Turn of
         <label>11: Auto Report Door/Window State Time</label>
         <description><![CDATA[
 The interval time for auto reporting the door/window state.<br /><ul><li>0 = Turn off auto report door/window state.</li> <li>1-127 = Number of ticks. The default value is 12. The tick time can be set by configuration No. 20.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>12</default>
       </parameter>
 
@@ -215,7 +215,7 @@ The interval time for auto reporting the door/window state.<br /><ul><li>0 = Tur
         <label>12: Auto Report Illumination Time</label>
         <description><![CDATA[
 The Interval time for auto reporting the illumination state.<br />0 = Turn off auto report illumination. 1-127 = Number of ticks. The default value is 12. The tick time can be set by configuration No. 20.
-        !]]></description>
+        ]]></description>
         <default>12</default>
       </parameter>
 
@@ -224,7 +224,7 @@ The Interval time for auto reporting the illumination state.<br />0 = Turn off a
         <label>13: Auto Report Temperature Time</label>
         <description><![CDATA[
 The interval time for auto reporting the temperature state.<br /><ul><li>0 = Turn off auto report temperature.</li> <li>1-127 = Number of ticks. The default value is 12. The tick time can be set by configuration No. 20.</li></ul>
-        !]]></description>
+        ]]></description>
         <default>12</default>
       </parameter>
 
@@ -247,7 +247,7 @@ The interval time for auto reporting the temperature state.<br /><ul><li>0 = Tur
         <label>22: Illumination Differential Report</label>
         <description><![CDATA[
 The illumination differential to report. The unit is percentage. When enabled, the device will measure every minute. Enabling this functionality will cause some issue. Please check the “Illumination Report” section of the Multisensor manual.<br />
-        !]]></description>
+        ]]></description>
         <default>1</default>
       </parameter>
 

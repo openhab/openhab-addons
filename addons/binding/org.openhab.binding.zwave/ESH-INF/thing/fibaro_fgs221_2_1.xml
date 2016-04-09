@@ -94,7 +94,7 @@
         <label>6: Sending commands to control devices assigned to 1-st association group (key no. 1)</label>
         <description><![CDATA[
 Sending commands to control devices assigned to 1-st association group (key no. 1)<br /><h1>Overview</h1><p>NOTE: Parameter 15 value must be set to 1 to work properly. This activates the double-click functionality - dimmer/roller shutter control</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Commands are sent when device is turned on and off</option>
@@ -108,7 +108,7 @@ Sending commands to control devices assigned to 1-st association group (key no. 
         <label>7: Sending commands to control devices assigned to 2-nd association group (key no. 2)</label>
         <description><![CDATA[
 Sending commands to control devices assigned to 2-nd association group (key no. 2)<br /><h1>Overview</h1><p>Info: Parameter 15 must be set to 1 to make this parameter work properly. This activates the double-click functionality - dimmer/roller shutter control.</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Commands are sent when device is turned on and off</option>
@@ -122,7 +122,7 @@ Sending commands to control devices assigned to 2-nd association group (key no. 
         <label>13: Assigns bistable key status to the device status</label>
         <description><![CDATA[
 Assigns bistable key status to the device status<br /><h1>Overview</h1><p>Info: Remote control from Fibaro System Is Still Possible. This function is useful When you want display status of external devices, e.g. Motion Sensor, in Fibaro System.</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">[On / Off] device changes status on key status change</option>
@@ -157,7 +157,7 @@ Assigns bistable key status to the device status<br /><h1>Overview</h1><p>Info: 
         <label>16: Saving the state of the device after a power failure</label>
         <description><![CDATA[
 Fibaro Switch returns to the last position saved before a power failure<br /><h1>Overview</h1><p>Options for changing the parameter 0-1</p>
-        !]]></description>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">Fibaro Switch does not save the state after a power failure</option>

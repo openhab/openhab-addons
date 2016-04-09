@@ -59,7 +59,7 @@
         <label>1: Sensitivity</label>
         <description><![CDATA[
 Sensitivity sets the amount of motion required for EZMotion to detect motion. A higher value makes it more sensitive and a lower value makes it less sensitive. Note that values above 200 are not recommended when EZMotion is battery operated.<br /> Reco
-        !]]></description>
+        ]]></description>
         <default>200</default>
       </parameter>
 
@@ -93,7 +93,7 @@ Sensitivity sets the amount of motion required for EZMotion to detect motion. A 
         <label>5: Stay Awake</label>
         <description><![CDATA[
 Setting Stay Awake to a non-zero value will cause EZMotion to always be awake. NOTE: this mode should NOT be used when EZMotion is battery powered! Batteries will only last a few days in this mode.<br /> Stay Awake is NOT set to the factory default (0) wh
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -102,7 +102,7 @@ Setting Stay Awake to a non-zero value will cause EZMotion to always be awake. N
         <label>6: On Value</label>
         <description><![CDATA[
 On Value is the value sent by the Z-Wave BASIC_SET command when motion is detected.<br /> A value of 0 will turn the lights off (not recommended).<br /> A value between 1 and 100 will set the dim level to between 1% and 100%.<br /> A value of 255 will tur
-        !]]></description>
+        ]]></description>
         <default>255</default>
       </parameter>
 

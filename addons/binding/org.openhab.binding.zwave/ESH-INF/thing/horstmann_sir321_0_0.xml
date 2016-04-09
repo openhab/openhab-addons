@@ -9,7 +9,7 @@
     <label>SIR-321 RF Countdown Timer</label>
     <description><![CDATA[
 RF Countdown Timer<br /><h1>Overview</h1><p>Wirelessly controllable 3 KW wall switch timer function</p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>

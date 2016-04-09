@@ -83,7 +83,7 @@
         <label>121: command class to use for open/close</label>
         <description><![CDATA[
 parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p> <p>Set to 1 for BATTERY report</p> <p>Set to 16 for SENSOR_BINARY report</p> <p>Set to 17 for SENSOR_BINARY and BATTERY</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">not set</option>
@@ -98,7 +98,7 @@ parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p> <p>Set to 
         <label>121: command class to use for open/close</label>
         <description><![CDATA[
 see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p> <p>set to 1 for BASIC report (default)</p>
-        !]]></description>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">not set</option>

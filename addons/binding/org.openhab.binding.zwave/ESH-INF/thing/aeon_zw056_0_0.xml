@@ -9,7 +9,7 @@
     <label>ZW056 Doorbell</label>
     <description><![CDATA[
 Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device based on Z-wave enhanced slave library V6.51.06.</p> <p>The Doorbell supports playing MP3 music files with a press of this doorbell. It has a 16MB flash memory that can store up to 100 ringtones. The volume can be adjusted manually via short press on the Volume Button, also you can switch the doorbell sound to the next via long press on the Volume Button. You may change/update your doorbell ringtone at any point in time you want by connecting your Doorbell to your PC to update the sound track on your Doorbell’s flash memory. </p> <br /><h2>Inclusion Information</h2><p>1. Install Doorbell, and plug it into the socket of AC Power.<br />2. Let the primary controller into inclusion mode (If you don’t know how to do this, please refer to its manual).<br />3. Press the Action Button.<br />4. If the inclusion is failed, please repeat the process from step 2. </p> <br /><h2>Exclusion Information</h2><p>1. Install Doorbell, and plug it into the socket of AC Power.<br />2. Let the primary controller into exclusion mode (If you don’t know how to do this, refer to its manual).<br />3. Press the Action Button.<br />4. If the remove is failed, please repeat the process from step 2.</p> <p>Note: If Doorbell is removed from Z-wave network, it will be reset to factory default. </p>
-    !]]></description>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -87,7 +87,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
         <label>10: Define button- and button+ action</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>0:  button- is previous, button+ is next</p> <p>1:  button- is next, button+ is previous</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -96,7 +96,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
         <label>11: Define long press button- and button+</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>0: short pressing changes volume, long pressing changes<br />default ringtone.<br />1: long pressing changes volume, short pressing changes<br />default ringtone.<br /></p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -105,7 +105,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
         <label>42: Get wireless button battery status</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>0x00:  normal battery level</p> <p>0xff:  low battery level</p> <p>set 0x00:  cancel low battery alert</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -114,7 +114,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
         <label>80: Enable Notifications</label>
         <description><![CDATA[
 Enable to send notifications to associated devices (Group1) when the state of Siren changed (0=nothing,1=hailCC,2=basic CC report).<br /><h1>Overview</h1>Enable/disable to send notifications to associated devices (Group 1) when the state of Doorbell is changed (0=nothing, 1=hail CC, 2=basic CC report)
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="10">Define buton- and button+ functions</option>
@@ -126,7 +126,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>81: Enable/disable battery group notification</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>Enable/disable to send notifications to associated devices (Group<br />1) when the Wireless Button’s battery is in low battery state<br />(0=nothing, 1=Configuration report 0x2A)</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -135,7 +135,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>241: Pair doorbell with button</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>Pair the Wireless Button with Doorbell.<br />Value=0x55555555, Start the Wireless Button pairing mode and<br />the blue Led will blink slowly, short press the Wireless Button<br />once, if the blue Led change to be solid, which means the pairing<br />is successful. Otherwise, repeat the steps.<br />It will automatically exit the pairing mode after 8s if there is no<br />pressing action of the Wireless Button.<br />Note:<br />You can send this configuration Get CC to ask the pairing result:<br />If configuration report value=0x00000000, which means the<br />pairing is failed.<br />If configuration report value =0xFFFFFFFF, which means the<br />pairing is successful.<br /></p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -144,7 +144,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>252: Lock configuration</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>0:  config not locked</p> <p>1:  config locked</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -159,7 +159,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>255: Reset</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>1. Size=0x01， Configuration Value=0x00:<br />Reset configuration setting.<br />2. Size=0x04， Configuration Value=0x55555555:<br />Reset Factory setting.</p>
-        !]]></description>
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -173,7 +173,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>1: Group 1</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>When the state of Doorbell (trigger to turn on/off the rington<br />e ) is changed:<br />1, Set Configuration parameter 80 to 0： Reserved (Default).<br />2, Set Configuration parameter 80 to 1： Send Hail CC.<br />3. Set Configuration parameter 80 to 2: Send the Basic<br />Report.</p>
-        !]]></description>
+        ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
@@ -181,7 +181,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>2: Forward basic set</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>Forward the Basic Set, Switch Binary Set, Switch Multilevel<br />Start Level Change, Switch Multilevel Stop Level Change,<br />Switch Multilevel Set, Scene Activation Set to associated<br />nodes in Group 2 when the Doorbell receives the Basic Set,<br />Switch Binary Set, Switch Multilevel Start Level Change,<br />Switch Multilevel Stop Level Change, Switch Multilevel Set,<br />Scene Activation Set commands from main controller.<br /></p>
-        !]]></description>
+        ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 

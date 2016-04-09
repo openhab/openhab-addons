@@ -76,7 +76,7 @@
         <label>80: Automatic Notifications</label>
         <description><![CDATA[
 Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables automatic notifications to associated devices whenever there is a state change.</p> (0=nothing, 1=hail CC, 2=basic CC report)
-        !]]></description>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Nothing</option>
@@ -101,7 +101,7 @@ Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables autom
         <label>91: Minimum change in wattage</label>
         <description><![CDATA[
 Minimum change in wattage to trigger event<br /><h1>Overview</h1><p>The value here represents minimum change in wattage (in terms of wattage) for a REPORT to be sent.</p>
-        !]]></description>
+        ]]></description>
         <default>50</default>
       </parameter>
 
@@ -110,7 +110,7 @@ Minimum change in wattage to trigger event<br /><h1>Overview</h1><p>The value he
         <label>92: Minimum change in wattage %</label>
         <description><![CDATA[
 Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value here represents minimum change in wattage percent (in terms of percentage) for a REPORT to be sent.</p>
-        !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 

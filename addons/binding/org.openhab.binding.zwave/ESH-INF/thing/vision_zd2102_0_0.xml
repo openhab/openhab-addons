@@ -7,7 +7,9 @@
 
   <thing-type id="vision_zd2102_00_000" listed="false">
     <label>ZD2102 Door Window Sensor</label>
-    <description>Door Window Sensor</description>
+    <description><![CDATA[
+Door Window Sensor<br /><h1>Overview</h1><p>This sensor monitors door/ window and send Z-Wave signal when door or window is opened and closed.</p> <p>When the device is secure included into Z-Wave network, above communication will be encrypted.</p>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -17,9 +19,15 @@
         </properties>
       </channel>
       <channel id="alarm_burglar" typeId="alarm_burglar">
-        <label>Alarm (burglar)</label>
+        <label>Tamper Alarm</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM;type=BURGLAR</property>
+        </properties>
+      </channel>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door Sensor</label>
+        <properties>
+          <property name="binding:*:OpenClosedType">ALARM;type=ACCESS_CONTROL</property>
         </properties>
       </channel>
     </channels>
@@ -48,10 +56,9 @@
         <description>Determines if external switch can be used.</description>
         <default>0</default>
         <options>
-          <option value="0">DISABLED</option>
-          <option value="255">ENABLED</option>
+          <option value="0">Disabled</option>
+          <option value="255">Enabled</option>
         </options>
-        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->
