@@ -115,7 +115,7 @@ public class ToonDisplayHandler extends AbstractToonHandler {
     protected void updateChannels(ToonState state) {
         logger.debug("Updating channels");
 
-        // bridge has collect new data samples
+        // bridge has collected new data samples
         // process results
         updateThermostatInfo(state.getThermostatInfo());
         updateGasUsage(state.getGasUsage());
@@ -149,11 +149,5 @@ public class ToonDisplayHandler extends AbstractToonHandler {
         } catch (ToonConnectionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-    }
-
-    @Override
-    public void initialize() {
-        logger.debug("Toon initialize");
-        updateStatus(ThingStatus.INITIALIZING);
     }
 }

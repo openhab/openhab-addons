@@ -138,7 +138,13 @@ public class ToopApiClient {
     private JsonObject validateResponce(Response response) throws ToonConnectionException {
         if (response.getStatus() != 200) {
             logger.debug("response status {}", response.getStatus());
+            clientId = clientIdChecksum = null;
             throw new ToonConnectionException("invalid api response status: " + response.getStatus());
+        }
+        if (!response.hasEntity()) {
+            logger.debug("missing entity");
+            clientId = clientIdChecksum = null;
+            throw new ToonConnectionException("empty response from api");
         }
         JsonObject json = jsonParser.parse(response.readEntity(String.class)).getAsJsonObject();
         if (!json.get("success").getAsBoolean()) {

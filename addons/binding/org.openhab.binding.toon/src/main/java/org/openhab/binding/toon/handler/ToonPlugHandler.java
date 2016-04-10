@@ -107,10 +107,4 @@ public class ToonPlugHandler extends AbstractToonHandler {
         }
     }
 
-    @Override
-    public void initialize() {
-        logger.debug("Plug initialize");
-        updateStatus(ThingStatus.INITIALIZING);
-    }
-
 }

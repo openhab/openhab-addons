@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.toon.config.ToonBridgeConfiguration;
 import org.openhab.binding.toon.internal.ToopApiClient;
 import org.openhab.binding.toon.internal.api.ToonState;
@@ -133,7 +134,11 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("This Bridge is read-only and cannot handle commands");
+        if (command == RefreshType.REFRESH) {
+            updateChannels();
+        } else {
+            logger.warn("This Bridge can only handle the REFRESH command");
+        }
     }
 
     public ToopApiClient getApiClient() {
