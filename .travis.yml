@@ -3,6 +3,7 @@ branches:
       - tado
 
 language: java
+script: mvn test -B addons/binding/org.openhab.binding.tado/pom.xml
 
 jdk:
   - oraclejdk8
