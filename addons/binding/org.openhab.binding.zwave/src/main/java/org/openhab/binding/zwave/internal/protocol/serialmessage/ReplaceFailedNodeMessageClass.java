@@ -55,25 +55,32 @@ public class ReplaceFailedNodeMessageClass extends ZWaveCommandProcessor {
 
         switch (incomingMessage.getMessagePayloadByte(0)) {
             case FAILED_NODE_REMOVE_STARTED:
+                // The replacing process started and now the new node must emit its node information frame to start the
+                // assign process.
                 logger.debug("NODE {}: Replace failed node successfully placed on stack.", nodeId);
                 break;
             case FAILED_NODE_NOT_PRIMARY_CONTROLLER:
+                // The replacing process was aborted because the controller is not a primary/inclusion/SIS controller.
                 logger.error("NODE {}: Replace failed node failed as not Primary Controller for node!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_NO_CALLBACK_FUNCTION:
+                // The replacing process was aborted because no call back function is used.
                 logger.error("NODE {}: Replace failed node failed as no callback function!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_NOT_FOUND:
-                logger.error("NODE {}: Replace failed node failed as node not found", nodeId);
+                // The replacing process aborted because the node was found, thereby not a failing node.
+                logger.error("NODE {}: Replace failed node failed as node if functioning!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_REMOVE_PROCESS_BUSY:
+                // The replacing process is busy.
                 logger.error("NODE {}: Replace failed node failed as Controller Busy!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_REMOVE_FAIL:
+                // The replacing process could not be started because of transmitter busy.
                 logger.error("NODE {}: Replace failed node failed!", nodeId);
                 transactionComplete = true;
                 break;
@@ -95,6 +102,7 @@ public class ReplaceFailedNodeMessageClass extends ZWaveCommandProcessor {
         logger.debug("NODE {}: Got ReplaceFailedNode request.", nodeId);
         switch (incomingMessage.getMessagePayloadByte(1)) {// TODO: Should this be (&& 0x0f)?
             case FAILED_NODE_OK:
+                // The node is working properly (removed from the failed nodes list). Replace process is stopped.
                 logger.error("NODE {}: Unable to remove failed node as it is not a failed node!", nodeId);
                 transactionComplete = true;
                 break;

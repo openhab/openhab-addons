@@ -169,7 +169,7 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
             if (product == null) {
                 continue;
             }
-            // logger.debug("Checking {}", product.getThingTypeUID());
+            logger.debug("Checking {}", product.getThingTypeUID());
             if (product.match(node) == true) {
                 foundProduct = product;
                 break;

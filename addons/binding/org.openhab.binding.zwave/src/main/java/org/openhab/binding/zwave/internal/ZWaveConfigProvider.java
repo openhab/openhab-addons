@@ -36,7 +36,6 @@ import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
-import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveUserCodeCommandClass;
@@ -217,21 +216,24 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             }
         }
 
+        List<ParameterOption> options = new ArrayList<ParameterOption>();
+        options.add(new ParameterOption(ZWaveBindingConstants.ACTION_CHECK_VALUE.toString(), "Do"));
+
         // If we're FAILED, allow removing from the controller
-        if (node.getNodeState() == ZWaveNodeState.FAILED) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.INTEGER)
-                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("-232323")
-                    .withGroupName("actions").build());
-        } else {
-            // Otherwise, allow us to put this on the failed list
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.INTEGER)
-                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("-232323")
-                    .withGroupName("actions").build());
-        }
+        // if (node.getNodeState() == ZWaveNodeState.FAILED) {
+        parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.INTEGER)
+                .withLabel("Remove device from controller").withAdvanced(true).withOptions(options)
+                .withDefault("-232323").withGroupName("actions").build());
+        // } else {
+        // Otherwise, allow us to put this on the failed list
+        parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.INTEGER)
+                .withLabel("Set device as FAILed").withAdvanced(true).withOptions(options).withDefault("-232323")
+                .withGroupName("actions").build());
+        // }
 
         if (node.isInitializationComplete() == true) {
             parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.INTEGER)
-                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("-232323")
+                    .withLabel("Reinitialise the device").withAdvanced(true).withOptions(options).withDefault("-232323")
                     .withGroupName("actions").build());
         }
 

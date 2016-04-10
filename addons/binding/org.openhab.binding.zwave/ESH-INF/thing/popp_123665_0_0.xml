@@ -58,6 +58,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -69,28 +70,25 @@
       <parameter name="config_1_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>1: Watt Meter Report Period</label>
-        <description>If the setting is configured for 1hour (set value
-				=720), the device will report its instant power consumption every 1
-				hour to Z-Wave Controller. (in seconds)</description>
+        <description>If the setting is configured for 1hour (set value =720), the device will report its instant power consumption every 1 hour to Z-Wave Controller. (in seconds)</description>
         <default>720</default>
+        <options>
+          <option value="99999">TEST</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>2: KWH Meter Report Period</label>
-        <description>if the setting is configured for 1hour (set value
-				=6), the device will report its Accumulated Power Consumption (KW/h)
-				every hour (in seconds)</description>
+        <description>if the setting is configured for 1hour (set value =6), the device will report its Accumulated Power Consumption (KW/h) every hour (in seconds)</description>
         <default>6</default>
       </parameter>
 
       <parameter name="config_4_2" type="integer" groupName="configuration"
                  min="0" max="65535">
-        <label>4: Threshold of KWh for Load caution </label>
-        <description>This is a warning when the KWh of load over the
-				preset threshold value, if the Accumulated Power Consumption exceeds
-				the setting value the device will send a warning alarm command to
-				the controller.</description>
+        <label>4: Threshold of KWh for Load caution</label>
+        <description>This is a warning when the KWh of load over the preset threshold value, if the Accumulated Power Consumption exceeds the setting value the device will send a warning alarm command to the controller.</description>
         <default>10000</default>
       </parameter>
 
@@ -121,7 +119,7 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Switch State</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

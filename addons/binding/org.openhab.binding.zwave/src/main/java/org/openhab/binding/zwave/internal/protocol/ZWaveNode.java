@@ -859,7 +859,7 @@ public class ZWaveNode {
      * @param data the class id for each class which must be encrypted in transmission
      */
     public void setSecuredClasses(byte[] data) {
-        logger.info("NODE {}:  Setting secured command classes for node with {}", this.getNodeId(),
+        logger.debug("NODE {}:  Setting secured command classes for node with {}", this.getNodeId(),
                 SerialMessage.bb2hex(data));
         boolean afterMark = false;
         securedCommandClasses.clear(); // reset the existing list
@@ -880,7 +880,7 @@ public class ZWaveNode {
             if (commandClass == null) {
                 // Not supported by OpenHab
                 logger.error(
-                        "NODE {}:  setSecuredClasses requested secure "
+                        "NODE {}: setSecuredClasses requested secure "
                                 + "class NOT supported by OpenHab: {}   afterMark={}",
                         this.getNodeId(), commandClass, afterMark);
             } else {
@@ -890,12 +890,12 @@ public class ZWaveNode {
                     continue;
                 } else if (afterMark) {
                     // Nothing to do, we don't track devices that control other devices
-                    logger.info("NODE {}:  is after mark for commandClass {}", this.getNodeId(), commandClass);
+                    logger.info("NODE {}: is after mark for commandClass {}", this.getNodeId(), commandClass);
                     break;
                 } else {
                     if (!this.supportsCommandClass(commandClass)) {
                         logger.info(
-                                "NODE {}:  Adding secured command class to supported that wasn't in original list {}",
+                                "NODE {}: Adding secured command class to supported that wasn't in original list {}",
                                 this.getNodeId(), commandClass.getLabel());
                         final ZWaveCommandClass classInstance = ZWaveCommandClass.getInstance((aByte & 0xFF), this,
                                 controller);
@@ -904,7 +904,7 @@ public class ZWaveNode {
                         }
                     }
                     securedCommandClasses.add(commandClass);
-                    logger.info("NODE {}:  (Secured) {}", this.getNodeId(), commandClass.getLabel());
+                    logger.info("NODE {}: (Secured) {}", this.getNodeId(), commandClass.getLabel());
                 }
             }
         }
@@ -974,9 +974,5 @@ public class ZWaveNode {
             }
         }
         return result;
-    }
-
-    public ZWaveController getController() {
-        return controller;
     }
 }

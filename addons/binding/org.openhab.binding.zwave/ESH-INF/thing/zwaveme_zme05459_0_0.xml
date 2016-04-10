@@ -35,6 +35,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -83,7 +84,7 @@
       <parameter name="config_4_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>4: Full close time</label>
-        <description>Time in seconds to go from opened to closed state. Used to estimate the current level. Note that in Permanent motion mode the reported value would a be Closed or Opened, while all Basic and Multilevel Set values (1-99, 255) would Open except 0 value that </description>
+        <description>Time in seconds to go from opened to closed state. Used to estimate the current level. Note that in Permanent motion mode the reported value would a be Closed or Opened, while all Basic and Multilevel Set values (1-99, 255) would Open except 0 value that</description>
         <default>60</default>
         <options>
           <option value="0">Keep in permanent motion</option>
@@ -245,17 +246,17 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Single press and hold of up/down buttons</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Double press and press-hold of up/down buttons</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Send Reports on blind state change</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
