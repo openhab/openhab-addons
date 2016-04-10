@@ -1,0 +1,8 @@
+branches:
+    only:
+      - tado
+
+language: java
+
+jdk:
+  - oraclejdk8
