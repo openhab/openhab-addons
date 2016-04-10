@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  */
 @XStreamAlias("alarmCommandClass")
 public class ZWaveAlarmCommandClass extends ZWaveCommandClass
-        implements ZWaveGetCommands, ZWaveCommandClassDynamicState {
+        implements ZWaveGetCommands, ZWaveCommandClassDynamicState, ZWaveCommandClassInitialization {
 
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveAlarmCommandClass.class);
@@ -45,8 +45,8 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
     private static final int ALARM_GET = 0x04;
     private static final int ALARM_REPORT = 0x05;
-    private static final int ALARM_GET_SUPPORTED = 0x06;
-    private static final int ALARM_SUPPORTED_REPORT = 0x07;
+    private static final int ALARM_GET_SUPPORTED = 0x07;
+    private static final int ALARM_SUPPORTED_REPORT = 0x08;
 
     private final Map<AlarmType, Alarm> alarms = new HashMap<AlarmType, Alarm>();
 
@@ -106,6 +106,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
                 if (version == 1) {
                     logger.debug("NODE {}: Alarm report - {} = {}", this.getNode().getNodeId(), alarmTypeCode, value);
                 } else {
+                    alarmTypeCode = serialMessage.getMessagePayloadByte(offset + 5);
                     sensor = serialMessage.getMessagePayloadByte(offset + 3);
                     event = serialMessage.getMessagePayloadByte(offset + 6);
                     status = serialMessage.getMessagePayloadByte(offset + 4);
@@ -417,6 +418,17 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
         public Integer getValue() {
             return (Integer) super.getValue();
         }
+    }
+
+    @Override
+    public Collection<SerialMessage> initialize(boolean refresh) {
+        ArrayList<SerialMessage> result = new ArrayList<SerialMessage>();
+        if (refresh == true || alarms.isEmpty()) {
+            if (getVersion() > 1) {
+                result.add(getSupportedMessage());
+            }
+        }
+        return result;
     }
 
     @Override
