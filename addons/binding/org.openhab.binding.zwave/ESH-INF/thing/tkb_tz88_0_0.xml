@@ -58,6 +58,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -91,63 +92,6 @@
                  min="1" max="10000">
         <label>4: Threshold of KWh for Load Caution</label>
         <default>10000</default>
-      </parameter>
-
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>5: Restore switch state mode</label>
-        <description>defines the behavior after a power cut</description>
-        <default>0</default>
-        <options>
-          <option value="0">Switch off</option>
-          <option value="1">Last switch state</option>
-          <option value="2">Switch on</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>6: Mode of switch off function</label>
-        <description>?</description>
-        <default>1</default>
-        <options>
-          <option value="0">Disable</option>
-          <option value="1">Enable</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>7: LED Behavior</label>
-        <description>defines the behavior of the LED</description>
-        <default>0</default>
-        <options>
-          <option value="1">Show switch state</option>
-          <option value="2">Show night mode</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_8_2" type="integer" groupName="configuration"
-                 min="1" max="32767">
-        <label>8: Auto off timer</label>
-        <description>Seconds before socket switches off. 0 to disable</description>
-        <default>0</default>
-        <options>
-          <option value="0">0 : Disable auto off function</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>9: RF off command mode</label>
-        <description>?</description>
-        <default>0</default>
-        <options>
-          <option value="0">Switch off</option>
-          <option value="1">Ignore</option>
-          <option value="2">Switch toggle</option>
-          <option value="3">Switch on</option>
-        </options>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->

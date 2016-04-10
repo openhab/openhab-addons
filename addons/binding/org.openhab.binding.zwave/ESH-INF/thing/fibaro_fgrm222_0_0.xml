@@ -41,6 +41,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -98,8 +99,7 @@
       <parameter name="config_12_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>12: Turning time/ delay time</label>
-        <description>In Venetian Blind mode (parameter 10 set to 2) the parameter determines time of full turn of the lamellas. In Gate Mode (parameter 10 set to 3 or 4) the parameter defines the delay time after which an open gate starts closing.
-Type	range</description>
+        <description>In Venetian Blind mode (parameter 10 set to 2) the parameter determines time of full turn of the lamellas. In Gate Mode (parameter 10 set to 3 or 4) the parameter defines the delay time after which an open gate starts closing. Type range</description>
         <default>150</default>
       </parameter>
 
@@ -263,12 +263,12 @@ Type	range</description>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Momentary click</label>
         <multipleLimit>16</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Momentary hold</label>
         <multipleLimit>16</multipleLimit>
       </parameter>

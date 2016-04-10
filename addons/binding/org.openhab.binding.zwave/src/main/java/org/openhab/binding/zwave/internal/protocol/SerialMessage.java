@@ -174,6 +174,12 @@ public class SerialMessage {
         return result.toString();
     }
 
+    /**
+     * Converts a byte to a hexadecimal string representation
+     *
+     * @param bb the byte to convert
+     * @return string the string representation
+     */
     public static String b2hex(byte b) {
         return String.format("%02X ", b);
     }
@@ -199,9 +205,10 @@ public class SerialMessage {
      */
     @Override
     public String toString() {
-        return String.format("Message: class=%s[0x%02X], type=%s[0x%02X], priority=%s, dest=%d, payload=%s",
+        return String.format(
+                "Message: class=%s[0x%02X], type=%s[0x%02X], priority=%s, dest=%d, callback=%d, payload=%s",
                 new Object[] { messageClass, messageClass.key, messageType, messageType.ordinal(), priority,
-                        messageNode, SerialMessage.bb2hex(this.getMessagePayload()) });
+                        messageNode, getCallbackId(), SerialMessage.bb2hex(this.getMessagePayload()) });
     };
 
     /**

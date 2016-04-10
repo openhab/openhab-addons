@@ -149,9 +149,9 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
      * Should be set to true to ensure all incoming security encapsulated messages adhere to
      * zwave security mac standards
      *
-     * Package-protected visible for test case use
+     * TODO: Package-protected visible for test case use
      */
-    static boolean DROP_PACKETS_ON_MAC_FAILURE = true;
+    public static boolean DROP_PACKETS_ON_MAC_FAILURE = true;
 
     /**
      * Should be set to true unless we find a good reason not to since we
@@ -381,6 +381,8 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
         switch (command) {
 
             case SECURITY_NONCE_GET:
+                logger.debug("NODE {}: Received SECURITY_NONCE_GET", this.getNode().getNodeId());
+
                 // the Device wants to send us a Encrypted Packet, so we need to generate a nonce and send it
                 lastNonceGetReceivedAt = System.currentTimeMillis();
                 sendNonceReport();
@@ -396,7 +398,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
                 int copyCount = messageBuf.length - startAt;
                 byte[] nonceBytes = new byte[copyCount];
                 System.arraycopy(messageBuf, startAt, nonceBytes, 0, copyCount);
-                debugHex("Received device nonce", nonceBytes);
+                debugHex("Received SECURITY_NONCE_REPORT", nonceBytes);
                 nonceGeneration.receivedNonceFromDevice(nonceBytes);
                 // Notify the ZWaveSecurityEncapsulationThread since we received a nonce
                 notifyEncapsulationThread();
@@ -433,9 +435,11 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
         int size = messagePayload.length - ourOffset;
         byte[] secureClassBytes = new byte[size];
         System.arraycopy(messagePayload, ourOffset, secureClassBytes, 0, size);
-        traceHex("Supported Security Classes", secureClassBytes);
+        // traceHex("Supported Security Classes", secureClassBytes);
         getNode().setSecuredClasses(secureClassBytes);
         receivedSecurityCommandsSupportedReport = true;
+
+        logger.debug("NODE {}: Supported Security Classes {}", SerialMessage.bb2hex(secureClassBytes));
     }
 
     public void sendNonceReport() throws ZWaveSerialMessageException {
@@ -523,8 +527,8 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
             if (sequenceDataByte != ZWaveSecurityPayloadFrame.SEQUENCE_BYTE_FOR_SINGLE_FRAME_MESSAGE) {
                 // This is a multi frame message which is not yet supported
                 logger.error(
-                        "NODE {}: Received multi frmae message which is not supported.  Please post this to the OpenHab"
-                                + "mailing list so it can be fixed!  bytes=",
+                        "NODE {}: Received multi frame message which is not supported.  Please post this to the openHAB "
+                                + "mailing list!  bytes=",
                         getNode().getNodeId(), SerialMessage.bb2hex(plaintextBytes));
                 return null;
             }
@@ -563,19 +567,19 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
         }
 
         if (serialMessage.getMessageClass() != SerialMessageClass.SendData) {
-            logger.error("NODE {}: Invalid message class {} for sendData for message {}", getNode().getNodeId(),
+            logger.error("NODE {}: Invalid message class {} for SendData for message {}", getNode().getNodeId(),
                     serialMessage.getMessageClass().getLabel(), serialMessage.getMessageClass().getKey(),
                     serialMessage.toString());
         }
 
         List<ZWaveSecurityPayloadFrame> securityPayloadFrameList = ZWaveSecurityPayloadFrame
                 .convertToSecurityPayload(getNode(), serialMessage);
-        logger.debug("NODE {}: Converted serial message {} to securityPayload(s): {}", getNode().getNodeId(),
+        logger.debug("NODE {}: Converted serial message {} to securityPayload(): {}", getNode().getNodeId(),
                 serialMessage, securityPayloadFrameList);
 
         if (!payloadEncapsulationQueue.isEmpty()) {
             // Clean up expired items and check for duplicate requests. This is necessary as
-            // bombarding a device with messages will typically cause issues and it will stop
+            // bombarding a device with messages will typically cause issues and it may stop
             // responding (seen during testing with Kwikset locks)
             Iterator<ZWaveSecurityPayloadFrame> iter = payloadEncapsulationQueue.iterator();
             while (iter.hasNext()) {
@@ -594,7 +598,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
                     byte[] aFrameFromQueueTwoBytes = new byte[2];
                     System.arraycopy(aFrameFromQueue.getMessageBytes(), 0, aFrameFromQueueTwoBytes, 0, 2);
                     shouldRemove = Arrays.equals(newMessageTwoBytes, aFrameFromQueueTwoBytes);
-                    logger.debug("NODE {}: payloadEncapsulationQueue simliar frame check, shouldRemove={}: {} vs {}",
+                    logger.debug("NODE {}: payloadEncapsulationQueue similar frame check, shouldRemove={}: {} vs {}",
                             getNode().getNodeId(), shouldRemove,
                             SerialMessage.bb2hex(aFrameFromQueue.getMessageBytes()),
                             SerialMessage.bb2hex(securityPayloadFrameList.get(0).getMessageBytes()));
@@ -605,7 +609,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
             }
         }
 
-        // Finally, since we've cleanup duplicates and removed old entries, we can add the new frame{s} to our queue
+        // Finally, since we've cleanup duplicates and removed old entries, we can add the new frame(s) to our queue
         payloadEncapsulationQueue.addAll(securityPayloadFrameList);
 
         // Wake up the {@link ZWaveSecurityEncapsulationThread} so it can do what it needs to
@@ -624,7 +628,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
             Iterator<ZWaveSecurityPayloadFrame> iter, String reason) {
         logger.info("NODE {}: {} removing from payloadEncapsulationQueue: {}", getNode().getNodeId(), reason,
                 frameToRemove);
-        boolean hasMultipleParts = frameToRemove.getTotalParts() > 0;
+        boolean hasMultipleParts = frameToRemove.getTotalParts() > 1; // TODO: CDJ changed this from 0!!!
         iter.remove();
 
         if (hasMultipleParts) {
@@ -684,7 +688,8 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
         }
 
         // Encapsulate the message fragment
-        traceHex("SecurityPayloadBytes", securityPayload.getMessageBytes());
+        debugHex("SecurityPayloadBytes", securityPayload.getMessageBytes());
+
         // Note that we set the expected reply to that of the original message, as it can vary
         SecurityEncapsulatedSerialMessage message = new SecurityEncapsulatedSerialMessage(SerialMessageClass.SendData,
                 SerialMessageType.Request, securityPayload.getOriginalMessage());
@@ -720,11 +725,14 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
         logger.trace("NODE {}: Used nonce to form {} ({}).", getNode().getNodeId(), commandToString(commandByte),
                 securityPayload.getLogMessage());
         outputData.write(commandByte);
+
         // create the iv
         byte[] initializationVector = new byte[16];
+
         // Generate a new nonce and fill the first half of the IV buffer with it
         byte[] nonceBytes = nonceGeneration.generateNonceForEncapsulationMessage();
         System.arraycopy(nonceBytes, 0, initializationVector, 0, HALF_OF_IV);
+
         // the 2nd half of the IV is the nonce provided by the device
         System.arraycopy(deviceNonce.getNonceBytes(), 0, initializationVector, HALF_OF_IV, HALF_OF_IV);
 
@@ -733,7 +741,8 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
             outputData.write(initializationVector, 0, HALF_OF_IV);
 
             int totalParts = securityPayload.getTotalParts();
-            if (totalParts < 1 || totalParts > 2) {
+            if (totalParts != 1) {
+                // We don't support multi-packet encapsulation at the moment...
                 logger.error("NODE {}: securityPayload had invalid number of parts: {}   Send aborted.",
                         getNode().getNodeId(), totalParts);
                 return;
@@ -753,12 +762,14 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
             byte[] ciphertextBytes = encryptCipher.doFinal(plaintextMessageBytes);
             traceHex("Encrypted Output", ciphertextBytes);
             outputData.write(ciphertextBytes);
+
             // Append the nonce identifier which is the first byte of the device nonce
             outputData.write(deviceNonce.getNonceBytes()[0]);
             int commandClassByteOffset = 2;
             int toMacLength = outputData.toByteArray().length - commandClassByteOffset; // Start at command class byte
             byte[] toMac = new byte[toMacLength];
             System.arraycopy(outputData.toByteArray(), commandClassByteOffset, toMac, 0, toMacLength);
+
             // Generate the MAC
             byte sendingNode = (byte) this.getController().getOwnNodeId();
             byte[] mac = generateMAC(commandByte, ciphertextBytes, sendingNode, (byte) getNode().getNodeId(),
@@ -773,9 +784,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
             message.setSecurityPayload(securityPayload);
             lastEncapsulatedRequstMessage = message;
             transmitMessage(message);
-        } catch (GeneralSecurityException e) {
-            logger.error("NODE {}: Error in sendNextMessageWithNonce, message not sent", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             logger.error("NODE {}: Error in sendNextMessageWithNonce, message not sent", e);
         }
     }
@@ -783,6 +792,8 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
     /**
      * Checks the fields which are marked with XStreamOmitField as they will be null
      * upon deserialization from a file
+     *
+     * TODO: Can't we find a better way to do this than calling it each time through the loop?
      */
     protected synchronized void checkInit() {
         if (nonceGeneration == null) {
@@ -840,7 +851,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
      *         and device are performing a secure pair
      */
     protected boolean wasThisNodeJustIncluded() {
-        ZWaveInclusionEvent lastInclusionEvent = getNode().getController().getLastIncludeSlaveFoundEvent();
+        ZWaveInclusionEvent lastInclusionEvent = getController().getLastIncludeSlaveFoundEvent();
         boolean result = false;
         if (lastInclusionEvent != null && lastInclusionEvent.getEvent() == Type.IncludeSlaveFound
                 && getNode().getNodeId() == lastInclusionEvent.getNodeId()) {
@@ -854,10 +865,11 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
 
     /**
      * Generate the MAC (message authentication code) from a security-encrypted message
-     *
+     * TODO: Public for testing - look to remove
+     * 
      * @throws GeneralSecurityException
      */
-    byte[] generateMAC(byte commandClass, byte[] ciphertext, byte sendingNode, byte receivingNode, byte[] iv)
+    public byte[] generateMAC(byte commandClass, byte[] ciphertext, byte sendingNode, byte receivingNode, byte[] iv)
             throws GeneralSecurityException {
         traceHex("generateMAC ciphertext", ciphertext);
         traceHex("generateMAC iv", iv);

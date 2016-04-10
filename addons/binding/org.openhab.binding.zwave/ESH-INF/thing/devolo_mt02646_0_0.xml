@@ -64,6 +64,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -112,12 +113,6 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>5: Lock &amp; Leave</label>
-        <default>0</default>
-      </parameter>
-
       <parameter name="config_6_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>6: Mode of switch off function</label>
@@ -137,7 +132,7 @@
         <options>
           <option value="1">The LED follows the state of the switch.</option>
           <option value="2">Night Mode - When the switch is On, the LED is Off, and when the switc</option>
-          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on </option>
+          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on</option>
         </options>
       </parameter>
 

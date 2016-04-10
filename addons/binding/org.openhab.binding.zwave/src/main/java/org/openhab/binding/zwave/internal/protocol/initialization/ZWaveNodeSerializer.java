@@ -66,6 +66,8 @@ public class ZWaveNodeSerializer {
         stream.processAnnotations(ZWaveDeviceClass.class);
         stream.processAnnotations(ZWaveCommandClass.class);
         stream.processAnnotations(CommandClass.class);
+
+        // Process the annotations for the command classes
         for (CommandClass commandClass : CommandClass.values()) {
             Class<? extends ZWaveCommandClass> cc = commandClass.getCommandClassClass();
 
