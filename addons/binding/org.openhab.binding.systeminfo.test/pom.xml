@@ -50,7 +50,7 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho-version}</version>
-				<configuration>					
+				<configuration>
 					<dependencies>
 						<dependency>
 							<type>eclipse-plugin</type>
@@ -75,6 +75,22 @@
 						<dependency>
 							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<!-- Required Bundles to enable LOGGING -->
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>ch.qos.logback.classic</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>ch.qos.logback.core</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>ch.qos.logback.slf4j</artifactId>
 							<version>0.0.0</version>
 						</dependency>
 					</dependencies>
@@ -118,7 +134,7 @@
 							<id>org.openhab.binding.systeminfo</id>
 							<level>4</level>
 							<autoStart>true</autoStart>
-						</bundle>						
+						</bundle>
 					</bundleStartLevel>
 				</configuration>
 			</plugin>
