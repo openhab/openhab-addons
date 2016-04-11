@@ -110,7 +110,7 @@ class SysteminfoOSGiTest extends OSGiTest{
             def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
             def description = systemInfoThing.getStatusInfo().getDescription();
             assertThat  "Thing status detail is {$thingStatusDetail} with description {$description}",systemInfoThing.getStatus(), is(equalTo(ThingStatus.ONLINE))
-        },2 * DEFAULT_TEST_INTERVAL_HIGH * 1000)
+        },3 * DEFAULT_TEST_INTERVAL_HIGH * 1000)
 
         def Items = itemRegistry.getItems();
         def GenericItem item = itemRegistry.getItem(ITEM_NAME) as GenericItem
@@ -124,7 +124,7 @@ class SysteminfoOSGiTest extends OSGiTest{
             } else if(acceptedItemType.equals("String")){
                 assertThat itemState, isA (StringType)
             }
-        },2 * DEFAULT_TEST_INTERVAL_HIGH * 1000)
+        },3 * DEFAULT_TEST_INTERVAL_HIGH * 1000)
     }
 
     private void intializeItem (ChannelUID channelUID,String acceptedItemType) {
