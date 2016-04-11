@@ -30,6 +30,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -54,8 +55,7 @@
       <parameter name="config_6_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>6: Separation of association sending (key 1)</label>
-        <description>Activate/Deactivate association sending for group
-				1 - Also see param #16</description>
+        <description>Activate/Deactivate association sending for group 1 - Also see param #16</description>
         <default>0</default>
         <options>
           <option value="0">Map status to all devices in group 1</option>
@@ -67,11 +67,7 @@
       <parameter name="config_7_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>7: Control key #2 behaviour</label>
-        <description>Key no.2 is not represented by any physical device - only
-				devices in the association list.
-				This functionality prevents of lack of reaction on pressing key no.2
-				through polling devices
-				from association list one by one and checking their</description>
+        <description>Key no.2 is not represented by any physical device - only devices in the association list. This functionality prevents of lack of reaction on pressing key no.2 through polling devices from association list one by one and checking their</description>
         <default>1</default>
         <options>
           <option value="0">Device status is not checked</option>
@@ -190,9 +186,7 @@
       <parameter name="config_20_1" type="integer" groupName="configuration"
                  min="100" max="170">
         <label>20: Parm 20</label>
-        <description>This function will enable decreasing the minimum level of the Dimmer by extending the control impulse.[100 - 170]
-      By changing the minimem level, the user may completely dim LED bulbs. 
-      Not all LED bulbs available on the market have the dimmm</description>
+        <description>This function will enable decreasing the minimum level of the Dimmer by extending the control impulse.[100 - 170] By changing the minimem level, the user may completely dim LED bulbs. Not all LED bulbs available on the market have the dimmm</description>
         <default>110</default>
       </parameter>
 
@@ -239,12 +233,12 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Switch 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Switch 2</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

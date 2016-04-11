@@ -45,6 +45,7 @@
       <property name="manufacturerRef">5257:3533</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -70,7 +71,7 @@
         <description>To change the top of the switch to OFF and the bottom of the switch ON.</description>
         <default>0</default>
         <options>
-          <option value="0">Top-ON, Bottom-OFF </option>
+          <option value="0">Top-ON, Bottom-OFF</option>
           <option value="1">Bottom-ON, Top-OFF</option>
         </options>
       </parameter>

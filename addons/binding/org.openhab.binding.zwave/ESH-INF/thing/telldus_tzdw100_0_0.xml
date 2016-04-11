@@ -39,6 +39,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -68,6 +69,7 @@
         <options>
           <option value="255">Last value</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
@@ -102,6 +104,7 @@
         <options>
           <option value="255">Last value</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_6_1" type="integer" groupName="configuration"
@@ -144,17 +147,17 @@
       </parameter-group>
 
       <parameter name="group_1" type="text" groupName="association">
-        <label>1:  Lifeline</label>
+        <label>1: Lifeline</label>
         <description>Lifeline - Sensor status</description>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Status</label>
         <description>Sensor status</description>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Status</label>
         <description>Sensor status</description>
         <multipleLimit>10</multipleLimit>

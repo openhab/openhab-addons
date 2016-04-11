@@ -62,9 +62,9 @@ public class ZWaveSecureNonceTracker {
      * Setting this to false will use the bad security practices from the original code. true will use accepted security
      * best practices
      *
-     * Package-protected visible for test case use
+     * TODO: Package-protected visible for test case use
      */
-    static boolean USE_SECURE_CRYPTO_PRACTICES = true;
+    public static boolean USE_SECURE_CRYPTO_PRACTICES = true;
 
     /**
      * It's a security best practice to periodically re-seed our random number

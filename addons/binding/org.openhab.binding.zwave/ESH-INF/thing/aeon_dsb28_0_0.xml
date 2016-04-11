@@ -38,7 +38,7 @@
       <channel id="meter_reset" typeId="meter_reset">
         <label>Reset Meter</label>
         <properties>
-          <property name="binding:*:OnOffType">METER,BASIC;event=true</property>
+          <property name="binding:*:OnOffType">METER,BASIC;reset=true</property>
         </properties>
       </channel>
       <channel id="meter_watts1" typeId="meter_watts">
@@ -123,6 +123,7 @@
       <property name="manufacturerRef">0002:001C</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -145,13 +146,7 @@
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="16">
         <label>3: Selective Reporting</label>
-        <description>Enable selective reporting only when power change reaches
-a certain threshold or percentage set in 4-11 below. This is
-used to reduce network traffic.
-(Bit 0: Whole HEM ,
-Bit 1:Clamp 1,
-Bit 2:Clamp 2,
-Bit 3:Clamp 3)</description>
+        <description>Enable selective reporting only when power change reaches a certain threshold or percentage set in 4-11 below. This is used to reduce network traffic. (Bit 0: Whole HEM , Bit 1:Clamp 1, Bit 2:Clamp 2, Bit 3:Clamp 3)</description>
         <default>1</default>
       </parameter>
 
@@ -214,36 +209,21 @@ Bit 3:Clamp 3)</description>
       <parameter name="config_101_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>101: Which reports need to send automatically for group 1</label>
-        <description>1	  ->  	Battery Report
-2	  ->  	MultiSensor Report for the whole device
-4	  ->  	Meter Report for Watt for the whole device
-8	  ->  	Meter Report for kWh for the whole device
-256	  ->  	Meter Report for Watt for clamp 1
-512	  ->  	Meter Report for W</description>
+        <description>1 -&gt; Battery Report 2 -&gt; MultiSensor Report for the whole device 4 -&gt; Meter Report for Watt for the whole device 8 -&gt; Meter Report for kWh for the whole device 256 -&gt; Meter Report for Watt for clamp 1 512 -&gt; Meter Report for W</description>
         <default>8</default>
       </parameter>
 
       <parameter name="config_102_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>102: Which reports need to send automatically for group 2</label>
-        <description>1	  ->  	Battery Report
-2	  ->  	MultiSensor Report for the whole device
-4	  ->  	Meter Report for Watt for the whole device
-8	  ->  	Meter Report for kWh for the whole device
-256	  ->  	Meter Report for Watt for clamp 1
-512	  ->  	Meter Report for W</description>
+        <description>1 -&gt; Battery Report 2 -&gt; MultiSensor Report for the whole device 4 -&gt; Meter Report for Watt for the whole device 8 -&gt; Meter Report for kWh for the whole device 256 -&gt; Meter Report for Watt for clamp 1 512 -&gt; Meter Report for W</description>
         <default>8</default>
       </parameter>
 
       <parameter name="config_103_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>103: Which reports need to send automatically for group 3</label>
-        <description>1	  ->  	Battery Report
-2	  ->  	MultiSensor Report for the whole device
-4	  ->  	Meter Report for Watt for the whole device
-8	  ->  	Meter Report for kWh for the whole device
-256	  ->  	Meter Report for Watt for clamp 1
-512	  ->  	Meter Report for W</description>
+        <description>1 -&gt; Battery Report 2 -&gt; MultiSensor Report for the whole device 4 -&gt; Meter Report for Watt for the whole device 8 -&gt; Meter Report for kWh for the whole device 256 -&gt; Meter Report for Watt for clamp 1 512 -&gt; Meter Report for W</description>
         <default>8</default>
       </parameter>
 
@@ -271,17 +251,17 @@ Bit 3:Clamp 3)</description>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Group 2</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Group 3</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

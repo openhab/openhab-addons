@@ -17,13 +17,13 @@
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint_furnace" typeId="thermostat_setpoint">
         <label>Setpoint (furnace)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=FURNACE</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint" typeId="thermostat_setpoint">
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
