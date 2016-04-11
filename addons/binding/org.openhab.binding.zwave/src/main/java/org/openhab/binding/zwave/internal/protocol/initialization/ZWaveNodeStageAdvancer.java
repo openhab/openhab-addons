@@ -477,7 +477,7 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                             }
                         }
                     } else {
-                        logger.info("NODE {}: SECURITY not supported, proceeding to next stage.", node.getNodeId());
+                        logger.debug("NODE {}: SECURITY not supported, proceeding to next stage.", node.getNodeId());
                     }
                     break;
 
