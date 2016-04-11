@@ -36,6 +36,7 @@ import org.eclipse.smarthome.test.OSGiTest
 import org.eclipse.smarthome.test.storage.VolatileStorageService
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
@@ -335,6 +336,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType);
     }
 
+    @Ignore
     @Test
     public void 'assert channel sensors_fan_speed is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_FAN_SPEED
@@ -344,6 +346,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType);
     }
 
+    @Ignore
     @Test
     public void 'assert channel battery_name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_NAME
@@ -353,6 +356,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType);
     }
 
+    @Ignore
     @Test
     public void 'assert channel battery_remaining_capacity is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY
@@ -362,6 +366,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType);
     }
 
+    @Ignore
     @Test
     public void 'assert channel battery_remaining_time is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME
@@ -371,6 +376,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType);
     }
 
+    @Ignore
     @Test
     public void 'assert channel display_information is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_DISPLAY_INFORMATION
