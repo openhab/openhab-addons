@@ -23,9 +23,15 @@
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
+        <label>Tamper Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
+          <property name="binding:*:OnOffType">ALARM;type=BURGLAR, event=3</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Motion</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM;type=BURGLAR, event=8</property>
         </properties>
       </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
