@@ -478,6 +478,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     //Jenskins's machine has no battery
+    @Ignore
     @Test
     public void 'assert channel battery_name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_NAME
