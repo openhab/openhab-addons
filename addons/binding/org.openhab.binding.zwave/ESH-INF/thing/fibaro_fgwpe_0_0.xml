@@ -105,12 +105,10 @@ Parameter defines how the Wall Plug will respond to alarms (device's status chan
         </options>
       </parameter>
 
-      <parameter name="config_39_1" type="integer" groupName="configuration"
-                 min="1" max="255">
+      <parameter name="config_39_2" type="integer" groupName="configuration"
+                 min="1" max="65535">
         <label>39: Alarm duration</label>
-        <description><![CDATA[
-Wall Plug's alarm mode duration. If a device sending an alarm frame through the Z-Wave network sets alarm duration as well, this parameter's settings are ignored.<br /> Default setting: 600 (seconds).<br />Available settings: 1 - 65535 (seconds)
-        ]]></description>
+        <description>Wall Plug's alarm mode duration. If a device sending an alarm frame through the Z-Wave network sets alarm duration as well, this parameter's settings are ignored.Default setting: 600 (seconds).Available settings: 1 - 65535 (seconds)</description>
         <default>600</default>
       </parameter>
 
