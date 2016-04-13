@@ -100,44 +100,51 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getStorageTotal(int deviceIndex);
+    public DecimalType getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Returns the available storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getStorageAvailable(int deviceIndex);
+    public DecimalType getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the used storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getStorageUsed(int deviceIndex);
+    public DecimalType getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the percent of available storage on the logical volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return percent of available storage
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getStorageAvailablePercent(int deviceIndex);
+    public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume
+     * 
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getStorageName(int deviceIndex);
+    public StringType getStorageName(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets additional information about the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getStorageDescription(int deviceIndex);
+    public StringType getStorageDescription(int deviceIndex) throws DeviceNotFoundException;
 
     // Network info
     /**
@@ -145,30 +152,34 @@ public interface SysteminfoInterface {
      *
      * @param networkIndex - the index of the network
      * @return 32-bit IPv4 address
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getNetworkIp(int networkIndex);
+    public StringType getNetworkIp(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Get the name of this network.
      *
      * @param networkIndex - the index of the network
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getNetworkName(int networkIndex);
+    public StringType getNetworkName(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Get human readable description of the network device.
      *
      * @param networkIndex- the index of the network
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getNetworkAdapterName(int networkIndex);
+    public StringType getNetworkAdapterName(int networkIndex) throws DeviceNotFoundException;
 
     // Display info
     /**
      * Get information about the display device as product number, manufacturer, serial number, width and height in cm";
      *
      * @param deviceIndex - the index of the display device
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getDisplayInformation(int deviceIndex);
+    public StringType getDisplayInformation(int deviceIndex) throws DeviceNotFoundException;
 
     // Sensors info
     /**
@@ -187,11 +198,12 @@ public interface SysteminfoInterface {
 
     /**
      * Get fan speed
-     * 
+     *
      * @param deviceIndex
      * @return Speed in rpm or 0 if unable to measure fan speed
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getSensorsFanSpeed(int deviceIndex);
+    public DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
 
     // Battery info
     /**
@@ -199,22 +211,25 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex
      * @return minutes remaining charge or 999, if the time is estimated as unlimited
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getBatteryRemainingTime(int deviceIndex);
+    public DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Battery remaining capacity.
      *
      * @param deviceIndex
      * @return percentage value /0-100/
+     * @throws DeviceNotFoundException TODO
      */
-    public DecimalType getBatteryRemainingCapacity(int deviceIndex);
+    public DecimalType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Get battery name
      *
      * @param deviceIndex
+     * @throws DeviceNotFoundException TODO
      */
-    public StringType getBatteryName(int deviceIndex);
+    public StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
 
 }

@@ -27,12 +27,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.bidning.systeminfo.model.SysteminfoImpl;
+import org.openhab.bidning.systeminfo.model.DeviceNotFoundException;
+import org.openhab.bidning.systeminfo.model.OshiSysteminfo;
 import org.openhab.bidning.systeminfo.model.SysteminfoInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import oshi.SystemInfo;
 
 /**
  * The {@link SysteminfoHandler} is responsible for providing real time information about the system
@@ -95,7 +94,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
 
         try {
-            this.systeminfo = new SysteminfoImpl(new SystemInfo());
+            this.systeminfo = new OshiSysteminfo();
         } catch (SocketException e) {
             logger.error("Network information is not availble ! I/O error occured {e}", e);
         }
@@ -214,92 +213,95 @@ public class SysteminfoHandler extends BaseThingHandler {
             // All digits are deleted from the ID
             channelID = channelID.replaceAll("\\d+", "");
         }
-
-        switch (channelID) {
-            case CHANNEL_OS_FAMILY:
-                state = systeminfo.getOsFamily();
-                break;
-            case CHANNEL_OS_MANUFACTURER:
-                state = systeminfo.getOsManufacturer();
-                break;
-            case CHANNEL_OS_VERSION:
-                state = systeminfo.getOsVersion();
-                break;
-            case CHANNEL_DISPLAY_INFORMATION:
-                state = systeminfo.getDisplayInformation(deviceIndex);
-                break;
-            case CHANNEL_BATTERY_NAME:
-                state = systeminfo.getBatteryName(deviceIndex);
-                break;
-            case CHANNEL_BATTERY_REMAINING_CAPACITY:
-                state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
-                break;
-            case CHANNEL_BATTERY_REMAINING_TIME:
-                state = systeminfo.getBatteryRemainingTime(deviceIndex);
-                break;
-            case CHANNEL_SENSORS_CPU_TEMPERATURE:
-                state = systeminfo.getSensorsCpuTemperature();
-                break;
-            case CHANNEL_SENOSRS_CPU_VOLTAGE:
-                state = systeminfo.getSensorsCpuVoltage();
-                break;
-            case CHANNEL_SENSORS_FAN_SPEED:
-                state = systeminfo.getSensorsFanSpeed(deviceIndex);
-                break;
-            case CHANNEL_CPU_LOAD:
-                state = systeminfo.getCpuLoad();
-                break;
-            case CHANNEL_CPU_PHYSICAL_CORES:
-                state = systeminfo.getCpuPhysicalCores();
-                break;
-            case CHANNEL_CPU_LOGICAL_CORES:
-                state = systeminfo.getCpuLogicalCores();
-                break;
-            case CHANNEL_CPU_DESCRIPTION:
-                state = systeminfo.getCpuDescription();
-                break;
-            case CHANNEL_CPU_NAME:
-                state = systeminfo.getCpuName();
-                break;
-            case CHANNEL_MEMORY_AVAILABLE:
-                state = systeminfo.getMemoryAvailable();
-                break;
-            case CHANNEL_MEMORY_USED:
-                state = systeminfo.getMemoryUsed();
-                break;
-            case CHANNEL_MEMORY_TOTAL:
-                state = systeminfo.getMemoryTotal();
-                break;
-            case CHANNEL_MEMORY_AVAILABLE_PERCENT:
-                state = systeminfo.getMemoryAvailablePercent();
-                break;
-            case CHANNEL_STORAGE_NAME:
-                state = systeminfo.getStorageName(deviceIndex);
-                break;
-            case CHANNEL_STORAGE_DESCRIPTION:
-                state = systeminfo.getStorageDescription(deviceIndex);
-                break;
-            case CHANNEL_STORAGE_AVAILABLE:
-                state = systeminfo.getStorageAvailable(deviceIndex);
-                break;
-            case CHANNEL_STORAGE_USED:
-                state = systeminfo.getStorageUsed(deviceIndex);
-                break;
-            case CHANNEL_STORAGE_TOTAL:
-                state = systeminfo.getStorageTotal(deviceIndex);
-                break;
-            case CHANNEL_STORAGE_AVAILABLE_PERCENT:
-                state = systeminfo.getStorageAvailablePercent(deviceIndex);
-                break;
-            case CHANNEL_NETWORK_IP:
-                state = systeminfo.getNetworkIp(deviceIndex);
-                break;
-            case CHANNEL_NETWORK_ADAPTER_NAME:
-                state = systeminfo.getNetworkAdapterName(deviceIndex);
-                break;
-            case CHANNEL_NETWORK_NAME:
-                state = systeminfo.getNetworkName(deviceIndex);
-                break;
+        try {
+            switch (channelID) {
+                case CHANNEL_OS_FAMILY:
+                    state = systeminfo.getOsFamily();
+                    break;
+                case CHANNEL_OS_MANUFACTURER:
+                    state = systeminfo.getOsManufacturer();
+                    break;
+                case CHANNEL_OS_VERSION:
+                    state = systeminfo.getOsVersion();
+                    break;
+                case CHANNEL_DISPLAY_INFORMATION:
+                    state = systeminfo.getDisplayInformation(deviceIndex);
+                    break;
+                case CHANNEL_BATTERY_NAME:
+                    state = systeminfo.getBatteryName(deviceIndex);
+                    break;
+                case CHANNEL_BATTERY_REMAINING_CAPACITY:
+                    state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
+                    break;
+                case CHANNEL_BATTERY_REMAINING_TIME:
+                    state = systeminfo.getBatteryRemainingTime(deviceIndex);
+                    break;
+                case CHANNEL_SENSORS_CPU_TEMPERATURE:
+                    state = systeminfo.getSensorsCpuTemperature();
+                    break;
+                case CHANNEL_SENOSRS_CPU_VOLTAGE:
+                    state = systeminfo.getSensorsCpuVoltage();
+                    break;
+                case CHANNEL_SENSORS_FAN_SPEED:
+                    state = systeminfo.getSensorsFanSpeed(deviceIndex);
+                    break;
+                case CHANNEL_CPU_LOAD:
+                    state = systeminfo.getCpuLoad();
+                    break;
+                case CHANNEL_CPU_PHYSICAL_CORES:
+                    state = systeminfo.getCpuPhysicalCores();
+                    break;
+                case CHANNEL_CPU_LOGICAL_CORES:
+                    state = systeminfo.getCpuLogicalCores();
+                    break;
+                case CHANNEL_CPU_DESCRIPTION:
+                    state = systeminfo.getCpuDescription();
+                    break;
+                case CHANNEL_CPU_NAME:
+                    state = systeminfo.getCpuName();
+                    break;
+                case CHANNEL_MEMORY_AVAILABLE:
+                    state = systeminfo.getMemoryAvailable();
+                    break;
+                case CHANNEL_MEMORY_USED:
+                    state = systeminfo.getMemoryUsed();
+                    break;
+                case CHANNEL_MEMORY_TOTAL:
+                    state = systeminfo.getMemoryTotal();
+                    break;
+                case CHANNEL_MEMORY_AVAILABLE_PERCENT:
+                    state = systeminfo.getMemoryAvailablePercent();
+                    break;
+                case CHANNEL_STORAGE_NAME:
+                    state = systeminfo.getStorageName(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_DESCRIPTION:
+                    state = systeminfo.getStorageDescription(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_AVAILABLE:
+                    state = systeminfo.getStorageAvailable(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_USED:
+                    state = systeminfo.getStorageUsed(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_TOTAL:
+                    state = systeminfo.getStorageTotal(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_AVAILABLE_PERCENT:
+                    state = systeminfo.getStorageAvailablePercent(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_IP:
+                    state = systeminfo.getNetworkIp(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_ADAPTER_NAME:
+                    state = systeminfo.getNetworkAdapterName(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_NAME:
+                    state = systeminfo.getNetworkName(deviceIndex);
+                    break;
+            }
+        } catch (DeviceNotFoundException e) {
+            logger.error("No information for channel " + channelID + deviceIndex, e);
         }
         return state;
     }

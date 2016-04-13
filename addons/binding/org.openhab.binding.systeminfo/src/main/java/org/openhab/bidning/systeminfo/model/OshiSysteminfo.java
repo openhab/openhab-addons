@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 
@@ -35,9 +36,9 @@ import oshi.util.EdidUtil;
  * @author Svilen Valkanov
  *
  */
-public class SysteminfoImpl implements SysteminfoInterface {
+public class OshiSysteminfo implements SysteminfoInterface {
     private OperatingSystem operatingSystem;
-    private ArrayList<NetworkInterface> networks;
+    private NetworkInterface[] networks;
     private Display[] displays;
     private OSFileStore[] fileStores;
     private GlobalMemory memory;
@@ -47,10 +48,10 @@ public class SysteminfoImpl implements SysteminfoInterface {
     private Sensors sensors;
 
     /**
-     *
      * @throws SocketException when it is not able to access the network information.
      */
-    public SysteminfoImpl(SystemInfo systemInfo) throws SocketException {
+    public OshiSysteminfo() throws SocketException {
+        SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hal = systemInfo.getHardware();
         operatingSystem = systemInfo.getOperatingSystem();
         displays = hal.getDisplays();
@@ -59,11 +60,29 @@ public class SysteminfoImpl implements SysteminfoInterface {
         powerSources = hal.getPowerSources();
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        if (networkInterfaces != null) {
-            networks = Collections.list(networkInterfaces);
-        }
+        networks = getNetworks();
+    }
 
+    private NetworkInterface[] getNetworks() throws SocketException {
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        NetworkInterface[] networksArray;
+        // NetworkInterface.getNetworkInterfaces() returns null if not network interfaces are found
+        if (networkInterfaces != null) {
+            ArrayList<NetworkInterface> networksList = Collections.list(networkInterfaces);
+            networksArray = new NetworkInterface[networksList.size()];
+            networksArray = networksList.toArray(networksArray);
+        } else {
+            networksArray = new NetworkInterface[0];
+        }
+        return networksArray;
+    }
+
+    @SuppressWarnings("null")
+    private Object getDevice(Object[] devices, int index) throws DeviceNotFoundException {
+        if ((devices != null) && (devices.length <= index)) {
+            throw new DeviceNotFoundException("Device with index: " + index + " can not be found!");
+        }
+        return devices[index];
     }
 
     @Override
@@ -148,91 +167,69 @@ public class SysteminfoImpl implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getStorageTotal(int index) {
-        if (fileStores.length <= index) {
-            return null;
-        }
-        long totalSpace = fileStores[index].getTotalSpace();
+    public DecimalType getStorageTotal(int index) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        long totalSpace = fileStore.getTotalSpace();
         totalSpace = getSizeInMB(totalSpace);
         return new DecimalType(totalSpace);
     }
 
     @Override
-    public DecimalType getStorageAvailable(int index) {
-        if (fileStores.length <= index) {
-            return null;
-        }
-        long freeSpace = fileStores[index].getUsableSpace();
+    public DecimalType getStorageAvailable(int index) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        long freeSpace = fileStore.getUsableSpace();
         freeSpace = getSizeInMB(freeSpace);
         return new DecimalType(freeSpace);
     }
 
     @Override
-    public DecimalType getStorageUsed(int index) {
-        if (fileStores.length <= index) {
-            return null;
-        }
-        long totalSpace = fileStores[index].getTotalSpace();
-        long freeSpace = fileStores[index].getUsableSpace();
+    public DecimalType getStorageUsed(int index) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
         long usedSpace = totalSpace - freeSpace;
         usedSpace = getSizeInMB(usedSpace);
         return new DecimalType(usedSpace);
     }
 
     @Override
-    public StringType getStorageName(int index) {
-        if (fileStores.length <= index) {
-            return null;
-        }
-        String name = fileStores[index].getName();
+    public StringType getStorageName(int index) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        String name = fileStore.getName();
         return new StringType(name);
     }
 
     @Override
-    public StringType getStorageDescription(int index) {
-        if (fileStores.length <= index) {
-            return null;
-        }
-        String description = fileStores[index].getDescription();
+    public StringType getStorageDescription(int index) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        String description = fileStore.getDescription();
         return new StringType(description);
     }
 
     @Override
-    public StringType getNetworkIp(int index) {
-        if (networks != null && networks.size() <= index) {
-            return null;
-        }
-        NetworkInterface netInterface = networks.get(index);
+    public StringType getNetworkIp(int index) throws DeviceNotFoundException {
+        NetworkInterface netInterface = (NetworkInterface) getDevice(networks, index);
         InetAddress adapterName = netInterface.getInetAddresses().nextElement();
         return new StringType(adapterName.getHostAddress());
     }
 
     @Override
-    public StringType getNetworkName(int index) {
-        if (networks != null && networks.size() <= index) {
-            return null;
-        }
-        NetworkInterface netInterface = networks.get(index);
+    public StringType getNetworkName(int index) throws DeviceNotFoundException {
+        NetworkInterface netInterface = (NetworkInterface) getDevice(networks, index);
         String name = netInterface.getName();
         return new StringType(name);
     }
 
     @Override
-    public StringType getNetworkAdapterName(int index) {
-        if (networks != null && networks.size() <= index) {
-            return null;
-        }
-        NetworkInterface netInterface = networks.get(index);
+    public StringType getNetworkAdapterName(int index) throws DeviceNotFoundException {
+        NetworkInterface netInterface = (NetworkInterface) getDevice(networks, index);
         String adapterName = netInterface.getDisplayName();
         return new StringType(adapterName);
     }
 
     @Override
-    public StringType getDisplayInformation(int index) {
-        if (displays.length <= index) {
-            return null;
-        }
-        Display display = displays[index];
+    public StringType getDisplayInformation(int index) throws DeviceNotFoundException {
+        Display display = (Display) getDevice(displays, index);
 
         byte[] edid = display.getEdid();
         String manufacturer = EdidUtil.getManufacturerID(edid);
@@ -259,21 +256,16 @@ public class SysteminfoImpl implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getSensorsFanSpeed(int index) {
+    public DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
         int[] fanSpeeds = sensors.getFanSpeeds();
-        if (fanSpeeds.length <= index) {
-            return null;
-        }
-        int speed = fanSpeeds[index];
+        int speed = (int) getDevice(ArrayUtils.toObject(fanSpeeds), index);
         return new DecimalType(speed);
     }
 
     @Override
-    public DecimalType getBatteryRemainingTime(int index) {
-        if (powerSources.length < index) {
-            return null;
-        }
-        double remainingTime = powerSources[index].getTimeRemaining();
+    public DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
+        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
+        double remainingTime = powerSource.getTimeRemaining();
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited
         if (remainingTime > 0) {
             remainingTime = getTimeInMinutes(remainingTime);
@@ -285,21 +277,17 @@ public class SysteminfoImpl implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getBatteryRemainingCapacity(int index) {
-        if (powerSources.length < index) {
-            return null;
-        }
-        double remainingCapacity = powerSources[index].getRemainingCapacity();
+    public DecimalType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
+        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
+        double remainingCapacity = powerSource.getRemainingCapacity();
         remainingCapacity = getPercentsValue(remainingCapacity);
         return new DecimalType(remainingCapacity);
     }
 
     @Override
-    public StringType getBatteryName(int index) {
-        if (powerSources.length < index) {
-            return null;
-        }
-        String name = powerSources[index].getName();
+    public StringType getBatteryName(int index) throws DeviceNotFoundException {
+        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
+        String name = powerSource.getName();
         return new StringType(name);
     }
 
@@ -325,12 +313,10 @@ public class SysteminfoImpl implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getStorageAvailablePercent(int deviceIndex) {
-        if (fileStores.length <= deviceIndex) {
-            return null;
-        }
-        long freeStorage = fileStores[deviceIndex].getUsableSpace();
-        long totalStorage = fileStores[deviceIndex].getTotalSpace();
+    public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        long freeStorage = fileStore.getUsableSpace();
+        long totalStorage = fileStore.getTotalSpace();
         double freePercentDecimal = (double) freeStorage / (double) totalStorage;
         double freePercent = getPercentsValue(freePercentDecimal);
         return new DecimalType(freePercent);
