@@ -63,7 +63,7 @@ Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration
 
       <parameter name="config_35_2" type="integer" groupName="configuration"
                  min="1" max="255">
-        <label>35: calibration timout</label>
+        <label>35: Calibration timout</label>
         <description><![CDATA[
 Set the timeout of all calibration steps for the Sensor.<br /><h1>Overview</h1><p>Set the timeout of all calibration steps for the Sensor.</p>
         ]]></description>
