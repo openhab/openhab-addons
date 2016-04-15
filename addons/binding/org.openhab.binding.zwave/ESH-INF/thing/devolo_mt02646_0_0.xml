@@ -61,6 +61,7 @@
       <property name="model">MT02646</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0001:0011</property>
+      <property name="commandClass:SWITCH_BINARY">getSupported=false</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
