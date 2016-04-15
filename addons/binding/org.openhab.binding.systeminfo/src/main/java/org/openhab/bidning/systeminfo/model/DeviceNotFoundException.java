@@ -1,8 +1,21 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.bidning.systeminfo.model;
 
 import java.io.IOException;
 
-//TODO javadoc
+/**
+ * {@link DeviceNotFoundException} is used to indicate that device can not be found on this hardware configuration, most
+ * probably because the device is not installed.
+ *
+ * @author Svilen Valkanov
+ *
+ */
 public class DeviceNotFoundException extends IOException {
     private static final long serialVersionUID = -707507777792259512L;
 
@@ -16,7 +29,7 @@ public class DeviceNotFoundException extends IOException {
 
     /**
      * Constructs an {@code DeviceNotFoundException} with the specified detail message.
-     * This Exceptions is used to indicate that the {@link SysteminfoInterface}} can not find a device with an index
+     *
      *
      * @param message
      *            The detail message (which is saved for later retrieval

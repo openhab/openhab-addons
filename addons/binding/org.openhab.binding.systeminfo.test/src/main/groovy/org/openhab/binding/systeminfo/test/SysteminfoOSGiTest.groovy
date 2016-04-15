@@ -221,7 +221,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         waitForAssert({
             assertThat  "Invalid configuratuin is used !", systemInfoThing.getStatus(), is(equalTo(ThingStatus.OFFLINE))
             assertThat systemInfoThing.getStatusInfo().getStatusDetail() , is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR))
-            assertThat systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Configuration is invalid !"))
+            assertThat systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing can not be initialized! Configuration is invalid !"))
         }, 1000)
     }
 
@@ -395,7 +395,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sorage_name is updated' () {
+    public void 'assert channel storage_name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_NAME
         String acceptedItemType = "String";
 

@@ -5,7 +5,7 @@
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
     <!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated.
-        High priority means that the channel changes his state dynamically at few seconds interval.
+        High priority should be channels, which change its state dynamically at few seconds interval.
         Medium priority channels usually need update of the state more often - at several minutes.
         Low priority channels do not change their state at all, or very often. They do not need regular updates.-->
 

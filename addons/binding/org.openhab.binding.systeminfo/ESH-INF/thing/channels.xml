@@ -57,7 +57,7 @@
     <channel-type id="memory_available_percent">
         <item-type>Number</item-type>
         <label>Memory available</label>
-        <description>Available memory size in %</description>
+        <description>Available memory size in percents</description>
         <state readOnly="true" pattern="%.1f %%" />
         <config-description uri="systeminfo:channels:highpriority" />
     </channel-type>
@@ -129,7 +129,7 @@
 	<channel-type id="fan_speed">
 		<item-type>Number</item-type>
 		<label>CPU fan speed</label>
-		<description>Speed of the cpu fan in rpm</description>
+		<description>Speed of the CPU fan in rpm</description>
 		<state readOnly="true" pattern="%d rpm" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
@@ -152,7 +152,7 @@
 	<channel-type id="battery_capacity">
 		<item-type>Number</item-type>
 		<label>Battery capacity</label>
-		<description>Percentage of capacity left</description>
+		<description>Battery capacity left in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
@@ -197,7 +197,7 @@
 	<channel-type id="display_information">
 		<item-type>String</item-type>
 		<label>Display information</label>
-		<description>Product, manufacturer, SN, width and height of the display </description>
+		<description>Product, manufacturer, SN, width and height of the display in cm</description>
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>

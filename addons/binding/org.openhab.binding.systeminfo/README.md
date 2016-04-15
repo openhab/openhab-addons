@@ -34,7 +34,7 @@ The thing has two configuration parameters:
    * **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
    * **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
-That means that by default configuration, channels with priority set to 'High' are updated every second, channels with priority set to 'Medium' - every minute, channels with priority set to 'Low' only at initializing.
+That means that by default configuration, channels with priority set to 'High' are updated every second, channels with priority set to 'Medium' - every minute, channels with priority set to 'Low' only at initializing or at Refresh command.
 
 
 ## Channels

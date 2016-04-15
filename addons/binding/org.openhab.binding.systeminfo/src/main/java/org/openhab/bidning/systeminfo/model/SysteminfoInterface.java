@@ -43,8 +43,8 @@ public interface SysteminfoInterface {
     public StringType getCpuName();
 
     /**
-     * Get description about the CPU e.g(model,family, vendor, serial number, identifier, architecture(32bit or
-     * 64bit)";)
+     * Get description about the CPU e.g (model, family, vendor, serial number, identifier, architecture(32bit or
+     * 64bit))
      */
     public StringType getCpuDescription();
 
@@ -100,7 +100,7 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
 
@@ -109,7 +109,7 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
 
@@ -118,7 +118,7 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
 
@@ -127,14 +127,14 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex - the index of the logical volume
      * @return percent of available storage
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume
-     * 
-     * @throws DeviceNotFoundException TODO
+     *
+     * @throws DeviceNotFoundException
      */
     public StringType getStorageName(int deviceIndex) throws DeviceNotFoundException;
 
@@ -142,7 +142,7 @@ public interface SysteminfoInterface {
      * Gets additional information about the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public StringType getStorageDescription(int deviceIndex) throws DeviceNotFoundException;
 
@@ -152,7 +152,7 @@ public interface SysteminfoInterface {
      *
      * @param networkIndex - the index of the network
      * @return 32-bit IPv4 address
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public StringType getNetworkIp(int networkIndex) throws DeviceNotFoundException;
 
@@ -160,7 +160,7 @@ public interface SysteminfoInterface {
      * Get the name of this network.
      *
      * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public StringType getNetworkName(int networkIndex) throws DeviceNotFoundException;
 
@@ -168,7 +168,7 @@ public interface SysteminfoInterface {
      * Get human readable description of the network device.
      *
      * @param networkIndex- the index of the network
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public StringType getNetworkAdapterName(int networkIndex) throws DeviceNotFoundException;
 
@@ -177,7 +177,7 @@ public interface SysteminfoInterface {
      * Get information about the display device as product number, manufacturer, serial number, width and height in cm";
      *
      * @param deviceIndex - the index of the display device
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public StringType getDisplayInformation(int deviceIndex) throws DeviceNotFoundException;
 
@@ -201,7 +201,7 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex
      * @return Speed in rpm or 0 if unable to measure fan speed
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
 
@@ -211,7 +211,7 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex
      * @return minutes remaining charge or 999, if the time is estimated as unlimited
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
 
@@ -220,7 +220,7 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex
      * @return percentage value /0-100/
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public DecimalType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
 
@@ -228,7 +228,7 @@ public interface SysteminfoInterface {
      * Get battery name
      *
      * @param deviceIndex
-     * @throws DeviceNotFoundException TODO
+     * @throws DeviceNotFoundException
      */
     public StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
 

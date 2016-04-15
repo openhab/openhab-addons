@@ -30,8 +30,8 @@ import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
 
 /**
- * This implementation of {@link SysteminfoInterface} is using the open source library Oshi to provide all information
- * except the network information, which is provided from JDK.
+ * This implementation of {@link SysteminfoInterface} is using the open source library Oshi to provide system
+ * information. Only the network information is provided from JDK.
  *
  * @author Svilen Valkanov
  *
@@ -48,6 +48,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private Sensors sensors;
 
     /**
+     * Some of the methods used in this constructor execute native code and require execute permissions
+     *
      * @throws SocketException when it is not able to access the network information.
      */
     public OshiSysteminfo() throws SocketException {
@@ -66,7 +68,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private NetworkInterface[] getNetworks() throws SocketException {
         Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         NetworkInterface[] networksArray;
-        // NetworkInterface.getNetworkInterfaces() returns null if not network interfaces are found
+        // NetworkInterface.getNetworkInterfaces() returns null if network interfaces are not found
         if (networkInterfaces != null) {
             ArrayList<NetworkInterface> networksList = Collections.list(networkInterfaces);
             networksArray = new NetworkInterface[networksList.size()];

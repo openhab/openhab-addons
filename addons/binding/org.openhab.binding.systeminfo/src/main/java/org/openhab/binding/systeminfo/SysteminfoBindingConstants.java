@@ -10,7 +10,7 @@ package org.openhab.binding.systeminfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link systeminfoBinding} class defines common constants, which are
+ * The {@link SysteminfoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Svilen Valkanov - Initial contribution

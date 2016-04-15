@@ -92,7 +92,6 @@ public class SysteminfoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-
         try {
             this.systeminfo = new OshiSysteminfo();
         } catch (SocketException e) {
@@ -105,7 +104,8 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is invalid !");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Thing can not be initialized! Configuration is invalid !");
         }
 
     }
@@ -118,7 +118,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             refreshIntervalHighPriority = (BigDecimal) config.get(HIGH_PRIORITY_REFRESH_TIME);
 
             if (refreshIntervalHighPriority.intValue() <= 0 || refreshIntervalMediumPriority.intValue() <= 0) {
-                throw new IllegalArgumentException("Refresh time must be positive value !");
+                throw new IllegalArgumentException("Refresh time must be positive number!");
             }
             logger.debug("Refresh time for medium priority channels set to {} s", refreshIntervalMediumPriority);
             logger.debug("Refresh time for high priority channels set to {} s", refreshIntervalHighPriority);
@@ -142,13 +142,14 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case "Low":
                     lowPriorityChannels.add(channel.getUID());
                     break;
+                default:
+                    logger.error("Invalid configuration parameter. Channel will not be updated !");
             }
         }
     }
 
     private void scheduleUpdates() {
         logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
-
         highPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -313,7 +314,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
      * @param channelID - the ID of the channel
-     * @return index >= 0
+     * @return natural number (number >=0)
      */
     private int getDeviceIndex(String channelID) {
         int deviceIndex = 0;
@@ -339,9 +340,11 @@ public class SysteminfoHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         if (highPriorityTasks != null) {
+            logger.debug("High prioriy tasks will not be run anymore !");
             highPriorityTasks.cancel(true);
         }
         if (mediumPriorityTasks != null) {
+            logger.debug("Medium prioriy tasks will not be run anymore !");
             mediumPriorityTasks.cancel(true);
         }
     }
