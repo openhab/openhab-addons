@@ -190,6 +190,36 @@
         <state pattern="%.1f" readOnly="true">
         </state>
     </channel-type>
+
+    <!-- Gas - Cubic Meters -->
+    <channel-type id="meter_gas_cubic_meters">
+        <item-type>Number</item-type>
+        <label>Gas Cubic Meters</label>
+        <description>Indicates the gas use in cubic meters</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
+    <!-- Gas - Cubic Feet -->
+    <channel-type id="meter_gas_cubic_feet">
+        <item-type>Number</item-type>
+        <label>Gas Cubic Feet</label>
+        <description>Indicates the gas use in cubic feet</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Gas - Pulses -->
+    <channel-type id="meter_gas_pulses">
+        <item-type>Number</item-type>
+        <label>Gas Pulse Count</label>
+        <description>Indicates the gas use in pulses</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
     
     <!-- Energy - Energy Consumption (kVAh) -->
     <channel-type id="meter_kvah">
@@ -239,6 +269,46 @@
         </state>
     </channel-type>
 
+    <!-- Water - Cubic Meters -->
+    <channel-type id="meter_water_cubic_meters">
+        <item-type>Number</item-type>
+        <label>Water consumption in cubic meters</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Water - Cubic Feet -->
+    <channel-type id="meter_water_cubic_feet">
+        <item-type>Number</item-type>
+        <label>Water consumption in cubic feet</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
+    <!-- Water - Gallons -->
+    <channel-type id="meter_water_gallons">
+        <item-type>Number</item-type>
+        <label>Water consumption in gallons</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Water - Pulses -->
+    <channel-type id="meter_water_pulses">
+        <item-type>Number</item-type>
+        <label>Water consumption in pulses</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
     <!-- Energy - Power Consumption -->
     <channel-type id="meter_watts">
         <item-type>Number</item-type>

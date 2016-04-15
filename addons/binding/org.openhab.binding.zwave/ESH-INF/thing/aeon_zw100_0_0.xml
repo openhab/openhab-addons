@@ -197,15 +197,6 @@ Ultraviolet change threshold<br /><h1>Overview</h1><p>Threshold change in ultrav
         </options>
       </parameter>
 
-      <parameter name="config_100_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>100: Set parameters 101-103 to default.</label>
-        <description><![CDATA[
-reset 101-103 to defaults<br /><h1>Overview</h1><p>Set 101-103 to default.</p>
-        ]]></description>
-        <default>0</default>
-      </parameter>
-
       <parameter name="config_101_4_000000FF" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>101: Group 1 Periodic Reports</label>
@@ -233,15 +224,6 @@ Periodic reports to send to Group 3<br /><h1>Overview</h1><p>This value is a com
         <default>0</default>
       </parameter>
 
-      <parameter name="config_110_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>110: Set parameters 111-113 to default.</label>
-        <description><![CDATA[
-Set parameters 111-113 to default. <br /><h1>Overview</h1><p>Set parameters 111-113 to default.   </p>
-        ]]></description>
-        <default>0</default>
-      </parameter>
-
       <parameter name="config_111_4" type="integer" groupName="configuration"
                  min="5" max="2678400">
         <label>111: Group 1 Report Interval</label>
@@ -264,7 +246,7 @@ Group 2 Report Interval<br /><h1>Overview</h1><p>The interval time of sending re
                  min="5" max="2678400">
         <label>113: Group 3 Report Interval</label>
         <description><![CDATA[
-Group 3 Report Interval<br /><h1>Overview</h1><p>The interval time of sending reports in Report group 3 (Valid values 0x05-0x28DE80).<br />1. The unit of interval time is second if USB power.<br />2. If battery power, the minimum interval time is 60 minutes by default, for<br />example, if the value is set to be more than 5 and less than 3600, the interval<br />time is 60 minutes, if the value is set to be more than 3600 and less than 7200,<br />the interval time is 120 minutes. You can also change the minimum interval time<br />to 4 minutes via setting the interval value(3 bytes) to 240 in Wake Up Interval Set<br />CC.</p>
+Group 3 Report Interval<br /><h1>Overview</h1><p>The interval time of sending reports in Report group 3</p> <ol><li>The unit of interval time is second if USB power.</li> <li>If battery power, the minimum interval time is 60 minutes by default, for example, if the value is set to be more than 5 and less than 3600, the interval time is 60 minutes, if the value is set to be more than 3600 and less than 7200, the interval time is 120 minutes. You can also change the minimum interval time to 4 minutes via setting the interval value(3 bytes) to 240 in Wake Up Interval Set CC.</li> </ol>
         ]]></description>
         <default>3600</default>
       </parameter>
@@ -327,6 +309,30 @@ Ultraviolet Sensor Calibration<br /><h1>Overview</h1><p>Ultraviolet sensor calib
           <option value="1431655765">Reset to default factory settings and be excluded</option>
         </options>
         <advanced>true</advanced>
+      </parameter>
+
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_100_1_wo" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>100: Set parameters 101-103 to default.</label>
+        <description><![CDATA[
+Reset 101-103 to defaults<br /><h1>Overview</h1><p>Set 101-103 to default.</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_110_1_wo" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>110: Set parameters 111-113 to default.</label>
+        <description><![CDATA[
+Set parameters 111-113 to default. <br /><h1>Overview</h1><p>Set parameters 111-113 to default.   </p>
+        ]]></description>
+        <default>0</default>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->
