@@ -57,6 +57,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -102,7 +103,7 @@
           <option value="3">enclosure opening notification enabled + exceeding temperature thresho</option>
           <option value="4">lack of Z-Wave range notification</option>
           <option value="5">enclosure opening notification enabled + lack of Z-Wave range notifica</option>
-          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave </option>
+          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave</option>
           <option value="7">enclosure opening notification enabled + exceeding temperature thresho</option>
         </options>
       </parameter>
@@ -119,7 +120,7 @@
           <option value="3">enclosure opening notification enabled + exceeding temperature thresho</option>
           <option value="4">lack of Z-Wave range notification</option>
           <option value="5">enclosure opening notification enabled + lack of Z-Wave range notifica</option>
-          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave </option>
+          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave</option>
           <option value="7">enclosure opening notification enabled + exceeding temperature thresho</option>
         </options>
       </parameter>
@@ -131,7 +132,7 @@
         <default>0</default>
         <options>
           <option value="0">BASIC ON and BASIC OFF enabled</option>
-          <option value="1">BASIC ON enabled </option>
+          <option value="1">BASIC ON enabled</option>
           <option value="2">BASIC OFF enabled</option>
         </options>
       </parameter>
@@ -208,22 +209,22 @@
         <label>1: Device Status</label>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Smoke Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Tamper Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Fire Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Tamper Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

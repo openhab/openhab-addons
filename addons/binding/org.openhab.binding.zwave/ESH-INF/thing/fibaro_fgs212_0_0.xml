@@ -40,6 +40,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -82,8 +83,7 @@
       <parameter name="config_6_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>6: Separation of association sending (key 1)</label>
-        <description>Activate/Deactivate association sending for group
-                1 - Also see param #16</description>
+        <description>Activate/Deactivate association sending for group 1 - Also see param #16</description>
         <default>0</default>
         <options>
           <option value="0">Map status to all devices in group 1</option>
@@ -95,8 +95,7 @@
       <parameter name="config_13_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>13: Inputs behaviour</label>
-        <description>In case of bi-stable switches, define their behaviour (toggle
-                or follow)</description>
+        <description>In case of bi-stable switches, define their behaviour (toggle or follow)</description>
         <default>0</default>
         <options>
           <option value="0">Toggle</option>
@@ -118,10 +117,7 @@
       <parameter name="config_15_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>15: Dimmer/Roller shutter control</label>
-        <description>Enable/Disable operation of dimmer or roller shutter devices
-                associated to group 1.
-                Available only when using mono-stable inputs (buttons) - Hold button 1 or
-                double-tap for operation</description>
+        <description>Enable/Disable operation of dimmer or roller shutter devices associated to group 1. Available only when using mono-stable inputs (buttons) - Hold button 1 or double-tap for operation</description>
         <default>0</default>
         <options>
           <option value="0">Disable Dimmer/Roller shutter control</option>
@@ -201,12 +197,12 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Switch 1</label>
         <multipleLimit>16</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Switch 2</label>
         <multipleLimit>16</multipleLimit>
       </parameter>

@@ -58,6 +58,7 @@
       <property name="defaultAssociations">4</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -84,7 +85,7 @@
         <default>0</default>
         <options>
           <option value="0">NO (normaly open) input type</option>
-          <option value="1"> NC (normaly close) input type</option>
+          <option value="1">NC (normaly close) input type</option>
         </options>
       </parameter>
 
@@ -95,16 +96,14 @@
         <default>0</default>
         <options>
           <option value="0">NO (normaly open) input type</option>
-          <option value="1"> NC (normaly close) input type</option>
+          <option value="1">NC (normaly close) input type</option>
         </options>
       </parameter>
 
       <parameter name="config_10_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>10: Activate / deactivate functions ALL ON/ALL OFF</label>
-        <description>Flush 1 relay module responds to commands ALL ON / 
-ALL OFF that may be sent by the main controller or by 
-other controller belonging to the system.</description>
+        <description>Flush 1 relay module responds to commands ALL ON / ALL OFF that may be sent by the main controller or by other controller belonging to the system.</description>
         <default>255</default>
         <options>
           <option value="0">ALL ON is not active ALL OFF is not active</option>
@@ -117,9 +116,7 @@ other controller belonging to the system.</description>
       <parameter name="config_11_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>11: Automatic turning off relay after set time</label>
-        <description>0 - Auto OFF disabled 
-1 – 65535 = 0,01second – 655,35 seconds
-Auto OFF enabled with define time, step is 10mseconds</description>
+        <description>0 - Auto OFF disabled 1 – 65535 = 0,01second – 655,35 seconds Auto OFF enabled with define time, step is 10mseconds</description>
         <default>0</default>
       </parameter>
 
@@ -130,32 +127,21 @@ Auto OFF enabled with define time, step is 10mseconds</description>
         <default>0</default>
         <options>
           <option value="0">Flush 1relay module saves its state before power failure (it returns t</option>
-          <option value="1">Flush 1relay module does not save the state after a power failure, it </option>
+          <option value="1">Flush 1relay module does not save the state after a power failure, it</option>
         </options>
       </parameter>
 
       <parameter name="config_40_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>40: Power reporting in Watts on power change</label>
-        <description>0 – Reporting Disabled
-1 – 100 = 1% - 100% Reporting enabled
-Power report is send (push) only when actual 
-power in Watts in real time change for more than 
-set percentage comparing to previous actual 
-power in Watts, step is 1%.
-NOTE: if power chan</description>
+        <description>0 – Reporting Disabled 1 – 100 = 1% - 100% Reporting enabled Power report is send (push) only when actual power in Watts in real time change for more than set percentage comparing to previous actual power in Watts, step is 1%. NOTE: if power chan</description>
         <default>3</default>
       </parameter>
 
       <parameter name="config_42_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>42: Power reporting in Watts on power change</label>
-        <description>default value 300 (power report in Watts is 
-send each 300s)
-0 – Reporting Disabled
-1 – 65535 = 1second – 65535 seconds.
-Reporting enabled. Power report is send with time 
-interval set by entered value. </description>
+        <description>default value 300 (power report in Watts is send each 300s) 0 – Reporting Disabled 1 – 65535 = 1second – 65535 seconds. Reporting enabled. Power report is send with time interval set by entered value.</description>
         <default>300</default>
       </parameter>
 
@@ -165,21 +151,18 @@ interval set by entered value. </description>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
-        <label>1: basic on/off (triggered at change of the output 
-Q state and reflecti</label>
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
+        <label>1: basic on/off (triggered at change of the output Q state and reflecti</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
-        <label>2:  basic on/off (triggered at change of the input I2 
-state and reflect</label>
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
+        <label>2: basic on/off (triggered at change of the input I2 state and reflect</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
-        <label>3:  basic on/off (triggered at change of the input I3 
-state and reflect</label>
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
+        <label>3: basic on/off (triggered at change of the input I3 state and reflect</label>
         <multipleLimit>4</multipleLimit>
       </parameter>
 

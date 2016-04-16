@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -95,6 +96,18 @@ public class ZWaveAlarmConverter extends ZWaveCommandClassConverter {
             return null;
         }
 
-        return eventAlarm.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+        State state = null;
+        switch (channel.getDataType()) {
+            case OnOffType:
+                state = (Integer) event.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+                break;
+            case OpenClosedType:
+                state = (Integer) event.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                break;
+            default:
+                logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                break;
+        }
+        return state;
     }
 }

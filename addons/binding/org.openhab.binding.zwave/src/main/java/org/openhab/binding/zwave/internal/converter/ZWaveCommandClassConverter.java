@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
@@ -40,10 +40,10 @@ public abstract class ZWaveCommandClassConverter {
     private static final Map<CommandClass, Class<? extends ZWaveCommandClassConverter>> converterMap;
 
     static {
-
         Map<CommandClass, Class<? extends ZWaveCommandClassConverter>> temp = new HashMap<CommandClass, Class<? extends ZWaveCommandClassConverter>>();
 
         temp.put(CommandClass.ALARM, ZWaveAlarmConverter.class);
+        temp.put(CommandClass.BARRIER_OPERATOR, ZWaveBarrierOperatorConverter.class);
         temp.put(CommandClass.BASIC, ZWaveBasicConverter.class);
         temp.put(CommandClass.BATTERY, ZWaveBatteryConverter.class);
         temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
@@ -62,7 +62,6 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.THERMOSTAT_MODE, ZWaveThermostatModeConverter.class);
         temp.put(CommandClass.THERMOSTAT_OPERATING_STATE, ZWaveThermostatOperatingStateConverter.class);
         temp.put(CommandClass.THERMOSTAT_SETPOINT, ZWaveThermostatSetpointConverter.class);
-        temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
 
         converterMap = Collections.unmodifiableMap(temp);
     }

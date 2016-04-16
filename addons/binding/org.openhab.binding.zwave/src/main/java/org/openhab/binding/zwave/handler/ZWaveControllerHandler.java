@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,7 +22,6 @@ import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -33,6 +32,7 @@ import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
+import org.openhab.binding.zwave.internal.protocol.ZWaveIoHandler;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  */
-public abstract class ZWaveControllerHandler extends BaseBridgeHandler implements ZWaveEventListener {
+public abstract class ZWaveControllerHandler extends BaseBridgeHandler implements ZWaveEventListener, ZWaveIoHandler {
 
     private Logger logger = LoggerFactory.getLogger(ZWaveControllerHandler.class);
 
@@ -114,7 +114,10 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             }
         }
 
-        super.initialize();
+        // We must set the state
+        updateStatus(ThingStatus.OFFLINE);
+
+        // super.initialize();
     }
 
     /**
@@ -294,12 +297,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     @Override
     public void ZWaveIncomingEvent(ZWaveEvent event) {
         if (event instanceof ZWaveNetworkStateEvent) {
+            logger.debug("Controller: Incoming Network State Event {}",
+                    ((ZWaveNetworkStateEvent) event).getNetworkState());
             if (((ZWaveNetworkStateEvent) event).getNetworkState() == true) {
                 updateStatus(ThingStatus.ONLINE);
-                Bridge bridge = this.getThing();
-                for (Thing child : bridge.getThings()) {
-                    ((ZWaveThingHandler) child.getHandler()).bridgeHandlerInitialized(this, bridge);
-                }
+                // TODO: Shouldn't the framework do this for us? Maybe it does here as there's a state change?
+                // Bridge bridge = this.getThing();
+                // for (Thing child : bridge.getThings()) {
+                // ((ZWaveThingHandler) child.getHandler()).bridgeHandlerInitialized(this, bridge);
+                // }
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -340,8 +346,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         controller.incomingPacket(serialMessage);
     }
 
-    public abstract void sendPacket(SerialMessage serialMessage);
-
+    @Override
     public void deviceDiscovered(int nodeId) {
         if (discoveryService == null) {
             return;

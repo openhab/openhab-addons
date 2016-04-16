@@ -28,6 +28,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -39,7 +40,7 @@
       <parameter name="config_37_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>37: Sirensound and Volume</label>
-        <description>The Value1(low byte) is used to select the Siren sound. The Value2(high byte) is used to adjust the volume. Other values will be ignored.						0 1	  ->  	do not change the current sound.1 1	  ->  	Siren sound 1 is selected.2 1	  ->  	Siren sound 2 i</description>
+        <description>The Value1(low byte) is used to select the Siren sound. The Value2(high byte) is used to adjust the volume. Other values will be ignored. 0 1 -&gt; do not change the current sound.1 1 -&gt; Siren sound 1 is selected.2 1 -&gt; Siren sound 2 i</description>
         <default>13</default>
         <advanced>true</advanced>
       </parameter>
@@ -96,7 +97,7 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Lifeline</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

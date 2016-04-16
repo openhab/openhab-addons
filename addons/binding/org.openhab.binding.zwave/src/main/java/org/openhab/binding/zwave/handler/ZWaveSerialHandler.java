@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -83,6 +83,7 @@ public class ZWaveSerialHandler extends ZWaveControllerHandler {
                     SerialPort.PARITY_NONE);
             this.serialPort.enableReceiveThreshold(1);
             this.serialPort.enableReceiveTimeout(ZWAVE_RECEIVE_TIMEOUT);
+            logger.debug("Starting receive thread");
             this.receiveThread = new ZWaveReceiveThread();
             this.receiveThread.start();
 
@@ -150,6 +151,10 @@ public class ZWaveSerialHandler extends ZWaveControllerHandler {
         private static final int CAN = 0x18;
 
         private final Logger logger = LoggerFactory.getLogger(ZWaveReceiveThread.class);
+
+        ZWaveReceiveThread() {
+            super("ZWaveReceiveThread");
+        }
 
         @Override
         public void serialEvent(SerialPortEvent arg0) {
