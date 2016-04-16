@@ -193,6 +193,9 @@ public class MySensorsBindingConstants {
     public final static String CHANNEL_VAR4 = "var4";
     public final static String CHANNEL_VAR5 = "var5";
 
+    // Wait time Arduino reset
+    public final static int RESET_TIME = 5000;
+
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
         {
             put(MYSENSORS_SUBTYPE_V_TEMP, CHANNEL_TEMP);
