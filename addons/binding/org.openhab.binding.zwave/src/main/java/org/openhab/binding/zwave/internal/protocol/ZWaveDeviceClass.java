@@ -434,6 +434,7 @@ public class ZWaveDeviceClass {
         ROUTING_SENSOR_MULTILEVEL(1, Generic.MULTILEVEL_SENSOR, "Routing Multilevel Sensor"),
 
         SIMPLE_METER(1, Generic.METER, "Simple Meter"),
+        ADVANCED_ENERGY_CONTROL(2, Generic.METER, "Advanced Energy Control"),
 
         SIMPLE_GARAGE_DOOR(1, Generic.GARAGE_DOOR, "Simple Garage Door"),
 
@@ -585,6 +586,10 @@ public class ZWaveDeviceClass {
                 case SIMPLE_METER:
                     return new CommandClass[] { CommandClass.METER, CommandClass.MANUFACTURER_SPECIFIC,
                             CommandClass.VERSION };
+                case ADVANCED_ENERGY_CONTROL:
+                    return new CommandClass[] { CommandClass.METER_TBL_CONFIG, CommandClass.METER_TBL_MONITOR,
+                            CommandClass.MANUFACTURER_SPECIFIC, CommandClass.VERSION };
+
                 case ALARM_SENSOR_ROUTING_BASIC:
                 case SMOKE_SENSOR_ROUTING_BASIC:
                     return new CommandClass[] { CommandClass.SENSOR_ALARM, CommandClass.MANUFACTURER_SPECIFIC,
