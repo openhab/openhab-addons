@@ -53,7 +53,7 @@
       <property name="vendor">Remotec</property>
       <property name="model">ZXT-120</property>
       <property name="manufacturerId">5254</property>
-      <property name="manufacturerRef">0101:8377</property>
+      <property name="manufacturerRef">0101:8377,0102:8377</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -73,12 +73,12 @@
 
       <parameter name="config_26_1" type="integer" groupName="configuration"
                  min="0" max="4">
-        <label>26: (Read Only) Learning status register</label>
+        <label>26: Learning status register (Read Only)</label>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_27_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_27_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
         <label>27: IR code number for built-in code library</label>
         <default>0</default>
       </parameter>
@@ -86,10 +86,10 @@
       <parameter name="config_28_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>28: External IR Emitter power level</label>
-        <default>-1</default>
+        <default>255</default>
         <options>
-          <option value="-1">High power mode</option>
           <option value="0">Normal power mode</option>
+          <option value="255">High power mode</option>
         </options>
       </parameter>
 
@@ -115,7 +115,7 @@
 
       <parameter name="config_35_4" type="integer" groupName="configuration"
                  min="0" max="65535">
-        <label>35: (Read Only) Learn location status. Bitmask.</label>
+        <label>35: Learn location status. Bitmask. (Read Only)</label>
         <default>0</default>
       </parameter>
 
