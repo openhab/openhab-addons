@@ -37,6 +37,7 @@
       <property name="model">RF9501</property>
       <property name="manufacturerId">001A</property>
       <property name="manufacturerRef">534C:0000</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -51,21 +52,21 @@
       <parameter name="config_1_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>1: Delayed OFF time</label>
-        <description>The amount of time in seconds the switch will delay when trigger the delayed off feature</description>
+        <description>The time in seconds the switch will delay when trigger the delayed off feature</description>
         <default>0</default>
       </parameter>
 
       <parameter name="config_2_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>2: Panic ON time</label>
-        <description>The amount of time in seconds the switch will turn on for when panic mode is triggered</description>
+        <description>The time in seconds the switch will turn on for when panic mode is triggered</description>
         <default>0</default>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>3: Panic OFF time</label>
-        <description>The amount of time in seconds the switch will turn off for when panic mode is triggered</description>
+        <description>The time in seconds the switch will turn off for when panic mode is triggered</description>
         <default>0</default>
       </parameter>
 
@@ -76,8 +77,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Power Up State</label>
         <description>Power Up State of the switch</description>
         <default>1</default>
@@ -88,8 +88,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Panic mode enable</label>
         <description>Enables this switch to participate in panic mode</description>
         <default>1</default>

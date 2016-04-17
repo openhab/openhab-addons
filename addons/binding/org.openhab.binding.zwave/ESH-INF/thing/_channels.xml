@@ -470,8 +470,7 @@
     <channel-type id="thermostat_setpoint">
         <item-type>Number</item-type>
         <label>Heating Setpoint</label>
-        <description>Sets the heating setpoint
-        </description>
+        <description>Sets the thermostate setpoint</description>
         <category>Temperature</category>
         <config-description>
             <parameter name="config_scale" type="text">
@@ -490,8 +489,7 @@
     <channel-type id="thermostat_fan_mode">
         <item-type>Number</item-type>
         <label>Fan Mode</label>
-        <description>Sets the fan mode
-        </description>
+        <description>Sets the fan mode</description>
         <category>Temperature</category>
         <state>
             <options>

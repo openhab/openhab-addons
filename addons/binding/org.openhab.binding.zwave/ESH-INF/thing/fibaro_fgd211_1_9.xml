@@ -40,8 +40,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Enable/Disable ALL ON/OFF</label>
         <description>Activate/Deactive ALL ON/OFF</description>
         <default>255</default>
@@ -53,8 +52,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Separation of association sending (key 1)</label>
         <description>Activate/Deactivate association sending for group 1 - Also see param #16</description>
         <default>0</default>
@@ -65,14 +63,15 @@
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Control key #2 behaviour</label>
-        <description>Key no.2 is not represented by any physical device - only devices in the association list. This functionality prevents of lack of reaction on pressing key no.2 through polling devices from association list one by one and checking their</description>
+        <description><![CDATA[
+Key no.2 is not represented by any physical device<br /><h1>Overview</h1><p>Key no.2 is not represented by any physical device - only devices in the association list.</p> <p>This functionality prevents of lack of reaction on pressing key no.2 through polling devices from association list one by one and checking their</p>
+        ]]></description>
         <default>1</default>
         <options>
-          <option value="0">Device status is not checked</option>
-          <option value="1">Device status is checked</option>
+          <option value="0">Status not checked</option>
+          <option value="1">Status checked</option>
         </options>
       </parameter>
 
@@ -117,8 +116,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Inputs Button/Switch configuration</label>
         <description>Binary inputs type configuration</description>
         <default>0</default>
@@ -128,8 +126,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_15_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_15_1" type="integer" groupName="configuration">
         <label>15: Parm 15</label>
         <description>Double-click set lighting at 100%</description>
         <default>0</default>
@@ -139,19 +136,17 @@
         </options>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: Saving state before power failure</label>
         <description>Saving state before power failure</description>
         <default>1</default>
         <options>
-          <option value="0">State NOT saved at power failure, all outputs are set to OFF upon powe</option>
-          <option value="1">State saved at power failure, all outputs are set to previous state up</option>
+          <option value="0">State NOT saved at power failure</option>
+          <option value="1">State saved at power failure</option>
         </options>
       </parameter>
 
-      <parameter name="config_17_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_17_1" type="integer" groupName="configuration">
         <label>17: 3-way switch</label>
         <description>The function of 3-way switch provides the option to double key no. 1. The dimmer may control two bi-stable push-buttons or an infinite number of mono-stable push-buttons. (default value 0)</description>
         <default>0</default>
@@ -161,8 +156,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_18_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_18_1" type="integer" groupName="configuration">
         <label>18: Synchronizing light level for associated devices</label>
         <description>The dimmer communicate the level to the associated devices. (default value 0)</description>
         <default>0</default>
@@ -172,8 +166,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_19_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_19_1" type="integer" groupName="configuration">
         <label>19: Change [On-Off] bi-stable keys</label>
         <description>This function allow user to change [On-Off] bi-stable keys (parameter no. 14) (default value 0)</description>
         <default>0</default>
@@ -190,8 +183,7 @@
         <default>110</default>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Relay 1: Response to General Alarm</label>
         <default>3</default>
         <options>
@@ -216,8 +208,7 @@
         <default>99</default>
       </parameter>
 
-      <parameter name="config_41_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_41_1" type="integer" groupName="configuration">
         <label>41: Scene activation functionality</label>
         <description>The device offers the possibility of sending commands compatible with Command class scene activation. Information is sent to devices assigned to association group no. 3. Controllers such as Home Center 2 are able to interpret such commands and based on th</description>
         <default>0</default>

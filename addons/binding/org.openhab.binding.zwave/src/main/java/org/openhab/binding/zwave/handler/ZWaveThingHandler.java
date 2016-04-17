@@ -123,16 +123,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         updateStatus(ThingStatus.OFFLINE);
 
         // TODO: Shouldn't the framework do this for us???
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof ZWaveControllerHandler) {
-                ZWaveControllerHandler bridgeHandler = (ZWaveControllerHandler) handler;
-                if (bridgeHandler.getOwnNodeId() != 0) {
-                    bridgeStatusChanged(bridge.getStatusInfo());
-                }
-            }
-        }
+        // Bridge bridge = getBridge();
+        // if (bridge != null) {
+        // ThingHandler handler = bridge.getHandler();
+        // if (handler instanceof ZWaveControllerHandler) {
+        // ZWaveControllerHandler bridgeHandler = (ZWaveControllerHandler) handler;
+        // if (bridgeHandler.getOwnNodeId() != 0) {
+        // bridgeStatusChanged(bridge.getStatusInfo());
+        // }
+        // }
+        // }
     }
 
     void initialiseNode() {
@@ -152,90 +152,93 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
 
         // Create the channels list to simplify processing incoming events
-        thingChannelsCmd = new ArrayList<ZWaveThingChannel>();
-        thingChannelsPoll = new ArrayList<ZWaveThingChannel>();
-        thingChannelsState = new ArrayList<ZWaveThingChannel>();
-        for (Channel channel : getThing().getChannels()) {
-            // Process the channel properties and configuration
-            Map<String, String> properties = channel.getProperties();
-            Configuration configuration = channel.getConfiguration();
+        synchronized (thingChannelsState) {
+            thingChannelsCmd = new ArrayList<ZWaveThingChannel>();
+            thingChannelsPoll = new ArrayList<ZWaveThingChannel>();
+            thingChannelsState = new ArrayList<ZWaveThingChannel>();
+            for (Channel channel : getThing().getChannels()) {
+                // Process the channel properties and configuration
+                Map<String, String> properties = channel.getProperties();
+                Configuration configuration = channel.getConfiguration();
 
-            logger.debug("NODE {}: Initialising channel {}", nodeId, channel.getUID());
+                logger.debug("NODE {}: Initialising channel {}", nodeId, channel.getUID());
 
-            for (String key : properties.keySet()) {
-                String[] bindingType = key.split(":");
-                if (bindingType.length != 3) {
-                    continue;
-                }
-                if (!ZWaveBindingConstants.CHANNEL_CFG_BINDING.equals(bindingType[0])) {
-                    continue;
-                }
-
-                String[] bindingProperties = properties.get(key).split(";");
-
-                // TODO: Check length???
-
-                // Get the command classes - comma separated
-                String[] cmdClasses = bindingProperties[0].split(",");
-
-                // Convert the arguments to a map
-                // - comma separated list of arguments "arg1=val1, arg2=val2"
-                Map<String, String> argumentMap = new HashMap<String, String>();
-                if (bindingProperties.length == 2) {
-                    String[] arguments = bindingProperties[1].split(",");
-                    for (String arg : arguments) {
-                        String[] prop = arg.split("=");
-                        argumentMap.put(prop[0], prop[1]);
-                        // logger.debug("Adding Argument {}=={}", prop[0], prop[1]);
+                for (String key : properties.keySet()) {
+                    String[] bindingType = key.split(":");
+                    if (bindingType.length != 3) {
+                        continue;
                     }
-                }
-
-                // Process the user configuration and add it to the argument map
-                for (String configName : configuration.getProperties().keySet()) {
-                    argumentMap.put(configName, configuration.get(configName).toString());
-                }
-
-                // Add all the command classes...
-                boolean first = true;
-                for (String cc : cmdClasses) {
-                    String[] ccSplit = cc.split(":");
-                    int endpoint = 0;
-
-                    if (ccSplit.length == 2) {
-                        endpoint = Integer.parseInt(ccSplit[1]);
+                    if (!ZWaveBindingConstants.CHANNEL_CFG_BINDING.equals(bindingType[0])) {
+                        continue;
                     }
 
-                    // Get the data type
-                    DataType dataType = DataType.DecimalType;
-                    try {
-                        dataType = DataType.valueOf(bindingType[2]);
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("NODE {}: Invalid item type defined ({}). Assuming DecimalType", nodeId, dataType);
+                    String[] bindingProperties = properties.get(key).split(";");
+
+                    // TODO: Check length???
+
+                    // Get the command classes - comma separated
+                    String[] cmdClasses = bindingProperties[0].split(",");
+
+                    // Convert the arguments to a map
+                    // - comma separated list of arguments "arg1=val1, arg2=val2"
+                    Map<String, String> argumentMap = new HashMap<String, String>();
+                    if (bindingProperties.length == 2) {
+                        String[] arguments = bindingProperties[1].split(",");
+                        for (String arg : arguments) {
+                            String[] prop = arg.split("=");
+                            argumentMap.put(prop[0], prop[1]);
+                            // logger.debug("Adding Argument {}=={}", prop[0], prop[1]);
+                        }
                     }
 
-                    // logger.debug("Creating - arg map is {} long", argumentMap.size());
-                    ZWaveThingChannel chan = new ZWaveThingChannel(channel.getUID(), dataType, ccSplit[0], endpoint,
-                            argumentMap);
-
-                    // First time round, and this is a command - then add the command
-                    if (first && ("*".equals(bindingType[1]) || "Command".equals(bindingType[1]))) {
-                        thingChannelsCmd.add(chan);
-                        logger.debug("NODE {}: Initialising cmd channel {}", nodeId, channel.getUID());
+                    // Process the user configuration and add it to the argument map
+                    for (String configName : configuration.getProperties().keySet()) {
+                        argumentMap.put(configName, configuration.get(configName).toString());
                     }
 
-                    // First time round, then add the polling class
-                    if (first) {
-                        thingChannelsPoll.add(chan);
-                        logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
-                    }
+                    // Add all the command classes...
+                    boolean first = true;
+                    for (String cc : cmdClasses) {
+                        String[] ccSplit = cc.split(":");
+                        int endpoint = 0;
 
-                    // Add the state and polling handlers
-                    if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
-                        logger.debug("NODE {}: Initialising state channel {}", nodeId, channel.getUID());
-                        thingChannelsState.add(chan);
-                    }
+                        if (ccSplit.length == 2) {
+                            endpoint = Integer.parseInt(ccSplit[1]);
+                        }
 
-                    first = false;
+                        // Get the data type
+                        DataType dataType = DataType.DecimalType;
+                        try {
+                            dataType = DataType.valueOf(bindingType[2]);
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("NODE {}: Invalid item type defined ({}). Assuming DecimalType", nodeId,
+                                    dataType);
+                        }
+
+                        // logger.debug("Creating - arg map is {} long", argumentMap.size());
+                        ZWaveThingChannel chan = new ZWaveThingChannel(channel.getUID(), dataType, ccSplit[0], endpoint,
+                                argumentMap);
+
+                        // First time round, and this is a command - then add the command
+                        if (first && ("*".equals(bindingType[1]) || "Command".equals(bindingType[1]))) {
+                            thingChannelsCmd.add(chan);
+                            logger.debug("NODE {}: Initialising cmd channel {}", nodeId, channel.getUID());
+                        }
+
+                        // First time round, then add the polling class
+                        if (first) {
+                            thingChannelsPoll.add(chan);
+                            logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
+                        }
+
+                        // Add the state and polling handlers
+                        if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
+                            logger.debug("NODE {}: Initialising state channel {}", nodeId, channel.getUID());
+                            thingChannelsState.add(chan);
+                        }
+
+                        first = false;
+                    }
                 }
             }
         }
@@ -418,95 +421,91 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         // Initialise the node
         initialiseNode();
 
+        if (node != null) {
+            updateNeighbours();
+
+            // We need to synchronise the configuration between the ZWave library and ESH.
+            // This is especially important when the device is first added as the ESH representation of the config
+            // will be set to defaults. We will also not have any defaults for association groups, wakeup etc.
+            Configuration config = editConfiguration();
+
+            // Process CONFIGURATION
+            ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
+                    .getCommandClass(CommandClass.CONFIGURATION);
+            if (configurationCommandClass != null) {
+                // Iterate over all parameters and process
+                for (int paramId : configurationCommandClass.getParameters().keySet()) {
+                    ZWaveConfigurationParameter parameter = configurationCommandClass.getParameter(paramId);
+                    updateConfigurationParameter(config, parameter.getIndex(), parameter.getSize(),
+                            parameter.getValue());
+                }
+            }
+
+            // Process ASSOCIATION
+            ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
+                    .getCommandClass(CommandClass.ASSOCIATION);
+            if (associationCommandClass != null) {
+                for (int groupId : associationCommandClass.getAssociations().keySet()) {
+                    List<String> group = new ArrayList<String>();
+
+                    // Build the configuration value
+                    for (ZWaveAssociation groupMember : associationCommandClass.getGroupMembers(groupId)
+                            .getAssociations()) {
+                        logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, groupId,
+                                groupMember.getNode(), groupMember.getEndpoint());
+                        group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
+                    }
+
+                    config.put("group_" + groupId, group);
+                }
+            }
+
+            // Process WAKE_UP
+            ZWaveWakeUpCommandClass wakeupCommandClass = (ZWaveWakeUpCommandClass) node
+                    .getCommandClass(CommandClass.WAKE_UP);
+            if (wakeupCommandClass != null) {
+                config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, wakeupCommandClass.getInterval());
+                config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, wakeupCommandClass.getTargetNodeId());
+            }
+
+            // Process SWITCH_ALL
+            ZWaveSwitchAllCommandClass switchallCommandClass = (ZWaveSwitchAllCommandClass) node
+                    .getCommandClass(CommandClass.SWITCH_ALL);
+            if (switchallCommandClass != null) {
+                config.put(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, switchallCommandClass.getMode());
+            }
+
+            // Process NODE_NAMING
+            ZWaveNodeNamingCommandClass nodenamingCommandClass = (ZWaveNodeNamingCommandClass) node
+                    .getCommandClass(CommandClass.NODE_NAMING);
+            if (nodenamingCommandClass != null) {
+                config.put(ZWaveBindingConstants.CONFIGURATION_NODELOCATION, nodenamingCommandClass.getLocation());
+                config.put(ZWaveBindingConstants.CONFIGURATION_NODENAME, nodenamingCommandClass.getName());
+            }
+
+            // Only update if configuration has changed
+            Configuration originalConfig = editConfiguration();
+
+            boolean update = false;
+            for (String property : config.getProperties().keySet()) {
+                if (config.get(property).equals(originalConfig.get(property)) == false) {
+                    update = true;
+                    break;
+                }
+            }
+
+            if (update == true) {
+                updateConfiguration(config);
+            }
+        }
+        controllerHandler = bridgeHandler;
+
         // Add the listener for ZWave events.
         // This ensures we get called whenever there's an event we might be interested in
         if (bridgeHandler.addEventListener(this) == false) {
             logger.warn("NODE {}: Controller failed to register event handler.", nodeId);
             return;
         }
-
-        controllerHandler = bridgeHandler;
-
-        if (node == null) {
-            return;
-        }
-
-        updateNeighbours();
-
-        // We need to synchronise the configuration between the ZWave library and ESH.
-        // This is especially important when the device is first added as the ESH representation of the config
-        // will be set to defaults. We will also not have any defaults for association groups, wakeup etc.
-        Configuration config = editConfiguration();
-
-        // Process CONFIGURATION
-        ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
-                .getCommandClass(CommandClass.CONFIGURATION);
-        if (configurationCommandClass != null) {
-            // Iterate over all parameters and process
-            for (int paramId : configurationCommandClass.getParameters().keySet()) {
-                ZWaveConfigurationParameter parameter = configurationCommandClass.getParameter(paramId);
-                updateConfigurationParameter(config, parameter.getIndex(), parameter.getSize(), parameter.getValue());
-            }
-        }
-
-        // Process ASSOCIATION
-        ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
-                .getCommandClass(CommandClass.ASSOCIATION);
-        if (associationCommandClass != null) {
-            for (int groupId : associationCommandClass.getAssociations().keySet()) {
-                List<String> group = new ArrayList<String>();
-
-                // Build the configuration value
-                for (ZWaveAssociation groupMember : associationCommandClass.getGroupMembers(groupId)
-                        .getAssociations()) {
-                    logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, groupId,
-                            groupMember.getNode(), groupMember.getEndpoint());
-                    group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
-                }
-
-                config.put("group_" + groupId, group);
-            }
-        }
-
-        // Process WAKE_UP
-        ZWaveWakeUpCommandClass wakeupCommandClass = (ZWaveWakeUpCommandClass) node
-                .getCommandClass(CommandClass.WAKE_UP);
-        if (wakeupCommandClass != null) {
-            config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, wakeupCommandClass.getInterval());
-            config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, wakeupCommandClass.getTargetNodeId());
-        }
-
-        // Process SWITCH_ALL
-        ZWaveSwitchAllCommandClass switchallCommandClass = (ZWaveSwitchAllCommandClass) node
-                .getCommandClass(CommandClass.SWITCH_ALL);
-        if (switchallCommandClass != null) {
-            config.put(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, switchallCommandClass.getMode());
-        }
-
-        // Process NODE_NAMING
-        ZWaveNodeNamingCommandClass nodenamingCommandClass = (ZWaveNodeNamingCommandClass) node
-                .getCommandClass(CommandClass.NODE_NAMING);
-        if (nodenamingCommandClass != null) {
-            config.put(ZWaveBindingConstants.CONFIGURATION_NODELOCATION, nodenamingCommandClass.getLocation());
-            config.put(ZWaveBindingConstants.CONFIGURATION_NODENAME, nodenamingCommandClass.getName());
-        }
-
-        // Only update if configuration has changed
-        Configuration originalConfig = editConfiguration();
-
-        boolean update = false;
-        for (String property : config.getProperties().keySet()) {
-            if (config.get(property).equals(originalConfig.get(property)) == false) {
-                update = true;
-                break;
-            }
-        }
-
-        if (update == true) {
-            updateConfiguration(config);
-        }
-
-        controllerHandler = bridgeHandler;
     }
 
     @Override
@@ -997,7 +996,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     int groupId = ((ZWaveAssociationEvent) event).getGroupId();
                     List<ZWaveAssociation> groupMembers = ((ZWaveAssociationEvent) event).getGroupMembers();
                     if (groupMembers != null) {
-                        logger.debug("NODE {}: Update ASSOCIATION group_{}", groupId);
+                        logger.debug("NODE {}: Update ASSOCIATION group_{}", nodeId, groupId);
 
                         List<String> group = new ArrayList<String>();
 
@@ -1007,7 +1006,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                                     groupMember.getNode(), groupMember.getEndpoint());
                             group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
                         }
-                        logger.debug("NODE {}: Update ASSOCIATION group_{}: {} members", groupId, group.size());
+                        logger.debug("NODE {}: Update ASSOCIATION group_{}: {} members", nodeId, groupId, group.size());
 
                         cfgUpdated = true;
                         configuration.put("group_" + groupId, group);
@@ -1056,36 +1055,38 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 updateConfiguration(configuration);
             }
 
-            if (thingChannelsState == null) {
-                logger.error("NODE {}: No state handlers!", nodeId);
-                return;
-            }
-
-            // Process the channels to see if we're interested
-            for (ZWaveThingChannel channel : thingChannelsState) {
-                // logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
-
-                if (channel.getEndpoint() != event.getEndpoint()) {
-                    continue;
-                }
-
-                // Is this command class associated with this channel?
-                if (!channel.getCommandClass().equals(commandClass)) {
-                    continue;
-                }
-
-                if (channel.converter == null) {
-                    logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
+            synchronized (thingChannelsState) {
+                if (thingChannelsState == null) {
+                    logger.error("NODE {}: No state handlers!", nodeId);
                     return;
                 }
 
-                // logger.debug("NODE {}: Processing event as channel {} {}", nodeId, channel.getUID(),
-                // channel.dataType);
-                State state = channel.converter.handleEvent(channel, event);
-                if (state != null) {
-                    logger.debug("Updating {} to {}", channel.getUID(), state);
+                // Process the channels to see if we're interested
+                for (ZWaveThingChannel channel : thingChannelsState) {
+                    // logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
 
-                    updateState(channel.getUID(), state);
+                    if (channel.getEndpoint() != event.getEndpoint()) {
+                        continue;
+                    }
+
+                    // Is this command class associated with this channel?
+                    if (!channel.getCommandClass().equals(commandClass)) {
+                        continue;
+                    }
+
+                    if (channel.converter == null) {
+                        logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
+                        return;
+                    }
+
+                    // logger.debug("NODE {}: Processing event as channel {} {}", nodeId, channel.getUID(),
+                    // channel.dataType);
+                    State state = channel.converter.handleEvent(channel, event);
+                    if (state != null) {
+                        logger.debug("Updating {} to {}", channel.getUID(), state);
+
+                        updateState(channel.getUID(), state);
+                    }
                 }
             }
 

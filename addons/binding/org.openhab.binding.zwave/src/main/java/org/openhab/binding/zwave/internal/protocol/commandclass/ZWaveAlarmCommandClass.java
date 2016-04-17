@@ -95,7 +95,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Alarm Request (v{})", getNode().getNodeId(), getVersion());
+        logger.debug("NODE {}: Received Alarm Request V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case ALARM_REPORT:
@@ -462,7 +462,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
          * @param alarmType the alarm type that triggered the event;
          * @param value the value for the event.
          */
-        private ZWaveAlarmValueEvent(int nodeId, int endpoint, AlarmType alarmType, int alarmEvent, int alarmStatus,
+        public ZWaveAlarmValueEvent(int nodeId, int endpoint, AlarmType alarmType, int alarmEvent, int alarmStatus,
                 Object value) {
             super(nodeId, endpoint, CommandClass.ALARM, value);
             this.alarmType = alarmType;
