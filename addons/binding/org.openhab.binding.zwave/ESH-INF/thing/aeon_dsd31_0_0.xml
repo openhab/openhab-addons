@@ -40,13 +40,14 @@
       <parameter name="config_37_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>37: Sirensound and Volume</label>
-        <description>The Value1(low byte) is used to select the Siren sound. The Value2(high byte) is used to adjust the volume. Other values will be ignored. 0 1 -&gt; do not change the current sound.1 1 -&gt; Siren sound 1 is selected.2 1 -&gt; Siren sound 2 i</description>
+        <description><![CDATA[
+Sets the sound type and volume<br /><h1>Overview</h1><p>The Value1(low byte) is used to select the Siren sound. The Value2(high byte) is used to adjust the volume. Other values will be ignored. 0 1  -&gt;   do not change the current sound.1 1  -&gt;   Siren sound 1 is selected.2 1  -&gt;   Siren sound 2 i</p>
+        ]]></description>
         <default>13</default>
         <advanced>true</advanced>
       </parameter>
 
-      <parameter name="config_37_2_0000000F" type="integer" groupName="configuration"
-                 min="1" max="5">
+      <parameter name="config_37_2_0000000F" type="integer" groupName="configuration">
         <label>37: Siren Sound</label>
         <default>1</default>
         <options>
@@ -58,8 +59,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_37_2_00000F00" type="integer" groupName="configuration"
-                 min="1" max="3">
+      <parameter name="config_37_2_00000F00" type="integer" groupName="configuration">
         <label>37: Siren Volume</label>
         <default>3</default>
         <options>
@@ -69,8 +69,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Send Notifications</label>
         <description>Enable to send notifications to associated devices when the state of Siren changed.</description>
         <default>0</default>
@@ -81,8 +80,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_252_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_252_1" type="integer" groupName="configuration">
         <label>252: Enable/Disable 'Lock' - Configuration</label>
         <default>0</default>
         <options>
