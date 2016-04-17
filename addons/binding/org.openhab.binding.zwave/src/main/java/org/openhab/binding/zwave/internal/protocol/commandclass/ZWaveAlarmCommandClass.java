@@ -68,6 +68,11 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
     private boolean isGetSupported = true;
 
+    public enum ReportType {
+        ALARM_REPORT,
+        NOTIFICATION_REPORT
+    };
+
     /**
      * Creates a new instance of the ZWaveAlarmCommandClass class.
      *
@@ -116,6 +121,13 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
                 if (version == 1) {
                     logger.debug("NODE {}: Alarm report - {} = {}", getNode().getNodeId(), alarmTypeCode, value);
+
+                    // for the v1 report types we do not try to decode the alarm types
+                    // since the are device depended
+                    ZWaveAlarmValueEvent zEvent = new ZWaveAlarmValueEvent(getNode().getNodeId(), endpoint,
+                            alarmTypeCode, value);
+                    this.getController().notifyEventListeners(zEvent);
+                    return;
                 } else {
                     alarmTypeCode = serialMessage.getMessagePayloadByte(offset + 5);
                     sensor = serialMessage.getMessagePayloadByte(offset + 3);
@@ -337,29 +349,10 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
         BURGLAR(7, "Burglar"),
         POWER_MANAGEMENT(8, "Power Management"),
         SYSTEM(9, "System"),
-        // DEADBOLT_JAMMED(9, "Bolt is Jammed"),
         EMERGENCY(10, "Emergency"),
         CLOCK(11, "Clock"),
         APPLIANCE(12, "Appliance"),
-        HOME_HEALTH(13, "Home Health"),
-        // CODE_ADDED(13, "Code was Added"),
-        UNLOCKED(16, "Unlocked"),
-        KEYPAD_LOCKED(18, "Locked with Keypad"),
-        KEYPAD_UNLOCK(19, "Unlocked by Keypad"),
-        MANUAL_LOCKED(21, "Manual Locked"),
-        MANUAL_UNLOCK(22, "Manual unlocked"),
-        RF_LOCKED(24, "Locked by RF module"),
-        RF_UNLOCK(25, "Unlocked by RF module"),
-        AUTO_LOCKED(27, "Auto Locked"),
-        ALL_CODES_DELETED(32, "All Codes Deleted"),
-        CODE_DELETED(33, "User Code Deleted"),
-        CODE_CHANGED(112, "User Code Changed"),
-        DUPLICATE_CODE(113, "Duplicate Code"),
-        POWER_CYCLED(130, "Power Cycled"),
-        TAMPER_ALARM(161, "Failed Code"),
-        BATTERY_LOW(167, "Battery Low"),
-        BATTERY_CRITICAL(168, "Battery Critical"),
-        BATTEERY_TOO_LOW(169, "Battery too low to operate");
+        HOME_HEALTH(13, "Home Health");
 
         /**
          * A mapping between the integer code and its corresponding Alarm type to facilitate lookup by code.
@@ -450,7 +443,12 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
      */
     public class ZWaveAlarmValueEvent extends ZWaveCommandClassValueEvent {
 
-        private AlarmType alarmType;
+        private final ReportType reportType;
+        // v1
+        private int alarmType;
+
+        // v2
+        private AlarmType zwaveAlarmType;
         private int alarmEvent;
         private int alarmStatus;
 
@@ -462,19 +460,43 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
          * @param alarmType the alarm type that triggered the event;
          * @param value the value for the event.
          */
+        private ZWaveAlarmValueEvent(int nodeId, int endpoint, int alarmType, Object value) {
+            super(nodeId, endpoint, CommandClass.ALARM, value);
+            this.alarmType = alarmType;
+            this.reportType = ReportType.ALARM_REPORT;
+        }
+
         private ZWaveAlarmValueEvent(int nodeId, int endpoint, AlarmType alarmType, int alarmEvent, int alarmStatus,
                 Object value) {
             super(nodeId, endpoint, CommandClass.ALARM, value);
-            this.alarmType = alarmType;
+            this.reportType = ReportType.NOTIFICATION_REPORT;
+            this.zwaveAlarmType = alarmType;
             this.alarmEvent = alarmEvent;
             this.alarmStatus = alarmStatus;
         }
 
         /**
+         * Gets the kind of report. A alarmv1 alarm report, with device depended values
+         * or a Notification Report with Zwave defined values.
+         *
+         * @return
+         */
+        public ReportType getReportType() {
+            return reportType;
+        }
+
+        /**
          * Gets the alarm type for this alarm value event.
          */
-        public AlarmType getAlarmType() {
+        public int getAlarmType() {
             return alarmType;
+        }
+
+        /**
+         * Gets the alarm type for this alarm value event.
+         */
+        public AlarmType getZwaveAlarmType() {
+            return zwaveAlarmType;
         }
 
         /**

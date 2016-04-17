@@ -4,6 +4,281 @@
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
 
+    <!-- Channel definition for zwave notification type=0x01/Smoke Alarm -->
+    <channel-type id="notification_smoke_alarm" advanced="true">
+        <item-type>Number</item-type>
+        <label>Smoke Alarm</label>
+        <description>Smoke Alarm</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Smoke detected</option>
+                <option value="2">Smoke detected, Unknown Location</option>
+                <option value="3">Smoke Alarm Test</option>
+                <option value="4">Replacement Required</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x02/CO Alarm -->
+    <channel-type id="notification_co_alarm" advanced="true">
+        <item-type>Number</item-type>
+        <label>CO Alarm</label>
+        <description>CO Alarm</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Carbon monoxide detected</option>
+                <option value="2">Carbon monoxide detected, Unknown Location</option>
+                <option value="3">Carbon monoxide Test</option>
+                <option value="4">Replacement Required</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x03/CO2 Alarm -->
+    <channel-type id="notification_co2_alarm" advanced="true">
+        <item-type>Number</item-type>
+        <label>CO2 Alarm</label>
+        <description>CO2 Alarm</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Carbon dioxide detected</option>
+                <option value="2">Carbon dioxide detected, Unknown Location</option>
+                <option value="3">Carbon dioxide Test</option>
+                <option value="4">Replacement Required</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x04/Heat Alarm -->
+    <channel-type id="notification_heat_alarm" advanced="true">
+        <item-type>Number</item-type>
+        <label>Heat Alarm</label>
+        <description>Heat Alarm</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Overheat detected</option>
+                <option value="2">Overheat detected, Unknown Location</option>
+                <option value="3">Rapid Temperature Rise</option>
+                <option value="4">Rapid Temperature Rise, Unknown Location</option>
+                <option value="5">Under heat detected</option>
+                <option value="6">Under heat detected, Unknown Location</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x05/Water Alarm -->
+    <channel-type id="notification_water_alarm" advanced="true">
+        <item-type>Number</item-type>
+        <label>Water Alarm</label>
+        <description>Water Alarm</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Water Leak detected</option>
+                <option value="2">Water Leak detected, Unknown Location</option>
+                <option value="3">Water Level Dropped</option>
+                <option value="4">Water Level Dropped, Unknown Location</option>
+                <option value="5">Replace Water Filter</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x06/Access Control -->
+    <channel-type id="notification_access_control" advanced="true">
+        <item-type>Number</item-type>
+        <label>Access Control</label>
+        <description>Access Control</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Manual Lock Operation</option>
+                <option value="2">Manual Unlock Operation</option>
+                <option value="3">RF Lock Operation</option>
+                <option value="4">RF Unlock Operation</option>
+                <option value="5">Keypad Lock Operation</option>
+                <option value="6">Keypad Unlock Operation</option>
+                <option value="7">Manual Not Fully Locked Operation</option>
+                <option value="8">RF Not Fully Locked Operation</option>
+                <option value="9">Auto Lock Locked Operation</option>
+                <option value="10">Auto Lock Not Fully Operation</option>
+                <option value="11">LockJammed</option>
+                <option value="12">All user codes deleted</option>
+                <option value="13">Single user code deleted</option>
+                <option value="14">New user code added</option>
+                <option value="15">New user code not added due to duplicate code</option>
+                <option value="16">Keypad temporary disabled</option>
+                <option value="17">Keypad busy</option>
+                <option value="18">New Program code Entered- Unique code for lock configuration</option>
+                <option value="19">Manually Enter user Access code exceeds code limit</option>
+                <option value="20">Unlock By RF with invalid user code</option>
+                <option value="21">Locked by RF with invalid user codes</option>
+                <option value="22">Window/Door is open</option>
+                <option value="23">Window/Door is closed</option>
+                <option value="64">Barrier performing initialization process</option>
+                <option value="65">Barrier operation (Open / Close) force has been exceeded.</option>
+                <option value="66">Barrier motor has exceeded manufacturer's operational time limit</option>
+                <option value="67">Barrier operation has exceeded physical mechanical limits. (For example: barrier has opened past the open limit)</option>
+                <option value="68">Barrier unable to perform requested operation due to UL requirements.</option>
+                <option value="69">Barrier Unattended operation has been disabled per UL requirements.</option>
+                <option value="70">Barrier failed to perform Requested operation, device malfunction</option>
+                <option value="71">Barrier Vacation Mode</option>
+                <option value="72">Barrier Safety Beam Obstacle</option>
+                <option value="73">Barrier Sensor Not Detected / Supervisory Error</option>
+                <option value="74">Barrier Sensor Low Battery Warning</option>
+                <option value="75">Barrier detected short in WallStation wires</option>
+                <option value="76">Barrier associated with non-Z-wave remote control.</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x07/Home Security -->
+    <channel-type id="notification_home_security" advanced="true">
+        <item-type>Number</item-type>
+        <label>Home Security</label>
+        <description>Home Security</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Intrusion</option>
+                <option value="2">Intrusion, Unknown Location</option>
+                <option value="3">Tampering, Product covering removed</option>
+                <option value="4">Tampering, invalid Code</option>
+                <option value="5">Glass Breakage</option>
+                <option value="6">Glass Breakage, Unknown Location</option>
+                <option value="7">Motion Detection</option>
+                <option value="8">Motion Detection, Unknown Location</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x08/Power Management -->
+    <channel-type id="notification_power_management" advanced="true">
+        <item-type>Number</item-type>
+        <label>Power Management</label>
+        <description>Power Management</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Power has been applied</option>
+                <option value="2">AC mains disconnected</option>
+                <option value="3">AC mains re-connected</option>
+                <option value="4">Surge detected</option>
+                <option value="5">Voltage Drop/Drift</option>
+                <option value="6">Over-current detected</option>
+                <option value="7">Over-voltage detected</option>
+                <option value="8">Over-load detected</option>
+                <option value="9">Load error</option>
+                <option value="10">Replace battery soon</option>
+                <option value="11">Replace battery now</option>
+                <option value="12">Battery is charging</option>
+                <option value="13">Battery is fully charged</option>
+                <option value="14">Charge battery soon</option>
+                <option value="15">Charge battery now!</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x09/System -->
+    <channel-type id="notification_system" advanced="true">
+        <item-type>Number</item-type>
+        <label>System</label>
+        <description>System</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">System hardware failure</option>
+                <option value="2">System software failure</option>
+                <option value="3">System hardware failure with manufacturer proprietary failure code</option>
+                <option value="4">System software failure with manufacturer proprietary failure code</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x0A/Emergency Alarm -->
+    <channel-type id="notification_emergency_alarm" advanced="true">
+        <item-type>Number</item-type>
+        <label>Emergency Alarm</label>
+        <description>Emergency Alarm</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Contact Police</option>
+                <option value="2">Contact Fire Service</option>
+                <option value="3">Contact Medical Service</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x0B/Clock -->
+    <channel-type id="notification_clock" advanced="true">
+        <item-type>Number</item-type>
+        <label>Clock</label>
+        <description>Clock</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Wake Up Alert</option>
+                <option value="2">Timer Ended</option>
+                <option value="3">Time remaining</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x0C/Appliance -->
+    <channel-type id="notification_appliance" advanced="true">
+        <item-type>Number</item-type>
+        <label>Appliance</label>
+        <description>Appliance</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Program started</option>
+                <option value="2">Program in progress</option>
+                <option value="3">Program completed</option>
+                <option value="4">Replace main filter</option>
+                <option value="5">Failure to set target temperature</option>
+                <option value="6">Supplying water</option>
+                <option value="7">Water supply failure</option>
+                <option value="8">Boiling</option>
+                <option value="9">Boiling failure</option>
+                <option value="10">Washing</option>
+                <option value="11">Washing failure</option>
+                <option value="12">Rinsing</option>
+                <option value="13">Rinsing failure</option>
+                <option value="14">Draining</option>
+                <option value="15">Draining failure</option>
+                <option value="16">Spinning</option>
+                <option value="17">Spinning failure</option>
+                <option value="18">Drying</option>
+                <option value="19">Drying failure</option>
+                <option value="20">Fan failure</option>
+                <option value="21">Compressor failure</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Channel definition for zwave notification type=0x0D/Home Health -->
+    <channel-type id="notification_home_health" advanced="true">
+        <item-type>Number</item-type>
+        <label>Home Health</label>
+        <description>Home Health</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Previous Events cleared</option>
+                <option value="1">Leaving Bed</option>
+                <option value="2">Sitting on bed</option>
+                <option value="3">lying on bed</option>
+                <option value="4">Posture changed</option>
+                <option value="5">Sitting on edge of bed</option>
+                <option value="6">Volatile Organic Compound level</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Access Alarm Channel -->
     <channel-type id="alarm_access">
         <item-type>Switch</item-type>
