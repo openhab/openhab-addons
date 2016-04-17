@@ -11,8 +11,6 @@
 -->
 <features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 
-    <repository>mvn:de.maggu2810.kat.features/apache-httpcomponents/${kat.version}/xml/features</repository>
-
     <!-- binding -->
 
     <feature name="openhab-binding-astro" description="Astro Binding" version="${project.version}">
@@ -55,7 +53,6 @@
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <feature>kat-apache-httpcomponents-httpclient</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ipp/${project.version}</bundle>
     </feature>
 
@@ -67,7 +64,7 @@
     <feature name="openhab-binding-kostalinverter" description="Kostal Inverter Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle
-        start-level="80">mvn:org.openhab.binding/org.openhab.binding.kostalinverter/${project.version}</bundle>
+            start-level="80">mvn:org.openhab.binding/org.openhab.binding.kostalinverter/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
@@ -104,7 +101,7 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pulseaudio/${project.version}</bundle>
     </feature>
 
-   <feature name="openhab-binding-rme" description="RME Binding" version="${project.version}">
+    <feature name="openhab-binding-rme" description="RME Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rme/${project.version}</bundle>
