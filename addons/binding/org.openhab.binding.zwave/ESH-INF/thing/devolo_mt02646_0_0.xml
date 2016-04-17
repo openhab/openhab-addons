@@ -79,6 +79,10 @@
         <label>1: Watt Meter Report Period</label>
         <description>Enable automatic interval in seconds reporting with an interval of 5s * the value. Set to 0 will disable the autoreporting function.</description>
         <default>720</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
@@ -86,6 +90,10 @@
         <label>2: KWH Meter Report Period</label>
         <description>Enable automatic interval in minutes reporting with an interval of 10min * the value. Set to 0 will disable the autoreporting function.</description>
         <default>6</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_3_2" type="integer" groupName="configuration"
@@ -102,8 +110,7 @@
         <default>10000</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Restore switch state mode</label>
         <description>Restore switch state mode. 1 is default.</description>
         <default>1</default>
@@ -114,8 +121,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Mode of switch off function</label>
         <description>Mode of switch off function. 1 is default.</description>
         <default>1</default>
@@ -125,8 +131,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: LED indication mode</label>
         <description>Restore switch state mode. 1 is default.</description>
         <default>1</default>
@@ -137,15 +142,18 @@
         </options>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
+      <parameter name="config_8_2" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>8: Auto off timer</label>
         <description>Auto off timer. 0 will disable the auto off function.</description>
         <default>0</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: RF off command mode</label>
         <description>RF off command mode</description>
         <default>0</default>
