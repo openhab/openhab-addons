@@ -11,6 +11,7 @@ package org.openhab.binding.zwave.internal.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
@@ -82,27 +83,92 @@ public class ZWaveAlarmConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        String alarmType = channel.getArguments().get("type");
-        String alarmEvent = channel.getArguments().get("event");
         ZWaveAlarmValueEvent eventAlarm = (ZWaveAlarmValueEvent) event;
-
-        // Don't trigger event if this item is bound to another alarm type
-        if (alarmType != null && AlarmType.valueOf(alarmType) != eventAlarm.getAlarmType()) {
-            return null;
+        switch (eventAlarm.getReportType()) {
+            case ALARM_REPORT:
+                return handleAlarmReport(channel, eventAlarm);
+            case NOTIFICATION_REPORT:
+                return handleNotifictionReport(channel, eventAlarm);
         }
+        return null;
+    }
 
-        // Check the event type
-        if (alarmEvent != null && Integer.parseInt(alarmEvent) != eventAlarm.getAlarmEvent()) {
-            return null;
+    private State handleAlarmReport(ZWaveThingChannel channel, ZWaveAlarmValueEvent eventAlarm) {
+        String alarmType = channel.getArguments().get("type");
+        // Don't trigger event if this item is bound to another alarm type
+        if (alarmType != null) {
+            // alarmType should be a number
+            Integer alarmTypeInt = null;
+            try {
+                alarmTypeInt = Integer.valueOf(alarmType);
+                if (alarmTypeInt != eventAlarm.getAlarmType()) {
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                // try to interpret it as a enum value
+                if (AlarmType.valueOf(alarmType).getKey() != eventAlarm.getAlarmType()) {
+                    return null;
+                }
+            }
         }
 
         State state = null;
         switch (channel.getDataType()) {
             case OnOffType:
-                state = (Integer) event.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+                state = eventAlarm.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
                 break;
             case OpenClosedType:
-                state = (Integer) event.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                state = eventAlarm.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                break;
+            default:
+                logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                break;
+        }
+        return state;
+
+    }
+
+    private State handleNotifictionReport(ZWaveThingChannel channel, ZWaveAlarmValueEvent eventAlarm) {
+        String alarmType = channel.getArguments().get("type");
+        String alarmEvent = channel.getArguments().get("event");
+
+        // Don't trigger event if this item is bound to another alarm type
+        if (alarmType != null && AlarmType.valueOf(alarmType) != eventAlarm.getZwaveAlarmType()) {
+            return null;
+        }
+
+        // Check the event type( this will only report the alarm activation. Not deactivation.
+        if (alarmEvent != null && Integer.parseInt(alarmEvent) != eventAlarm.getAlarmEvent()) {
+            return null;
+        }
+
+        // handle event 0xfe as 'clear the event'
+        int event = eventAlarm.getAlarmEvent() == 0xfe ? 0 : eventAlarm.getAlarmEvent();
+
+        State state = null;
+        switch (channel.getDataType()) {
+            case OnOffType:
+                state = event == 0 ? OnOffType.OFF : OnOffType.ON;
+                break;
+            case OpenClosedType:
+                if (AlarmType.ACCESS_CONTROL.equals(eventAlarm.getZwaveAlarmType())) {
+                    switch (event) {
+                        case 22: // Window/Door is open
+                            state = OpenClosedType.OPEN;
+                            break;
+                        case 23: // Window/Door is closed
+                            state = OpenClosedType.CLOSED;
+                            break;
+                        default:
+                            logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(),
+                                    channel.getDataType());
+                    }
+                } else {
+                    logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                }
+                break;
+            case DecimalType:
+                state = new DecimalType(event);
                 break;
             default:
                 logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
