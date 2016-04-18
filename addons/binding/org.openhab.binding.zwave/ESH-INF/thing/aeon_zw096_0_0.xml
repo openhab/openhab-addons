@@ -69,8 +69,7 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Current overload protection enable</label>
         <description><![CDATA[
 Current overload protection enable<br /><h1>Overview</h1><p>Current Overload Protection. Load will be closed when the Current overrun (US: 15.5A, other country: 16.2A) and the time more than 2 minutes (0=disabled, 1=enabled).</p>
@@ -82,8 +81,7 @@ Current overload protection enable<br /><h1>Overview</h1><p>Current Overload Pro
         </options>
       </parameter>
 
-      <parameter name="config_20_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_20_1" type="integer" groupName="configuration">
         <label>20: Output load after re-power</label>
         <description><![CDATA[
 Configure the output load status after re‐power<br /><h1>Overview</h1><p>Configure the output load status after re-power on<br />(0=last status, 1=always on, 2=always off)</p>
@@ -96,8 +94,7 @@ Configure the output load status after re‐power<br /><h1>Overview</h1><p>Confi
         </options>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Enable send to associated devices</label>
         <description><![CDATA[
 Enable to send notifications to Group 1<br /><h1>Overview</h1><p>Enable to send notifications to associated devices (Group 1) when the state of Micro Switch’s load changed (0=nothing, 1=hail CC, 2=basic CC report).</p>
@@ -110,8 +107,7 @@ Enable to send notifications to Group 1<br /><h1>Overview</h1><p>Enable to send 
         </options>
       </parameter>
 
-      <parameter name="config_81_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_81_1" type="integer" groupName="configuration">
         <label>81: Configure LED state</label>
         <description><![CDATA[
 Configure the state of the LED<br /><h1>Overview</h1><p>Configure the state of LED when it is in 3 modes below:</p> <ul><li>0= The LED will follow the status (on/off) of its load (Energy mode).</li> <li>1= When the state of Switch’s load changed, The LED will follow the status (on/off) of its load, but the red LED will turn off after 5 seconds if there is no any switch action (momentary indicate mode).</li> <li>2= Night light mode.</li> </ul>
@@ -174,8 +170,7 @@ Green brightness in energy mode (%)<br /><h1>Overview</h1><p>Configure the brigh
         <default>50</default>
       </parameter>
 
-      <parameter name="config_90_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_90_1" type="integer" groupName="configuration">
         <label>90: Enable items 91 and 92</label>
         <description><![CDATA[
 Enables/disables parameter 91 and 92<br /><h1>Overview</h1><p>Enables/disables parameter 91 and 92 below (1=enabled, 0=disabled).</p>
@@ -203,13 +198,6 @@ minimum change in wattage to trigger<br /><h1>Overview</h1><p>The value here rep
 minimum change in wattage percent<br /><h1>Overview</h1><p>The value here represents minimum change in wattage<br />percent (in terms of percentage) for a REPORT to be sent<br />(Valid values 0-100).</p>
         ]]></description>
         <default>5</default>
-      </parameter>
-
-      <parameter name="config_100_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>100: Set 101‐103 to default.</label>
-        <description>Set 101‐103 to default.</description>
-        <default>0</default>
       </parameter>
 
       <parameter name="config_101_4_000000FF" type="integer" groupName="configuration"
@@ -248,8 +236,7 @@ Group 2 automatic update interval<br /><h1>Overview</h1><p>The time interval of 
         <default>600</default>
       </parameter>
 
-      <parameter name="config_252_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_252_1" type="integer" groupName="configuration">
         <label>252: Configuration Locked</label>
         <description><![CDATA[
 Enable/disable Configuration Locked (0 =disable, 1 = enable). <br /><h1>Overview</h1><p>Enable/disable Configuration Locked (0 =disable, 1 =enable).</p>
@@ -261,8 +248,19 @@ Enable/disable Configuration Locked (0 =disable, 1 = enable). <br /><h1>Overview
         </options>
       </parameter>
 
-      <parameter name="config_255_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_100_1_wo" type="integer" groupName="configuration">
+        <label>100: Set 101‐103 to default.</label>
+        <description>Set 101‐103 to default.</description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_255_1_wo" type="integer" groupName="configuration">
         <label>255: RESET</label>
         <description><![CDATA[
 Reset the device to defaults<br /><h1>Overview</h1><p>Reset configuration set up to default setting.</p>
