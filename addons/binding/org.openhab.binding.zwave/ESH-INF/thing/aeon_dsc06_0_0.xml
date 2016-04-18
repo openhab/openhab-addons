@@ -55,8 +55,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Multilevel Sensor Report Content</label>
         <default>0</default>
         <options>
@@ -65,14 +64,25 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
-        <label>2: Make SES blink</label>
+      <parameter name="config_2_2_000000FF" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>2: Cycle time of blinking SES light</label>
+        <description><![CDATA[
+Cycle blink length in 1/10ths of second<br /><h1>Overview</h1><p>Configuration Value 2 is to Specify the Cycle of on/off, the unit of it is 0.1 second. For example: if we set Configuration Value 1 to '15', Configuration Value 2 to '10',then SES will open 0.5 second, close 0.5 second, and repeat for 14 times.</p>
+        ]]></description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_2_2_0000FF00" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>2: Make SES blink (seconds)</label>
+        <description><![CDATA[
+blink for this many seconds<br /><h1>Overview</h1><p>Configuration Value 1 is to Specify the time that SES need blink, The unit is Second;</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Automatic Notifications</label>
         <description><![CDATA[
 Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables automatic notifications to associated devices whenever there is a state change.</p> (0=nothing, 1=hail CC, 2=basic CC report)
@@ -85,8 +95,7 @@ Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables autom
         </options>
       </parameter>
 
-      <parameter name="config_90_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_90_1" type="integer" groupName="configuration">
         <label>90: Enable/disable Parameter 91 and 92</label>
         <description>Enables/disables parameter 91 and 92 below</description>
         <default>0</default>
@@ -114,17 +123,7 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         <default>10</default>
       </parameter>
 
-      <parameter name="config_100_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>100: Set 100 to 103 to default</label>
-        <default>0</default>
-        <options>
-          <option value="0">Reset</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_101_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_101_4" type="integer" groupName="configuration">
         <label>101: Group 1 report</label>
         <default>8</default>
         <options>
@@ -135,8 +134,7 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         </options>
       </parameter>
 
-      <parameter name="config_102_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_102_4" type="integer" groupName="configuration">
         <label>102: Group 2 report</label>
         <default>0</default>
         <options>
@@ -147,8 +145,7 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         </options>
       </parameter>
 
-      <parameter name="config_103_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_103_4" type="integer" groupName="configuration">
         <label>103: Group 3 report</label>
         <default>0</default>
         <options>
@@ -156,15 +153,6 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
           <option value="4">Meter Report (Watts)</option>
           <option value="8">Meter Report (kWh)</option>
           <option value="12">Meter Report Watts and kWh</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_110_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>110: Set 111 to 113 to default</label>
-        <default>0</default>
-        <options>
-          <option value="0">Reset</option>
         </options>
       </parameter>
 
@@ -195,8 +183,29 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         <default>0</default>
       </parameter>
 
-      <parameter name="config_255_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_100_1_wo" type="integer" groupName="configuration">
+        <label>100: Set 100 to 103 to default</label>
+        <default>0</default>
+        <options>
+          <option value="0">Reset</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_110_1_wo" type="integer" groupName="configuration">
+        <label>110: Set 111 to 113 to default</label>
+        <default>0</default>
+        <options>
+          <option value="0">Reset</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_255_1_wo" type="integer" groupName="configuration">
         <label>255: Device Reset</label>
         <default>0</default>
         <options>
