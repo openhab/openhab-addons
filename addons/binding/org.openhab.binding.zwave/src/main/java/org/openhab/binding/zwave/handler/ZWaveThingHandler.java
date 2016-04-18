@@ -123,16 +123,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         updateStatus(ThingStatus.OFFLINE);
 
         // TODO: Shouldn't the framework do this for us???
-        // Bridge bridge = getBridge();
-        // if (bridge != null) {
-        // ThingHandler handler = bridge.getHandler();
-        // if (handler instanceof ZWaveControllerHandler) {
-        // ZWaveControllerHandler bridgeHandler = (ZWaveControllerHandler) handler;
-        // if (bridgeHandler.getOwnNodeId() != 0) {
-        // bridgeStatusChanged(bridge.getStatusInfo());
-        // }
-        // }
-        // }
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof ZWaveControllerHandler) {
+                ZWaveControllerHandler bridgeHandler = (ZWaveControllerHandler) handler;
+                if (bridgeHandler.getOwnNodeId() != 0) {
+                    bridgeStatusChanged(bridge.getStatusInfo());
+                }
+            }
+        }
     }
 
     void initialiseNode() {
