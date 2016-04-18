@@ -1,8 +1,6 @@
 # Orvibo Binding
 
-This binding integrates Orvibo products that communicate using UDP. Primarily this was designed for S20 Wifi Sockets but other similar products may be implemented in future.
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding integrates Orvibo products that communicate using UDP. Primarily this was designed for S20 Wifi Sockets but other products using the same protocol may be implemented in future.
 
 ## Supported Things
 
