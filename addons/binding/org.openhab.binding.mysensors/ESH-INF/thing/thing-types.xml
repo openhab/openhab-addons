@@ -30,6 +30,12 @@
                 </description>
                 <default>115200</default>
             </parameter>
+            <parameter name="imperial" type="boolean" required="false">
+                <context>imperialconfig</context>
+                <label>Imperial/Metric selection</label>
+                <description>Metric answer with imperial instead of metric</description>
+                <default>false</default>
+            </parameter>
 		</config-description>
 
 	</bridge-type>
@@ -59,6 +65,12 @@
 				</description>
 				<default>100</default>
 			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+                <context>imperialconfig</context>
+                <label>Imperial/Metric selection</label>
+                <description>Metric answer with imperial instead of metric</description>
+                <default>false</default>
+            </parameter>
 		</config-description>
 
 	</bridge-type>

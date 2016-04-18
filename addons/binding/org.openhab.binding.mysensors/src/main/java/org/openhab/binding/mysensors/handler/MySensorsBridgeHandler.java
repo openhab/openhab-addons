@@ -133,19 +133,75 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             }
         }
 
-        // Have we get a ICONFIG message?
+        // Have we get a I_VERSION message?
         if (msg.getNodeId() == 0) {
             if (msg.getChildId() == 0 || msg.getChildId() == 255) {
                 if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
                     if (msg.getAck() == 0) {
                         if (msg.getSubType() == MYSENSORS_SUBTYPE_I_VERSION) {
-
                             handleIncomingVersionMessage(msg.msg);
                         }
                     }
                 }
             }
         }
+
+        // Have we get a I_CONFIG message?
+        if (msg.getNodeId() == 0) {
+            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
+                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                    if (msg.getAck() == 0) {
+                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_CONFIG) {
+                            answerIConfigMessage(msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Have we get a I_TIME message?
+        if (msg.getNodeId() == 0) {
+            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
+                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                    if (msg.getAck() == 0) {
+                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_TIME) {
+                            answerITimeMessage(msg);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Answer to I_TIME message for gateway time request from sensor
+     *
+     * @param msg, the incoming I_TIME message from sensor
+     */
+    private void answerITimeMessage(MySensorsMessage msg) {
+        logger.info("I_TIME request received from {}, answering...", msg.nodeId);
+
+        String time = Long.toString(System.currentTimeMillis());
+        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
+                MYSENSORS_SUBTYPE_I_TIME, time);
+        mysCon.addMySensorsOutboundMessage(newMsg);
+
+    }
+
+    /**
+     * Answer to I_CONFIG message for imperial/metric request from sensor
+     *
+     * @param msg, the incoming I_CONFIG message from sensor
+     */
+    private void answerIConfigMessage(MySensorsMessage msg) {
+        logger.info("I_CONFIG request received from {}, answering...", msg.nodeId);
+        boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
+        String config = imperial ? "I" : "M";
+
+        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
+                MYSENSORS_SUBTYPE_I_CONFIG, config);
+        mysCon.addMySensorsOutboundMessage(newMsg);
+
     }
 
     /**
