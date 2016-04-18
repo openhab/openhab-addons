@@ -17,8 +17,7 @@
                 <required>true</required>
             </parameter>
         </config-description>
-
-        
+       
     </thing-type>
     
     <channel-type id="power">
@@ -27,10 +26,4 @@
         <description>Switch on/off your S20 Socket.</description>
     </channel-type>
     
-    <channel-type id="label">
-        <item-type>String</item-type>
-        <label>Label</label>
-        <description>The name given to your S20 Socket.</description>
-    </channel-type>
-
 </thing:thing-descriptions>
