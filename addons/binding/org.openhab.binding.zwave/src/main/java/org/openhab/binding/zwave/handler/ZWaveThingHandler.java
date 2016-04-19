@@ -152,95 +152,94 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
 
         // Create the channels list to simplify processing incoming events
-        synchronized (thingChannelsState) {
-            thingChannelsCmd = new ArrayList<ZWaveThingChannel>();
-            thingChannelsPoll = new ArrayList<ZWaveThingChannel>();
-            thingChannelsState = new ArrayList<ZWaveThingChannel>();
-            for (Channel channel : getThing().getChannels()) {
-                // Process the channel properties and configuration
-                Map<String, String> properties = channel.getProperties();
-                Configuration configuration = channel.getConfiguration();
+        // synchronized (thingChannelsState) {
+        thingChannelsCmd = new ArrayList<ZWaveThingChannel>();
+        thingChannelsPoll = new ArrayList<ZWaveThingChannel>();
+        thingChannelsState = new ArrayList<ZWaveThingChannel>();
+        for (Channel channel : getThing().getChannels()) {
+            // Process the channel properties and configuration
+            Map<String, String> properties = channel.getProperties();
+            Configuration configuration = channel.getConfiguration();
 
-                logger.debug("NODE {}: Initialising channel {}", nodeId, channel.getUID());
+            logger.debug("NODE {}: Initialising channel {}", nodeId, channel.getUID());
 
-                for (String key : properties.keySet()) {
-                    String[] bindingType = key.split(":");
-                    if (bindingType.length != 3) {
-                        continue;
-                    }
-                    if (!ZWaveBindingConstants.CHANNEL_CFG_BINDING.equals(bindingType[0])) {
-                        continue;
-                    }
+            for (String key : properties.keySet()) {
+                String[] bindingType = key.split(":");
+                if (bindingType.length != 3) {
+                    continue;
+                }
+                if (!ZWaveBindingConstants.CHANNEL_CFG_BINDING.equals(bindingType[0])) {
+                    continue;
+                }
 
-                    String[] bindingProperties = properties.get(key).split(";");
+                String[] bindingProperties = properties.get(key).split(";");
 
-                    // TODO: Check length???
+                // TODO: Check length???
 
-                    // Get the command classes - comma separated
-                    String[] cmdClasses = bindingProperties[0].split(",");
+                // Get the command classes - comma separated
+                String[] cmdClasses = bindingProperties[0].split(",");
 
-                    // Convert the arguments to a map
-                    // - comma separated list of arguments "arg1=val1, arg2=val2"
-                    Map<String, String> argumentMap = new HashMap<String, String>();
-                    if (bindingProperties.length == 2) {
-                        String[] arguments = bindingProperties[1].split(",");
-                        for (String arg : arguments) {
-                            String[] prop = arg.split("=");
-                            argumentMap.put(prop[0], prop[1]);
-                            // logger.debug("Adding Argument {}=={}", prop[0], prop[1]);
-                        }
-                    }
-
-                    // Process the user configuration and add it to the argument map
-                    for (String configName : configuration.getProperties().keySet()) {
-                        argumentMap.put(configName, configuration.get(configName).toString());
-                    }
-
-                    // Add all the command classes...
-                    boolean first = true;
-                    for (String cc : cmdClasses) {
-                        String[] ccSplit = cc.split(":");
-                        int endpoint = 0;
-
-                        if (ccSplit.length == 2) {
-                            endpoint = Integer.parseInt(ccSplit[1]);
-                        }
-
-                        // Get the data type
-                        DataType dataType = DataType.DecimalType;
-                        try {
-                            dataType = DataType.valueOf(bindingType[2]);
-                        } catch (IllegalArgumentException e) {
-                            logger.warn("NODE {}: Invalid item type defined ({}). Assuming DecimalType", nodeId,
-                                    dataType);
-                        }
-
-                        // logger.debug("Creating - arg map is {} long", argumentMap.size());
-                        ZWaveThingChannel chan = new ZWaveThingChannel(channel.getUID(), dataType, ccSplit[0], endpoint,
-                                argumentMap);
-
-                        // First time round, and this is a command - then add the command
-                        if (first && ("*".equals(bindingType[1]) || "Command".equals(bindingType[1]))) {
-                            thingChannelsCmd.add(chan);
-                            logger.debug("NODE {}: Initialising cmd channel {}", nodeId, channel.getUID());
-                        }
-
-                        // First time round, then add the polling class
-                        if (first) {
-                            thingChannelsPoll.add(chan);
-                            logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
-                        }
-
-                        // Add the state and polling handlers
-                        if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
-                            logger.debug("NODE {}: Initialising state channel {}", nodeId, channel.getUID());
-                            thingChannelsState.add(chan);
-                        }
-
-                        first = false;
+                // Convert the arguments to a map
+                // - comma separated list of arguments "arg1=val1, arg2=val2"
+                Map<String, String> argumentMap = new HashMap<String, String>();
+                if (bindingProperties.length == 2) {
+                    String[] arguments = bindingProperties[1].split(",");
+                    for (String arg : arguments) {
+                        String[] prop = arg.split("=");
+                        argumentMap.put(prop[0], prop[1]);
+                        // logger.debug("Adding Argument {}=={}", prop[0], prop[1]);
                     }
                 }
+
+                // Process the user configuration and add it to the argument map
+                for (String configName : configuration.getProperties().keySet()) {
+                    argumentMap.put(configName, configuration.get(configName).toString());
+                }
+
+                // Add all the command classes...
+                boolean first = true;
+                for (String cc : cmdClasses) {
+                    String[] ccSplit = cc.split(":");
+                    int endpoint = 0;
+
+                    if (ccSplit.length == 2) {
+                        endpoint = Integer.parseInt(ccSplit[1]);
+                    }
+
+                    // Get the data type
+                    DataType dataType = DataType.DecimalType;
+                    try {
+                        dataType = DataType.valueOf(bindingType[2]);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("NODE {}: Invalid item type defined ({}). Assuming DecimalType", nodeId, dataType);
+                    }
+
+                    // logger.debug("Creating - arg map is {} long", argumentMap.size());
+                    ZWaveThingChannel chan = new ZWaveThingChannel(channel.getUID(), dataType, ccSplit[0], endpoint,
+                            argumentMap);
+
+                    // First time round, and this is a command - then add the command
+                    if (first && ("*".equals(bindingType[1]) || "Command".equals(bindingType[1]))) {
+                        thingChannelsCmd.add(chan);
+                        logger.debug("NODE {}: Initialising cmd channel {}", nodeId, channel.getUID());
+                    }
+
+                    // First time round, then add the polling class
+                    if (first) {
+                        thingChannelsPoll.add(chan);
+                        logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
+                    }
+
+                    // Add the state and polling handlers
+                    if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
+                        logger.debug("NODE {}: Initialising state channel {}", nodeId, channel.getUID());
+                        thingChannelsState.add(chan);
+                    }
+
+                    first = false;
+                }
             }
+            // }
         }
 
         startPolling();
@@ -1055,40 +1054,40 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 updateConfiguration(configuration);
             }
 
-            synchronized (thingChannelsState) {
-                if (thingChannelsState == null) {
-                    logger.error("NODE {}: No state handlers!", nodeId);
+            // synchronized (thingChannelsState) {
+            if (thingChannelsState == null) {
+                logger.error("NODE {}: No state handlers!", nodeId);
+                return;
+            }
+
+            // Process the channels to see if we're interested
+            for (ZWaveThingChannel channel : thingChannelsState) {
+                // logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
+
+                if (channel.getEndpoint() != event.getEndpoint()) {
+                    continue;
+                }
+
+                // Is this command class associated with this channel?
+                if (!channel.getCommandClass().equals(commandClass)) {
+                    continue;
+                }
+
+                if (channel.converter == null) {
+                    logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
                     return;
                 }
 
-                // Process the channels to see if we're interested
-                for (ZWaveThingChannel channel : thingChannelsState) {
-                    // logger.debug("NODE {}: Checking channel {}", nodeId, channel.getUID());
+                // logger.debug("NODE {}: Processing event as channel {} {}", nodeId, channel.getUID(),
+                // channel.dataType);
+                State state = channel.converter.handleEvent(channel, event);
+                if (state != null) {
+                    logger.debug("Updating {} to {}", channel.getUID(), state);
 
-                    if (channel.getEndpoint() != event.getEndpoint()) {
-                        continue;
-                    }
-
-                    // Is this command class associated with this channel?
-                    if (!channel.getCommandClass().equals(commandClass)) {
-                        continue;
-                    }
-
-                    if (channel.converter == null) {
-                        logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
-                        return;
-                    }
-
-                    // logger.debug("NODE {}: Processing event as channel {} {}", nodeId, channel.getUID(),
-                    // channel.dataType);
-                    State state = channel.converter.handleEvent(channel, event);
-                    if (state != null) {
-                        logger.debug("Updating {} to {}", channel.getUID(), state);
-
-                        updateState(channel.getUID(), state);
-                    }
+                    updateState(channel.getUID(), state);
                 }
             }
+            // }
 
             return;
         }

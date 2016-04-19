@@ -48,19 +48,6 @@ Configure the default startup ringtone<br /><h1>Overview</h1><p>Configure the de
         <default>1</default>
       </parameter>
 
-      <parameter name="config_34_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>34: Sensor Calibration (see overview)</label>
-        <description><![CDATA[
-Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration Steps:</p> <ol><li>Let the garage door move to full close position.</li> <li>Send this parameter (0x22) with “value=1” to Garage Door Controller.</li> <li>Let the garage door move to full open position.</li> <li>Let the garage door move to full close position after the step 3 is completed.</li> </ol><p>After the step 4 is completed, all calibration steps are complete.</p> <p>Note: This process should be implemented when the Garage Door Controller just only has one Sensor is installed on the garage door.</p>
-        ]]></description>
-        <default>0</default>
-        <options>
-          <option value="0">calibration not active</option>
-          <option value="1">begin calibration</option>
-        </options>
-      </parameter>
-
       <parameter name="config_35_2" type="integer" groupName="configuration"
                  min="1" max="255">
         <label>35: Calibration timout</label>
@@ -106,8 +93,7 @@ alarm opening volume (value 3)<br /><h1>Overview</h1><p>Value3: configure the vo
         <default>8</default>
       </parameter>
 
-      <parameter name="config_37_4_7F000000" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_37_4_7F000000" type="integer" groupName="configuration">
         <label>37: Disable alarm</label>
         <description><![CDATA[
 Disable alarm<br /><h1>Overview</h1><p>Value4=0, disable the alarm prompt. Value4=1, enable the<br />alarm prompt.</p>
@@ -191,8 +177,7 @@ Get the environment temperature<br /><h1>Overview</h1><p>Get the environment tem
         <default>0</default>
       </parameter>
 
-      <parameter name="config_47_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_47_1" type="integer" groupName="configuration">
         <label>47: Button definition</label>
         <description><![CDATA[
 Define the function of Button- or Button+.<br /><h1>Overview</h1><p>Define the function of Button- or Button+.<br />Value=0, short pressing the “Button +/-” will be used to adjust<br />the volume of sound. Long pressing the “Button +/-” will be<br />used to switch the sound to the next.<br />Value=1, short pressing the “Button +/-” will be used to switch<br />the sound to the next. Long pressing the “Button +/-” will be<br />used to adjust the volume of sound.</p>
@@ -204,8 +189,7 @@ Define the function of Button- or Button+.<br /><h1>Overview</h1><p>Define the f
         </options>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="1" max="2">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Hail on change</label>
         <description><![CDATA[
 send the Hail CC/configuration report on change<br /><h1>Overview</h1><p>It will send the Hail CC/configuration report CC when the state<br />of garage door is changed:<br />1, Value=0 , reserved.<br />2, Value=1 , send Hail CC</p> <p>3, Value=2 , send Barrier operator report CC</p>
@@ -217,8 +201,7 @@ send the Hail CC/configuration report on change<br /><h1>Overview</h1><p>It will
         </options>
       </parameter>
 
-      <parameter name="config_241_4" type="integer" groupName="configuration"
-                 min="0" max="1431655681">
+      <parameter name="config_241_4" type="integer" groupName="configuration">
         <label>241: Pair the Sensor</label>
         <description><![CDATA[
 Pair the Sensor with Garage Door Controller<br /><h1>Overview</h1><p>Pair the Sensor with Garage Door Controller.<br />Send Configuration Set:<br />Value=0x55555501, which will trigger to start the pairing of<br />Sensor (installed on the top of the garage door), at this time,<br />the Network LED on the Garage Door Controller will blink<br />slowly and then short press Tamper Switch back of the Sensor.<br />If pairing is successful, the Network LED will stop blinking and<br />the Garage Door Controller will send the configuration report<br />with value=0x01FF to primary controller/gateway. Otherwise,<br />repeat the operation.<br />Note:<br />1. If you do not press the Tamper Switch when starting the<br />pairing mode, the pairing status will keep for 8 second and<br />then exit the pairing status automatically.<br />2. The Sensor has been paired with the Garage Door Controller<br />after factory.</p>
@@ -230,8 +213,7 @@ Pair the Sensor with Garage Door Controller<br /><h1>Overview</h1><p>Pair the Se
         </options>
       </parameter>
 
-      <parameter name="config_252_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_252_1" type="integer" groupName="configuration">
         <label>252: configuration lock</label>
         <description><![CDATA[
 Enable/disable configuration locked<br /><h1>Overview</h1><p>Enable/disable configuration locked<br />1, Value=0 : Enable.<br />2, Value=1 : Disable.</p>
@@ -240,6 +222,24 @@ Enable/disable configuration locked<br /><h1>Overview</h1><p>Enable/disable conf
         <options>
           <option value="0">configuration lock</option>
           <option value="1">configuration unlocked</option>
+        </options>
+      </parameter>
+
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_34_1_wo" type="integer" groupName="configuration">
+        <label>34: Sensor Calibration (see overview)</label>
+        <description><![CDATA[
+Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration Steps:</p> <ol><li>Let the garage door move to full close position.</li> <li>Send this parameter (0x22) with “value=1” to Garage Door Controller.</li> <li>Let the garage door move to full open position.</li> <li>Let the garage door move to full close position after the step 3 is completed.</li> </ol><p>After the step 4 is completed, all calibration steps are complete.</p> <p>Note: This process should be implemented when the Garage Door Controller just only has one Sensor is installed on the garage door.</p>
+        ]]></description>
+        <default>0</default>
+        <options>
+          <option value="0">calibration not active</option>
+          <option value="1">begin calibration</option>
         </options>
       </parameter>
 
