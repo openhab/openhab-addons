@@ -25,7 +25,6 @@ public class OrviboBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_S20_SWITCH = "power";
-    public final static String CHANNEL_S20_LABEL = "label";
 
     // List of all Config properties
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";
