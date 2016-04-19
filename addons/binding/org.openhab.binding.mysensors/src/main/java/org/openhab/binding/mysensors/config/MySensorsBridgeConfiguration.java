@@ -8,5 +8,6 @@ public class MySensorsBridgeConfiguration {
     public Integer sendDelay;
     public Integer baudRate;
     public Boolean imperial;
+    public Boolean skipStartupCheck;
 
 }

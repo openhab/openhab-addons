@@ -43,8 +43,18 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     private MySensorsBridgeConnection mysCon = null;
 
+    // Is (I)mperial or (M)etric?
+    private String iConfig = null;
+
+    private boolean skipStartupCheck = false;
+
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
+
+        boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
+        iConfig = imperial ? "I" : "M";
+
+        skipStartupCheck = getConfigAs(MySensorsBridgeConfiguration.class).skipStartupCheck;
     }
 
     /*
@@ -60,9 +70,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
             mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
-                    configuration.sendDelay);
+                    configuration.sendDelay, skipStartupCheck);
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_ETH)) {
-            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
+            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay,
+                    skipStartupCheck);
         }
 
         mysCon.addUpdateListener(this);
@@ -195,11 +206,9 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
      */
     private void answerIConfigMessage(MySensorsMessage msg) {
         logger.info("I_CONFIG request received from {}, answering...", msg.nodeId);
-        boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
-        String config = imperial ? "I" : "M";
 
         MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
-                MYSENSORS_SUBTYPE_I_CONFIG, config);
+                MYSENSORS_SUBTYPE_I_CONFIG, iConfig);
         mysCon.addMySensorsOutboundMessage(newMsg);
 
     }

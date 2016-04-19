@@ -30,6 +30,12 @@
                 </description>
                 <default>115200</default>
             </parameter>
+            <parameter name="skipStartupCheck" type="boolean" required="false">
+                <context>skipstartupchek</context>
+                <label>Skip startup connection check</label>
+                <description>Allow the user to bypass the I_VERSION check on startup</description>
+                <default>false</default>
+            </parameter>
             <parameter name="imperial" type="boolean" required="false">
                 <context>imperialconfig</context>
                 <label>Imperial/Metric selection</label>
@@ -65,6 +71,12 @@
 				</description>
 				<default>100</default>
 			</parameter>
+			<parameter name="skipStartupCheck" type="boolean" required="false">
+                <context>skipstartupchek</context>
+                <label>Skip startup connection check</label>
+                <description>Allow the user to bypass the I_VERSION check on startup</description>
+                <default>false</default>
+            </parameter>
 			<parameter name="imperial" type="boolean" required="false">
                 <context>imperialconfig</context>
                 <label>Imperial/Metric selection</label>
