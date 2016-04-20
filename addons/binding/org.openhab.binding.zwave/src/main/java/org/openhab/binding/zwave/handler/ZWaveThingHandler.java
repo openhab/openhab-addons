@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,9 +82,9 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
     private boolean finalTypeSet = false;
 
     private int nodeId;
-    private List<ZWaveThingChannel> thingChannelsCmd;
-    private List<ZWaveThingChannel> thingChannelsState;
-    private List<ZWaveThingChannel> thingChannelsPoll;
+    private List<ZWaveThingChannel> thingChannelsCmd = Collections.emptyList();
+    private List<ZWaveThingChannel> thingChannelsState = Collections.emptyList();
+    private List<ZWaveThingChannel> thingChannelsPoll = Collections.emptyList();
 
     private Map<Integer, ZWaveConfigSubParameter> subParameters = new HashMap<Integer, ZWaveConfigSubParameter>();
     private Map<String, Object> pendingCfg = new HashMap<String, Object>();
