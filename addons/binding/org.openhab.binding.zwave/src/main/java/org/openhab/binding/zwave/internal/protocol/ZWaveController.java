@@ -1082,12 +1082,10 @@ public class ZWaveController {
                     sendAllowed.tryAcquire();
                     // logger.debug("Receive ---- acquired");
                 } catch (InterruptedException e) {
-                    logger.error("Exception during ZWave thread: Input 1.");
-                    e.printStackTrace();
+                    logger.error("Exception during ZWave thread: Input 1. {}", e);
                     break;
                 } catch (Exception e) {
-                    logger.error("Exception during ZWave thread: Input 2.");
-                    e.printStackTrace();
+                    logger.error("Exception during ZWave thread: Input 2. {}", e);
                 }
             }
 
