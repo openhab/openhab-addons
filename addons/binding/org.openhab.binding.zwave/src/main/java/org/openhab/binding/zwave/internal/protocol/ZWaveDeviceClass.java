@@ -435,6 +435,7 @@ public class ZWaveDeviceClass {
 
         SIMPLE_METER(1, Generic.METER, "Simple Meter"),
         ADVANCED_ENERGY_CONTROL(2, Generic.METER, "Advanced Energy Control"),
+        WHOLE_HOME_METER_SIMPLE(3, Generic.METER, "Whole Home Meter Simple"),
 
         SIMPLE_GARAGE_DOOR(1, Generic.GARAGE_DOOR, "Simple Garage Door"),
 
