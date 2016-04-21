@@ -21,42 +21,41 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel.DataType;
-import org.openhab.binding.zwave.internal.converter.ZWaveMeterConverter;
+import org.openhab.binding.zwave.internal.converter.ZWaveMultiLevelSensorConverter;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMeterCommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMeterCommandClass.MeterScale;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMeterCommandClass.MeterType;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiLevelSensorCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 
-public class ZWaveMeterConverterTest {
+public class ZWaveMultiLevelSensorConverterTest {
     final ChannelUID uid = new ChannelUID("zwave:node:bridge:channel");
 
     private ZWaveThingChannel createChannel(String type) {
         Map<String, String> args = new HashMap<String, String>();
         args.put("type", type);
-        return new ZWaveThingChannel(uid, DataType.DecimalType, CommandClass.METER.toString(), 0, args);
+        return new ZWaveThingChannel(uid, DataType.DecimalType, CommandClass.SENSOR_MULTILEVEL.toString(), 0, args);
     }
 
-    private ZWaveCommandClassValueEvent createEvent(MeterType type, MeterScale scale, BigDecimal value) {
+    private ZWaveCommandClassValueEvent createEvent(ZWaveMultiLevelSensorCommandClass.SensorType type, int scale,
+            BigDecimal value) {
         ZWaveController controller = Mockito.mock(ZWaveController.class);
         ZWaveNode node = Mockito.mock(ZWaveNode.class);
         ZWaveEndpoint endpoint = Mockito.mock(ZWaveEndpoint.class);
-        ZWaveMeterCommandClass cls = new ZWaveMeterCommandClass(node, controller, endpoint);
+        ZWaveMultiLevelSensorCommandClass cls = new ZWaveMultiLevelSensorCommandClass(node, controller, endpoint);
 
-        return cls.new ZWaveMeterValueEvent(1, 0, type, scale, value);
+        return cls.new ZWaveMultiLevelSensorValueEvent(1, 0, type, 0, value);
     }
 
     @Test
-    public void Event_Electric() {
-        ZWaveMeterConverter converter = new ZWaveMeterConverter();
-        ZWaveThingChannel channel = createChannel(MeterScale.E_KWh.toString());
-        BigDecimal value = new BigDecimal("3.3");
+    public void Event_Luminance() {
+        ZWaveMultiLevelSensorConverter converter = new ZWaveMultiLevelSensorConverter();
+        ZWaveThingChannel channel = createChannel(ZWaveMultiLevelSensorCommandClass.SensorType.LUMINANCE.toString());
+        BigDecimal value = new BigDecimal("103");
 
-        ZWaveCommandClassValueEvent event = createEvent(ZWaveMeterCommandClass.MeterType.ELECTRIC,
-                ZWaveMeterCommandClass.MeterScale.E_KWh, value);
+        ZWaveCommandClassValueEvent event = createEvent(ZWaveMultiLevelSensorCommandClass.SensorType.LUMINANCE, 0,
+                value);
 
         State state = converter.handleEvent(channel, event);
 
