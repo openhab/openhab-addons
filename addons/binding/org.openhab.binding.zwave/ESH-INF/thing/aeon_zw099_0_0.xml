@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="aeon_zw099_00_000" listed="false">
+    <label>ZW099 Smart Dimmer 6</label>
+    <description><![CDATA[
+Smart Dimmer 6<br /><h1>Overview</h1><p>Turn the primary controller of Z-Wave network into inclusion mode, short press the product’s Action button that you can find on the product's housing. </p> <br /><h2>Inclusion Information</h2><p>1. Insert the Smart Dimmer to power socket, The RGB LED will be colorful gradient status.<br />2. Let the primary controller into inclusion mode (If you don’t know how to do this, refer to its manual).<br />3. Press the Action button.<br />4. If the inclusion success, Smart Dimmer LED will be solid. Otherwise, the LED will remain colorful gradient status, in which you need to repeat the process from step 2. </p> <br /><h2>Exclusion Information</h2><p>1. Insert the Smart Dimmer to power socket, The Smart Dimmer LED will be solid.<br />2. Let the primary controller into remove mode (If you don’t know how to do this, refer to its manual).<br />3. Press the Action button.<br />4. If the remove is successful, Smart Dimmer LED will be colorful gradient status. If Smart Dimmer LED still be solid, please repeat the process from step 2.</p>
+    ]]></description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Aeon Labs</property>
+      <property name="model">ZW099</property>
+      <property name="manufacturerId">0086</property>
+      <property name="manufacturerRef">0003:0063,0103:0063,0203:0063,1D03:0063</property>
+      <property name="defaultAssociations">1</property>
+    </properties>
+
+    <!-- CONFIGURATION DESCRIPTIONS -->
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_3_1" type="integer" groupName="configuration">
+        <label>3: Current overload protection</label>
+        <description>Toggle current overload protection</description>
+        <default>0</default>
+        <options>
+          <option value="0">disabled</option>
+          <option value="1">enabled</option>
+        </options>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
+        <label>1: Group 1</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>When the state of Smart Dimmer(on/off/dim the load ) is changed:</p> <p>1. Set Configuration parameter 80 to 0:Reserved (Default).<br />2. Set Configuration parameter 80 to 1:Send Hail CC.<br />3. Set Configuration parameter 80 to 2: Send the Basic Report.  </p>
+        ]]></description>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
+        <label>2: Group 2</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>Forward the Basic Set, Switch Multilevel Start Level Change, Switch Multilevel Stop Level Change, Switch Multilevel Set to associated nodes in Group 2 when the Smart Dimmer receives the Basic Set, Switch Multilevel Start Level Change, Switch Multilevel Stop Level Change, Switch Multilevel Set commands from main controller.  </p>
+        ]]></description>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>

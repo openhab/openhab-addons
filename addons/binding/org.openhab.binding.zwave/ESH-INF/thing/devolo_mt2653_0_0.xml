@@ -30,6 +30,7 @@
       <property name="model">MT2653</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0100:0102</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -41,8 +42,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Button 1 and 3 pair mode</label>
         <description>In separate mode button 1 works with group 1, button 3 with groups 3. Click is On, Hold is dimming Up, Double click is Off, Click-Hold is dimming Down. In pair button 1/3 are Up/Down correspondingly. Click is On/Off, Hold is dimming Up/Down. Single clicks</description>
         <default>1</default>
@@ -53,8 +53,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Button 2 and 4 pair mode</label>
         <description>In separate mode button 1 works with group 2, button 4 with groups 3. Click is On, Hold is dimming Up, Double click is Off, Click-Hold is dimming Down. In pair button 2/4 are Up/Down correspondingly. Click is On/Off, Hold is dimming Up/Down. Single clicks</description>
         <default>1</default>
@@ -65,10 +64,9 @@
         </options>
       </parameter>
 
-      <parameter name="config_11_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_11_1" type="integer" groupName="configuration">
         <label>11: Action on group 1</label>
-        <description>In Switch On/Off only mode On command is sent on Dim Up, Off on Dim Down. In Scenes mode the scene ID sent is (10 * group + ActionID), where ActionID is: 1 = On, 2 = Off, 3 = Dim Up Start, 4 = Dim Down Start, 5 = Dim Up Stop, 6 = Dim Down Stop</description>
+        <description>This parameter defines the command to be sent to devices of control group A when the related button is pressed.</description>
         <default>1</default>
         <options>
           <option value="0">Disabled</option>
@@ -78,13 +76,14 @@
           <option value="4">Send Scenes</option>
           <option value="5">Send Preconfigured Scenes</option>
           <option value="6">Control devices in proximity</option>
+          <option value="7">Control door lock</option>
+          <option value="8">Central scene to gateway</option>
         </options>
       </parameter>
 
-      <parameter name="config_12_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_12_1" type="integer" groupName="configuration">
         <label>12: Action on group 2</label>
-        <description>In Switch On/Off only mode On command is sent on Dim Up, Off on Dim Down. In Scenes mode the scene ID sent is (10 * group + ActionID), where ActionID is: 1 = On, 2 = Off, 3 = Dim Up Start, 4 = Dim Down Start, 5 = Dim Up Stop, 6 = Dim Down Stop</description>
+        <description>This parameter defines the command to be sent to devices of control group B when the related button is pressed.</description>
         <default>1</default>
         <options>
           <option value="0">Disabled</option>
@@ -94,13 +93,14 @@
           <option value="4">Send Scenes</option>
           <option value="5">Send Preconfigured Scenes</option>
           <option value="6">Control devices in proximity</option>
+          <option value="7">Control door lock</option>
+          <option value="8">Central scene to gateway</option>
         </options>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Action on group 3</label>
-        <description>In Switch On/Off only mode On command is sent on Dim Up, Off on Dim Down. In Scenes mode the scene ID sent is (10 * group + ActionID), where ActionID is: 1 = On, 2 = Off, 3 = Dim Up Start, 4 = Dim Down Start, 5 = Dim Up Stop, 6 = Dim Down Stop</description>
+        <description>This parameter defines the command to be sent to devices of control group C when the related button is pressed.</description>
         <default>1</default>
         <options>
           <option value="0">Disabled</option>
@@ -110,13 +110,14 @@
           <option value="4">Send Scenes</option>
           <option value="5">Send Preconfigured Scenes</option>
           <option value="6">Control devices in proximity</option>
+          <option value="7">Control door lock</option>
+          <option value="8">Central scene to gateway</option>
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Action on group 4</label>
-        <description>In Switch On/Off only mode On command is sent on Dim Up, Off on Dim Down. In Scenes mode the scene ID sent is (10 * group + ActionID), where ActionID is: 1 = On, 2 = Off, 3 = Dim Up Start, 4 = Dim Down Start, 5 = Dim Up Stop, 6 = Dim Down Stop</description>
+        <description>This parameter defines the command to be sent to devices of control group D when the related button is pressed.</description>
         <default>1</default>
         <options>
           <option value="0">Disabled</option>
@@ -126,29 +127,22 @@
           <option value="4">Send Scenes</option>
           <option value="5">Send Preconfigured Scenes</option>
           <option value="6">Control devices in proximity</option>
+          <option value="7">Control door lock</option>
+          <option value="8">Central scene to gateway</option>
         </options>
       </parameter>
 
-      <parameter name="config_20_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>20: Typical click timeout</label>
-        <description>Typical time used to differenciate click, hold and double clicks in 10ms units</description>
-        <default>50</default>
-      </parameter>
-
-      <parameter name="config_21_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_21_1" type="integer" groupName="configuration">
         <label>21: Send the following Switch All commands</label>
         <default>1</default>
         <options>
-          <option value="-1">Switch all on and off</option>
-          <option value="1">NO (Normal Open)</option>
-          <option value="2">NC (Normal Close)</option>
+          <option value="1">Switch off only</option>
+          <option value="2">Switch on only</option>
+          <option value="255">Switch all on and off</option>
         </options>
       </parameter>
 
-      <parameter name="config_22_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_22_1" type="integer" groupName="configuration">
         <label>22: Invert buttons</label>
         <default>0</default>
         <options>
@@ -157,19 +151,17 @@
         </options>
       </parameter>
 
-      <parameter name="config_24_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>24: LED confirmation mode</label>
-        <default>2</default>
+      <parameter name="config_25_1" type="integer" groupName="configuration">
+        <label>25: Block Wake up</label>
+        <description>Blocks wake up even when Wake Up Interval is set</description>
+        <default>0</default>
         <options>
-          <option value="0">No confirmations</option>
-          <option value="1">Confirm button press</option>
-          <option value="2">Confirm button press and delivery</option>
+          <option value="0">Wake up is BLOCKED</option>
+          <option value="1">Wake up is POSSIBLE according to Intervall</option>
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Send unsolicited Battery Report on Wake Up</label>
         <default>0</default>
         <options>
@@ -186,23 +178,29 @@
       </parameter-group>
 
       <parameter name="group_1" type="text" groupName="association" multiple="true">
-        <label>1: Controlled by button 1 or single clicks of buttons 1 and 3</label>
-        <multipleLimit>8</multipleLimit>
+        <label>1: ZWave Plus Lifeline</label>
+        <description>ZWave Plus Lifeline</description>
+        <multipleLimit>10</multipleLimit>
       </parameter>
 
       <parameter name="group_2" type="text" groupName="association" multiple="true">
-        <label>2: Controlled by button 3 or double clicks of buttons 1 and 3</label>
-        <multipleLimit>8</multipleLimit>
+        <label>2: Controlled by button 1 or single clicks of buttons 1 and 3</label>
+        <multipleLimit>10</multipleLimit>
       </parameter>
 
       <parameter name="group_3" type="text" groupName="association" multiple="true">
-        <label>3: Controlled by button 2 or single clicks of buttons 2 and 4</label>
-        <multipleLimit>8</multipleLimit>
+        <label>3: Controlled by button 3 or double clicks of buttons 1 and 3</label>
+        <multipleLimit>10</multipleLimit>
       </parameter>
 
       <parameter name="group_4" type="text" groupName="association" multiple="true">
-        <label>4: Controlled by button 4 or double clicks of buttons 2 and 4</label>
-        <multipleLimit>8</multipleLimit>
+        <label>4: Controlled by button 2 or single clicks of buttons 2 and 4</label>
+        <multipleLimit>10</multipleLimit>
+      </parameter>
+
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
+        <label>5: Controlled by button 4 or double clicks of buttons 2 and 4</label>
+        <multipleLimit>10</multipleLimit>
       </parameter>
 
     </config-description>

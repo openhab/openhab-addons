@@ -18,10 +18,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,13 +88,13 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Sensor Multi Level Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received Sensor Multi Level Request V{}", this.getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SENSOR_MULTI_LEVEL_SUPPORTED_REPORT:
@@ -440,7 +440,7 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
          * @param scale the scale for the event
          * @param value the value for the event.
          */
-        private ZWaveMultiLevelSensorValueEvent(int nodeId, int endpoint, SensorType sensorType, int scale,
+        public ZWaveMultiLevelSensorValueEvent(int nodeId, int endpoint, SensorType sensorType, int scale,
                 Object value) {
             super(nodeId, endpoint, CommandClass.SENSOR_MULTILEVEL, value);
             this.sensorType = sensorType;
