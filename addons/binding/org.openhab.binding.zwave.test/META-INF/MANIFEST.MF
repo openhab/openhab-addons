@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Openhab ZWave Binding Tests
 Bundle-SymbolicName: org.openhab.binding.zwave.test;singleton:=true
 Bundle-Version: 2.0.0.qualifier
+Bundle-ClassPath: .,lib/mockito-all-1.10.19.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: Openhab
 Fragment-Host: org.openhab.binding.zwave

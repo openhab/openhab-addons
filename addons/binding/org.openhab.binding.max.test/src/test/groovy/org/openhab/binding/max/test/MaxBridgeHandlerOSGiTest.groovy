@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler
 import org.eclipse.smarthome.test.OSGiTest
 import org.eclipse.smarthome.test.storage.VolatileStorageService
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.openhab.binding.max.MaxBinding
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler
@@ -44,7 +45,7 @@ class MaxBridgeHandlerOSGiTest extends OSGiTest {
         assertThat thingRegistry, is(notNullValue())
     }
 
-    @Test
+    @Test @Ignore
     void maxCubeBridgeHandlerRegisteredAndUnregister() {
 
         MaxCubeBridgeHandler maxBridgeHandler = getService(ThingHandler, MaxCubeBridgeHandler)
