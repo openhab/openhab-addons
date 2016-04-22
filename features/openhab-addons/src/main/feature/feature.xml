@@ -163,6 +163,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-sonytv" description="SonyTV Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonytv/${project.version}</bundle>
+    </feature>
+
     <!-- misc -->
 
     <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
