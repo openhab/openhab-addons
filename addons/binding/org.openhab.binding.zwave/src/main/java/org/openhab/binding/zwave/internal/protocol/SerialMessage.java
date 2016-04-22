@@ -140,7 +140,7 @@ public class SerialMessage {
      */
     public SerialMessage(int nodeId, byte[] buffer) {
         logger.trace("NODE {}: Creating new SerialMessage from buffer = {}", nodeId, SerialMessage.bb2hex(buffer));
-        messageLength = buffer.length - 2; // buffer[1];
+        messageLength = buffer.length - 2; // buffer[1]; TODO: Why is this commented out?!?
         byte messageCheckSumm = calculateChecksum(buffer);
         byte messageCheckSummReceived = buffer[messageLength + 1];
         if (messageCheckSumm == messageCheckSummReceived) {
@@ -534,7 +534,7 @@ public class SerialMessage {
         SendDataAbort(0x16, "SendDataAbort"), // Abort Send data.
         RfPowerLevelSet(0x17, "RfPowerLevelSet"), // Set RF Power level
         SendDataMeta(0x18, "SendDataMeta"),
-        GetRandom(0x1c, "GetRandom"), // ???
+        GetRandom(0x1c, "GetRandom"), // Returns a random number
         MemoryGetId(0x20, "MemoryGetId"), // ???
         MemoryGetByte(0x21, "MemoryGetByte"), // Get a byte of memory.
         MemoryPutByte(0x22, "MemoryPutByte"),

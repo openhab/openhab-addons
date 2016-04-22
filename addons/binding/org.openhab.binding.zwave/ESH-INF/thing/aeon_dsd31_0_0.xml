@@ -71,7 +71,9 @@ Sets the sound type and volume<br /><h1>Overview</h1><p>The Value1(low byte) is 
 
       <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Send Notifications</label>
-        <description>Enable to send notifications to associated devices when the state of Siren changed.</description>
+        <description><![CDATA[
+send notifications to associated devices<br /><h1>Overview</h1><p>Enable to send notifications to associated devices when the state of Siren changed.</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Nothing</option>
