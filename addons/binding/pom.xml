@@ -21,6 +21,7 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.freebox</module>
+    <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
