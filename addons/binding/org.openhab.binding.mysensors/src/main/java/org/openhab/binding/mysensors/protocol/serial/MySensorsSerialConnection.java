@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.mysensors.MySensorsBindingConstants;
 import org.openhab.binding.mysensors.internal.MySensorsBridgeConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +31,12 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
     private MySensorsSerialWriter mysConWriter = null;
     private MySensorsSerialReader mysConReader = null;
 
-    public MySensorsSerialConnection(String serialPort, int baudRate, int sendDelay) {
-        super();
+    public MySensorsSerialConnection(String serialPort, int baudRate, int sendDelay, boolean skipStartupCheck) {
+        super(skipStartupCheck);
 
         this.serialPort = serialPort;
         this.baudRate = baudRate;
         this.sendDelay = sendDelay;
-
-    }
-
-    public MySensorsSerialConnection(String serialPort, int baudRate) {
-        super();
-
-        this.serialPort = serialPort;
-        this.baudRate = baudRate;
 
     }
 
@@ -55,12 +48,15 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         serialConnection = new NRSerialPort(serialPort, baudRate);
         if (serialConnection.connect()) {
             logger.debug("Successfully connected to serial port.");
+
             try {
-                Thread.sleep(3000);
+                logger.debug("Waiting {} seconds to allow correct reset trigger on serial connection opening",
+                        MySensorsBindingConstants.RESET_TIME / 1000);
+                Thread.sleep(MySensorsBindingConstants.RESET_TIME);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Interrupted reset time wait");
             }
+
             mysConReader = new MySensorsSerialReader(serialConnection.getInputStream(), this);
             mysConWriter = new MySensorsSerialWriter(serialConnection.getOutputStream(), this, sendDelay);
 
@@ -146,5 +142,4 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         //
         System.setProperty("gnu.io.rxtx.SerialPorts", finalPorts);
     }
-
 }

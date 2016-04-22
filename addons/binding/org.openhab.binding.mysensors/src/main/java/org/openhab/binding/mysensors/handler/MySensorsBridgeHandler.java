@@ -43,8 +43,18 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     private MySensorsBridgeConnection mysCon = null;
 
+    // Is (I)mperial or (M)etric?
+    private String iConfig = null;
+
+    private boolean skipStartupCheck = false;
+
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
+
+        boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
+        iConfig = imperial ? "I" : "M";
+
+        skipStartupCheck = getConfigAs(MySensorsBridgeConfiguration.class).skipStartupCheck;
     }
 
     /*
@@ -60,9 +70,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
             mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
-                    configuration.sendDelay);
+                    configuration.sendDelay, skipStartupCheck);
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_ETH)) {
-            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay);
+            mysCon = new MySensorsIpConnection(configuration.ipAddress, configuration.tcpPort, configuration.sendDelay,
+                    skipStartupCheck);
         }
 
         mysCon.addUpdateListener(this);
@@ -133,19 +144,73 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
             }
         }
 
-        // Have we get a ICONFIG message?
+        // Have we get a I_VERSION message?
         if (msg.getNodeId() == 0) {
             if (msg.getChildId() == 0 || msg.getChildId() == 255) {
                 if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
                     if (msg.getAck() == 0) {
                         if (msg.getSubType() == MYSENSORS_SUBTYPE_I_VERSION) {
-
                             handleIncomingVersionMessage(msg.msg);
                         }
                     }
                 }
             }
         }
+
+        // Have we get a I_CONFIG message?
+        if (msg.getNodeId() == 0) {
+            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
+                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                    if (msg.getAck() == 0) {
+                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_CONFIG) {
+                            answerIConfigMessage(msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Have we get a I_TIME message?
+        if (msg.getNodeId() == 0) {
+            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
+                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                    if (msg.getAck() == 0) {
+                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_TIME) {
+                            answerITimeMessage(msg);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Answer to I_TIME message for gateway time request from sensor
+     *
+     * @param msg, the incoming I_TIME message from sensor
+     */
+    private void answerITimeMessage(MySensorsMessage msg) {
+        logger.info("I_TIME request received from {}, answering...", msg.nodeId);
+
+        String time = Long.toString(System.currentTimeMillis());
+        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
+                MYSENSORS_SUBTYPE_I_TIME, time);
+        mysCon.addMySensorsOutboundMessage(newMsg);
+
+    }
+
+    /**
+     * Answer to I_CONFIG message for imperial/metric request from sensor
+     *
+     * @param msg, the incoming I_CONFIG message from sensor
+     */
+    private void answerIConfigMessage(MySensorsMessage msg) {
+        logger.info("I_CONFIG request received from {}, answering...", msg.nodeId);
+
+        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
+                MYSENSORS_SUBTYPE_I_CONFIG, iConfig);
+        mysCon.addMySensorsOutboundMessage(newMsg);
+
     }
 
     /**

@@ -27,9 +27,13 @@ public abstract class MySensorsBridgeConnection {
     private Object holdingThread = null;
     private boolean iVersionResponse = false;
 
-    public MySensorsBridgeConnection() {
+    private boolean skipStartupCheck = false;
+
+    public MySensorsBridgeConnection(boolean skipStartupCheck) {
         outboundMessageQueue = new LinkedBlockingQueue<MySensorsMessage>();
         updateListeners = new ArrayList<>();
+
+        this.skipStartupCheck = skipStartupCheck;
     }
 
     /**
@@ -59,14 +63,19 @@ public abstract class MySensorsBridgeConnection {
 
         holdingThread = this;
 
-        synchronized (holdingThread) {
-            try {
-                if (!iVersionResponse) {
-                    this.wait(5 * 1000); // wait 2s the reply for the I_VERSION message
+        if (!skipStartupCheck) {
+            synchronized (holdingThread) {
+                try {
+                    if (!iVersionResponse) {
+                        this.wait(5 * 1000); // wait 2s the reply for the I_VERSION message
+                    }
+                } catch (Exception e) {
+                    logger.error("Exception on waiting for I_VERSION message", e);
                 }
-            } catch (Exception e) {
-                logger.error("Exception on waiting for I_VERSION message", e);
             }
+        } else {
+            logger.warn("Skipping I_VERSION connection test, not recommended...");
+            iVersionResponse = true;
         }
 
         if (!iVersionResponse) {

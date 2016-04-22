@@ -21,17 +21,11 @@ public class MySensorsIpConnection extends MySensorsBridgeConnection {
     private MySensorsIpWriter mysConWriter = null;
     private MySensorIpReader mysConReader = null;
 
-    public MySensorsIpConnection(String ipAddress, int tcpPort, int sendDelay) {
-        super();
+    public MySensorsIpConnection(String ipAddress, int tcpPort, int sendDelay, boolean skipStartupCheck) {
+        super(skipStartupCheck);
         this.ipAddress = ipAddress;
         this.tcpPort = tcpPort;
         this.sendDelay = sendDelay;
-    }
-
-    public MySensorsIpConnection(String ipAddress, int tcpPort) {
-        super();
-        this.ipAddress = ipAddress;
-        this.tcpPort = tcpPort;
     }
 
     @Override
