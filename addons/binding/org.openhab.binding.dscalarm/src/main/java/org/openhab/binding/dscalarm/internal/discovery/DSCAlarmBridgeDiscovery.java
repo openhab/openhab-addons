@@ -35,6 +35,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final static Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
     private long refreshInterval = 600;
+    private long intialDelay = 30;
     private ScheduledFuture<?> envisalinkBridgeDiscoveryJob;
     private ScheduledFuture<?> it100BridgeDiscoveryJob;
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
@@ -63,11 +64,15 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Start DSC Alarm Bridge background discovery");
         if (envisalinkBridgeDiscoveryJob == null || envisalinkBridgeDiscoveryJob.isCancelled()) {
-            envisalinkBridgeDiscoveryJob = scheduler.scheduleAtFixedRate(envisalinkBridgeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            envisalinkBridgeDiscoveryJob = scheduler.scheduleAtFixedRate(envisalinkBridgeDiscoveryRunnable, intialDelay,
+                    refreshInterval, TimeUnit.SECONDS);
         }
+
         if (it100BridgeDiscoveryJob == null || it100BridgeDiscoveryJob.isCancelled()) {
-            it100BridgeDiscoveryJob = scheduler.scheduleAtFixedRate(it100BridgeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            it100BridgeDiscoveryJob = scheduler.scheduleAtFixedRate(it100BridgeDiscoveryRunnable, intialDelay,
+                    refreshInterval, TimeUnit.SECONDS);
         }
+
     }
 
     @Override
@@ -156,7 +161,8 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             if (thingUID != null) {
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel("DSC IT-100 Bridge - " + port).build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withLabel("DSC IT-100 Bridge - " + port).build();
                 thingDiscovered(result);
 
                 logger.trace("addBridge(): '{}' was added to Smarthome inbox.", result.getThingUID());
