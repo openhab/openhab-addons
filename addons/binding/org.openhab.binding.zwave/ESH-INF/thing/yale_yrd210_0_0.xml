@@ -39,6 +39,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -78,8 +79,7 @@
       <parameter name="config_4_1" type="integer" groupName="configuration"
                  min="1" max="7">
         <label>4: Wrong Code Entry Limit</label>
-        <description>The number of invalid code entries lock will accept before sending TAMPER Alarm.
-			When number of wrong code entries is exceeded, lock will disable keypad for the time specified by Shutdown Time parameter.</description>
+        <description>The number of invalid code entries lock will accept before sending TAMPER Alarm. When number of wrong code entries is exceeded, lock will disable keypad for the time specified by Shutdown Time parameter.</description>
         <default>5</default>
       </parameter>
 
@@ -104,10 +104,7 @@
       <parameter name="config_8_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>8: Operating Mode</label>
-        <description><![CDATA[
-Normal Mode
-Vacation Mode - all user codes disabled
-Privacy Mode - all user codes disabled and RF Lock/Unlock disabled    !]]></description>
+        <description>Normal Mode Vacation Mode - all user codes disabled Privacy Mode - all user codes disabled and RF Lock/Unlock disabled</description>
         <default>0</default>
         <options>
           <option value="0">Normal</option>
@@ -122,7 +119,7 @@ Privacy Mode - all user codes disabled and RF Lock/Unlock disabled    !]]></desc
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Alarm Reports</label>
         <multipleLimit>4</multipleLimit>
       </parameter>

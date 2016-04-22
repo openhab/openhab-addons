@@ -61,9 +61,11 @@
       <property name="model">MT02646</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0001:0011</property>
+      <property name="commandClass:SWITCH_BINARY">getSupported=false</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -77,6 +79,10 @@
         <label>1: Watt Meter Report Period</label>
         <description>Enable automatic interval in seconds reporting with an interval of 5s * the value. Set to 0 will disable the autoreporting function.</description>
         <default>720</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
@@ -84,6 +90,10 @@
         <label>2: KWH Meter Report Period</label>
         <description>Enable automatic interval in minutes reporting with an interval of 10min * the value. Set to 0 will disable the autoreporting function.</description>
         <default>6</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_3_2" type="integer" groupName="configuration"
@@ -100,8 +110,7 @@
         <default>10000</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Restore switch state mode</label>
         <description>Restore switch state mode. 1 is default.</description>
         <default>1</default>
@@ -112,14 +121,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>5: Lock &amp; Leave</label>
-        <default>0</default>
-      </parameter>
-
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Mode of switch off function</label>
         <description>Mode of switch off function. 1 is default.</description>
         <default>1</default>
@@ -129,27 +131,29 @@
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: LED indication mode</label>
         <description>Restore switch state mode. 1 is default.</description>
         <default>1</default>
         <options>
           <option value="1">The LED follows the state of the switch.</option>
           <option value="2">Night Mode - When the switch is On, the LED is Off, and when the switc</option>
-          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on </option>
+          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on</option>
         </options>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
+      <parameter name="config_8_2" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>8: Auto off timer</label>
         <description>Auto off timer. 0 will disable the auto off function.</description>
         <default>0</default>
+        <options>
+          <option value="0">Disable</option>
+        </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: RF off command mode</label>
         <description>RF off command mode</description>
         <default>0</default>

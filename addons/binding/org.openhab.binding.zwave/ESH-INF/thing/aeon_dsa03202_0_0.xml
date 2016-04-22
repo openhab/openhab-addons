@@ -28,6 +28,7 @@
       <property name="commandClass:WAKE_UP">getSupported=false</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -165,7 +166,7 @@
       <parameter name="config_250_1_wo" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>250: Secondary Controller Mode</label>
-        <description>When in Group Mode, the minimote is paired directly to devices.  When in Scene Mode, minimote button presses will send SCENE_ACTIVATION commands.</description>
+        <description>When in Group Mode, the minimote is paired directly to devices. When in Scene Mode, minimote button presses will send SCENE_ACTIVATION commands.</description>
         <default>0</default>
         <options>
           <option value="0">Group Mode</option>
@@ -179,22 +180,22 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Scene 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Scene 2</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Scene 3</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Scene 4</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

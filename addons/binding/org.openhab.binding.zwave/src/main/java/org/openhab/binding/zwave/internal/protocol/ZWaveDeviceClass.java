@@ -370,12 +370,15 @@ public class ZWaveDeviceClass {
         PORTABLE_REMOTE_CONTROLLER(1, Generic.REMOTE_CONTROLLER, "Portable Remote Controller"),
         PORTABLE_SCENE_CONTROLLER(2, Generic.REMOTE_CONTROLLER, "Portable Scene Controller"),
         PORTABLE_INSTALLER_TOOL(3, Generic.REMOTE_CONTROLLER, "Portable Installer Tool"),
+        AV_REMOTE_CONTROLLER(4, Generic.REMOTE_CONTROLLER, "AV Remote Controller"),
+        SIMPLE_REMOTE_CONTROLLER(6, Generic.REMOTE_CONTROLLER, "Simple Remote Controller"),
 
         PC_CONTROLLER(1, Generic.STATIC_CONTROLLER, "PC Controller"),
         SCENE_CONTROLLER(2, Generic.STATIC_CONTROLLER, "Scene Controller"),
         INSTALLER_TOOL(3, Generic.STATIC_CONTROLLER, "Static Installer Tool"),
-        AV_REMOTE_CONTROLLER(4, Generic.STATIC_CONTROLLER, "AV Remote Controller"),
-        SIMPLE_REMOTE_CONTROLLER(6, Generic.STATIC_CONTROLLER, "Simple Remote Controller"),
+        SET_TOP_BOX_CONTROLLER(4, Generic.STATIC_CONTROLLER, "Set-Top Box Controller"),
+        SUB_SYSTEM_CONTROLLER(4, Generic.STATIC_CONTROLLER, "Sub-System Controller"),
+        TV_CONTROLLER(6, Generic.STATIC_CONTROLLER, "TV Controller"),
 
         SATELLITE_RECEIVER(4, Generic.AV_CONTROL_POINT, "Satellite Receiver"),
         SATELLITE_RECEIVER_V2(17, Generic.AV_CONTROL_POINT, "Satellite Receiver V2"),
@@ -431,6 +434,8 @@ public class ZWaveDeviceClass {
         ROUTING_SENSOR_MULTILEVEL(1, Generic.MULTILEVEL_SENSOR, "Routing Multilevel Sensor"),
 
         SIMPLE_METER(1, Generic.METER, "Simple Meter"),
+        ADVANCED_ENERGY_CONTROL(2, Generic.METER, "Advanced Energy Control"),
+        WHOLE_HOME_METER_SIMPLE(3, Generic.METER, "Whole Home Meter Simple"),
 
         SIMPLE_GARAGE_DOOR(1, Generic.GARAGE_DOOR, "Simple Garage Door"),
 
@@ -582,6 +587,10 @@ public class ZWaveDeviceClass {
                 case SIMPLE_METER:
                     return new CommandClass[] { CommandClass.METER, CommandClass.MANUFACTURER_SPECIFIC,
                             CommandClass.VERSION };
+                case ADVANCED_ENERGY_CONTROL:
+                    return new CommandClass[] { CommandClass.METER_TBL_CONFIG, CommandClass.METER_TBL_MONITOR,
+                            CommandClass.MANUFACTURER_SPECIFIC, CommandClass.VERSION };
+
                 case ALARM_SENSOR_ROUTING_BASIC:
                 case SMOKE_SENSOR_ROUTING_BASIC:
                     return new CommandClass[] { CommandClass.SENSOR_ALARM, CommandClass.MANUFACTURER_SPECIFIC,

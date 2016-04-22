@@ -87,6 +87,20 @@
 				<default>1000</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="ntpServer1" type="text" required="false" groupName="device">
+				<label>NTP Server 1</label>
+				<description>The hostname for NTP Server 1 used by the Cube to get the time.
+                </description>
+				<default>ntp.homematic.com</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ntpServer2" type="text" required="false" groupName="device">
+				<label>NTP Server 2</label>
+				<description>The hostname for NTP Server 2 used by the Cube to get the time.
+                </description>
+				<default>ntp.homematic.com</default>
+				<advanced>true</advanced>
+			</parameter>
 
 			<!-- Trigger reset action from habmin menu -->
 			<parameter name="action-cubeReset" type="integer" groupName="actions">

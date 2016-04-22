@@ -30,7 +30,6 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCom
  *
  * @see {@link ZWaveSecurityCommandClass#queueMessageForEncapsulation}
  * @author Dave Badia
- * @since 1.8.0
  */
 public class ZWaveSecurityPayloadFrame {
     // TODO: DB instead of timeout here, tie this back to the sending of the nonce request?
@@ -76,8 +75,8 @@ public class ZWaveSecurityPayloadFrame {
 
         List<ZWaveSecurityPayloadFrame> list = new ArrayList<ZWaveSecurityPayloadFrame>();
         /*
-         * The sequence data in a single byte. The entire byte is zero if the whole
-         * message fit into one frame. If multiple frames are required:
+         * The sequence data in a single byte. The entire byte is zero if the whole message fit into one frame.
+         * If multiple frames are required:
          * 1st 2 bits: reserved, always 0
          * 3rd bit: second frame: 0 for 1st frame, 1 for second frame
          * 4th bit: sequenced: 0 if the entire message fits in one frame; 1 if more than 1 are required
@@ -113,6 +112,10 @@ public class ZWaveSecurityPayloadFrame {
         this.partNumber = partNumber;
         this.partBytes = partBuffer;
         this.totalParts = totalParts;
+        // if (totalParts != 1) {
+        // totalParts = totalParts;
+        // logger.debug("More parts than I want to see!");
+        // }
         this.sequenceByte = sequenceByte;
         this.expirationTime = System.currentTimeMillis() + MESSAGE_EXPIRATION_MS;
         // Replace the original payload bytes with ours

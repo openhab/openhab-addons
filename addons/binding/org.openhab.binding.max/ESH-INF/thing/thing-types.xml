@@ -43,11 +43,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -124,11 +124,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -205,11 +205,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -271,11 +271,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -328,11 +328,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>

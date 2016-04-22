@@ -98,7 +98,7 @@ public class RemoveFailedNodeMessageClass extends ZWaveCommandProcessor {
         logger.debug("NODE {}: Got RemoveFailedNode request.", nodeId);
         switch (incomingMessage.getMessagePayloadByte(1)) {
             case FAILED_NODE_OK:
-                logger.error("NODE {}: Unable to remove failed node as it is not a failed node!", nodeId);
+                logger.error("NODE {}: Unable to remove failed node as it has not failed!", nodeId);
                 transactionComplete = true;
                 break;
             case FAILED_NODE_REMOVED:

@@ -33,6 +33,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -147,32 +148,32 @@
         <label>1: Lifeline</label>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Button 1 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Button 2 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Button 3 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Button 4 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_6" type="text" groupName="association"  multiple="true">
+      <parameter name="group_6" type="text" groupName="association" multiple="true">
         <label>6: Button 1 and 3 - Duo - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_7" type="text" groupName="association"  multiple="true">
+      <parameter name="group_7" type="text" groupName="association" multiple="true">
         <label>7: Button 2 and 4 - Duo - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>

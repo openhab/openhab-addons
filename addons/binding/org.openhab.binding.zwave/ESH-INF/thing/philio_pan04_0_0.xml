@@ -6,8 +6,8 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
   <thing-type id="philio_pan04_00_000" listed="false">
-    <label>PAN04 In Wall Dual Relay(1 Way) Switch Module 2x 1.5kW				with power meter			</label>
-    <description>In Wall Dual Relay(1 Way) Switch Module 2x 1.5kW				with power meter			</description>
+    <label>PAN04 In Wall Dual Relay(1 Way) Switch Module 2x 1.5kW with power meter</label>
+    <description>In Wall Dual Relay(1 Way) Switch Module 2x 1.5kW with power meter</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -172,6 +172,7 @@
       <property name="defaultAssociations">2,3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -183,27 +184,21 @@
       <parameter name="config_1_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>1: W meter report period</label>
-        <description>If the setting is configured for 1 hour (value = 720),
-							the device will report its instant power consumption every 1 hour to Z-Wave Controller.
-							Unit: 5 seconds</description>
+        <description>If the setting is configured for 1 hour (value = 720), the device will report its instant power consumption every 1 hour to Z-Wave Controller. Unit: 5 seconds</description>
         <default>720</default>
       </parameter>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>2: kWh meter report period</label>
-        <description>If the setting is configured for 1 hour (value = 6),
-							the device will report its total power consumption every 1 hour to Z-Wave Controller.
-							Unit: 10 minutes</description>
+        <description>If the setting is configured for 1 hour (value = 6), the device will report its total power consumption every 1 hour to Z-Wave Controller. Unit: 10 minutes</description>
         <default>6</default>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>3: Selected endpoint</label>
-        <description>If Controller not using Multi_Channel command class
-							to access the endpoint of PAN04, you may configure
-							the endpoint value to react the Basic Command Class</description>
+        <description>If Controller not using Multi_Channel command class to access the endpoint of PAN04, you may configure the endpoint value to react the Basic Command Class</description>
         <default>1</default>
         <options>
           <option value="1">Relay 1</option>

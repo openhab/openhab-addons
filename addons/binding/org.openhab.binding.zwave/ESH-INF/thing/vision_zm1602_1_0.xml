@@ -29,6 +29,7 @@
       <property name="versionMax">15.2</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->

@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -90,11 +91,32 @@ public class ZWaveAlarmConverter extends ZWaveCommandClassConverter {
             return null;
         }
 
-        // Check the event type
-        if (alarmEvent != null && Integer.parseInt(alarmEvent) != eventAlarm.getAlarmEvent()) {
-            return null;
+        // Default to using the value.
+        // If this is V3 then we'll use the event status instead
+        int value = (int) event.getValue();
+
+        // Alarm V3 use events...
+        if (alarmEvent != null) {
+            // Check the event type
+            if (Integer.parseInt(alarmEvent) != eventAlarm.getAlarmEvent()) {
+                return null;
+            }
+
+            value = eventAlarm.getAlarmStatus();
         }
 
-        return eventAlarm.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+        State state = null;
+        switch (channel.getDataType()) {
+            case OnOffType:
+                state = value == 0 ? OnOffType.OFF : OnOffType.ON;
+                break;
+            case OpenClosedType:
+                state = value == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                break;
+            default:
+                logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                break;
+        }
+        return state;
     }
 }

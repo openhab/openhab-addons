@@ -42,7 +42,7 @@
                 <default></default>
             </parameter>
 
-            <parameter name="controller_master" type="boolean" required="true"
+            <parameter name="controller_master" type="boolean"
 				groupName="network">
 				<label>Controller is Master</label>
 				<description><![CDATA[This controller is the master controller in the network.<br/>
@@ -56,7 +56,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="controller_suc" type="boolean" required="true"
+			<parameter name="controller_suc" type="boolean"
 				groupName="network">
 				<label>Controller is SUC</label>
 				<description>Controller is SUC and will receive updates from other controllers in the network</description>
@@ -95,7 +95,7 @@
                 <label>Soft Reset Controller</label>
                 <description>Resets the Z-Wave stick - similar to removing the stick from the USB.</description>
                 <advanced>true</advanced>
-                <default></default>
+                <default>0</default>
                 <options>
                     <option value="-232323">send</option>
                 </options>
@@ -105,7 +105,7 @@
                 <label>Hard Reset Controller</label>
                 <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!</description>
                 <advanced>true</advanced>
-                <default></default>
+                <default>0</default>
                 <options>
                     <option value="-232323">send</option>
                 </options>
@@ -115,7 +115,7 @@
                 <label>Exclude Devices</label>
                 <description>Puts the controller into Exclusion mode.</description>
                 <advanced>true</advanced>
-                <default></default>
+                <default>0</default>
                 <options>
                     <option value="-232323">send</option>
                 </options>

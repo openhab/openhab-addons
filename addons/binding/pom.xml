@@ -28,6 +28,7 @@
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
+    <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.pioneeravr</module>

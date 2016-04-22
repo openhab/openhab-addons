@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -187,32 +189,54 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
             numBytes = MAX_STRING_LENGTH;
         }
 
-        // Check for non-printable characters - ignore anything after the first one!
+        if (charPresentation != ENCODING_ASCII) {
+            logger.debug("NODE {}: Switching to using ASCII encoding", getNode().getNodeId());
+            charPresentation = ENCODING_ASCII;
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // Check for null terminations - ignore anything after the first null
         for (int c = 0; c < numBytes; c++) {
-            if (serialMessage.getMessagePayloadByte(c + offset + 2) == 0) {
-                numBytes = c;
-                logger.debug("NODE {} : Node name string truncated to {} characters", this.getNode().getNodeId(),
-                        numBytes);
-                break;
+            if (serialMessage.getMessagePayloadByte(c + offset + 2) > 32
+                    && serialMessage.getMessagePayloadByte(c + offset + 2) < 127) {
+                baos.write((byte) (serialMessage.getMessagePayloadByte(c + offset + 2)));
             }
         }
-
-        byte[] strBuffer = Arrays.copyOfRange(serialMessage.getMessagePayload(), offset + 2, offset + 2 + numBytes);
-
         try {
-            switch (charPresentation) {
-                case ENCODING_ASCII:
-                case ENCODING_EXTENDED_ASCII:
-                    return new String(strBuffer, "ASCII");
-
-                case ENCODING_UTF16:
-                    String sTemp = new String(strBuffer, "UTF-16");
-                    return new String(sTemp.getBytes("UTF-8"), "UTF-8");
-            }
-        } catch (UnsupportedEncodingException uee) {
-            System.out.println("Exception: " + uee);
+            return new String(baos.toByteArray(), "ASCII");
+        } catch (UnsupportedEncodingException e) {
+            return null;
         }
-        return null;
+
+        /*
+         * byte[] strBuffer = Arrays.copyOfRange(serialMessage.getMessagePayload(), offset + 2, offset + 2 + numBytes);
+         *
+         * String response = null;
+         * try {
+         * switch (charPresentation) {
+         * case ENCODING_ASCII:
+         * // Using standard ASCII codes. (values 128-255 are ignored)
+         * break;
+         * case ENCODING_EXTENDED_ASCII:
+         * // Using standard and OEM Extended ASCII
+         * response = new String(strBuffer, "ASCII");
+         * break;
+         *
+         * case ENCODING_UTF16:
+         * // Unicode UTF-16
+         * String sTemp = new String(strBuffer, "UTF-16");
+         * response = new String(sTemp.getBytes("UTF-8"), "UTF-8");
+         * break;
+         * }
+         * } catch (UnsupportedEncodingException uee) {
+         * System.out.println("Exception: " + uee);
+         * }
+         * if (response == null) {
+         * return null;
+         * }
+         *
+         * return response.replaceAll("\\p{C}", "?");
+         */
     }
 
     /**
@@ -300,12 +324,15 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
                 str);
 
         byte[] nameBuffer = null;
-        try {
-            nameBuffer = str.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
+        byte encoding = ENCODING_ASCII;
+
+        // First we want to see if this can be encoded in ASCII
+        CharsetEncoder asciiEncoder = StandardCharsets.US_ASCII.newEncoder();
+        if (asciiEncoder.canEncode(str) == true) {
+            nameBuffer = str.getBytes(StandardCharsets.US_ASCII);
+        } else {
+            nameBuffer = str.getBytes(StandardCharsets.UTF_16);
+            encoding = ENCODING_UTF16;
         }
 
         int len = nameBuffer.length;
@@ -316,7 +343,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
         byte[] newPayload = { (byte) this.getNode().getNodeId(), (byte) ((byte) len + 3),
-                (byte) getCommandClass().getKey(), (byte) command, (byte) ENCODING_UTF16 };
+                (byte) getCommandClass().getKey(), (byte) command, encoding };
 
         byte[] msg = new byte[newPayload.length + len];
         System.arraycopy(newPayload, 0, msg, 0, newPayload.length);

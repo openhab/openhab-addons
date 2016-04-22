@@ -21,5 +21,6 @@ public enum MessageType {
     L,
     S,
     N,
+    F,
     A
 }
