@@ -19,6 +19,7 @@ Import-Package: org.slf4j,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
+ org.mockito,
  org.osgi.service.device
 Require-Bundle: org.junit;bundle-version="4.11.0"
 Export-Package: org.openhab.binding.zwave.internal.protocol;x-internal:=true
