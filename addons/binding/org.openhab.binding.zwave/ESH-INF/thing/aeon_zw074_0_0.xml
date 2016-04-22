@@ -53,7 +53,7 @@
       <property name="vendor">Aeon Labs</property>
       <property name="model">ZW074</property>
       <property name="manufacturerId">0086</property>
-      <property name="manufacturerRef">0002:004A,0102:004A</property>
+      <property name="manufacturerRef">0002:004A,0102:004A,0202:004A</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -85,8 +85,7 @@
         <default>240</default>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Motion sensor</label>
         <default>1</default>
         <options>
@@ -95,8 +94,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_40_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_40_1" type="integer" groupName="configuration">
         <label>40: Enable/disable the selective reporting only when measurements reach a certain threshold or percentage set in 41‐44 below. This is used to reduce netwo</label>
         <default>0</default>
         <options>
@@ -132,8 +130,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_46_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_46_1" type="integer" groupName="configuration">
         <label>46: Enable/disable to send the alarm report of low temperature(‐15C)</label>
         <default>0</default>
         <options>
@@ -181,8 +178,7 @@
         <default>720</default>
       </parameter>
 
-      <parameter name="config_252_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_252_1" type="integer" groupName="configuration">
         <label>252: Enable/disable Configuration Locked</label>
         <default>0</default>
         <options>
@@ -191,8 +187,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_255_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_255_1" type="integer" groupName="configuration">
         <label>255: Reset to default factory setting.</label>
         <default>1</default>
         <options>

@@ -7,8 +7,7 @@ Bundle-ClassPath: .,lib/mockito-all-1.10.19.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: Openhab
 Fragment-Host: org.openhab.binding.zwave
-Import-Package: org.slf4j,
- groovy.json,
+Import-Package: groovy.json,
  groovy.lang,
  org.codehaus.groovy.reflection,
  org.codehaus.groovy.runtime,
@@ -20,6 +19,9 @@ Import-Package: org.slf4j,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
- org.osgi.service.device
-Require-Bundle: org.junit;bundle-version="4.11.0"
+ org.openhab.binding.zwave.internal.protocol,
+ org.osgi.service.device,
+ org.slf4j
+Require-Bundle: org.junit;bundle-version="4.11.0",
+ org.slf4j.log4j
 Export-Package: org.openhab.binding.zwave.internal.protocol;x-internal:=true

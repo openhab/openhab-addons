@@ -77,7 +77,9 @@
       <parameter name="config_1_2" type="integer" groupName="configuration"
                  min="0" max="32767">
         <label>1: Watt Meter Report Period</label>
-        <description>Enable automatic interval in seconds reporting with an interval of 5s * the value. Set to 0 will disable the autoreporting function.</description>
+        <description><![CDATA[
+multiples of 5s<br /><h1>Overview</h1><p>Enable automatic interval in seconds reporting with an interval of 5s * the value. Set to 0 will disable the autoreporting function.</p>
+        ]]></description>
         <default>720</default>
         <options>
           <option value="0">Disable</option>
@@ -88,7 +90,9 @@
       <parameter name="config_2_2" type="integer" groupName="configuration"
                  min="0" max="32767">
         <label>2: KWH Meter Report Period</label>
-        <description>Enable automatic interval in minutes reporting with an interval of 10min * the value. Set to 0 will disable the autoreporting function.</description>
+        <description><![CDATA[
+number of 10 minute intervals<br /><h1>Overview</h1><p>Enable automatic interval in minutes reporting with an interval of 10min * the value. Set to 0 will disable the autoreporting function.</p>
+        ]]></description>
         <default>6</default>
         <options>
           <option value="0">Disable</option>
@@ -106,24 +110,26 @@
       <parameter name="config_4_2" type="integer" groupName="configuration"
                  min="1" max="10000">
         <label>4: Threshold of KWh for Load Caution</label>
-        <description>Enable automatic warning when the accumulated kWh power consumption exceeds the setting value from 1KWh ~ 10000KWh.. Set to 0 will disable kWh load caution reporting.</description>
+        <description><![CDATA[
+load caution threshold<br /><h1>Overview</h1><p>Enable automatic warning when the accumulated kWh power consumption exceeds the setting value from 1KWh ~ 10000KWh.. Set to 0 will disable kWh load caution reporting.</p>
+        ]]></description>
         <default>10000</default>
       </parameter>
 
       <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Restore switch state mode</label>
-        <description>Restore switch state mode. 1 is default.</description>
+        <description>Restore switch state mode.</description>
         <default>1</default>
         <options>
           <option value="0">Upon the return of AC power, the switch will remain Off.</option>
-          <option value="1">Upon the return of AC power, the switch will return to the state it wa</option>
+          <option value="1">resume previous state</option>
           <option value="2">Upon the return of AC power, the switch will turn On.</option>
         </options>
       </parameter>
 
       <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Mode of switch off function</label>
-        <description>Mode of switch off function. 1 is default.</description>
+        <description>Mode of switch off function.</description>
         <default>1</default>
         <options>
           <option value="0">SWITCH OFF commands received are ignored.</option>
@@ -133,12 +139,12 @@
 
       <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: LED indication mode</label>
-        <description>Restore switch state mode. 1 is default.</description>
+        <description>Restore switch state mode.</description>
         <default>1</default>
         <options>
           <option value="1">The LED follows the state of the switch.</option>
-          <option value="2">Night Mode - When the switch is On, the LED is Off, and when the switc</option>
-          <option value="3">Flash Mode - When the state of the switch changes, the LED will be on</option>
+          <option value="2">LED off with load ON</option>
+          <option value="3">Flash mode</option>
         </options>
       </parameter>
 
@@ -159,8 +165,8 @@
         <default>0</default>
         <options>
           <option value="0">When SWITCH ALL OFF is received, the MT02646 turns Off.</option>
-          <option value="1">When SWITCH ALL OFF is received, the MT02646 ignores the command and d</option>
-          <option value="2">When SWITCH ALL OFF is received, the MT02646 will turn On if it is Off</option>
+          <option value="1">Ignore ALL OFF</option>
+          <option value="2">If ALL OFF is received, turn ON if it is OFF</option>
           <option value="3">When SWITCH ALL OFF is received, the MT02646 turns On.</option>
         </options>
       </parameter>
