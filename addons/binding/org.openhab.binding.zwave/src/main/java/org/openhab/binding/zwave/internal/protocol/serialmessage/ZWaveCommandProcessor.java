@@ -65,10 +65,11 @@ public abstract class ZWaveCommandProcessor {
     protected void checkTransactionComplete(SerialMessage lastSentMessage, SerialMessage latestIncomingMessage) {
         // Put the message in our table so it will be processed now or later
         incomingMessageTable.put(System.currentTimeMillis(), latestIncomingMessage);
+
         // First, check if we're waiting for an ACK from the controller
         // This is used for multi-stage transactions to ensure we get all parts of the
         // transaction before completing.
-        if (lastSentMessage.isAckPending()) {
+        if (lastSentMessage == null || lastSentMessage.isAckPending()) {
             logger.trace("Checking transaction complete: Message has Ack Pending: {}", lastSentMessage);
             // Return until we get the ack, then come back and compare. This is necessary since, per ZWaveSendThread, we
             // sometimes
