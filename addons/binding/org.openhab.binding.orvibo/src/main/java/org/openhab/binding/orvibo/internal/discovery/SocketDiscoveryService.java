@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -51,7 +51,6 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
     protected void activate(Map<String, Object> configProperties) {
         try {
             s20Client = S20Client.getInstance();
-            // s20Client.connect();
             super.activate(configProperties);
         } catch (SocketException ex) {
             logger.error("Error occured while activating S20 discovery service: " + ex.getMessage(), ex);
