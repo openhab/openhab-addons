@@ -61,8 +61,7 @@
         <default>3</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Celsius / Fahrenheit</label>
         <description>0 = Celsius, 1 = Fahrenheit</description>
         <default>0</default>
@@ -74,7 +73,7 @@
 
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="1" max="7">
-        <label>3: Infrared sensor sensitivity adjustment,</label>
+        <label>3: Infrared sensor sensitivity adjustment</label>
         <description><![CDATA[
 1 is most sensitive, 7 is least<br /><h1>Overview</h1><p>(Parameter 3) Infrared sensor sensitivity adjustment, 7 levels sensitivity, 1 = most<br />sensitive, 7 = most insensitive, default values= 4</p>
         ]]></description>
