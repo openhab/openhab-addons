@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Urtsi Binding
+Bundle-SymbolicName: org.openhab.binding.urtsi;singleton:=true
+Bundle-Vendor: Eclipse.org/SmartHome
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: com.google.common.base,
+ com.google.common.collect,
+ gnu.io,
+ org.apache.commons.io;version="2.2.0",
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.urtsi,
+ org.openhab.binding.urtsi.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.urtsi,
+ org.openhab.binding.urtsi.handler
