@@ -27,6 +27,12 @@ import com.github.tavalin.s20.S20Client;
 import com.github.tavalin.s20.S20Client.SocketDiscoveryListener;
 import com.github.tavalin.s20.Socket;
 
+/**
+ * The {@link SocketDiscoveryService} class defines a service used
+ * to discover S20 sockets on the local netowork.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(SocketDiscoveryService.class);
@@ -45,6 +51,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
     protected void activate(Map<String, Object> configProperties) {
         try {
             s20Client = S20Client.getInstance();
+            // s20Client.connect();
             super.activate(configProperties);
         } catch (SocketException ex) {
             logger.error("Error occured while activating S20 discovery service: " + ex.getMessage(), ex);

@@ -11,7 +11,7 @@ package org.openhab.binding.orvibo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link OrviboBinding} class defines common constants, which are
+ * The {@link OrviboBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Daniel Walters - Initial contribution

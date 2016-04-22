@@ -1,6 +1,6 @@
 # Orvibo Binding
 
-This binding integrates Orvibo products that communicate using UDP. Primarily this was designed for S20 Wifi Sockets but other products using the same protocol may be implemented in future.
+This binding integrates Orvibo devices that communicate using UDP. Primarily this was designed for S20 Wifi Sockets but other products using the same protocol may be implemented in future.
 
 ## Supported Things
 
@@ -16,20 +16,37 @@ This binding does not require any special configuration.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+This is optional, it is recommended to let the binding discover and add Orvibo devices.
+ 
+To manually configure an S20 Thing you must specify its deviceId (MAC address). 
+ 
+In the thing file, this looks e.g. like
+```
+Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### S20:
+|Channel | Description | Example  |
+|------- | -------- | ---- |
+|power	 | Current power state of switch | orvibo:s20:mysocket:power |
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
 
-## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+## Items:
+```
+Switch MySwitch              "Switch state [%s]"  { channel="orvibo:s20:mysocket:power" }
+```
 
-## Any custom content here!
+## Example Sitemap
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Using the above things channels and items 
+Sitemap:
+```
+sitemap demo label="Main Menu" {
+        Frame  {
+                Switch item=MySwitch 
+        }
+}
+```

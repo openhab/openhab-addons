@@ -18,7 +18,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.orvibo.handler.S20Handler;
-import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,22 +40,23 @@ public class OrviboHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        try {
-            s20Client = S20Client.getInstance();
-            s20Client.connect();
-        } catch (Exception e) {
-            logger.error("Error activating OrviboHandlerFactory: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        s20Client.disconnect();
-        super.deactivate(componentContext);
-    }
+    /*
+     * @Override
+     * protected void activate(ComponentContext componentContext) {
+     * super.activate(componentContext);
+     * try {
+     * 
+     * } catch (Exception e) {
+     * logger.error("Error activating OrviboHandlerFactory: " + e.getMessage(), e);
+     * }
+     * }
+     * 
+     * @Override
+     * protected void deactivate(ComponentContext componentContext) {
+     * s20Client.disconnect();
+     * super.deactivate(componentContext);
+     * }
+     */
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
