@@ -40,8 +40,10 @@ public class ZWaveClockCommandClassTest extends ZWaveCommandClassTest {
 
         assertEquals(event.getCommandClass(), CommandClass.CLOCK);
         assertEquals(event.getEndpoint(), 0);
-        // reported time is in the past, so offset should be != 0 and negative.
-        assertEquals(true, (Long) event.getValue() < 0);
+        Date date = (Date) event.getValue();
+        assertNotNull(date);
+        // reported time is in the past.
+        assertEquals(true, date.before(new Date()));
     }
 
     @Test

@@ -48,13 +48,6 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
     private static final int CLOCK_GET = 5;
     private static final int CLOCK_REPORT = 6;
 
-    // acceptable amount of time the clock on the node may be off before
-    // we provide the node with a clock update.
-    private static final int CLOCK_PRESISION = 5 * 60 * 1000;
-
-    @XStreamOmitField
-    private boolean updateClock = false;
-
     /**
      * Creates a new instance of the ZWaveClockCommandClass class.
      *
@@ -148,18 +141,8 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
                 cal.set(Calendar.HOUR_OF_DAY, hour);
                 cal.set(Calendar.MINUTE, minute);
                 Date nodeTime = cal.getTime();
-                long clockOffset = (nodeTime.getTime() - System.currentTimeMillis()) / 1000 / 60;
-                ZWaveClockValueEvent zEvent = new ZWaveClockValueEvent(getNode().getNodeId(), endpoint, clockOffset);
+                ZWaveClockValueEvent zEvent = new ZWaveClockValueEvent(getNode().getNodeId(), endpoint, nodeTime);
                 this.getController().notifyEventListeners(zEvent);
-
-                Date low = new Date(System.currentTimeMillis() - CLOCK_PRESISION);
-                Date high = new Date(System.currentTimeMillis() + CLOCK_PRESISION);
-
-                // auto correct the time if off by more than 5 minutes
-                if (nodeTime.before(low) || nodeTime.after(high)) {
-                    updateClock = true;
-                }
-                break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
                         this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
@@ -173,17 +156,11 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
         if (refresh == true && getEndpoint() == null) {
             result.add(getValueMessage());
         }
-        if (updateClock) {
-            logger.warn("NODE {}: adjusting clock", getNode().getNodeId());
-            updateClock = false;
-            result.add(getSetMessage(new Date()));
-            result.add(getValueMessage());
-        }
         return result;
     }
 
     /**
-     * Z-Wave Clock Event class. Indicates the current clock offset in minutes.
+     * Z-Wave Clock Event class. Indicates the current date on the node.
      *
      * @author Jorg de Jong
      */
@@ -194,10 +171,10 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
          *
          * @param nodeId the nodeId of the event
          * @param endpoint the endpoint of the event.
-         * @param offset the current clock offset in minutes.
+         * @param date the current date on the node.
          */
-        private ZWaveClockValueEvent(int nodeId, int endpoint, long offset) {
-            super(nodeId, endpoint, CommandClass.CLOCK, offset);
+        private ZWaveClockValueEvent(int nodeId, int endpoint, Date date) {
+            super(nodeId, endpoint, CommandClass.CLOCK, date);
         }
     }
 }
