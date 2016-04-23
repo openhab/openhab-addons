@@ -45,7 +45,7 @@ class MaxBridgeHandlerOSGiTest extends OSGiTest {
         assertThat thingRegistry, is(notNullValue())
     }
 
-    @Test @Ignore
+    @Test
     void maxCubeBridgeHandlerRegisteredAndUnregister() {
 
         MaxCubeBridgeHandler maxBridgeHandler = getService(ThingHandler, MaxCubeBridgeHandler)
