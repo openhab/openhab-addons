@@ -220,8 +220,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     }
 
                     // logger.debug("Creating - arg map is {} long", argumentMap.size());
-                    ZWaveThingChannel chan = new ZWaveThingChannel(channel.getUID(), dataType, ccSplit[0], endpoint,
-                            argumentMap);
+                    ZWaveThingChannel chan = new ZWaveThingChannel(controllerHandler, channel.getUID(), dataType,
+                            ccSplit[0], endpoint, argumentMap);
 
                     // First time round, and this is a command - then add the command
                     if (first && ("*".equals(bindingType[1]) || "Command".equals(bindingType[1]))) {
@@ -422,9 +422,6 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             return;
         }
 
-        // Initialise the node
-        initialiseNode();
-
         if (node != null) {
             updateNeighbours();
 
@@ -510,6 +507,9 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             logger.warn("NODE {}: Controller failed to register event handler.", nodeId);
             return;
         }
+
+        // Initialise the node - create all the channel links
+        initialiseNode();
     }
 
     @Override
@@ -525,6 +525,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
+
+        controllerHandler = null;
     }
 
     @Override
@@ -844,6 +846,13 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     controllerHandler.reinitialiseNode(nodeId);
                 }
 
+                if ("heal".equals(cfg[1]) && valueObject instanceof BigDecimal
+                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                    logger.debug("NODE {}: Starting heal on node!", nodeId);
+
+                    controllerHandler.healNode(nodeId);
+                }
+
                 // Don't save the value
                 valueObject = "";
             } else {
@@ -1059,7 +1068,6 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 updateConfiguration(configuration);
             }
 
-            // synchronized (thingChannelsState) {
             if (thingChannelsState == null) {
                 logger.error("NODE {}: No state handlers!", nodeId);
                 return;
@@ -1092,7 +1100,6 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     updateState(channel.getUID(), state);
                 }
             }
-            // }
 
             return;
         }

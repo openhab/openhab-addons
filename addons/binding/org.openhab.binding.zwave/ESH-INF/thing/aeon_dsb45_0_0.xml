@@ -50,8 +50,7 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Sensor Binary Report</label>
         <description>Toggle the sensor binary report value</description>
         <default>0</default>
@@ -61,8 +60,7 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Wake up</label>
         <description>Enable wake up 10 minutes when the power is switched on.</description>
         <default>0</default>
@@ -72,8 +70,7 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Basic set value</label>
         <description>Toggle the basic set value when the Magnet switch is opened /closed.</description>
         <default>0</default>
@@ -83,8 +80,7 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
         </options>
       </parameter>
 
-      <parameter name="config_121_4_000000FF" type="integer" groupName="configuration"
-                 min="1" max="17">
+      <parameter name="config_121_4_000000FF" type="integer" groupName="configuration">
         <label>121: Reports that will be sent</label>
         <description><![CDATA[
 configuration Value 4(LSB)<br /><h1>Overview</h1><p>See documentation for bytes</p> <p>Setting to 1 send BATTERY</p> <p>Setting to 16 sends SENSOR BINARY</p> <p>Setting to 17 sends SENSOR BINARY and BATTERY</p>
@@ -98,8 +94,7 @@ configuration Value 4(LSB)<br /><h1>Overview</h1><p>See documentation for bytes<
         </options>
       </parameter>
 
-      <parameter name="config_121_4_0000FF00" type="integer" groupName="configuration"
-                 min="1" max="17">
+      <parameter name="config_121_4_0000FF00" type="integer" groupName="configuration">
         <label>121: Parameter 121 Value 3</label>
         <description><![CDATA[
 See documentation<br /><h1>Overview</h1><p>set to 1 sends BASIC SET</p> <p>set to 16 sends ALARM</p> <p>set to 17 sends ALARM and BASIC SET</p>

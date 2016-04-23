@@ -162,8 +162,7 @@ public final class ZWaveNetworkMonitor implements ZWaveEventListener {
     }
 
     /**
-     * Sets the polling period (in milliseconds) between each network health
-     * ping.
+     * Sets the polling period (in milliseconds) between each network health ping.
      *
      * @param time period in seconds
      */

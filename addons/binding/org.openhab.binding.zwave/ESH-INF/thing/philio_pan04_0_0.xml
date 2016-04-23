@@ -195,8 +195,7 @@
         <default>6</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Selected endpoint</label>
         <description>If Controller not using Multi_Channel command class to access the endpoint of PAN04, you may configure the endpoint value to react the Basic Command Class</description>
         <default>1</default>
@@ -207,8 +206,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Switch mode</label>
         <description>Change the external switch mode</description>
         <default>1</default>
@@ -233,8 +231,7 @@
         <default>10000</default>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Restore switch state mode</label>
         <description>Restores the switch state setting in case the device was disconnected from the power source.</description>
         <default>1</default>
@@ -252,8 +249,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: RF off command mode</label>
         <description>Whenever a switch off command, BASIC_SET 、BINARY_SWITCH_SET 、 SWITCH_ALL_OFF, is received, it could be interpreted as 4 kinds of commands.</description>
         <default>1</default>
@@ -265,8 +261,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_10_1" type="integer" groupName="configuration">
         <label>10: Endpoint 3</label>
         <description>Multi-Channel Command is a good way to control relay1 and relay2 of PAN04 individually. The endpoint3 of PAN04 is related to both relay1 and relay2. In some condition it becomes redundant in Multi-Channel Command Class.</description>
         <default>1</default>

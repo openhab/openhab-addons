@@ -46,6 +46,12 @@
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
@@ -66,8 +72,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Smoke Sensor sensitivity</label>
         <description>There are 3 levels of sensitivity to smoke presence. Level 1 means the highest sensitivity. Rising the parameter value lowers the sensitivity to smoke presence.</description>
         <default>2</default>
@@ -78,8 +83,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Z-Wave notifications status</label>
         <description>This parameter allows to activate excess temperature and/or enclosure opening notifications sent to the main controller</description>
         <default>0</default>
@@ -91,8 +95,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Visual indicator notifications status</label>
         <description>This parameter allows to activate visual indications but does not apply to major alarms, such as FIRE, TROUBLE and LOW BATTERY ALARM.</description>
         <default>0</default>
@@ -108,8 +111,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Sound notifications status</label>
         <description>This parameter allows to activate sound signals but does not apply to major alarms, such as FIRE, TROUBLE and LOW BATTERY ALARM.</description>
         <default>0</default>
@@ -125,8 +127,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_10_1" type="integer" groupName="configuration">
         <label>10: Configuration of control frames in BASIC command class</label>
         <description>This parameter defines which frames will be sent in the 2-nd Association Group (FIRE ALARM). The values of BASIC ON and BASIC OFF frames may be defined as described in further parameters.</description>
         <default>0</default>
@@ -151,8 +152,7 @@
         <default>255</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Alarm broadcast</label>
         <description>A value other than 0 means that alarms are being sent in broadcast mode, i.e. to all devices within a Fibaro Smoke Sensor’s range</description>
         <default>0</default>

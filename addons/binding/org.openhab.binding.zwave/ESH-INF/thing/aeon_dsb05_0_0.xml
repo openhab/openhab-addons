@@ -67,8 +67,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Wake up for 10 minutes when batteries are inserted</label>
         <default>0</default>
         <options>
@@ -86,8 +85,7 @@ On time before sending off command<br /><h1>Overview</h1><p>How long should the 
         <default>240</default>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Motion sensor</label>
         <default>1</default>
         <options>
@@ -96,8 +94,7 @@ On time before sending off command<br /><h1>Overview</h1><p>How long should the 
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Command to send when movement</label>
         <default>1</default>
         <options>
