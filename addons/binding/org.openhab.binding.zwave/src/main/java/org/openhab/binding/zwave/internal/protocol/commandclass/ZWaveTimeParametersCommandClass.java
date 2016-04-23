@@ -9,7 +9,6 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import java.io.ByteArrayOutputStream;
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -31,31 +30,30 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
- * Handles the clock command class.
+ * Handles the time parameters command class.
  *
- * @author Chris Jackson
  * @author Jorg de Jong
  *
  */
-@XStreamAlias("clockCommandClass")
-public class ZWaveClockCommandClass extends ZWaveCommandClass
+@XStreamAlias("timeParametersCommandClass")
+public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
         implements ZWaveGetCommands, ZWaveCommandClassDynamicState {
 
     @XStreamOmitField
-    private static final Logger logger = LoggerFactory.getLogger(ZWaveClockCommandClass.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZWaveTimeParametersCommandClass.class);
 
-    private static final int CLOCK_SET = 4;
-    private static final int CLOCK_GET = 5;
-    private static final int CLOCK_REPORT = 6;
+    private static final int TIME_SET = 1;
+    private static final int TIME_GET = 2;
+    private static final int TIME_REPORT = 3;
 
     /**
-     * Creates a new instance of the ZWaveClockCommandClass class.
+     * Creates a new instance of the ZWaveTimeParametersCommandClass class.
      *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
      */
-    public ZWaveClockCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
+    public ZWaveTimeParametersCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
     }
 
@@ -64,17 +62,17 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
      */
     @Override
     public CommandClass getCommandClass() {
-        return CommandClass.CLOCK;
+        return CommandClass.TIME_PARAMETERS;
     }
 
     /**
-     * Gets a SerialMessage with the CLOCK_GET command
+     * Gets a SerialMessage with the TIME_GET command
      *
      * @return the serial message.
      */
     @Override
     public SerialMessage getValueMessage() {
-        logger.debug("NODE {}: Creating new message for command CLOCK_GET", getNode().getNodeId());
+        logger.debug("NODE {}: Creating new message for command TIME_GET", getNode().getNodeId());
 
         SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
@@ -82,36 +80,37 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
         outputData.write(getNode().getNodeId());
         outputData.write(2);
         outputData.write(getCommandClass().getKey());
-        outputData.write(CLOCK_GET);
+        outputData.write(TIME_GET);
         result.setMessagePayload(outputData.toByteArray());
         return result;
     }
 
     /**
-     * Gets a SerialMessage with the CLOCK_SET command
+     * Gets a SerialMessage with the TIME_SET command
      *
      * @return the serial message.
      */
     public SerialMessage getSetMessage(Date date) {
-        logger.debug("NODE {}: Creating new message for command CLOCK_SET", getNode().getNodeId());
+        logger.debug("NODE {}: Creating new message for command TIME_SET", getNode().getNodeId());
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-
-        int day = cal.get(Calendar.DAY_OF_WEEK) == 1 ? 7 : cal.get(Calendar.DAY_OF_WEEK) - 1;
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int minute = cal.get(Calendar.MINUTE);
 
         SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Immediate);
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(getNode().getNodeId());
-        outputData.write(4);
+        outputData.write(9);
         outputData.write(getCommandClass().getKey());
-        outputData.write(CLOCK_SET);
-        outputData.write((day << 5) | hour);
-        outputData.write(minute);
+        outputData.write(TIME_SET);
+        outputData.write((cal.get(Calendar.YEAR) & 0xff00) >> 8);
+        outputData.write((cal.get(Calendar.YEAR) & 0xff));
+        outputData.write(cal.get(Calendar.MONTH) + 1);
+        outputData.write(cal.get(Calendar.DAY_OF_MONTH));
+        outputData.write(cal.get(Calendar.HOUR_OF_DAY));
+        outputData.write(cal.get(Calendar.MINUTE));
+        outputData.write(cal.get(Calendar.SECOND));
         result.setMessagePayload(outputData.toByteArray());
         return result;
     }
@@ -127,22 +126,26 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
         logger.debug("NODE {}: Received clock command (v{})", this.getNode().getNodeId(), this.getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
-            case CLOCK_REPORT:
-                int day = serialMessage.getMessagePayloadByte(offset + 1) >> 5;
-                int hour = serialMessage.getMessagePayloadByte(offset + 1) & 0x1f;
-                int minute = serialMessage.getMessagePayloadByte(offset + 2);
-                String days[] = new DateFormatSymbols().getWeekdays();
-                int javaDay = day == 7 ? 1 : day + 1;
-                logger.debug(String.format("NODE %d: Received clock report: %s %02d:%02d", getNode().getNodeId(),
-                        days[javaDay], hour, minute));
+            case TIME_REPORT:
+
+                int year = (serialMessage.getMessagePayloadByte(offset + 1) << 8
+                        | serialMessage.getMessagePayloadByte(offset + 2));
+                int month = serialMessage.getMessagePayloadByte(offset + 3);
+                int day = serialMessage.getMessagePayloadByte(offset + 4);
+                int hour = serialMessage.getMessagePayloadByte(offset + 5);
+                int minute = serialMessage.getMessagePayloadByte(offset + 6);
+                int second = serialMessage.getMessagePayloadByte(offset + 7);
 
                 Calendar cal = Calendar.getInstance();
-                cal.set(Calendar.DAY_OF_WEEK, javaDay);
-                cal.set(Calendar.HOUR_OF_DAY, hour);
-                cal.set(Calendar.MINUTE, minute);
+                cal.clear();
+                cal.set(year, month - 1, day, hour, minute, second);
+                logger.debug("NODE {}: Received time report: {}", getNode().getNodeId(), cal.getTime());
+
                 Date nodeTime = cal.getTime();
-                ZWaveClockValueEvent zEvent = new ZWaveClockValueEvent(getNode().getNodeId(), endpoint, nodeTime);
+                ZWaveTimeValueEvent zEvent = new ZWaveTimeValueEvent(getNode().getNodeId(), endpoint, nodeTime);
                 this.getController().notifyEventListeners(zEvent);
+
+                break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
                         this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
@@ -160,21 +163,21 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
     }
 
     /**
-     * Z-Wave Clock Event class. Indicates the current date on the node.
+     * Z-Wave Clock Event class. Indicates the current time on the node.
      *
      * @author Jorg de Jong
      */
-    public class ZWaveClockValueEvent extends ZWaveCommandClassValueEvent {
+    public class ZWaveTimeValueEvent extends ZWaveCommandClassValueEvent {
 
         /**
          * Constructor. Creates a instance of the ZWaveClockValueEvent class.
          *
          * @param nodeId the nodeId of the event
          * @param endpoint the endpoint of the event.
-         * @param date the current date on the node.
+         * @param date the current time on the node.
          */
-        private ZWaveClockValueEvent(int nodeId, int endpoint, Date date) {
-            super(nodeId, endpoint, CommandClass.CLOCK, date);
+        private ZWaveTimeValueEvent(int nodeId, int endpoint, Date date) {
+            super(nodeId, endpoint, CommandClass.TIME_PARAMETERS, date);
         }
     }
 }

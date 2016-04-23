@@ -446,7 +446,7 @@ public abstract class ZWaveCommandClass {
         PROPRIETARY(0x88, "PROPRIETARY", null),
         LANGUAGE(0x89, "LANGUAGE", null),
         TIME(0x8A, "TIME", null),
-        TIME_PARAMETERS(0x8B, "TIME_PARAMETERS", null),
+        TIME_PARAMETERS(0x8B, "TIME_PARAMETERS", ZWaveTimeParametersCommandClass.class),
         GEOGRAPHIC_LOCATION(0x8C, "GEOGRAPHIC_LOCATION", null),
         COMPOSITE(0x8D, "COMPOSITE", null),
         MULTI_INSTANCE_ASSOCIATION(0x8E, "MULTI_INSTANCE_ASSOCIATION", null),
