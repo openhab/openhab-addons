@@ -9,15 +9,19 @@
 package org.openhab.binding.zwave.handler;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -1100,26 +1104,28 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
         // Handle wakeup notification events.
         if (incomingEvent instanceof ZWaveWakeUpEvent) {
-            // We're only interested in the report
-            if (((ZWaveWakeUpEvent) incomingEvent)
-                    .getEvent() != ZWaveWakeUpCommandClass.WAKE_UP_INTERVAL_CAPABILITIES_REPORT
-                    && ((ZWaveWakeUpEvent) incomingEvent)
-                            .getEvent() != ZWaveWakeUpCommandClass.WAKE_UP_INTERVAL_REPORT) {
-                return;
-            }
-
             ZWaveNode node = controllerHandler.getNode(nodeId);
             if (node == null) {
                 return;
             }
 
-            ZWaveWakeUpCommandClass commandClass = (ZWaveWakeUpCommandClass) node.getCommandClass(CommandClass.WAKE_UP);
-            Configuration configuration = editConfiguration();
-            configuration.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, commandClass.getInterval());
-            pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL);
-            configuration.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, commandClass.getTargetNodeId());
-            pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE);
-            updateConfiguration(configuration);
+            switch (((ZWaveWakeUpEvent) incomingEvent).getEvent()) {
+                case ZWaveWakeUpCommandClass.WAKE_UP_NOTIFICATION:
+                    Map<String, String> properties = editProperties();
+                    properties.put(ZWaveBindingConstants.PROPERTY_WAKEUP_TIME, getISO8601StringForCurrentDate());
+                    updateProperties(properties);
+                    break;
+                case ZWaveWakeUpCommandClass.WAKE_UP_INTERVAL_REPORT:
+                    ZWaveWakeUpCommandClass commandClass = (ZWaveWakeUpCommandClass) node
+                            .getCommandClass(CommandClass.WAKE_UP);
+                    Configuration configuration = editConfiguration();
+                    configuration.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, commandClass.getInterval());
+                    pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL);
+                    configuration.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, commandClass.getTargetNodeId());
+                    pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE);
+                    updateConfiguration(configuration);
+                    break;
+            }
             return;
         }
 
@@ -1387,5 +1393,28 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
 
         return configStatus;
+    }
+
+    /**
+     * Return an ISO 8601 combined date and time string for current date/time
+     *
+     * @return String with format "yyyy-MM-dd'T'HH:mm:ss'Z'"
+     */
+    public static String getISO8601StringForCurrentDate() {
+        Date now = new Date();
+        return getISO8601StringForDate(now);
+    }
+
+    /**
+     * Return an ISO 8601 combined date and time string for specified date/time
+     *
+     * @param date
+     *            Date
+     * @return String with format "yyyy-MM-dd'T'HH:mm:ss'Z'"
+     */
+    private static String getISO8601StringForDate(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dateFormat.format(date);
     }
 }

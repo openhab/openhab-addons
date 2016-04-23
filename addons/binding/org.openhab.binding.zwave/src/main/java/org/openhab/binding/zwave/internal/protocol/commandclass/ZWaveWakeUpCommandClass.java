@@ -21,11 +21,11 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionCompletedEvent;
 import org.slf4j.Logger;
@@ -133,7 +133,7 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -189,19 +189,18 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
 
                 ZWaveWakeUpEvent capabilitiesEvent = new ZWaveWakeUpEvent(getNode().getNodeId(),
                         WAKE_UP_INTERVAL_CAPABILITIES_REPORT);
-                this.getController().notifyEventListeners(capabilitiesEvent);
+                getController().notifyEventListeners(capabilitiesEvent);
                 break;
             case WAKE_UP_NOTIFICATION:
                 logger.debug("NODE {}: Received WAKE_UP_NOTIFICATION", this.getNode().getNodeId());
                 serialMessage.setTransactionCanceled();
 
                 // Set the awake flag. This will also empty the queue
-                this.setAwake(true);
+                setAwake(true);
                 break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command 0x%02X for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, this.getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -579,8 +578,7 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
         private final int event;
 
         /**
-         * Constructor. Creates a new instance of the ZWaveWakeUpEvent
-         * class.
+         * Constructor. Creates a new instance of the ZWaveWakeUpEvent class.
          *
          * @param nodeId the nodeId of the event.
          */
