@@ -21,6 +21,7 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.freebox</module>
+    <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
@@ -39,9 +40,11 @@
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
+    <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zwave</module>
-    <module>org.openhab.binding.onkyo</module>
+    <module>org.openhab.binding.zwave.test</module>
   </modules>
 
 </project>

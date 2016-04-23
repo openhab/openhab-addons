@@ -50,7 +50,7 @@ public class ZWaveMeterConverterTest {
     }
 
     @Test
-    public void EventElectric() {
+    public void Event_Electric() {
         ZWaveMeterConverter converter = new ZWaveMeterConverter();
         ZWaveThingChannel channel = createChannel(MeterScale.E_KWh.toString());
         BigDecimal value = new BigDecimal("3.3");
