@@ -1,6 +1,6 @@
 #!/bin/sh
 
-serialPort="/dev/pts/12"
+serialPort=$1
 
 # socat -d -d pty,raw,echo=0 pty,raw,echo=0
 
@@ -163,6 +163,9 @@ echo "12;3;1;0;39;1234" > $serialPort
 
 # set impedance
 echo "12;3;1;0;14;1000000" > $serialPort
+
+#get time
+echo "172;255;3;0;1;0" > $serialPort # I_TIME
 
 # INTERNAL
 # batteryLevel

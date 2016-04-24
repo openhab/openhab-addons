@@ -192,7 +192,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     private void answerITimeMessage(MySensorsMessage msg) {
         logger.info("I_TIME request received from {}, answering...", msg.nodeId);
 
-        String time = Long.toString(System.currentTimeMillis());
+        String time = Long.toString(System.currentTimeMillis() / 1000);
         MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
                 MYSENSORS_SUBTYPE_I_TIME, time);
         mysCon.addMySensorsOutboundMessage(newMsg);
