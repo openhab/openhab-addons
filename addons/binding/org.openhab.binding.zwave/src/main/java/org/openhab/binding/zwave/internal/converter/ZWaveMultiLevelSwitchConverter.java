@@ -174,7 +174,9 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         messages.add(serialMessage);
 
         // Poll an update once we've sent the command
-        messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
+        // Don't poll immediately since some devices return the original value, and some the new value.
+        // This conflicts with OH that will move the slider immediately.
+        // messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
         return messages;
     }
 }
