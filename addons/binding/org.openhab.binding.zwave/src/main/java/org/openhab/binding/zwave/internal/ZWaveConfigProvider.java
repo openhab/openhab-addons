@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zwave.internal;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -147,7 +148,8 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                 .withDescription("Set the minimum polling period for this device<BR/>"
                         + "Note that the polling period may be longer than set since the binding treats "
                         + "polls as the lowest priority data within the network.")
-                .withDefault("1800").withGroupName("thingcfg").build());
+                .withDefault("1800").withMinimum(new BigDecimal(15)).withMaximum(new BigDecimal(7200))
+                .withGroupName("thingcfg").build());
 
         // If we support the wakeup class, then add the configuration
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.WAKE_UP) != null) {
