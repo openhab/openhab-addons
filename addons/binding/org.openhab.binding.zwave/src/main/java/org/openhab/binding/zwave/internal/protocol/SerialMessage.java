@@ -490,6 +490,10 @@ public class SerialMessage {
      * Serial message priority enumeration. Indicates the message priority.
      * Queue priority concept -:
      * <ul>
+     * <li>RealTime: Messages that must be sent at highest priority. Generally this is reserved for battery devices so
+     * we send messages while they are awake. The high priority allows their messages to jump the queue.
+     * <i>RealTime</i> messages will not be queued in the wakeup queue. This is meant to be used for time critical
+     * events that have no meaning if they are delayed.
      * <li>Immediate: Messages that must be sent at highest priority. Generally this is reserved for battery devices so
      * we send messages while they are awake. The high priority allows their messages to jump the queue.
      * <li>High: Other high priority messages
@@ -504,6 +508,7 @@ public class SerialMessage {
      *
      */
     public enum SerialMessagePriority {
+        RealTime,
         Immediate,
         High,
         Set,
@@ -648,8 +653,6 @@ public class SerialMessage {
     /**
      * Comparator Class. Compares two serial messages with each other based on node status (awake / sleep), priority and
      * sequence number.
-     *
-     * @author Jan-Willem Spuij
      */
     public static class SerialMessageComparator implements Comparator<SerialMessage> {
 

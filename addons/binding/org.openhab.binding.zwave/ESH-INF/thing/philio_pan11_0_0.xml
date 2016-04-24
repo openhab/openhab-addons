@@ -101,8 +101,7 @@
         <default>10000</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Restore switch state mode</label>
         <default>1</default>
         <options>
@@ -112,8 +111,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Mode of switch Off function</label>
         <default>1</default>
         <options>
@@ -122,8 +120,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: LED indication mode</label>
         <default>1</default>
         <options>
@@ -139,8 +136,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: RF Off command mode</label>
         <default>0</default>
         <options>

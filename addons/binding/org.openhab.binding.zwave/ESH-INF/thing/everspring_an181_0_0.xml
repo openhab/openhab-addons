@@ -96,8 +96,7 @@ Set Basic Set Command value to be sent to group 2 when switch is turned on<br />
         <default>3</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Remember status</label>
         <description>Set whether to remember the last status</description>
         <default>1</default>

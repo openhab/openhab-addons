@@ -107,8 +107,7 @@ Period of time after wich Motion alarm will be cancelled.<br /><h1>Overview</h1>
         <default>30</default>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_8_1" type="integer" groupName="configuration">
         <label>8: PIR Sensor Operating Mode</label>
         <description><![CDATA[
 The parameter determines the part of day in which the PIR sensor will be active.<br /><h1>Overview</h1><p>The parameter determines the part of day in which the PIR sensor will be active. This parameter influences only the motion reports and associations. Tamper, light intensity and temperature measurements will be still active, regardless of this parameter settings. 0 - PIR sensor always active 1 - PIR sensor active during the day only 2 - PIR sensor active during the night only. Default setting: 0 Parameter size: 1 [byte] </p>
@@ -130,8 +129,7 @@ The parameter defines the difference between night and day.<br /><h1>Overview</h
         <default>200</default>
       </parameter>
 
-      <parameter name="config_12_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_12_1" type="integer" groupName="configuration">
         <label>12: BASIC COMMAND CLASS FRAMES CONFIGURATION</label>
         <description><![CDATA[
 Determines the command frames sent in 1-st association group.<br /><h1>Overview</h1><p>The parameter determines the command frames sent in 1-st association group, assigned to PIR sensor.<br />0 - BASIC ON and BASIC OFF command frames sent in Basic Command Class.<br />1 - only the BASIC ON command frame sent in Basic Command Class.<br />2 - only the BASIC OFF command frame sent in Basic CommandClass.<br />Values of BASIC ON and BASIC OFF command frames may be modified by dedicated parameters.<br />Default setting: 0 Parameter size: 1 [byte] </p>
@@ -180,8 +178,7 @@ Time period after which a tamper alarm will be cancelled.<br /><h1>Overview</h1>
         <default>30</default>
       </parameter>
 
-      <parameter name="config_24_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_24_1" type="integer" groupName="configuration">
         <label>24: TAMPER OPERATING MODES</label>
         <description><![CDATA[
 The parameter determines the behaviour of tamper and how it reports.<br /><h1>Overview</h1><p>The parameter determines the behaviour of tamper and how it reports. </p> <p>0 – Tamper alarm is reported in Sensor Alarm command class / Cancellation is not reported.</p> <p>1 – Tamper alarm is reported in Sensor Alarm command class / Cancellation is reported in Sensor Alarm commad class after the time period set in parameter 22 (Tamper Alarm Cancellation Delay) 2 - Tamper alarm is reported in Sensor Alarm command class / Cancellation is not reported. Sensor’s orientation in space is reported in Fibar Commad Class after the time period set in paramer 22.</p> 3 - Tamper alarm is reported in Sensor Alarm command class / Cancellation is reported in Sensor Alarm commad class after the time period set in parameter 22. Sensor’s orientation in space is reported in Fibar Commad Class after the time period set in paramer 22.   4 - The maximum level of vibrations recorded in the time period set in parameter 22 is reported. Reports stop being sent when the vibrations cease. The reports are sent in Sensor Alarm command class. Value displayed in the “value” field (0 - 100) depends on the vibrations force. Reports to the association groups are sent using Sensor Alarm command class.   Available settings: 0 or 255 Default setting: 0 Parameter size: 1 [byte] 
@@ -196,8 +193,7 @@ The parameter determines the behaviour of tamper and how it reports.<br /><h1>Ov
         </options>
       </parameter>
 
-      <parameter name="config_26_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_26_1" type="integer" groupName="configuration">
         <label>26: TAMPER ALARM BROADCAST MODE</label>
         <description><![CDATA[
 Alarm frame will or will not be sent in broadcast mode.<br /><h1>Overview</h1><p>The parameter determines whether the tamper alarm frame will or will not be sent in broadcast mode. Alarm frames sent in broadcast mode may be received by all of the devices within communication range (if they accept such frames).</p> <p>0 - Tamper alarm is not sent in broadcast mode.</p> <p>1 - Tamper alarm sent in broadcast mode.</p> <p>Default setting: 0<br /> Parameter size: 1 [byte] </p>
@@ -263,8 +259,7 @@ The value to be added to the actual measured temperature.<br /><h1>Overview</h1>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: LED SIGNALING MODE</label>
         <description><![CDATA[
 Way in which LED diode behaves after motion has been detected.<br /><h1>Overview</h1><p>The parameter determines the way in which LED diode behaves after motion has been detected.<br />Values from 1 to 9 = single long blink at the moment of reporting motion. No other motion will be indicated until alarm is cancelled.<br />Values from 10 to 18 = single long blink at the moment of reporting motion and one short blink each time the motion is detected again.<br />Values from 19 to 26 = single long blink at the moment of reporting motion and two short blinks each time the motion is detected again.</p>
@@ -346,8 +341,7 @@ This parameter is relevant only when parameter 80 has been properly configured.<
         <default>28</default>
       </parameter>
 
-      <parameter name="config_89_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_89_1" type="integer" groupName="configuration">
         <label>89: LED INDICATING TAMPER ALARM</label>
         <description><![CDATA[
 Indicating mode resembles a police car (white, red and blue).<br /><h1>Overview</h1><p>Indicating mode resembles a police car (white, red and blue).</p> <p>0 - LED does not indicate tamper alarm.</p> <p>1 - LED indicates tamper alarm.</p> <p>Default setting: 1 Parameter size: 1 [byte]</p>

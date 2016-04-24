@@ -61,8 +61,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Current Overload Protection</label>
         <default>0</default>
         <options>
@@ -71,8 +70,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Notification on Status Change</label>
         <default>0</default>
         <options>
@@ -82,8 +80,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_90_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_90_1" type="integer" groupName="configuration">
         <label>90: Automated sending of a Report triggered by minimal change of value.</label>
         <default>0</default>
         <options>
@@ -140,8 +137,7 @@
         <default>600</default>
       </parameter>
 
-      <parameter name="config_120_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_120_1" type="integer" groupName="configuration">
         <label>120: Turn External Button Mode</label>
         <default>255</default>
         <options>

@@ -21,11 +21,11 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionCompletedEvent;
 import org.slf4j.Logger;
@@ -133,7 +133,7 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -189,19 +189,18 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
 
                 ZWaveWakeUpEvent capabilitiesEvent = new ZWaveWakeUpEvent(getNode().getNodeId(),
                         WAKE_UP_INTERVAL_CAPABILITIES_REPORT);
-                this.getController().notifyEventListeners(capabilitiesEvent);
+                getController().notifyEventListeners(capabilitiesEvent);
                 break;
             case WAKE_UP_NOTIFICATION:
                 logger.debug("NODE {}: Received WAKE_UP_NOTIFICATION", this.getNode().getNodeId());
                 serialMessage.setTransactionCanceled();
 
                 // Set the awake flag. This will also empty the queue
-                this.setAwake(true);
+                setAwake(true);
                 break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command 0x%02X for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, this.getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -240,21 +239,27 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
             return true;
         }
 
+        // Don't add any RealTime messages to the wakeup queue. This stops us delaying
+        // messages like time set which would mean setting the time completely wrong!
+        if (serialMessage.getPriority() == SerialMessagePriority.RealTime) {
+            logger.debug("NODE {}: Dropping RealTime message", getNode().getNodeId());
+            return false;
+        }
+
         // Make sure we never add the WAKE_UP_NO_MORE_INFORMATION message to the queue
         if (serialMessage.getMessagePayload().length >= 2
                 && serialMessage.getMessagePayload()[2] == (byte) WAKE_UP_NO_MORE_INFORMATION) {
-            logger.debug("NODE {}: Last MSG not queuing.", this.getNode().getNodeId());
+            logger.debug("NODE {}: Last MSG not queuing.", getNode().getNodeId());
             return false;
         }
         if (this.wakeUpQueue.contains(serialMessage)) {
-            logger.debug("NODE {}: Message already on the wake-up queue. Removing original.",
-                    this.getNode().getNodeId());
-            this.wakeUpQueue.remove(serialMessage);
+            logger.debug("NODE {}: Message already on the wake-up queue. Removing original.", getNode().getNodeId());
+            wakeUpQueue.remove(serialMessage);
         }
 
-        logger.debug("NODE {}: Putting message {} in wakeup queue.", this.getNode().getNodeId(),
+        logger.debug("NODE {}: Putting message {} in wakeup queue.", getNode().getNodeId(),
                 serialMessage.getMessageClass());
-        this.wakeUpQueue.add(serialMessage);
+        wakeUpQueue.add(serialMessage);
 
         // This message has been queued - don't send it now...
         return false;
@@ -267,13 +272,13 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      */
     public SerialMessage getIntervalMessage() {
         if (isGetSupported == false) {
-            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            logger.debug("NODE {}: Node doesn't support get requests", getNode().getNodeId());
             return null;
         }
 
         logger.debug("NODE {}: Creating new message for application command WAKE_UP_INTERVAL_GET",
-                this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+                getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Config);
         byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
                 (byte) WAKE_UP_INTERVAL_GET };
@@ -288,13 +293,13 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      */
     public SerialMessage getIntervalCapabilitiesMessage() {
         if (isGetSupported == false) {
-            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            logger.debug("NODE {}: Node doesn't support get requests", getNode().getNodeId());
             return null;
         }
 
         logger.debug("NODE {}: Creating new message for application command WAKE_UP_INTERVAL_CAPABILITIES_GET",
                 this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Config);
         byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
                 (byte) WAKE_UP_INTERVAL_CAPABILITIES_GET };
@@ -390,17 +395,17 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
         byte[] payload = serialMessage.getMessagePayload();
 
         // Check if it's addressed to this node
-        if (payload.length == 0 || (payload[0] & 0xFF) != this.getNode().getNodeId()) {
+        if (payload.length == 0 || (payload[0] & 0xFF) != getNode().getNodeId()) {
             return;
         }
 
         // We now know that this is a message to this node.
         // If it's not the WAKE_UP_NO_MORE_INFORMATION, then we need to set the wakeup timer
-        if (payload.length >= 4 && (payload[2] & 0xFF) == this.getCommandClass().getKey()
+        if (payload.length >= 4 && (payload[2] & 0xFF) == getCommandClass().getKey()
                 && (payload[3] & 0xFF) == WAKE_UP_NO_MORE_INFORMATION) {
             // This is confirmation of our 'go to sleep' message
-            logger.debug("NODE {}: Went to sleep", this.getNode().getNodeId());
-            this.setAwake(false);
+            logger.debug("NODE {}: Went to sleep", getNode().getNodeId());
+            setAwake(false);
             return;
         }
 
@@ -408,9 +413,9 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
         if (!this.wakeUpQueue.isEmpty()) {
             // Get the next message from the queue.
             // Bump it's priority to highest to try and send it while the node is awake
-            serialMessage = this.wakeUpQueue.poll();
+            serialMessage = wakeUpQueue.poll();
             serialMessage.setPriority(SerialMessagePriority.Immediate);
-            this.getController().sendData(serialMessage);
+            getController().sendData(serialMessage);
         } else if (isAwake() == true) {
             // No more messages in the queue.
             // Start a timer to send the "Go To Sleep" message
@@ -439,7 +444,7 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
         this.isAwake = isAwake;
 
         if (isAwake) {
-            logger.debug("NODE {}: Is awake with {} messages in the wake-up queue.", this.getNode().getNodeId(),
+            logger.debug("NODE {}: Is awake with {} messages in the wake-up queue.", getNode().getNodeId(),
                     this.wakeUpQueue.size());
 
             this.lastWakeup = Calendar.getInstance().getTime();
@@ -449,10 +454,10 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
 
             // Handle the wake-up queue for this node.
             // We send the first message, and when that's ACKed, we sent the next
-            if (!this.wakeUpQueue.isEmpty()) {
+            if (!wakeUpQueue.isEmpty()) {
                 // Get the next message from the queue.
                 // Bump it's priority to highest to try and send it while the node is awake
-                SerialMessage serialMessage = this.wakeUpQueue.poll();
+                SerialMessage serialMessage = wakeUpQueue.poll();
                 serialMessage.setPriority(SerialMessagePriority.Immediate);
                 this.getController().sendData(serialMessage);
             } else {
@@ -462,7 +467,7 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
                 setSleepTimer();
             }
         } else {
-            logger.debug("NODE {}: Is sleeping", this.getNode().getNodeId());
+            logger.debug("NODE {}: Is sleeping", getNode().getNodeId());
         }
     }
 
@@ -472,14 +477,13 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      *
      * @param interval the wakeup interval in seconds
      * @return the serial message
-     * @author Chris Jackson
      */
     public SerialMessage setInterval(int interval) {
         logger.debug("NODE {}: Creating new message for application command WAKE_UP_INTERVAL_SET to {}",
-                this.getNode().getNodeId(), interval);
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+                getNode().getNodeId(), interval);
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Config);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 6, (byte) getCommandClass().getKey(),
+        byte[] newPayload = { (byte) getNode().getNodeId(), 6, (byte) getCommandClass().getKey(),
                 (byte) WAKE_UP_INTERVAL_SET, (byte) ((interval >> 16) & 0xff), (byte) ((interval >> 8) & 0xff),
                 (byte) (interval & 0xff), (byte) getController().getOwnNodeId() };
         result.setMessagePayload(newPayload);
@@ -579,8 +583,7 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
         private final int event;
 
         /**
-         * Constructor. Creates a new instance of the ZWaveWakeUpEvent
-         * class.
+         * Constructor. Creates a new instance of the ZWaveWakeUpEvent class.
          *
          * @param nodeId the nodeId of the event.
          */

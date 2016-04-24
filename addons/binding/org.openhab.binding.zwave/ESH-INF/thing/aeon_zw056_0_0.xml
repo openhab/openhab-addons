@@ -60,8 +60,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
         <default>0</default>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Send Basic Set on open/close event</label>
         <description>Default=0</description>
         <default>0</default>
@@ -109,8 +108,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
         <default>0</default>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Enable Notifications</label>
         <description><![CDATA[
 Enable to send notifications to associated devices (Group1) when the state of Siren changed (0=nothing,1=hailCC,2=basic CC report).<br /><h1>Overview</h1>Enable/disable to send notifications to associated devices (Group 1) when the state of Doorbell is changed (0=nothing, 1=hail CC, 2=basic CC report)
@@ -154,8 +152,7 @@ Enable to send notifications to associated devices (Group1) when the state of Si
         <label>Actions</label>
       </parameter-group>
 
-      <parameter name="config_255_4_wo" type="integer" groupName="configuration"
-                 min="0" max="4294967295">
+      <parameter name="config_255_4_wo" type="integer" groupName="configuration">
         <label>255: Reset</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>1. Size=0x01， Configuration Value=0x00:<br />Reset configuration setting.<br />2. Size=0x04， Configuration Value=0x55555555:<br />Reset Factory setting.</p>

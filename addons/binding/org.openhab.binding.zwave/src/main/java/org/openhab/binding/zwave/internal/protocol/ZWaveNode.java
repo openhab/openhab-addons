@@ -259,9 +259,9 @@ public class ZWaveNode {
                     return;
                 }
             case FAILED:
-                this.deadCount++;
-                this.deadTime = Calendar.getInstance().getTime();
-                logger.debug("NODE {}: Node is DEAD.", this.nodeId);
+                deadCount++;
+                deadTime = Calendar.getInstance().getTime();
+                logger.debug("NODE {}: Node is DEAD.", nodeId);
                 break;
             case INITIALIZING:
                 break;
@@ -301,8 +301,8 @@ public class ZWaveNode {
      *
      * @param tempMan the manufacturer to set
      */
-    public void setManufacturer(int tempMan) {
-        this.manufacturer = tempMan;
+    public void setManufacturer(int manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
     /**

@@ -61,5 +61,4 @@ public class ZWaveMultiLevelSensorCommandClassTest extends ZWaveCommandClassTest
         assertEquals(event.getSensorType(), ZWaveMultiLevelSensorCommandClass.SensorType.TEMPERATURE);
         assertEquals(event.getValue(), new BigDecimal("27.4"));
     }
-
 }

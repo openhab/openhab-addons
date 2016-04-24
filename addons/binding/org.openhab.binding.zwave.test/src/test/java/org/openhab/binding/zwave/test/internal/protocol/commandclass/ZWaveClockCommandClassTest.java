@@ -11,39 +11,45 @@ package org.openhab.binding.zwave.test.internal.protocol.commandclass;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveClockCommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveClockCommandClass.ZWaveClockValueEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 
 /**
  * Test cases for {@link ZWaveClockCommandClass}.
  *
  * @author Jorg de Jong
+ * @author Chris Jackson
  */
 public class ZWaveClockCommandClassTest extends ZWaveCommandClassTest {
 
     @Test
-    public void reportTimeOffset() {
+    public void reportTime() {
         byte[] packetData = { 0x01, 0x0F, 0x00, 0x04, 0x00, 0x07, 0x07, (byte) 0x81, 0x06, -127, 4, 127, 0, -119 };
 
         List<ZWaveEvent> events = processCommandClassMessage(packetData);
 
         assertEquals(events.size(), 1);
 
-        ZWaveClockValueEvent event = (ZWaveClockValueEvent) events.get(0);
+        ZWaveCommandClassValueEvent event = (ZWaveCommandClassValueEvent) events.get(0);
 
         assertEquals(event.getCommandClass(), CommandClass.CLOCK);
         assertEquals(event.getEndpoint(), 0);
         Date date = (Date) event.getValue();
         assertNotNull(date);
-        // reported time is in the past.
-        assertEquals(true, date.before(new Date()));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        assertEquals(1, cal.get(Calendar.HOUR_OF_DAY));
+        assertEquals(4, cal.get(Calendar.MINUTE));
+        assertEquals(5, cal.get(Calendar.DAY_OF_WEEK));
     }
 
     @Test

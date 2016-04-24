@@ -236,6 +236,9 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .withLabel("Reinitialise the device").withAdvanced(true).withOptions(options).withDefault("-232323")
                     .withGroupName("actions").build());
         }
+        parameters.add(ConfigDescriptionParameterBuilder.create("action_heal", Type.INTEGER)
+                .withLabel("Heal the device").withAdvanced(true).withOptions(options).withDefault("-232323")
+                .withGroupName("actions").build());
 
         return new ConfigDescription(uri, parameters, groups);
 

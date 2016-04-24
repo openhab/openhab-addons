@@ -150,15 +150,6 @@ Configuration report for the battery state of Sensor<br /><h1>Overview</h1><p>Co
         <default>0</default>
       </parameter>
 
-      <parameter name="config_44_1" type="integer" groupName="configuration"
-                 min="1" max="10">
-        <label>44: ringtone volume test</label>
-        <description><![CDATA[
-Test the volume of the current ringtone<br /><h1>Overview</h1><p>Test the volume of the current ringtone.<br />Value=1 to value=10, which map to the volume level 1 to level<br />10.</p>
-        ]]></description>
-        <default>0</default>
-      </parameter>
-
       <parameter name="config_45_2" type="integer" groupName="configuration"
                  min="0" max="500">
         <label>45: Temperature</label>
@@ -238,6 +229,14 @@ Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration
         <label>43: Play or Pause ringtone</label>
         <description><![CDATA[
 Start playing or Stop playing the ringtone<br /><h1>Overview</h1><p>Start playing or Stop playing the ringtone:<br />1, Value=0xff, stop playing ringtone.<br />2, Value=0x01~0x64, start playing the ringtone that you<br />selected.</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_44_1_wo" type="integer" groupName="configuration">
+        <label>44: ringtone volume test</label>
+        <description><![CDATA[
+Test the volume of the current ringtone<br /><h1>Overview</h1><p>Test the volume of the current ringtone.<br />Value=1 to value=10, which map to the volume level 1 to level<br />10.</p>
         ]]></description>
         <default>0</default>
       </parameter>

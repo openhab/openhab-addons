@@ -39,8 +39,7 @@ In-Wall Smart Dimmer<br /><h2>Inclusion Information</h2><p>1. Follow the instruc
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Invert Switch</label>
         <description><![CDATA[
 Invert the ON/OFF Switch State.<br /><h1>Overview</h1><p>If the switch is accidentally installed upside down with “On” at the bottom and “Off” at the top, the default On/Off rocker settings can be reversed by changing parameter 4’s value to “1”.</p>
