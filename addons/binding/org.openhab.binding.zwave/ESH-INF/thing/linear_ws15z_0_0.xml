@@ -54,8 +54,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Night Light</label>
         <description>By default, the LED will turn OFF when the lead attached is turned ON.</description>
         <default>1</default>
@@ -65,8 +64,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Invert Switch</label>
         <description>To change the top of the switch to OFF and the bottom of the switch ON.</description>
         <default>0</default>

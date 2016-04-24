@@ -38,8 +38,7 @@ On/Off Relay Switch<br /><h1>Overview</h1><p>Also marketed as GE / Jasco 12722.<
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Night Light</label>
         <description><![CDATA[
 Defines the behavior of the blue LED. <br /> Default is Night Light mode where LED is on when switch is off.
@@ -52,8 +51,7 @@ Defines the behavior of the blue LED. <br /> Default is Night Light mode where L
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Invert Switch</label>
         <description><![CDATA[
 Invert the ON/OFF Switch State. <br /> Setting this parameter to Yes will change the top of the switch to OFF and the bottom to ON. <br /> Note: If you invert the switches and also install the product upside down, the load will now be control

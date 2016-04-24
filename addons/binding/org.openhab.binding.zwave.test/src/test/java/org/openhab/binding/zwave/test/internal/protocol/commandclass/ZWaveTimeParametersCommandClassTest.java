@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveTimeParametersCommandClass;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveTimeParametersCommandClass.ZWaveTimeValueEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 
 /**
@@ -37,7 +37,7 @@ public class ZWaveTimeParametersCommandClassTest extends ZWaveCommandClassTest {
 
         assertEquals(events.size(), 1);
 
-        ZWaveTimeValueEvent event = (ZWaveTimeValueEvent) events.get(0);
+        ZWaveCommandClassValueEvent event = (ZWaveCommandClassValueEvent) events.get(0);
 
         assertEquals(event.getCommandClass(), CommandClass.TIME_PARAMETERS);
         assertEquals(event.getEndpoint(), 0);

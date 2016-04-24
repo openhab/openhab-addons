@@ -128,8 +128,7 @@ Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Paramet
         <advanced>true</advanced>
       </parameter>
 
-      <parameter name="config_7_1_00000008" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_7_1_00000008" type="integer" groupName="configuration">
         <label>7: Disable send of BASIC OFF after door closed</label>
         <default>1</default>
         <options>
@@ -138,8 +137,7 @@ Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Paramet
         </options>
       </parameter>
 
-      <parameter name="config_7_1_00000010" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_7_1_00000010" type="integer" groupName="configuration">
         <label>7: Notification Type</label>
         <default>0</default>
         <options>
@@ -148,8 +146,7 @@ Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Paramet
         </options>
       </parameter>
 
-      <parameter name="config_7_1_00000020" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_7_1_00000020" type="integer" groupName="configuration">
         <label>7: Disable Multi CC in auto report</label>
         <default>0</default>
         <options>
@@ -158,8 +155,7 @@ Parameter to set the Customer Function.<br /><h1>Overview</h1><p><strong>Paramet
         </options>
       </parameter>
 
-      <parameter name="config_7_1_00000040" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_7_1_00000040" type="integer" groupName="configuration">
         <label>7: Disable to report battery state when the device triggered</label>
         <default>0</default>
         <options>

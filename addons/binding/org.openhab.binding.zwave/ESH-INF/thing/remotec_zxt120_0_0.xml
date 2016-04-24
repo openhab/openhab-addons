@@ -83,8 +83,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_28_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_28_1" type="integer" groupName="configuration">
         <label>28: External IR Emitter power level</label>
         <default>255</default>
         <options>
@@ -93,8 +92,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_32_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_32_1" type="integer" groupName="configuration">
         <label>32: Surround IR control</label>
         <default>-1</default>
         <options>
@@ -103,8 +101,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_33_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_33_1" type="integer" groupName="configuration">
         <label>33: AC function Swing control</label>
         <default>1</default>
         <options>

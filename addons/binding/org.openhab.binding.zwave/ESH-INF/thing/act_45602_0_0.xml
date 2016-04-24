@@ -37,8 +37,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Ignore Start Level When Receiving Dim Commands</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>Every “Dim” command from your remote controller includes a start level embedded in it. The 45602 can be set to ignore the start level that is part of the dim command. Setting parameter 5 to a value of 0 will cause the 45602 to dim or brighten from the start level embedded in the command</p>
@@ -104,8 +103,7 @@ Timing of each step the dimmer will change when receiving a ZWave all on/off com
         <default>3</default>
       </parameter>
 
-      <parameter name="config_29_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_29_1" type="integer" groupName="configuration">
         <label>29: Load Sensing</label>
         <description><![CDATA[
 Sense when existing switch is used to turn on the lamp<br /><h1>Overview</h1><p>Load sensing allows you to operate the lamp using the existing switch on the lamp by sensing a change in the resistive load of the light plugged in. When it detects the change in resistance it will turn the lamp on to full power.</p> <p>When replacing a burned-out light bulb, the load sensing feature will automatically turn the light ON when the new bulb is installed even if the Z-wave module was previously turned OFF</p>

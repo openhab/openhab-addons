@@ -48,8 +48,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Send Sensor binary report on open/close events</label>
         <default>0</default>
         <options>
@@ -58,8 +57,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Enable wake up 10 minutes when power on</label>
         <default>0</default>
         <options>
@@ -68,8 +66,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Send Basic Set on open/close event</label>
         <default>0</default>
         <options>
@@ -105,8 +102,7 @@ Value is specified in number of seconds.<br /><h1>Overview</h1><p>Values greater
         <default>1</default>
       </parameter>
 
-      <parameter name="config_122_1" type="integer" groupName="configuration"
-                 min="1" max="11">
+      <parameter name="config_122_1" type="integer" groupName="configuration">
         <label>122: Notification type to send</label>
         <default>6</default>
         <options>

@@ -5,19 +5,19 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="trane_tranexr524_00_000" listed="false">
+  <thing-type id="trane_xr524_00_000" listed="false">
     <label>Trane XR524 Touchscreen Comfort Control Thermostat</label>
     <description>Touchscreen Comfort Control Thermostat</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="thermostat_mode" typeId="trane_tranexr524_00_000_thermostat_mode">
+      <channel id="thermostat_mode" typeId="trane_xr524_00_000_thermostat_mode">
         <label>Thermostat mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanmode" typeId="trane_tranexr524_00_000_thermostat_fanmode">
+      <channel id="thermostat_fanmode" typeId="trane_xr524_00_000_thermostat_fanmode">
         <label>Thermostat fan mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
@@ -47,7 +47,7 @@
           <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanstate" typeId="trane_tranexr524_00_000_thermostat_fanstate">
+      <channel id="thermostat_fanstate" typeId="trane_xr524_00_000_thermostat_fanstate">
         <label>Thermostat fan state</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_FAN_STATE</property>
@@ -64,7 +64,7 @@
     </properties>
 
   </thing-type>
-    <channel-type id="trane_tranexr524_00_000_thermostat_mode">
+    <channel-type id="trane_xr524_00_000_thermostat_mode">
       <item-type>Number</item-type>
       <label>Thermostat Mode</label>
       <description>Sets the thermostat mode</description>
@@ -80,7 +80,7 @@
       </state>
     </channel-type>
 
-    <channel-type id="trane_tranexr524_00_000_thermostat_fanmode">
+    <channel-type id="trane_xr524_00_000_thermostat_fanmode">
       <item-type>Number</item-type>
       <label>Thermostat Fan Mode</label>
       <description>Sets the thermostat fan mode</description>
@@ -94,7 +94,7 @@
       </state>
     </channel-type>
 
-    <channel-type id="trane_tranexr524_00_000_thermostat_fanstate">
+    <channel-type id="trane_xr524_00_000_thermostat_fanstate">
       <item-type>Number</item-type>
       <label>Thermostat Fan State</label>
       <description>Sets the thermostat fan state</description>
