@@ -37,7 +37,8 @@ public class ZWaveMeterTblMonitorConverterTest {
     private ZWaveThingChannel createChannel(String type) {
         Map<String, String> args = new HashMap<String, String>();
         args.put("type", type);
-        return new ZWaveThingChannel(uid, DataType.DecimalType, CommandClass.METER_TBL_MONITOR.toString(), 0, args);
+        return new ZWaveThingChannel(null, uid, DataType.DecimalType, CommandClass.METER_TBL_MONITOR.toString(), 0,
+                args);
     }
 
     private ZWaveCommandClassValueEvent createEvent(MeterTblMonitorType type, MeterTblMonitorScale scale,
@@ -52,7 +53,7 @@ public class ZWaveMeterTblMonitorConverterTest {
 
     @Test
     public void EventElectric() {
-        ZWaveMeterTblMonitorConverter converter = new ZWaveMeterTblMonitorConverter();
+        ZWaveMeterTblMonitorConverter converter = new ZWaveMeterTblMonitorConverter(null);
         ZWaveThingChannel channel = createChannel(MeterTblMonitorScale.TE_KWh.toString());
         BigDecimal value = new BigDecimal("3.3");
 
