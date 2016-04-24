@@ -820,7 +820,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     if (pollingPeriod > POLLING_PERIOD_MAX) {
                         pollingPeriod = POLLING_PERIOD_MAX;
                     }
-                    valueObject = Integer.toString((int) pollingPeriod);
+                    valueObject = new BigDecimal(pollingPeriod);
 
                     // Restart polling so we use the new value
                     startPolling();
