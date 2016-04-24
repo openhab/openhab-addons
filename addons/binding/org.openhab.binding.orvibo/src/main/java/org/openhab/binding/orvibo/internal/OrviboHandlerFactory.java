@@ -40,24 +40,6 @@ public class OrviboHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    /*
-     * @Override
-     * protected void activate(ComponentContext componentContext) {
-     * super.activate(componentContext);
-     * try {
-     * 
-     * } catch (Exception e) {
-     * logger.error("Error activating OrviboHandlerFactory: " + e.getMessage(), e);
-     * }
-     * }
-     * 
-     * @Override
-     * protected void deactivate(ComponentContext componentContext) {
-     * s20Client.disconnect();
-     * super.deactivate(componentContext);
-     * }
-     */
-
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
