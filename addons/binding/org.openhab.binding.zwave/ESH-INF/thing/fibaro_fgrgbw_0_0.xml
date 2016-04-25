@@ -102,8 +102,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: ALL ON / ALL OFF function activation</label>
         <description>Activation/deactivation of ALL ON/ALL OFF functions. By default, ALL ON active ALL OFF active. Default setting: ALL ON active ALL OFF active</description>
         <default>255</default>
@@ -115,8 +114,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Associations command class choice</label>
         <description>Associations command class choice. By default, Normal (Dimmer) - BASIC_SET/SWITCH_MULTILEVEL_START/STOP. Default setting: Normal (Dimmer) - BASIC_SET/SWITCH_MULTILEVEL_START/STOP</description>
         <default>0</default>
@@ -129,8 +127,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_8_1" type="integer" groupName="configuration">
         <label>8: Outputs state change mode</label>
         <description>MODE1, Example: change saturation level from 0% to 99% Parameter 9: Step = 5 Parameter 10: Time between steps: 10ms. Default setting: MODE1</description>
         <default>0</default>
@@ -194,8 +191,7 @@ Inputs/Outputs configuration - relevant for main controllers other than Home Cen
         <default>4369</default>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: Remember device status after power failure</label>
         <description>Define how will the Plug react after the power supply is back on. Default setting: 1 Available settings: 0 - Device does not memorize its state aft</description>
         <default>1</default>
@@ -205,8 +201,7 @@ Inputs/Outputs configuration - relevant for main controllers other than Home Cen
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Alarm of any type (General alarm, flood alarm, smoke alarm: CO, CO2, temperature alarm.)</label>
         <description>Alarm of any type (General alarm, flood alarm, smoke alarm: CO, CO2, temperature alarm.) Default setting: INACTIVE</description>
         <default>0</default>
@@ -236,8 +231,7 @@ IActive PROGRAM alarm time.<br /> Default setting: 600s<br /> 1-65534 specifies 
         <default>600</default>
       </parameter>
 
-      <parameter name="config_42_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_42_1" type="integer" groupName="configuration">
         <label>42: Command class reporting Outputs status change</label>
         <description>Command class reporting Outputs status change. Default setting: 0</description>
         <default>0</default>
@@ -275,8 +269,7 @@ Defines the required change in power to generate an unsolicited power report.<br
         <default>1</default>
       </parameter>
 
-      <parameter name="config_71_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_71_1" type="integer" groupName="configuration">
         <label>71: Response to BRIGHTNESS set to 0%</label>
         <description>Response to BRIGHTNESS set to 0%. Default setting: 1</description>
         <default>1</default>
@@ -295,8 +288,7 @@ Starting animation programm.<br /> Starting predefined program when device set t
         <default>1</default>
       </parameter>
 
-      <parameter name="config_73_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_73_1" type="integer" groupName="configuration">
         <label>73: Triple click action</label>
         <description>Triple click action. Default setting: 0</description>
         <default>0</default>

@@ -74,8 +74,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Input 1 switch type</label>
         <description>Switch type (input I1)</description>
         <default>0</default>
@@ -85,8 +84,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Input 2 contact type</label>
         <description>Input 2 contact type</description>
         <default>0</default>
@@ -96,8 +94,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Input 3 contact type</label>
         <description>Input 3 contact type</description>
         <default>0</default>
@@ -107,8 +104,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_10_1" type="integer" groupName="configuration">
         <label>10: Activate / deactivate functions ALL ON/ALL OFF</label>
         <description>Flush 1 relay module responds to commands ALL ON / ALL OFF that may be sent by the main controller or by other controller belonging to the system.</description>
         <default>255</default>
@@ -120,8 +116,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Saving the state of the device after a power failure</label>
         <description>Saving the state of the device after a power failure</description>
         <default>0</default>

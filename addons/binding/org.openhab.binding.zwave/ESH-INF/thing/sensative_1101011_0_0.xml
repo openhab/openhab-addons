@@ -54,8 +54,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Notification type</label>
         <description>Define the notification type.</description>
         <default>1</default>
@@ -66,8 +65,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: LED indication</label>
         <description>Specify if LED should indicate special event.</description>
         <default>1</default>

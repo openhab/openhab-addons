@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="dlink_dchz510_00_000" listed="false">
+    <label>DCH-Z510 Siren</label>
+    <description>Siren</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">D-Link</property>
+      <property name="model">DCH-Z510</property>
+      <property name="manufacturerId">0108</property>
+      <property name="manufacturerRef">0000:0000</property>
+    </properties>
+
+  </thing-type>
+</thing:thing-descriptions>

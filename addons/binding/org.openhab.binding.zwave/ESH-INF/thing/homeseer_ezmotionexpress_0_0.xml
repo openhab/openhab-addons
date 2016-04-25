@@ -70,8 +70,7 @@ Sensitivity sets the amount of motion required for EZMotion to detect motion. A 
         <default>20</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: LED On/Off</label>
         <description>LED ON/OFF turns the LED on or off. A slight improvement in battery life is obtained by turning the LED off.</description>
         <default>255</default>

@@ -402,7 +402,7 @@ public abstract class ZWaveCommandClass {
         ZIP_ADV_CLIENT(0x34, "ZIP_ADV_CLIENT", null),
         METER_PULSE(0x35, "METER_PULSE", null),
         METER_TBL_CONFIG(0x3C, "METER_TBL_CONFIG", null),
-        METER_TBL_MONITOR(0x3D, "METER_TBL_MONITOR", null),
+        METER_TBL_MONITOR(0x3D, "METER_TBL_MONITOR", ZWaveMeterTblMonitorCommandClass.class),
         METER_TBL_PUSH(0x3E, "METER_TBL_PUSH", null),
         THERMOSTAT_HEATING(0x38, "THERMOSTAT_HEATING", null),
         THERMOSTAT_MODE(0x40, "THERMOSTAT_MODE", ZWaveThermostatModeCommandClass.class),

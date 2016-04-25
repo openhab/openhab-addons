@@ -37,7 +37,7 @@ public class ZWaveMeterConverterTest {
     private ZWaveThingChannel createChannel(String type) {
         Map<String, String> args = new HashMap<String, String>();
         args.put("type", type);
-        return new ZWaveThingChannel(uid, DataType.DecimalType, CommandClass.METER.toString(), 0, args);
+        return new ZWaveThingChannel(null, uid, DataType.DecimalType, CommandClass.METER.toString(), 0, args);
     }
 
     private ZWaveCommandClassValueEvent createEvent(MeterType type, MeterScale scale, BigDecimal value) {
@@ -51,7 +51,7 @@ public class ZWaveMeterConverterTest {
 
     @Test
     public void Event_Electric() {
-        ZWaveMeterConverter converter = new ZWaveMeterConverter();
+        ZWaveMeterConverter converter = new ZWaveMeterConverter(null);
         ZWaveThingChannel channel = createChannel(MeterScale.E_KWh.toString());
         BigDecimal value = new BigDecimal("3.3");
 

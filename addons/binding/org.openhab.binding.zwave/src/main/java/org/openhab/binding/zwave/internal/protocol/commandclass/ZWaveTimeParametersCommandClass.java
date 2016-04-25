@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * Handles the time parameters command class.
  *
  * @author Jorg de Jong
- *
+ * @author Chris Jackson
  */
 @XStreamAlias("timeParametersCommandClass")
 public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
@@ -97,7 +97,7 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
         cal.setTime(date);
 
         SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
-                SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Immediate);
+                SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.RealTime);
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(getNode().getNodeId());
@@ -123,11 +123,10 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received clock command (v{})", this.getNode().getNodeId(), this.getVersion());
+        logger.debug("NODE {}: Received TIME_PARAMETERS command V{}", this.getNode().getNodeId(), this.getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case TIME_REPORT:
-
                 int year = (serialMessage.getMessagePayloadByte(offset + 1) << 8
                         | serialMessage.getMessagePayloadByte(offset + 2));
                 int month = serialMessage.getMessagePayloadByte(offset + 3);
@@ -142,14 +141,14 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
                 logger.debug("NODE {}: Received time report: {}", getNode().getNodeId(), cal.getTime());
 
                 Date nodeTime = cal.getTime();
-                ZWaveTimeValueEvent zEvent = new ZWaveTimeValueEvent(getNode().getNodeId(), endpoint, nodeTime);
-                this.getController().notifyEventListeners(zEvent);
-
+                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
+                        CommandClass.TIME_PARAMETERS, nodeTime);
+                getController().notifyEventListeners(zEvent);
                 break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, getCommandClass().getLabel(), getCommandClass().getKey()));
+                break;
         }
     }
 
@@ -160,24 +159,5 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
             result.add(getValueMessage());
         }
         return result;
-    }
-
-    /**
-     * Z-Wave Clock Event class. Indicates the current time on the node.
-     *
-     * @author Jorg de Jong
-     */
-    public class ZWaveTimeValueEvent extends ZWaveCommandClassValueEvent {
-
-        /**
-         * Constructor. Creates a instance of the ZWaveClockValueEvent class.
-         *
-         * @param nodeId the nodeId of the event
-         * @param endpoint the endpoint of the event.
-         * @param date the current time on the node.
-         */
-        private ZWaveTimeValueEvent(int nodeId, int endpoint, Date date) {
-            super(nodeId, endpoint, CommandClass.TIME_PARAMETERS, date);
-        }
     }
 }

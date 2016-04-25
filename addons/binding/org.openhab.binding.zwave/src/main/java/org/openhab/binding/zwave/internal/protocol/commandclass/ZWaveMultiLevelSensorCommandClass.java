@@ -94,7 +94,7 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Sensor Multi Level Request V{}", this.getNode().getNodeId(), getVersion());
+        logger.debug("NODE {}: Received SENSOR_MULTILEVEL command V{}", this.getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SENSOR_MULTI_LEVEL_SUPPORTED_REPORT:

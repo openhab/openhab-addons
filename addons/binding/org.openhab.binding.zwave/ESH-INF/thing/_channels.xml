@@ -566,5 +566,27 @@
             </options>
         </state>
     </channel-type>
+
+    <!-- Time Offset Channel -->
+    <channel-type id="time_offset">
+        <item-type>Number</item-type>
+        <label>Time Offset</label>
+        <description>Provides the current time difference for the devices time
+        </description>
+        <category>Temperature</category>
+        <config-description>
+            <parameter name="config_offset" type="integer" min="10" max="600">
+                <label>Automatic Update Offset</label>
+                <description><![CDATA[The number of seconds difference in the time before it is reset<br/>
+                Setting this will automatically update the devices clock when the time difference between
+                the device, and the computer exceeds this number of seconds.]]></description>
+                <default>60</default>
+                <options>
+                    <option value="0">Disable Auto Update</option>
+                </options>
+                <limitToOptions>false</limitToOptions>
+            </parameter>
+        </config-description>
+    </channel-type>
     
 </thing:thing-descriptions>

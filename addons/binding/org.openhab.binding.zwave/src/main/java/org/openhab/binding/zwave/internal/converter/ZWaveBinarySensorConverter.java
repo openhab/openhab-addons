@@ -14,6 +14,7 @@ import java.util.List;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -40,8 +41,8 @@ public class ZWaveBinarySensorConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveBinarySensorConverter} class.
      *
      */
-    public ZWaveBinarySensorConverter() {
-        super();
+    public ZWaveBinarySensorConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**

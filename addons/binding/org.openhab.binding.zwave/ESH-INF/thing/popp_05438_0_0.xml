@@ -49,8 +49,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: LED indication mode</label>
         <description>Set LED indication mode.</description>
         <default>1</default>
@@ -70,8 +69,7 @@ If not zero, automatically switch device off after a user defined time.<br /> 0 
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: What to do on RF off command.</label>
         <description><![CDATA[
 Defines how to interpret RF Off command.<br /> Can be used in conjunction with Auto Off function:<br /> Ignore - to switch on the light by motion detectors and switch it off after some amount of time:<br /> in case of multiple motion detectors ea
@@ -85,8 +83,7 @@ Defines how to interpret RF Off command.<br /> Can be used in conjunction with A
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Restore switch state after power cycle.</label>
         <description><![CDATA[
 Defines if the switch should restore switch state to the last state prior<br /> to device power off (power cycle).
@@ -107,8 +104,7 @@ Max load 3500 W.<br /><h1>Overview</h1><ul><li>0 -&gt; Disabled</li> <li>1 - 350
         <default>0</default>
       </parameter>
 
-      <parameter name="config_21_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_21_1" type="integer" groupName="configuration">
         <label>21: LED Off color</label>
         <description>Color for Off state.</description>
         <default>0</default>
@@ -121,8 +117,7 @@ Max load 3500 W.<br /><h1>Overview</h1><ul><li>0 -&gt; Disabled</li> <li>1 - 350
         </options>
       </parameter>
 
-      <parameter name="config_22_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_22_1" type="integer" groupName="configuration">
         <label>22: LED On color.</label>
         <description>Color for On state.</description>
         <default>3</default>

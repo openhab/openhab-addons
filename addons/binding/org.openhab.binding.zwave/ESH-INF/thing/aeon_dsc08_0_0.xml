@@ -55,8 +55,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Multilevel Sensor Report Content</label>
         <default>0</default>
         <options>
@@ -71,8 +70,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Automatic Notifications</label>
         <description>Enables automatic notifications to associated devices whenever there is a state change</description>
         <default>0</default>
@@ -83,8 +81,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_90_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_90_1" type="integer" groupName="configuration">
         <label>90: Enable Parameter 91</label>
         <description>Enables/disables parameter 91 and 92 below</description>
         <default>0</default>
@@ -108,8 +105,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_100_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_100_1" type="integer" groupName="configuration">
         <label>100: Set 100 to 103 to default</label>
         <default>0</default>
         <options>
@@ -117,8 +113,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_101_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_101_4" type="integer" groupName="configuration">
         <label>101: Group 1 report</label>
         <default>8</default>
         <options>
@@ -128,8 +123,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_102_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_102_4" type="integer" groupName="configuration">
         <label>102: Group 2 report</label>
         <default>0</default>
         <options>
@@ -139,8 +133,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_103_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_103_4" type="integer" groupName="configuration">
         <label>103: Group 3 report</label>
         <default>0</default>
         <options>
@@ -150,8 +143,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_110_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_110_1" type="integer" groupName="configuration">
         <label>110: Set 111 to 113 to default</label>
         <default>0</default>
         <options>
@@ -192,8 +184,7 @@
         <label>Actions</label>
       </parameter-group>
 
-      <parameter name="config_255_1_wo" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_255_1_wo" type="integer" groupName="configuration">
         <label>255: Device Reset</label>
         <default>0</default>
         <options>

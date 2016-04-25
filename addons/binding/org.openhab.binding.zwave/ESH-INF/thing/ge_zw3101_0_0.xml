@@ -37,8 +37,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Ignore Start-Level (Receiving)</label>
         <description>This dimmer will start dimming from its current level.</description>
         <default>0</default>
@@ -89,8 +88,7 @@
         <default>3</default>
       </parameter>
 
-      <parameter name="config_29_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_29_1" type="integer" groupName="configuration">
         <label>29: Load Sensing</label>
         <default>0</default>
         <options>

@@ -49,8 +49,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Enable/Disable ALL ON/OFF</label>
         <description>Activate/Deactive ALL ON/OFF</description>
         <default>255</default>
@@ -62,8 +61,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Enable/Disable OFF-delay</label>
         <description>Activate/Deactivate Automatic turning off relay after set time</description>
         <default>0</default>
@@ -89,8 +87,7 @@
         <default>20</default>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Separation of association sending (key 1)</label>
         <description>Activate/Deactivate association sending for group 1 - Also see param #16</description>
         <default>0</default>
@@ -101,8 +98,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Control key #2 behaviour</label>
         <description>![CDATA[NOTE: Parameter 15 value must be set to 1 to work properly.</description>
         <default>1</default>
@@ -113,8 +109,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Inputs behaviour</label>
         <description>In case of bi-stable switches, define their behaviour (toggle or follow)</description>
         <default>0</default>
@@ -124,8 +119,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Inputs Button/Switch configuration</label>
         <description>Binary inputs type configuration</description>
         <default>1</default>
@@ -135,8 +129,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_15_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_15_1" type="integer" groupName="configuration">
         <label>15: Dimmer/Roller shutter control</label>
         <description>Enable/Disable operation of dimmer or roller shutter devices associated to group 1. Available only when using mono-stable inputs (buttons) - Hold button 1 or double-tap for operation</description>
         <default>0</default>
@@ -146,8 +139,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: Saving state before power failure</label>
         <description>Saving state before power failure</description>
         <default>1</default>
@@ -157,8 +149,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Relay 1: Response to General Alarm</label>
         <default>3</default>
         <options>
@@ -169,8 +160,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_31_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_31_1" type="integer" groupName="configuration">
         <label>31: Relay 1: Response to Water Flood Alarm</label>
         <default>2</default>
         <options>
@@ -181,8 +171,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_32_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_32_1" type="integer" groupName="configuration">
         <label>32: Relay 1: Response to Smoke, CO, CO2 Alarm</label>
         <default>3</default>
         <options>
@@ -193,8 +182,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_33_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_33_1" type="integer" groupName="configuration">
         <label>33: Relay 1: Response to Temperature Alarm</label>
         <default>1</default>
         <options>
@@ -212,8 +200,7 @@
         <default>600</default>
       </parameter>
 
-      <parameter name="config_40_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_40_1" type="integer" groupName="configuration">
         <label>40: Relay 2: Response to General Alarm</label>
         <default>3</default>
         <options>
@@ -224,8 +211,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_41_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_41_1" type="integer" groupName="configuration">
         <label>41: Relay 2: Response to Water Flood Alarm</label>
         <default>2</default>
         <options>
@@ -236,8 +222,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_42_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_42_1" type="integer" groupName="configuration">
         <label>42: Relay 2: Response to Smoke, CO, CO2 Alarm</label>
         <default>3</default>
         <options>
@@ -248,8 +233,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_43_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_43_1" type="integer" groupName="configuration">
         <label>43: Relay 2: Response to Temperature Alarm</label>
         <default>1</default>
         <options>
