@@ -34,6 +34,8 @@ public class ZWaveClockConverter extends ZWaveCommandClassConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(ZWaveClockConverter.class);
 
+    private Date lastClockUpdate = new Date();
+
     /**
      * Constructor. Creates a new instance of the {@link ZWaveClockConverter} class.
      *
@@ -81,7 +83,7 @@ public class ZWaveClockConverter extends ZWaveCommandClassConverter {
                 long clockOffset = Math.abs(nodeTime.getTime() - System.currentTimeMillis()) / 1000;
 
                 // If the clock is outside the offset, then update
-                if (clockOffset > offsetAllowed) {
+                if (clockOffset > offsetAllowed && lastClockUpdate.getTime() < (new Date().getTime() - 30000)) {
                     logger.debug("NODE {}: Clock was {} seconds off. Time will be updated.", event.getNodeId(),
                             clockOffset);
 
@@ -98,9 +100,24 @@ public class ZWaveClockConverter extends ZWaveCommandClassConverter {
                     } else {
                         controller.sendData(serialMessage);
                     }
+
+                    // We keep track of the last time we set the time to avoid a pathalogical loop if the time set
+                    // doesn't work
+                    lastClockUpdate = new Date();
+
+                    // And request a read-back
+                    serialMessage = node.encapsulate(commandClass.getValueMessage(), commandClass,
+                            channel.getEndpoint());
+                    if (serialMessage == null) {
+                        logger.warn("Generating message failed for command class = {}, node = {}, endpoint = {}",
+                                commandClass.getCommandClass().getLabel(), node.getNodeId(), channel.getEndpoint());
+                        return null;
+                    } else {
+                        controller.sendData(serialMessage);
+                    }
                 }
 
-                state = new DecimalType(offsetAllowed);
+                state = new DecimalType(clockOffset);
                 break;
             default:
                 logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
