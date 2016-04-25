@@ -31,7 +31,7 @@
 				<label>Priority</label>
 				<description>The priority associated with updates sent to the Hyperion server.</description>
 				<required>true</required>
-				<default>100</default>
+				<default>50</default>
 			</parameter>
 			<parameter name="poll_frequency" type="integer" required="true">
 				<label>Polling frequency</label>
