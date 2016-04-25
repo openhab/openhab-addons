@@ -66,9 +66,8 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
 
         SerialMessage serialMessage;
         if (setpointType != null) {
-            serialMessage = node.encapsulate(
-                    commandClass.getMessage(SetpointType.getSetpointType(Integer.parseInt(setpointType))), commandClass,
-                    channel.getEndpoint());
+            serialMessage = node.encapsulate(commandClass.getMessage(SetpointType.getSetpointType(setpointType)),
+                    commandClass, channel.getEndpoint());
         } else {
             serialMessage = node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint());
         }
