@@ -54,7 +54,11 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
         iConfig = imperial ? "I" : "M";
 
+        logger.info("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
+
         skipStartupCheck = getConfigAs(MySensorsBridgeConfiguration.class).skipStartupCheck;
+
+        logger.debug("Set skip check on startup to: {}", skipStartupCheck);
     }
 
     /*
@@ -158,26 +162,22 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         }
 
         // Have we get a I_CONFIG message?
-        if (msg.getNodeId() == 0) {
-            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
-                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
-                    if (msg.getAck() == 0) {
-                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_CONFIG) {
-                            answerIConfigMessage(msg);
-                        }
+        if (msg.getChildId() == 0 || msg.getChildId() == 255) {
+            if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                if (msg.getAck() == 0) {
+                    if (msg.getSubType() == MYSENSORS_SUBTYPE_I_CONFIG) {
+                        answerIConfigMessage(msg);
                     }
                 }
             }
         }
 
         // Have we get a I_TIME message?
-        if (msg.getNodeId() == 0) {
-            if (msg.getChildId() == 0 || msg.getChildId() == 255) {
-                if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
-                    if (msg.getAck() == 0) {
-                        if (msg.getSubType() == MYSENSORS_SUBTYPE_I_TIME) {
-                            answerITimeMessage(msg);
-                        }
+        if (msg.getChildId() == 0 || msg.getChildId() == 255) {
+            if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) {
+                if (msg.getAck() == 0) {
+                    if (msg.getSubType() == MYSENSORS_SUBTYPE_I_TIME) {
+                        answerITimeMessage(msg);
                     }
                 }
             }
@@ -192,7 +192,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     private void answerITimeMessage(MySensorsMessage msg) {
         logger.info("I_TIME request received from {}, answering...", msg.nodeId);
 
-        String time = Long.toString(System.currentTimeMillis());
+        String time = Long.toString(System.currentTimeMillis() / 1000);
         MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
                 MYSENSORS_SUBTYPE_I_TIME, time);
         mysCon.addMySensorsOutboundMessage(newMsg);
