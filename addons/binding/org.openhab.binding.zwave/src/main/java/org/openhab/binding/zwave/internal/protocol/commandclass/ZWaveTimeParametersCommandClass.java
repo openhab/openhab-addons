@@ -123,7 +123,7 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received TIME_PARAMETERS command V{}", this.getNode().getNodeId(), this.getVersion());
+        logger.debug("NODE {}: Received TIME_PARAMETERS command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case TIME_REPORT:
@@ -142,7 +142,7 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
 
                 Date nodeTime = cal.getTime();
                 ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
-                        CommandClass.TIME_PARAMETERS, nodeTime);
+                        getCommandClass(), nodeTime);
                 getController().notifyEventListeners(zEvent);
                 break;
             default:
