@@ -136,9 +136,7 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
     private void handleColor(Command command) throws IOException {
         if (command instanceof HSBType) {
             HSBType color = (HSBType) command;
-            Color c = Color.getHSBColor(color.getHue().floatValue(), color.getSaturation().floatValue(),
-                    color.getBrightness().floatValue());
-
+            Color c = new Color(color.getRGB());
             int r = c.getRed();
             int g = c.getGreen();
             int b = c.getBlue();
