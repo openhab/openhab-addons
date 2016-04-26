@@ -27,13 +27,13 @@
       <channel id="shutter_fgrm222" typeId="switch_dimmer">
         <label>Shutter (FGRM222)</label>
         <properties>
-          <property name="binding:*:PercentType">FIBARO_FGRM_222;type=shutter</property>
+          <property name="binding:*:PercentType">FIBARO_FGRM_222;type=shutter,invert=true</property>
         </properties>
       </channel>
       <channel id="lamella_fgrm222" typeId="switch_dimmer">
         <label>Lamella (FGRM222)</label>
         <properties>
-          <property name="binding:*:PercentType">FIBARO_FGRM_222;type=lamella</property>
+          <property name="binding:*:PercentType">FIBARO_FGRM_222;type=lamella,invert=true</property>
         </properties>
       </channel>
       <channel id="switch_binary" typeId="switch_binary">
@@ -68,7 +68,7 @@
         <default>255</default>
         <options>
           <option value="0">No protection. Roller Shutter responds to push buttons</option>
-          <option value="2">Local protection active. Roller Shutter does not respond to push butto</option>
+          <option value="2">Local protection active. Roller Shutter does not respond to push button</option>
         </options>
       </parameter>
 

@@ -9,10 +9,10 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass.proprietary;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
@@ -109,7 +109,7 @@ public class FibaroFGRM222CommandClass extends ZWaveCommandClass {
         // (byte) 15,
         // (byte) 38,
         // (byte) 1, // set blind % (1 --> set, 2 ? , 3 report
-        // (byte) 3, // set lamelle
+        // (byte) 3, // set lamella
         // (byte) 0, // blind level
         // (byte) 0 // lamella level
         // };
@@ -122,7 +122,7 @@ public class FibaroFGRM222CommandClass extends ZWaveCommandClass {
         // (byte) 15,
         // (byte) 38,
         // (byte) 3, // set blind % (1 --> set, 2 ? , 3 report
-        // (byte) 1, // set lamelle
+        // (byte) 1, // set lamella
         // (byte) 0, // blind level
         // (byte) 0 // lamella level
         // };
