@@ -400,7 +400,7 @@ public abstract class ZWaveCommandClass {
         METER(0x32, "METER", ZWaveMeterCommandClass.class),
         COLOR(0x33, "COLOR", ZWaveColorCommandClass.class),
         ZIP_ADV_CLIENT(0x34, "ZIP_ADV_CLIENT", null),
-        METER_PULSE(0x35, "METER_PULSE", null),
+        METER_PULSE(0x35, "METER_PULSE", ZWaveMeterPulseCommandClass.class),
         METER_TBL_CONFIG(0x3C, "METER_TBL_CONFIG", null),
         METER_TBL_MONITOR(0x3D, "METER_TBL_MONITOR", ZWaveMeterTblMonitorCommandClass.class),
         METER_TBL_PUSH(0x3E, "METER_TBL_PUSH", null),
