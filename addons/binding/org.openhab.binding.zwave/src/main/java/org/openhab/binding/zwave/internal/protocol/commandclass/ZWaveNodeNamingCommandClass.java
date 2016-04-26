@@ -255,10 +255,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         }
 
         this.name = name;
-        logger.debug("NODE {}: Node name: {}", this.getNode().getNodeId(), name);
-        ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
+        logger.debug("NODE {}: Node name: {}", getNode().getNodeId(), name);
+        ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
                 this.getCommandClass(), name, Type.NODENAME_NAME);
-        this.getController().notifyEventListeners(zEvent);
+        getController().notifyEventListeners(zEvent);
     }
 
     /**
@@ -277,10 +277,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         }
 
         this.location = location;
-        logger.debug("NODE {}: Node location: {}", this.getNode().getNodeId(), location);
-        ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(), endpoint,
-                this.getCommandClass(), location, Type.NODENAME_LOCATION);
-        this.getController().notifyEventListeners(zEvent);
+        logger.debug("NODE {}: Node location: {}", getNode().getNodeId(), location);
+        ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
+                getCommandClass(), location, Type.NODENAME_LOCATION);
+        getController().notifyEventListeners(zEvent);
     }
 
     /**
@@ -292,8 +292,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         logger.debug("NODE {}: Creating new message for application command NAME_GET", this.getNode().getNodeId());
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
-                (byte) NAME_GET };
+        byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(), (byte) NAME_GET };
         result.setMessagePayload(newPayload);
         return result;
     }
@@ -307,8 +306,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         logger.debug("NODE {}: Creating new message for application command LOCATION_GET", this.getNode().getNodeId());
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
-                (byte) LOCATION_GET };
+        byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(), (byte) LOCATION_GET };
         result.setMessagePayload(newPayload);
         return result;
     }
