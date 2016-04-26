@@ -54,6 +54,7 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.COLOR, ZWaveColorConverter.class);
         temp.put(CommandClass.CONFIGURATION, ZWaveConfigurationConverter.class);
         temp.put(CommandClass.DOOR_LOCK, ZWaveDoorLockConverter.class);
+        temp.put(CommandClass.FIBARO_FGRM_222, FibaroFGRM222Converter.class);
         temp.put(CommandClass.METER, ZWaveMeterConverter.class);
         temp.put(CommandClass.METER_TBL_MONITOR, ZWaveMeterTblMonitorConverter.class);
         temp.put(CommandClass.PROTECTION, ZWaveProtectionConverter.class);
