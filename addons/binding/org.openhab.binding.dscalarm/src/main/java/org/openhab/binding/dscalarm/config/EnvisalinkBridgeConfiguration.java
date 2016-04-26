@@ -9,7 +9,8 @@
 package org.openhab.binding.dscalarm.config;
 
 /**
- * Configuration class for the EyezOn Envisalink 3/2DS Ethernet TCP interface bridge, used to connect to the DSC Alarm system.
+ * Configuration class for the EyezOn Envisalink 3/2DS Ethernet TCP interface bridge, used to connect to the DSC Alarm
+ * system.
  * 
  * @author Russell Stephens - Initial contribution
  */

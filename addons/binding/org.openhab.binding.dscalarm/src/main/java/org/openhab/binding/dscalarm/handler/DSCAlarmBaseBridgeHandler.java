@@ -48,6 +48,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     /** The DSC Alarm bridge type. */
     private DSCAlarmBridgeType dscAlarmBridgeType = null;
 
+    /** The DSC Alarm bridge type. */
+    private DSCAlarmProtocol dscAlarmProtocol = null;
+
     /** The DSC Alarm Discovery Service. */
     private DSCAlarmDiscoveryService dscAlarmDiscoveryService = null;
 
@@ -90,9 +93,10 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * @param bridge
      * @param dscAlarmBridgeType
      */
-    DSCAlarmBaseBridgeHandler(Bridge bridge, DSCAlarmBridgeType dscAlarmBridgeType) {
+    DSCAlarmBaseBridgeHandler(Bridge bridge, DSCAlarmBridgeType dscAlarmBridgeType, DSCAlarmProtocol dscAlarmProtocol) {
         super(bridge);
         this.dscAlarmBridgeType = dscAlarmBridgeType;
+        this.dscAlarmProtocol = dscAlarmProtocol;
     }
 
     /**
@@ -100,6 +104,22 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      */
     public DSCAlarmBridgeType getBridgeType() {
         return dscAlarmBridgeType;
+    }
+
+    /**
+     * Sets the protocol.
+     *
+     * @param dscAlarmProtocol
+     */
+    public void setProtocol(DSCAlarmProtocol dscAlarmProtocol) {
+        this.dscAlarmProtocol = dscAlarmProtocol;
+    }
+
+    /**
+     * Returns the protocol.
+     */
+    public DSCAlarmProtocol getProtocol() {
+        return dscAlarmProtocol;
     }
 
     /**
@@ -142,10 +162,14 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         openConnection();
 
         if (isConnected()) {
-            if (sendCommand(DSCAlarmCode.NetworkLogin)) {
-                onConnected();
+            if (dscAlarmBridgeType == DSCAlarmBridgeType.Envisalink) {
+                if (sendCommand(DSCAlarmCode.NetworkLogin)) {
+                    onConnected();
+                } else {
+                    closeConnection();
+                }
             } else {
-                closeConnection();
+                onConnected();
             }
         }
     }
@@ -351,7 +375,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Check if things have changed.
      */
     public void checkThings() {
-        logger.trace("Checking Things!");
+        logger.debug("Checking Things!");
 
         allThingsRefreshed = true;
 
@@ -373,8 +397,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     }
 
                     if (handler.getDSCAlarmThingType().equals(DSCAlarmThingType.PANEL)) {
-                        if (panelThingHandler == null)
+                        if (panelThingHandler == null) {
                             panelThingHandler = handler;
+                        }
                     }
 
                     allThingsRefreshed = false;
@@ -556,13 +581,13 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 validCommand = true;
                 break;
             case LabelsRequest: /* 002 */
-                if (!dscAlarmBridgeType.equals(DSCAlarmBridgeType.IT100)) {
+                if (!dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
                     break;
                 }
                 validCommand = true;
                 break;
             case NetworkLogin: /* 005 */
-                if (!dscAlarmBridgeType.equals(DSCAlarmBridgeType.Envisalink)) {
+                if (!dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI)) {
                     break;
                 }
 
@@ -574,7 +599,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 validCommand = true;
                 break;
             case DumpZoneTimers: /* 008 */
-                if (!dscAlarmBridgeType.equals(DSCAlarmBridgeType.Envisalink)) {
+                if (!dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI)) {
                     break;
                 }
                 validCommand = true;
@@ -600,7 +625,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 validCommand = true;
                 break;
             case KeepAlive: /* 074 */
-                if (!dscAlarmBridgeType.equals(DSCAlarmBridgeType.Envisalink)) {
+                if (!dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI)) {
                     break;
                 }
             case PartitionArmControlAway: /* 030 */
@@ -624,11 +649,17 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars: {}", userCode);
                     break;
                 }
-                data = dscAlarmData[0] + userCode;
+
+                if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
+                    data = dscAlarmData[0] + String.format("%-6s", userCode).replace(' ', '0');
+                } else {
+                    data = dscAlarmData[0] + userCode;
+                }
+
                 validCommand = true;
                 break;
             case VirtualKeypadControl: /* 058 */
-                if (!dscAlarmBridgeType.equals(DSCAlarmBridgeType.IT100)) {
+                if (!dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
                     break;
                 }
             case TimeStampControl: /* 055 */
@@ -663,7 +694,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 validCommand = true;
                 break;
             case KeySequence: /* 071 */
-                if (!dscAlarmBridgeType.equals(DSCAlarmBridgeType.Envisalink)) {
+                if (!dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI)) {
                     break;
                 }
 
@@ -680,6 +711,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars: {}", dscAlarmData[0]);
                     break;
                 }
+
                 data = userCode;
                 validCommand = true;
                 break;
@@ -695,8 +727,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             write(cmd);
             successful = true;
             logger.debug("sendCommand(): '{}' Command Sent - {}", dscAlarmCode, cmd);
-        } else
-            logger.error("sendCommand(): Command Not Sent - Invalid!");
+        } else {
+            logger.error("sendCommand(): Command '{}' Not Sent - Invalid!", dscAlarmCode);
+        }
 
         return successful;
     }
