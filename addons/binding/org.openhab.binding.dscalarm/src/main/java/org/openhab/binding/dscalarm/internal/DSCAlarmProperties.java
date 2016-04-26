@@ -41,7 +41,10 @@ public class DSCAlarmProperties {
 
     private int generalState = 0;
     private String generalStateDescription = "";
-    private int armState = 0; /* partition:0=disarmed, 1=away armed, 2=stay armed, 3=away no delay, 4=stay no delay, 5=with user code; zone:0=Armed, 1=Bypassed*/
+    private int armState = 0; /*
+                               * partition:0=disarmed, 1=away armed, 2=stay armed, 3=away no delay, 4=stay no delay,
+                               * 5=with user code; zone:0=Armed, 1=Bypassed
+                               */
     private String armStateDescription = "";
     private int alarmState = 0;
     private String alarmStateDescription = "";
@@ -49,32 +52,37 @@ public class DSCAlarmProperties {
     private String tamperStateDescription = "";
     private int faultState = 0;
     private String faultStateDescription = "";
-    private int openingClosingState = 0; /* 0=None, 1=User Closing, 2=Special Closing, 3=Partial Closing, 4=User Opening, 5=Special Opening */
+    private int openingClosingState = 0; /*
+                                          * 0=None, 1=User Closing, 2=Special Closing, 3=Partial Closing, 4=User
+                                          * Opening, 5=Special Opening
+                                          */
     private String openingClosingStateDescription = "";
 
     /**
-     * Bitwise representation of a zones state: bit0=General State (0-Closed, 1-Open), bit1=Arm State (0-Armed, 1-Bypassed), bit2=Alarm State (0-No Alarm, 1-Alarm), bit3=Tamper State (0-No Tamper, 1-Tamper), bit4=Fault State (0-No Fault, 1-Fault).
+     * Bitwise representation of a zones state: bit0=General State (0-Closed, 1-Open), bit1=Arm State (0-Armed,
+     * 1-Bypassed), bit2=Alarm State (0-No Alarm, 1-Alarm), bit3=Tamper State (0-No Tamper, 1-Tamper), bit4=Fault State
+     * (0-No Fault, 1-Fault).
      */
     private int zoneBitState = 0;
 
     private String ledStates[] = { "Off", "On", "Flashing" };
-    private int readyLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int readyLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String readyLEDStateDescription = "Off";
-    private int armedLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int armedLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String armedLEDStateDescription = "Off";
-    private int memoryLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int memoryLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String memoryLEDStateDescription = "Off";
-    private int bypassLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int bypassLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String bypassLEDStateDescription = "Off";
-    private int troubleLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int troubleLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String troubleLEDStateDescription = "Off";
-    private int programLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int programLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String programLEDStateDescription = "Off";
-    private int fireLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int fireLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String fireLEDStateDescription = "Off";
-    private int backlightLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int backlightLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String backlightLEDStateDescription = "Off";
-    private int acLEDState = 0; /* 0=Off, 1=On, 2=Flashing*/
+    private int acLEDState = 0; /* 0=Off, 1=On, 2=Flashing */
     private String acLEDStateDescription = "Off";
 
     private String troubleMessage = "";
