@@ -81,7 +81,7 @@ public class IT100BridgeDiscovery {
                     try {
                         message = serialInput.readLine();
                     } catch (IOException e) {
-                        logger.error("discoverBridge(): No Message Read from Serial Port '{}'", portIdentifier.getName());
+                        logger.debug("discoverBridge(): No Message Read from Serial Port '{}'", portIdentifier.getName());
                         continue;
                     }
 
@@ -93,13 +93,13 @@ public class IT100BridgeDiscovery {
                     }
 
                 } catch (UnsupportedCommOperationException e) {
-                    logger.error("discoverBridge(): Unsupported Comm Operation Exception: ", e);
+                    logger.debug("discoverBridge(): Unsupported Comm Operation Exception - '{}': {}", portIdentifier.getName(), e.toString());
                 } catch (PortInUseException e) {
-                    logger.error("discoverBridge(): Port in Use Exception: ", e);
+                    logger.debug("discoverBridge(): Port in Use Exception - '{}': {}", portIdentifier.getName(), e.toString());
                 } catch (UnsupportedEncodingException e) {
-                    logger.error("discoverBridge(): Unsupported Encoding Exception: ", e);
+                    logger.debug("discoverBridge(): Unsupported Encoding Exception - '{}': {}", portIdentifier.getName(), e.toString());
                 } catch (IOException e) {
-                    logger.error("discoverBridge(): IO Exception: ", e);
+                    logger.debug("discoverBridge(): IO Exception - '{}': ", portIdentifier.getName(), e.toString());
                 } finally {
                     if (serialInput != null) {
                         IOUtils.closeQuietly(serialInput);

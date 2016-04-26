@@ -94,10 +94,10 @@ public class EnvisalinkBridgeDiscovery {
                     try (BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                         message = input.readLine();
                     } catch (SocketTimeoutException e) {
-                        logger.error("discoverBridge(): No Message Read from Socket at [{}] - {}", ipAddress, e.getMessage());
+                        logger.debug("discoverBridge(): No Message Read from Socket at [{}] - {}", ipAddress, e.getMessage());
                         continue;
                     } catch (Exception e) {
-                        logger.error("discoverBridge(): Exception Reading from Socket! {}", e.toString());
+                        logger.debug("discoverBridge(): Exception Reading from Socket! {}", e.toString());
                         continue;
                     }
 
@@ -109,13 +109,13 @@ public class EnvisalinkBridgeDiscovery {
                     }
                 }
             } catch (IllegalArgumentException e) {
-                logger.error("discoverBridge(): Illegal Argument Exception - {}", e.toString());
+                logger.debug("discoverBridge(): Illegal Argument Exception - {}", e.toString());
             } catch (SocketTimeoutException e) {
                 logger.trace("discoverBridge(): No Connection on Port 4025! [{}]", ipAddress);
             } catch (SocketException e) {
-                logger.error("discoverBridge(): Socket Exception! [{}] - {}", ipAddress, e.toString());
+                logger.debug("discoverBridge(): Socket Exception! [{}] - {}", ipAddress, e.toString());
             } catch (IOException e) {
-                logger.error("discoverBridge(): IO Exception! [{}] - {}", ipAddress, e.toString());
+                logger.debug("discoverBridge(): IO Exception! [{}] - {}", ipAddress, e.toString());
             }
         }
     }
