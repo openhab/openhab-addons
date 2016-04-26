@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,8 +25,6 @@ import org.openhab.binding.mysensors.discovery.MySensorsDiscoveryService;
 import org.openhab.binding.mysensors.handler.MySensorsBridgeHandler;
 import org.openhab.binding.mysensors.handler.MySensorsHandler;
 import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MySensorsHandlerFactory} is responsible for creating things and thing
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
  * @author Tim Oberföll - Initial contribution
  */
 public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
-
-    private Logger logger = LoggerFactory.getLogger(MySensorsHandlerFactory.class);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -79,7 +75,6 @@ public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
-        // TODO Auto-generated method stub
         return super.createThing(thingTypeUID, configuration, thingUID);
     }
 

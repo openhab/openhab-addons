@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.mysensors.protocol;
 
 import java.io.BufferedReader;
@@ -57,9 +64,7 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
                     }
                 }
             } catch (Exception e) {
-                // FIXME this exception has to be fixed, is not normal to have exception: Underlying input stream
-                // returned zero bytes
-                // logger.error("exception on reading from serial port, message: {}", e.getMessage());
+                logger.error("exception on reading from serial port, message: {}", e.getMessage());
             }
 
         }
