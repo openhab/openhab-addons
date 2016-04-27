@@ -79,6 +79,9 @@ public class ZWaveBinarySwitchConverter extends ZWaveCommandClassConverter {
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
         ZWaveBinarySwitchCommandClass commandClass = (ZWaveBinarySwitchCommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.SWITCH_BINARY, channel.getEndpoint());
+        if (commandClass == null) {
+            return null;
+        }
 
         int value = 0;
         if (command instanceof OnOffType) {
