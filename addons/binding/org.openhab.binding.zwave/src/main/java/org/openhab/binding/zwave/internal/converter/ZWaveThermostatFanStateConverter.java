@@ -50,7 +50,7 @@ public class ZWaveThermostatFanStateConverter extends ZWaveCommandClassConverter
     @Override
     public List<SerialMessage> executeRefresh(ZWaveThingChannel channel, ZWaveNode node) {
         ZWaveThermostatFanStateCommandClass commandClass = (ZWaveThermostatFanStateCommandClass) node
-                .resolveCommandClass(ZWaveCommandClass.CommandClass.THERMOSTAT_FAN_MODE, channel.getEndpoint());
+                .resolveCommandClass(ZWaveCommandClass.CommandClass.THERMOSTAT_FAN_STATE, channel.getEndpoint());
         if (commandClass == null) {
             return null;
         }
