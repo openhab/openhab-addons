@@ -51,8 +51,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Activate / deactivate functions ALL ON / ALL OFF</label>
         <description>Activate / deactivate functions ALL ON / ALL OFF</description>
         <default>255</default>
@@ -64,8 +63,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Auto off relay after specified time</label>
         <description>Auto off relay after specified time, with the possibility of manual override - immediate Off after button push</description>
         <default>0</default>
@@ -89,8 +87,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Sending commands to control devices assigned to 1-st association group (key no. 1)</label>
         <description><![CDATA[
 Sending commands to control devices assigned to 1-st association group (key no. 1)<br /><h1>Overview</h1><p>NOTE: Parameter 15 value must be set to 1 to work properly. This activates the double-click functionality - dimmer/roller shutter control</p>
@@ -103,8 +100,7 @@ Sending commands to control devices assigned to 1-st association group (key no. 
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Sending commands to control devices assigned to 2-nd association group (key no. 2)</label>
         <description><![CDATA[
 Sending commands to control devices assigned to 2-nd association group (key no. 2)<br /><h1>Overview</h1><p>Info: Parameter 15 must be set to 1 to make this parameter work properly. This activates the double-click functionality - dimmer/roller shutter control.</p>
@@ -117,8 +113,7 @@ Sending commands to control devices assigned to 2-nd association group (key no. 
         </options>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Assigns bistable key status to the device status</label>
         <description><![CDATA[
 Assigns bistable key status to the device status<br /><h1>Overview</h1><p>Info: Remote control from Fibaro System Is Still Possible. This function is useful When you want display status of external devices, e.g. Motion Sensor, in Fibaro System.</p>
@@ -130,8 +125,7 @@ Assigns bistable key status to the device status<br /><h1>Overview</h1><p>Info: 
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Switch type connector</label>
         <description>Switch type connector, you may choose between momentary and toggle switches</description>
         <default>1</default>
@@ -141,8 +135,7 @@ Assigns bistable key status to the device status<br /><h1>Overview</h1><p>Info: 
         </options>
       </parameter>
 
-      <parameter name="config_15_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_15_1" type="integer" groupName="configuration">
         <label>15: Operation of the Dimmer and Roller Shutter Controller</label>
         <description>Enabling this option allows the user to dim lighting/shut roller by associating Dimmer/Roller Shutter Controller and holding or double press of double switch (only momentary switch)</description>
         <default>0</default>
@@ -152,8 +145,7 @@ Assigns bistable key status to the device status<br /><h1>Overview</h1><p>Info: 
         </options>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: Saving the state of the device after a power failure</label>
         <description><![CDATA[
 Fibaro Switch returns to the last position saved before a power failure<br /><h1>Overview</h1><p>Options for changing the parameter 0-1</p>
@@ -165,8 +157,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Relay 1: Response to General Alarm</label>
         <default>3</default>
         <options>
@@ -177,8 +168,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_31_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_31_1" type="integer" groupName="configuration">
         <label>31: Relay 1: Response to Water Flood Alarm</label>
         <default>2</default>
         <options>
@@ -189,8 +179,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_32_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_32_1" type="integer" groupName="configuration">
         <label>32: Relay 1: Response to Smoke, CO, CO2 Alarm</label>
         <default>3</default>
         <options>
@@ -201,8 +190,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_33_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_33_1" type="integer" groupName="configuration">
         <label>33: Relay 1: Response to Temperature Alarm</label>
         <default>1</default>
         <options>
@@ -220,8 +208,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         <default>600</default>
       </parameter>
 
-      <parameter name="config_40_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_40_1" type="integer" groupName="configuration">
         <label>40: Relay 2: Response to General Alarm</label>
         <default>3</default>
         <options>
@@ -232,8 +219,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_41_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_41_1" type="integer" groupName="configuration">
         <label>41: Relay 2: Response to Water Flood Alarm</label>
         <default>2</default>
         <options>
@@ -244,8 +230,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_42_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_42_1" type="integer" groupName="configuration">
         <label>42: Relay 2: Response to Smoke, CO, CO2 Alarm</label>
         <default>3</default>
         <options>
@@ -256,8 +241,7 @@ Fibaro Switch returns to the last position saved before a power failure<br /><h1
         </options>
       </parameter>
 
-      <parameter name="config_43_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_43_1" type="integer" groupName="configuration">
         <label>43: Relay 2: Response to Temperature Alarm</label>
         <default>1</default>
         <options>

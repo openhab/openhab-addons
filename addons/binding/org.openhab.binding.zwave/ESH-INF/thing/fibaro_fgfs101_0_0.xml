@@ -73,8 +73,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Acoustic and visual signals On / Off in case of flooding</label>
         <description>Parameter allows for LED indicator and acoustic alarm deactivation in case of flooding detection</description>
         <default>3</default>
@@ -86,8 +85,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Type of alarm frame sent to 1-st association group (FLOOD)</label>
         <description>Parameter determines a type of command frame sent by the Sensor in case flooding has been detected or cancelled</description>
         <default>-127</default>
@@ -106,8 +104,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <default>255</default>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: Alarm cancelling or turning a device off (Basic) command frame deactivation</label>
         <description>Allows for deactivating device turn off and alarm cancellation functions for the devices assigned to 1-st association group</description>
         <default>0</default>
@@ -131,8 +128,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <default>50</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Alarm BROADCAST</label>
         <description><![CDATA[
 Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
@@ -180,8 +176,7 @@ Default is red (0x00FF0000).<br /><b>NOTE:</b> A main controller interprets colo
         <default>16711680</default>
       </parameter>
 
-      <parameter name="config_63_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_63_1" type="integer" groupName="configuration">
         <label>63: Managing a LED indicator under standard operation</label>
         <description>Parameter determines LED indicator’s operation. Set to 0 turns the indicator off, saving a battery life</description>
         <default>2</default>
@@ -199,8 +194,7 @@ Default is red (0x00FF0000).<br /><b>NOTE:</b> A main controller interprets colo
         <default>0</default>
       </parameter>
 
-      <parameter name="config_74_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_74_1" type="integer" groupName="configuration">
         <label>74: Alarm frame sent to 2-nd Association Group activation</label>
         <description>(MOVEMENT_TAMPER / BUTTON_TAMPER) The device is able to turn on alarms resulting from sensor’s vibrations e.g. when the sensor is moved, or the TMP button released. 2-nd Association Group alarms are not cancelled.</description>
         <default>2</default>
@@ -228,8 +222,7 @@ Parameter determines a time period after which an alarm frame will be retransmit
         <default>0</default>
       </parameter>
 
-      <parameter name="config_77_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_77_1" type="integer" groupName="configuration">
         <label>77: Flood sensor functionality turned off</label>
         <description>Allows for turning of the internal flood sensor. Tamper and built in temperature sensor will remain active</description>
         <default>0</default>

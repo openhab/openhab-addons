@@ -56,8 +56,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Input switch type</label>
         <default>0</default>
         <options>
@@ -66,8 +65,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Working mode</label>
         <description>With this parameter it is possible to change the module presentation on the user interface.</description>
         <default>0</default>
@@ -77,8 +75,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_10_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_10_2" type="integer" groupName="configuration">
         <label>10: Activate / deactivate functions ALL ON / ALL OFF</label>
         <description>DIN dimmer module responds to commands ALL ON / ALL OFF that may be sent by the main controller or by other controller belonging to the system.</description>
         <default>255</default>
@@ -108,8 +105,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_21_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_21_1" type="integer" groupName="configuration">
         <label>21: Enable / Disable Double click function</label>
         <description>If Double click function is enabled, a fast double click on the push button will set dimming power at maximum dimming value.</description>
         <default>0</default>
@@ -119,8 +115,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Saving the state of the device after a power failure</label>
         <description>If state saving is enabled, DIN dimmer module saves its state before power failure (it returns to the last position saved before a power failure). If state saving is disabled, DIN dimmer module does not save the state after a powe</description>
         <default>0</default>
@@ -182,8 +177,7 @@ Time of moving the Dimmer between min. and max dimming values by continuous hold
         <default>3</default>
       </parameter>
 
-      <parameter name="config_67_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_67_1" type="integer" groupName="configuration">
         <label>67: Ignore start level</label>
         <description>This parameter is used with association group 3. A receiving device SHOULD respect the start level if the Ignore Start Level bit is 0. A receiving device MUST ignore the start level if the Ignore Start Level bit is 1.</description>
         <default>0</default>

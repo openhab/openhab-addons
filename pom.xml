@@ -49,13 +49,11 @@
 
     <properties>
         <esh.version>0.8.0-SNAPSHOT</esh.version>
-        <shk.version>1.2</shk.version>
+        <kat.version>1.4.1</kat.version>
         <ohc.version>2.0.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.0.0.x</ohcp2.version>
         <ohdr.version>1.0.3</ohdr.version>
-        <karaf.version>4.0.3</karaf.version>
-        <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
-        <karaf.features.version>4.0.3</karaf.features.version>
+        <karaf.version>4.0.4</karaf.version>
         <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
@@ -124,7 +122,7 @@
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <version>${karaf.maven.plugin.version}</version>
+                    <version>${karaf.version}</version>
                     <extensions>true</extensions>
                 </plugin>
                 <plugin>
@@ -351,10 +349,10 @@
             </snapshots>
         </repository>
 
-        <!-- SHK releases -->
+        <!-- maggu2810's maven repository -->
         <repository>
-            <id>shk-bintray</id>
-            <name>Bintray Repository for shk</name>
+            <id>maggu2810-bintray</id>
+            <name>Bintray Repository of maggu2810</name>
             <url>https://dl.bintray.com/maggu2810/maven</url>
             <releases>
                 <enabled>true</enabled>

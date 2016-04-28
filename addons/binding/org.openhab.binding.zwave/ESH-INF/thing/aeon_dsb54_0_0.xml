@@ -42,8 +42,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Send Sensor binary report on open/close events</label>
         <default>0</default>
         <options>
@@ -52,8 +51,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Send Basic Set on open/close event</label>
         <default>0</default>
         <options>
@@ -62,8 +60,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_101_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_101_1" type="integer" groupName="configuration">
         <label>101: Low battery voltage check</label>
         <description>parameter defines, if battery check function is possible, when battery is below warning voltage</description>
         <default>0</default>
@@ -87,8 +84,7 @@
         <default>256</default>
       </parameter>
 
-      <parameter name="config_252_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_252_1" type="integer" groupName="configuration">
         <label>252: Permit other configurations</label>
         <description>Lock or Unlock other configuration set function</description>
         <default>0</default>
@@ -104,8 +100,7 @@
         <label>Actions</label>
       </parameter-group>
 
-      <parameter name="config_255_2_wo" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_255_2_wo" type="integer" groupName="configuration">
         <label>255: Reset to default</label>
         <description>Reset to the default configuration</description>
         <default>0</default>

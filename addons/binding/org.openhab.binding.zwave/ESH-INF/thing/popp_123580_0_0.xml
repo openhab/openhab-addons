@@ -37,8 +37,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="3">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Set LED indication mode</label>
         <default>1</default>
         <options>
@@ -56,8 +55,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="3">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: RF Off command</label>
         <description>Defines how to interpret RF Off command. Can be used in conjunction with Auto Off function: Ignore - to switch on the light by motion detectors and switch it off after some amount of time: in case of multiple motion detectors each would try to switch the</description>
         <default>0</default>
@@ -69,8 +67,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Ignore start level</label>
         <default>1</default>
         <options>
@@ -93,8 +90,7 @@
         <default>3</default>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Behavior when ON received</label>
         <description>Defines the dim level on command 'ON'. On default he dimmer restores last dim level. This parameter allows configuring the maximum level on second On command (if already On) or to always switch on to maximum level.</description>
         <default>0</default>
@@ -168,8 +164,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_54_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_54_1" type="integer" groupName="configuration">
         <label>54: Pulse type</label>
         <description>NB: Do not touch these settings if you are not sure what they mean!</description>
         <default>0</default>

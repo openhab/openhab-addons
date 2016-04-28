@@ -62,8 +62,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Send Out Basic Command</label>
         <description>Enable or Disable the status message function when the local button press changes the switching state.</description>
         <default>0</default>

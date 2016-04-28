@@ -85,8 +85,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Input 1 switch type</label>
         <description>Input 1 switch type</description>
         <default>1</default>
@@ -96,8 +95,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Input 2 switch type</label>
         <description>Input 2 switch type</description>
         <default>1</default>
@@ -107,8 +105,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_10_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_10_2" type="integer" groupName="configuration">
         <label>10: Activate / deactivate functions ALL ON/ALL OFF</label>
         <description>Flush 1 relay module responds to commands ALL ON / ALL OFF that may be sent by the main controller or by other controller belonging to the system.</description>
         <default>255</default>
@@ -165,8 +162,7 @@ Available configuration parameters:<br /><ul><li>0 – seconds selected</li> <li
         <default>0</default>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Saving the state of the relays Q1 and Q2 after a power failure</label>
         <description>Saving the state of the relays Q1 and Q2 after a power failure</description>
         <default>0</default>
@@ -212,8 +208,7 @@ default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = 
         <default>300</default>
       </parameter>
 
-      <parameter name="config_63_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_63_1" type="integer" groupName="configuration">
         <label>63: Output Q1 Switch selection</label>
         <default>0</default>
         <options>
@@ -222,8 +217,7 @@ default value is 300 (power report in Watts is sent each 300s)<br /><ul><li>0 = 
         </options>
       </parameter>
 
-      <parameter name="config_64_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_64_1" type="integer" groupName="configuration">
         <label>64: Output Q2 Switch selection</label>
         <default>0</default>
         <options>

@@ -4,6 +4,21 @@
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
 
+    <!-- Access Alarm Channel -->
+    <channel-type id="alarm_access">
+        <item-type>Switch</item-type>
+        <label>Access control alarm</label>
+        <description>Indicates if the access control alarm is triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="OFF">Ok</option>
+                <option value="ON">Alarm</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Burglar Alarm Channel -->
     <channel-type id="alarm_burglar">
         <item-type>Switch</item-type>
@@ -175,6 +190,36 @@
         <state pattern="%.1f" readOnly="true">
         </state>
     </channel-type>
+
+    <!-- Gas - Cubic Meters -->
+    <channel-type id="meter_gas_cubic_meters">
+        <item-type>Number</item-type>
+        <label>Gas Cubic Meters</label>
+        <description>Indicates the gas use in cubic meters</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
+    <!-- Gas - Cubic Feet -->
+    <channel-type id="meter_gas_cubic_feet">
+        <item-type>Number</item-type>
+        <label>Gas Cubic Feet</label>
+        <description>Indicates the gas use in cubic feet</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Gas - Pulses -->
+    <channel-type id="meter_gas_pulses">
+        <item-type>Number</item-type>
+        <label>Gas Pulse Count</label>
+        <description>Indicates the gas use in pulses</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
     
     <!-- Energy - Energy Consumption (kVAh) -->
     <channel-type id="meter_kvah">
@@ -224,6 +269,46 @@
         </state>
     </channel-type>
 
+    <!-- Water - Cubic Meters -->
+    <channel-type id="meter_water_cubic_meters">
+        <item-type>Number</item-type>
+        <label>Water consumption in cubic meters</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Water - Cubic Feet -->
+    <channel-type id="meter_water_cubic_feet">
+        <item-type>Number</item-type>
+        <label>Water consumption in cubic feet</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
+    <!-- Water - Gallons -->
+    <channel-type id="meter_water_gallons">
+        <item-type>Number</item-type>
+        <label>Water consumption in gallons</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Water - Pulses -->
+    <channel-type id="meter_water_pulses">
+        <item-type>Number</item-type>
+        <label>Water consumption in pulses</label>
+        <description>Indicates the instantaneous water consumption</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
     <!-- Energy - Power Consumption -->
     <channel-type id="meter_watts">
         <item-type>Number</item-type>
@@ -385,8 +470,7 @@
     <channel-type id="thermostat_setpoint">
         <item-type>Number</item-type>
         <label>Heating Setpoint</label>
-        <description>Sets the heating setpoint
-        </description>
+        <description>Sets the thermostate setpoint</description>
         <category>Temperature</category>
         <config-description>
             <parameter name="config_scale" type="text">
@@ -405,8 +489,7 @@
     <channel-type id="thermostat_fan_mode">
         <item-type>Number</item-type>
         <label>Fan Mode</label>
-        <description>Sets the fan mode
-        </description>
+        <description>Sets the fan mode</description>
         <category>Temperature</category>
         <state>
             <options>
@@ -482,6 +565,28 @@
                 <option value="13">Away</option>
             </options>
         </state>
+    </channel-type>
+
+    <!-- Time Offset Channel -->
+    <channel-type id="time_offset">
+        <item-type>Number</item-type>
+        <label>Time Offset</label>
+        <description>Provides the current time difference for the devices time
+        </description>
+        <category>Temperature</category>
+        <config-description>
+            <parameter name="config_offset" type="integer" min="10" max="600">
+                <label>Automatic Update Offset</label>
+                <description><![CDATA[The number of seconds difference in the time before it is reset<br/>
+                Setting this will automatically update the devices clock when the time difference between
+                the device, and the computer exceeds this number of seconds.]]></description>
+                <default>60</default>
+                <options>
+                    <option value="0">Disable Auto Update</option>
+                </options>
+                <limitToOptions>false</limitToOptions>
+            </parameter>
+        </config-description>
     </channel-type>
     
 </thing:thing-descriptions>
