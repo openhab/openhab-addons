@@ -9,6 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="envisalink" />
 			<bridge-type-ref id="it100" />
+            <bridge-type-ref id="tcpserver" />
 		</supported-bridge-type-refs>
 
 		<label>DSC Alarm Panel</label>
@@ -124,7 +125,7 @@
 	</channel-type>
 
 	<channel-type id="panel_command">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Panel Command</label>
 		<description>Send Command</description>
 		<state pattern="%d">

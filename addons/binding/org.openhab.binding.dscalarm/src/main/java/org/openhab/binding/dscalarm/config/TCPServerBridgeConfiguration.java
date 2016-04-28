@@ -9,28 +9,34 @@
 package org.openhab.binding.dscalarm.config;
 
 /**
- * Configuration class for the DSC IT100 RS232 Serial interface bridge, used to connect to the DSC Alarm system.
- * 
+ * Configuration class for the TCP Server bridge, used to connect to the DSC Alarm system.
+ *
  * @author Russell Stephens - Initial contribution
  */
 
-public class IT100BridgeConfiguration {
+public class TCPServerBridgeConfiguration {
 
-    // IT-100 Bridge Thing constants
-    public static final String SERIAL_PORT = "serialPort";
-    public static final String BAUD = "baud";
+    // TCP Server Bridge Thing constants
+    public static final String IP_ADDRESS = "ipAddress";
+    public static final String PORT = "port";
+    public static final String PASSWORD = "password";
+    public static final String CONNECTION_TIMEOUT = "connectionTimeout";
     public static final String POLL_PERIOD = "pollPeriod";
 
     /**
-     * DSC IT100 port name for a serial connection. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or
-     * /dev/ttyUSB0 for Linux.
+     * The IP address of the TCP Server
      */
-    public String serialPort;
+    public String ipAddress;
 
     /**
-     * DSC IT100 baud rate for serial connections. Valid values are 9600 (default), 19200, 38400, 57600, and 115200.
+     * The port number of the TCP Server
      */
-    public Integer baud;
+    public Integer port;
+
+    /**
+     * The Socket connection timeout for the TCP Server
+     */
+    public Integer connectionTimeout;
 
     /**
      * The Panel Poll Period. Can be set in range 1-15 minutes. Default is 1 minute;

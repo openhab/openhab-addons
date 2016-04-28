@@ -45,4 +45,23 @@ public class ZWaveMeterCommandClassTest extends ZWaveCommandClassTest {
         assertEquals(event.getValue(), new BigDecimal("43.9"));
     }
 
+    @Test
+    public void Meter_Electric_Watts_2() {
+        byte[] packetData = { 0x01, 0x0E, 0x00, 0x04, 0x00, 0x1B, 0x08, 0x32, 0x02, 0x21, 0x74, 0x00, 0x02, 0x5C, 0x1D,
+                (byte) 0xC0 };
+
+        List<ZWaveEvent> events = processCommandClassMessage(packetData);
+
+        assertEquals(events.size(), 1);
+
+        ZWaveMeterValueEvent event = (ZWaveMeterValueEvent) events.get(0);
+
+        assertEquals(event.getCommandClass(), CommandClass.METER);
+        // assertEquals(event.getNodeId(), 27);
+        assertEquals(event.getEndpoint(), 0);
+        assertEquals(event.getMeterScale(), ZWaveMeterCommandClass.MeterScale.E_W);
+        assertEquals(event.getMeterType(), ZWaveMeterCommandClass.MeterType.ELECTRIC);
+        assertEquals(event.getValue(), new BigDecimal("154.653"));
+    }
+
 }

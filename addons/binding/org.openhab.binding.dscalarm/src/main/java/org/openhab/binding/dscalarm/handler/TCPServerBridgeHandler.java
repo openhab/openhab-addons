@@ -20,27 +20,27 @@ import java.net.UnknownHostException;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.dscalarm.config.EnvisalinkBridgeConfiguration;
+import org.openhab.binding.dscalarm.config.TCPServerBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The bridge handler for the EyezOn Envisalink 3/2DS Ethernet interface.
+ * The bridge handler for a TCP Server to connect to a DSC IT100 RS232 Serial interface over a network.
  *
  * @author Russell Stephens - Initial Contribution
  */
 
-public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
+public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(EnvisalinkBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(TCPServerBridgeHandler.class);
 
     /**
      * Constructor.
      *
      * @param bridge
      */
-    public EnvisalinkBridgeHandler(Bridge bridge) {
-        super(bridge, DSCAlarmBridgeType.Envisalink, DSCAlarmProtocol.ENVISALINK_TPI);
+    public TCPServerBridgeHandler(Bridge bridge) {
+        super(bridge, DSCAlarmBridgeType.TCPServer, DSCAlarmProtocol.IT100_API);
     }
 
     // Variables for TCP connection.
@@ -53,15 +53,14 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing the Envisalink Bridge handler.");
+        logger.debug("Initializing the TCP Server Bridge handler.");
 
-        EnvisalinkBridgeConfiguration configuration = getConfigAs(EnvisalinkBridgeConfiguration.class);
+        TCPServerBridgeConfiguration configuration = getConfigAs(TCPServerBridgeConfiguration.class);
 
         ipAddress = configuration.ipAddress;
 
         if (configuration.ipAddress != null) {
             tcpPort = configuration.port.intValue();
-            setPassword(configuration.password);
             connectionTimeout = configuration.connectionTimeout.intValue();
             pollPeriod = configuration.pollPeriod.intValue();
 
@@ -71,7 +70,7 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
                 this.pollPeriod = 1;
             }
 
-            logger.debug("Envisalink Bridge Handler Initialized");
+            logger.debug("TCP Server Bridge Handler Initialized");
             logger.debug("   IP Address:         {},", ipAddress);
             logger.debug("   Port:               {},", tcpPort);
             logger.debug("   Password:           {},", getPassword());

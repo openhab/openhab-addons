@@ -9,6 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="envisalink" />
 			<bridge-type-ref id="it100" />
+            <bridge-type-ref id="tcpserver" />
 		</supported-bridge-type-refs>
 
 		<label>DSC Alarm Partition</label>

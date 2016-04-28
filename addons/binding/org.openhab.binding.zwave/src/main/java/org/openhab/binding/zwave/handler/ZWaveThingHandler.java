@@ -342,30 +342,35 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         Runnable pollingRunnable = new Runnable() {
             @Override
             public void run() {
-                // TODO: If/when this code changes, we should only poll channels that are linked.
-                logger.debug("NODE {}: Polling...", nodeId);
-                ZWaveNode node = controllerHandler.getNode(nodeId);
-                if (node == null || node.isInitializationComplete() == false) {
-                    logger.debug("NODE {}: Polling deferred until initialisation complete", nodeId);
-                    return;
-                }
+                try {
+                    // TODO: If/when this code changes, we should only poll channels that are linked.
+                    logger.debug("NODE {}: Polling...", nodeId);
+                    ZWaveNode node = controllerHandler.getNode(nodeId);
+                    if (node == null || node.isInitializationComplete() == false) {
+                        logger.debug("NODE {}: Polling deferred until initialisation complete", nodeId);
+                        return;
+                    }
 
-                List<SerialMessage> messages = new ArrayList<SerialMessage>();
-                for (ZWaveThingChannel channel : thingChannelsPoll) {
-                    logger.debug("NODE {}: Polling {}", nodeId, channel.getUID());
-                    if (channel.converter == null) {
-                        logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId, channel.getUID());
-                    } else {
-                        List<SerialMessage> poll = channel.converter.executeRefresh(channel, node);
-                        if (poll != null) {
-                            messages.addAll(poll);
+                    List<SerialMessage> messages = new ArrayList<SerialMessage>();
+                    for (ZWaveThingChannel channel : thingChannelsPoll) {
+                        logger.debug("NODE {}: Polling {}", nodeId, channel.getUID());
+                        if (channel.converter == null) {
+                            logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId,
+                                    channel.getUID());
+                        } else {
+                            List<SerialMessage> poll = channel.converter.executeRefresh(channel, node);
+                            if (poll != null) {
+                                messages.addAll(poll);
+                            }
                         }
                     }
-                }
 
-                // Send all the messages
-                for (SerialMessage message : messages) {
-                    controllerHandler.sendData(message);
+                    // Send all the messages
+                    for (SerialMessage message : messages) {
+                        controllerHandler.sendData(message);
+                    }
+                } catch (Exception e) {
+                    logger.warn(String.format("NODE %d: Polling aborted due to exception", nodeId), e);
                 }
             }
         };

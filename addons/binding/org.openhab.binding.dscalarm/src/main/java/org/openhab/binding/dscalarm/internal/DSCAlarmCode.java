@@ -202,7 +202,8 @@ public enum DSCAlarmCode {
     }
 
     /**
-     * Lookup function to return the DSCAlarmCode value based on the string code. Returns 'UnknownCode' if the string code is not found.
+     * Lookup function to return the DSCAlarmCode value based on the string code. Returns 'UnknownCode' if the string
+     * code is not found.
      *
      * @param code
      * @return enum value
