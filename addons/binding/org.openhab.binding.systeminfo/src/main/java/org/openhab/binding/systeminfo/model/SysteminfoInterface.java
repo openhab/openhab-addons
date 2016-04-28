@@ -90,7 +90,7 @@ public interface SysteminfoInterface {
     /**
      * Percents of available memory on the machine
      *
-     * @return percent of available memory
+     * @return percent of available memory or 0, if no information is available
      */
     public DecimalType getMemoryAvailablePercent();
 
@@ -98,28 +98,28 @@ public interface SysteminfoInterface {
     /**
      * Returns total size of swap memory
      *
-     * @return memory size in MB
+     * @return memory size in MB or 0, if no there is no swap memory
      */
     public DecimalType getSwapTotal();
 
     /**
      * Returns available size swap of memory
      *
-     * @return memory size in MB
+     * @return memory size in MB or 0, if no there is no swap memory
      */
     public DecimalType getSwapAvailable();
 
     /**
      * Returns used size of swap memory
      *
-     * @return memory size in MB
+     * @return memory size in MB or 0, if no there is no swap memory
      */
     public DecimalType getSwapUsed();
 
     /**
      * Percents of available swap memory on the machine
      *
-     * @return percent of available memory
+     * @return percent of available memory or 0, if no there is no swap memory
      */
     public DecimalType getSwapAvailablePercent();
 

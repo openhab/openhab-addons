@@ -316,8 +316,13 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
-        double freePercentDecimal = (double) availableMemory / (double) totalMemory;
-        double freePercent = getPercentsValue(freePercentDecimal);
+        double freePercent;
+        if (totalMemory > 0) {
+            double freePercentDecimal = (double) availableMemory / (double) totalMemory;
+            freePercent = getPercentsValue(freePercentDecimal);
+        } else {
+            freePercent = 0;
+        }
         return new DecimalType(freePercent);
     }
 
@@ -370,8 +375,14 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long usedSwap = memory.getSwapUsed();
         long totalSwap = memory.getSwapTotal();
         long freeSwap = totalSwap - usedSwap;
-        double freePercentDecimal = (double) freeSwap / (double) totalSwap;
-        double freePercent = getPercentsValue(freePercentDecimal);
+        double freePercent;
+        if (totalSwap > 0) {
+            double freePercentDecimal = (double) freeSwap / (double) totalSwap;
+            freePercent = getPercentsValue(freePercentDecimal);
+        } else {
+            freePercent = 0;
+        }
+
         return new DecimalType(freePercent);
     }
 
