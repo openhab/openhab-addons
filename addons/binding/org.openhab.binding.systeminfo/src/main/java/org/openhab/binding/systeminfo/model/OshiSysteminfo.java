@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.bidning.systeminfo.model;
+package org.openhab.binding.systeminfo.model;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -22,6 +22,7 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.Display;
 import oshi.hardware.GlobalMemory;
+import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.PowerSource;
 import oshi.hardware.Sensors;
@@ -44,7 +45,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private GlobalMemory memory;
     private PowerSource[] powerSources;
     private CentralProcessor cpu;
-
+    private HWDiskStore[] drives;
     private Sensors sensors;
 
     /**
@@ -63,6 +64,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
         networks = getNetworks();
+        drives = hal.getDiskStores();
     }
 
     private NetworkInterface[] getNetworks() throws SocketException {
@@ -195,10 +197,27 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     @Override
+    public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        long freeStorage = fileStore.getUsableSpace();
+        long totalStorage = fileStore.getTotalSpace();
+        double freePercentDecimal = (double) freeStorage / (double) totalStorage;
+        double freePercent = getPercentsValue(freePercentDecimal);
+        return new DecimalType(freePercent);
+    }
+
+    @Override
     public StringType getStorageName(int index) throws DeviceNotFoundException {
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
         String name = fileStore.getName();
         return new StringType(name);
+    }
+
+    @Override
+    public StringType getStorageType(int deviceIndex) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        String type = fileStore.getType();
+        return new StringType(type);
     }
 
     @Override
@@ -293,18 +312,6 @@ public class OshiSysteminfo implements SysteminfoInterface {
         return new StringType(name);
     }
 
-    private long getSizeInMB(long sizeInBytes) {
-        return sizeInBytes /= 1024 * 1024;
-    }
-
-    private double getPercentsValue(double decimalFraction) {
-        return decimalFraction * 100;
-    }
-
-    private double getTimeInMinutes(double timeInSeconds) {
-        return timeInSeconds / 100;
-    }
-
     @Override
     public DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
@@ -315,13 +322,69 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        long freeStorage = fileStore.getUsableSpace();
-        long totalStorage = fileStore.getTotalSpace();
-        double freePercentDecimal = (double) freeStorage / (double) totalStorage;
+    public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException {
+        HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
+        String name = drive.getName();
+        return new StringType(name);
+    }
+
+    @Override
+    public StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException {
+        HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
+        String model = drive.getModel();
+        return new StringType(model);
+    }
+
+    @Override
+    public StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException {
+        HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
+        String serialNumber = drive.getSerial();
+        return new StringType(serialNumber);
+    }
+
+    @Override
+    public DecimalType getSwapTotal() {
+        long swapTotal = memory.getSwapTotal();
+        swapTotal = getSizeInMB(swapTotal);
+        return new DecimalType(swapTotal);
+    }
+
+    @Override
+    public DecimalType getSwapAvailable() {
+        long swapTotal = memory.getSwapTotal();
+        long swapUsed = memory.getSwapUsed();
+        long swapAvaialble = swapTotal - swapUsed;
+        swapAvaialble = getSizeInMB(swapAvaialble);
+        return new DecimalType(swapAvaialble);
+    }
+
+    @Override
+    public DecimalType getSwapUsed() {
+        long swapTotal = memory.getSwapUsed();
+        swapTotal = getSizeInMB(swapTotal);
+        return new DecimalType(swapTotal);
+    }
+
+    @Override
+    public DecimalType getSwapAvailablePercent() {
+        long usedSwap = memory.getSwapUsed();
+        long totalSwap = memory.getSwapTotal();
+        long freeSwap = totalSwap - usedSwap;
+        double freePercentDecimal = (double) freeSwap / (double) totalSwap;
         double freePercent = getPercentsValue(freePercentDecimal);
         return new DecimalType(freePercent);
+    }
+
+    private long getSizeInMB(long sizeInBytes) {
+        return sizeInBytes /= 1024 * 1024;
+    }
+
+    private double getPercentsValue(double decimalFraction) {
+        return decimalFraction * 100;
+    }
+
+    private double getTimeInMinutes(double timeInSeconds) {
+        return timeInSeconds / 100;
     }
 
 }

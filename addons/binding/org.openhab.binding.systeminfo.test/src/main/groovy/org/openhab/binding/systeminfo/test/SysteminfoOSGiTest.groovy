@@ -145,7 +145,7 @@ class SysteminfoOSGiTest extends OSGiTest{
             def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
             def description = systemInfoThing.getStatusInfo().getDescription();
             assertThat  "Thing status detail is {$thingStatusDetail} with description {$description}",systemInfoThing.getStatus(), is(equalTo(ThingStatus.ONLINE))
-        }, 2000)
+        }, 3000)
         //The binding starts all refresh tasks in SysteminfoHandler.scheduleUpdates() after this delay !
         sleep(SysteminfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT  * 1000)
 
@@ -394,9 +394,55 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+
+    @Test
+    public void 'assert channel swap_available is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel swap_used is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_USED
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel swap_total is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_TOTAL
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel swap_available_percent is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE_PERCENT
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
     @Test
     public void 'assert channel storage_name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_NAME
+        String acceptedItemType = "String";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel storage_type is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TYPE
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
@@ -431,7 +477,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sorage_total is updated' () {
+    public void 'assert channel storage_total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TOTAL
         String acceptedItemType = "Number";
 
@@ -440,11 +486,38 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sorage_available_percent is updated' () {
+    public void 'assert channel storage_available_percent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel drive_name is updated' () {
+        String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_NAME;
+        String acceptedItemType = "String";
+
+        initializeThingWithChannel(channelID,acceptedItemType)
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel drive_model is updated' () {
+        String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_MODEL;
+        String acceptedItemType = "String";
+
+        initializeThingWithChannel(channelID,acceptedItemType)
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel drive_serial is updated' () {
+        String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_SERIAL;
+        String acceptedItemType = "String";
+
+        initializeThingWithChannel(channelID,acceptedItemType)
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 

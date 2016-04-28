@@ -3,8 +3,9 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- This thing represents a computer with single logical storage device,single display, battery and one network interface installed.
-	   If other configurations are needed feel free to create different thing types. Currently dynamic channel creation is not supported from the binding.-->
+	<!-- This thing represents a computer with single logical storage device,single display, battery and one network interface 
+		installed. If other configurations are needed feel free to create different thing types. Currently dynamic channel creation 
+		is not supported from the binding. -->
 	<thing-type id="computer">
 		<label>Systeminfo</label>
 		<description>Sample thing for systeminfo Binding</description>
@@ -17,7 +18,15 @@
 			<channel id="memory_used" typeId="memory_used"></channel>
 			<channel id="memory_total" typeId="memory_total"></channel>
 			<channel id="memory_available_percent" typeId="memory_available_percent"></channel>
+			<channel id="swap_available" typeId="swap_available"></channel>
+			<channel id="swap_used" typeId="swap_used"></channel>
+			<channel id="swap_total" typeId="swap_total"></channel>
+			<channel id="swap_available_percent" typeId="swap_available_percent"></channel>
+			<channel id="drive_name" typeId="drive_name"></channel>
+			<channel id="drive_model" typeId="drive_model"></channel>
+			<channel id="drive_serial" typeId="drive_serial"></channel>
 			<channel id="storage_name" typeId="storage_name"></channel>
+			<channel id="storage_type" typeId="storage_type"></channel>
 			<channel id="storage_description" typeId="storage_description"></channel>
 			<channel id="storage_available" typeId="storage_available"></channel>
 			<channel id="storage_used" typeId="storage_used"></channel>

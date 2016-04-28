@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.bidning.systeminfo.model;
+package org.openhab.binding.systeminfo.model;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -94,6 +94,35 @@ public interface SysteminfoInterface {
      */
     public DecimalType getMemoryAvailablePercent();
 
+    // Swap memory info
+    /**
+     * Returns total size of swap memory
+     *
+     * @return memory size in MB
+     */
+    public DecimalType getSwapTotal();
+
+    /**
+     * Returns available size swap of memory
+     *
+     * @return memory size in MB
+     */
+    public DecimalType getSwapAvailable();
+
+    /**
+     * Returns used size of swap memory
+     *
+     * @return memory size in MB
+     */
+    public DecimalType getSwapUsed();
+
+    /**
+     * Percents of available swap memory on the machine
+     *
+     * @return percent of available memory
+     */
+    public DecimalType getSwapAvailablePercent();
+
     // Storage info
     /**
      * Returns the total space of the logical storage volume.
@@ -139,12 +168,43 @@ public interface SysteminfoInterface {
     public StringType getStorageName(int deviceIndex) throws DeviceNotFoundException;
 
     /**
-     * Gets additional information about the logical storage volume
+     * Gets the type of the logical storage volume (e.g. NTFS, FAT32)
      *
-     * @param deviceIndex - the index of the logical volume
+     * @throws DeviceNotFoundException
+     */
+    public StringType getStorageType(int deviceIndex) throws DeviceNotFoundException;
+
+    /**
+     * Gets the description of the logical storage volume
+     *
      * @throws DeviceNotFoundException
      */
     public StringType getStorageDescription(int deviceIndex) throws DeviceNotFoundException;
+
+    // Hardware drive info
+    /**
+     * Gets the name of the physical storage drive
+     *
+     * @param deviceIndex - index of the storage drive
+     * @throws DeviceNotFoundException
+     */
+    public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException;
+
+    /**
+     * Gets the model of the physical storage drive
+     *
+     * @param deviceIndex - index of the storage drive
+     * @throws DeviceNotFoundException
+     */
+    public StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException;
+
+    /**
+     * Gets the serial number of the physical storage drive
+     *
+     * @param deviceIndex - index of the storage drive
+     * @throws DeviceNotFoundException
+     */
+    public StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException;
 
     // Network info
     /**

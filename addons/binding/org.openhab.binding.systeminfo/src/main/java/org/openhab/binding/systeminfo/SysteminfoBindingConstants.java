@@ -58,9 +58,49 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_MEMORY_AVAILABLE_PERCENT = "memory_available_percent";
 
     /**
+     * Total size of swap memory
+     */
+    public final static String CHANNEL_SWAP_TOTAL = "swap_total";
+
+    /**
+     * Size of the available swap memory
+     */
+    public final static String CHANNEL_SWAP_AVAILABLE = "swap_available";
+
+    /**
+     * Size of the used swap memory
+     */
+    public final static String CHANNEL_SWAP_USED = "swap_used";
+
+    /**
+     * Percents of the available swap memory
+     */
+    public final static String CHANNEL_SWAP_AVAILABLE_PERCENT = "swap_available_percent";
+
+    /**
+     * Physical storage drive name
+     */
+    public final static String CHANNEL_DRIVE_NAME = "drive_name";
+
+    /**
+     * Physical storage drive model
+     */
+    public final static String CHANNEL_DRIVE_MODEL = "drive_model";
+
+    /**
+     * Physical storage drive serial number
+     */
+    public final static String CHANNEL_DRIVE_SERIAL = "drive_serial";
+
+    /**
      * Name of the logical volume storage
      */
     public final static String CHANNEL_STORAGE_NAME = "storage_name";
+
+    /**
+     * Logical storage volume type -(e.g. NTFS, FAT32 ..)
+     */
+    public final static String CHANNEL_STORAGE_TYPE = "storage_type";
 
     /**
      * Description of the logical volume storage

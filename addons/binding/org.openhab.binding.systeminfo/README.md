@@ -5,7 +5,9 @@ System information Binding provides operating system and hardware information in
  - Operating system name, version and manufacturer
  - CPU average load, name, description, number of physical and logical cores
  - Free, total and available memory
- - Free, total, available storage space
+ - Free, total and available swap memory
+ - Hard drive name, model and serial number
+ - Free, total, available storage space and storage type (NTSFS, FAT32 ..)
  - Battery information - estimated remaining time, capacity, name
  - Sensors information - CPU voltage and temperature, fan speeds 
  - Display information
@@ -54,8 +56,16 @@ The binding introduces the following channel types:
 | memory_used  | Used memory size in MB  | Number | High | No |
 | memory_total  | Total memory size in MB  | Number | Low | No |
 | memory_available_percent  | Available memory size in %  | Number | High | No |
+| swap_available  | Available swap memory size in MB  | Number | High | No |
+| swap_used  | Used swap memory size in MB  | Number | High | No |
+| swap_total  | Total swap memory size in MB  | Number | Low | No |
+| swap_available_percent  | Available swap memory size in %  | Number | High | No |
+| drive_name  | Drive name  | String | Low | Yes |
+| drive_model  | Drive description  | String | Low | Yes |
+| drive_serial  | Drive serial number  | String | Low | Yes |
 | storage_name  | Storage name  | String | Low | Yes |
 | storage_description  | Storage description  | String | Low | Yes |
+| storage_type  | Storage type  | String | Low | Yes |
 | storage_used  | Used storage size in MB  | Number | Medium | Yes |
 | storage_available  | Available storage size in MB  | Number | Medium | Yes |
 | storage_available_percent  | Available storage size in percents  | Number | Medium | Yes |
@@ -111,8 +121,14 @@ Number CPU_Load                     { channel="systeminfo:computer:work:cpu_load
 Number CPU_LogicalProcCount         { channel="systeminfo:computer:work:cpu_logical_cores" }
 Number CPU_PhysicalProcCount        { channel="systeminfo:computer:work:cpu_phisycal_cores" }
 
+/* Drive information*/
+String Drive_Name                    { channel="systeminfo:computer:work:drive_name" }
+String Drive_Model                   { channel="systeminfo:computer:work:drive_model" }
+String Drive_Serial                  { channel="systeminfo:computer:work:drive_serial" }
+
 /* Storage information*/
 String Storage_Name                  { channel="systeminfo:computer:work:storage_name" }
+String Storage_Type                  { channel="systeminfo:computer:work:storage_type" }
 String Storage_Description           { channel="systeminfo:computer:work:storage_description" }
 Number Storage_Available             { channel="systeminfo:computer:work:storage_available" }
 Number Storage_Used                  { channel="systeminfo:computer:work:storage_used" }
@@ -124,6 +140,12 @@ Number Memory_Available              { channel="systeminfo:computer:work:memory_
 Number Memory_Used                   { channel="systeminfo:computer:work:memory_used" }
 Number Memory_Total                  { channel="systeminfo:computer:work:memory_total" }
 Number Memory_Available_Percent      { channel="systeminfo:computer:work:memory_available_percent" }
+
+/* Swap memory information*/
+Number Swap_Available                { channel="systeminfo:computer:work:swap_available" }
+Number Swap_Used                     { channel="systeminfo:computer:work:swap_used" }
+Number Swap_Total                    { channel="systeminfo:computer:work:swap_total" }
+Number Swap_Available_Percent        { channel="systeminfo:computer:work:swap_available_percent" }
 
 /* Battery information*/
 String Battery_Name                  { channel="systeminfo:computer:work:battery_name" }

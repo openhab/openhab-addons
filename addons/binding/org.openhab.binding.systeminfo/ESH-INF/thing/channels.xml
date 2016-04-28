@@ -3,8 +3,8 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- This file contains channel specific information and describes how the different channel types should be rendered.
-	   Each channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
+	<!-- This file contains channel specific information and describes how the different channel types should be rendered. Each 
+		channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
 
 	<channel-type id="os_manufacturer">
 		<item-type>String</item-type>
@@ -53,20 +53,76 @@
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
-    
-    <channel-type id="memory_available_percent">
-        <item-type>Number</item-type>
-        <label>Memory available</label>
-        <description>Available memory size in percents</description>
-        <state readOnly="true" pattern="%.1f %%" />
-        <config-description uri="systeminfo:channels:highpriority" />
-    </channel-type>
-    
+
+	<channel-type id="memory_available_percent">
+		<item-type>Number</item-type>
+		<label>Memory available</label>
+		<description>Available memory size in percents</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="swap_available">
+		<item-type>Number</item-type>
+		<label>Swap memory available</label>
+		<description>Available swap memory size in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="swap_used">
+		<item-type>Number</item-type>
+		<label>Swap memory used</label>
+		<description>Used swap memory size in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="swap_total">
+		<item-type>Number</item-type>
+		<label>Swap memory total</label>
+		<description>Total swap memory size in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="swap_available_percent">
+		<item-type>Number</item-type>
+		<label>Swap memory available</label>
+		<description>Available swap memory size in percents</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="drive_name">
+		<item-type>String</item-type>
+		<label>Drive name</label>
+		<description>The name of the drive</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="drive_model">
+		<item-type>String</item-type>
+		<label>Drive model</label>
+		<description>The model of the drive</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="drive_serial">
+		<item-type>String</item-type>
+		<label>Drive serial number</label>
+		<description>The serial number of the drive</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
 	<channel-type id="storage_name">
 		<item-type>String</item-type>
 		<label>Storage name</label>
 		<description>Storage name</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
@@ -74,6 +130,14 @@
 		<item-type>String</item-type>
 		<label>Storage description</label>
 		<description>Storage description</description>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="storage_type">
+		<item-type>String</item-type>
+		<label>Storage type</label>
+		<description>Storage type</description>
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
@@ -101,14 +165,14 @@
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
-	
+
 	<channel-type id="storage_available_percent">
-        <item-type>Number</item-type>
-        <label>Storage available</label>
-        <description>Available storage size in percents</description>
-        <state readOnly="true" pattern="%.1f %%" />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Storage available</label>
+		<description>Available storage size in percents</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
 
 	<channel-type id="cpu_temperature">
 		<item-type>Number</item-type>

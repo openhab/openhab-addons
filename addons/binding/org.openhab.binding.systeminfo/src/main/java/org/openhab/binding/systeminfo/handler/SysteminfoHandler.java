@@ -27,9 +27,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.bidning.systeminfo.model.DeviceNotFoundException;
-import org.openhab.bidning.systeminfo.model.OshiSysteminfo;
-import org.openhab.bidning.systeminfo.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.model.DeviceNotFoundException;
+import org.openhab.binding.systeminfo.model.OshiSysteminfo;
+import org.openhab.binding.systeminfo.model.SysteminfoInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,13 +91,16 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        System.out.println("Start init.");
         logger.debug("Start initializing!");
         try {
             this.systeminfo = new OshiSysteminfo();
         } catch (SocketException e) {
             logger.error("Network information is not availble ! I/O error occured {e}", e);
+        } catch (Exception e) {
+            logger.error("Can not instantate Systeminfo object", e);
         }
-
+        System.out.println("Class is created.");
         if (isConfigurationValid()) {
             groupChannelsByPriority();
             scheduleUpdates();
@@ -273,6 +276,27 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_MEMORY_AVAILABLE_PERCENT:
                     state = systeminfo.getMemoryAvailablePercent();
                     break;
+                case CHANNEL_SWAP_AVAILABLE:
+                    state = systeminfo.getSwapAvailable();
+                    break;
+                case CHANNEL_SWAP_USED:
+                    state = systeminfo.getSwapUsed();
+                    break;
+                case CHANNEL_SWAP_TOTAL:
+                    state = systeminfo.getSwapTotal();
+                    break;
+                case CHANNEL_SWAP_AVAILABLE_PERCENT:
+                    state = systeminfo.getSwapAvailablePercent();
+                    break;
+                case CHANNEL_DRIVE_MODEL:
+                    state = systeminfo.getDriveModel(deviceIndex);
+                    break;
+                case CHANNEL_DRIVE_SERIAL:
+                    state = systeminfo.getDriveSerialNumber(deviceIndex);
+                    break;
+                case CHANNEL_DRIVE_NAME:
+                    state = systeminfo.getDriveName(deviceIndex);
+                    break;
                 case CHANNEL_STORAGE_NAME:
                     state = systeminfo.getStorageName(deviceIndex);
                     break;
@@ -287,6 +311,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_STORAGE_TOTAL:
                     state = systeminfo.getStorageTotal(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_TYPE:
+                    state = systeminfo.getStorageType(deviceIndex);
                     break;
                 case CHANNEL_STORAGE_AVAILABLE_PERCENT:
                     state = systeminfo.getStorageAvailablePercent(deviceIndex);
