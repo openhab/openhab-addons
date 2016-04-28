@@ -108,24 +108,24 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received protection command (v{})", this.getNode().getNodeId(), this.getVersion());
+        logger.debug("NODE {}: Received PROTECTION command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case PROTECTION_REPORT:
                 int localMode = serialMessage.getMessagePayloadByte(offset + 1) & 0x0f;
 
                 if (localMode < LocalProtectionType.values().length) {
-                    this.currentLocalMode = LocalProtectionType.values()[localMode];
+                    currentLocalMode = LocalProtectionType.values()[localMode];
                     ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(),
-                            endpoint, getCommandClass(), this.currentLocalMode, Type.PROTECTION_LOCAL);
-                    this.getController().notifyEventListeners(zEvent);
+                            endpoint, getCommandClass(), currentLocalMode, Type.PROTECTION_LOCAL);
+                    getController().notifyEventListeners(zEvent);
                 }
                 if (getVersion() > 1) {
                     int rfMode = serialMessage.getMessagePayloadByte(offset + 2) & 0x0f;
                     if (rfMode < RfProtectionType.values().length) {
                         ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(),
                                 endpoint, getCommandClass(), RfProtectionType.values()[rfMode], Type.PROTECTION_RF);
-                        this.getController().notifyEventListeners(zEvent);
+                        getController().notifyEventListeners(zEvent);
                     }
                     logger.debug("NODE {}: Received protection report local:{} rf:{}", getNode().getNodeId(),
                             LocalProtectionType.values()[localMode], RfProtectionType.values()[rfMode]);
@@ -168,8 +168,7 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
 
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -240,14 +239,14 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
             outputData.write(3);
             outputData.write(getCommandClass().getKey());
             outputData.write(PROTECTION_SET);
-            outputData.write(newLocalMode.getKey());
+            outputData.write(newLocalMode.ordinal());
         } else {
             outputData.write(getNode().getNodeId());
             outputData.write(4);
             outputData.write(getCommandClass().getKey());
             outputData.write(PROTECTION_SET);
-            outputData.write(newLocalMode.getKey());
-            outputData.write(rfMode.getKey());
+            outputData.write(newLocalMode.ordinal());
+            outputData.write(rfMode.ordinal());
 
         }
         result.setMessagePayload(outputData.toByteArray());
@@ -293,30 +292,9 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
      */
     @XStreamAlias("localProtection")
     public enum LocalProtectionType {
-        Unprotected("Unprotected"),
-        Sequence("Protection by sequence"),
-        Protected("No operation possible");
-
-        private String label;
-
-        private LocalProtectionType(String label) {
-            this.label = label;
-        }
-
-        /**
-         * @return the key
-         */
-        public int getKey() {
-            return this.ordinal();
-        }
-
-        /**
-         * @return the label
-         */
-        public String getLabel() {
-            return label;
-        }
-
+        UNPROTECTED,
+        SEQUENCE,
+        PROTECTED;
     }
 
     /**
@@ -326,28 +304,8 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
      */
     @XStreamAlias("rfProtection")
     public enum RfProtectionType {
-        Unprotected("Unprotected"),
-        NoRFControl("No RF control"),
-        NoRFResponse("No RF response at all");
-
-        private String label;
-
-        private RfProtectionType(String label) {
-            this.label = label;
-        }
-
-        /**
-         * @return the key
-         */
-        public int getKey() {
-            return this.ordinal();
-        }
-
-        /**
-         * @return the label
-         */
-        public String getLabel() {
-            return label;
-        }
+        UNPROTECTED,
+        NORFCONTROL,
+        NORFRESPONSE;
     }
 }

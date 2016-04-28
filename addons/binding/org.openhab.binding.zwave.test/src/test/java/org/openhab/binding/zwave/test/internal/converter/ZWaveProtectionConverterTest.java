@@ -41,12 +41,12 @@ public class ZWaveProtectionConverterTest {
         ZWaveThingChannel channel = createChannel(Type.PROTECTION_LOCAL.name());
 
         ZWaveCommandClassValueEvent event = new ZWaveCommandClassValueEvent(0, 0, CommandClass.PROTECTION,
-                LocalProtectionType.Sequence, Type.PROTECTION_LOCAL);
+                LocalProtectionType.SEQUENCE, Type.PROTECTION_LOCAL);
 
         State state = converter.handleEvent(channel, event);
 
         assertEquals(state.getClass(), DecimalType.class);
-        assertEquals(((DecimalType) state).intValue(), LocalProtectionType.Sequence.getKey());
+        assertEquals(((DecimalType) state).intValue(), LocalProtectionType.SEQUENCE.ordinal());
     }
 
     @Test
@@ -55,12 +55,12 @@ public class ZWaveProtectionConverterTest {
         ZWaveThingChannel channel = createChannel(Type.PROTECTION_RF.name());
 
         ZWaveCommandClassValueEvent event = new ZWaveCommandClassValueEvent(0, 0, CommandClass.PROTECTION,
-                RfProtectionType.NoRFResponse, Type.PROTECTION_RF);
+                RfProtectionType.NORFRESPONSE, Type.PROTECTION_RF);
 
         State state = converter.handleEvent(channel, event);
 
         assertEquals(state.getClass(), DecimalType.class);
-        assertEquals(((DecimalType) state).intValue(), RfProtectionType.NoRFResponse.getKey());
+        assertEquals(((DecimalType) state).intValue(), RfProtectionType.NORFRESPONSE.ordinal());
     }
 
 }

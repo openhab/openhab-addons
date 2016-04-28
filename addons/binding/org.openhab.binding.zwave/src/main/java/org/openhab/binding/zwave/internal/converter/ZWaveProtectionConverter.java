@@ -64,6 +64,10 @@ public class ZWaveProtectionConverter extends ZWaveCommandClassConverter {
         ZWaveProtectionCommandClass commandClass = (ZWaveProtectionCommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.PROTECTION, channel.getEndpoint());
 
+        if (commandClass == null) {
+            return null;
+        }
+
         SerialMessage serialMessage = null;
 
         if (type != null) {
@@ -87,9 +91,7 @@ public class ZWaveProtectionConverter extends ZWaveCommandClassConverter {
                             commandClass.setValueMessage(null, RfProtectionType.values()[value]), commandClass,
                             channel.getEndpoint());
                 }
-
             }
-
         }
 
         if (serialMessage == null) {
