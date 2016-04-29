@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
+import static org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -73,8 +75,10 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
 
     // list of command classes that are eligible for auto subscription.
     @XStreamOmitField
-    private Set<CommandClass> autoCCs = ImmutableSet.of(CommandClass.DEVICE_RESET_LOCALLY, CommandClass.BATTERY,
-            CommandClass.CONFIGURATION);
+    private Set<CommandClass> autoCCs = ImmutableSet.of(DEVICE_RESET_LOCALLY, BATTERY, CONFIGURATION, METER,
+            THERMOSTAT_OPERATING_STATE, THERMOSTAT_MODE, THERMOSTAT_FAN_MODE, SENSOR_MULTILEVEL, SENSOR_ALARM,
+            THERMOSTAT_FAN_STATE, THERMOSTAT_SETPOINT, SENSOR_BINARY, ALARM, COLOR, SCENE_ACTIVATION, CENTRAL_SCENE,
+            DOOR_LOCK, METER_TBL_MONITOR, METER_PULSE);
 
     /**
      * Creates a new instance of the ZwaveAssociationGroupInfoCommandClass class.
