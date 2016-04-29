@@ -86,7 +86,7 @@ public class ZWaveNode {
 
     // Keep the NIF - just used for information and debug in the XML
     @SuppressWarnings("unused")
-    private List<Integer> nodeInformationFrame = null;
+    private List<CommandClass> nodeInformationFrame = null;
 
     private Map<CommandClass, ZWaveCommandClass> supportedCommandClasses = new HashMap<CommandClass, ZWaveCommandClass>();
     private final Set<CommandClass> securedCommandClasses = new HashSet<CommandClass>();
@@ -822,7 +822,7 @@ public class ZWaveNode {
                 deviceId);
     }
 
-    public void updateNIF(List<Integer> nif) {
+    public void updateNifClasses(List<CommandClass> nif) {
         nodeInformationFrame = nif;
     }
 
