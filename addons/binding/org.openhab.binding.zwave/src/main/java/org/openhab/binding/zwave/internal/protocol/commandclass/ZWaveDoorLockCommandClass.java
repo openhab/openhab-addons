@@ -39,30 +39,30 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
         implements ZWaveGetCommands, ZWaveSetCommands, ZWaveCommandClassInitialization, ZWaveCommandClassDynamicState {
     public enum Type {
-        DOORLOCK_STATE,
-        DOORLOCK_TIMEOUT
+        DOOR_LOCK_STATE,
+        DOOR_LOCK_TIMEOUT
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ZWaveDoorLockCommandClass.class);
 
-    static final int DOORLOCK_SET = 0x01;
+    static final int DOOR_LOCK_SET = 1;
     /**
-     * Request the state of the door lock, ie {@link #DOORLOCK_REPORT}
+     * Request the state of the door lock, ie {@link #DOOR_LOCK_REPORT}
      */
-    private static final int DOORLOCK_GET = 0x02;
+    private static final int DOOR_LOCK_GET = 2;
     /**
      * Details about the state of the door lock (secured, unsecured)
      */
-    private static final int DOORLOCK_REPORT = 0x03;
-    private static final int DOORLOCK_CONFIG_SET = 0x04;
+    private static final int DOOR_LOCK_REPORT = 3;
+    private static final int DOOR_LOCK_CONFIG_SET = 4;
     /**
-     * Request the config of the door lock, ie {@link #DOORLOCK_CONFIG_REPORT}
+     * Request the config of the door lock, ie {@link #DOOR_LOCK_CONFIG_REPORT}
      */
-    private static final int DOORLOCK_CONFIG_GET = 0x05;
+    private static final int DOOR_LOCK_CONFIG_GET = 5;
     /**
      * Details about the config of the door lock (timed autolock, etc)
      */
-    private static final int DOORLOCK_CONFIG_REPORT = 0x06;
+    private static final int DOOR_LOCK_CONFIG_REPORT = 6;
 
     @XStreamOmitField
     private boolean initialisationDone = false;
@@ -103,10 +103,10 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received DoorLock Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received DOORLOCK command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
-            case DOORLOCK_CONFIG_REPORT:
+            case DOOR_LOCK_CONFIG_REPORT:
                 initialisationDone = true;
                 lockTimeoutSet = serialMessage.getMessagePayloadByte(offset + 1) == 2 ? true : false;
                 insideHandleMode = serialMessage.getMessagePayloadByte(offset + 2) & 0x0f;
@@ -116,7 +116,9 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
 
                 lockTimeout = 0;
                 if (lockTimeoutSet == true) {
-                    lockTimeout = lockTimeoutSeconds;
+                    if (lockTimeoutSeconds != 0xfe) {
+                        lockTimeout = lockTimeoutSeconds;
+                    }
                     if (lockTimeoutMinutes != 0xfe) {
                         lockTimeout += lockTimeoutMinutes * 60;
                     }
@@ -124,12 +126,12 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
                 logger.info(
                         "NODE {}: Door-Lock config report - timeoutEnabled={} timeoutMinutes={}, "
                                 + "timeoutSeconds={}",
-                        this.getNode().getNodeId(), lockTimeoutSet, lockTimeoutMinutes, lockTimeoutSeconds);
-                ZWaveCommandClassValueEvent configEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
-                        endpoint, CommandClass.DOOR_LOCK, lockTimeout, Type.DOORLOCK_TIMEOUT);
-                this.getController().notifyEventListeners(configEvent);
+                        getNode().getNodeId(), lockTimeoutSet, lockTimeoutMinutes, lockTimeoutSeconds);
+                ZWaveCommandClassValueEvent configEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(),
+                        endpoint, CommandClass.DOOR_LOCK, lockTimeout, Type.DOOR_LOCK_TIMEOUT);
+                getController().notifyEventListeners(configEvent);
                 return;
-            case DOORLOCK_REPORT:
+            case DOOR_LOCK_REPORT:
                 dynamicDone = true;
 
                 int lockState = serialMessage.getMessagePayloadByte(offset + 1);
@@ -143,16 +145,15 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
                         "NODE %d: Door-Lock state report - lockState=%s, "
                                 + "handlesMode=0x%02x, doorCondition=0x%02x, timeoutMinutes=0x%02x, "
                                 + "timeoutSeconds=0x%02x",
-                        this.getNode().getNodeId(), doorLockState.label, handlesMode, doorCondition,
-                        statusTimeoutMinutes, statusTimeoutSeconds));
-                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
-                        endpoint, CommandClass.DOOR_LOCK, lockState, Type.DOORLOCK_STATE);
-                this.getController().notifyEventListeners(zEvent);
+                        getNode().getNodeId(), doorLockState.label, handlesMode, doorCondition, statusTimeoutMinutes,
+                        statusTimeoutSeconds));
+                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
+                        CommandClass.DOOR_LOCK, lockState, Type.DOOR_LOCK_STATE);
+                getController().notifyEventListeners(zEvent);
                 break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command 0x%02X for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, getCommandClass().getLabel(), getCommandClass().getKey()));
                 break;
         }
     }
@@ -164,36 +165,36 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
      */
     @Override
     public SerialMessage getValueMessage() {
-        logger.debug("NODE {}: Creating new message for application command DOORLOCK_GET", this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for application command DOORLOCK_GET", getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
-                (byte) DOORLOCK_GET, };
+        byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
+                (byte) DOOR_LOCK_GET, };
         result.setMessagePayload(newPayload);
         return result;
     }
 
     @Override
     public SerialMessage setValueMessage(int value) {
-        logger.debug("NODE {}: Creating new message for application command DOORLOCK_SET", this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for application command DOORLOCK_SET", getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 3, (byte) getCommandClass().getKey(),
-                (byte) DOORLOCK_SET, (byte) value };
+        byte[] newPayload = { (byte) getNode().getNodeId(), 3, (byte) getCommandClass().getKey(), (byte) DOOR_LOCK_SET,
+                (byte) value };
         result.setMessagePayload(newPayload);
         return result;
     }
 
     public SerialMessage getConfigMessage() {
         logger.debug("NODE {}: Creating new message for application command DOORLOCK_CONFIG_GET",
-                this.getNode().getNodeId());
-        SerialMessage message = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+                getNode().getNodeId());
+        SerialMessage message = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
-        outputData.write((byte) this.getNode().getNodeId());
+        outputData.write((byte) getNode().getNodeId());
         outputData.write(2);
         outputData.write((byte) getCommandClass().getKey());
-        outputData.write((byte) DOORLOCK_CONFIG_GET);
+        outputData.write((byte) DOOR_LOCK_CONFIG_GET);
         message.setMessagePayload(outputData.toByteArray());
         return message;
     }
@@ -213,14 +214,14 @@ public class ZWaveDoorLockCommandClass extends ZWaveCommandClass
             lockTimeoutSeconds = 0xfe;
         }
 
-        logger.debug("NODE {}: Creating new message for application command DOORLOCK_GET", this.getNode().getNodeId());
-        SerialMessage message = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for application command DOORLOCK_GET", getNode().getNodeId());
+        SerialMessage message = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
-        outputData.write((byte) this.getNode().getNodeId());
+        outputData.write((byte) getNode().getNodeId());
         outputData.write(6);
         outputData.write((byte) getCommandClass().getKey());
-        outputData.write((byte) DOORLOCK_CONFIG_SET);
+        outputData.write((byte) DOOR_LOCK_CONFIG_SET);
 
         if (lockTimeoutSet == true) {
             outputData.write((byte) 2);
