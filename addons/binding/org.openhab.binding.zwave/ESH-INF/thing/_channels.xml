@@ -589,4 +589,35 @@
         </config-description>
     </channel-type>
     
+    <!-- Local Protection Channel -->
+    <channel-type id="protection_local" advanced="true">
+        <item-type>Number</item-type>
+        <label>Local Protection Mode</label>
+        <description>Sets the local protection mode
+        </description>
+        <state>
+            <options>
+                <option value="0">Unprotected</option>
+                <option value="1">Protection by sequence</option>
+                <option value="2">No operation possible</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Rf Protection Channel -->
+    <channel-type id="protection_rf" advanced="true">
+        <item-type>Number</item-type>
+        <label>Rf Protection Mode</label>
+        <description>Sets the rf protection mode
+        </description>
+        <state>
+            <options>
+                <option value="0">Unprotected</option>
+                <option value="1">No RF control</option>
+                <option value="2">No RF response at all</option>
+            </options>
+        </state>
+    </channel-type>
+
+    
 </thing:thing-descriptions>
