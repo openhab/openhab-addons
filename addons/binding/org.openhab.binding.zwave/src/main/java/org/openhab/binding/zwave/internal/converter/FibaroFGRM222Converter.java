@@ -102,6 +102,11 @@ public class FibaroFGRM222Converter extends ZWaveCommandClassConverter {
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
         FibaroFGRM222CommandClass commandClass = (FibaroFGRM222CommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.FIBARO_FGRM_222, channel.getEndpoint());
+        if (commandClass == null) {
+            logger.warn("NODE {}: Cannot resolve command class (endpoint: {}).", node.getNodeId(),
+                    channel.getEndpoint());
+            return null;
+        }
 
         logger.debug("NODE {}: receiveCommand()", node.getNodeId());
         SerialMessage serialMessage = null;
