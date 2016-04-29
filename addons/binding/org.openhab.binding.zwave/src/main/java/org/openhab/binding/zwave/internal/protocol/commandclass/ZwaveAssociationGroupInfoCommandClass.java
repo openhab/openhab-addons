@@ -142,7 +142,6 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
             return;
         }
 
-        // Maximum length is 16 bytes
         if (numBytes > MAX_STRING_LENGTH) {
             logger.warn("NODE {}: Group Name is too big; maximum is {} characters {}", getNode().getNodeId(),
                     MAX_STRING_LENGTH, numBytes);
