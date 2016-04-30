@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -207,7 +206,7 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
         int groupid = serialMessage.getMessagePayloadByte(offset + 1);
         int size = serialMessage.getMessagePayloadByte(offset + 2);
         logger.debug("NODE {}: Supported Command classes and commands for group:{} ->", getNode().getNodeId(), groupid);
-        List<CommandClass> commands = new ArrayList<>();
+        Set<CommandClass> commands = new HashSet<>();
         for (int i = 0; i < size; i += 2) {
 
             // check if this node actually supports this Command Class
@@ -227,7 +226,7 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
                         serialMessage.getMessagePayloadByte(offset + 4 + i));
             }
         }
-        getGroupInfo(groupid).setCommandList(commands);
+        getGroupInfo(groupid).setCommands(commands);
     }
 
     /**
@@ -347,7 +346,7 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
                 if (refresh == true || info.getProfile() == null) {
                     result.add(getInfoMessage(i));
                 }
-                if (refresh == true || info.getCommandList() == null) {
+                if (refresh == true || info.getCommands() == null) {
                     result.add(getCommandListMessage(i));
                 }
             }
@@ -371,14 +370,14 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
     public class GroupInfo {
         private String name;
         private Integer profile;
-        private List<CommandClass> commandList;
+        private Set<CommandClass> commands;
 
-        public List<CommandClass> getCommandList() {
-            return commandList;
+        public Set<CommandClass> getCommands() {
+            return commands;
         }
 
-        public void setCommandList(List<CommandClass> commandList) {
-            this.commandList = commandList;
+        public void setCommands(Set<CommandClass> commands) {
+            this.commands = commands;
         }
 
         public Integer getProfile() {

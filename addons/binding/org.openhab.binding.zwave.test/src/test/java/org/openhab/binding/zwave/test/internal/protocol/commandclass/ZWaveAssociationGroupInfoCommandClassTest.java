@@ -63,9 +63,9 @@ public class ZWaveAssociationGroupInfoCommandClassTest {
         assertNotNull(cls.getGroupInfo());
         assertEquals("Lifeline", cls.getGroupInfo().get(1).getName());
         assertEquals(Integer.valueOf(1), cls.getGroupInfo().get(1).getProfile());
-        assertEquals(false, cls.getGroupInfo().get(1).getCommandList().isEmpty());
+        assertEquals(false, cls.getGroupInfo().get(1).getCommands().isEmpty());
         assertEquals(false,
-                cls.getGroupInfo().get(1).getCommandList().contains(CommandClass.DEVICE_RESET_LOCALLY.getKey()));
+                cls.getGroupInfo().get(1).getCommands().contains(CommandClass.DEVICE_RESET_LOCALLY.getKey()));
         assertEquals(true, cls.getAutoSubscribeGroups().contains(1));
     }
 
