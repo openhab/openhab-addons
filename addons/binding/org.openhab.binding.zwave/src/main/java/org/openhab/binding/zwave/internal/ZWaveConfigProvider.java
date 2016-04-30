@@ -197,6 +197,33 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .withGroupName("thingcfg").withOptions(options).build());
         }
 
+        // If we support the powerlevel class, then add the configuration
+        if (node.getCommandClass(ZWaveCommandClass.CommandClass.POWERLEVEL) != null) {
+            List<ParameterOption> options = new ArrayList<ParameterOption>();
+            options.add(new ParameterOption("0", "Normal"));
+            options.add(new ParameterOption("1", "Minus 1dB"));
+            options.add(new ParameterOption("2", "Minus 2dB"));
+            options.add(new ParameterOption("3", "Minus 3dB"));
+            options.add(new ParameterOption("4", "Minus 4dB"));
+            options.add(new ParameterOption("5", "Minus 5dB"));
+            options.add(new ParameterOption("6", "Minus 6dB"));
+            options.add(new ParameterOption("7", "Minus 7dB"));
+            options.add(new ParameterOption("8", "Minus 8dB"));
+            options.add(new ParameterOption("9", "Minus 9dB"));
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL, Type.INTEGER).withLabel("Power Level")
+                    .withDescription(
+                            "Set the RF output level - Normal is maximum power<br>Setting the power to a lower level may be useful to reduce overloading of the receiver in adjacent nodes where they are close together, or if maximum power is not required for battery devices, it may extend battery life by reducing the transmit power.")
+                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT, Type.INTEGER)
+                    .withLabel("Power Level Timeout")
+                    .withDescription(
+                            "Set the power level timeout in seconds<br>The node will reset to the normal power level if communications is not made within the specified number of seconds.")
+                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+        }
+
         // If we support DOOR_LOCK - add options
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.DOOR_LOCK) != null) {
             parameters.add(ConfigDescriptionParameterBuilder
