@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -74,6 +75,7 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
 
     @Override
     public void dispose() {
+        logger.debug("Disposing of Hyperion thing handler.");
         refreshHandler.cancel(true);
         server.removeListener(this);
     }
@@ -143,7 +145,7 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
 
             int priority = ((BigDecimal) thing.getConfiguration().get(PROP_PRIORITY)).intValue();
             server.setColor(r, g, b, priority);
-            logger.debug("channel {} set to {}", CHANNEL_COLOR, command.toString());
+            logger.debug("Channel {} set to {}", CHANNEL_COLOR, command.toString());
         } else {
             logger.warn("Channel {} unable to process command {}", CHANNEL_COLOR, command.toString());
         }
@@ -151,13 +153,13 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
 
     private void handleClearAll(Command command) throws IOException {
         server.clearAll();
-        logger.debug("channel {} set to {}", CHANNEL_CLEAR, "clear all");
+        logger.debug("Channel {} set to {}", CHANNEL_CLEAR, "clear all");
     }
 
     private void handleClear(Command command) throws IOException {
         int priority = ((BigDecimal) thing.getConfiguration().get(PROP_PRIORITY)).intValue();
         server.clearPriority(priority);
-        logger.debug("channel {} set to {}", CHANNEL_CLEAR, "clear");
+        logger.debug("Channel {} set to {}", CHANNEL_CLEAR, "clear");
     }
 
     @Override
@@ -166,6 +168,8 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
             int intValue = (int) Math.round((double) newValue * 100);
             PercentType percentType = new PercentType(intValue);
             updateState(CHANNEL_BRIGHTNESS, percentType);
+        } else {
+            logger.warn("Ignoring change to {}", property);
         }
     }
 }
