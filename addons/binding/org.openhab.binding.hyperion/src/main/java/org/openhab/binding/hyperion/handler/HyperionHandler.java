@@ -123,13 +123,7 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
             server.setValueGain(value);
             logger.debug("channel {} set to {}", CHANNEL_BRIGHTNESS, value);
         } else if (command instanceof IncreaseDecreaseType) {
-            // get current brightness
-            // increment/decrement current brightness by 5
-            // set new brightness
-            // double currentGain = server.getValueGain();
-            // double newGain = currentGain + 0.05;
-
-            // server.setValue(newGain);
+            logger.warn("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command.toString());
         } else {
             logger.warn("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command.toString());
         }

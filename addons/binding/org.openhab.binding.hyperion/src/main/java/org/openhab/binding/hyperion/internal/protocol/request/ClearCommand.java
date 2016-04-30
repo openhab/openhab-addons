@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.request;
 
+/**
+ * The {@link ClearCommand} is a POJO for sending a Clear command
+ * to the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class ClearCommand extends HyperionCommand {
 
     private final static String NAME = "clear";

@@ -10,6 +10,11 @@ package org.openhab.binding.hyperion.internal.protocol.transform;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The {@link ValueGain} is a POJO for an value gain transformation on the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class ValueGain implements Transform {
 
     @SerializedName("valueGain")

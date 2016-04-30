@@ -10,6 +10,12 @@ package org.openhab.binding.hyperion.internal.protocol.request;
 
 import org.openhab.binding.hyperion.internal.protocol.transform.Transform;
 
+/**
+ * The {@link TransformCommand} is a POJO for sending transform commands
+ * to the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class TransformCommand extends HyperionCommand {
 
     private final static String NAME = "transform";
