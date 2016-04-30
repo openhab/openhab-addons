@@ -29,12 +29,12 @@
                 <default></default>
             </parameter>
             
-			<parameter name="refreshInterval" type="integer" required="false">
-				<label>Refresh Interval</label>
-				<description>The refresh interval to poll Toon (in ms).</description>
-				<default>30000</default>
-				<advanced>true</advanced>
-			</parameter>            
+            <parameter name="refreshInterval" type="integer" required="false">
+                <label>Refresh Interval</label>
+                <description>The refresh interval to poll Toon (in ms).</description>
+                <default>30000</default>
+                <advanced>true</advanced>
+            </parameter>            
         </config-description>
     </bridge-type>
 
