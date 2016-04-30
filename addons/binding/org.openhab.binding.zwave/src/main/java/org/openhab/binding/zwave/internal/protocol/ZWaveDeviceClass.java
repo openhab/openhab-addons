@@ -557,7 +557,7 @@ public class ZWaveDeviceClass {
                 case SCENE_SWITCH_MULTILEVEL:
                 case SCENE_SWITCH_MULTILEVEL_DISCONTINUED:
                     return new CommandClass[] { CommandClass.SCENE_ACTIVATION, CommandClass.SCENE_ACTUATOR_CONF,
-                            CommandClass.SWITCH_ALL, CommandClass.MANUFACTURER_SPECIFIC };
+                            CommandClass.MANUFACTURER_SPECIFIC };
                 case MOTOR_MULTIPOSITION:
                     return new CommandClass[] { CommandClass.VERSION, CommandClass.MANUFACTURER_SPECIFIC };
                 case MOTOR_CONTROL_CLASS_A:
