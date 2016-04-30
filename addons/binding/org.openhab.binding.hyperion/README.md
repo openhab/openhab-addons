@@ -20,7 +20,7 @@ Currently there is no automatic discovery.  You must manually add a Hyperion Ser
 In order to use a Hyperion Server Thing it must be properly configured.  You can do this either through a UI / REST or through static .thing files.
 
 |Parameter | Data type | Required | Example  |
-|------- | -------- | ---- |
+|------- | -------- | ---- | ---- |
 |host	 | String | Y | "192.168.0.10" |
 |port	 | Integer | Y | 19444 |
 |priority	 | Integer | Y | 50 |
