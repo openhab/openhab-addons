@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.transform;
 
+/**
+ * The {@link Transform} interface defines the common capabilities for a transform POJO.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public interface Transform {
 
     public Object getValue();

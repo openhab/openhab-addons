@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.request;
 
+/**
+ * The {@link ColorCommand} is a POJO for sending a color command
+ * to the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class ColorCommand extends HyperionCommand {
 
     private final static String NAME = "color";

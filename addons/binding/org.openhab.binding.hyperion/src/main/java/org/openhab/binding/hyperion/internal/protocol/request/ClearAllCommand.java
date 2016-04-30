@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.request;
 
+/**
+ * The {@link ClearAllCommand} is a POJO for sending a Clear All command
+ * to the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class ClearAllCommand extends HyperionCommand {
 
     private static final String NAME = "clearall";

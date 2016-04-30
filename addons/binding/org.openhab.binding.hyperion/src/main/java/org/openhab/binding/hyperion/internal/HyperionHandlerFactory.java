@@ -8,31 +8,27 @@
  */
 package org.openhab.binding.hyperion.internal;
 
-import static org.openhab.binding.hyperion.HyperionBindingConstants.*;
+import static org.openhab.binding.hyperion.HyperionBindingConstants.THING_TYPE_SERVER;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.hyperion.handler.HyperionHandler;
-
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.hyperion.handler.HyperionHandler;
 
 /**
- * The {@link HyperionHandlerFactory} is responsible for creating things and thing 
+ * The {@link HyperionHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Daniel Walters - Initial contribution
  */
 public class HyperionHandlerFactory extends BaseThingHandlerFactory {
-    
+
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SERVER);
-    
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -50,4 +46,3 @@ public class HyperionHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 }
-

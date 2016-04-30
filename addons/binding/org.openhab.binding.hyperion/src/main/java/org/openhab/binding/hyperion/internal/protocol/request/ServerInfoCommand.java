@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.request;
 
+/**
+ * The {@link ServerInfoCommand} is a POJO for server info commands
+ * to the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class ServerInfoCommand extends HyperionCommand {
 
     private static final String NAME = "serverinfo";
