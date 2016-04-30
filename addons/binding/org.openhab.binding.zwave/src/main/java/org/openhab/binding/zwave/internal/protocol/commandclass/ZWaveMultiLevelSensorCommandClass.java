@@ -236,12 +236,6 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
      * @return the serial message
      */
     public SerialMessage getMessage(SensorType sensorType) {
-        if (getVersion() < 5) {
-            logger.debug("NODE {}: command SENSOR_MULTI_LEVEL_GET sensorType not supprted for version:{}",
-                    this.getNode().getNodeId(), getVersion());
-            return null;
-        }
-
         if (isGetSupported == false) {
             logger.debug("NODE {}: Node doesn't support get requests for MULTI_LEVEL_SENSOR",
                     this.getNode().getNodeId());
@@ -253,12 +247,23 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
-        outputData.write(getNode().getNodeId());
-        outputData.write(4);
-        outputData.write(getCommandClass().getKey());
-        outputData.write(SENSOR_MULTI_LEVEL_GET);
-        outputData.write(sensorType.getKey());
-        outputData.write(0); // first scale }
+        if (getVersion() < 5) {
+            // pre v5 does not have a sensortype argument, but since we
+            // used to use it, lets not break things and keep doing so....
+            outputData.write(getNode().getNodeId());
+            outputData.write(3);
+            outputData.write(getCommandClass().getKey());
+            outputData.write(SENSOR_MULTI_LEVEL_GET);
+            outputData.write(sensorType.getKey());
+        } else {
+            outputData.write(getNode().getNodeId());
+            outputData.write(4);
+            outputData.write(getCommandClass().getKey());
+            outputData.write(SENSOR_MULTI_LEVEL_GET);
+            outputData.write(sensorType.getKey());
+            outputData.write(0); // first scale }
+
+        }
         result.setMessagePayload(outputData.toByteArray());
         return result;
     }
