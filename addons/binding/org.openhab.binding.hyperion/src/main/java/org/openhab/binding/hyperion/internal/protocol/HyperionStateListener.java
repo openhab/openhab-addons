@@ -8,6 +8,12 @@
  */
 package org.openhab.binding.hyperion.internal.protocol;
 
+/**
+ * The {@link HyperionStateListener} interface provides a mechanism for
+ * being notified of a change of state in the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public interface HyperionStateListener {
 
     public void stateChanged(String property, Object oldValue, Object newValue);

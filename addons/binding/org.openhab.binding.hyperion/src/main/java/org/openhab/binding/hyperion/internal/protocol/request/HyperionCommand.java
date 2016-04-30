@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.request;
 
-import org.openhab.binding.hyperion.internal.protocol.response.Response;
-
+/**
+ * The {@link HyperionCommand} is a abstract class for sending commands
+ * to the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public abstract class HyperionCommand {
 
     private String command;
-
-    private transient Response response;
 
     public HyperionCommand(String command) {
         setCommand(command);
@@ -28,11 +30,4 @@ public abstract class HyperionCommand {
         this.command = command;
     }
 
-    public Response getResponse() {
-        return response;
-    }
-
-    public void setResponse(Response response) {
-        this.response = response;
-    }
 }

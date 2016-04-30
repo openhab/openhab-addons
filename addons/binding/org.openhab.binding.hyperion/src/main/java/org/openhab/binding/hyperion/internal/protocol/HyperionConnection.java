@@ -33,6 +33,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 
+/**
+ * The {@link HyperionConnection} class is responsible for handling
+ * the communication with the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class HyperionConnection {
 
     private Logger logger = LoggerFactory.getLogger(HyperionConnection.class);

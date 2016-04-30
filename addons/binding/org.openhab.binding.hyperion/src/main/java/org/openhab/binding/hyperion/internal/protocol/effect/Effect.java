@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.effect;
 
+/**
+ * The {@link Effect} is a POJO for an effect on the Hyperion server.
+ *
+ * @author Daniel Walters - Initial contribution
+ */
 public class Effect {
 
     private String name;
@@ -15,7 +20,6 @@ public class Effect {
     public Effect(String name) {
         setName(name);
     }
-    //
 
     public String getName() {
         return name;
