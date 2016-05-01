@@ -33,7 +33,7 @@
                 <label>Room</label>
                 <description>The room name.</description>
             </parameter>
-            <parameter name="serialNumber" type="text" required="true">
+            <parameter name="serialNumber" type="text" required="false">
                 <label>Serial Number</label>
                 <description>The Serial Number identifies one specific device.</description>
             </parameter>

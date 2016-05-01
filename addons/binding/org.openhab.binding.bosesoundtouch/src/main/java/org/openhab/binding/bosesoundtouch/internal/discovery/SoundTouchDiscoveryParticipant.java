@@ -59,9 +59,10 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             InetAddress[] addrs = info.getInetAddresses();
 
             // we expect only one address per device..
-            if (addrs.length > 1)
-                logger.warn("Bose SoundTouch device " + uid.getThingTypeId() + " (" + label
+            if (addrs.length > 1) {
+                logger.warn("Bose SoundTouch device " + info.getName() + " (" + label
                         + ") reports multiple addresses - using the first one!" + Arrays.toString(addrs));
+            }
 
             properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
             properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_PORT, BigDecimal.valueOf(info.getPort()));
