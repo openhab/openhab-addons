@@ -417,7 +417,7 @@ public abstract class ZWaveCommandClass {
         BASIC_WINDOW_COVERING(0x50, "BASIC_WINDOW_COVERING", null),
         MTP_WINDOW_COVERING(0x51, "MTP_WINDOW_COVERING", null),
         CRC_16_ENCAP(0x56, "CRC_16_ENCAP", ZWaveCRC16EncapsulationCommandClass.class),
-        ASSOCIATION_GROUP_INFO(0x59, "ASSOCIATION_GROUP_INFO", null),
+        ASSOCIATION_GROUP_INFO(0x59, "ASSOCIATION_GROUP_INFO", ZwaveAssociationGroupInfoCommandClass.class),
         DEVICE_RESET_LOCALLY(0x5a, "DEVICE_RESET_LOCALLY", ZWaveDeviceResetLocallyCommandClass.class),
         CENTRAL_SCENE(0x5b, "CENTRAL_SCENE", ZWaveCentralSceneCommandClass.class),
         ZWAVE_PLUS_INFO(0x5e, "ZWAVE_PLUS_INFO", ZWavePlusCommandClass.class),
