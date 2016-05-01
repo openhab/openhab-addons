@@ -42,8 +42,7 @@
                 <default></default>
             </parameter>
 
-            <parameter name="controller_master" type="boolean"
-				groupName="network">
+            <parameter name="controller_master" type="boolean" groupName="network">
 				<label>Controller is Master</label>
 				<description><![CDATA[This controller is the master controller in the network.<br/>
 				The binding will perform automatic configuration of the network.
@@ -56,8 +55,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="controller_suc" type="boolean"
-				groupName="network">
+			<parameter name="controller_suc" type="boolean" groupName="network">
 				<label>Controller is SUC</label>
 				<description>Controller is SUC and will receive updates from other controllers in the network</description>
 				<options>
