@@ -124,7 +124,7 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received CLOCK command V{}", this.getNode().getNodeId(), this.getVersion());
+        logger.debug("NODE {}: Received CLOCK command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case CLOCK_REPORT:
@@ -142,7 +142,7 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
                 cal.set(Calendar.MINUTE, minute);
                 Date nodeTime = cal.getTime();
                 ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
-                        CommandClass.CLOCK, nodeTime);
+                        getCommandClass(), nodeTime);
                 getController().notifyEventListeners(zEvent);
                 break;
             default:

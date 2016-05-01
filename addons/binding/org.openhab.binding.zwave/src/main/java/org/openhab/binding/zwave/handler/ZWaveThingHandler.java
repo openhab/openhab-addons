@@ -57,6 +57,8 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurati
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass.ZWaveConfigurationParameterEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveDoorLockCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNodeNamingCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass.ZWavePowerLevelCommandClassChangeEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSwitchAllCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveUserCodeCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
@@ -342,30 +344,35 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         Runnable pollingRunnable = new Runnable() {
             @Override
             public void run() {
-                // TODO: If/when this code changes, we should only poll channels that are linked.
-                logger.debug("NODE {}: Polling...", nodeId);
-                ZWaveNode node = controllerHandler.getNode(nodeId);
-                if (node == null || node.isInitializationComplete() == false) {
-                    logger.debug("NODE {}: Polling deferred until initialisation complete", nodeId);
-                    return;
-                }
+                try {
+                    // TODO: If/when this code changes, we should only poll channels that are linked.
+                    logger.debug("NODE {}: Polling...", nodeId);
+                    ZWaveNode node = controllerHandler.getNode(nodeId);
+                    if (node == null || node.isInitializationComplete() == false) {
+                        logger.debug("NODE {}: Polling deferred until initialisation complete", nodeId);
+                        return;
+                    }
 
-                List<SerialMessage> messages = new ArrayList<SerialMessage>();
-                for (ZWaveThingChannel channel : thingChannelsPoll) {
-                    logger.debug("NODE {}: Polling {}", nodeId, channel.getUID());
-                    if (channel.converter == null) {
-                        logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId, channel.getUID());
-                    } else {
-                        List<SerialMessage> poll = channel.converter.executeRefresh(channel, node);
-                        if (poll != null) {
-                            messages.addAll(poll);
+                    List<SerialMessage> messages = new ArrayList<SerialMessage>();
+                    for (ZWaveThingChannel channel : thingChannelsPoll) {
+                        logger.debug("NODE {}: Polling {}", nodeId, channel.getUID());
+                        if (channel.converter == null) {
+                            logger.debug("NODE {}: Polling aborted as no converter found for {}", nodeId,
+                                    channel.getUID());
+                        } else {
+                            List<SerialMessage> poll = channel.converter.executeRefresh(channel, node);
+                            if (poll != null) {
+                                messages.addAll(poll);
+                            }
                         }
                     }
-                }
 
-                // Send all the messages
-                for (SerialMessage message : messages) {
-                    controllerHandler.sendData(message);
+                    // Send all the messages
+                    for (SerialMessage message : messages) {
+                        controllerHandler.sendData(message);
+                    }
+                } catch (Exception e) {
+                    logger.warn(String.format("NODE %d: Polling aborted due to exception", nodeId), e);
                 }
             }
         };
@@ -760,6 +767,34 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                             .setValueMessage(Integer.parseInt(configurationParameter.getValue().toString())));
                 }
                 pendingCfg.put(configurationParameter.getKey(), valueObject);
+            } else if ("powerlevel".equals(cfg[0])) {
+                ZWavePowerLevelCommandClass powerlevelCommandClass = (ZWavePowerLevelCommandClass) node
+                        .getCommandClass(CommandClass.POWERLEVEL);
+                if (powerlevelCommandClass == null) {
+                    logger.error("NODE {}: Error getting PowerLevelCommandClass", nodeId);
+                    continue;
+                }
+
+                // Since both level and timeout are set in a single command, we first check if the value exists in the
+                // pending list, and if not, use the value already stored in the command class
+                if ("level".equals(cfg[1])) {
+                    Integer timeout = (Integer) pendingCfg.get(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT);
+                    if (timeout == null) {
+                        timeout = powerlevelCommandClass.getTimeout();
+                    }
+                    controllerHandler.sendData(powerlevelCommandClass.setValueMessage(
+                            (Integer.parseInt(configurationParameter.getValue().toString())), timeout));
+                }
+                if ("timeout".equals(cfg[1])) {
+                    Integer level = (Integer) pendingCfg.get(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL);
+                    if (level == null) {
+                        level = powerlevelCommandClass.getLevel();
+                    }
+                    controllerHandler.sendData(powerlevelCommandClass.setValueMessage(level,
+                            (Integer.parseInt(configurationParameter.getValue().toString()))));
+                }
+                controllerHandler.sendData(powerlevelCommandClass.getValueMessage());
+                pendingCfg.put(configurationParameter.getKey(), valueObject);
             } else if ("doorlock".equals(cfg[0])) {
                 ZWaveDoorLockCommandClass commandClass = (ZWaveDoorLockCommandClass) node
                         .getCommandClass(CommandClass.DOOR_LOCK);
@@ -1050,7 +1085,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
                 case DOOR_LOCK:
                     switch ((ZWaveDoorLockCommandClass.Type) event.getType()) {
-                        case DOORLOCK_TIMEOUT:
+                        case DOOR_LOCK_TIMEOUT:
                             cfgUpdated = true;
                             configuration.put(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, event.getValue());
                             pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT);
@@ -1058,6 +1093,15 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         default:
                             break;
                     }
+                    break;
+
+                case POWERLEVEL:
+                    ZWavePowerLevelCommandClassChangeEvent powerEvent = (ZWavePowerLevelCommandClassChangeEvent) event;
+                    cfgUpdated = true;
+                    configuration.put(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL, powerEvent.getLevel());
+                    pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL);
+                    configuration.put(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT, powerEvent.getTimeout());
+                    pendingCfg.remove(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT);
                     break;
 
                 default:
