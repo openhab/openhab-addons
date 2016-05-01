@@ -17,6 +17,10 @@ public enum OperationModeType implements PrimitiveType,State,Command {
     BLUETOOTH,
     AUX,
     MEDIA,
+    SPOTIFY,
+    PANDORA,
+    DEEZER,
+    SIRIUSXM,
     OTHER,
     GROUPMEMBER;
 

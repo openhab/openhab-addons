@@ -988,6 +988,21 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             case STANDBY:
                                 nm = OperationModeType.STANDBY;
                                 break;
+                            case DEEZER:
+                                nm = OperationModeType.DEEZER;
+                                break;
+                            case PANDORA:
+                                nm = OperationModeType.PANDORA;
+                                break;
+                            case SIRIUSXM:
+                                nm = OperationModeType.SIRIUSXM;
+                                break;
+                            case SPOTIFY:
+                                nm = OperationModeType.SPOTIFY;
+                                break;
+                            case STORED_MUSIC:
+                                nm = OperationModeType.MEDIA;
+                                break;
                             case UNKNOWN:
                                 nm = OperationModeType.OTHER;
                                 break;

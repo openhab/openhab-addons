@@ -6,6 +6,10 @@ public class ContentItem {
         INTERNET_RADIO,
         BLUETOOTH,
         STORED_MUSIC,
+        SPOTIFY,
+        PANDORA,
+        DEEZER,
+        SIRIUSXM,
         UNKNOWN
     }; // TODO incomplete!
 
