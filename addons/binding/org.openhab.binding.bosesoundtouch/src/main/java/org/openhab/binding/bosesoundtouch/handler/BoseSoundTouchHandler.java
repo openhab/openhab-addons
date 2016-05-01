@@ -556,6 +556,12 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             nowPlayingMap.put("stationLocation", State.NowPlayingStationLocation);
             nowPlayingMap.put("stationName", State.NowPlayingStationName);
             nowPlayingMap.put("track", State.NowPlayingTrack);
+            nowPlayingMap.put("connectionStatusInfo", State.Unprocessed); // TODO active when Source==Bluetooth
+            // TODO active when Source==Pandora and maybe also other sources - seems to be rating related
+            nowPlayingMap.put("time", State.Unprocessed);
+            nowPlayingMap.put("rating", State.Unprocessed);
+            nowPlayingMap.put("skipEnabled", State.Unprocessed);
+            nowPlayingMap.put("rateEnabled", State.Unprocessed);
 
             Map<String, State> contentItemMap = new HashMap<>();
             stateSwitchingMap.put(State.ContentItem, contentItemMap);
@@ -608,7 +614,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                         // message
                         state = State.Msg;
                     } else {
-                        logger.warn("Unhandled XML entity during " + curState + ": " + localName);
+                        if (logger.isDebugEnabled()) {
+                            logger.warn("Unhandled XML entity during " + curState + ": " + localName);
+                        }
                         state = State.Unprocessed;
                     }
                     break;
