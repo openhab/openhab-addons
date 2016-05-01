@@ -179,6 +179,7 @@ load caution threshold<br /><h1>Overview</h1><p>Enable automatic warning when th
 
       <parameter name="group_1" type="text" groupName="association">
         <label>1: Reports</label>
+        <description>Grouping 1 includes, SWITCH_BINARY_REPORT, METER_REPORT, ALARM_REPORT.</description>
       </parameter>
 
     </config-description>
