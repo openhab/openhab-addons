@@ -42,7 +42,7 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
     private final int OPTION_NETWORK_WIDE = 0x40;
 
     public SerialMessage doRequestStart(boolean highPower, boolean networkWide) {
-        logger.debug("Setting controller into INCLUSION mode.");
+        logger.debug("Setting controller into INCLUSION mode, highPower:{} networkWide:{}.", highPower, networkWide);
 
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessage.SerialMessageClass.AddNodeToNetwork,
