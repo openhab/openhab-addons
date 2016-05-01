@@ -32,13 +32,13 @@ public class YamahaReceiverBindingConstants {
     public final static String CHANNEL_MUTE = "mute";
     public final static String CHANNEL_NETRADIO_TUNE = "netradiotune";
 
-    public static final Object UPNP_TYPE = "MediaRenderer";
+    public static final String UPNP_TYPE = "MediaRenderer";
 
     public static final CharSequence UPNP_MANUFACTURER = "YAMAHA";
 
-    public static final Object CONFIG_REFRESH = "REFRESH";
-    public static final Object CONFIG_HOST_NAME = "HOST";
-    public static final Object CONFIG_ZONE = "ZONE";
-    public static final Object CONFIG_RELVOLUMECHANGE = "RELVOLUMECHANGE";
+    public static final String CONFIG_REFRESH = "REFRESH";
+    public static final String CONFIG_HOST_NAME = "HOST";
+    public static final String CONFIG_ZONE = "ZONE";
+    public static final String CONFIG_RELVOLUMECHANGE = "RELVOLUMECHANGE";
 
 }
