@@ -8,14 +8,19 @@
  */
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * This class processes a serial message from the zwave controller
@@ -29,6 +34,8 @@ public class SerialApiGetCapabilitiesMessageClass extends ZWaveCommandProcessor 
     private int manufactureId = 0;
     private int deviceType = 0;
     private int deviceId = 0;
+
+    private Set<SerialMessage.SerialMessageClass> apiCapabilities = new HashSet<>();
 
     public SerialMessage doRequest() {
         return new SerialMessage(SerialMessageClass.SerialApiGetCapabilities, SerialMessageType.Request,
@@ -52,6 +59,7 @@ public class SerialApiGetCapabilitiesMessageClass extends ZWaveCommandProcessor 
         logger.debug(String.format("Device Type    = 0x%x", deviceType));
         logger.debug(String.format("Device ID      = 0x%x", deviceId));
 
+        apiCapabilities = new HashSet<>();
         // Print the list of messages supported by this controller
         for (int by = 8; by < incomingMessage.getMessagePayload().length; by++) {
             for (int bi = 0; bi < 8; bi++) {
@@ -62,6 +70,7 @@ public class SerialApiGetCapabilitiesMessageClass extends ZWaveCommandProcessor 
                         logger.debug(String.format("Supports: Unknown Class 0x%02x", ((by - 8) << 3) + bi + 1));
                     } else {
                         logger.debug("Supports: {}", msgClass.getLabel());
+                        apiCapabilities.add(msgClass);
                     }
                 }
             }
@@ -86,5 +95,9 @@ public class SerialApiGetCapabilitiesMessageClass extends ZWaveCommandProcessor 
 
     public int getDeviceId() {
         return deviceId;
+    }
+
+    public Set<SerialMessageClass> getApiCapabilities() {
+        return ImmutableSet.copyOf(apiCapabilities);
     }
 }

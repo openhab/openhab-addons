@@ -585,6 +585,7 @@ public class SerialMessage {
         SendSucId(0x57, "SendSucId"),
         RequestNodeNeighborUpdateOptions(0x5a, "RequestNodeNeighborUpdateOptions"), // Allow options for request node
                                                                                     // neighbor update
+        ExploreRequestInclusion(0x5e, "ExploreRequestInclusion"), // Initiate a Network-Wide Inclusion process
         RequestNodeInfo(0x60, "RequestNodeInfo"), // Get info (supported command classes) for the specified node
         RemoveFailedNodeID(0x61, "RemoveFailedNodeID"), // Mark a specified node id as failed
         IsFailedNodeID(0x62, "IsFailedNodeID"), // Check to see if a specified node has failed
