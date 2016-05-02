@@ -9,8 +9,8 @@
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +39,10 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
     private final int ADD_NODE_STATUS_FAILED = 0x07;
 
     private final int OPTION_HIGH_POWER = 0x80;
+    private final int OPTION_NETWORK_WIDE = 0x40;
 
-    public SerialMessage doRequestStart(boolean highPower) {
-        logger.debug("Setting controller into INCLUSION mode.");
+    public SerialMessage doRequestStart(boolean highPower, boolean networkWide) {
+        logger.debug("Setting controller into INCLUSION mode, highPower:{} networkWide:{}.", highPower, networkWide);
 
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessage.SerialMessageClass.AddNodeToNetwork,
@@ -50,6 +51,9 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
         byte[] newPayload = { (byte) ADD_NODE_ANY, (byte) 255 };
         if (highPower == true) {
             newPayload[0] |= OPTION_HIGH_POWER;
+        }
+        if (networkWide == true) {
+            newPayload[0] |= OPTION_NETWORK_WIDE;
         }
 
         newMessage.setMessagePayload(newPayload);
