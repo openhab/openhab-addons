@@ -20,24 +20,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
- * Handles the climate control schedule command class.
+ * Handles the meter table configuration command class.
  *
  * @author Chris Jackson
+ *
  */
-@XStreamAlias("climateControlScheduleCommandClass")
-public class ZWaveClimateControlScheduleCommandClass extends ZWaveCommandClass {
+@XStreamAlias("meterTblConfigurationCommandClass")
+public class ZWaveMeterTblConfigurationCommandClass extends ZWaveCommandClass {
 
     @XStreamOmitField
-    private static final Logger logger = LoggerFactory.getLogger(ZWaveClimateControlScheduleCommandClass.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZWaveMeterTblConfigurationCommandClass.class);
 
     /**
-     * Creates a new instance of the ZWaveClimateControlCommandClass class.
+     * Creates a new instance of the ZWaveMeterTblConfigurationCommandClass class.
      *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
      */
-    public ZWaveClimateControlScheduleCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
+    public ZWaveMeterTblConfigurationCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
     }
 
@@ -46,7 +47,7 @@ public class ZWaveClimateControlScheduleCommandClass extends ZWaveCommandClass {
      */
     @Override
     public CommandClass getCommandClass() {
-        return CommandClass.CLIMATE_CONTROL_SCHEDULE;
+        return CommandClass.METER_TBL_CONFIG;
     }
 
     /**
@@ -57,14 +58,13 @@ public class ZWaveClimateControlScheduleCommandClass extends ZWaveCommandClass {
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received CLIMATE_CONTROL_SCHEDULE command V{}", this.getNode().getNodeId(),
-                this.getVersion());
+        logger.debug("NODE {}: Received METER_TBL_CONFIG command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, getCommandClass().getLabel(), getCommandClass().getKey()));
+                break;
         }
     }
 }
