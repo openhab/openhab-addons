@@ -60,6 +60,11 @@ public class FibaroFGRM222CommandClass extends ZWaveCommandClass {
     }
 
     public SerialMessage setValueMessage(final int level, final String type) {
+        /*
+         * <blind %>: 0 to 99%, 0 = fully closed, 99% = fully opened
+         * <lamellas %>: 0 to 99%, 0 = vertical, 99% = horizontal
+         */
+
         logger.debug("NODE {}: Creating new message for application command FIBARO FGRM 222 set. type: {}. level {}.",
                 this.getNode().getNodeId(), type, level);
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessage.SerialMessageClass.SendData,
@@ -67,22 +72,41 @@ public class FibaroFGRM222CommandClass extends ZWaveCommandClass {
                 SerialMessage.SerialMessagePriority.Set);
         byte[] newPayload;
         if (type.equalsIgnoreCase(FibaroFGRM222ValueType.Shutter.name())) {
+            final int levelInRange;
+            if (level >= 100) {
+                levelInRange = 99;
+            } else if (level < 0) {
+                levelInRange = 0;
+            } else {
+                levelInRange = level;
+            }
+
             newPayload = new byte[] { (byte) this.getNode().getNodeId(), // Node ID of Target Node
                     (byte) 8, // Number of payload Bytes following
                     (byte) 0x91, // 4 Magic Fibaro Bytes.
                     (byte) 0x1, (byte) 0xF, (byte) 0x26, (byte) 1, // set blind % (1 --> set, 2 ? , 3 report
                     (byte) 2, // set lamella
-                    (byte) level, // blind level
+                    (byte) levelInRange, // blind level
                     (byte) 0 // lamella level
             };
-        } else {
+        } else /* if (type.equalsIgnoreCase(FibaroFGRM222ValueType.Lamella.name())) */ {
+            final int levelInRange;
+            if (level >= 100) {
+                levelInRange = 99;
+            } else if (level < 0) {
+                levelInRange = 0;
+            } else {
+                levelInRange = level;
+            }
+
             newPayload = new byte[] { (byte) this.getNode().getNodeId(), (byte) 8, (byte) 0x91, (byte) 0x1, (byte) 0xF,
                     (byte) 0x26, (byte) 1, // set blind % (1 --> set, 2 ? , 3 report
                     (byte) 1, // set lamella
                     (byte) 0, // blind level
-                    (byte) level // lamella level
+                    (byte) levelInRange // lamella level
             };
         }
+
         result.setMessagePayload(newPayload);
         return result;
     }

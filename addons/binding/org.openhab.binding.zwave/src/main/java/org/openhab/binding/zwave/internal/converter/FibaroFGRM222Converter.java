@@ -129,9 +129,10 @@ public class FibaroFGRM222Converter extends ZWaveCommandClassConverter {
                 logger.warn("NODE {}: No conversion for channel {}", node.getNodeId(), channel.getUID());
                 return null;
             }
-            if (value == 0) {
-                value = 1;
-            }
+
+            // if (value == 0) {
+            // value = 1;
+            // }
             logger.debug("NODE {}: Converted command '{}' to value {} for item = {}, endpoint = {}.", node.getNodeId(),
                     command, channel.getEndpoint());
 
