@@ -287,7 +287,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel cpu_load is updated' () {
+    public void 'assert channel cpu#load is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD;
         String acceptedItemType = "Number";
 
@@ -296,7 +296,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel cpu_description is updated' () {
+    public void 'assert channel cpu#description is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_DESCRIPTION;
         String acceptedItemType = "String";
 
@@ -305,7 +305,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel cpu_name is updated' () {
+    public void 'assert channel cpu#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_NAME;
         String acceptedItemType = "String";
 
@@ -314,7 +314,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel cpu_logical_cores is updated' () {
+    public void 'assert channel cpu#logicalCores is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOGICAL_CORES
         String acceptedItemType = "Number";
 
@@ -323,7 +323,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel cpu_physical_cores is updated' () {
+    public void 'assert channel cpu#physicalCores is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_PHYSICAL_CORES
         String acceptedItemType = "Number";
 
@@ -332,7 +332,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel os_version is updated' () {
+    public void 'assert channel os#version is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_OS_VERSION;
         String acceptedItemType = "String";
 
@@ -341,7 +341,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel os_family is updated' () {
+    public void 'assert channel os#family is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_OS_FAMILY;
         String acceptedItemType = "String";
 
@@ -350,7 +350,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel os_manufacturer is updated' () {
+    public void 'assert channel os#manufacturer is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_OS_MANUFACTURER
         String acceptedItemType = "String";
 
@@ -359,7 +359,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel memory_available is updated' () {
+    public void 'assert channel memory#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_AVAILABLE
         String acceptedItemType = "Number";
 
@@ -368,7 +368,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel memory_used is updated' () {
+    public void 'assert channel memory#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_USED
         String acceptedItemType = "Number";
 
@@ -377,7 +377,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel memory_total is updated' () {
+    public void 'assert channel memory#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_TOTAL
         String acceptedItemType = "Number";
 
@@ -386,7 +386,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel memory_available_percent is updated' () {
+    public void 'assert channel memory#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_MEMORY_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
@@ -396,7 +396,7 @@ class SysteminfoOSGiTest extends OSGiTest{
 
 
     @Test
-    public void 'assert channel swap_available is updated' () {
+    public void 'assert channel swap#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE
         String acceptedItemType = "Number";
 
@@ -405,7 +405,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel swap_used is updated' () {
+    public void 'assert channel swap#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_USED
         String acceptedItemType = "Number";
 
@@ -414,7 +414,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel swap_total is updated' () {
+    public void 'assert channel swap#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_TOTAL
         String acceptedItemType = "Number";
 
@@ -423,7 +423,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel swap_available_percent is updated' () {
+    public void 'assert channel swap#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
@@ -432,7 +432,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_name is updated' () {
+    public void 'assert channel storage#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_NAME
         String acceptedItemType = "String";
 
@@ -441,7 +441,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_type is updated' () {
+    public void 'assert channel storage#type is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TYPE
         String acceptedItemType = "String";
 
@@ -450,7 +450,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_description is updated' () {
+    public void 'assert channel storage#description is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_DESCRIPTION
         String acceptedItemType = "String";
 
@@ -459,7 +459,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_available is updated' () {
+    public void 'assert channel storage#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE
         String acceptedItemType = "Number";
 
@@ -468,7 +468,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_used is updated' () {
+    public void 'assert channel storage#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_USED
         String acceptedItemType = "Number";
 
@@ -477,7 +477,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_total is updated' () {
+    public void 'assert channel storage#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TOTAL
         String acceptedItemType = "Number";
 
@@ -486,7 +486,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel storage_available_percent is updated' () {
+    public void 'assert channel storage#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE_PERCENT
         String acceptedItemType = "Number";
 
@@ -495,7 +495,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel drive_name is updated' () {
+    public void 'assert channel drive#name is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_NAME;
         String acceptedItemType = "String";
 
@@ -504,7 +504,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel drive_model is updated' () {
+    public void 'assert channel drive#model is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_MODEL;
         String acceptedItemType = "String";
 
@@ -513,7 +513,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel drive_serial is updated' () {
+    public void 'assert channel drive#serial is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_SERIAL;
         String acceptedItemType = "String";
 
@@ -522,7 +522,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sensors_cpu_temperature is updated' () {
+    public void 'assert channel sensors#cpuTemp is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_CPU_TEMPERATURE
         String acceptedItemType = "Number";
 
@@ -531,7 +531,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel sensors_cpu_voltage is updated' () {
+    public void 'assert channel sensors#cpuVoltage is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENOSRS_CPU_VOLTAGE
         String acceptedItemType = "Number";
 
@@ -542,7 +542,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     //Jenskins's machine has no CPU Fan
     @Ignore
     @Test
-    public void 'assert channel sensors_fan_speed is updated' () {
+    public void 'assert channel sensors#fanSpeed is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_FAN_SPEED
         String acceptedItemType = "Number";
 
@@ -553,7 +553,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     //Jenskins's machine has no battery
     @Ignore
     @Test
-    public void 'assert channel battery_name is updated' () {
+    public void 'assert channel battery#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_NAME
         String acceptedItemType = "String";
 
@@ -564,7 +564,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     //Jenskins's machine has no battery
     @Ignore
     @Test
-    public void 'assert channel battery_remaining_capacity is updated' () {
+    public void 'assert channel battery#remainingCapacity is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY
         String acceptedItemType = "Number";
 
@@ -575,7 +575,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     //Jenskins's machine has no battery
     @Ignore
     @Test
-    public void 'assert channel battery_remaining_time is updated' () {
+    public void 'assert channel battery#remainingTime is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME
         String acceptedItemType = "Number";
 
@@ -586,7 +586,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     //Jenskins's machine has not display
     @Ignore
     @Test
-    public void 'assert channel display_information is updated' () {
+    public void 'assert channel display#information is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_DISPLAY_INFORMATION
         String acceptedItemType = "String";
 
@@ -595,7 +595,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel network_ip is updated' () {
+    public void 'assert channel network#ip is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_IP
         String acceptedItemType = "String";
 
@@ -604,7 +604,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel network_name is updated' () {
+    public void 'assert channel network#networkName is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_NAME
         String acceptedItemType = "String";
 
@@ -613,7 +613,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel network_adapter_name is updated' () {
+    public void 'assert channel network#networkDisplayName is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_ADAPTER_NAME
         String acceptedItemType = "String";
 

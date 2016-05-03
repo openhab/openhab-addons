@@ -40,46 +40,60 @@ That means that by default configuration, channels with priority set to 'High' a
 
 
 ## Channels
+
+The binding support several channel group. Each channel group, contains one or more channels. In the list below, you can find, how are channel group and channels related.
+
+**thing** `computer`
+    * **group** `os`
+        * **channel** `family, manufacturer, version `
+    * **group** `memory`
+        * **channel** `available, total, used, available_percent`
+    * **group** `swap`
+        * **channel** `available, total, used, available_percent`
+    * **group** `storage`
+        * **channel** `available, total, used, available_percent, name, description, type`
+    * **group** `drive` 
+        * **channel** `name, model, serial`
+    * **group** `display` 
+        * **channel** `information`
+    * **group** `battery`
+        * **channel** `name, remainingCapacity,remainingTime`
+    * **group** `cpu`
+        * **channel** `name, description, load, logicalCores, physicalCores`
+    * **group** `sensors`
+        * **channel** `cpuTemp, cpuVoltage, fanSpeed`
+    * **group** `network`
+        * **channel** `ip, networkDisplayName, networkName` (String)
+
+In the table is shown more detailed information about each Channel type.
 The binding introduces the following channel types:
 
-| Chnanel Type | Channel Description | Supported item type | Default priority | Device index |
-| ------------- | ------------- |------------|----------| -------- |
-| os_manufacturer  | The manufacturer of the operating system  | String | Low | No |
-| os_version  | The version of the operating system  | String | Low | No |
-| os_family  | The family of the operating system | String | Low | No |
-| cpu_load  | CPU load in percents  | Number | High | No |
-| cpu_name  | CPU name  | String | Low | No |
-| cpu_description  | Processor model, family, SN, identifier, vendor, architecture  | String | Low | No |
-| cpu_logical_cores  | Number of CPU logical cores  | Number | Low | No |
-| cpu_phisycal_cores  | Number of CPU physical cores<  | Number | Low | No |
-| memory_available  | Available memory size in MB  | Number | High | No |
-| memory_used  | Used memory size in MB  | Number | High | No |
-| memory_total  | Total memory size in MB  | Number | Low | No |
-| memory_available_percent  | Available memory size in %  | Number | High | No |
-| swap_available  | Available swap memory size in MB  | Number | High | No |
-| swap_used  | Used swap memory size in MB  | Number | High | No |
-| swap_total  | Total swap memory size in MB  | Number | Low | No |
-| swap_available_percent  | Available swap memory size in %  | Number | High | No |
-| drive_name  | Drive name  | String | Low | Yes |
-| drive_model  | Drive description  | String | Low | Yes |
-| drive_serial  | Drive serial number  | String | Low | Yes |
-| storage_name  | Storage name  | String | Low | Yes |
-| storage_description  | Storage description  | String | Low | Yes |
-| storage_type  | Storage type  | String | Low | Yes |
-| storage_used  | Used storage size in MB  | Number | Medium | Yes |
-| storage_available  | Available storage size in MB  | Number | Medium | Yes |
-| storage_available_percent  | Available storage size in percents  | Number | Medium | Yes |
-| storage_total  | Total storage size in MB  | Number | Low | Yes |
-| cpu_temperature  | Temperature of the CPU in Celsius degrees  | Number | High | No |
-| cpu_voltage  | Voltage of the CPU in V  | Number | Medium | No |
-| fan_speed  | Speed of the CPU fan in rpm  | String | Low | Yes |
-| battery_name  | Battery name  | String | Low | Yes |
-| battery_time  | Remaining time of the battery in minutes | Number | Medium | Yes |
-| battery_capacity  | Percentage of capacity left  | Number | Medium | Yes |
-| display_information  | Product, manufacturer, SN, width and height of the display  | String | Low | Yes |
-| network_ip  | Host IP address of the network  | String | Low | Yes |
-| network_name  | Network name  | String | Low | Yes |
-| network_adapter_name  | Network adapter name  | String | Low | Yes |
+| Chnanel Type | Channel Description | Supported item type | Default priority | 
+| ------------- | ------------- |------------|----------|
+| manufacturer  | The manufacturer of the operating system  | String | Low |
+| version  | The version of the operating system  | String | Low | 
+| family  | The family of the operating system | String | Low |
+| load  | Load in percents  | Number | High | 
+| name | Name of the device  | String | Low | 
+| logicalCores  | Number of CPU logical cores  | Number | Low |
+| phisycalCores  | Number of CPU physical cores<  | Number | Low |
+| available  | Available size in MB  | Number | High |
+| used  | Used size in MB  | Number | High |
+| total  | Total size in MB  | Number | Low |
+| availablePercent  | Available size in %  | Number | High |
+| model  | The model of the device  | String | Low |
+| serial  | The serial number of the device  | String | Low |
+| description  | Description of the device  | String | Low |
+| type  | Storage type  | String | Low |
+| cpuTemp  | CPU Temperature in Celsius degrees  | Number | High |
+| cpuVoltage  | CPU Voltage in V  | Number | Medium |
+| fanSpeed  | Fan speed in rpm  | String | Low |
+| remainingTime  | Remaining time in minutes | Number | Medium |
+| remainingCapacity  | Remaining capacity in percents  | Number | Medium |
+| information  | Product, manufacturer, SN, width and height of the display in cm  | String | Low |
+| ip  | Host IP address of the network  | String | Low |
+| networkName  | The name of the network.  | String | Low |
+| networkDisplayName  | The display name of the network  | String | Low |
 
 Some of the channels may have device index attached to the Channel Type.
  - channel_ID  ::= Chnanel_Type & (deviceIndex) 
@@ -105,58 +119,58 @@ systeminfo:computer:work [interval_high=3, interval_medium=60]
 Items:
 ```
 /* Operating system */
-String OS_Family                    { channel="systeminfo:computer:work:os_family" }
-String OS_Manufacturer              { channel="systeminfo:computer:work:os_manufacturer" }
-String OS_Version                   { channel="systeminfo:computer:work:os_version" }
+String OS_Family                    { channel="systeminfo:computer:work:os#family" }
+String OS_Manufacturer              { channel="systeminfo:computer:work:os#manufacturer" }
+String OS_Version                   { channel="systeminfo:computer:work:os#version" }
 
 /* Network information*/
-String Network_AdapterName          { channel="systeminfo:computer:work:network_adapter_name" }
-String Network_Name                 { channel="systeminfo:computer:work:network_name" }
-String Network_IP                   { channel="systeminfo:computer:work:network_ip" }
+String Network_AdapterName          { channel="systeminfo:computer:work:network#networkDisplayName" }
+String Network_Name                 { channel="systeminfo:computer:work:network#networkName" }
+String Network_IP                   { channel="systeminfo:computer:work:network#ip" }
 
 /* CPU information*/
-String CPU_Name                     { channel="systeminfo:computer:work:cpu_name" }
-String CPU_Description              { channel="systeminfo:computer:work:cpu_description" }
-Number CPU_Load                     { channel="systeminfo:computer:work:cpu_load"} 
-Number CPU_LogicalProcCount         { channel="systeminfo:computer:work:cpu_logical_cores" }
-Number CPU_PhysicalProcCount        { channel="systeminfo:computer:work:cpu_phisycal_cores" }
+String CPU_Name                     { channel="systeminfo:computer:work:cpu#name" }
+String CPU_Description              { channel="systeminfo:computer:work:cpu#description" }
+Number CPU_Load                     { channel="systeminfo:computer:work:cpu#load"} 
+Number CPU_LogicalProcCount         { channel="systeminfo:computer:work:cpu#logicalCores" }
+Number CPU_PhysicalProcCount        { channel="systeminfo:computer:work:cpu#phisycalCores" }
 
 /* Drive information*/
-String Drive_Name                    { channel="systeminfo:computer:work:drive_name" }
-String Drive_Model                   { channel="systeminfo:computer:work:drive_model" }
-String Drive_Serial                  { channel="systeminfo:computer:work:drive_serial" }
+String Drive_Name                    { channel="systeminfo:computer:work:drive#name" }
+String Drive_Model                   { channel="systeminfo:computer:work:drive#model" }
+String Drive_Serial                  { channel="systeminfo:computer:work:drive#serial" }
 
 /* Storage information*/
-String Storage_Name                  { channel="systeminfo:computer:work:storage_name" }
-String Storage_Type                  { channel="systeminfo:computer:work:storage_type" }
-String Storage_Description           { channel="systeminfo:computer:work:storage_description" }
-Number Storage_Available             { channel="systeminfo:computer:work:storage_available" }
-Number Storage_Used                  { channel="systeminfo:computer:work:storage_used" }
-Number Storage_Total                 { channel="systeminfo:computer:work:storage_total" }
-Number Storage_Available_Percent     { channel="systeminfo:computer:work:storage_available_percent" }
+String Storage_Name                  { channel="systeminfo:computer:work:storage#name" }
+String Storage_Type                  { channel="systeminfo:computer:work:storage#type" }
+String Storage_Description           { channel="systeminfo:computer:work:storage#description" }
+Number Storage_Available             { channel="systeminfo:computer:work:storage#available" }
+Number Storage_Used                  { channel="systeminfo:computer:work:storage#used" }
+Number Storage_Total                 { channel="systeminfo:computer:work:storage#total" }
+Number Storage_Available_Percent     { channel="systeminfo:computer:work:storage#availablePercent" }
 
 /* Memory information*/
-Number Memory_Available              { channel="systeminfo:computer:work:memory_available" }
-Number Memory_Used                   { channel="systeminfo:computer:work:memory_used" }
-Number Memory_Total                  { channel="systeminfo:computer:work:memory_total" }
-Number Memory_Available_Percent      { channel="systeminfo:computer:work:memory_available_percent" }
+Number Memory_Available              { channel="systeminfo:computer:work:memory#available" }
+Number Memory_Used                   { channel="systeminfo:computer:work:memory#used" }
+Number Memory_Total                  { channel="systeminfo:computer:work:memory#total" }
+Number Memory_Available_Percent      { channel="systeminfo:computer:work:memory#availablePercent" }
 
 /* Swap memory information*/
-Number Swap_Available                { channel="systeminfo:computer:work:swap_available" }
-Number Swap_Used                     { channel="systeminfo:computer:work:swap_used" }
-Number Swap_Total                    { channel="systeminfo:computer:work:swap_total" }
-Number Swap_Available_Percent        { channel="systeminfo:computer:work:swap_available_percent" }
+Number Swap_Available                { channel="systeminfo:computer:work:swap#available" }
+Number Swap_Used                     { channel="systeminfo:computer:work:swap#used" }
+Number Swap_Total                    { channel="systeminfo:computer:work:swap#total" }
+Number Swap_Available_Percent        { channel="systeminfo:computer:work:swap#availablePercent" }
 
 /* Battery information*/
-String Battery_Name                  { channel="systeminfo:computer:work:battery_name" }
-Number Battery_RemainingCapacity     { channel="systeminfo:computer:work:battery_remaining_capacity" }
-Number Battery_RemainingTime         { channel="systeminfo:computer:work:battery_remaining_time" }
+String Battery_Name                  { channel="systeminfo:computer:work:battery#name" }
+Number Battery_RemainingCapacity     { channel="systeminfo:computer:work:battery#remainingCapacity" }
+Number Battery_RemainingTime         { channel="systeminfo:computer:work:battery#remainingTime" }
 
 /* Display information*/
-String Display_Description           { channel="systeminfo:computer:work:display_information" }
+String Display_Description           { channel="systeminfo:computer:work:display#information" }
 
 /* Sensors information*/
-Number Sensor_CPUTemp                { channel="systeminfo:computer:work:sensors_cpu_temperature" }
-Number Sensor_CPUVoltage             { channel="systeminfo:computer:work:sensors_cpu_voltage" }
-Number Sensor_FanSpeed               { channel="systeminfo:computer:work:sensors_fan_speed" }
+Number Sensor_CPUTemp                { channel="systeminfo:computer:work:sensors#cpuTemp" }
+Number Sensor_CPUVoltage             { channel="systeminfo:computer:work:sensors#cpuVoltage" }
+Number Sensor_FanSpeed               { channel="systeminfo:computer:work:sensors#fanSpeed" }
 ```

@@ -6,259 +6,274 @@
 	<!-- This file contains channel specific information and describes how the different channel types should be rendered. Each 
 		channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
 
-	<channel-type id="os_manufacturer">
+	<channel-group-type id="osGroup">
+		<label>OS parameters</label>
+		<description>OS parameters</description>
+		<channels>
+			<channel id="family" typeId="family" />
+			<channel id="manufacturer" typeId="manufacturer" />
+			<channel id="version" typeId="version" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="memoryGroup">
+		<label>Physical memory</label>
+		<description>Physical memory information</description>
+		<channels>
+			<channel id="total" typeId="total" />
+			<channel id="available" typeId="available" />
+			<channel id="used" typeId="used" />
+			<channel id="availablePercent" typeId="availablePercent" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="swapGroup">
+		<label>Swap Memory</label>
+		<description>Swap memory information</description>
+		<channels>
+			<channel id="total" typeId="total" />
+			<channel id="available" typeId="available" />
+			<channel id="used" typeId="used" />
+			<channel id="availablePercent" typeId="availablePercent" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="storageGroup">
+		<label>Storage</label>
+		<description>Logical storage information</description>
+		<channels>
+			<channel id="total" typeId="total" />
+			<channel id="available" typeId="available" />
+			<channel id="used" typeId="used" />
+			<channel id="availablePercent" typeId="availablePercent" />
+			<channel id="name" typeId="name" />
+			<channel id="description" typeId="description" />
+			<channel id="type" typeId="type" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="driveGroup">
+		<label>Drive</label>
+		<description>Drive information</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="model" typeId="model" />
+			<channel id="serial" typeId="serial" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="networkGroup">
+		<label>Network</label>
+		<description>Network parameters</description>
+		<channels>
+			<channel id="ip" typeId="ip" />
+			<channel id="networkName" typeId="networkName" />
+			<channel id="networkDisplayName" typeId="networkDisplayName" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="displayGroup">
+		<label>Display</label>
+		<description>Display parameters</description>
+		<channels>
+			<channel id="information" typeId="information" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sensorsGroup">
+		<label>Sensor</label>
+		<description>Sensor parameters</description>
+		<channels>
+			<channel id="cpuTemp" typeId="cpuTemp" />
+			<channel id="cpuVoltage" typeId="cpuVoltage" />
+			<channel id="fanSpeed" typeId="fanSpeed" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="batteryGroup">
+		<label>Battery</label>
+		<description>Battery parameters</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="remainingCapacity" typeId="remainingCapacity" />
+			<channel id="remainingTime" typeId="remainingTime" />
+		</channels>
+	</channel-group-type>
+
+	<!-- CPU parameters -->
+	<channel-group-type id="cpuGroup">
+		<label>CPU</label>
+		<description>CPU parameters</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="description" typeId="description" />
+			<channel id="logicalCores" typeId="logicalCores" />
+			<channel id="phisycalCores" typeId="phisycalCores" />
+			<channel id="load" typeId="load" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="manufacturer">
 		<item-type>String</item-type>
-		<label>OS manufacturer</label>
+		<label>Manufacturer</label>
 		<description>The manufacturer of the operating system</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="os_version">
+	<channel-type id="version">
 		<item-type>String</item-type>
-		<label>OS Version</label>
+		<label>Version</label>
 		<description>The version of the operating system</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="os_family">
+	<channel-type id="family">
 		<item-type>String</item-type>
-		<label>OS Family</label>
+		<label>Family</label>
 		<description>The family of the operating system</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="memory_available">
+	<channel-type id="available">
 		<item-type>Number</item-type>
-		<label>Memory available</label>
-		<description>Available memory size in MB</description>
+		<label>Available</label>
+		<description>Available size in MB</description>
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="memory_used">
+	<channel-type id="used">
 		<item-type>Number</item-type>
-		<label>Memory used</label>
-		<description>Used memory size in MB</description>
+		<label>Used</label>
+		<description>Used size in MB</description>
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="memory_total">
+	<channel-type id="total">
 		<item-type>Number</item-type>
-		<label>Memory total</label>
-		<description>Total memory size in MB</description>
+		<label>Total</label>
+		<description>Total size in MB</description>
 		<state readOnly="true" pattern="%d MB" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="memory_available_percent">
+	<channel-type id="availablePercent">
 		<item-type>Number</item-type>
-		<label>Memory available</label>
-		<description>Available memory size in percents</description>
+		<label>Available</label>
+		<description>Available size in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="swap_available">
-		<item-type>Number</item-type>
-		<label>Swap memory available</label>
-		<description>Available swap memory size in MB</description>
-		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:highpriority" />
-	</channel-type>
-
-	<channel-type id="swap_used">
-		<item-type>Number</item-type>
-		<label>Swap memory used</label>
-		<description>Used swap memory size in MB</description>
-		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:highpriority" />
-	</channel-type>
-
-	<channel-type id="swap_total">
-		<item-type>Number</item-type>
-		<label>Swap memory total</label>
-		<description>Total swap memory size in MB</description>
-		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="swap_available_percent">
-		<item-type>Number</item-type>
-		<label>Swap memory available</label>
-		<description>Available swap memory size in percents</description>
-		<state readOnly="true" pattern="%.1f %%" />
-		<config-description uri="systeminfo:channels:highpriority" />
-	</channel-type>
-
-	<channel-type id="drive_name">
+	<channel-type id="name">
 		<item-type>String</item-type>
-		<label>Drive name</label>
-		<description>The name of the drive</description>
+		<label>Name</label>
+		<description>Name of the device</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="drive_model">
+	<channel-type id="model">
 		<item-type>String</item-type>
-		<label>Drive model</label>
-		<description>The model of the drive</description>
+		<label>Model</label>
+		<description>The model of the device</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="drive_serial">
+	<channel-type id="serial">
 		<item-type>String</item-type>
-		<label>Drive serial number</label>
-		<description>The serial number of the drive</description>
+		<label>Serial number</label>
+		<description>The serial number of the device</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="storage_name">
+	<channel-type id="description">
 		<item-type>String</item-type>
-		<label>Storage name</label>
-		<description>Storage name</description>
+		<label>Description</label>
+		<description>Description of the device</description>
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="storage_description">
+	<channel-type id="type">
 		<item-type>String</item-type>
-		<label>Storage description</label>
-		<description>Storage description</description>
-		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="storage_type">
-		<item-type>String</item-type>
-		<label>Storage type</label>
+		<label>Type</label>
 		<description>Storage type</description>
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="storage_used">
+	<channel-type id="cpuTemp">
 		<item-type>Number</item-type>
-		<label>Storage used</label>
-		<description>Used storage size in MB</description>
-		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
-	</channel-type>
-
-	<channel-type id="storage_total">
-		<item-type>Number</item-type>
-		<label>Storage total</label>
-		<description>Total storage size in MB</description>
-		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="storage_available">
-		<item-type>Number</item-type>
-		<label>Storage available</label>
-		<description>Available storage size in MB</description>
-		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
-	</channel-type>
-
-	<channel-type id="storage_available_percent">
-		<item-type>Number</item-type>
-		<label>Storage available</label>
-		<description>Available storage size in percents</description>
-		<state readOnly="true" pattern="%.1f %%" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
-	</channel-type>
-
-	<channel-type id="cpu_temperature">
-		<item-type>Number</item-type>
-		<label>CPU vemperature</label>
-		<description>Temperature of the CPI in Celsius degrees</description>
+		<label>CPU Temperature</label>
+		<description>CPU Temperature in Celsius degrees</description>
 		<state readOnly="true" pattern="%.1f °" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="cpu_voltage">
+	<channel-type id="cpuVoltage">
 		<item-type>Number</item-type>
-		<label>CPU voltage</label>
-		<description>Voltage of the CPU in V</description>
+		<label>CPU Voltage</label>
+		<description>CPU Voltage in V</description>
 		<state readOnly="true" pattern="%.1f V" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="fan_speed">
+	<channel-type id="fanSpeed">
 		<item-type>Number</item-type>
-		<label>CPU fan speed</label>
-		<description>Speed of the CPU fan in rpm</description>
+		<label>Fan speed</label>
+		<description>Fan speed in rpm</description>
 		<state readOnly="true" pattern="%d rpm" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="battery_name">
-		<item-type>String</item-type>
-		<label>Battery name</label>
-		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="battery_time">
+	<channel-type id="remainingTime">
 		<item-type>Number</item-type>
-		<label>Remaining time of the battery</label>
+		<label>Remaining time</label>
 		<description>Remaining time in minutes</description>
 		<state readOnly="true" pattern="%d Minutes" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="battery_capacity">
+	<channel-type id="remainingCapacity">
 		<item-type>Number</item-type>
-		<label>Battery capacity</label>
-		<description>Battery capacity left in percents</description>
+		<label>Remaining capacity</label>
+		<description>Remaining capacity in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="cpu_load">
+	<channel-type id="load">
 		<item-type>Number</item-type>
-		<label>CPU load</label>
-		<description>CPU load in percents</description>
+		<label>Load</label>
+		<description>Load in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="cpu_name">
-		<item-type>String</item-type>
-		<label>CPU name</label>
-		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="cpu_description">
-		<item-type>String</item-type>
-		<label>CPU description</label>
-		<description>Processor model, family, SN, identifier, vendor, architecture</description>
-		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="cpu_logical_cores">
+	<channel-type id="logicalCores">
 		<item-type>Number</item-type>
-		<label>Number of CPU logical cores</label>
+		<label>CPU logical cores</label>
+		<description>Number of CPU logical cores</description>
 		<state readOnly="true" pattern="%d" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="cpu_phisycal_cores">
+	<channel-type id="phisycalCores">
 		<item-type>Number</item-type>
-		<label>Number of CPU physical cores</label>
+		<label>CPU physical cores</label>
+		<description>Number of CPU physical cores</description>
 		<state readOnly="true" pattern="%d" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="display_information">
+	<channel-type id="information">
 		<item-type>String</item-type>
 		<label>Display information</label>
 		<description>Product, manufacturer, SN, width and height of the display in cm</description>
@@ -266,7 +281,7 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="network_ip">
+	<channel-type id="ip">
 		<item-type>String</item-type>
 		<label>IP address </label>
 		<description>Host IP address of the network</description>
@@ -274,16 +289,18 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="network_name">
+	<channel-type id="networkName">
 		<item-type>String</item-type>
 		<label>Network name</label>
+		<description>The name of the network.</description>
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="network_adapter_name">
+	<channel-type id="networkDisplayName">
 		<item-type>String</item-type>
-		<label>Network adapter name</label>
+		<label>Network display name</label>
+		<description>The display name of the network</description>
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>

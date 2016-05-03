@@ -91,16 +91,14 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        System.out.println("Start init.");
         logger.debug("Start initializing!");
         try {
             this.systeminfo = new OshiSysteminfo();
         } catch (SocketException e) {
-            logger.error("Network information is not availble ! I/O error occured {e}", e);
+            logger.error("Network information is not available ! I/O error occured {e}", e);
         } catch (Exception e) {
             logger.error("Can not instantate Systeminfo object", e);
         }
-        System.out.println("Class is created.");
         if (isConfigurationValid()) {
             groupChannelsByPriority();
             scheduleUpdates();

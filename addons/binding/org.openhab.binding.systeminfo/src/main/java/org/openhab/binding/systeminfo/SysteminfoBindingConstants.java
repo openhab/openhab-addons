@@ -25,182 +25,182 @@ public class SysteminfoBindingConstants {
     /**
      * Contains information about the family /Windows, Linux, OS X etc/ of the operation system
      */
-    public final static String CHANNEL_OS_FAMILY = "os_family";
+    public final static String CHANNEL_OS_FAMILY = "os#family";
 
     /**
      * Name of the manufacturer of the operation system
      */
-    public final static String CHANNEL_OS_MANUFACTURER = "os_manufacturer";
+    public final static String CHANNEL_OS_MANUFACTURER = "os#manufacturer";
 
     /**
      * Version of the operation system
      */
-    public final static String CHANNEL_OS_VERSION = "os_version";
+    public final static String CHANNEL_OS_VERSION = "os#version";
 
     /**
      * Size of the available memory
      */
-    public final static String CHANNEL_MEMORY_AVAILABLE = "memory_available";
+    public final static String CHANNEL_MEMORY_AVAILABLE = "memory#available";
 
     /**
      * Size of the used memory
      */
-    public final static String CHANNEL_MEMORY_USED = "memory_used";
+    public final static String CHANNEL_MEMORY_USED = "memory#used";
 
     /**
      * Total size of the memory
      */
-    public final static String CHANNEL_MEMORY_TOTAL = "memory_total";
+    public final static String CHANNEL_MEMORY_TOTAL = "memory#total";
 
     /**
      * Percents of the available memory
      */
-    public final static String CHANNEL_MEMORY_AVAILABLE_PERCENT = "memory_available_percent";
+    public final static String CHANNEL_MEMORY_AVAILABLE_PERCENT = "memory#availablePercent";
 
     /**
      * Total size of swap memory
      */
-    public final static String CHANNEL_SWAP_TOTAL = "swap_total";
+    public final static String CHANNEL_SWAP_TOTAL = "swap#total";
 
     /**
      * Size of the available swap memory
      */
-    public final static String CHANNEL_SWAP_AVAILABLE = "swap_available";
+    public final static String CHANNEL_SWAP_AVAILABLE = "swap#available";
 
     /**
      * Size of the used swap memory
      */
-    public final static String CHANNEL_SWAP_USED = "swap_used";
+    public final static String CHANNEL_SWAP_USED = "swap#used";
 
     /**
      * Percents of the available swap memory
      */
-    public final static String CHANNEL_SWAP_AVAILABLE_PERCENT = "swap_available_percent";
+    public final static String CHANNEL_SWAP_AVAILABLE_PERCENT = "swap#availablePercent";
 
     /**
      * Physical storage drive name
      */
-    public final static String CHANNEL_DRIVE_NAME = "drive_name";
+    public final static String CHANNEL_DRIVE_NAME = "drive#name";
 
     /**
      * Physical storage drive model
      */
-    public final static String CHANNEL_DRIVE_MODEL = "drive_model";
+    public final static String CHANNEL_DRIVE_MODEL = "drive#model";
 
     /**
      * Physical storage drive serial number
      */
-    public final static String CHANNEL_DRIVE_SERIAL = "drive_serial";
+    public final static String CHANNEL_DRIVE_SERIAL = "drive#serial";
 
     /**
      * Name of the logical volume storage
      */
-    public final static String CHANNEL_STORAGE_NAME = "storage_name";
+    public final static String CHANNEL_STORAGE_NAME = "storage#name";
 
     /**
      * Logical storage volume type -(e.g. NTFS, FAT32 ..)
      */
-    public final static String CHANNEL_STORAGE_TYPE = "storage_type";
+    public final static String CHANNEL_STORAGE_TYPE = "storage#type";
 
     /**
      * Description of the logical volume storage
      */
-    public final static String CHANNEL_STORAGE_DESCRIPTION = "storage_description";
+    public final static String CHANNEL_STORAGE_DESCRIPTION = "storage#description";
 
     /**
      * Size of the available storage space
      */
-    public final static String CHANNEL_STORAGE_AVAILABLE = "storage_available";
+    public final static String CHANNEL_STORAGE_AVAILABLE = "storage#available";
 
     /**
      * Size of the used storage space
      */
-    public final static String CHANNEL_STORAGE_USED = "storage_used";
+    public final static String CHANNEL_STORAGE_USED = "storage#used";
 
     /**
      * Total storage space
      */
-    public final static String CHANNEL_STORAGE_TOTAL = "storage_total";
+    public final static String CHANNEL_STORAGE_TOTAL = "storage#total";
 
     /**
      * Percents of the available storage space
      */
-    public final static String CHANNEL_STORAGE_AVAILABLE_PERCENT = "storage_available_percent";
+    public final static String CHANNEL_STORAGE_AVAILABLE_PERCENT = "storage#availablePercent";
 
     /**
      * Temperature of the CPU measured from the sensors.
      */
-    public final static String CHANNEL_SENSORS_CPU_TEMPERATURE = "sensors_cpu_temperature";
+    public final static String CHANNEL_SENSORS_CPU_TEMPERATURE = "sensors#cpuTemp";
 
     /**
      * Voltage of the CPU core.
      */
-    public final static String CHANNEL_SENOSRS_CPU_VOLTAGE = "sensors_cpu_voltage";
+    public final static String CHANNEL_SENOSRS_CPU_VOLTAGE = "sensors#cpuVoltage";
 
     /**
      * Fan speed
      */
-    public final static String CHANNEL_SENSORS_FAN_SPEED = "sensors_fan_speed";
+    public final static String CHANNEL_SENSORS_FAN_SPEED = "sensors#fanSpeed";
 
     /**
      * Name of the battery
      */
-    public final static String CHANNEL_BATTERY_NAME = "battery_name";
+    public final static String CHANNEL_BATTERY_NAME = "battery#name";
 
     /**
      * Remaining capacity of the battery.
      */
-    public final static String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery_remaining_capacity";
+    public final static String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery#remainingCapacity";
 
     /**
      * Estimated remaining time of the battery
      */
-    public final static String CHANNEL_BATTERY_REMAINING_TIME = "battery_remaining_time";
+    public final static String CHANNEL_BATTERY_REMAINING_TIME = "battery#remainingTime";
 
     /**
      * Detailed description about the CPU
      */
-    public final static String CHANNEL_CPU_DESCRIPTION = "cpu_description";
+    public final static String CHANNEL_CPU_DESCRIPTION = "cpu#description";
 
     /**
      * Number of CPU logical cores
      */
-    public final static String CHANNEL_CPU_LOGICAL_CORES = "cpu_logical_cores";
+    public final static String CHANNEL_CPU_LOGICAL_CORES = "cpu#logicalCores";
 
     /**
      * Number of CPU physical cores
      */
-    public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu_phisycal_cores";
+    public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu#phisycalCores";
 
     /**
      * Average CPU load
      */
-    public final static String CHANNEL_CPU_LOAD = "cpu_load";
+    public final static String CHANNEL_CPU_LOAD = "cpu#load";
 
     /**
      * CPU name
      */
-    public final static String CHANNEL_CPU_NAME = "cpu_name";
+    public final static String CHANNEL_CPU_NAME = "cpu#name";
 
     /**
      * Information about the display device
      */
-    public final static String CHANNEL_DISPLAY_INFORMATION = "display_information";
+    public final static String CHANNEL_DISPLAY_INFORMATION = "display#information";
 
     /**
      * Host IP address of the network
      */
-    public final static String CHANNEL_NETWORK_IP = "network_ip";
+    public final static String CHANNEL_NETWORK_IP = "network#ip";
 
     /**
-     * Network adapter name
+     * Network display name
      */
-    public final static String CHANNEL_NETWORK_ADAPTER_NAME = "network_adapter_name";
+    public final static String CHANNEL_NETWORK_ADAPTER_NAME = "network#networkName";
 
     /**
      * Network name
      */
-    public final static String CHANNEL_NETWORK_NAME = "network_name";
+    public final static String CHANNEL_NETWORK_NAME = "network#networkDisplayName";
 
     /**
      * Name of the configuration parameter of the thing that defines refresh time for High priority channels
