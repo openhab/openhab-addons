@@ -115,8 +115,8 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Start reading Thing configuration.");
         Configuration config = getConfig();
         try {
-            refreshIntervalMediumPriority = (BigDecimal) config.get(MEDIUM_PRIORITY_REFRESH_TIME);
-            refreshIntervalHighPriority = (BigDecimal) config.get(HIGH_PRIORITY_REFRESH_TIME);
+            refreshIntervalMediumPriority = (BigDecimal) config.get((Object)MEDIUM_PRIORITY_REFRESH_TIME);
+            refreshIntervalHighPriority = (BigDecimal) config.get((Object)HIGH_PRIORITY_REFRESH_TIME);
 
             if (refreshIntervalHighPriority.intValue() <= 0 || refreshIntervalMediumPriority.intValue() <= 0) {
                 throw new IllegalArgumentException("Refresh time must be positive number!");

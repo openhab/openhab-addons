@@ -163,7 +163,7 @@
 
 	<channel-type id="availablePercent">
 		<item-type>Number</item-type>
-		<label>Available</label>
+		<label>Available (%)</label>
 		<description>Available size in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:highpriority" />

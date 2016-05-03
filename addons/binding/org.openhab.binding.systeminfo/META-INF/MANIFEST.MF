@@ -22,7 +22,8 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.systeminfo,
  org.openhab.binding.systeminfo.handler,
- org.slf4j
+ org.slf4j,
+ org.eclipse.smarthome.config.discovery
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.systeminfo,
  org.openhab.binding.systeminfo.handler

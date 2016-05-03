@@ -23,7 +23,7 @@ If multiple storage or display devices support is needed, new thing type has to 
 
 ## Discovery
 
-Discovery is not necessary.
+The discovery service implementation tries to resolve the computer name. If the resolving process fails, the computer name is set to "Unknown". In both cases it creates a Discovery Result with thing type  **computer**.
 
 ## Binding configuration
 
