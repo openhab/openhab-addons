@@ -71,8 +71,8 @@ public class ZWaveClockConverter extends ZWaveCommandClassConverter {
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
         int offsetAllowed = Integer.MAX_VALUE;
         String offsetString = channel.getArguments().get("config_offset");
-        if (offsetString != null && Integer.parseInt(offsetString) != 0) {
-            offsetAllowed = Integer.parseInt(offsetString);
+        if (offsetString != null && Double.valueOf(offsetString) != 0) {
+            offsetAllowed = Double.valueOf(offsetString).intValue();
         }
 
         State state = null;
