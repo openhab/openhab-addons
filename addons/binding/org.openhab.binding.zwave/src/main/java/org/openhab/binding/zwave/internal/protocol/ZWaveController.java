@@ -11,7 +11,9 @@ package org.openhab.binding.zwave.internal.protocol;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -119,6 +121,7 @@ public class ZWaveController {
     private int sucID = 0;
     private boolean softReset = false;
     private boolean masterController = true;
+    private Set<SerialMessageClass> apiCapabilities = new HashSet<>();
 
     private AtomicInteger timeOutCount = new AtomicInteger(0);
 
@@ -330,6 +333,7 @@ public class ZWaveController {
                 this.manufactureId = ((SerialApiGetCapabilitiesMessageClass) processor).getManufactureId();
                 this.deviceId = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceId();
                 this.deviceType = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceType();
+                this.apiCapabilities = ((SerialApiGetCapabilitiesMessageClass) processor).getApiCapabilities();
 
                 this.enqueue(new SerialApiGetInitDataMessageClass().doRequest());
                 break;
@@ -736,7 +740,8 @@ public class ZWaveController {
      *
      */
     public void requestAddNodesStart() {
-        this.enqueue(new AddNodeMessageClass().doRequestStart(true));
+        this.enqueue(new AddNodeMessageClass().doRequestStart(true,
+                hasApiCapability(SerialMessageClass.ExploreRequestInclusion)));
         logger.debug("ZWave controller start inclusion");
     }
 
@@ -1025,6 +1030,17 @@ public class ZWaveController {
      */
     public boolean isMasterController() {
         return masterController;
+    }
+
+    /**
+     * Checks if the serial API supports the given capability.
+     *
+     * @param capability
+     *            the capability to check
+     * @return true if the controller API support the capability
+     */
+    public boolean hasApiCapability(SerialMessageClass capability) {
+        return apiCapabilities.contains(capability);
     }
 
     /**

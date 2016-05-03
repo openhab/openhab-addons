@@ -155,6 +155,22 @@
         </state>
     </channel-type>
 
+
+    <!-- Tamper Alarm Channel -->
+    <channel-type id="alarm_tamper">
+        <item-type>Switch</item-type>
+        <label>Burglar alarm</label>
+        <description>Indicates if the tamper alarm is triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="OFF">Ok</option>
+                <option value="ON">Alarm</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Color Setting Channel -->
     <channel-type id="color_color">
         <item-type>Color</item-type>
