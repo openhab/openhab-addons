@@ -154,7 +154,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
                 logger.debug("NODE {}: Process Alarm Supported Report", getNode().getNodeId());
 
                 int numBytes = serialMessage.getMessagePayloadByte(offset + 1);
-
+                numBytes = 0;
                 for (int i = 0; i < numBytes; ++i) {
                     for (int bit = 0; bit < 8; ++bit) {
                         if (((serialMessage.getMessagePayloadByte(offset + i + 2)) & (1 << bit)) == 0) {
