@@ -42,6 +42,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
 /**
@@ -50,10 +51,13 @@ import org.openhab.binding.systeminfo.handler.SysteminfoHandler
  * @author Svilen Valkanov
  *
  */
+
 class SysteminfoOSGiTest extends OSGiTest{
     def  DEFAULT_TEST_THING_NAME = "work";
     def  DEFAULT_TEST_ITEM_NAME = "test"
     def DEFAULT_CHANNEL_TEST_PRIORITY = "High"
+    def DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
+    def DEFAULT_THING_INITIALIZE_MAX_TIME = 3000
 
     Thing systemInfoThing
 
@@ -95,7 +99,7 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     private void initializeThingWithConfiguration(Configuration config) {
         String priority = DEFAULT_CHANNEL_TEST_PRIORITY
-        String channelID = SysteminfoBindingConstants.CHANNEL_CPU_NAME
+        String channelID = DEFAULT_TEST_CHANNEL_ID
         String acceptedItemType = "String";
 
         initializeThing(config,channelID,acceptedItemType,priority)
@@ -145,7 +149,7 @@ class SysteminfoOSGiTest extends OSGiTest{
             def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
             def description = systemInfoThing.getStatusInfo().getDescription();
             assertThat  "Thing status detail is {$thingStatusDetail} with description {$description}",systemInfoThing.getStatus(), is(equalTo(ThingStatus.ONLINE))
-        }, 3000)
+        }, DEFAULT_THING_INITIALIZE_MAX_TIME)
         //The binding starts all refresh tasks in SysteminfoHandler.scheduleUpdates() after this delay !
         sleep(SysteminfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT  * 1000)
 
@@ -222,7 +226,7 @@ class SysteminfoOSGiTest extends OSGiTest{
             assertThat  "Invalid configuratuin is used !", systemInfoThing.getStatus(), is(equalTo(ThingStatus.OFFLINE))
             assertThat systemInfoThing.getStatusInfo().getStatusDetail() , is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR))
             assertThat systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing can not be initialized! Configuration is invalid !"))
-        }, 1000)
+        }, DEFAULT_THING_INITIALIZE_MAX_TIME)
     }
 
     @Test
@@ -237,7 +241,7 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @Test
     public void 'assert medium priority channel is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE;
+        String channnelID = DEFAULT_TEST_CHANNEL_ID;
         String acceptedItemType = "Number";
         String priority = "Medium"
 
@@ -246,8 +250,8 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     private void testItemStateOnCommand(Command command,boolean mustItemStateChange) {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE;
-        String acceptedItemType = "Number";
+        String channnelID = DEFAULT_TEST_CHANNEL_ID
+        String acceptedItemType = "Number"
 
         //Priority is set to low, so after initialize () channel state will be updated only on REFRESH
         String priority = "Low"
@@ -278,8 +282,8 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @Test
     public void 'assert state of not existing device is not updated' () {
-        int deviceIndex = 15;
-        String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_USED + deviceIndex;
+        int deviceIndex = 50;
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_MAC + deviceIndex;
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
@@ -288,7 +292,52 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @Test
     public void 'assert channel cpu#load is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD;
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel cpu#load1 is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_1
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel cpu#load5 is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_5
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel cpu#load15 is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD_15;
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel cpu#threads is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_THREADS;
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Test
+    public void 'assert channel cpu#uptime is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_UPTIME;
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
@@ -394,7 +443,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
-
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE
@@ -404,6 +453,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_USED
@@ -413,6 +463,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_TOTAL
@@ -422,6 +473,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel swap#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SWAP_AVAILABLE_PERCENT
@@ -431,6 +483,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_NAME
@@ -440,6 +493,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#type is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TYPE
@@ -449,6 +503,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#description is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_DESCRIPTION
@@ -458,6 +513,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#available is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE
@@ -467,6 +523,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#used is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_USED
@@ -476,6 +533,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#total is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_TOTAL
@@ -485,6 +543,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel storage#availablePercent is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_STORAGE_AVAILABLE_PERCENT
@@ -494,6 +553,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel drive#name is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_NAME;
@@ -503,6 +563,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel drive#model is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_MODEL;
@@ -512,6 +573,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel drive#serial is updated' () {
         String channelID = SysteminfoBindingConstants.CHANNEL_DRIVE_SERIAL;
@@ -540,7 +602,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     //Jenskins's machine has no CPU Fan
-    @Ignore
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel sensors#fanSpeed is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_SENSORS_FAN_SPEED
@@ -551,7 +613,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     //Jenskins's machine has no battery
-    @Ignore
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel battery#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_NAME
@@ -562,7 +624,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     //Jenskins's machine has no battery
-    @Ignore
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel battery#remainingCapacity is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY
@@ -573,7 +635,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     //Jenskins's machine has no battery
-    @Ignore
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel battery#remainingTime is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME
@@ -583,8 +645,8 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
-    //Jenskins's machine has not display
-    @Ignore
+    //Jenskins's machine has no display
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel display#information is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_DISPLAY_INFORMATION
@@ -594,6 +656,8 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Ignore
     @Test
     public void 'assert channel network#ip is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_IP
@@ -603,6 +667,57 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'asssert channel network#mac is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_MAC
+        String acceptedItemType = "String";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'asssert channel network#dataSent is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_SENT
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'asssert channel network#dataReceived is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_RECEIVED
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'asssert channel network#packagesSent is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKAGES_SENT
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'asssert channel network#packagesReceived is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKAGES_RECEIVED
+        String acceptedItemType = "Number";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel network#networkName is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_NAME
@@ -612,6 +727,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
     public void 'assert channel network#networkDisplayName is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_ADAPTER_NAME

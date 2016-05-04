@@ -48,6 +48,10 @@
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<configuration>
+					<providerHint>junit47</providerHint>
+					<providerProperties>
+						<excludegroups>org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface</excludegroups>
+					</providerProperties>
 					<dependencies>
 						<dependency>
 							<type>eclipse-plugin</type>
@@ -90,7 +94,7 @@
 							<artifactId>ch.qos.logback.slf4j</artifactId>
 							<version>0.0.0</version>
 						</dependency>
-					</dependencies>					
+					</dependencies>
 					<defaultStartLevel>
 						<level>4</level>
 						<autoStart>true</autoStart>

@@ -19,8 +19,9 @@ Import-Package: groovy.json,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
- org.junit,
+ org.junit;version="4.11",
  org.openhab.binding.systeminfo.test,
  org.osgi.framework,
- org.slf4j
+ org.slf4j, 
+ org.junit.experimental.categories
 Export-Package: org.openhab.binding.systeminfo.test
