@@ -115,8 +115,10 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Start reading Thing configuration.");
         Configuration config = getConfig();
         try {
-            refreshIntervalMediumPriority = (BigDecimal) config.get((Object)MEDIUM_PRIORITY_REFRESH_TIME);
-            refreshIntervalHighPriority = (BigDecimal) config.get((Object)HIGH_PRIORITY_REFRESH_TIME);
+            Object mediumRefreshTime = MEDIUM_PRIORITY_REFRESH_TIME;
+            Object highRefreshTime = HIGH_PRIORITY_REFRESH_TIME;
+            refreshIntervalMediumPriority = (BigDecimal) config.get(mediumRefreshTime);
+            refreshIntervalHighPriority = (BigDecimal) config.get(highRefreshTime);
 
             if (refreshIntervalHighPriority.intValue() <= 0 || refreshIntervalMediumPriority.intValue() <= 0) {
                 throw new IllegalArgumentException("Refresh time must be positive number!");
@@ -133,6 +135,11 @@ public class SysteminfoHandler extends BaseThingHandler {
     private void groupChannelsByPriority() {
         for (Channel channel : getThing().getChannels()) {
             String priority = (String) channel.getConfiguration().get("priority");
+            if (priority == null) {
+                logger.debug("Channel with id {} will not be updated. The channel has no priority set !",
+                        channel.getUID());
+                break;
+            }
             switch (priority) {
                 case "High":
                     highPriorityChannels.add(channel.getUID());
@@ -250,6 +257,21 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_CPU_LOAD:
                     state = systeminfo.getCpuLoad();
                     break;
+                case CHANNEL_CPU_LOAD_1:
+                    state = systeminfo.getCpuLoad1();
+                    break;
+                case CHANNEL_CPU_LOAD_5:
+                    state = systeminfo.getCpuLoad5();
+                    break;
+                case CHANNEL_CPU_LOAD_15:
+                    state = systeminfo.getCpuLoad15();
+                    break;
+                case CHANNEL_CPU_UPTIME:
+                    state = systeminfo.getCpuUptime();
+                    break;
+                case CHANNEL_CPU_THREADS:
+                    state = systeminfo.getCpuThreads();
+                    break;
                 case CHANNEL_CPU_PHYSICAL_CORES:
                     state = systeminfo.getCpuPhysicalCores();
                     break;
@@ -320,10 +342,25 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getNetworkIp(deviceIndex);
                     break;
                 case CHANNEL_NETWORK_ADAPTER_NAME:
-                    state = systeminfo.getNetworkAdapterName(deviceIndex);
+                    state = systeminfo.getNetworkDisplayName(deviceIndex);
                     break;
                 case CHANNEL_NETWORK_NAME:
                     state = systeminfo.getNetworkName(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_MAC:
+                    state = systeminfo.getNetworkMac(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_DATA_SENT:
+                    state = systeminfo.getNetworkDataSent(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_DATA_RECEIVED:
+                    state = systeminfo.getNetworkDataReceived(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_PACKAGES_RECEIVED:
+                    state = systeminfo.getNetworkPackageReceived(deviceIndex);
+                    break;
+                case CHANNEL_NETWORK_PACKAGES_SENT:
+                    state = systeminfo.getNetworkPackageSent(deviceIndex);
                     break;
             }
         } catch (DeviceNotFoundException e) {

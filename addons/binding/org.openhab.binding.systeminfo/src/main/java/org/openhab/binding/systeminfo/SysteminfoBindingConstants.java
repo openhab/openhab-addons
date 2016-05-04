@@ -173,14 +173,39 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu#phisycalCores";
 
     /**
-     * Average CPU load
+     * Average recent CPU load
      */
     public final static String CHANNEL_CPU_LOAD = "cpu#load";
+
+    /**
+     * Average CPU load for the last minute
+     */
+    public final static String CHANNEL_CPU_LOAD_1 = "cpu#load1";
+
+    /**
+     * Average CPU load for the last 5 minutes
+     */
+    public final static String CHANNEL_CPU_LOAD_5 = "cpu#load5";
+
+    /**
+     * Average CPU load for the last 15 minutes
+     */
+    public final static String CHANNEL_CPU_LOAD_15 = "cpu#load15";
 
     /**
      * CPU name
      */
     public final static String CHANNEL_CPU_NAME = "cpu#name";
+
+    /**
+     * CPU uptime in minutes
+     */
+    public final static String CHANNEL_CPU_UPTIME = "cpu#uptime";
+
+    /**
+     * CPU running threads count
+     */
+    public final static String CHANNEL_CPU_THREADS = "cpu#threads";
 
     /**
      * Information about the display device
@@ -198,9 +223,34 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_NETWORK_ADAPTER_NAME = "network#networkName";
 
     /**
+     * Network data sent
+     */
+    public final static String CHANNEL_NETWORK_DATA_SENT = "network#dataSent";
+
+    /**
+     * Network data received
+     */
+    public final static String CHANNEL_NETWORK_DATA_RECEIVED = "network#dataReceived";
+
+    /**
+     * Network packages sent
+     */
+    public final static String CHANNEL_NETWORK_PACKAGES_SENT = "network#packagesSent";
+
+    /**
+     * Network packages received
+     */
+    public final static String CHANNEL_NETWORK_PACKAGES_RECEIVED = "network#packagesReceived";
+
+    /**
      * Network name
      */
     public final static String CHANNEL_NETWORK_NAME = "network#networkDisplayName";
+
+    /**
+     * Network mac address
+     */
+    public final static String CHANNEL_NETWORK_MAC = "network#mac";
 
     /**
      * Name of the configuration parameter of the thing that defines refresh time for High priority channels

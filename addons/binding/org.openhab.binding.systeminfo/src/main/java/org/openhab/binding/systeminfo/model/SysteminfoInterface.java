@@ -59,11 +59,46 @@ public interface SysteminfoInterface {
     public DecimalType getCpuPhysicalCores();
 
     /**
-     * Get the average CPU load for all logical processors
+     * Get the recent average CPU load for all logical processors
      *
      * @return the load as percentage value /0-100/
      */
     public DecimalType getCpuLoad();
+
+    /**
+     * Returns the system load average for the last minute.
+     *
+     * @return the load as percentage value /0-100/ or negative value, if no information is available
+     */
+    public DecimalType getCpuLoad1();
+
+    /**
+     * Returns the system load average for the last 5 minutes.
+     *
+     * @return the load as percentage value /0-100/ or negative value, if no information is available
+     */
+    public DecimalType getCpuLoad5();
+
+    /**
+     * Returns the system load average for the last 15 minutes.
+     *
+     * @return the load as percentage value /0-100/ or negative value, if no information is available
+     */
+    public DecimalType getCpuLoad15();
+
+    /**
+     * Get the System uptime (time since boot).
+     *
+     * @return time in minutes since boot
+     */
+    public DecimalType getCpuUptime();
+
+    /**
+     * Get the number of threads currently running
+     *
+     * @return number of threads
+     */
+    public DecimalType getCpuThreads();
 
     // Memory info
     /**
@@ -225,12 +260,52 @@ public interface SysteminfoInterface {
     public StringType getNetworkName(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get human readable description of the network device.
+     * The description of the network. On some platforms, this is identical to the name.
      *
-     * @param networkIndex- the index of the network
+     * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    public StringType getNetworkAdapterName(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkDisplayName(int networkIndex) throws DeviceNotFoundException;
+
+    /**
+     * Gets the MAC Address of the network.
+     *
+     * @param networkIndex - the index of the network
+     * @throws DeviceNotFoundException
+     */
+    public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException;
+
+    /**
+     * Get number of packages received
+     *
+     * @param networkIndex - the index of the network
+     * @throws DeviceNotFoundException
+     */
+    public DecimalType getNetworkPackageReceived(int networkIndex) throws DeviceNotFoundException;
+
+    /**
+     * Get number of packages sent
+     *
+     * @param networkIndex - the index of the network
+     * @throws DeviceNotFoundException
+     */
+    public DecimalType getNetworkPackageSent(int networkIndex) throws DeviceNotFoundException;
+
+    /**
+     * Get data sent in MB for this network
+     *
+     * @param networkIndex - the index of the network
+     * @throws DeviceNotFoundException
+     */
+    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException;
+
+    /**
+     * Get data received in MB for this network
+     *
+     * @param networkIndex - the index of the network
+     * @throws DeviceNotFoundException
+     */
+    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException;
 
     // Display info
     /**

@@ -69,6 +69,11 @@
 			<channel id="ip" typeId="ip" />
 			<channel id="networkName" typeId="networkName" />
 			<channel id="networkDisplayName" typeId="networkDisplayName" />
+			<channel id="dataSent" typeId="dataSent" />
+			<channel id="dataReceived" typeId="dataReceived" />
+			<channel id="packagesSent" typeId="packagesSent" />
+			<channel id="packagesReceied" typeId="packagesReceived" />
+			<channel id="mac" typeId="mac"></channel>
 		</channels>
 	</channel-group-type>
 
@@ -110,6 +115,11 @@
 			<channel id="logicalCores" typeId="logicalCores" />
 			<channel id="phisycalCores" typeId="phisycalCores" />
 			<channel id="load" typeId="load" />
+			<channel id="load1" typeId="loadAvarage" />
+			<channel id="load5" typeId="loadAvarage" />
+			<channel id="load15" typeId="loadAvarage" />
+			<channel id="uptime" typeId="uptime" />
+			<channel id="threads" typeId="threads" />
 		</channels>
 	</channel-group-type>
 
@@ -256,6 +266,30 @@
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
+	
+	<channel-type id="loadAvarage">
+        <item-type>Number</item-type>
+        <label>Load average</label>
+        <description>Load in percents for the last 1,5 or 15 minutes</description>
+        <state readOnly="true" pattern="%.1f %%" />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
+    
+    <channel-type id="uptime">
+        <item-type>Number</item-type>
+        <label>System uptime</label>
+        <description>System uptime (time after start) in minutes</description>
+        <state readOnly="true" pattern="%.1f %%" />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
+    
+    <channel-type id="threads">
+        <item-type>Number</item-type>
+        <label>Number of threads</label>
+        <description>Number of threads currently running</description>
+        <state readOnly="true" pattern="%.1f %%" />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
 
 	<channel-type id="logicalCores">
 		<item-type>Number</item-type>
@@ -288,6 +322,14 @@
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
+	
+	<channel-type id="mac">
+        <item-type>String</item-type>
+        <label>Mac address </label>
+        <description>Mac address of the network</description>
+        <state readOnly="true" pattern="%s " />
+        <config-description uri="systeminfo:channels:lowpriority" />
+    </channel-type>
 
 	<channel-type id="networkName">
 		<item-type>String</item-type>
@@ -304,4 +346,37 @@
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
+	
+	<channel-type id="packagesSent">
+        <item-type>String</item-type>
+        <label>Packages sent</label>
+        <description>Number of packages sent</description>
+        <state readOnly="true" pattern="%s " />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
+    
+    <channel-type id="packagesReceived">
+        <item-type>String</item-type>
+        <label>Packages received</label>
+        <description>Number of packages received</description>
+        <state readOnly="true" pattern="%s " />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
+    
+    <channel-type id="dataSent">
+        <item-type>String</item-type>
+        <label>Data sent</label>
+        <description>Data sent in MB</description>
+        <state readOnly="true" pattern="%s MB" />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
+    
+    <channel-type id="dataReceived">
+        <item-type>String</item-type>
+        <label>Data received</label>
+        <description>Data received in MB</description>
+        <state readOnly="true" pattern="%s MB" />
+        <config-description uri="systeminfo:channels:mediumpriority" />
+    </channel-type>
+    
 </thing:thing-descriptions>

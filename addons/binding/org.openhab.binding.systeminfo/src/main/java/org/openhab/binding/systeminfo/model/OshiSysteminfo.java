@@ -7,12 +7,8 @@
  */
 package org.openhab.binding.systeminfo.model;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.math.BigDecimal;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -24,6 +20,7 @@ import oshi.hardware.Display;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
 import oshi.hardware.PowerSource;
 import oshi.hardware.Sensors;
 import oshi.software.os.OSFileStore;
@@ -39,7 +36,7 @@ import oshi.util.EdidUtil;
  */
 public class OshiSysteminfo implements SysteminfoInterface {
     private OperatingSystem operatingSystem;
-    private NetworkInterface[] networks;
+    private NetworkIF[] networks;
     private Display[] displays;
     private OSFileStore[] fileStores;
     private GlobalMemory memory;
@@ -47,6 +44,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private CentralProcessor cpu;
     private HWDiskStore[] drives;
     private Sensors sensors;
+
+    public final static int PRECISION_AFTER_DECIMAl_SIGN = 2;
 
     /**
      * Some of the methods used in this constructor execute native code and require execute permissions
@@ -63,22 +62,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
         powerSources = hal.getPowerSources();
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
-        networks = getNetworks();
+        networks = hal.getNetworkIFs();
         drives = hal.getDiskStores();
-    }
-
-    private NetworkInterface[] getNetworks() throws SocketException {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        NetworkInterface[] networksArray;
-        // NetworkInterface.getNetworkInterfaces() returns null if network interfaces are not found
-        if (networkInterfaces != null) {
-            ArrayList<NetworkInterface> networksList = Collections.list(networkInterfaces);
-            networksArray = new NetworkInterface[networksList.size()];
-            networksArray = networksList.toArray(networksArray);
-        } else {
-            networksArray = new NetworkInterface[0];
-        }
-        return networksArray;
     }
 
     @SuppressWarnings("null")
@@ -143,8 +128,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
     @Override
     public DecimalType getCpuLoad() {
         double processorLoad = cpu.getSystemCpuLoad();
-        processorLoad = getPercentsValue(processorLoad);
-        return new DecimalType(processorLoad);
+        BigDecimal processorLoadPercent = getPercentsValue(processorLoad);
+        return new DecimalType(processorLoadPercent);
     }
 
     @Override
@@ -202,7 +187,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long freeStorage = fileStore.getUsableSpace();
         long totalStorage = fileStore.getTotalSpace();
         double freePercentDecimal = (double) freeStorage / (double) totalStorage;
-        double freePercent = getPercentsValue(freePercentDecimal);
+        BigDecimal freePercent = getPercentsValue(freePercentDecimal);
         return new DecimalType(freePercent);
     }
 
@@ -229,21 +214,22 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getNetworkIp(int index) throws DeviceNotFoundException {
-        NetworkInterface netInterface = (NetworkInterface) getDevice(networks, index);
-        InetAddress adapterName = netInterface.getInetAddresses().nextElement();
-        return new StringType(adapterName.getHostAddress());
+        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
+        String[] ipAddresses = netInterface.getIPv4addr();
+        String ipv4 = (String) getDevice(ipAddresses, 0);
+        return new StringType(ipv4);
     }
 
     @Override
     public StringType getNetworkName(int index) throws DeviceNotFoundException {
-        NetworkInterface netInterface = (NetworkInterface) getDevice(networks, index);
+        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
         String name = netInterface.getName();
         return new StringType(name);
     }
 
     @Override
-    public StringType getNetworkAdapterName(int index) throws DeviceNotFoundException {
-        NetworkInterface netInterface = (NetworkInterface) getDevice(networks, index);
+    public StringType getNetworkDisplayName(int index) throws DeviceNotFoundException {
+        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
         String adapterName = netInterface.getDisplayName();
         return new StringType(adapterName);
     }
@@ -301,8 +287,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
         double remainingCapacity = powerSource.getRemainingCapacity();
-        remainingCapacity = getPercentsValue(remainingCapacity);
-        return new DecimalType(remainingCapacity);
+        BigDecimal remainingCapacityPercents = getPercentsValue(remainingCapacity);
+        return new DecimalType(remainingCapacityPercents);
     }
 
     @Override
@@ -316,12 +302,12 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
-        double freePercent;
+        BigDecimal freePercent;
         if (totalMemory > 0) {
             double freePercentDecimal = (double) availableMemory / (double) totalMemory;
             freePercent = getPercentsValue(freePercentDecimal);
         } else {
-            freePercent = 0;
+            freePercent = new BigDecimal(0);
         }
         return new DecimalType(freePercent);
     }
@@ -375,12 +361,12 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long usedSwap = memory.getSwapUsed();
         long totalSwap = memory.getSwapTotal();
         long freeSwap = totalSwap - usedSwap;
-        double freePercent;
+        BigDecimal freePercent;
         if (totalSwap > 0) {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
             freePercent = getPercentsValue(freePercentDecimal);
         } else {
-            freePercent = 0;
+            freePercent = new BigDecimal(0);
         }
 
         return new DecimalType(freePercent);
@@ -390,12 +376,98 @@ public class OshiSysteminfo implements SysteminfoInterface {
         return sizeInBytes /= 1024 * 1024;
     }
 
-    private double getPercentsValue(double decimalFraction) {
-        return decimalFraction * 100;
+    private BigDecimal getPercentsValue(double decimalFraction) {
+        BigDecimal result = new BigDecimal(decimalFraction * 100);
+        result = result.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
+        return result;
     }
 
     private double getTimeInMinutes(double timeInSeconds) {
         return timeInSeconds / 100;
+    }
+
+    @Override
+    public DecimalType getCpuLoad1() {
+        return new DecimalType(getAvarageCpuLoad(1));
+    }
+
+    @Override
+    public DecimalType getCpuLoad5() {
+        return new DecimalType(getAvarageCpuLoad(5));
+    }
+
+    @Override
+    public DecimalType getCpuLoad15() {
+        return new DecimalType(getAvarageCpuLoad(15));
+    }
+
+    private BigDecimal getAvarageCpuLoad(int timeInMunutes) {
+        // This paramater is specified in OSHI Javadoc
+        int index;
+        switch (timeInMunutes) {
+            case 1:
+                index = 0;
+                break;
+            case 5:
+                index = 1;
+                break;
+            case 15:
+                index = 2;
+                break;
+            default:
+                index = -1;
+        }
+        double processorLoads[] = cpu.getSystemLoadAverage(index);
+        BigDecimal result = new BigDecimal(processorLoads[index]);
+        result.setScale(PRECISION_AFTER_DECIMAl_SIGN);
+        return result;
+    }
+
+    @Override
+    public DecimalType getCpuUptime() {
+        long seconds = cpu.getSystemUptime();
+        return new DecimalType(getTimeInMinutes(seconds));
+    }
+
+    @Override
+    public DecimalType getCpuThreads() {
+        int threadCount = cpu.getThreadCount();
+        return new DecimalType(threadCount);
+    }
+
+    @Override
+    public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException {
+        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        String mac = network.getMacaddr();
+        return new StringType(mac);
+    }
+
+    @Override
+    public DecimalType getNetworkPackageReceived(int networkIndex) throws DeviceNotFoundException {
+        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        long packRecv = network.getPacketsRecv();
+        return new DecimalType(packRecv);
+    }
+
+    @Override
+    public DecimalType getNetworkPackageSent(int networkIndex) throws DeviceNotFoundException {
+        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        long packSent = network.getPacketsSent();
+        return new DecimalType(packSent);
+    }
+
+    @Override
+    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
+        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        long bytesSent = network.getBytesSent();
+        return new DecimalType(getSizeInMB(bytesSent));
+    }
+
+    @Override
+    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
+        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        long bytesRecv = network.getBytesRecv();
+        return new DecimalType(getSizeInMB(bytesRecv));
     }
 
 }
