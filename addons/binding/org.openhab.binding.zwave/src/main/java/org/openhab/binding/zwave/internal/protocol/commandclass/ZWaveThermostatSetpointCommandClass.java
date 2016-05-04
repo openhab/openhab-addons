@@ -435,6 +435,7 @@ public class ZWaveThermostatSetpointCommandClass extends ZWaveCommandClass
      *
      * @author Chris Jackson
      */
+    @XStreamAlias("setpoint")
     private class Setpoint {
         SetpointType setpointType;
         boolean initialised = false;
