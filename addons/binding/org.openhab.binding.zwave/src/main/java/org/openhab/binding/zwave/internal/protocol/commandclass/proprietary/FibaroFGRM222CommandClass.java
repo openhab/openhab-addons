@@ -75,8 +75,8 @@ public class FibaroFGRM222CommandClass extends ZWaveCommandClass {
             final int levelInRange;
             if (level >= 100) {
                 levelInRange = 99;
-            } else if (level < 0) {
-                levelInRange = 0;
+            } else if (level <= 0) {
+                levelInRange = 1;
             } else {
                 levelInRange = level;
             }
@@ -93,8 +93,8 @@ public class FibaroFGRM222CommandClass extends ZWaveCommandClass {
             final int levelInRange;
             if (level >= 100) {
                 levelInRange = 99;
-            } else if (level < 0) {
-                levelInRange = 0;
+            } else if (level <= 0) {
+                levelInRange = 1;
             } else {
                 levelInRange = level;
             }
