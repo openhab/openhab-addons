@@ -126,7 +126,6 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
                 logger.warn("NODE {}: Unsupported Command {} for command class {} ({}).", getNode().getNodeId(),
                         command, getCommandClass().getLabel(), getCommandClass().getKey());
                 break;
-
         }
     }
 
