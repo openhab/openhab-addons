@@ -12,8 +12,8 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +45,7 @@ public class DeleteReturnRouteMessageClass extends ZWaveCommandProcessor {
 
         logger.debug("NODE {}: Got DeleteReturnRoute response.", nodeId);
         if (incomingMessage.getMessagePayloadByte(0) != 0x00) {
+            lastSentMessage.setAckRecieved();
             logger.debug("NODE {}: DeleteReturnRoute command in progress.", nodeId);
         } else {
             logger.error("NODE {}: DeleteReturnRoute command failed.", nodeId);
@@ -71,6 +72,8 @@ public class DeleteReturnRouteMessageClass extends ZWaveCommandProcessor {
             zController.notifyEventListeners(new ZWaveNetworkEvent(ZWaveNetworkEvent.Type.DeleteReturnRoute, nodeId,
                     ZWaveNetworkEvent.State.Success));
         }
+
+        checkTransactionComplete(lastSentMessage, incomingMessage);
 
         return true;
     }

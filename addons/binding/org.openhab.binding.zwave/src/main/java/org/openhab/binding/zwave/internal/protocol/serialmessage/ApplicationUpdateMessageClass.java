@@ -74,7 +74,7 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                 node.setApplicationUpdateReceived(true);
 
                 // If we're finished initialisation, then we can treat this like a HAIL
-                if (node.getNodeInitializationStage() == ZWaveNodeInitStage.DONE) {
+                if (node.getNodeInitStage() == ZWaveNodeInitStage.DONE) {
                     // If this node supports associations, then assume this should be handled through that mechanism
                     if (node.getCommandClass(CommandClass.ASSOCIATION) == null) {
                         // If we receive an Application Update Request and the node is already
