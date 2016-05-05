@@ -39,6 +39,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -47,8 +48,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Send Sensor binary report on open/close events</label>
         <default>0</default>
         <options>
@@ -57,8 +57,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Enable wake up 10 minutes when power on</label>
         <default>0</default>
         <options>
@@ -67,8 +66,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Send Basic Set on open/close event</label>
         <default>0</default>
         <options>
@@ -86,22 +84,25 @@
       <parameter name="config_111_4" type="integer" groupName="configuration"
                  min="0" max="2147483647">
         <label>111: Set the interval time of battery report</label>
-        <description>Value is specified in number of seconds. Values greater than 10 will be rounded up to the nearest 4 minutes (10 through 240 = 4 minutes, 241 through 480 = 8 minutes, etc.)</description>
+        <description><![CDATA[
+Value is specified in number of seconds.<br /><h1>Overview</h1><p>Values greater than 10 will be rounded up to the nearest 4 minutes (10 through 240 = 4 minutes, 241 through 480 = 8 minutes, etc.)</p>
+        ]]></description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_121_4" type="integer" groupName="configuration"
-                 min="0" max="4294967295">
-        <label>121: Send those commands to associated devices on open/close/tamper events</label>
-        <description><![CDATA[
-Available Configurations<br />
-				16 -&gt; Sensor binary report<br />
-				256 -&gt; Basic Set      !]]></description>
-        <default>256</default>
+      <parameter name="config_121_4_00000010" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>121: Send Sensor Binary report to associated devices</label>
+        <default>0</default>
       </parameter>
 
-      <parameter name="config_122_1" type="integer" groupName="configuration"
-                 min="1" max="11">
+      <parameter name="config_121_4_00000100" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>121: Send Basic report to associated devices</label>
+        <default>1</default>
+      </parameter>
+
+      <parameter name="config_122_1" type="integer" groupName="configuration">
         <label>122: Notification type to send</label>
         <default>6</default>
         <options>
@@ -125,7 +126,7 @@ Available Configurations<br />
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

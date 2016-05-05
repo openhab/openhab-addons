@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,8 +45,8 @@ public class ZWaveCommandClassValueEvent extends ZWaveEvent {
      * @param nodeId the nodeId of the event
      * @param endpoint the endpoint of the event.
      * @param commandClass the command class that fired the ZWaveCommandClassValueEvent;
-     * @param type the command class defined type for this value
      * @param value the value for the event.
+     * @param type the type of event (normally an enum that provides information on the event type)
      */
     public ZWaveCommandClassValueEvent(int nodeId, int endpoint, CommandClass commandClass, Object value, Object type) {
         super(nodeId, endpoint);

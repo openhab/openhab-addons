@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,10 +19,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageCl
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociationGroup;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveAssociationEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.slf4j.Logger;
@@ -121,7 +122,8 @@ public class ZWaveAssociationCommandClass extends ZWaveCommandClass implements Z
      *            the offset position from which to start message processing.
      * @throws ZWaveSerialMessageException
      */
-    protected void processAssociationReport(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
+    protected void processAssociationReport(SerialMessage serialMessage, int offset)
+            throws ZWaveSerialMessageException {
         // Extract the group index
         int group = serialMessage.getMessagePayloadByte(offset + 1);
         // The max associations supported (0 if the requested group is not supported)
@@ -212,7 +214,7 @@ public class ZWaveAssociationCommandClass extends ZWaveCommandClass implements Z
      */
     protected void processGroupingsReport(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
         maxGroups = serialMessage.getMessagePayloadByte(offset + 1);
-        logger.debug("NODE {}: processGroupingsReport number of groups {}", getNode(), maxGroups);
+        logger.debug("NODE {}: processGroupingsReport number of groups {}", getNode().getNodeId(), maxGroups);
 
         initialiseDone = true;
 
@@ -353,6 +355,15 @@ public class ZWaveAssociationCommandClass extends ZWaveCommandClass implements Z
      */
     public int getMaxGroups() {
         return maxGroups;
+    }
+
+    /**
+     * Return all association groups
+     *
+     * @return
+     */
+    public Map<Integer, ZWaveAssociationGroup> getAssociations() {
+        return Collections.unmodifiableMap(configAssociations);
     }
 
     @Override

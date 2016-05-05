@@ -43,11 +43,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -73,6 +73,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -120,11 +124,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -150,6 +154,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -197,11 +205,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -218,6 +226,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -259,11 +271,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -316,11 +328,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 
-			<parameter name="room" type="text" required="false" groupName="identification">
+			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 			</parameter>
-			<parameter name="name" type="text" required="false" groupName="identification">
+			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 			</parameter>
@@ -337,6 +349,10 @@
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
 				<label>Delete Device from Cube</label>
 				<description>Deletes the device from the MAX! Cube. Device will need to be included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>

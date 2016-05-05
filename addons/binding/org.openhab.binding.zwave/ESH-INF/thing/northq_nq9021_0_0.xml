@@ -22,6 +22,12 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
@@ -32,6 +38,7 @@
       <property name="manufacturerRef">0001:0001</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -47,8 +54,7 @@
         <default>1024</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Sensor type</label>
         <default>2</default>
         <options>
@@ -127,8 +133,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Debug mode</label>
         <default>1</default>
         <options>
@@ -140,7 +145,7 @@
       <parameter name="config_15_4" type="integer" groupName="configuration"
                  min="0" max="65535">
         <label>15: Calibration status</label>
-        <description>The calibration progress is calculated as (value[1] - 65 + value[2] / value[3]) * 25. The calibration is finished successfully when value[0]  =  2 and value[2] = value[3]. The calibration has failed if value[0] != 1 OR (value[0] = 2 AND value[2] != value[</description>
+        <description>The calibration progress is calculated as (value[1] - 65 + value[2] / value[3]) * 25. The calibration is finished successfully when value[0] = 2 and value[2] = value[3]. The calibration has failed if value[0] != 1 OR (value[0] = 2 AND value[2] != value[</description>
         <default>0</default>
       </parameter>
 

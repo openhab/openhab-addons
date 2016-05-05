@@ -42,8 +42,7 @@
                 <default></default>
             </parameter>
 
-            <parameter name="controller_master" type="boolean" required="true"
-				groupName="network">
+            <parameter name="controller_master" type="boolean" groupName="network">
 				<label>Controller is Master</label>
 				<description><![CDATA[This controller is the master controller in the network.<br/>
 				The binding will perform automatic configuration of the network.
@@ -56,8 +55,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="controller_suc" type="boolean" required="true"
-				groupName="network">
+			<parameter name="controller_suc" type="boolean" groupName="network">
 				<label>Controller is SUC</label>
 				<description>Controller is SUC and will receive updates from other controllers in the network</description>
 				<options>
@@ -68,21 +66,37 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="heal_enable" type="boolean" groupName="heal">
-				<label>Heal Enabled</label>
-				<description></description>
-                <options>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </options>
-				<default>false</default>
-			</parameter>
-
-			<parameter name="heal_time" type="integer" min="0" max="23"
-				groupName="heal">
+			<parameter name="heal_time" type="integer" groupName="heal">
 				<label>Heal Time</label>
 				<description></description>
 				<default>2</default>
+                <options>
+                    <option value="-1">Disabled</option>
+                    <option value="1">1 AM</option>
+                    <option value="2">2 AM</option>
+                    <option value="3">3 AM</option>
+                    <option value="4">4 AM</option>
+                    <option value="5">5 AM</option>
+                    <option value="6">6 AM</option>
+                    <option value="7">7 AM</option>
+                    <option value="8">8 AM</option>
+                    <option value="9">9 AM</option>
+                    <option value="10">10 AM</option>
+                    <option value="11">11 AM</option>
+                    <option value="12">Midday</option>
+                    <option value="13">1 PM</option>
+                    <option value="14">2 PM</option>
+                    <option value="15">3 PM</option>
+                    <option value="16">4 PM</option>
+                    <option value="17">5 PM</option>
+                    <option value="18">6 PM</option>
+                    <option value="19">7 PM</option>
+                    <option value="20">8 PM</option>
+                    <option value="21">9 PM</option>
+                    <option value="22">10 PM</option>
+                    <option value="23">11 PM</option>
+                    <option value="0">Midnight</option>
+                </options>
 			</parameter>
 			
 			<parameter-group name="actions">
@@ -91,25 +105,34 @@
                 <description></description>
             </parameter-group>
            
-            <parameter name="controller_softreset" type="text" groupName="actions">
+            <parameter name="controller_softreset" type="integer" groupName="actions">
                 <label>Soft Reset Controller</label>
                 <description>Resets the Z-Wave stick - similar to removing the stick from the USB.</description>
                 <advanced>true</advanced>
-                <default>GO</default>
+                <default>0</default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
             </parameter>
 
-            <parameter name="controller_hardreset" type="text" groupName="actions">
+            <parameter name="controller_hardreset" type="integer" groupName="actions">
                 <label>Hard Reset Controller</label>
                 <description>Hard resets the Z-Wave stick - this will erase all configuration from the controller!</description>
                 <advanced>true</advanced>
-                <default>GO</default>
+                <default>0</default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
             </parameter>
 
-            <parameter name="controller_exclude" type="text" groupName="actions">
+            <parameter name="controller_exclude" type="integer" groupName="actions">
                 <label>Exclude Devices</label>
                 <description>Puts the controller into Exclusion mode.</description>
                 <advanced>true</advanced>
-                <default>GO</default>
+                <default>0</default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
             </parameter>
             
             <parameter name="security_networkkey" type="text" groupName="network">

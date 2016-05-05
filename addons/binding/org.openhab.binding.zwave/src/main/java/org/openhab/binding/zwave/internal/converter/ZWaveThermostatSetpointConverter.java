@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,7 +15,8 @@ import java.util.List;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
@@ -43,8 +44,8 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
      * Constructor. Creates a new instance of the {@link ZWaveThermostatSetpointConverter} class.
      *
      */
-    public ZWaveThermostatSetpointConverter() {
-        super();
+    public ZWaveThermostatSetpointConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -65,9 +66,8 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
 
         SerialMessage serialMessage;
         if (setpointType != null) {
-            serialMessage = node.encapsulate(
-                    commandClass.getMessage(SetpointType.getSetpointType(Integer.parseInt(setpointType))), commandClass,
-                    channel.getEndpoint());
+            serialMessage = node.encapsulate(commandClass.getMessage(SetpointType.getSetpointType(setpointType)),
+                    commandClass, channel.getEndpoint());
         } else {
             serialMessage = node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint());
         }

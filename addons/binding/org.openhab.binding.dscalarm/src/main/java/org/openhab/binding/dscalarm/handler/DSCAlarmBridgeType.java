@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,10 +10,11 @@ package org.openhab.binding.dscalarm.handler;
 
 /**
  * Enum class for the different bridge types.
- * 
+ *
  * @author Russell Stephens - Initial Contribution
  */
 public enum DSCAlarmBridgeType {
     Envisalink,
-    IT100;
+    IT100,
+    TCPServer;
 }

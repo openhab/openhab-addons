@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,6 +27,7 @@ public class DSCAlarmBindingConstants {
     // List of bridge device types
     public static final String ENVISALINK_BRIDGE = "envisalink";
     public static final String IT100_BRIDGE = "it100";
+    public static final String TCPSERVER_BRIDGE = "tcpserver";
 
     // List of DSC Alarm device types
     public static final String PANEL = "panel";
@@ -37,6 +38,7 @@ public class DSCAlarmBindingConstants {
     // List of all Bridge Thing Type UIDs
     public final static ThingTypeUID ENVISALINKBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, ENVISALINK_BRIDGE);
     public final static ThingTypeUID IT100BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, IT100_BRIDGE);
+    public final static ThingTypeUID TCPSERVERBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, TCPSERVER_BRIDGE);
 
     // List of all DSC Alarm Thing Type UIDs
     public final static ThingTypeUID PANEL_THING_TYPE = new ThingTypeUID(BINDING_ID, PANEL);
@@ -47,7 +49,6 @@ public class DSCAlarmBindingConstants {
     // List of all Channel IDs
     public final static String BRIDGE_RESET = "bridge_reset";
 
-    public final static String PANEL_CONNECTION = "panel_connection";
     public final static String PANEL_MESSAGE = "panel_message";
     public final static String PANEL_COMMAND = "panel_command";
     public final static String PANEL_SYSTEM_ERROR = "panel_system_error";
@@ -98,9 +99,9 @@ public class DSCAlarmBindingConstants {
     public final static String KEYPAD_AC_LED = "keypad_ac_led";
 
     // Set of all supported Thing Type UIDs
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, PANEL_THING_TYPE, PARTITION_THING_TYPE, ZONE_THING_TYPE, KEYPAD_THING_TYPE);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE, PANEL_THING_TYPE, PARTITION_THING_TYPE, ZONE_THING_TYPE, KEYPAD_THING_TYPE);
 
     // Set of all supported Bridge Type UIDs
-    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE);
+    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE);
 
 }

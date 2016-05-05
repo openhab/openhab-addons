@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -172,8 +172,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 updateDeviceName(configurationParameter);
             }
             if (configurationParameter.getKey().startsWith("action-")) {
-                if (configurationParameter.getValue().toString().equals("0")) {
-                    configurationParameter.setValue(BigDecimal.valueOf(-1));
+                if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
+                    configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
                     if (configurationParameter.getKey().equals(ACTION_DEVICE_DELETE)) {
                         deviceDelete();
                     }

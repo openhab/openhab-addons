@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,13 +12,13 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Basic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Generic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.slf4j.Logger;
@@ -87,24 +87,23 @@ public class IdentifyNodeMessageClass extends ZWaveCommandProcessor {
 
         Basic basic = Basic.getBasic(incomingMessage.getMessagePayloadByte(3));
         if (basic == null) {
-            logger.error(String.format("NODE %d: Basic device class 0x%02x not found", nodeId,
-                    incomingMessage.getMessagePayloadByte(3)));
+            logger.error("NODE {}: Basic device class {} not found", nodeId, incomingMessage.getMessagePayloadByte(3));
             return false;
         }
         logger.debug("NODE {}: Basic = {}", nodeId, basic.getLabel());
 
         Generic generic = Generic.getGeneric(incomingMessage.getMessagePayloadByte(4));
         if (generic == null) {
-            logger.error(String.format("NODE %d: Generic device class 0x%02x not found", nodeId,
-                    incomingMessage.getMessagePayloadByte(4)));
+            logger.error("NODE {}: Generic device class {} not found", nodeId,
+                    incomingMessage.getMessagePayloadByte(4));
             return false;
         }
         logger.debug("NODE {}: Generic = {}", nodeId, generic.getLabel());
 
         Specific specific = Specific.getSpecific(generic, incomingMessage.getMessagePayloadByte(5));
         if (specific == null) {
-            logger.error(String.format("NODE %d: Specific device class 0x%02x not found", nodeId,
-                    incomingMessage.getMessagePayloadByte(5)));
+            logger.error("NODE {}: Specific device class {} not found", nodeId,
+                    incomingMessage.getMessagePayloadByte(5));
             return false;
         }
         logger.debug("NODE {}: Specific = {}", nodeId, specific.getLabel());

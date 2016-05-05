@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,8 @@ import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -41,8 +42,8 @@ public class ZWaveThermostatOperatingStateConverter extends ZWaveCommandClassCon
      *
      * @param controller the {@link ZWaveController} to use for sending messages.
      */
-    public ZWaveThermostatOperatingStateConverter() {
-        super();
+    public ZWaveThermostatOperatingStateConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**

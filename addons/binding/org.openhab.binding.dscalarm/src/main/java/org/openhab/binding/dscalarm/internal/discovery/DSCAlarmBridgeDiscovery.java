@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,6 +35,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final static Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
     private long refreshInterval = 600;
+    private long intialDelay = 30;
     private ScheduledFuture<?> envisalinkBridgeDiscoveryJob;
     private ScheduledFuture<?> it100BridgeDiscoveryJob;
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
@@ -63,11 +64,13 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Start DSC Alarm Bridge background discovery");
         if (envisalinkBridgeDiscoveryJob == null || envisalinkBridgeDiscoveryJob.isCancelled()) {
-            envisalinkBridgeDiscoveryJob = scheduler.scheduleAtFixedRate(envisalinkBridgeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            envisalinkBridgeDiscoveryJob = scheduler.scheduleAtFixedRate(envisalinkBridgeDiscoveryRunnable, intialDelay, refreshInterval, TimeUnit.SECONDS);
         }
+
         if (it100BridgeDiscoveryJob == null || it100BridgeDiscoveryJob.isCancelled()) {
-            it100BridgeDiscoveryJob = scheduler.scheduleAtFixedRate(it100BridgeDiscoveryRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+            it100BridgeDiscoveryJob = scheduler.scheduleAtFixedRate(it100BridgeDiscoveryRunnable, intialDelay, refreshInterval, TimeUnit.SECONDS);
         }
+
     }
 
     @Override

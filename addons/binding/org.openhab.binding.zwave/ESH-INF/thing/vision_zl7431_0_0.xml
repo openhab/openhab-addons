@@ -28,6 +28,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -36,15 +37,12 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: </label>
         <default>1</default>
         <options>
-          <option value="1">Set to 1 for a Single Wall Switch without
-					Indicator Light or for</option>
-          <option value="2">Set to 2 for a Single Wall Switch with Indicator
-					Light</option>
+          <option value="1">Set to 1 for a Single Wall Switch without Indicator Light or for</option>
+          <option value="2">Set to 2 for a Single Wall Switch with Indicator Light</option>
         </options>
       </parameter>
 
@@ -54,7 +52,7 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Update Controller</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

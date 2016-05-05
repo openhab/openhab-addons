@@ -40,6 +40,12 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
@@ -51,6 +57,7 @@
       <property name="defaultAssociations">3</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -66,8 +73,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Acoustic and visual signals On / Off in case of alarm</label>
         <description>parameter allows for LED indicator and acoustic alarm deactivation in case of smoke detection</description>
         <default>3</default>
@@ -79,8 +85,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Type of alarm frame sent to 1-st association group (SMOKE)</label>
         <description>parameter determines a type of command frame sent by the Sensor in case smoke detection has been detected or cancelled</description>
         <default>-127</default>
@@ -94,8 +99,8 @@
                  min="1" max="255">
         <label>7: Forced Level of Dimming group 1</label>
         <description><![CDATA[
-Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1.<br />
-In the case of alarm frames the alarm priority is specified. Possible parameter setti    !]]></description>
+Value of the parameter specifying the forced level of dimming / opening sun blinds when comes 'switch on' / 'open' command to devices from association group no. 1.<br /> In the case of alarm frames the alarm priority is specified. Possible parameter setti
+        ]]></description>
         <default>255</default>
       </parameter>
 
@@ -112,11 +117,11 @@ In the case of alarm frames the alarm priority is specified. Possible parameter 
         <default>20</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
-Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given     !]]></description>
+Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Broadcast inactive</option>
@@ -130,8 +135,8 @@ Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices
                  min="-1000" max="1000">
         <label>73: Temperature measurement compensation</label>
         <description><![CDATA[
-Temperature value to be added to or deducted from the current measured temperature<br />
-			-1000 0,1°C - 1000 0,1°C    !]]></description>
+Temperature value to be added to or deducted from the current measured temperature<br /> -1000 0,1°C - 1000 0,1°C
+        ]]></description>
         <default>0</default>
       </parameter>
 
@@ -139,8 +144,8 @@ Temperature value to be added to or deducted from the current measured temperatu
                  min="0" max="255">
         <label>80: Z-Wave range test interval</label>
         <description><![CDATA[
-Time period between the consecutive Z-Wave network range tests.<br />
-			0 10min[10min-24h] - 17 10min[10min-24h]	   -&gt;  	0 – Z-Wave network range test inactive    !]]></description>
+Time period between the consecutive Z-Wave network range tests.<br /> 0 10min[10min-24h] - 17 10min[10min-24h] -&gt; 0 – Z-Wave network range test inactive
+        ]]></description>
         <default>1</default>
       </parameter>
 
@@ -148,13 +153,12 @@ Time period between the consecutive Z-Wave network range tests.<br />
                  min="0" max="255">
         <label>81: Temperature alarm threshold</label>
         <description><![CDATA[
-0	   -&gt;  	0 – temperature alarm inactive<br />
-			2 °C - 100 °C	   -&gt;  Temperature    !]]></description>
+0 -&gt; 0 – temperature alarm inactive<br /> 2 °C - 100 °C -&gt; Temperature
+        ]]></description>
         <default>54</default>
       </parameter>
 
-      <parameter name="config_82_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_82_1" type="integer" groupName="configuration">
         <label>82: Smoke Sensor sensitivity</label>
         <description>There are 3 levels of sensitivity to smoke presence. Level 1 means the highest sensitivity.</description>
         <default>2</default>
@@ -165,8 +169,7 @@ Time period between the consecutive Z-Wave network range tests.<br />
         </options>
       </parameter>
 
-      <parameter name="config_83_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_83_1" type="integer" groupName="configuration">
         <label>83: Black Box sensitivity level</label>
         <description>Parameter specifies temperature and smoke level after which the Black Box starts recording them.</description>
         <default>0</default>
@@ -181,8 +184,8 @@ Time period between the consecutive Z-Wave network range tests.<br />
                  min="-126" max="127">
         <label>84: Malfunction alarm</label>
         <description><![CDATA[
-Time interval in which malfuntion alarm, if detected, is repeated using visual and acoustic alarms.<br />
-			-126 100ms[100ms-25,5s] - 127 100ms[100ms-25,5s]    !]]></description>
+Time interval in which malfuntion alarm, if detected, is repeated using visual and acoustic alarms.<br /> -126 100ms[100ms-25,5s] - 127 100ms[100ms-25,5s]
+        ]]></description>
         <default>10</default>
       </parameter>
 
@@ -190,8 +193,8 @@ Time interval in which malfuntion alarm, if detected, is repeated using visual a
                  min="-126" max="127">
         <label>85: Temperature alarm</label>
         <description><![CDATA[
-Time interval in which temperature alarm, if detected, is repeated using visual and acoustic alarms.<br />
-			-126 100ms[100ms-25,5s] - 127 100ms[100ms-25,5s] -&gt; 5 means 500ms    !]]></description>
+Time interval in which temperature alarm, if detected, is repeated using visual and acoustic alarms.<br /> -126 100ms[100ms-25,5s] - 127 100ms[100ms-25,5s] -&gt; 5 means 500ms
+        ]]></description>
         <default>5</default>
       </parameter>
 
@@ -199,8 +202,8 @@ Time interval in which temperature alarm, if detected, is repeated using visual 
                  min="1" max="17280">
         <label>86: Lack of the Z-Wave range alarm</label>
         <description><![CDATA[
-Time interval in which lack of the Z-Wave network alarm, if detected, is repeated using visual and acoustic alarms.<br />
-			1 5s [5s-24h] - 17280 5s [5s-24h]	   -&gt;  	360 means 30min    !]]></description>
+Time interval in which lack of the Z-Wave network alarm, if detected, is repeated using visual and acoustic alarms.<br /> 1 5s [5s-24h] - 17280 5s [5s-24h] -&gt; 360 means 30min
+        ]]></description>
         <default>360</default>
       </parameter>
 
@@ -208,13 +211,12 @@ Time interval in which lack of the Z-Wave network alarm, if detected, is repeate
                  min="1" max="17280">
         <label>87: Low battery alarm</label>
         <description><![CDATA[
-Time interval in which low battery alarm, if detected, is repeated using visual and acoustic alarms.<br />
-			1 5s [5s-24h] - 17280 5s [5s-24h]	   -&gt;  	360 means 30min    !]]></description>
+Time interval in which low battery alarm, if detected, is repeated using visual and acoustic alarms.<br /> 1 5s [5s-24h] - 17280 5s [5s-24h] -&gt; 360 means 30min
+        ]]></description>
         <default>360</default>
       </parameter>
 
-      <parameter name="config_88_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_88_1" type="integer" groupName="configuration">
         <label>88: Temperature measurement compensation for report</label>
         <description>Consider temperature measurement compensation (parameter 73) when sending temperature report.</description>
         <default>0</default>
@@ -224,8 +226,7 @@ Time interval in which low battery alarm, if detected, is repeated using visual 
         </options>
       </parameter>
 
-      <parameter name="config_89_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_89_1" type="integer" groupName="configuration">
         <label>89: Tamper alarm</label>
         <description>Activates/inactivates temper switch alarm</description>
         <default>1</default>
@@ -242,12 +243,12 @@ Time interval in which low battery alarm, if detected, is repeated using visual 
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Fire Status</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: TMP Button</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+                  
+    <channel-type id="lastStatusStore" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Last Status Store</label>
+        <description>Last Status Store</description>
+        <state readOnly="true"/>
+    </channel-type>
+      
+    <channel-type id="location">
+        <item-type>Location</item-type>
+        <label>Location</label>
+        <description>Location of the device</description>
+        <state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
+    </channel-type>
+    
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current temperature</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="setpointTemp">
+        <item-type>Number</item-type>
+        <label>Setpoint</label>
+        <description>Thermostat temperature setpoint</description>
+        <category>Temperature</category>
+        <state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false">
+        </state>
+    </channel-type>
+    
+    <channel-type id="boilerOn">
+        <item-type>Number</item-type>
+        <label>Boiler On</label>
+        <description>Duration, since the previous data point, during which the boiler has been on (in seconds)</description>
+        <category>Duration</category>
+        <state readOnly="true" pattern="%d s"></state>                
+    </channel-type>
+    
+    <channel-type id="boilerOff">
+        <item-type>Number</item-type>
+        <label>Boiler Off</label>
+        <description>Duration, since the previous data point, during which the boiler has been off (in seconds)</description>
+        <category>Duration</category>
+        <state readOnly="true" pattern="%d s"></state>              
+    </channel-type>
+    
+    <channel-type id="setpointMode">
+        <item-type>String</item-type>
+        <label>Setpoint Mode</label>
+        <description>Chosen setpoint_mode (program, away, hg, manual, off, max)</description>
+        <state readOnly="false">
+            <options>
+                <option value="program">program</option>
+                <option value="away">away</option>
+                <option value="hg">hg</option>
+                <option value="manual">manual</option>
+                <option value="off">off</option>
+                <option value="max">max</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="timeUtc" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Measurement Time</label>
+        <description>Timestamp when last data was measured</description>
+        <state readOnly="true"/>
+    </channel-type>      
+    
+    <channel-type id="lastPlugSeen" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Last Plug Seen</label>
+        <description>Last Plug Seen</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="lastMessage" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Last Message</label>
+        <description>Last Message emitted by the module</description>
+        <state readOnly="true"/>
+    </channel-type>    
+    
+    <channel-type id="setpointEndTime">
+        <item-type>DateTime</item-type>
+        <label>Setpoint set until</label>
+        <description>Time until when the setpoint is active</description>
+        <state readOnly="true"/>
+    </channel-type>    
+    
+    <channel-type id="lastThermSeen" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Last Therm Seen</label>
+        <description>Last Them Seen</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="co2">
+        <item-type>Number</item-type>
+        <label>CO2</label>
+        <description>Air Quality in ppm</description>
+        <state readOnly="true" pattern="%d ppm">
+        </state>
+    </channel-type>
+    
+    <channel-type id="noise">
+        <item-type>Number</item-type>
+        <label>Noise</label>
+        <description>Current Noise Level in dB</description>
+        <category>Noise</category>
+        <state readOnly="true" pattern="%d dB">
+        </state>
+    </channel-type>
+    
+    <channel-type id="pressure">
+        <item-type>Number</item-type>
+        <label>Pressure</label>
+        <description>Current pressure in hPa</description>
+        <category>Pressure</category>
+        <state readOnly="true" pattern="%.1f hPa"></state>                
+    </channel-type>
+    
+    <channel-type id="absolutePressure" advanced="true">
+        <item-type>Number</item-type>
+        <label>Abs Pressure</label>
+        <description>Absolute pressure in hPa</description>
+        <category>Pressure</category>
+        <state readOnly="true" pattern="%.1f hPa"></state>                
+    </channel-type>
+    
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Current humidity in %</description>
+        <category>Humidity</category>
+        <state readOnly="true" pattern="%d %%">
+        </state>
+    </channel-type>
+    
+   <channel-type id="humidex">
+        <item-type>Number</item-type>
+        <label>Humidex</label>
+        <description>Computed Humidex index</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.0f">
+        </state>
+    </channel-type>
+    
+    <channel-type id="heatIndex">
+        <item-type>Number</item-type>
+        <label>Heat Index</label>
+        <description>Computed Heat Index</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.0f">
+        </state>
+    </channel-type>
+    
+    <channel-type id="dewPoint" advanced="true">
+        <item-type>Number</item-type>
+        <label>Dewpoint</label>
+        <description>Computed Dewpoint Temperature</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="dewPointDepression" advanced="true">
+        <item-type>Number</item-type>
+        <label>Dewpoint Depression</label>
+        <description>Computed Dewpoint Depression</description>
+        <state readOnly="true" pattern="%.1f">
+        </state>
+    </channel-type>
+    
+    <channel-type id="rain">
+        <item-type>Number</item-type>
+        <label>Rain</label>
+        <description>Quantity of water</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%d mm"/>
+    </channel-type>
+    
+    <channel-type id="WindAngle">
+        <item-type>Number</item-type>
+        <label>Wind Angle</label>
+        <description>Current 5 min average wind direction</description>
+        <category>Wind</category>
+        <state min="0" max="360" step="1" readOnly="true" pattern="%d °"></state>
+    </channel-type>
+    
+    <channel-type id="WindStrength">
+        <item-type>Number</item-type>
+        <label>Wind Strength</label>
+        <description>Current 5 min average wind speed</description>
+        <category>Wind</category>
+        <state readOnly="true" pattern="%.1f km/h"/>
+    </channel-type>
+    
+    <channel-type id="GustAngle">
+        <item-type>Number</item-type>
+        <label>Gust Angle</label>
+        <description>Direction of the last 5 min highest gust wind</description>
+        <category>Wind</category>
+        <state min="0" max="360" step="1" readOnly="true" pattern="%d °"></state>
+    </channel-type>
+    
+    <channel-type id="GustStrength">
+        <item-type>Number</item-type>
+        <label>Gust Strength</label>
+        <description>Speed of the last 5 min highest gust wind</description>
+        <category>Wind</category>
+        <state readOnly="true" pattern="%.1f km/h"/>
+    </channel-type>
+    
+    <channel-type id="unit">
+        <item-type>Number</item-type>
+        <label>Unit system</label>
+        <description>Describes unit system of privided values (metric or imperial)</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Metric</option>
+                <option value="1">Imperial</option>
+            </options>
+        </state>
+    </channel-type>      
+    
+    <channel-type id="windUnit">
+        <item-type>Number</item-type>
+        <label>Wind Unit</label>
+        <description>Unit used to report Wind speeds</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">Km/h</option>
+                <option value="1">Miles/H</option>
+                <option value="2">m/s</option>
+                <option value="3">Beaufort</option>
+                <option value="4">Knot</option>
+            </options>
+        </state>
+    </channel-type>      
+    
+    <channel-type id="pressureUnit">
+        <item-type>Number</item-type>
+        <label>Pressure Unit</label>
+        <description>Unit used to report Pressure values</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">mbar</option>
+                <option value="1">inHg</option>
+                <option value="2">mmHg</option>
+            </options>
+        </state>
+    </channel-type>                                                                                                                                              
+        
+</thing:thing-descriptions>

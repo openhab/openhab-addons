@@ -40,6 +40,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -48,8 +49,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: LED indication mode</label>
         <description>Set LED indication mode.</description>
         <default>1</default>
@@ -64,20 +64,16 @@
                  min="0" max="255">
         <label>2: Automatically switch off after x seconds.</label>
         <description><![CDATA[
-If not zero, automatically switch device off after a user defined time.<br />
-			0 -&gt; Disabled<br />
-			1-65535 -&gt; Enabled, seconds    !]]></description>
+If not zero, automatically switch device off after a user defined time.<br /> 0 -&gt; Disabled<br /> 1-65535 -&gt; Enabled, seconds
+        ]]></description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: What to do on RF off command.</label>
         <description><![CDATA[
-Defines how to interpret RF Off command.<br />
-				Can be used in conjunction with Auto Off function:<br />
-				Ignore - to switch on the light by motion detectors and switch it off after some amount of time:<br />
-				in case of multiple motion detectors ea    !]]></description>
+Defines how to interpret RF Off command.<br /> Can be used in conjunction with Auto Off function:<br /> Ignore - to switch on the light by motion detectors and switch it off after some amount of time:<br /> in case of multiple motion detectors ea
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Switch off (default)</option>
@@ -87,12 +83,11 @@ Defines how to interpret RF Off command.<br />
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Restore switch state after power cycle.</label>
         <description><![CDATA[
-Defines if the switch should restore switch state to the last state prior<br />
-				to device power off (power cycle).    !]]></description>
+Defines if the switch should restore switch state to the last state prior<br /> to device power off (power cycle).
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">No, turn off</option>
@@ -104,14 +99,12 @@ Defines if the switch should restore switch state to the last state prior<br />
                  min="0" max="3500">
         <label>20: Specify the consumption of the load in watts, for the calculation of power consumption.</label>
         <description><![CDATA[
- Max load 3500 W.<br /><h1>Overview</h1><ul><li>0 -&amp;gt; Disabled</li>
-<li>1 - 3500 -&amp;gt; Watts</li>
-</ul>    !]]></description>
+Max load 3500 W.<br /><h1>Overview</h1><ul><li>0 -&gt; Disabled</li> <li>1 - 3500 -&gt; Watts</li> </ul>
+        ]]></description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_21_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_21_1" type="integer" groupName="configuration">
         <label>21: LED Off color</label>
         <description>Color for Off state.</description>
         <default>0</default>
@@ -124,8 +117,7 @@ Defines if the switch should restore switch state to the last state prior<br />
         </options>
       </parameter>
 
-      <parameter name="config_22_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_22_1" type="integer" groupName="configuration">
         <label>22: LED On color.</label>
         <description>Color for On state.</description>
         <default>3</default>
@@ -144,12 +136,12 @@ Defines if the switch should restore switch state to the last state prior<br />
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Send Reports on switch state change.</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Controlled by buttons</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

@@ -46,6 +46,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -61,8 +62,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Send Out Basic Command</label>
         <description>Enable or Disable the status message function when the local button press changes the switching state.</description>
         <default>0</default>
@@ -89,7 +89,7 @@
         <label>1: Reports</label>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Control</label>
         <multipleLimit>4</multipleLimit>
       </parameter>

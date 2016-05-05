@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,10 +19,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class ZWaveThermostatSetpointCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -365,6 +365,11 @@ public class ZWaveThermostatSetpointCommandClass extends ZWaveCommandClass
          */
         private static Map<Integer, SetpointType> codeToSetpointTypeMapping;
 
+        /**
+         * A mapping between the name,and its corresponding SetpointType to facilitate lookup by enumeration name.
+         */
+        private static Map<String, SetpointType> nameToSetpointTypeMapping;
+
         private int key;
         private String label;
 
@@ -375,8 +380,10 @@ public class ZWaveThermostatSetpointCommandClass extends ZWaveCommandClass
 
         private static void initMapping() {
             codeToSetpointTypeMapping = new HashMap<Integer, SetpointType>();
+            nameToSetpointTypeMapping = new HashMap<>();
             for (SetpointType s : values()) {
                 codeToSetpointTypeMapping.put(s.key, s);
+                nameToSetpointTypeMapping.put(s.name().toLowerCase(), s);
             }
         }
 
@@ -392,6 +399,20 @@ public class ZWaveThermostatSetpointCommandClass extends ZWaveCommandClass
                 initMapping();
             }
             return codeToSetpointTypeMapping.get(i);
+        }
+
+        /**
+         * Lookup function based on the name. Returns null if the name does not exist.
+         *
+         * @param name the name to lookup
+         * @return enumeration value of the setpoint type.
+         */
+        public static SetpointType getSetpointType(String name) {
+            if (nameToSetpointTypeMapping == null) {
+                initMapping();
+            }
+
+            return nameToSetpointTypeMapping.get(name.toLowerCase());
         }
 
         /**
@@ -414,6 +435,7 @@ public class ZWaveThermostatSetpointCommandClass extends ZWaveCommandClass
      *
      * @author Chris Jackson
      */
+    @XStreamAlias("setpoint")
     private class Setpoint {
         SetpointType setpointType;
         boolean initialised = false;

@@ -33,6 +33,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -41,13 +42,9 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Button 1 and 3 pair mode</label>
-        <description>In separate mode button 1 works with Group A, button
-				3 with Group C. Click is ON, Hold is dimming UP, Double click is
-				OFF, Click-Hold is dimming DOWN. In pair button 1/3 are UP/DOWN
-				correspondingly. Click is ON/OFF, Hold is dimming UP/DOWN.</description>
+        <description>In separate mode button 1 works with Group A, button 3 with Group C. Click is ON, Hold is dimming UP, Double click is OFF, Click-Hold is dimming DOWN. In pair button 1/3 are UP/DOWN correspondingly. Click is ON/OFF, Hold is dimming UP/DOWN.</description>
         <default>1</default>
         <options>
           <option value="0">Separately</option>
@@ -56,13 +53,9 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Button 2 and 4 pair mode</label>
-        <description>In separate mode button 2 works with control group B,
-				button 4 with control group D. Click is ON, Hold is dimming UP,
-				Double click is OFF, Click-Hold is dimming DOWN. In pair button B/D
-				are UP/DOWN correspondingly. Click is ON/OFF, Hold is </description>
+        <description>In separate mode button 2 works with control group B, button 4 with control group D. Click is ON, Hold is dimming UP, Double click is OFF, Click-Hold is dimming DOWN. In pair button B/D are UP/DOWN correspondingly. Click is ON/OFF, Hold is</description>
         <default>1</default>
         <options>
           <option value="0">Separately</option>
@@ -71,18 +64,13 @@
         </options>
       </parameter>
 
-      <parameter name="config_11_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_11_1" type="integer" groupName="configuration">
         <label>11: Command to control Group A</label>
-        <description>defines the command to be sent to devices of control
-				group A when the related button is pressed
-			</description>
+        <description>defines the command to be sent to devices of control group A when the related button is pressed</description>
         <default>8</default>
         <options>
           <option value="0">Disable</option>
-          <option value="1">Switch on/off and Dim (send Basic Set and Switch
-					Multilevel)
-		</option>
+          <option value="1">Switch on/off and Dim (send Basic Set and Switch Multilevel)</option>
           <option value="2">Switch on/off only (send Basic Set)</option>
           <option value="3">Switch all</option>
           <option value="4">Send scenes</option>
@@ -93,18 +81,13 @@
         </options>
       </parameter>
 
-      <parameter name="config_12_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_12_1" type="integer" groupName="configuration">
         <label>12: Command to control Group B</label>
-        <description>defines the command to be sent to devices of control
-				group B when the related button is pressed
-			</description>
+        <description>defines the command to be sent to devices of control group B when the related button is pressed</description>
         <default>8</default>
         <options>
           <option value="0">Disable</option>
-          <option value="1">Switch on/off and Dim (send Basic Set and Switch
-					Multilevel)
-		</option>
+          <option value="1">Switch on/off and Dim (send Basic Set and Switch Multilevel)</option>
           <option value="2">Switch on/off only (send Basic Set)</option>
           <option value="3">Switch all</option>
           <option value="4">Send scenes</option>
@@ -115,18 +98,13 @@
         </options>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Command to control Group C</label>
-        <description>defines the command to be sent to devices of control
-				group C when the related button is pressed
-			</description>
+        <description>defines the command to be sent to devices of control group C when the related button is pressed</description>
         <default>8</default>
         <options>
           <option value="0">Disable</option>
-          <option value="1">Switch on/off and Dim (send Basic Set and Switch
-					Multilevel)
-		</option>
+          <option value="1">Switch on/off and Dim (send Basic Set and Switch Multilevel)</option>
           <option value="2">Switch on/off only (send Basic Set)</option>
           <option value="3">Switch all</option>
           <option value="4">Send scenes</option>
@@ -137,18 +115,13 @@
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Command to control Group D</label>
-        <description>defines the command to be sent to devices of control
-				group D when the related button is pressed
-			</description>
+        <description>defines the command to be sent to devices of control group D when the related button is pressed</description>
         <default>8</default>
         <options>
           <option value="0">Disable</option>
-          <option value="1">Switch on/off and Dim (send Basic Set and Switch
-					Multilevel)
-		</option>
+          <option value="1">Switch on/off and Dim (send Basic Set and Switch Multilevel)</option>
           <option value="2">Switch on/off only (send Basic Set)</option>
           <option value="3">Switch all</option>
           <option value="4">Send scenes</option>
@@ -159,8 +132,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_21_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_21_1" type="integer" groupName="configuration">
         <label>21: Send the following switch all commands</label>
         <default>1</default>
         <options>
@@ -170,8 +142,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_22_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_22_1" type="integer" groupName="configuration">
         <label>22: Invert buttons</label>
         <default>0</default>
         <options>
@@ -180,25 +151,21 @@
         </options>
       </parameter>
 
-      <parameter name="config_25_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_25_1" type="integer" groupName="configuration">
         <label>25: Block wake up even when Wake Up Interval is set</label>
         <default>0</default>
         <options>
           <option value="0">Wake up is blocked (default)</option>
-          <option value="1">Wake up is possible if configured accordingly
-				</option>
+          <option value="1">Wake up is possible if configured accordingly</option>
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: end unsolicited battery report on Wake Up</label>
         <default>0</default>
         <options>
           <option value="0">No</option>
-          <option value="1">To same node as Wake Up Notification (default)
-				</option>
+          <option value="1">To same node as Wake Up Notification (default)</option>
           <option value="2">Broadcast to neighbors</option>
         </options>
       </parameter>
@@ -209,27 +176,27 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Lifeline</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Control Group A</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Control Group B</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Control Group C</label>
         <multipleLimit>10</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Control Group D</label>
         <multipleLimit>10</multipleLimit>
       </parameter>

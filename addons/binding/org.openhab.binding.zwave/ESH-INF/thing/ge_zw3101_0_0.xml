@@ -28,6 +28,7 @@
       <property name="manufacturerRef">4450:3030</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -36,11 +37,9 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Ignore Start-Level (Receiving)</label>
-        <description>This dimmer will start dimming from its current
-				level.</description>
+        <description>This dimmer will start dimming from its current level.</description>
         <default>0</default>
         <options>
           <option value="0">No</option>
@@ -51,8 +50,7 @@
       <parameter name="config_7_1" type="integer" groupName="configuration"
                  min="1" max="99">
         <label>7: On/Off Command Dim Step</label>
-        <description>Indicates how many levels the dimmer will change for
-				each dimming step.</description>
+        <description>Indicates how many levels the dimmer will change for each dimming step.</description>
         <default>1</default>
       </parameter>
 
@@ -66,8 +64,7 @@
       <parameter name="config_9_1" type="integer" groupName="configuration"
                  min="1" max="99">
         <label>9: Local Control Dim Step</label>
-        <description>Indicates how many levels the dimmer will change for
-				each dimming step.</description>
+        <description>Indicates how many levels the dimmer will change for each dimming step.</description>
         <default>1</default>
       </parameter>
 
@@ -81,8 +78,7 @@
       <parameter name="config_11_1" type="integer" groupName="configuration"
                  min="1" max="99">
         <label>11: ALL ON/ALL OFF Dim Step</label>
-        <description>Indicates how many levels the dimmer will change for
-				each dimming step.</description>
+        <description>Indicates how many levels the dimmer will change for each dimming step.</description>
         <default>1</default>
       </parameter>
 
@@ -92,8 +88,7 @@
         <default>3</default>
       </parameter>
 
-      <parameter name="config_29_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_29_1" type="integer" groupName="configuration">
         <label>29: Load Sensing</label>
         <default>0</default>
         <options>

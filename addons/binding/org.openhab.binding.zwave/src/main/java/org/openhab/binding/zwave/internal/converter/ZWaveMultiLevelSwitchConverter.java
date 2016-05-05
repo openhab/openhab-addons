@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,8 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBatteryCommandClass;
@@ -42,8 +43,8 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveMultiLevelSwitchConverter} class.
      *
      */
-    public ZWaveMultiLevelSwitchConverter() {
-        super();
+    public ZWaveMultiLevelSwitchConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -173,7 +174,9 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         messages.add(serialMessage);
 
         // Poll an update once we've sent the command
-        messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
+        // Don't poll immediately since some devices return the original value, and some the new value.
+        // This conflicts with OH that will move the slider immediately.
+        // messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
         return messages;
     }
 }

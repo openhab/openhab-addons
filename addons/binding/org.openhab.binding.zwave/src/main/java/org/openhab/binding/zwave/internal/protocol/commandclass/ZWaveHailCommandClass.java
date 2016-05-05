@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
+import java.util.concurrent.TimeUnit;
+
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveDelayedPollEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +59,7 @@ public class ZWaveHailCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -74,13 +77,14 @@ public class ZWaveHailCommandClass extends ZWaveCommandClass {
                     return;
                 }
 
-                getController().pollNode(getNode());
+                // Send delayed poll event
+                getController().notifyEventListeners(
+                        new ZWaveDelayedPollEvent(this.getNode().getNodeId(), 0, 75, TimeUnit.MILLISECONDS));
 
                 break;
             default:
-                logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                logger.warn("NODE {}: Unsupported Command {} for command class {}.", this.getNode().getNodeId(),
+                        command, this.getCommandClass().getLabel());
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,7 +20,8 @@ import java.util.Map;
 
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
@@ -37,20 +38,25 @@ import org.slf4j.LoggerFactory;;
  */
 public abstract class ZWaveCommandClassConverter {
 
+    protected final ZWaveControllerHandler controller;
+
     private static final Map<CommandClass, Class<? extends ZWaveCommandClassConverter>> converterMap;
 
     static {
-
         Map<CommandClass, Class<? extends ZWaveCommandClassConverter>> temp = new HashMap<CommandClass, Class<? extends ZWaveCommandClassConverter>>();
 
         temp.put(CommandClass.ALARM, ZWaveAlarmConverter.class);
+        temp.put(CommandClass.BARRIER_OPERATOR, ZWaveBarrierOperatorConverter.class);
         temp.put(CommandClass.BASIC, ZWaveBasicConverter.class);
         temp.put(CommandClass.BATTERY, ZWaveBatteryConverter.class);
         temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
+        temp.put(CommandClass.CLOCK, ZWaveClockConverter.class);
         temp.put(CommandClass.COLOR, ZWaveColorConverter.class);
         temp.put(CommandClass.CONFIGURATION, ZWaveConfigurationConverter.class);
         temp.put(CommandClass.DOOR_LOCK, ZWaveDoorLockConverter.class);
         temp.put(CommandClass.METER, ZWaveMeterConverter.class);
+        temp.put(CommandClass.METER_TBL_MONITOR, ZWaveMeterTblMonitorConverter.class);
+        temp.put(CommandClass.PROTECTION, ZWaveProtectionConverter.class);
         temp.put(CommandClass.SCENE_ACTIVATION, ZWaveSceneActivationConverter.class);
         temp.put(CommandClass.SENSOR_ALARM, ZWaveAlarmSensorConverter.class);
         temp.put(CommandClass.SENSOR_BINARY, ZWaveBinarySensorConverter.class);
@@ -62,7 +68,7 @@ public abstract class ZWaveCommandClassConverter {
         temp.put(CommandClass.THERMOSTAT_MODE, ZWaveThermostatModeConverter.class);
         temp.put(CommandClass.THERMOSTAT_OPERATING_STATE, ZWaveThermostatOperatingStateConverter.class);
         temp.put(CommandClass.THERMOSTAT_SETPOINT, ZWaveThermostatSetpointConverter.class);
-        temp.put(CommandClass.CENTRAL_SCENE, ZWaveCentralSceneConverter.class);
+        temp.put(CommandClass.TIME_PARAMETERS, ZWaveTimeParametersConverter.class);
 
         converterMap = Collections.unmodifiableMap(temp);
     }
@@ -76,8 +82,9 @@ public abstract class ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveCommandClassConverter} class.
      *
      */
-    public ZWaveCommandClassConverter() {
+    public ZWaveCommandClassConverter(ZWaveControllerHandler controller) {
         super();
+        this.controller = controller;
     }
 
     /**
@@ -118,15 +125,16 @@ public abstract class ZWaveCommandClassConverter {
         return 0;
     }
 
-    public static ZWaveCommandClassConverter getConverter(CommandClass commandClass) {
+    public static ZWaveCommandClassConverter getConverter(ZWaveControllerHandler controller2,
+            CommandClass commandClass) {
         Constructor<? extends ZWaveCommandClassConverter> constructor;
         try {
             if (converterMap.get(commandClass) == null) {
                 logger.warn("CommandClass converter {} is not implemented!", commandClass.getLabel());
                 return null;
             }
-            constructor = converterMap.get(commandClass).getConstructor();
-            return constructor.newInstance();
+            constructor = converterMap.get(commandClass).getConstructor(ZWaveControllerHandler.class);
+            return constructor.newInstance(controller2);
         } catch (Exception e) {
             logger.error("Error getting converter {}", e.getMessage());
             return null;

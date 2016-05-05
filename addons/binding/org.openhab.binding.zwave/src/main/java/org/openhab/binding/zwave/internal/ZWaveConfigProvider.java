@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zwave.internal;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,9 +37,9 @@ import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
-import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveUserCodeCommandClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +148,8 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                 .withDescription("Set the minimum polling period for this device<BR/>"
                         + "Note that the polling period may be longer than set since the binding treats "
                         + "polls as the lowest priority data within the network.")
-                .withDefault("1800").withGroupName("thingcfg").build());
+                .withDefault("1800").withMinimum(new BigDecimal(15)).withMaximum(new BigDecimal(7200))
+                .withGroupName("thingcfg").build());
 
         // If we support the wakeup class, then add the configuration
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.WAKE_UP) != null) {
@@ -195,6 +197,33 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .withGroupName("thingcfg").withOptions(options).build());
         }
 
+        // If we support the powerlevel class, then add the configuration
+        if (node.getCommandClass(ZWaveCommandClass.CommandClass.POWERLEVEL) != null) {
+            List<ParameterOption> options = new ArrayList<ParameterOption>();
+            options.add(new ParameterOption("0", "Normal"));
+            options.add(new ParameterOption("1", "Minus 1dB"));
+            options.add(new ParameterOption("2", "Minus 2dB"));
+            options.add(new ParameterOption("3", "Minus 3dB"));
+            options.add(new ParameterOption("4", "Minus 4dB"));
+            options.add(new ParameterOption("5", "Minus 5dB"));
+            options.add(new ParameterOption("6", "Minus 6dB"));
+            options.add(new ParameterOption("7", "Minus 7dB"));
+            options.add(new ParameterOption("8", "Minus 8dB"));
+            options.add(new ParameterOption("9", "Minus 9dB"));
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL, Type.INTEGER).withLabel("Power Level")
+                    .withDescription(
+                            "Set the RF output level - Normal is maximum power<br>Setting the power to a lower level may be useful to reduce overloading of the receiver in adjacent nodes where they are close together, or if maximum power is not required for battery devices, it may extend battery life by reducing the transmit power.")
+                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+
+            parameters.add(ConfigDescriptionParameterBuilder
+                    .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT, Type.INTEGER)
+                    .withLabel("Power Level Timeout")
+                    .withDescription(
+                            "Set the power level timeout in seconds<br>The node will reset to the normal power level if communications is not made within the specified number of seconds.")
+                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+        }
+
         // If we support DOOR_LOCK - add options
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.DOOR_LOCK) != null) {
             parameters.add(ConfigDescriptionParameterBuilder
@@ -203,27 +232,45 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .build());
         }
 
-        // If we're DEAD, allow moving to the FAILED list
-        if (node.getNodeState() == ZWaveNodeState.DEAD) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.TEXT)
-                    .withLabel("Set device as FAILed").withAdvanced(true).withDefault("GO").withGroupName("actions")
-                    .build());
+        ZWaveUserCodeCommandClass userCodeClass = (ZWaveUserCodeCommandClass) node
+                .getCommandClass(ZWaveCommandClass.CommandClass.USER_CODE);
+        if (userCodeClass != null && userCodeClass.getNumberOfSupportedCodes() > 0) {
+            groups.add(new ConfigDescriptionParameterGroup("usercode", "lock", false, "User Code", null));
+
+            for (int code = 1; code <= userCodeClass.getNumberOfSupportedCodes(); code++) {
+                parameters.add(ConfigDescriptionParameterBuilder
+                        .create(ZWaveBindingConstants.CONFIGURATION_USERCODE + code, Type.TEXT)
+                        .withLabel("Code " + code).withDescription("Set the user code (4 to 10 numbers)")
+                        .withDefault("").withGroupName("usercode").build());
+            }
         }
+
+        List<ParameterOption> options = new ArrayList<ParameterOption>();
+        options.add(new ParameterOption(ZWaveBindingConstants.ACTION_CHECK_VALUE.toString(), "Do"));
 
         // If we're FAILED, allow removing from the controller
-        if (node.getNodeState() == ZWaveNodeState.FAILED) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.TEXT)
-                    .withLabel("Remove device from controller").withAdvanced(true).withDefault("GO")
-                    .withGroupName("actions").build());
-        }
+        // if (node.getNodeState() == ZWaveNodeState.FAILED) {
+        parameters.add(ConfigDescriptionParameterBuilder.create("action_remove", Type.INTEGER)
+                .withLabel("Remove device from controller").withAdvanced(true).withOptions(options)
+                .withDefault("-232323").withGroupName("actions").build());
+        // } else {
+        // Otherwise, allow us to put this on the failed list
+        parameters.add(ConfigDescriptionParameterBuilder.create("action_failed", Type.INTEGER)
+                .withLabel("Set device as FAILed").withAdvanced(true).withOptions(options).withDefault("-232323")
+                .withGroupName("actions").build());
+        // }
 
         if (node.isInitializationComplete() == true) {
-            parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.TEXT)
-                    .withLabel("Reinitialise the device").withAdvanced(true).withDefault("GO").withGroupName("actions")
-                    .build());
+            parameters.add(ConfigDescriptionParameterBuilder.create("action_reinit", Type.INTEGER)
+                    .withLabel("Reinitialise the device").withAdvanced(true).withOptions(options).withDefault("-232323")
+                    .withGroupName("actions").build());
         }
+        parameters.add(ConfigDescriptionParameterBuilder.create("action_heal", Type.INTEGER)
+                .withLabel("Heal the device").withAdvanced(true).withOptions(options).withDefault("-232323")
+                .withGroupName("actions").build());
 
         return new ConfigDescription(uri, parameters, groups);
+
     }
 
     private static void initialiseZWaveThings() {

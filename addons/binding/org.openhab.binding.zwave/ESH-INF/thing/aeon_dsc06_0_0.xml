@@ -46,6 +46,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -54,8 +55,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Multilevel Sensor Report Content</label>
         <default>0</default>
         <options>
@@ -64,19 +64,11 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
-        <label>2: Make SES blink</label>
-        <default>0</default>
-      </parameter>
-
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Automatic Notifications</label>
         <description><![CDATA[
-Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables automatic notifications to associated devices whenever there is a state change.</p>
-(0=nothing, 1=hail CC, 2=basic CC report)
-    !]]></description>
+Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables automatic notifications to associated devices whenever there is a state change</p> (0=nothing, 1=hail CC, 2=basic CC report)
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Nothing</option>
@@ -85,8 +77,7 @@ Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables autom
         </options>
       </parameter>
 
-      <parameter name="config_90_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_90_1" type="integer" groupName="configuration">
         <label>90: Enable/disable Parameter 91 and 92</label>
         <description>Enables/disables parameter 91 and 92 below</description>
         <default>0</default>
@@ -101,7 +92,7 @@ Enable or disable automatic notifications<br /><h1>Overview</h1><p>Enables autom
         <label>91: Minimum change in wattage</label>
         <description><![CDATA[
 Minimum change in wattage to trigger event<br /><h1>Overview</h1><p>The value here represents minimum change in wattage (in terms of wattage) for a REPORT to be sent.</p>
-    !]]></description>
+        ]]></description>
         <default>50</default>
       </parameter>
 
@@ -110,21 +101,11 @@ Minimum change in wattage to trigger event<br /><h1>Overview</h1><p>The value he
         <label>92: Minimum change in wattage %</label>
         <description><![CDATA[
 Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value here represents minimum change in wattage percent (in terms of percentage) for a REPORT to be sent.</p>
-    !]]></description>
+        ]]></description>
         <default>10</default>
       </parameter>
 
-      <parameter name="config_100_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>100: Set 100 to 103 to default</label>
-        <default>0</default>
-        <options>
-          <option value="0">Reset</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_101_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_101_4" type="integer" groupName="configuration">
         <label>101: Group 1 report</label>
         <default>8</default>
         <options>
@@ -135,8 +116,7 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         </options>
       </parameter>
 
-      <parameter name="config_102_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_102_4" type="integer" groupName="configuration">
         <label>102: Group 2 report</label>
         <default>0</default>
         <options>
@@ -147,8 +127,7 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         </options>
       </parameter>
 
-      <parameter name="config_103_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_103_4" type="integer" groupName="configuration">
         <label>103: Group 3 report</label>
         <default>0</default>
         <options>
@@ -156,15 +135,6 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
           <option value="4">Meter Report (Watts)</option>
           <option value="8">Meter Report (kWh)</option>
           <option value="12">Meter Report Watts and kWh</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_110_1" type="integer" groupName="configuration"
-                 min="0" max="1">
-        <label>110: Set 111 to 113 to default</label>
-        <default>0</default>
-        <options>
-          <option value="0">Reset</option>
         </options>
       </parameter>
 
@@ -195,8 +165,29 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         <default>0</default>
       </parameter>
 
-      <parameter name="config_255_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_100_1_wo" type="integer" groupName="configuration">
+        <label>100: Set 100 to 103 to default</label>
+        <default>0</default>
+        <options>
+          <option value="0">Reset</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_110_1_wo" type="integer" groupName="configuration">
+        <label>110: Set 111 to 113 to default</label>
+        <default>0</default>
+        <options>
+          <option value="0">Reset</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_255_1_wo" type="integer" groupName="configuration">
         <label>255: Device Reset</label>
         <default>0</default>
         <options>
@@ -210,7 +201,7 @@ Minimum change in wattage % to trigger event<br /><h1>Overview</h1><p>The value 
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Status Reports</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

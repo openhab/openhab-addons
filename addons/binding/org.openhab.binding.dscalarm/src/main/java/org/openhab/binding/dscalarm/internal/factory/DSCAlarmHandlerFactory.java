@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,25 +8,12 @@
  */
 package org.openhab.binding.dscalarm.internal.factory;
 
-import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.*;
+import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
-import org.openhab.binding.dscalarm.config.*;
-import org.openhab.binding.dscalarm.handler.DSCAlarmBaseBridgeHandler;
-import org.openhab.binding.dscalarm.handler.EnvisalinkBridgeHandler;
-import org.openhab.binding.dscalarm.handler.IT100BridgeHandler;
-import org.openhab.binding.dscalarm.handler.PanelThingHandler;
-import org.openhab.binding.dscalarm.handler.PartitionThingHandler;
-import org.openhab.binding.dscalarm.handler.ZoneThingHandler;
-import org.openhab.binding.dscalarm.handler.KeypadThingHandler;
-import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
-import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,10 +22,28 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
+import org.openhab.binding.dscalarm.config.DSCAlarmPartitionConfiguration;
+import org.openhab.binding.dscalarm.config.DSCAlarmZoneConfiguration;
+import org.openhab.binding.dscalarm.config.EnvisalinkBridgeConfiguration;
+import org.openhab.binding.dscalarm.config.IT100BridgeConfiguration;
+import org.openhab.binding.dscalarm.config.TCPServerBridgeConfiguration;
+import org.openhab.binding.dscalarm.handler.DSCAlarmBaseBridgeHandler;
+import org.openhab.binding.dscalarm.handler.EnvisalinkBridgeHandler;
+import org.openhab.binding.dscalarm.handler.IT100BridgeHandler;
+import org.openhab.binding.dscalarm.handler.KeypadThingHandler;
+import org.openhab.binding.dscalarm.handler.PanelThingHandler;
+import org.openhab.binding.dscalarm.handler.PartitionThingHandler;
+import org.openhab.binding.dscalarm.handler.TCPServerBridgeHandler;
+import org.openhab.binding.dscalarm.handler.ZoneThingHandler;
+import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
+import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DSCAlarmHandlerFactory} is responsible for creating things and thing. handlers.
- * 
+ *
  * @author Russell Stephens - Initial Contribution
  */
 public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
@@ -57,6 +62,10 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
             ThingUID it100BridgeUID = getIT100BridgeThingUID(thingTypeUID, thingUID, configuration);
             logger.debug("createThing(): IT100_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID, it100BridgeUID.getId());
             return super.createThing(thingTypeUID, configuration, it100BridgeUID, null);
+        } else if (DSCAlarmBindingConstants.TCPSERVERBRIDGE_THING_TYPE.equals(thingTypeUID)) {
+            ThingUID tcpServerBridgeUID = getTCPServerBridgeThingUID(thingTypeUID, thingUID, configuration);
+            logger.debug("createThing(): TCP_SERVER_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID, tcpServerBridgeUID.getId());
+            return super.createThing(thingTypeUID, configuration, tcpServerBridgeUID, null);
         } else if (DSCAlarmBindingConstants.PANEL_THING_TYPE.equals(thingTypeUID)) {
             ThingUID panelThingUID = getDSCAlarmPanelUID(thingTypeUID, thingUID, configuration, bridgeUID);
             logger.debug("createThing(): PANEL_THING: Creating '{}' type Thing - {}", thingTypeUID, panelThingUID.getId());
@@ -85,7 +94,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Get the Envisalink Bridge Thing UID.
-     * 
+     *
      * @param thingTypeUID
      * @param thingUID
      * @param configuration
@@ -94,7 +103,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getEnvisalinkBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
             String ipAddress = (String) configuration.get(EnvisalinkBridgeConfiguration.IP_ADDRESS);
-            String bridgeID = ipAddress.replace('.', '-');
+            String bridgeID = ipAddress.replace('.', '_');
             thingUID = new ThingUID(thingTypeUID, bridgeID);
         }
         return thingUID;
@@ -102,7 +111,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Get the IT-100 Bridge Thing UID.
-     * 
+     *
      * @param thingTypeUID
      * @param thingUID
      * @param configuration
@@ -111,7 +120,25 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getIT100BridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
             String serialPort = (String) configuration.get(IT100BridgeConfiguration.SERIAL_PORT);
-            String bridgeID = serialPort.replace('.', '-');
+            String bridgeID = serialPort.replace('.', '_');
+            thingUID = new ThingUID(thingTypeUID, bridgeID);
+        }
+        return thingUID;
+    }
+
+    /**
+     * Get the IT-100 Bridge Thing UID.
+     *
+     * @param thingTypeUID
+     * @param thingUID
+     * @param configuration
+     * @return thingUID
+     */
+    private ThingUID getTCPServerBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+        if (thingUID == null) {
+            String ipAddress = (String) configuration.get(TCPServerBridgeConfiguration.IP_ADDRESS);
+            String port = (String) configuration.get(TCPServerBridgeConfiguration.PORT);
+            String bridgeID = ipAddress.replace('.', '_') + "_" + port;
             thingUID = new ThingUID(thingTypeUID, bridgeID);
         }
         return thingUID;
@@ -119,7 +146,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Get the Panel Thing UID.
-     * 
+     *
      * @param thingTypeUID
      * @param thingUID
      * @param configuration
@@ -136,7 +163,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Get the Partition Thing UID.
-     * 
+     *
      * @param thingTypeUID
      * @param thingUID
      * @param configuration
@@ -153,7 +180,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Get the Zone Thing UID.
-     * 
+     *
      * @param thingTypeUID
      * @param thingUID
      * @param configuration
@@ -170,7 +197,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Get the Keypad Thing UID.
-     * 
+     *
      * @param thingTypeUID
      * @param thingUID
      * @param configuration
@@ -187,7 +214,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     /**
      * Register the Thing Discovery Service for a bridge.
-     * 
+     *
      * @param dscAlarmBridgeHandler
      */
     private void registerDSCAlarmDiscoveryService(DSCAlarmBaseBridgeHandler dscAlarmBridgeHandler) {
@@ -209,12 +236,17 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
             EnvisalinkBridgeHandler handler = new EnvisalinkBridgeHandler((Bridge) thing);
             registerDSCAlarmDiscoveryService(handler);
             logger.debug("createHandler(): ENVISALINKBRIDGE_THING: ThingHandler created for {}", thingTypeUID);
-            return (EnvisalinkBridgeHandler) handler;
+            return handler;
         } else if (thingTypeUID.equals(DSCAlarmBindingConstants.IT100BRIDGE_THING_TYPE)) {
             IT100BridgeHandler handler = new IT100BridgeHandler((Bridge) thing);
             registerDSCAlarmDiscoveryService(handler);
             logger.debug("createHandler(): IT100BRIDGE_THING: ThingHandler created for {}", thingTypeUID);
-            return (IT100BridgeHandler) handler;
+            return handler;
+        } else if (thingTypeUID.equals(DSCAlarmBindingConstants.TCPSERVERBRIDGE_THING_TYPE)) {
+            TCPServerBridgeHandler handler = new TCPServerBridgeHandler((Bridge) thing);
+            registerDSCAlarmDiscoveryService(handler);
+            logger.debug("createHandler(): TCPSERVERBRIDGE_THING: ThingHandler created for {}", thingTypeUID);
+            return handler;
         } else if (thingTypeUID.equals(DSCAlarmBindingConstants.PANEL_THING_TYPE)) {
             logger.debug("createHandler(): PANEL_THING: ThingHandler created for {}", thingTypeUID);
             return new PanelThingHandler(thing);

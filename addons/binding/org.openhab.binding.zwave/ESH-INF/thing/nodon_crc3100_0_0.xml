@@ -33,6 +33,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -41,8 +42,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Buttons 1 and 3 profile</label>
         <description>To set-up the profile of buttons 1 and 3</description>
         <default>0</default>
@@ -53,8 +53,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Buttons 2 and 4 profile</label>
         <description>To set-up the profile of buttons 2 and 4</description>
         <default>0</default>
@@ -65,8 +64,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Scene Type</label>
         <description>To choose the way of sending Scene to the gateway</description>
         <default>0</default>
@@ -76,8 +74,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Button 1 configuration</label>
         <description>To set-up the how button 1 behaves, when set in MONO Profile</description>
         <default>0</default>
@@ -88,8 +85,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Button 2 configuration</label>
         <description>To set-up the how button 2 behaves, when set in MONO Profile</description>
         <default>0</default>
@@ -100,8 +96,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Button 3 configuration</label>
         <description>To set-up the how button 3 behaves, when set in MONO Profile</description>
         <default>0</default>
@@ -112,8 +107,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_7_1" type="integer" groupName="configuration">
         <label>7: Button 4 configuration</label>
         <description>To set-up the how button 4 behaves, when set in MONO Profile</description>
         <default>0</default>
@@ -124,8 +118,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_8_1" type="integer" groupName="configuration">
         <label>8: LED Management</label>
         <description>How to set up LED behaviour</description>
         <default>0</default>
@@ -147,32 +140,32 @@
         <label>1: Lifeline</label>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Button 1 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Button 2 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Button 3 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Button 4 - Mono - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_6" type="text" groupName="association"  multiple="true">
+      <parameter name="group_6" type="text" groupName="association" multiple="true">
         <label>6: Button 1 and 3 - Duo - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>
 
-      <parameter name="group_7" type="text" groupName="association"  multiple="true">
+      <parameter name="group_7" type="text" groupName="association" multiple="true">
         <label>7: Button 2 and 4 - Duo - Controlled nodes</label>
         <multipleLimit>8</multipleLimit>
       </parameter>

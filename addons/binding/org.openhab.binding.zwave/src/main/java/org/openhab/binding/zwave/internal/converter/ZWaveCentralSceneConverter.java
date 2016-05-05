@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,8 @@ package org.openhab.binding.zwave.internal.converter;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.zwave.handler.ZWaveThingHandler.ZWaveThingChannel;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
+import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,8 @@ public class ZWaveCentralSceneConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveConverterBase} class.
      *
      */
-    public ZWaveCentralSceneConverter() {
-        super();
+    public ZWaveCentralSceneConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     @Override

@@ -39,6 +39,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -47,8 +48,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Send Sensor binary report on open/close events</label>
         <default>0</default>
         <options>
@@ -57,8 +57,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Enable wake up 10 minutes when power on</label>
         <default>0</default>
         <options>
@@ -67,8 +66,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Send Basic Set on open/close event</label>
         <default>0</default>
         <options>
@@ -77,15 +75,11 @@
         </options>
       </parameter>
 
-      <parameter name="config_121_4_000000FF" type="integer" groupName="configuration"
-                 min="0" max="17">
+      <parameter name="config_121_4_000000FF" type="integer" groupName="configuration">
         <label>121: command class to use for open/close</label>
         <description><![CDATA[
-parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p>
-<p>Set to 1 for BATTERY report</p>
-<p>Set to 16 for SENSOR_BINARY report</p>
-<p>Set to 17 for SENSOR_BINARY and BATTERY</p>
-    !]]></description>
+parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p> <p>Set to 1 for BATTERY report</p> <p>Set to 16 for SENSOR_BINARY report</p> <p>Set to 17 for SENSOR_BINARY and BATTERY</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">not set</option>
@@ -95,14 +89,11 @@ parameter 4 (LSB)<br /><h1>Overview</h1><p>Set to 0 for no report</p>
         </options>
       </parameter>
 
-      <parameter name="config_121_4_0000FF00" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_121_4_0000FF00" type="integer" groupName="configuration">
         <label>121: command class to use for open/close</label>
         <description><![CDATA[
-see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p>
-<p>set to 1 for BASIC report (default)</p>
-
-    !]]></description>
+see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p> <p>set to 1 for BASIC report (default)</p>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">not set</option>
@@ -116,7 +107,7 @@ see overview (parameter 3)<br /><h1>Overview</h1><p>set to 0 for no report</p>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association"  multiple="true">
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>

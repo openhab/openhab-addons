@@ -46,6 +46,12 @@
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
@@ -57,6 +63,7 @@
       <property name="defaultAssociations">1</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
 
       <!-- PARAMETER DEFINITIONS -->
@@ -65,8 +72,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Smoke Sensor sensitivity</label>
         <description>There are 3 levels of sensitivity to smoke presence. Level 1 means the highest sensitivity. Rising the parameter value lowers the sensitivity to smoke presence.</description>
         <default>2</default>
@@ -77,8 +83,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Z-Wave notifications status</label>
         <description>This parameter allows to activate excess temperature and/or enclosure opening notifications sent to the main controller</description>
         <default>0</default>
@@ -90,8 +95,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Visual indicator notifications status</label>
         <description>This parameter allows to activate visual indications but does not apply to major alarms, such as FIRE, TROUBLE and LOW BATTERY ALARM.</description>
         <default>0</default>
@@ -102,13 +106,12 @@
           <option value="3">enclosure opening notification enabled + exceeding temperature thresho</option>
           <option value="4">lack of Z-Wave range notification</option>
           <option value="5">enclosure opening notification enabled + lack of Z-Wave range notifica</option>
-          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave </option>
+          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave</option>
           <option value="7">enclosure opening notification enabled + exceeding temperature thresho</option>
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Sound notifications status</label>
         <description>This parameter allows to activate sound signals but does not apply to major alarms, such as FIRE, TROUBLE and LOW BATTERY ALARM.</description>
         <default>0</default>
@@ -119,19 +122,18 @@
           <option value="3">enclosure opening notification enabled + exceeding temperature thresho</option>
           <option value="4">lack of Z-Wave range notification</option>
           <option value="5">enclosure opening notification enabled + lack of Z-Wave range notifica</option>
-          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave </option>
+          <option value="6">exceeding temperature threshold notification enabled + lack of Z-Wave</option>
           <option value="7">enclosure opening notification enabled + exceeding temperature thresho</option>
         </options>
       </parameter>
 
-      <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_10_1" type="integer" groupName="configuration">
         <label>10: Configuration of control frames in BASIC command class</label>
         <description>This parameter defines which frames will be sent in the 2-nd Association Group (FIRE ALARM). The values of BASIC ON and BASIC OFF frames may be defined as described in further parameters.</description>
         <default>0</default>
         <options>
           <option value="0">BASIC ON and BASIC OFF enabled</option>
-          <option value="1">BASIC ON enabled </option>
+          <option value="1">BASIC ON enabled</option>
           <option value="2">BASIC OFF enabled</option>
         </options>
       </parameter>
@@ -150,8 +152,7 @@
         <default>255</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Alarm broadcast</label>
         <description>A value other than 0 means that alarms are being sent in broadcast mode, i.e. to all devices within a Fibaro Smoke Sensor’s range</description>
         <default>0</default>
@@ -208,22 +209,22 @@
         <label>1: Device Status</label>
       </parameter>
 
-      <parameter name="group_2" type="text" groupName="association"  multiple="true">
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Smoke Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association"  multiple="true">
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
         <label>3: Tamper Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_4" type="text" groupName="association"  multiple="true">
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
         <label>4: Fire Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_5" type="text" groupName="association"  multiple="true">
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
         <label>5: Tamper Alarm</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
