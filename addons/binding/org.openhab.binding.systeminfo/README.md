@@ -3,7 +3,7 @@
 System information Binding provides operating system and hardware information including:
 
  - Operating system name, version and manufacturer
- - CPU average load, name, description, number of physical and logical cores
+ - CPU average recent load and load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime
  - Free, total and available memory
  - Free, total and available swap memory
  - Hard drive name, model and serial number
@@ -11,7 +11,7 @@ System information Binding provides operating system and hardware information in
  - Battery information - estimated remaining time, capacity, name
  - Sensors information - CPU voltage and temperature, fan speeds 
  - Display information
- - Network IP,name and adapter name
+ - Network IP,name and adapter name, mac, data sent and received, packages sent and received
  
  The binding uses [oshi](https://github.com/dblock/oshi) API to access this information regardless of the underlying platform and does not need any native parts.
  
@@ -25,6 +25,7 @@ If multiple storage or display devices support is needed, new thing type has to 
 
 The discovery service implementation tries to resolve the computer name. If the resolving process fails, the computer name is set to "Unknown". In both cases it creates a Discovery Result with thing type  **computer**.
 
+When [this issue] (https://github.com/eclipse/smarthome/issues/1118)  is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them). At the moment this is not supported.
 ## Binding configuration
 
 No binding configuration required.
@@ -36,72 +37,85 @@ The thing has two configuration parameters:
    * **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
    * **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
-That means that by default configuration, channels with priority set to 'High' are updated every second, channels with priority set to 'Medium' - every minute, channels with priority set to 'Low' only at initializing or at Refresh command.
+That means that by default configuration:
+   * channels with priority set to 'High' are updated every second
+   * channels with priority set to 'Medium' - every minute 
+   * channels with priority set to 'Low' only at initializing or at Refresh command.
 
-
+For more info see [channel configuration](#channel-configuration)
 ## Channels
 
-The binding support several channel group. Each channel group, contains one or more channels. In the list below, you can find, how are channel group and channels related.
+The binding support several channel group. Each channel group, contains one or more channels. In the list below, you can find, how are channel group and channels id`s related.
 
 **thing** `computer`
-    * **group** `os`
-        * **channel** `family, manufacturer, version `
-    * **group** `memory`
-        * **channel** `available, total, used, available_percent`
-    * **group** `swap`
-        * **channel** `available, total, used, available_percent`
-    * **group** `storage`
-        * **channel** `available, total, used, available_percent, name, description, type`
-    * **group** `drive` 
-        * **channel** `name, model, serial`
-    * **group** `display` 
-        * **channel** `information`
-    * **group** `battery`
-        * **channel** `name, remainingCapacity,remainingTime`
-    * **group** `cpu`
-        * **channel** `name, description, load, logicalCores, physicalCores`
-    * **group** `sensors`
-        * **channel** `cpuTemp, cpuVoltage, fanSpeed`
-    * **group** `network`
-        * **channel** `ip, networkDisplayName, networkName` (String)
+   * **group** `os`
+         **channel** `family, manufacturer, version `
+   * **group** `memory`
+         **channel** `available, total, used, available_percent`
+   * **group** `swap`
+         **channel** `available, total, used, available_percent`
+   * **group** `storage` (deviceIndex)
+         **channel** `available, total, used, available_percent, name, description, type`
+   * **group** `drive` (deviceIndex)
+         **channel** `name, model, serial`
+   * **group** `display` (deviceIndex)
+         **channel** `information`
+   * **group** `battery` (deviceIndex)
+         **channel** `name, remainingCapacity, remainingTime`
+   * **group** `cpu` 
+         **channel** `name, description, load, load1, load5, load15, uptime, logicalCores, physicalCores`
+   * **group** `sensors`
+         **channel** `cpuTemp, cpuVoltage, fanSpeed`
+   * **group** `network` (deviceIndex)
+         **channel** `ip, mac, networkDisplayName, networkName, packagesSent, packagesReceived, dataSent, dataReceived`
 
-In the table is shown more detailed information about each Channel type.
-The binding introduces the following channel types:
-
-| Chnanel Type | Channel Description | Supported item type | Default priority | 
-| ------------- | ------------- |------------|----------|
-| manufacturer  | The manufacturer of the operating system  | String | Low |
-| version  | The version of the operating system  | String | Low | 
-| family  | The family of the operating system | String | Low |
-| load  | Load in percents  | Number | High | 
-| name | Name of the device  | String | Low | 
-| logicalCores  | Number of CPU logical cores  | Number | Low |
-| phisycalCores  | Number of CPU physical cores<  | Number | Low |
-| available  | Available size in MB  | Number | High |
-| used  | Used size in MB  | Number | High |
-| total  | Total size in MB  | Number | Low |
-| availablePercent  | Available size in %  | Number | High |
-| model  | The model of the device  | String | Low |
-| serial  | The serial number of the device  | String | Low |
-| description  | Description of the device  | String | Low |
-| type  | Storage type  | String | Low |
-| cpuTemp  | CPU Temperature in Celsius degrees  | Number | High |
-| cpuVoltage  | CPU Voltage in V  | Number | Medium |
-| fanSpeed  | Fan speed in rpm  | String | Low |
-| remainingTime  | Remaining time in minutes | Number | Medium |
-| remainingCapacity  | Remaining capacity in percents  | Number | Medium |
-| information  | Product, manufacturer, SN, width and height of the display in cm  | String | Low |
-| ip  | Host IP address of the network  | String | Low |
-| networkName  | The name of the network.  | String | Low |
-| networkDisplayName  | The display name of the network  | String | Low |
-
-Some of the channels may have device index attached to the Channel Type.
- - channel_ID  ::= Chnanel_Type & (deviceIndex) 
- - deviceIndex ::= number
- - (e.g. *storage_available1*)
+The groups marked with "deviceIndex" may have device index attached to the Channel Group.
+ - channel ::= chnanel_group & (deviceIndex) & # channel_id
+ - deviceIndex ::= number > 0
+ - (e.g. *storage1#available*)
  
  The binding uses this index to get information about a specific device from a list of devices.
  (e.g on a single computer could be installed several local disks with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 ant etc).
+
+In the table is shown more detailed information about each Channel type.
+The binding introduces the following channels:
+
+| Chnanel ID | Channel Description | Supported item type | Default priority | Advanced |
+| ------------- | ------------- |------------|----------|----------|
+| manufacturer  | The manufacturer of the operating system  | String | Low | False |
+| version  | The version of the operating system  | String | Low | False |
+| family  | The family of the operating system | String | Low | False |
+| load  | Recent load in percents  | Number | High | False |
+| load1 | Load in percents for the last 1 minutes | Number | Medium | True |
+| load5 | Load in percents for the last 5 minutes | Number | Medium | True |
+| load15 | Load in percents for the last 1 minutes | Number | Medium | True |
+| threads | Number of threads currently running | Number | Medium | True |
+| uptime | System uptime (time after start) in minutes | Number | Medium | True |
+| name | Name of the device  | String | Low | False |
+| logicalCores  | Number of CPU logical cores  | Number | Low | False |
+| phisycalCores  | Number of CPU physical cores<  | Number | Low | False |
+| available  | Available size in MB  | Number | High | False |
+| used  | Used size in MB  | Number | High | False |
+| total  | Total size in MB  | Number | Low | False |
+| availablePercent  | Available size in %  | Number | High | False |
+| model  | The model of the device  | String | Low | True |
+| serial  | The serial number of the device  | String | Low | True |
+| description  | Description of the device  | String | Low | False |
+| type  | Storage type  | String | Low | False |
+| cpuTemp  | CPU Temperature in Celsius degrees  | Number | High | False |
+| cpuVoltage  | CPU Voltage in V  | Number | Medium | False |
+| fanSpeed  | Fan speed in rpm  | Number | Medium | True |
+| remainingTime  | Remaining time in minutes | Number | Medium | False |
+| remainingCapacity  | Remaining capacity in percents  | Number | Medium | False |
+| information  | Product, manufacturer, SN, width and height of the display in cm  | String | Low | False |
+| ip  | Host IP address of the network  | String | Low | False |
+| mac  | MAC address | String | Low | False |
+| networkName  | The name of the network.  | String | Low | False |
+| networkDisplayName  | The display name of the network  | String | Low | False |
+| packagesSent  | Number of packages sent | Number | Medium | True |
+| packagesReceived  | Number of packages received | Number | Medium | True |
+| dataSent  | Data sent in MB | Number | Medium | True |
+| dataReceived  | Data received in MB | Number | Medium | True |
 
 ##Channel configuration
 
@@ -127,6 +141,11 @@ String OS_Version                   { channel="systeminfo:computer:work:os#versi
 String Network_AdapterName          { channel="systeminfo:computer:work:network#networkDisplayName" }
 String Network_Name                 { channel="systeminfo:computer:work:network#networkName" }
 String Network_IP                   { channel="systeminfo:computer:work:network#ip" }
+String Network_Mac                  { channel="systeminfo:computer:work:network#mac" }
+Number Network_DataSent             { channel="systeminfo:computer:work:network#dataSent" }
+Number Network_DataRecevied         { channel="systeminfo:computer:work:network#dataReceived" }
+Number Network_PackagesSent         { channel="systeminfo:computer:work:network#packagesSent" }
+Number Network_PackagesRecevied     { channel="systeminfo:computer:work:network#packagesReceived" }
 
 /* CPU information*/
 String CPU_Name                     { channel="systeminfo:computer:work:cpu#name" }
@@ -134,6 +153,12 @@ String CPU_Description              { channel="systeminfo:computer:work:cpu#desc
 Number CPU_Load                     { channel="systeminfo:computer:work:cpu#load"} 
 Number CPU_LogicalProcCount         { channel="systeminfo:computer:work:cpu#logicalCores" }
 Number CPU_PhysicalProcCount        { channel="systeminfo:computer:work:cpu#phisycalCores" }
+Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
+Number CPU_Load5                    { channel="systeminfo:computer:work:cpu#load5" }
+Number CPU_Load15                   { channel="systeminfo:computer:work:cpu#load15" }
+Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
+Number CPU_Threads                  { channel="systeminfo:computer:work:cpu#threads" }
+Number CPU_Uptime                   { channel="systeminfo:computer:work:cpu#uptime" }
 
 /* Drive information*/
 String Drive_Name                    { channel="systeminfo:computer:work:drive#name" }

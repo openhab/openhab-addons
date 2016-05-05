@@ -3,7 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- This thing represents a computer with single logical storage device,single display, battery and one network interface 
+	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one network interface 
 		installed. If other configurations are needed feel free to create different thing types. Currently dynamic channel creation 
 		is not supported from the binding. -->
 	<thing-type id="computer">
@@ -26,6 +26,5 @@
 
 		<config-description-ref uri="thing-type:systeminfo:computerConfig" />
 	</thing-type>
-
 
 </thing:thing-descriptions>

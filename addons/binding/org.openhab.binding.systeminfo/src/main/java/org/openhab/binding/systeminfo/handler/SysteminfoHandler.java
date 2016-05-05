@@ -10,7 +10,6 @@ package org.openhab.binding.systeminfo.handler;
 import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.net.SocketException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -94,8 +93,6 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         try {
             this.systeminfo = new OshiSysteminfo();
-        } catch (SocketException e) {
-            logger.error("Network information is not available ! I/O error occured {e}", e);
         } catch (Exception e) {
             logger.error("Can not instantate Systeminfo object", e);
         }
@@ -115,6 +112,8 @@ public class SysteminfoHandler extends BaseThingHandler {
         logger.debug("Start reading Thing configuration.");
         Configuration config = getConfig();
         try {
+            // When the Thing is created with ThingBuidler, calling config.get(String) throws an Exception. This is why
+            // this casting is needed
             Object mediumRefreshTime = MEDIUM_PRIORITY_REFRESH_TIME;
             Object highRefreshTime = HIGH_PRIORITY_REFRESH_TIME;
             refreshIntervalMediumPriority = (BigDecimal) config.get(mediumRefreshTime);
@@ -151,7 +150,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     lowPriorityChannels.add(channel.getUID());
                     break;
                 default:
-                    logger.error("Invalid configuration parameter. Channel will not be updated !");
+                    logger.error("Invalid priority configuration parameter. Channel will not be updated !");
             }
         }
     }
@@ -215,9 +214,11 @@ public class SysteminfoHandler extends BaseThingHandler {
     private State getInfoForChannel(ChannelUID channelUID) {
         State state = null;
         String channelID = channelUID.getId();
-        int deviceIndex = getDeviceIndex(channelID);
+        String channelGroupID = channelUID.getGroupId();
+        int deviceIndex = getDeviceIndex(channelGroupID);
         if (deviceIndex > 0) {
-            // The channelID contains deviceIndex. It must be deleted from the channelID, because otherwise the method
+            // The channelGroup contains deviceIndex. It must be deleted from the channelID, because otherwise the
+            // method
             // will not find the correct method below.
             // All digits are deleted from the ID
             channelID = channelID.replaceAll("\\d+", "");
@@ -362,6 +363,8 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_NETWORK_PACKAGES_SENT:
                     state = systeminfo.getNetworkPackageSent(deviceIndex);
                     break;
+                default:
+                    logger.error("Channel with unknown ID: {} !", channelID);
             }
         } catch (DeviceNotFoundException e) {
             logger.error("No information for channel " + channelID + deviceIndex, e);
@@ -370,9 +373,9 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     /**
-     * The device index is an optional part of the channelID - the last characters. It is used to identify unique
-     * device, when more than one devices are available (e.g. local disks with names C:\, D:\, E"\ - the first will have
-     * deviceIndex=0, the second deviceIndex=1 ant etc).
+     * The device index is an optional part of the channelID - the last characters of the groupID. It is used to
+     * identify unique device, when more than one devices are available (e.g. local disks with names C:\, D:\, E"\ - the
+     * first will have deviceIndex=0, the second deviceIndex=1 ant etc).
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
      * @param channelID - the ID of the channel

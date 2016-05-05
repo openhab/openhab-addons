@@ -176,6 +176,8 @@ class SysteminfoOSGiTest extends OSGiTest{
                     assertThat itemState, isA (DecimalType)
                 } else if(acceptedItemType.equals("String")){
                     assertThat itemState, isA (StringType)
+                } else {
+                    fail "Test might not be set up correctly! Check if 'acceptedItemType' in the test case is set correctly !"
                 }
             },waitTime)
         }
@@ -263,7 +265,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String newItemName = "New_item";
 
         //New item is initialized after the first refresh task has finished
-        sleep(SysteminfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT  * 2 * 1000)
+        sleep(SysteminfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT * 1000 + DEFAULT_THING_INITIALIZE_MAX_TIME)
 
         intializeItem(channelUID,newItemName,acceptedItemType)
 
@@ -282,12 +284,23 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @Test
     public void 'assert state of not existing device is not updated' () {
-        int deviceIndex = 50;
-        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_MAC + deviceIndex;
-        String acceptedItemType = "Number";
+        int deviceIndex = 520;
+        String channnelID = "network$deviceIndex#mac"
+        String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
         testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+    @Category(PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert state of second device is updated' () {
+        //This test assumes that at least 2 network interfaces are present on the test platform
+        int deviceIndex = 1;
+        String channnelID = "network$deviceIndex#mac"
+        String acceptedItemType = "String";
+
+        initializeThingWithChannel(channnelID,acceptedItemType);
+        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.systeminfo.discovery;
 
 import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
@@ -8,6 +15,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -15,10 +23,20 @@ import org.openhab.binding.systeminfo.SysteminfoBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Discovery service implementation for the Systeminfo binding. It creates {@link DiscoveryResult} with
+ * {@link #DEFAULT_THING_LABEL}. The discovered Thing will have id - the hostname or {@link #DEFAULT_THING_ID}'
+ *
+ * @author Svilen Valkanov
+ */
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     private static final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
-    public final static int DISCOVERY_TIME_SECONDS = 30;
+
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
+
+    private final static int DISCOVERY_TIME_SECONDS = 30;
+    private final static String DEFAULT_THING_ID = "unknown";
+    private final static String DEFAULT_THING_LABEL = "Local computer";
 
     public SysteminfoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
@@ -27,18 +45,20 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting system information discovery !");
-        String hostname = "Unknown";
+        String hostname;
 
         try {
             InetAddress addr;
             addr = InetAddress.getLocalHost();
             hostname = addr.getHostName();
         } catch (UnknownHostException ex) {
-            logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}", hostname);
+            hostname = DEFAULT_THING_ID;
+            logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}",
+                    DEFAULT_THING_ID);
         }
 
         ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
         ThingUID computer = new ThingUID(computerType, hostname);
-        thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel("Local computer").build());
+        thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel(DEFAULT_THING_LABEL).build());
     }
 }

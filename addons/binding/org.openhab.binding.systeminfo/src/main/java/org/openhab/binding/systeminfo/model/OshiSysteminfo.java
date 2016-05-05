@@ -45,14 +45,14 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private HWDiskStore[] drives;
     private Sensors sensors;
 
-    public final static int PRECISION_AFTER_DECIMAl_SIGN = 2;
+    public final static int PRECISION_AFTER_DECIMAl_SIGN = 1;
 
     /**
      * Some of the methods used in this constructor execute native code and require execute permissions
      *
      * @throws SocketException when it is not able to access the network information.
      */
-    public OshiSysteminfo() throws SocketException {
+    public OshiSysteminfo() {
         SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hal = systemInfo.getHardware();
         operatingSystem = systemInfo.getOperatingSystem();
@@ -252,13 +252,15 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getSensorsCpuTemperature() {
-        double cpuTemp = sensors.getCpuTemperature();
+        BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
+        cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
         return new DecimalType(cpuTemp);
     }
 
     @Override
     public DecimalType getSensorsCpuVoltage() {
-        double cpuVoltage = sensors.getCpuVoltage();
+        BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
+        cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
         return new DecimalType(cpuVoltage);
     }
 
@@ -272,14 +274,13 @@ public class OshiSysteminfo implements SysteminfoInterface {
     @Override
     public DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
-        double remainingTime = powerSource.getTimeRemaining();
-        // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited
-        if (remainingTime > 0) {
-            remainingTime = getTimeInMinutes(remainingTime);
-        } else if (remainingTime == -2 || remainingTime == -1) {
-            remainingTime = 999;
+        double remainingTimeInSeconds = powerSource.getTimeRemaining();
+        // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
+        // In this case we will set the result value to 999
+        BigDecimal remainingTime = new BigDecimal(999);
+        if (remainingTimeInSeconds > 0) {
+            remainingTime = getTimeInMinutes(remainingTimeInSeconds);
         }
-
         return new DecimalType(remainingTime);
     }
 
@@ -382,8 +383,10 @@ public class OshiSysteminfo implements SysteminfoInterface {
         return result;
     }
 
-    private double getTimeInMinutes(double timeInSeconds) {
-        return timeInSeconds / 100;
+    private BigDecimal getTimeInMinutes(double timeInSeconds) {
+        BigDecimal timeInMinutes = new BigDecimal(timeInSeconds / 60);
+        timeInMinutes = timeInMinutes.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_UP);
+        return timeInMinutes;
     }
 
     @Override
@@ -417,9 +420,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
             default:
                 index = -1;
         }
-        double processorLoads[] = cpu.getSystemLoadAverage(index);
+        double processorLoads[] = cpu.getSystemLoadAverage(index + 1);
         BigDecimal result = new BigDecimal(processorLoads[index]);
-        result.setScale(PRECISION_AFTER_DECIMAl_SIGN);
+        result = result.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
         return result;
     }
 
