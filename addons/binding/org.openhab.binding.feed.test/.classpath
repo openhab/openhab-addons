@@ -4,11 +4,12 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/test/groovy"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path ="src/test/resources"/>
+	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="lib" path="/org.openhab.binding.feed/lib/jdom-2.0.2.jar"/>
 	<classpathentry kind="lib" path="/org.openhab.binding.feed/lib/rome-1.5.1.jar"/>
 	<classpathentry kind="lib" path="/org.openhab.binding.feed/lib/rome-fetcher-1.5.1.jar"/>
 	<classpathentry kind="lib" path="/org.openhab.binding.feed/lib/rome-utils-1.5.1.jar"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

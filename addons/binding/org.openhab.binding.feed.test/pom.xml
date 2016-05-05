@@ -28,14 +28,14 @@
 			<url>http://dist.springsource.org/release/GRECLIPSE/e4.3/</url>
 		</repository>
 		<repository>
-            <id>jetty-eclipse</id>
-            <layout>p2</layout>
-            <url>http://download.eclipse.org/eclipse/updates/4.5</url>
-        </repository>
+			<id>jetty-eclipse</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/eclipse/updates/4.5</url>
+		</repository>
 	</repositories>
 
 	<build>
-		<plugins>			
+		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.version}</version>
@@ -66,8 +66,8 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho-version}</version>
-				<configuration>					
-					<excludes>						
+				<configuration>
+					<excludes>
 						<exclude>**/*.groovy</exclude>
 					</excludes>
 					<defaultStartLevel>
@@ -75,7 +75,7 @@
 						<autoStart>true</autoStart>
 					</defaultStartLevel>
 					<dependencies>
-					    <!-- Equinox Bundles-->
+						<!-- Equinox Bundles -->
 						<dependency>
 							<type>eclipse-plugin</type>
 							<artifactId>org.eclipse.equinox.ds</artifactId>
@@ -114,36 +114,36 @@
 						</dependency>
 						<!-- Required Bundles to for HTTP service -->
 						<dependency>
-                            <type>eclipse-plugin</type>
-                            <artifactId>org.eclipse.equinox.http.jetty</artifactId>
-                            <version>0.0.0</version>
-                        </dependency>
-                        <dependency>
-                            <type>eclipse-plugin</type>
-                            <artifactId>org.eclipse.equinox.http.servlet</artifactId>
-                            <version>0.0.0</version>
-                        </dependency> 
-                        <!-- Smarthome core bundles -->
-                        <dependency>
-                            <type>eclipse-plugin</type>
-                            <artifactId>org.eclipse.smarthome.config.xml</artifactId>
-                            <version>0.0.0</version>
-                        </dependency>
-                        <dependency>
-                            <type>eclipse-plugin</type>
-                            <artifactId>org.eclipse.smarthome.core.thing</artifactId>
-                            <version>0.8.0.20160302</version>
-                        </dependency>
-                        <dependency>
-                            <type>eclipse-plugin</type>
-                            <artifactId>org.eclipse.smarthome.core.thing.xml</artifactId>
-                            <version>0.0.0</version>
-                        </dependency>
-                        <dependency>
-                            <type>eclipse-plugin</type>
-                            <artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
-                            <version>0.0.0</version>
-                        </dependency>                                               
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.equinox.http.jetty</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.equinox.http.servlet</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<!-- Smarthome core bundles -->
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.smarthome.config.xml</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.smarthome.core.thing</artifactId>
+							<version>0.8.0.20160302</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.smarthome.core.thing.xml</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
+							<version>0.0.0</version>
+						</dependency>
 					</dependencies>
 					<bundleStartLevel>
 						<bundle>
@@ -152,31 +152,32 @@
 							<autoStart>true</autoStart>
 						</bundle>
 						<bundle>
-                            <id>org.eclipse.equinox.http.servlet</id>
-                            <level>3</level>
-                            <autoStart>true</autoStart>
-                        </bundle>
-                        <bundle>
-                            <id>org.eclipse.equinox.http.jetty</id>
-                            <level>3</level>
-                            <autoStart>true</autoStart>
-                        </bundle>
+							<id>org.eclipse.equinox.http.servlet</id>
+							<level>3</level>
+							<autoStart>true</autoStart>
+						</bundle>
+						<bundle>
+							<id>org.eclipse.equinox.http.jetty</id>
+							<level>3</level>
+							<autoStart>true</autoStart>
+						</bundle>
 						<bundle>
 							<id>org.eclipse.equinox.event</id>
 							<level>2</level>
 							<autoStart>true</autoStart>
 						</bundle>
 					</bundleStartLevel>
-					<!-- org.osgi.service.http.port is the port, where the dummy servlets will be accessible (e.g. for 
-                        mocked camera, backend, etc.) -->
-                    <!-- Setting ClientPlatformID. Otherwise the acs url will be got differently -->
-                    <argLine> -Dorg.osgi.service.http.port=9090 -Dprm.platform.capability.ClientPlatformID=notSimulator</argLine>
-                    <!-- All the println test output is redirected to target\surefire-reports\[test-class-fully-qualified-name]-output.txt -->
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <!-- Only this declaration is not enough. We have to do this in the argLine above. Otherwise the argument is not taken into account -->
-                    <systemPropertyVariables>
-                        <prm.platform.capability.ClientPlatformID>notSimulator</prm.platform.capability.ClientPlatformID>
-                    </systemPropertyVariables>
+					<!-- org.osgi.service.http.port is the port, where the dummy servlets will be accessible (e.g. for mocked camera, backend, 
+						etc.) -->
+					<!-- Setting ClientPlatformID. Otherwise the acs url will be got differently -->
+					<argLine> -Dorg.osgi.service.http.port=9090 -Dprm.platform.capability.ClientPlatformID=notSimulator</argLine>
+					<!-- All the println test output is redirected to target\surefire-reports\[test-class-fully-qualified-name]-output.txt -->
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<!-- Only this declaration is not enough. We have to do this in the argLine above. Otherwise the argument is not taken 
+						into account -->
+					<systemPropertyVariables>
+						<prm.platform.capability.ClientPlatformID>notSimulator</prm.platform.capability.ClientPlatformID>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 		</plugins>

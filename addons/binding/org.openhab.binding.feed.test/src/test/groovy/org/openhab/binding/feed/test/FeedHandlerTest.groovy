@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus
 import org.eclipse.smarthome.core.thing.ThingStatusDetail
 import org.eclipse.smarthome.core.thing.ThingUID
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider
 import org.eclipse.smarthome.core.types.RefreshType
@@ -216,8 +217,10 @@ public class FeedHandlerTest extends OSGiTest {
 
         //create Feed Thing
         ThingUID feedUID = new ThingUID(FeedBindingConstants.FEED_THING_TYPE_UID,THING_NAME)
-        channelUID = new ChannelUID(feedUID,FeedBindingConstants.FEED_CHANNEL)
-        feedThing = managedThingProvider.createThing(FeedBindingConstants.FEED_THING_TYPE_UID, feedUID, null, null, configuration)
+        channelUID = new ChannelUID(feedUID,FeedBindingConstants.CHANNEL_LATEST_CONTENT)
+        feedThing = ThingBuilder.create(FeedBindingConstants.FEED_THING_TYPE_UID, feedUID).withConfiguration(configuration).build()
+
+        managedThingProvider.add(feedThing)
 
         //wait for FeedHandler to be registered
         waitForAssert({
