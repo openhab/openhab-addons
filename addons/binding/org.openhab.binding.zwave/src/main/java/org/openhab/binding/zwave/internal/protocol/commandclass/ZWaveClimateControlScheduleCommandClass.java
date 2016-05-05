@@ -9,10 +9,10 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
- * Handles the climate control command class.
+ * Handles the climate control schedule command class.
  *
  * @author Chris Jackson
  */
@@ -29,10 +29,6 @@ public class ZWaveClimateControlScheduleCommandClass extends ZWaveCommandClass {
 
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveClimateControlScheduleCommandClass.class);
-
-    private static final int SWITCH_TOGGLE_SET = 1;
-    private static final int SWITCH_TOGGLE_GET = 2;
-    private static final int SWITCH_TOGGLE_REPORT = 3;
 
     /**
      * Creates a new instance of the ZWaveClimateControlCommandClass class.
@@ -55,13 +51,13 @@ public class ZWaveClimateControlScheduleCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received climate control schedule command (v{})", this.getNode().getNodeId(),
+        logger.debug("NODE {}: Received CLIMATE_CONTROL_SCHEDULE command V{}", this.getNode().getNodeId(),
                 this.getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
