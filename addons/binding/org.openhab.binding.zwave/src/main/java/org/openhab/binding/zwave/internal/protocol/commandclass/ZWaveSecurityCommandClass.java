@@ -818,7 +818,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
     void setupNetworkKey(boolean useSchemeZero) {
         logger.info("NODE {}: setupNetworkKey useSchemeZero={}", getNode().getNodeId(), useSchemeZero);
         if (useSchemeZero) {
-            logger.info("NODE {}: Using Scheme0 Network Key for Key Exchange since we are in inclusion mode.)",
+            logger.info("NODE {}: Using Scheme0 Network Key for Key Exchange since we are in inclusion mode.",
                     getNode().getNodeId());
             // Scheme0 network key is a key of all zeros
             networkKey = new SecretKeySpec(new byte[16], AES);

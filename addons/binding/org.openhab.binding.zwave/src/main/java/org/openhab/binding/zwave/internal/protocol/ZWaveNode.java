@@ -143,7 +143,7 @@ public class ZWaveNode {
         // Create the initialisation advancer and tell it we've loaded from file
         nodeInitStageAdvancer = new ZWaveNodeInitStageAdvancer(this, controller);
         nodeInitStageAdvancer.setRestoredFromConfigfile();
-        nodeInitStageAdvancer.setCurrentStage(ZWaveNodeInitStage.EMPTYNODE);
+        nodeInitStageAdvancer.startInitialisation(ZWaveNodeInitStage.EMPTYNODE);
     }
 
     /**
@@ -369,7 +369,7 @@ public class ZWaveNode {
      * @param nodeStage the nodeStage to set
      */
     public void setNodeStage(ZWaveNodeInitStage nodeStage) {
-        nodeInitStageAdvancer.setCurrentStage(nodeStage);
+        nodeInitStageAdvancer.startInitialisation(nodeStage);
     }
 
     /**
@@ -460,7 +460,7 @@ public class ZWaveNode {
     public void resetResendCount() {
         resendCount = 0;
         if (nodeInitStageAdvancer.isInitializationComplete() && isDead() == false) {
-            nodeInitStageAdvancer.setCurrentStage(ZWaveNodeInitStage.DONE);
+            nodeInitStageAdvancer.startInitialisation(ZWaveNodeInitStage.DONE);
         }
     }
 
@@ -587,6 +587,10 @@ public class ZWaveNode {
      */
     public void initialiseNode() {
         nodeInitStageAdvancer.startInitialisation();
+    }
+
+    public void initialiseNode(ZWaveNodeInitStage startStage) {
+        nodeInitStageAdvancer.startInitialisation(startStage);
     }
 
     /**

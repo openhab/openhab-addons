@@ -92,8 +92,6 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                     for (int i = 6; i < length + 3; i++) {
                         int data = incomingMessage.getMessagePayloadByte(i);
 
-                        logger.trace(String.format("NODE %d: Command class 0x%02X is supported.", nodeId, data));
-
                         CommandClass commandClass = CommandClass.getCommandClass(data);
                         if (commandClass == null) {
                             logger.trace(String.format("NODE %d: Command class 0x%02X is not known.", nodeId, data));
