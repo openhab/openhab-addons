@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClassWithInitialization;
 import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStageAdvancer;
@@ -93,11 +93,13 @@ public class ZWaveSecureInclusionStateTracker {
             // Commands absent from EXPECTED_COMMAND_ORDER_LIST are always ok
             return true;
         }
+
         // Going back to the first step (zero index) is always OK // TODO: DB is it really?
         if (INIT_COMMAND_ORDER_LIST.indexOf(newStep) > 0) {
             // We have to verify where we are at
             int currentIndex = INIT_COMMAND_ORDER_LIST.indexOf(currentStep);
             int newIndex = INIT_COMMAND_ORDER_LIST.indexOf(newStep);
+
             // Accept one message back or the same message(device resending last reply) in addition to the normal one
             // message ahead
             if (newIndex != currentIndex && newIndex - currentIndex > 1) {
@@ -157,7 +159,7 @@ public class ZWaveSecureInclusionStateTracker {
             logger.debug("NODE {}: in InclusionStateTracker.getNextRequest() time left for reply: {}ms, returning {}",
                     node.getNodeId(), (System.currentTimeMillis() - waitForReplyTimeout), nextRequestMessage);
             if (System.currentTimeMillis() > waitForReplyTimeout) {
-                // waited too long for a reply, secure inclusion failed
+                // Waited too long for a reply, secure inclusion failed
                 setErrorState(WAIT_TIME_MILLIS + "ms passed since last request was sent, secure inclusion failed.");
                 return null;
             }
