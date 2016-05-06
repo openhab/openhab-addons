@@ -24,10 +24,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tavalin.s20.S20Client;
-import com.github.tavalin.s20.Socket;
-import com.github.tavalin.s20.Socket.SocketStateListener;
-import com.github.tavalin.s20.entities.Types.PowerState;
+import com.github.tavalin.orvibo.OrviboClient;
+import com.github.tavalin.orvibo.devices.Socket;
+import com.github.tavalin.orvibo.devices.Socket.SocketStateListener;
+import com.github.tavalin.orvibo.entities.Types.PowerState;
 
 /**
  * The {@link S20Handler} is responsible for handling commands, which are
@@ -39,7 +39,7 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
 
     private Logger logger = LoggerFactory.getLogger(S20Handler.class);
     private Socket socket;
-    private S20Client client;
+    private OrviboClient client;
     private ScheduledFuture<?> subscribeHandler;
     private long refreshInterval = 15;
     private Runnable subscribeTask = new Runnable() {
@@ -69,25 +69,21 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_S20_SWITCH)) {
-            try {
-                if (command == OnOffType.ON) {
-                    socket.on();
-                } else if (command == OnOffType.OFF) {
-                    socket.off();
-                }
-            } catch (SocketException e) {
-                logger.error("Error issuing command {} to socket {}", command, channelUID.getId());
+            if (command == OnOffType.ON) {
+                socket.on();
+            } else if (command == OnOffType.OFF) {
+                socket.off();
             }
         }
     }
 
     private void configure() {
         try {
-            client = S20Client.getInstance();
+            client = OrviboClient.getInstance();
             String deviceId = thing.getUID().getId();
             socket = client.socketWithDeviceId(deviceId);
             socket.addSocketStateListener(this);
-            socket.findOnNetwork();
+            socket.find();
             subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } catch (SocketException ex) {

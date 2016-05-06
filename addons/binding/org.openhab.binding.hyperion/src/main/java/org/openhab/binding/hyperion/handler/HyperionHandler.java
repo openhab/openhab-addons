@@ -52,7 +52,7 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
     public void initialize() {
         logger.debug("Initializing Hyperion thing handler.");
         try {
-            String address = (String) thing.getConfiguration().get(PROP_HOST);
+            String address = (String) thing.getConfiguration().get(PROP_PORT);
             int port = ((BigDecimal) thing.getConfiguration().get(PROP_PORT)).intValue();
             int refreshInterval = ((BigDecimal) thing.getConfiguration().get(PROP_POLL_FREQUENCY)).intValue();
 

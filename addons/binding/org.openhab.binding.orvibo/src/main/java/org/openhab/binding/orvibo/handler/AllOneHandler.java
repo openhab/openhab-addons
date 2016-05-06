@@ -7,6 +7,10 @@
  */
 package org.openhab.binding.orvibo.handler;
 
+import java.net.SocketException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -15,51 +19,33 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.tavalin.orvibo.OrviboClient;
+import com.github.tavalin.orvibo.devices.AllOne;
+
 /**
  * The {@link AllOneHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Janis Steder - Initial contribution
+ * @author Daniel Walters/Janis Steder - Initial contribution
  */
 public class AllOneHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(AllOneHandler.class);
-
-    // private OrviboMain orvibo;
+    private AllOne allone;
+    private OrviboClient client;
+    private ScheduledFuture<?> subscribeHandler;
+    private long refreshInterval = 15;
+    private Runnable subscribeTask = new Runnable() {
+        @Override
+        public void run() {
+            if (allone != null) {
+                allone.subscribe();
+            }
+        }
+    };
 
     public AllOneHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-
-        /*
-         * // if uninitialized -> subscribe
-         * // send command
-         * switch (channelUID.getId()) {
-         * case OrviboBindingConstants.EMIT:
-         * try {
-         * orvibo.emit(command.toString());
-         * } catch (IOException e) {
-         * logger.error("Orvibo: Could not emit signal: " + e.getMessage());
-         * e.printStackTrace();
-         * }
-         * break;
-         * case OrviboBindingConstants.LEARN:
-         * try {
-         * orvibo.learnMode();
-         * } catch (IOException e) {
-         * logger.error("Orvibo: Could not enter learn mode: " + e.getMessage());
-         * e.printStackTrace();
-         * }
-         * case OrviboBindingConstants.LEARN_NAME:
-         * orvibo.setLearnName(command.toString());
-         * default:
-         * logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-         * break;
-         * }
-         */
     }
 
     @Override
@@ -92,8 +78,52 @@ public class AllOneHandler extends BaseThingHandler {
          */
     }
 
+    @Override
+    public void dispose() {
+        subscribeHandler.cancel(true);
+    }
+
     private void configure() {
-        // TODO Auto-generated method stub
-        updateStatus(ThingStatus.ONLINE);
+        try {
+            client = OrviboClient.getInstance();
+            String deviceId = thing.getUID().getId();
+            allone = client.allOneWithDeviceId(deviceId);
+            allone.find();
+            subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (SocketException ex) {
+            logger.error("Error occured while initializing S20 handler: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+
+        /*
+         * // if uninitialized -> subscribe
+         * // send command
+         * switch (channelUID.getId()) {
+         * case OrviboBindingConstants.EMIT:
+         * try {
+         * orvibo.emit(command.toString());
+         * } catch (IOException e) {
+         * logger.error("Orvibo: Could not emit signal: " + e.getMessage());
+         * e.printStackTrace();
+         * }
+         * break;
+         * case OrviboBindingConstants.LEARN:
+         * try {
+         * orvibo.learnMode();
+         * } catch (IOException e) {
+         * logger.error("Orvibo: Could not enter learn mode: " + e.getMessage());
+         * e.printStackTrace();
+         * }
+         * case OrviboBindingConstants.LEARN_NAME:
+         * orvibo.setLearnName(command.toString());
+         * default:
+         * logger.debug("Command received for an unknown channel: {}", channelUID.getId());
+         * break;
+         * }
+         */
     }
 }
