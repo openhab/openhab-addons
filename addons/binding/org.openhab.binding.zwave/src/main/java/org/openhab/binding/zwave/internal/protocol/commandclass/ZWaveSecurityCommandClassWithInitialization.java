@@ -24,7 +24,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionCompletedEvent;
-import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeStageAdvancer;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStageAdvancer;
 import org.openhab.binding.zwave.internal.protocol.security.SecurityEncapsulatedSerialMessage;
 import org.openhab.binding.zwave.internal.protocol.security.ZWaveSecureInclusionStateTracker;
 import org.openhab.binding.zwave.internal.protocol.security.ZWaveSecurityPayloadFrame;
@@ -60,7 +60,7 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
     private volatile ZWaveSecureInclusionStateTracker inclusionStateTracker = null;
 
     /**
-     * The last {@link SerialMessage} that was given to {@link ZWaveNodeStageAdvancer}
+     * The last {@link SerialMessage} that was given to {@link ZWaveNodeInitStageAdvancer}
      * when it called {@link ZWaveSecurityCommandClass#initialize(boolean)}. Used
      * in cases where we need to resend the last message (transmission failure, etc)
      */
@@ -70,7 +70,7 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
     private static final String SECURE_INCLUSION_FAILED_MESSAGE = "Secure Inclusion FAILED.";
 
     /**
-     * Timer that tracks how long we should wait for a response. {@link ZWaveNodeStageAdvancer}
+     * Timer that tracks how long we should wait for a response. {@link ZWaveNodeInitStageAdvancer}
      * already has a timer, but since the initialization of this class involves multiple security
      * messages, we cannot rely on that to re-send the last message. So, we keep our own timer
      * to know when it's time to retry a message
@@ -324,7 +324,7 @@ public class ZWaveSecurityCommandClassWithInitialization extends ZWaveSecurityCo
      *         null if the secure pairing process has completed or failed
      * @throws ZWaveSerialMessageException
      *
-     * @see {@link ZWaveNodeStageAdvancer}
+     * @see {@link ZWaveNodeInitStageAdvancer}
      */
     @Override
     public Collection<SerialMessage> initialize(boolean firstIteration) {

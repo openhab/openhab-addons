@@ -16,7 +16,7 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClassWithInitialization;
-import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeStageAdvancer;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStageAdvancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class ZWaveSecureInclusionStateTracker {
     private static final int WAIT_TIME_MILLIS = 10000;
 
     /**
-     * The next {@link SerialMessage} that will be given to {@link ZWaveNodeStageAdvancer}
+     * The next {@link SerialMessage} that will be given to {@link ZWaveNodeInitStageAdvancer}
      * when it calls {@link ZWaveSecurityCommandClass#initialize(boolean)}
      */
     private SerialMessage nextRequestMessage = null;

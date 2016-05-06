@@ -18,36 +18,43 @@ import java.util.Map;
  * @author Brian Crosby
  */
 public enum ZWaveNodeInitStage {
-    EMPTYNODE(0, true, "Empty New Node"),
-    PROTOINFO(1, true, "Protocol Information"),
-    NEIGHBORS(2, true, "Node Neighbor Information"),
-    FAILED_CHECK(3, true, "Checking if node is failed"),
-    WAIT(4, true, "Waiting"),
-    PING(5, true, "Ping Node"),
-    DETAILS(6, true, "Node Information"),
-    MANUFACTURER(7, true, "Manufacture Name and Product Identification"),
-    SECURITY_REPORT(8, true, "Security Report"),
-    APP_VERSION(9, true, "Application Version"),
-    DISCOVERY_COMPLETE(10, true, "Discovery Complete"),
-    VERSION(11, true, "Command Class Versions"),
-    ENDPOINTS(12, true, "Command Class Endpoints"),
-    UPDATE_DATABASE(13, true, "Updating database"),
-    STATIC_VALUES(14, true, "Static Information"),
-    ASSOCIATIONS(15, false, "Associations"),
-    SET_WAKEUP(16, false, "Wakeup Target"),
-    SET_ASSOCIATION(17, false, "Wakeup Target"),
-    STATIC_END(18, false, "Static Initialisation Finished"),
+    EMPTYNODE(0, true),
+    PROTOINFO(1, true),
+    INIT_NEIGHBORS(2, true),
+    FAILED_CHECK(3, true),
+    WAIT(4, true),
+    PING(5, true),
+    DETAILS(6, true),
+    MANUFACTURER(7, true),
+    SECURITY_REPORT(8, true),
+    APP_VERSION(9, true),
+    DISCOVERY_COMPLETE(10, true),
+    VERSION(11, true),
+    ENDPOINTS(12, true),
+    UPDATE_DATABASE(13, true),
+    STATIC_VALUES(14, true),
+    ASSOCIATIONS(15, false),
+    SET_WAKEUP(16, false),
+    SET_ASSOCIATION(17, false),
+    STATIC_END(18, false),
 
     // States below are not restored from the configuration files
-    SESSION_START(19, false, "Restore Marker"),
-    GET_CONFIGURATION(20, false, "Getting configuration"),
-    DYNAMIC_VALUES(21, false, "Frequently Changed Information"),
+    SESSION_START(19, false),
+    GET_CONFIGURATION(20, false),
+    DYNAMIC_VALUES(21, false),
+    DYNAMIC_END(22, false),
 
-    DONE(22, false, "Node Complete");
+    // States below are performed during initialisation, but also during heal
+    HEAL(23, false),
+    DELETE_ROUTES(24, false),
+    SUC_ROUTE(25, false),
+    RETURN_ROUTES(26, false),
+    NEIGHBORS(27, true),
+
+    DONE(28, false);
 
     private int stage;
     private boolean mandatory;
-    private String label;
 
     /**
      * A mapping between the integer code and its corresponding
@@ -55,10 +62,9 @@ public enum ZWaveNodeInitStage {
      */
     private static Map<Integer, ZWaveNodeInitStage> codeToNodeStageMapping;
 
-    private ZWaveNodeInitStage(int s, boolean m, String l) {
+    private ZWaveNodeInitStage(int s, boolean m) {
         stage = s;
         mandatory = m;
-        label = l;
     }
 
     private static void initMapping() {
@@ -75,15 +81,6 @@ public enum ZWaveNodeInitStage {
      */
     public int getStage() {
         return this.stage;
-    }
-
-    /**
-     * Get the stage label
-     *
-     * @return label
-     */
-    public String getLabel() {
-        return this.label;
     }
 
     /**
