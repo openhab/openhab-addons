@@ -49,6 +49,9 @@ public class ZWavePowerLevelCommandClass extends ZWaveCommandClass
     private int powerLevel = 0;
     private int powerTimeout = 0;
 
+    @XStreamOmitField
+    private boolean initialiseDone = false;
+
     /**
      * Creates a new instance of the ZWavePowerLevelCommandClass class.
      *
@@ -87,6 +90,7 @@ public class ZWavePowerLevelCommandClass extends ZWaveCommandClass
                 ZWavePowerLevelCommandClassChangeEvent event = new ZWavePowerLevelCommandClassChangeEvent(
                         getNode().getNodeId(), powerLevel, powerTimeout);
                 getController().notifyEventListeners(event);
+                initialiseDone = true;
                 break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command %d for command class %s (0x%02X).",
@@ -141,7 +145,7 @@ public class ZWavePowerLevelCommandClass extends ZWaveCommandClass
     public Collection<SerialMessage> getDynamicValues(boolean refresh) {
         ArrayList<SerialMessage> result = new ArrayList<SerialMessage>();
 
-        if (refresh == true || powerTimeout == 0) {
+        if (refresh == true || initialiseDone == false) {
             result.add(getValueMessage());
         }
 
