@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.discovery.ZWaveDiscoveryService;
-import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -40,6 +39,7 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInitializationStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStage;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +58,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     private ServiceRegistration discoveryRegistration;
 
     private volatile ZWaveController controller;
-
-    // Network monitoring class
-    ZWaveNetworkMonitor networkMonitor;
 
     private Boolean isMaster;
     private Boolean isSUC;
@@ -145,11 +142,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         controller = new ZWaveController(this, config);
         controller.addEventListener(this);
 
-        // The network monitor service needs to know the controller...
-        this.networkMonitor = new ZWaveNetworkMonitor(controller);
-        if (healTime != null) {
-            networkMonitor.setHealTime(healTime);
-        }
         // if (aliveCheckPeriod != null) {
         // networkMonitor.setPollPeriod(aliveCheckPeriod);
         // }
@@ -464,11 +456,23 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         controller.reinitialiseNode(nodeId);
     }
 
-    public void healNode(int nodeId) {
-        if (networkMonitor == null) {
-            return;
+    public boolean healNode(int nodeId) {
+        if (controller == null) {
+            return false;
         }
-        networkMonitor.startNodeHeal(nodeId);
+        ZWaveNode node = controller.getNode(nodeId);
+        if (node == null) {
+            return false;
+        }
+
+        // Only set the HEAL stage if the node is in DONE state
+        if (node.getNodeInitStage() != ZWaveNodeInitStage.DONE) {
+            return false;
+        }
+
+        node.setNodeStage(ZWaveNodeInitStage.HEAL);
+
+        return true;
     }
 
     private void updateNeighbours() {

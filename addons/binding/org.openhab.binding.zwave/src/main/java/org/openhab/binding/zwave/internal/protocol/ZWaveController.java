@@ -22,7 +22,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
@@ -125,9 +124,6 @@ public class ZWaveController {
 
     private AtomicInteger timeOutCount = new AtomicInteger(0);
 
-    // Network monitoring class
-    private ZWaveNetworkMonitor networkMonitor;
-
     private ZWaveIoHandler ioHandler;
 
     /**
@@ -177,12 +173,6 @@ public class ZWaveController {
         this.sendThread.start();
         this.inputThread = new ZWaveInputThread();
         this.inputThread.start();
-
-        // The network monitor service needs to know the controller...
-        networkMonitor = new ZWaveNetworkMonitor(this);
-        if (config.get("healTime") != null) {
-            networkMonitor.setHealTime(Integer.parseInt(config.get("healTime")));
-        }
     }
 
     private class InitializeDelayTask extends TimerTask {
