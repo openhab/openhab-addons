@@ -32,6 +32,7 @@
       <property name="model">ZWS12</property>
       <property name="manufacturerId">0085</property>
       <property name="manufacturerRef">0003:0001</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
