@@ -469,16 +469,17 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         }
         ZWaveNode node = controller.getNode(nodeId);
         if (node == null) {
+            logger.error("NODE {}: Can't be found!", nodeId);
             return false;
         }
 
         // Only set the HEAL stage if the node is in DONE state
         if (node.getNodeInitStage() != ZWaveNodeInitStage.DONE) {
+            logger.debug("NODE {}: Can't start heal when device initialisation is not complete", nodeId);
             return false;
         }
 
-        node.setNodeStage(ZWaveNodeInitStage.HEAL);
-
+        node.setNodeStage(ZWaveNodeInitStage.HEAL_START);
         return true;
     }
 
