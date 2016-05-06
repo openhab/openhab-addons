@@ -728,11 +728,41 @@ public class ZWaveController {
     /**
      * Puts the controller into inclusion mode to add new nodes
      *
+     * @param inclusionMode the mode to use for inclusion.
+     *            <br>
+     *            0=Low Power Inclusion
+     *            <br>
+     *            1=High Power Inclusion
+     *            <br>
+     *            2=Network Wide Inclusion
+     *
      */
-    public void requestAddNodesStart() {
-        this.enqueue(new AddNodeMessageClass().doRequestStart(true,
-                hasApiCapability(SerialMessageClass.ExploreRequestInclusion)));
-        logger.debug("ZWave controller start inclusion");
+    public void requestAddNodesStart(int inclusionMode) {
+        logger.debug("ZWave controller start inclusion - mode {}", inclusionMode);
+
+        // Check if the stick supports NWI - if not, revert to HPI
+        if (inclusionMode == 2 && hasApiCapability(SerialMessageClass.ExploreRequestInclusion) == false) {
+            inclusionMode = 1;
+        }
+
+        boolean highPower;
+        boolean networkWide;
+        switch (inclusionMode) {
+            case 0:
+                highPower = false;
+                networkWide = false;
+                break;
+            case 1:
+                highPower = true;
+                networkWide = false;
+                break;
+            default:
+                highPower = true;
+                networkWide = true;
+                break;
+        }
+
+        enqueue(new AddNodeMessageClass().doRequestStart(highPower, networkWide));
     }
 
     /**
