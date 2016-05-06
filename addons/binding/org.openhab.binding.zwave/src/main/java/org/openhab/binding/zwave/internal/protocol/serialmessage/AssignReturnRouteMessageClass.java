@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
+import java.io.ByteArrayOutputStream;
+
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
@@ -32,8 +34,13 @@ public class AssignReturnRouteMessageClass extends ZWaveCommandProcessor {
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessageClass.AssignReturnRoute, SerialMessageType.Request,
                 SerialMessageClass.AssignReturnRoute, SerialMessagePriority.High);
-        byte[] newPayload = { (byte) nodeId, (byte) destinationId, (byte) callbackId };
-        newMessage.setMessagePayload(newPayload);
+
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(nodeId);
+        outputData.write(destinationId);
+        outputData.write(callbackId);
+        newMessage.setMessagePayload(outputData.toByteArray());
+
         return newMessage;
     }
 

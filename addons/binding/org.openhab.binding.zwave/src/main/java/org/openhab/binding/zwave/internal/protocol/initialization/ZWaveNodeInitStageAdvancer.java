@@ -1086,9 +1086,12 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
     public void setCurrentStage(ZWaveNodeInitStage newStage) {
         currentStage = newStage;
 
-        // Remember the time so we can handle retries and keep users
-        // informed
+        // Remember the time so we can handle retries and keep users informed
         queryStageTimeStamp = Calendar.getInstance().getTime();
+
+        // Set an event callback so we get notification of events
+        // We do this again here in case this is part of a HEAL
+        controller.addEventListener(this);
     }
 
     /**
