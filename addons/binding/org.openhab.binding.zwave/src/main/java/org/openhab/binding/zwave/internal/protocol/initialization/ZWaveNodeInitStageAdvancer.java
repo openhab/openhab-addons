@@ -52,6 +52,9 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInitializationStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNodeStatusEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionCompletedEvent;
+import org.openhab.binding.zwave.internal.protocol.serialmessage.AssignReturnRouteMessageClass;
+import org.openhab.binding.zwave.internal.protocol.serialmessage.AssignSucReturnRouteMessageClass;
+import org.openhab.binding.zwave.internal.protocol.serialmessage.DeleteReturnRouteMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.GetRoutingInfoMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.IdentifyNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.IsFailedNodeMessageClass;
@@ -112,10 +115,10 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson
  * @author Jan-Willem Spuij
  */
-public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
+public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
     private static final ZWaveNodeSerializer nodeSerializer = new ZWaveNodeSerializer();
-    private static final Logger logger = LoggerFactory.getLogger(ZWaveNodeStageAdvancer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZWaveNodeInitStageAdvancer.class);
 
     private ZWaveNode node;
     private ZWaveController controller;
@@ -155,7 +158,7 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
      * @param controller
      *            the controller to use
      */
-    public ZWaveNodeStageAdvancer(ZWaveNode node, ZWaveController controller) {
+    public ZWaveNodeInitStageAdvancer(ZWaveNode node, ZWaveController controller) {
         this.node = node;
         this.controller = controller;
 
@@ -343,13 +346,13 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     addToQueue(new IdentifyNodeMessageClass().doRequest(node.getNodeId()));
                     break;
 
-                case NEIGHBORS:
+                case INIT_NEIGHBORS:
                     // If the incoming frame is the IdentifyNode, then we continue
                     if (eventClass == SerialMessageClass.GetRoutingInfo) {
                         break;
                     }
 
-                    logger.debug("NODE {}: Node advancer: NEIGHBORS - send RoutingInfo", node.getNodeId());
+                    logger.debug("NODE {}: Node advancer: INIT_NEIGHBORS - send RoutingInfo", node.getNodeId());
                     addToQueue(new GetRoutingInfoMessageClass().doRequest(node.getNodeId()));
                     break;
 
@@ -437,7 +440,7 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                     // 3. It will sometimes return an empty message list, but this just means it's
                     // waiting for another response to come back
                     if (node.supportsCommandClass(CommandClass.SECURITY)) {
-                        ZWaveSecurityCommandClassWithInitialization securityCommandClass = (ZWaveSecurityCommandClassWithInitialization) this.node
+                        ZWaveSecurityCommandClassWithInitialization securityCommandClass = (ZWaveSecurityCommandClassWithInitialization) node
                                 .getCommandClass(CommandClass.SECURITY);
                         // For a node restored from a config file, this may or may not return a message
                         Collection<SerialMessage> messageList = securityCommandClass.initialize(stageAdvanced);
@@ -906,8 +909,62 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                             msgQueue.size());
                     break;
 
+                case DELETE_ROUTES:
+                    // If the incoming frame is the DeleteReturnRoute, then we continue
+                    if (eventClass == SerialMessageClass.DeleteReturnRoute) {
+                        break;
+                    }
+
+                    if (node.getRoutingList().size() != 0) {
+                        // Delete all the return routes for the node
+                        logger.debug("NODE {}: Node advancer is deleting return routes.", node.getNodeId());
+                        addToQueue(new DeleteReturnRouteMessageClass().doRequest(node.getNodeId()));
+                        break;
+                    }
+                    break;
+
+                case SUC_ROUTE:
+                    if (eventClass == SerialMessageClass.AssignSucReturnRoute) {
+                        break;
+                    }
+
+                    // Only set the route if this is not the controller and there is an SUC in the network
+                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
+                        // Update the route to the controller
+                        logger.debug("NODE {}: Node advancer is setting SUC route.", node.getNodeId());
+                        addToQueue(new AssignSucReturnRouteMessageClass().doRequest(node.getNodeId(),
+                                controller.getCallbackId()));
+                        break;
+                    }
+                    break;
+
+                case RETURN_ROUTES:
+                    // If the incoming frame is the DeleteReturnRoute, then we continue
+                    if (eventClass == SerialMessageClass.AssignReturnRoute) {
+                        break;
+                    }
+
+                    for (Integer route : node.getRoutingList()) {
+                        // Loop through all the nodes and set the return route
+                        logger.debug("NODE {}: Adding return route to {}", node.getNodeId(), route);
+                        addToQueue(new AssignReturnRouteMessageClass().doRequest(node.getNodeId(), route,
+                                controller.getCallbackId()));
+                    }
+                    break;
+
+                case NEIGHBORS:
+                    // If the incoming frame is the IdentifyNode, then we continue
+                    if (eventClass == SerialMessageClass.GetRoutingInfo) {
+                        break;
+                    }
+
+                    logger.debug("NODE {}: Node advancer: NEIGHBORS - get RoutingInfo", node.getNodeId());
+                    addToQueue(new GetRoutingInfoMessageClass().doRequest(node.getNodeId()));
+                    break;
+
                 case DISCOVERY_COMPLETE:
                 case STATIC_END:
+                case DYNAMIC_END:
                 case DONE:
                     // Save the node information to file
                     nodeSerializer.SerializeNode(node);
@@ -1029,9 +1086,12 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
     public void setCurrentStage(ZWaveNodeInitStage newStage) {
         currentStage = newStage;
 
-        // Remember the time so we can handle retries and keep users
-        // informed
+        // Remember the time so we can handle retries and keep users informed
         queryStageTimeStamp = Calendar.getInstance().getTime();
+
+        // Set an event callback so we get notification of events
+        // We do this again here in case this is part of a HEAL
+        controller.addEventListener(this);
     }
 
     /**
@@ -1103,6 +1163,8 @@ public class ZWaveNodeStageAdvancer implements ZWaveEventListener {
                 case IdentifyNode:
                 case RequestNodeInfo:
                 case GetRoutingInfo:
+                case AssignReturnRoute:
+                case DeleteReturnRoute:
                 case IsFailedNodeID:
                     logger.debug("NODE {}: Node advancer - {}: Transaction complete ({}:{}) success({})",
                             node.getNodeId(), currentStage.toString(), serialMessage.getMessageClass(),
