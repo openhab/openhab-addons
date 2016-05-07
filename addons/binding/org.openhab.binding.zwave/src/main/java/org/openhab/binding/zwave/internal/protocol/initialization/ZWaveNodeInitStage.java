@@ -8,94 +8,57 @@
  */
 package org.openhab.binding.zwave.internal.protocol.initialization;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Node Stage Enumeration for node initialisation.
+ * Node Stage Enumeration for node initialisation sequence.
+ * The initialisation will be performed in the order of the enum definitions.
  *
  * @author Chris Jackson
- * @author Brian Crosby
  */
 public enum ZWaveNodeInitStage {
-    EMPTYNODE(0, true),
-    PROTOINFO(1, true),
-    INIT_NEIGHBORS(2, true),
-    FAILED_CHECK(3, true),
-    WAIT(4, true),
-    PING(5, true),
-    DETAILS(6, true),
-    MANUFACTURER(7, true),
-    SECURITY_REPORT(8, true),
-    APP_VERSION(9, true),
-    DISCOVERY_COMPLETE(10, true),
-    VERSION(11, true),
-    ENDPOINTS(12, true),
-    UPDATE_DATABASE(13, true),
-    STATIC_VALUES(14, true),
-    ASSOCIATIONS(15, false),
-    SET_WAKEUP(16, false),
-    SET_ASSOCIATION(17, false),
-    STATIC_END(18, false),
+    EMPTYNODE(true),
+    PROTOINFO(true),
+    INIT_NEIGHBORS(true),
+    FAILED_CHECK(true),
+    WAIT(true),
+    PING(true),
+    DETAILS(true),
+
+    // States below form the main part of the initialisation
+    // For newly included devices, we start here
+    INCLUSION_START(true),
+    IDENTIFY_NODE(true),
+    SECURITY_REPORT(true),
+    MANUFACTURER(true),
+    APP_VERSION(true),
+    DISCOVERY_COMPLETE(true),
+    VERSION(true),
+    ENDPOINTS(true),
+    UPDATE_DATABASE(true),
+    STATIC_VALUES(true),
+    ASSOCIATIONS(false),
+    SET_WAKEUP(false),
+    SET_ASSOCIATION(false),
+    STATIC_END(false),
 
     // States below are not restored from the configuration files
-    SESSION_START(19, false),
-    GET_CONFIGURATION(20, false),
-    DYNAMIC_VALUES(21, false),
-    DYNAMIC_END(22, false),
+    SESSION_START(false),
+    GET_CONFIGURATION(false),
+    DYNAMIC_VALUES(false),
+    DYNAMIC_END(false),
 
     // States below are performed during initialisation, but also during heal
-    HEAL(23, false),
-    DELETE_ROUTES(24, false),
-    SUC_ROUTE(25, false),
-    RETURN_ROUTES(26, false),
-    NEIGHBORS(27, true),
+    HEAL_START(false),
+    DELETE_ROUTES(false),
+    SUC_ROUTE(false),
+    RETURN_ROUTES(false),
+    NEIGHBORS(false),
 
-    DONE(28, false);
+    DONE(false);
 
-    private int stage;
     private boolean mandatory;
 
-    /**
-     * A mapping between the integer code and its corresponding
-     * Node Stage to facilitate lookup by code.
-     */
-    private static Map<Integer, ZWaveNodeInitStage> codeToNodeStageMapping;
-
-    private ZWaveNodeInitStage(int s, boolean m) {
-        stage = s;
-        mandatory = m;
-    }
-
-    private static void initMapping() {
-        codeToNodeStageMapping = new HashMap<Integer, ZWaveNodeInitStage>();
-        for (ZWaveNodeInitStage s : values()) {
-            codeToNodeStageMapping.put(s.stage, s);
-        }
-    }
-
-    /**
-     * Get the stage protocol number.
-     *
-     * @return number
-     */
-    public int getStage() {
-        return this.stage;
-    }
-
-    /**
-     * Lookup function based on the command class code.
-     * Returns null if there is no command class with code i
-     *
-     * @param i the code to lookup
-     * @return enumeration value of the command class.
-     */
-    public static ZWaveNodeInitStage getNodeStage(int i) {
-        if (codeToNodeStageMapping == null) {
-            initMapping();
-        }
-
-        return codeToNodeStageMapping.get(i);
+    private ZWaveNodeInitStage(boolean manditory) {
+        this.mandatory = manditory;
     }
 
     /**
@@ -104,9 +67,9 @@ public enum ZWaveNodeInitStage {
      * @return the next stage
      */
     public ZWaveNodeInitStage getNextStage() {
-        for (ZWaveNodeInitStage s : values()) {
-            if (s.stage == this.stage + 1) {
-                return s;
+        for (ZWaveNodeInitStage stage : values()) {
+            if (stage.ordinal() == this.ordinal() + 1) {
+                return stage;
             }
         }
 
@@ -119,7 +82,7 @@ public enum ZWaveNodeInitStage {
      * @return true if static stages complete
      */
     public boolean isStaticComplete() {
-        if (stage > SESSION_START.stage) {
+        if (ordinal() > SESSION_START.ordinal()) {
             return true;
         }
         return false;
