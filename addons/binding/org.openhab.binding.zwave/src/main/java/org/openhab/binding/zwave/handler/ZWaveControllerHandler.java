@@ -279,7 +279,14 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (controller == null) {
             return;
         }
-        controller.requestAddNodesStart();
+
+        int inclusionMode = 2;
+        Object param = getConfig().get(CONFIGURATION_INCLUSION_MODE);
+        if (param instanceof BigDecimal && param != null) {
+            inclusionMode = ((BigDecimal) param).intValue();
+        }
+
+        controller.requestAddNodesStart(inclusionMode);
     }
 
     public void stopDeviceDiscovery() {
