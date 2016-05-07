@@ -143,7 +143,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
     ThingType thingType = null;
 
     private Date queryStageTimeStamp;
-    private ZWaveNodeInitStage currentStage;
+    private ZWaveNodeInitStage currentStage = ZWaveNodeInitStage.EMPTYNODE;
 
     /**
      * Used only by {@link ZWaveNodeInitStage#SECURITY_REPORT}
@@ -162,6 +162,9 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
         this.node = node;
         this.controller = controller;
 
+        // Create the timer
+        timer = new Timer();
+
         // Initialise the message queue
         msgQueue = new ArrayBlockingQueue<SerialMessage>(MAX_BUFFFER_LEN, true);
     }
@@ -170,13 +173,21 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
      * Starts the initialisation from the beginning.
      */
     public void startInitialisation() {
+        startInitialisation(ZWaveNodeInitStage.EMPTYNODE);
+    }
+
+    /**
+     * Start the initialisation from a specific stage
+     *
+     * @param startStage
+     */
+    public void startInitialisation(ZWaveNodeInitStage startStage) {
+        logger.debug("NODE {}: Starting initialisation from {}", node.getNodeId(), startStage);
+
         // Reset the state variables
-        currentStage = ZWaveNodeInitStage.EMPTYNODE;
+        currentStage = startStage;
         queryStageTimeStamp = Calendar.getInstance().getTime();
         retryTimer = BACKOFF_TIMER_START;
-
-        // Create the timer and timer task
-        timer = new Timer();
 
         wakeupCount = 0;
 
@@ -270,8 +281,8 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
             return;
         }
 
-        logger.debug("NODE {}: Node advancer - {}: queue length({}), free to send({})", node.getNodeId(),
-                currentStage.toString(), msgQueue.size(), freeToSend);
+        logger.debug("NODE {}: Node advancer - {}: queue length({}), free to send({})", node.getNodeId(), currentStage,
+                msgQueue.size(), freeToSend);
 
         // If this is a battery node, and we exceed the wakeup count without advancing the stage, then reset.
         if (wakeupCount >= 3) {
@@ -310,8 +321,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                 retryCount++;
                 if (retryCount > MAX_RETRIES) {
                     retryCount = 0;
-                    logger.error("NODE {}: Node advancer: Retries exceeded at {}", node.getNodeId(),
-                            currentStage.toString());
+                    logger.error("NODE {}: Node advancer: Retries exceeded at {}", node.getNodeId(), currentStage);
                     if (currentStage.isStageMandatory() == false) {
                         // If the current stage is not mandatory, then we skip forward to the next
                         // stage.
@@ -328,8 +338,8 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                 }
             }
 
-            logger.debug("NODE {}: Node advancer: loop - {} try {}: stageAdvanced({})", node.getNodeId(),
-                    currentStage.toString(), retryCount, stageAdvanced);
+            logger.debug("NODE {}: Node advancer: loop - {} try {}: stageAdvanced({})", node.getNodeId(), currentStage,
+                    retryCount, stageAdvanced);
 
             switch (currentStage) {
                 case EMPTYNODE:
@@ -347,7 +357,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     break;
 
                 case INIT_NEIGHBORS:
-                    // If the incoming frame is the IdentifyNode, then we continue
+                    // If the incoming frame is the GetRoutingInfo, then we continue
                     if (eventClass == SerialMessageClass.GetRoutingInfo) {
                         break;
                     }
@@ -367,7 +377,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         break;
                     }
 
-                    // If the incoming frame is the IdentifyNode, then we continue
+                    // If the incoming frame is the IsFailedNodeID, then we continue
                     if (eventClass == SerialMessageClass.IsFailedNodeID) {
                         break;
                     }
@@ -394,7 +404,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     }
 
                     // If it's not listening, and not awake,
-                    // we'll wait a while before progressing with initialisation.
+                    // then wait a while before progressing with initialisation.
                     logger.debug("NODE {}: Node advancer: WAIT - Still waiting!", node.getNodeId());
                     return;
 
@@ -428,6 +438,17 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         addToQueue(msg);
                     }
                     break;
+
+                case IDENTIFY_NODE:
+                    // If the incoming frame is the IdentifyNode, then we continue
+                    if (eventClass == SerialMessageClass.IdentifyNode) {
+                        break;
+                    }
+
+                    logger.debug("NODE {}: Node advancer: PROTOINFO - send IdentifyNode", node.getNodeId());
+                    addToQueue(new IdentifyNodeMessageClass().doRequest(node.getNodeId()));
+                    break;
+
                 case SECURITY_REPORT:
                     // For devices that use security. When invoked during secure inclusion, this
                     // method will go through all steps to give the device our zwave:networkKey from
@@ -989,7 +1010,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     return;
 
                 case SESSION_START:
-                case HEAL:
+                case HEAL_START:
                     // This is a 'do nothing' state.
                     // It's used as a marker within the NodeStage class to indicate
                     // where to start initialisation under specific situations.
@@ -997,7 +1018,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                 default:
                     logger.debug("NODE {}: Node advancer: Unknown node state {} encountered.", node.getNodeId(),
-                            currentStage.toString().toString());
+                            currentStage);
                     break;
             }
 
@@ -1013,7 +1034,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                 // Reset the backoff timer
                 retryTimer = BACKOFF_TIMER_START;
 
-                logger.debug("NODE {}: Node advancer - advancing to {}", node.getNodeId(), currentStage.toString());
+                logger.debug("NODE {}: Node advancer - advancing to {}", node.getNodeId(), currentStage);
 
                 // Notify listeners
                 ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(), currentStage);
@@ -1084,15 +1105,11 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
     /**
      * Sets the current node stage
      */
-    public void setCurrentStage(ZWaveNodeInitStage newStage) {
+    private void setCurrentStage(ZWaveNodeInitStage newStage) {
         currentStage = newStage;
 
         // Remember the time so we can handle retries and keep users informed
         queryStageTimeStamp = Calendar.getInstance().getTime();
-
-        // Set an event callback so we get notification of events
-        // We do this again here in case this is part of a HEAL
-        controller.addEventListener(this);
     }
 
     /**
@@ -1168,7 +1185,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                 case DeleteReturnRoute:
                 case IsFailedNodeID:
                     logger.debug("NODE {}: Node advancer - {}: Transaction complete ({}:{}) success({})",
-                            node.getNodeId(), currentStage.toString(), serialMessage.getMessageClass(),
+                            node.getNodeId(), currentStage, serialMessage.getMessageClass(),
                             serialMessage.getMessageType(), completeEvent.getState());
 
                     // If this frame was successfully sent, then handle the stage advancer
@@ -1258,7 +1275,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
             // Timer has triggered, so log it!
             logger.debug("NODE {}: Stage {}. Initialisation retry timer triggered. Increased to {}", node.getNodeId(),
-                    currentStage.toString(), retryTimer);
+                    currentStage, retryTimer);
 
             // Kickstart comms - clear the queue and run the advancer
             msgQueue.clear();
