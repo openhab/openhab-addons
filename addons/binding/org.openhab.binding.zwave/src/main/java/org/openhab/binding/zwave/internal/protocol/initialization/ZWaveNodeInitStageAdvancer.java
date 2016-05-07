@@ -989,9 +989,10 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     return;
 
                 case SESSION_START:
+                case HEAL:
                     // This is a 'do nothing' state.
                     // It's used as a marker within the NodeStage class to indicate
-                    // where to start initialisation if we restored from XML.
+                    // where to start initialisation under specific situations.
                     break;
 
                 default:
