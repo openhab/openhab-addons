@@ -862,16 +862,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
             } else if ("action".equals(cfg[0])) {
                 if ("failed".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controllerHandler.replaceFailedNode(nodeId);
                 }
                 if ("remove".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controllerHandler.removeFailedNode(nodeId);
                     controllerHandler.checkNodeFailed(nodeId);
                 }
                 if ("reinit".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     logger.debug("NODE {}: Re-initialising node!", nodeId);
 
                     // Delete the saved XML
@@ -882,7 +882,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
 
                 if ("heal".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     logger.debug("NODE {}: Starting heal on node!", nodeId);
 
                     controllerHandler.healNode(nodeId);
