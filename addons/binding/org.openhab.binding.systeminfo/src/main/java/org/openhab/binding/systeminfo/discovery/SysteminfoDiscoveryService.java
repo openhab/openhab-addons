@@ -37,6 +37,8 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     private final static int DISCOVERY_TIME_SECONDS = 30;
     private final static String DEFAULT_THING_ID = "unknown";
     private final static String DEFAULT_THING_LABEL = "Local computer";
+    private final static String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
+    private final static String HOST_NAME_SEPERATOR = "_";
 
     public SysteminfoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
@@ -48,9 +50,13 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
         String hostname;
 
         try {
-            InetAddress addr;
-            addr = InetAddress.getLocalHost();
-            hostname = addr.getHostName();
+            hostname = getHostName();
+            if (hostname.isEmpty()) {
+                throw new UnknownHostException();
+            }
+            if (!hostname.matches("[" + THING_UID_VALID_CHARS + "]*")) {
+                hostname = hostname.replaceAll("[^" + THING_UID_VALID_CHARS + "]", HOST_NAME_SEPERATOR);
+            }
         } catch (UnknownHostException ex) {
             hostname = DEFAULT_THING_ID;
             logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}",
@@ -60,5 +66,11 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
         ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
         ThingUID computer = new ThingUID(computerType, hostname);
         thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel(DEFAULT_THING_LABEL).build());
+    }
+
+    protected String getHostName() throws UnknownHostException {
+        InetAddress addr = InetAddress.getLocalHost();
+        String hostname = addr.getHostName();
+        return hostname;
     }
 }

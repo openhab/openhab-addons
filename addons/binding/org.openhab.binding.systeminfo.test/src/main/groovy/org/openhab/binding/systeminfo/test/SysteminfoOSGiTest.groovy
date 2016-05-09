@@ -11,6 +11,10 @@ import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 
 import org.eclipse.smarthome.config.core.Configuration
+import org.eclipse.smarthome.config.discovery.DiscoveryResult
+import org.eclipse.smarthome.config.discovery.DiscoveryService
+import org.eclipse.smarthome.config.discovery.inbox.Inbox
+import org.eclipse.smarthome.config.discovery.inbox.InboxFilterCriteria
 import org.eclipse.smarthome.core.items.GenericItem
 import org.eclipse.smarthome.core.items.ItemRegistry
 import org.eclipse.smarthome.core.library.items.NumberItem
@@ -44,6 +48,7 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
+import org.openhab.binding.systeminfo.discovery.SysteminfoDiscoveryService
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
 /**
  * OSGi tests for the {@link SysteminfoHandler}
@@ -748,6 +753,85 @@ class SysteminfoOSGiTest extends OSGiTest{
 
         initializeThingWithChannel(channnelID,acceptedItemType);
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    class SysteminfoDiscoveryServiceMock extends SysteminfoDiscoveryService {
+        String hostname;
+        SysteminfoDiscoveryServiceMock(String hostname) {
+            super()
+            this.hostname = hostname;
+        }
+
+        @Override
+        protected String getHostName() throws UnknownHostException{
+            if(hostname.equals("unresolved")) {
+                throw new UnknownHostException()
+            }
+            return hostname;
+        }
+    }
+
+    @Test
+    public void 'test discovery with invalid hostname' () {
+        String hostname = "Hilo.fritz.box"
+        String expectedHostname = "Hilo_fritz_box"
+
+        testDiscoveryService(expectedHostname, hostname)
+    }
+
+    @Test
+    public void 'test discovery with valid hostname' () {
+        String hostname = "MyComputer"
+        String expectedHostname = "MyComputer"
+
+        testDiscoveryService(expectedHostname,hostname)
+    }
+
+    @Test
+    public void 'test discovery with unresolved hostname' () {
+        String hostname = "unresolved"
+        String expectedHostname = SysteminfoDiscoveryService.DEFAULT_THING_ID
+
+        testDiscoveryService(expectedHostname,hostname)
+    }
+
+    @Test
+    public void 'test discovery with empty hostname string' () {
+        String hostname = ""
+        String expectedHostname = SysteminfoDiscoveryService.DEFAULT_THING_ID
+
+        testDiscoveryService(expectedHostname,hostname)
+    }
+
+
+    private void testDiscoveryService(String expectedHostname, String hostname) {
+        SysteminfoDiscoveryService discoveryService = getService(DiscoveryService,SysteminfoDiscoveryService)
+        waitForAssert {
+            assertThat discoveryService, is(notNullValue())
+        }
+        SysteminfoDiscoveryService discoveryServiceMock = new SysteminfoDiscoveryServiceMock(hostname)
+        unregisterService(discoveryService)
+        registerService(discoveryServiceMock, DiscoveryService.class.getName(), new Hashtable())
+
+        ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+        ThingUID computerUID = new ThingUID(computerType, expectedHostname);
+
+        discoveryServiceMock.startScan();
+
+        Inbox inbox = getService(Inbox)
+        assertThat inbox, is(notNullValue())
+
+        waitForAssert {
+            List<DiscoveryResult> results = inbox.get(new InboxFilterCriteria(computerUID, null))
+            assertFalse "No Thing with UID " + computerUID.getAsString() + " in inbox", results.isEmpty()
+        }
+
+        inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL)
+
+        waitForAssert {
+            systemInfoThing = thingRegistry.get(computerUID)
+            assertThat systemInfoThing, is (notNullValue())
+        }
     }
 
     @After

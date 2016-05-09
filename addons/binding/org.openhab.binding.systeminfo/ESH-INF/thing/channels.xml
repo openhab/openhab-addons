@@ -112,7 +112,7 @@
 			<channel id="name" typeId="name" />
 			<channel id="description" typeId="description" />
 			<channel id="logicalCores" typeId="logicalCores" />
-			<channel id="phisycalCores" typeId="phisycalCores" />
+			<channel id="physicalCores" typeId="physicalCores" />
 			<channel id="load" typeId="load" />
 			<channel id="load1" typeId="loadAvarage" />
 			<channel id="load5" typeId="loadAvarage" />
@@ -298,7 +298,7 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="phisycalCores">
+	<channel-type id="physicalCores">
 		<item-type>Number</item-type>
 		<label>CPU physical cores</label>
 		<description>Number of CPU physical cores</description>

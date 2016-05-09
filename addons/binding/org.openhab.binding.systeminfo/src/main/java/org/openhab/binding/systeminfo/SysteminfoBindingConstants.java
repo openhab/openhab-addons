@@ -170,7 +170,7 @@ public class SysteminfoBindingConstants {
     /**
      * Number of CPU physical cores
      */
-    public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu#phisycalCores";
+    public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu#physicalCores";
 
     /**
      * Average recent CPU load
