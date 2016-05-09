@@ -145,7 +145,7 @@ public class FeedHandler extends BaseThingHandler {
 
         if (feedUpdated) {
             String content = getFeedContent(currentFeedState, numberOfEntriesStored.intValue());
-            updateState(FEED_CHANNEL, new StringType(content));
+            updateState(CHANNEL_LATEST_CONTENT, new StringType(content));
             logger.debug("Content updated !");
         }
     }
@@ -269,7 +269,7 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (channelUID.getId().equals(FEED_CHANNEL)) {
+            if (channelUID.getId().equals(CHANNEL_LATEST_CONTENT)) {
                 refreshFeedState();
             } else {
                 logger.debug("Command received for an unknown channel: {}", channelUID.getId());

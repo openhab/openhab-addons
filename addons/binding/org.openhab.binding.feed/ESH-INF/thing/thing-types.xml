@@ -14,7 +14,7 @@
 		<description>Provides the content of the Feed in XML format.</description>
 
 		<channels>
-			<channel id="feed-channel" typeId="feed-channel" />
+			<channel id="latest-content" typeId="latest-content" />
 		</channels>
 
 		<config-description>
@@ -64,9 +64,9 @@
 	</thing-type>
 
 
-	<channel-type id="feed-channel">
+	<channel-type id="latest-content">
 		<item-type>String</item-type>
-		<label>Feed channel</label>
+		<label>Latest content</label>
 		<description>Contains the latest feed content.</description>
 	</channel-type>
 
