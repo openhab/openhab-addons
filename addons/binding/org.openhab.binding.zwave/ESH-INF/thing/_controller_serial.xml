@@ -134,7 +134,28 @@
                     <option value="-232323">send</option>
                 </options>
             </parameter>
-            
+
+            <parameter name="inclusion_mode" type="integer" groupName="network">
+                <label>Inclusion Mode</label>
+                <description>
+                    <![CDATA[Set the controller inclusion mode<br/>
+<h1>Low Power Inclusion</h1>
+In this mode, the device to be included must be brought close to the controller – normally the device must be within a meter or so of the controller.  Low Power Inclusion may be required for some older devices.
+<h1>High Power Inclusion</h1>
+In this mode, the controller and the device will use their nominal RF power, so they can be included into the network anywhere so long as the device can directly communicate with the controller. This would normally mean the device can be within 10 to 15m of the controller, however this will depend on the environment and it could require a shorter distance.
+<h1>Network Wide Inclusion</h1>
+In this mode, the controller uses high power, but also other devices within the network can route the inclusion messages within the mesh network. This means that devices can be included in their final location even if they are not in direct communication with the controller. This mode will only work when the routing devices also support NWI – generally this can be considered when the devices are Z-Wave Plus compatible.
+                    ]]>
+                </description>
+                <advanced>true</advanced>
+                <default>2</default>
+                <options>
+                    <option value="0">Low Power Inclusion</option>
+                    <option value="1">High Power Inclusion</option>
+                    <option value="2">Network Wide Inclusion</option>
+                </options>
+            </parameter>
+
             <parameter name="security_networkkey" type="text" groupName="network">
                 <label>Network Security Key</label>
                 <description>Set the network security key</description>

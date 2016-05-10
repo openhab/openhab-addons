@@ -94,7 +94,7 @@ public class ZWaveNodeSerializer {
             // Don't serialise if the stage is not at least finished static
             // If we do serialise when we haven't completed the static stages
             // then when the binding starts it will have incomplete information!
-            if (node.getNodeInitializationStage().isStaticComplete() == false) {
+            if (node.getNodeInitStage().isStaticComplete() == false) {
                 logger.debug("NODE {}: Serialise aborted as static stages not complete", node.getNodeId());
                 return;
             }
