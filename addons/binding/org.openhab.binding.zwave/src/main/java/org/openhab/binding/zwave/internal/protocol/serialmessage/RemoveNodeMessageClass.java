@@ -63,7 +63,7 @@ public class RemoveNodeMessageClass extends ZWaveCommandProcessor {
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(REMOVE_NODE_STOP);
-        outputData.write(255); // TODO: This should use the callbackId
+        outputData.write(254); // TODO: This should use the callbackId
         newMessage.setMessagePayload(outputData.toByteArray());
 
         return newMessage;
