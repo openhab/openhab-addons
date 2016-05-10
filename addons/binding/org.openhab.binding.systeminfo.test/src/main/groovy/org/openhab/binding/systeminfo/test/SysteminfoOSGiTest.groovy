@@ -381,24 +381,6 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Test
-    public void 'assert channel cpu#logicalCores is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_LOGICAL_CORES
-        String acceptedItemType = "Number";
-
-        initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
-    }
-
-    @Test
-    public void 'assert channel cpu#physicalCores is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_PHYSICAL_CORES
-        String acceptedItemType = "Number";
-
-        initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
-    }
-
-    @Test
     public void 'assert channel os#version is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_OS_VERSION;
         String acceptedItemType = "String";

@@ -3,20 +3,20 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one network interface 
-		installed. If other configurations are needed feel free to create different thing types. Currently dynamic channel creation 
-		is not supported from the binding. -->
+	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one 
+		network interface installed. If other configurations are needed feel free to create different thing types. Currently dynamic 
+		channel creation is not supported from the binding. -->
 	<thing-type id="computer">
 		<label>Systeminfo</label>
 		<description>Sample thing for systeminfo Binding</description>
 
 		<channel-groups>
-			<channel-group id="os" typeId="osGroup" />
+			<channel-group id="os" typeId="osGroup" /> 
 			<channel-group id="memory" typeId="memoryGroup" />
 			<channel-group id="storage" typeId="storageGroup" />
 			<channel-group id="sensors" typeId="sensorsGroup" />
 			<channel-group id="cpu" typeId="cpuGroup" />
-			<!-- This group types are not mandatory for every computer configuration-->
+			<!-- This group types are not mandatory for every computer configuration -->
 			<channel-group id="drive" typeId="driveGroup" />
 			<channel-group id="swap" typeId="swapGroup" />
 			<channel-group id="display" typeId="displayGroup" />
@@ -24,6 +24,11 @@
 			<channel-group id="network" typeId="networkGroup" />
 		</channel-groups>
 
+		<properties>
+			<property name="cpu_logicalCores">CPU_Logical_Cores</property>
+			<property name="cpu_physicalCores">CPU_Physical_Cores</property>			
+		</properties>
+		
 		<config-description-ref uri="thing-type:systeminfo:computerConfig" />
 	</thing-type>
 

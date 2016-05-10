@@ -21,6 +21,17 @@ public class SysteminfoBindingConstants {
 
     public final static ThingTypeUID THING_TYPE_COMPUTER = new ThingTypeUID(BINDING_ID, "computer");
 
+    // Thing properties
+    /**
+     * Number of CPU logical cores
+     */
+    public final static String PROPERTY_CPU_LOGICAL_CORES = "cpu_logicalCores";
+
+    /**
+     * Number of CPU physical cores
+     */
+    public final static String PROPERTY_CPU_PHYSICAL_CORES = "cpu_physicalCores";
+
     // List of all Channel IDs
     /**
      * Contains information about the family /Windows, Linux, OS X etc/ of the operation system
@@ -161,16 +172,6 @@ public class SysteminfoBindingConstants {
      * Detailed description about the CPU
      */
     public final static String CHANNEL_CPU_DESCRIPTION = "cpu#description";
-
-    /**
-     * Number of CPU logical cores
-     */
-    public final static String CHANNEL_CPU_LOGICAL_CORES = "cpu#logicalCores";
-
-    /**
-     * Number of CPU physical cores
-     */
-    public final static String CHANNEL_CPU_PHYSICAL_CORES = "cpu#physicalCores";
 
     /**
      * Average recent CPU load

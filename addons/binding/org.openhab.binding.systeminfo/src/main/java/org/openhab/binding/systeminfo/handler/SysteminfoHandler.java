@@ -12,6 +12,7 @@ import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -98,6 +99,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
         if (isConfigurationValid()) {
             groupChannelsByPriority();
+            updateProperties();
             scheduleUpdates();
             logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
@@ -129,6 +131,13 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.error("Refresh time value is invalid!. Please change the thing configuration!", e);
             return false;
         }
+    }
+
+    private void updateProperties() {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
+        properties.put(PROPERTY_CPU_PHYSICAL_CORES, systeminfo.getCpuPhysicalCores().toString());
+        updateProperties(properties);
     }
 
     private void groupChannelsByPriority() {
@@ -272,12 +281,6 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_CPU_THREADS:
                     state = systeminfo.getCpuThreads();
-                    break;
-                case CHANNEL_CPU_PHYSICAL_CORES:
-                    state = systeminfo.getCpuPhysicalCores();
-                    break;
-                case CHANNEL_CPU_LOGICAL_CORES:
-                    state = systeminfo.getCpuLogicalCores();
                     break;
                 case CHANNEL_CPU_DESCRIPTION:
                     state = systeminfo.getCpuDescription();

@@ -6,7 +6,7 @@
 	<!-- This file contains channel specific information and describes how the different channel types should be rendered. Each 
 		channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
 
-	<channel-group-type id="osGroup">
+	<channel-group-type id="osGroup" advanced="true">
 		<label>OS parameters</label>
 		<description>OS parameters</description>
 		<channels>
@@ -27,7 +27,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="swapGroup">
+	<channel-group-type id="swapGroup" advanced="true">
 		<label>Swap Memory</label>
 		<description>Swap memory information</description>
 		<channels>
@@ -52,7 +52,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="driveGroup">
+	<channel-group-type id="driveGroup" advanced="true">
 		<label>Drive</label>
 		<description>Drive information</description>
 		<channels>
@@ -77,7 +77,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="displayGroup">
+	<channel-group-type id="displayGroup" advanced="true">
 		<label>Display</label>
 		<description>Display parameters</description>
 		<channels>
@@ -85,7 +85,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sensorsGroup">
+	<channel-group-type id="sensorsGroup" advanced="true">
 		<label>Sensor</label>
 		<description>Sensor parameters</description>
 		<channels>
@@ -111,8 +111,6 @@
 		<channels>
 			<channel id="name" typeId="name" />
 			<channel id="description" typeId="description" />
-			<channel id="logicalCores" typeId="logicalCores" />
-			<channel id="physicalCores" typeId="physicalCores" />
 			<channel id="load" typeId="load" />
 			<channel id="load1" typeId="loadAvarage" />
 			<channel id="load5" typeId="loadAvarage" />
@@ -202,7 +200,7 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="description">
+	<channel-type id="description" advanced="true">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description of the device</description>
@@ -210,7 +208,7 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="type">
+	<channel-type id="type" advanced="true">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Storage type</description>
@@ -218,7 +216,7 @@
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="cpuTemp">
+	<channel-type id="cpuTemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>CPU Temperature</label>
 		<description>CPU Temperature in Celsius degrees</description>
@@ -226,7 +224,7 @@
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="cpuVoltage">
+	<channel-type id="cpuVoltage" advanced="true">
 		<item-type>Number</item-type>
 		<label>CPU Voltage</label>
 		<description>CPU Voltage in V</description>
@@ -234,7 +232,7 @@
 		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="fanSpeed"  advanced="true">
+	<channel-type id="fanSpeed" advanced="true">
 		<item-type>Number</item-type>
 		<label>Fan speed</label>
 		<description>Fan speed in rpm</description>
@@ -265,48 +263,32 @@
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
-	
-	<channel-type id="loadAvarage"  advanced="true">
-        <item-type>Number</item-type>
-        <label>Load average</label>
-        <description>Load in percents for the last 1,5 or 15 minutes</description>
-        <state readOnly="true" pattern="%.1f %%" />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
-    
-    <channel-type id="uptime" advanced="true">
-        <item-type>Number</item-type>
-        <label>System uptime</label>
-        <description>System uptime (time after start) in minutes</description>
-        <state readOnly="true" pattern="%.1f Minutes" />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
-    
-    <channel-type id="threads" advanced="true">
-        <item-type>Number</item-type>
-        <label>Number of threads</label>
-        <description>Number of threads currently running</description>
-        <state readOnly="true" pattern="%d" />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
 
-	<channel-type id="logicalCores">
+	<channel-type id="loadAvarage" advanced="true">
 		<item-type>Number</item-type>
-		<label>CPU logical cores</label>
-		<description>Number of CPU logical cores</description>
-		<state readOnly="true" pattern="%d" />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<label>Load average</label>
+		<description>Load in percents for the last 1,5 or 15 minutes</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="physicalCores">
+	<channel-type id="uptime" advanced="true">
 		<item-type>Number</item-type>
-		<label>CPU physical cores</label>
-		<description>Number of CPU physical cores</description>
-		<state readOnly="true" pattern="%d" />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<label>System uptime</label>
+		<description>System uptime (time after start) in minutes</description>
+		<state readOnly="true" pattern="%.1f Minutes" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="information">
+	<channel-type id="threads" advanced="true">
+		<item-type>Number</item-type>
+		<label>Number of threads</label>
+		<description>Number of threads currently running</description>
+		<state readOnly="true" pattern="%d" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
+
+	<channel-type id="information" advanced="true">
 		<item-type>String</item-type>
 		<label>Display information</label>
 		<description>Product, manufacturer, SN, width and height of the display in cm</description>
@@ -321,14 +303,14 @@
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
-	
-	<channel-type id="mac">
-        <item-type>String</item-type>
-        <label>Mac address </label>
-        <description>Mac address of the network</description>
-        <state readOnly="true" pattern="%s " />
-        <config-description uri="systeminfo:channels:lowpriority" />
-    </channel-type>
+
+	<channel-type id="mac" advanced="true">
+		<item-type>String</item-type>
+		<label>Mac address </label>
+		<description>Mac address of the network</description>
+		<state readOnly="true" pattern="%s " />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
 
 	<channel-type id="networkName">
 		<item-type>String</item-type>
@@ -345,37 +327,37 @@
 		<state readOnly="true" pattern="%s " />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>
-	
-	<channel-type id="packagesSent"  advanced="true">
-        <item-type>Number</item-type>
-        <label>Packages sent</label>
-        <description>Number of packages sent</description>
-        <state readOnly="true" pattern="%d " />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
-    
-    <channel-type id="packagesReceived"  advanced="true">
-        <item-type>Number</item-type>
-        <label>Packages received</label>
-        <description>Number of packages received</description>
-        <state readOnly="true" pattern="%d " />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
-    
-    <channel-type id="dataSent"  advanced="true">
-        <item-type>Number</item-type>
-        <label>Data sent</label>
-        <description>Data sent in MB</description>
-        <state readOnly="true" pattern="%d MB" />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
-    
-    <channel-type id="dataReceived"  advanced="true">
-        <item-type>Number</item-type>
-        <label>Data received</label>
-        <description>Data received in MB</description>
-        <state readOnly="true" pattern="%d MB" />
-        <config-description uri="systeminfo:channels:mediumpriority" />
-    </channel-type>
-    
+
+	<channel-type id="packagesSent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Packages sent</label>
+		<description>Number of packages sent</description>
+		<state readOnly="true" pattern="%d " />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
+
+	<channel-type id="packagesReceived" advanced="true">
+		<item-type>Number</item-type>
+		<label>Packages received</label>
+		<description>Number of packages received</description>
+		<state readOnly="true" pattern="%d " />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
+
+	<channel-type id="dataSent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Data sent</label>
+		<description>Data sent in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
+
+	<channel-type id="dataReceived" advanced="true">
+		<item-type>Number</item-type>
+		<label>Data received</label>
+		<description>Data received in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
+
 </thing:thing-descriptions>

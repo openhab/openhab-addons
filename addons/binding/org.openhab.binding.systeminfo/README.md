@@ -19,6 +19,10 @@ System information Binding provides operating system and hardware information in
 
 The binding supports only one thing type - **computer**. This thing represents a system with one storage volume, one display device and one network adapter.
 
+The thing has the following properties:
+ - `cpu_logicalCores` - Number of CPU logical cores
+ - `cpu_physicalCores` - Number of CPU physical cores
+
 If multiple storage or display devices support is needed, new thing type has to be defined. This is workaround until [this issue] (https://github.com/eclipse/smarthome/issues/588) is resolved and it is possible to add dynamically channels to DSL defined thing.
 
 ## Discovery
@@ -63,7 +67,7 @@ The binding support several channel group. Each channel group, contains one or m
    * **group** `battery` (deviceIndex)
          **channel** `name, remainingCapacity, remainingTime`
    * **group** `cpu` 
-         **channel** `name, description, load, load1, load5, load15, uptime, logicalCores, physicalCores`
+         **channel** `name, description, load, load1, load5, load15, uptime`
    * **group** `sensors`
          **channel** `cpuTemp, cpuVoltage, fanSpeed`
    * **group** `network` (deviceIndex)
@@ -75,16 +79,16 @@ The groups marked with "deviceIndex" may have device index attached to the Chann
  - (e.g. *storage1#available*)
  
  The binding uses this index to get information about a specific device from a list of devices.
- (e.g on a single computer could be installed several local disks with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 ant etc).
+ (e.g on a single computer could be installed several local disks with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 ant etc). If device with this index is not existing, the binding will display an error message on the console.
 
 In the table is shown more detailed information about each Channel type.
 The binding introduces the following channels:
 
 | Chnanel ID | Channel Description | Supported item type | Default priority | Advanced |
 | ------------- | ------------- |------------|----------|----------|
-| manufacturer  | The manufacturer of the operating system  | String | Low | False |
-| version  | The version of the operating system  | String | Low | False |
-| family  | The family of the operating system | String | Low | False |
+| manufacturer  | The manufacturer of the operating system  | String | Low | True |
+| version  | The version of the operating system  | String | Low | True |
+| family  | The family of the operating system | String | Low | True |
 | load  | Recent load in percents  | Number | High | False |
 | load1 | Load in percents for the last 1 minutes | Number | Medium | True |
 | load5 | Load in percents for the last 5 minutes | Number | Medium | True |
@@ -92,24 +96,22 @@ The binding introduces the following channels:
 | threads | Number of threads currently running | Number | Medium | True |
 | uptime | System uptime (time after start) in minutes | Number | Medium | True |
 | name | Name of the device  | String | Low | False |
-| logicalCores  | Number of CPU logical cores  | Number | Low | False |
-| phisycalCores  | Number of CPU physical cores<  | Number | Low | False |
 | available  | Available size in MB  | Number | High | False |
 | used  | Used size in MB  | Number | High | False |
 | total  | Total size in MB  | Number | Low | False |
 | availablePercent  | Available size in %  | Number | High | False |
 | model  | The model of the device  | String | Low | True |
 | serial  | The serial number of the device  | String | Low | True |
-| description  | Description of the device  | String | Low | False |
-| type  | Storage type  | String | Low | False |
-| cpuTemp  | CPU Temperature in Celsius degrees  | Number | High | False |
-| cpuVoltage  | CPU Voltage in V  | Number | Medium | False |
+| description  | Description of the device  | String | Low | True |
+| type  | Storage type  | String | Low | True |
+| cpuTemp  | CPU Temperature in Celsius degrees  | Number | High | True |
+| cpuVoltage  | CPU Voltage in V  | Number | Medium | True |
 | fanSpeed  | Fan speed in rpm  | Number | Medium | True |
 | remainingTime  | Remaining time in minutes | Number | Medium | False |
 | remainingCapacity  | Remaining capacity in percents  | Number | Medium | False |
-| information  | Product, manufacturer, SN, width and height of the display in cm  | String | Low | False |
+| information  | Product, manufacturer, SN, width and height of the display in cm  | String | Low | True |
 | ip  | Host IP address of the network  | String | Low | False |
-| mac  | MAC address | String | Low | False |
+| mac  | MAC address | String | Low | True |
 | networkName  | The name of the network.  | String | Low | False |
 | networkDisplayName  | The display name of the network  | String | Low | False |
 | packagesSent  | Number of packages sent | Number | Medium | True |
@@ -151,8 +153,6 @@ Number Network_PackagesRecevied     { channel="systeminfo:computer:work:network#
 String CPU_Name                     { channel="systeminfo:computer:work:cpu#name" }
 String CPU_Description              { channel="systeminfo:computer:work:cpu#description" }
 Number CPU_Load                     { channel="systeminfo:computer:work:cpu#load"} 
-Number CPU_LogicalProcCount         { channel="systeminfo:computer:work:cpu#logicalCores" }
-Number CPU_PhysicalProcCount        { channel="systeminfo:computer:work:cpu#phisycalCores" }
 Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                    { channel="systeminfo:computer:work:cpu#load5" }
 Number CPU_Load15                   { channel="systeminfo:computer:work:cpu#load15" }
