@@ -22,14 +22,15 @@
 		<description>An Orvibo AllOne Smart Remote Control</description>
 		<channels>
 			<channel id="learn" typeId="learn" />
-			<channel id="learnName" typeId="learnname" />
-			<channel id="emit" typeId="emit" />
 			<channel id="learnname" typeId="learnname" />
+			<channel id="emitname" typeId="emitname" />
+			<channel id="emit" typeId="emit" />
 		</channels>
 		<config-description>
 			<parameter name="rootFolder" type="text" required="true">
 				<label>Root Folder</label>
 				<description>Root Folder where  IR / RF433 Files will be searched and saved.</description>
+				<default>/</default>
 			</parameter>
 			<parameter name="deviceId" type="text" required="true">
 				<label>MAC Address</label>

@@ -7,10 +7,14 @@
  */
 package org.openhab.binding.orvibo.handler;
 
+import static org.openhab.binding.orvibo.OrviboBindingConstants.*;
+
 import java.net.SocketException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -21,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.tavalin.orvibo.OrviboClient;
 import com.github.tavalin.orvibo.devices.AllOne;
+import com.github.tavalin.orvibo.exceptions.OrviboException;
 
 /**
  * The {@link AllOneHandler} is responsible for handling commands, which are
@@ -98,7 +103,13 @@ public class AllOneHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        switch (channelUID.getId()) {
+            case CHANNEL_ALLONE_LEARN_NAME: {
+                handleLearnName(command);
 
+                break;
+            }
+        }
         /*
          * // if uninitialized -> subscribe
          * // send command
@@ -125,5 +136,22 @@ public class AllOneHandler extends BaseThingHandler {
          * break;
          * }
          */
+    }
+
+    private void handleLearnName(Command command) {
+        if (command instanceof StringType) {
+            Configuration config = thing.getConfiguration();
+            String rootFolder = (String) config.get(CONFIG_PROPERTY_ROOT);
+            StringType string = (StringType) command;
+            String learnFilename = string.toString();
+            allone.setRootFolder(rootFolder);
+            allone.setLearnFilename(learnFilename);
+            try {
+                logger.debug(allone.getLearnFilename());
+            } catch (OrviboException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }
