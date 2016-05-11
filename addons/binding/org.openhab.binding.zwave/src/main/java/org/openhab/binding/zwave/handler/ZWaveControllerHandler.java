@@ -206,15 +206,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 }
 
                 if (cfg[1].equals("softreset") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestSoftReset();
                     value = "";
                 } else if (cfg[1].equals("hardreset") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestHardReset();
                     value = "";
                 } else if (cfg[1].equals("exclude") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestRemoveNodesStart();
                     value = "";
                 } else if (cfg[1].equals("suc") && value instanceof Boolean) {
@@ -293,7 +293,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (controller == null) {
             return;
         }
-        controller.requestAddNodesStop();
+        controller.requestInclusionStop();
     }
 
     @Override
