@@ -42,6 +42,7 @@ public class ZWaveMultiLevelSensorCommandClassTest extends ZWaveCommandClassTest
         assertEquals(event.getEndpoint(), 0);
         assertEquals(event.getSensorType(), ZWaveMultiLevelSensorCommandClass.SensorType.LUMINANCE);
         assertEquals(event.getValue(), new BigDecimal("103"));
+        assertEquals(event.getSensorScale(), 1);
     }
 
     @Test
@@ -60,5 +61,6 @@ public class ZWaveMultiLevelSensorCommandClassTest extends ZWaveCommandClassTest
         assertEquals(event.getEndpoint(), 0);
         assertEquals(event.getSensorType(), ZWaveMultiLevelSensorCommandClass.SensorType.TEMPERATURE);
         assertEquals(event.getValue(), new BigDecimal("27.4"));
+        assertEquals(event.getSensorScale(), 0);
     }
 }
