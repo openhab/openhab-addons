@@ -39,7 +39,6 @@ public abstract class ZWaveCommandClass {
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveCommandClass.class);
 
-    private static final int MAX_SUPPORTED_VERSION = 1;
     private static final int SIZE_MASK = 0x07;
     // private static final SCALE_MASK = 0x18; // unused
     // private static final SCALE_SHIFT = 0x03; // unused
@@ -55,6 +54,12 @@ public abstract class ZWaveCommandClass {
 
     private int version = 0;
     private int instances = 0;
+
+    @XStreamOmitField
+    protected int versionMax = 1;
+
+    @SuppressWarnings("unused")
+    private int versionSupported = 0;
 
     /**
      * Protected constructor. Initiates a new instance of a Command Class.
@@ -140,6 +145,22 @@ public abstract class ZWaveCommandClass {
      * @param version. The version number to set.
      */
     public void setVersion(int version) {
+        // Record the version supported by the device
+        // This gets recorded in the XML so we know more about the device
+        versionSupported = version;
+
+        // Now set the version we are actually going to support
+        if (version > versionMax) {
+            this.version = versionMax;
+            logger.debug(
+                    "NODE {}: Version = {}, version set to maximum supported by the binding. Enabling extra functionality.",
+                    getNode().getNodeId(), versionMax);
+        } else {
+            this.version = version;
+            logger.debug("NODE {}: Version = {}, version set. Enabling extra functionality.", getNode().getNodeId(),
+                    version);
+        }
+
         this.version = version;
     }
 
@@ -147,7 +168,7 @@ public abstract class ZWaveCommandClass {
      * The maximum version implemented by this command class.
      */
     public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
+        return versionMax;
     }
 
     /**
