@@ -3,10 +3,10 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- DEFINITIONS of terms used in the binding:
-	    Feed is a XML document used for providing users with frequently updated content. It is located at URL. The most popular feed formats are RSS and Atom. 
-		Entry is a single element in the Feed, that contains reference (link), short description and other information like images, 
-		comments and etc. Entry in this binding is abstraction for RSS item element and Atom entry element. -->
+	<!-- DEFINITIONS of terms used in the binding: Feed is a XML document used for providing users with frequently updated content. 
+		It is located at URL. The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains 
+		reference (link), short description and other information like images, comments and etc. Entry in this binding is abstraction 
+		for RSS item element and Atom entry element. -->
 
 	<!-- Feed Thing Type -->
 	<thing-type id="feed">
@@ -15,6 +15,11 @@
 
 		<channels>
 			<channel id="latest-content" typeId="latest-content" />
+			<channel id="author" typeId="author"/>
+			<channel id="description" typeId="description"/>
+			<channel id="title" typeId="title"/>
+			<channel id="published-date" typeId="published-date"/>
+			<channel id="number-of-entries" typeId="number-of-entries"/>
 		</channels>
 
 		<config-description>
@@ -69,5 +74,35 @@
 		<label>Latest content</label>
 		<description>Contains the latest feed content.</description>
 	</channel-type>
+
+	<channel-type id="author">
+		<item-type>String</item-type>
+		<label>Author</label>
+		<description>The name of the feed author, if author is present</description>
+	</channel-type>
+
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>The title of the feed</description>
+	</channel-type>
+
+	<channel-type id="description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Description of the feed</description>
+	</channel-type>
+
+	<channel-type id="published-date">
+		<item-type>DateTime</item-type>
+		<label>Published date</label>
+		<description>The last update date of the feed</description>
+	</channel-type>
+	
+	<channel-type id="number-of-entries">
+        <item-type>Number</item-type>
+        <label>Number of entries</label>
+        <description>Number of entries in the feed</description>
+    </channel-type>
 
 </thing:thing-descriptions>

@@ -13,12 +13,19 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -26,7 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.feed.FeedBindingConstants;
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +45,8 @@ import com.rometools.fetcher.impl.HttpURLFeedFetcher;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.SyndFeedOutput;
 
 /**
- *
  * The {@link FeedHandler } is responsible for handling commands, which are
  * sent to one of the channels and for the regular updates of the feed data.
  *
@@ -76,8 +81,6 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         checkConfiguration();
-
-        startAutomaticRefresh();
     }
 
     /**
@@ -86,7 +89,7 @@ public class FeedHandler extends BaseThingHandler {
      */
     private void checkConfiguration() {
         logger.debug("Start reading Feed Thing configuration.");
-        Configuration configuration = editConfiguration();
+        Configuration configuration = getConfig();
 
         // It is not necessary to check if the URL is valid, this will be done in fetchFeedData() method
         urlString = (String) configuration.get(URL);
@@ -100,7 +103,6 @@ public class FeedHandler extends BaseThingHandler {
             logger.warn("Refresh time [{}] is not valid. Falling back to default value: {}. {}", refreshTime,
                     DEFAULT_REFRESH_TIME, e.getMessage());
             refreshTime = DEFAULT_REFRESH_TIME;
-            configuration.put(FeedBindingConstants.REFRESH_TIME, DEFAULT_REFRESH_TIME);
         }
 
         outputFeedFormat = (String) configuration.get(FEED_FORMAT);
@@ -108,7 +110,6 @@ public class FeedHandler extends BaseThingHandler {
             logger.warn("Format [{}] is not supported. Falling back to default value: {}.", outputFeedFormat,
                     DEFAULT_FEED_FORMAT);
             outputFeedFormat = DEFAULT_FEED_FORMAT;
-            configuration.put(FeedBindingConstants.FEED_FORMAT, DEFAULT_FEED_FORMAT);
         }
 
         try {
@@ -121,10 +122,7 @@ public class FeedHandler extends BaseThingHandler {
                     numberOfEntriesStored, DEFAULT_NUMBER_OF_ENTRIES, e.getMessage());
 
             numberOfEntriesStored = DEFAULT_NUMBER_OF_ENTRIES;
-            configuration.put(FeedBindingConstants.NUMBER_OF_ENTRIES, DEFAULT_NUMBER_OF_ENTRIES);
         }
-
-        updateConfiguration(configuration);
     }
 
     private void startAutomaticRefresh() {
@@ -137,6 +135,7 @@ public class FeedHandler extends BaseThingHandler {
         };
 
         refreshTask = scheduler.scheduleAtFixedRate(refresher, 0, refreshTime.intValue(), TimeUnit.MINUTES);
+        logger.debug("Start automatic refresh at {} minutes", refreshTime.intValue());
     }
 
     private void refreshFeedState() {
@@ -144,10 +143,53 @@ public class FeedHandler extends BaseThingHandler {
         boolean feedUpdated = updateFeedIfChanged(feed);
 
         if (feedUpdated) {
-            String content = getFeedContent(currentFeedState, numberOfEntriesStored.intValue());
-            updateState(CHANNEL_LATEST_CONTENT, new StringType(content));
-            logger.debug("Content updated !");
+            List<Channel> channels = getThing().getChannels();
+            for (Channel channel : channels) {
+                publishChannelIfLinked(channel.getUID());
+            }
         }
+    }
+
+    private void publishChannelIfLinked(ChannelUID channelUID) {
+
+        String channelID = channelUID.getId();
+        if (isLinked(channelID)) {
+            State state = null;
+            switch (channelID) {
+                case CHANNEL_LATEST_CONTENT:
+                    String content = getLatestContent(currentFeedState, numberOfEntriesStored.intValue());
+                    state = new StringType(content);
+                    break;
+                case CHANNEL_AUTHOR:
+                    String author = currentFeedState.getAuthor();
+                    state = new StringType(author);
+                    break;
+                case CHANNEL_DESCRIPTION:
+                    String description = currentFeedState.getDescription();
+                    state = new StringType(description);
+                    break;
+                case CHANNEL_TITLE:
+                    String title = currentFeedState.getTitle();
+                    state = new StringType(title);
+                    break;
+                case CHANNEL_PUBLISHED_DATE:
+                    Date pubDate = currentFeedState.getPublishedDate();
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.setTime(pubDate);
+                    state = new DateTimeType(calendar);
+                    break;
+                case CHANNEL_NUMBER_OF_ENTRIES:
+                    int numberOfEntries = currentFeedState.getEntries().size();
+                    state = new DecimalType(numberOfEntries);
+                    break;
+            }
+            if (state != null) {
+                updateState(channelID, state);
+            } else {
+                logger.debug("Can not update channel {} - information is missing !", channelID);
+            }
+        }
+
     }
 
     /**
@@ -214,14 +256,9 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates a String with the XML representation for the given {@link SyndFeed} in one of the specified formats
-     * {@link #SUPPORTED_FEED_FORMATS}.
-     *
-     * @param numberOfEntries - number of {@link SyndEntry} or all entries, if they are less than this number
-     * @param feed
-     * @return <code>String</code> containing the XML data or <code>null</code> if XML can not be created
+     * TODO
      */
-    private String getFeedContent(SyndFeed feed, int numberOfEntries) {
+    private String getLatestContent(SyndFeed feed, int numberOfEntries) {
         List<SyndEntry> allEntries = feed.getEntries();
 
         if (allEntries.size() > numberOfEntries) {
@@ -231,49 +268,45 @@ public class FeedHandler extends BaseThingHandler {
              * published time of the entry.
              */
             allEntries = allEntries.subList(0, numberOfEntries);
-            feed.setEntries(allEntries);
+
             logger.debug("Content will be generated from the first {} feed entries.", numberOfEntries);
         }
-        return getFeedContent(feed);
-    }
 
-    /**
-     * Creates a String with the XML representation for the given {@link SyndFeed} in one of the specified formats
-     * {@link #SUPPORTED_FEED_FORMATS}.This method sets the Feed format as well.
-     *
-     * @param feed
-     * @return <code>String</code> containing the XML data or <code>null</code> if XML is invalid for the selected
-     *         {@link #outputFeedFormat}
-     */
-    private String getFeedContent(SyndFeed feed) {
         feed.setFeedType(outputFeedFormat);
 
         if (outputFeedFormat.equals("rss_0.91N") || outputFeedFormat.equals("rss_0.91U")) {
             // RSS 0.91 has required language attribute. Default value is assigned, because if this value is missing,
-            // theconversion to RSS 0.91 will fail
+            // the conversion to RSS 0.91 will fail
             if (feed.getLanguage() == null) {
                 feed.setLanguage("en-us");
             }
         }
+        return getLatestContent(allEntries);
+    }
 
-        SyndFeedOutput outputBuilder = new SyndFeedOutput();
-        String content = null;
-        try {
-            content = outputBuilder.outputString(feed);
-        } catch (Exception e) {
-            logger.error("The XML representation for the feed could not be created. {}", e.getMessage());
+    /**
+     * TODO
+     */
+    private String getLatestContent(List<SyndEntry> entries) {
+        StringBuilder latestContent = new StringBuilder();
+        for (SyndEntry entry : entries) {
+            String title = entry.getTitle();
+            String description = entry.getDescription().getValue();
+            Date publishedDate = entry.getPublishedDate();
+            String publishedDateString = DateFormat.getInstance().format(publishedDate);
+            // TODO new lines are not displayed in basic UI.
+            // Separator is hard coded.
+            String entryAsString = String.format("Title: %s%nDate: %s%nDescription: %s%n#", title, publishedDateString,
+                    description);
+            latestContent.append(entryAsString);
         }
-        return content;
+        return latestContent.toString();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (channelUID.getId().equals(CHANNEL_LATEST_CONTENT)) {
-                refreshFeedState();
-            } else {
-                logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-            }
+            publishChannelIfLinked(channelUID);
         } else {
             logger.debug("Command {} is not supported for channel: {}. Supported command: REFRESH", command,
                     channelUID.getId());
@@ -281,10 +314,19 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-        if (refreshTask.isDone()) {
-            logger.error("Refresh task is not terminated properly");
+    public void channelLinked(ChannelUID channelUID) {
+        if (refreshTask == null) {
+            startAutomaticRefresh();
         }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        // TODO if all channels are unlinked the automatic refresh should stop ?
+    }
+
+    @Override
+    public void dispose() {
         refreshTask.cancel(true);
     }
 }

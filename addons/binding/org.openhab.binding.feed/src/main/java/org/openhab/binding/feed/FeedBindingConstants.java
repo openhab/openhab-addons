@@ -28,7 +28,13 @@ public class FeedBindingConstants {
     public final static ThingTypeUID FEED_THING_TYPE_UID = new ThingTypeUID("feed", "feed");
 
     // List of all Channel IDs
+    // TODO javadoc
     public final static String CHANNEL_LATEST_CONTENT = "latest-content";
+    public final static String CHANNEL_DESCRIPTION = "description";
+    public final static String CHANNEL_PUBLISHED_DATE = "published-date";
+    public final static String CHANNEL_AUTHOR = "author";
+    public final static String CHANNEL_TITLE = "title";
+    public final static String CHANNEL_NUMBER_OF_ENTRIES = "number-of-entries";
 
     // Configuration parameters
     /**
