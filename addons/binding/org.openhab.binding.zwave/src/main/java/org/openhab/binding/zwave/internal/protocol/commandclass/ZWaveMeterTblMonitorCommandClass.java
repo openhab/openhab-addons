@@ -43,22 +43,22 @@ public class ZWaveMeterTblMonitorCommandClass extends ZWaveCommandClass
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveMeterTblMonitorCommandClass.class);
 
-    private static final byte METER_TBL_TABLE_ID_GET = 0x03;
-    private static final byte METER_TBL_TABLE_ID_REPORT = 0x04;
-    private static final byte METER_TBL_TABLE_CAPABILITY_GET = 0x05;
-    private static final byte METER_TBL_REPORT = 0x06;
-    private static final byte METER_TBL_CURRENT_DATA_GET = 0x0C;
-    private static final byte METER_TBL_CURRENT_DATA_REPORT = 0x0D;
+    private static final byte METER_TBL_TABLE_ID_GET = 3;
+    private static final byte METER_TBL_TABLE_ID_REPORT = 4;
+    private static final byte METER_TBL_TABLE_CAPABILITY_GET = 5;
+    private static final byte METER_TBL_REPORT = 6;
+    private static final byte METER_TBL_CURRENT_DATA_GET = 12;
+    private static final byte METER_TBL_CURRENT_DATA_REPORT = 13;
 
-    // unsuported private static final byte METER_TBL_STATUS_REPORT = 0x0B;
-    // unsuported private static final byte METER_TBL_STATUS_DATE_GET = 0x0A;
-    // unsuported private static final byte METER_TBL_STATUS_DEPTH_GET = 0x09;
-    // unsuported private static final byte METER_TBL_STATUS_SUPPORTED_GET = 0x07;
-    // unsuported private static final byte METER_TBL_STATUS_SUPPORTED_REPORT = 0x08;
-    // unsuported private static final byte METER_TBL_HISTORICAL_DATA_GET = 0x0E;
-    // unsuported private static final byte METER_TBL_HISTORICAL_DATA_REPORT = 0x0F;;
-    // unsuported private static final byte METER_TBL_TABLE_POINT_ADM_NO_GET = 0x01;
-    // unsuported private static final byte METER_TBL_TABLE_POINT_ADM_NO_REPORT = 0x02;
+    // unsuported private static final byte METER_TBL_STATUS_REPORT = 11;
+    // unsuported private static final byte METER_TBL_STATUS_DATE_GET = 10;
+    // unsuported private static final byte METER_TBL_STATUS_DEPTH_GET = 9;
+    // unsuported private static final byte METER_TBL_STATUS_SUPPORTED_GET = 7;
+    // unsuported private static final byte METER_TBL_STATUS_SUPPORTED_REPORT = 8;
+    // unsuported private static final byte METER_TBL_HISTORICAL_DATA_GET = 14;
+    // unsuported private static final byte METER_TBL_HISTORICAL_DATA_REPORT = 15;
+    // unsuported private static final byte METER_TBL_TABLE_POINT_ADM_NO_GET = 1;
+    // unsuported private static final byte METER_TBL_TABLE_POINT_ADM_NO_REPORT = 2;
 
     @XStreamOmitField
     private boolean initialiseDone = false;
