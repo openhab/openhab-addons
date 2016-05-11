@@ -9,6 +9,7 @@ package org.openhab.binding.netatmo.handler;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -80,28 +81,28 @@ abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
             case CHANNEL_TIMEUTC:
                 return new DateTimeType(timestampToCalendar(dashboard.getTimeUtc()));
             case CHANNEL_TEMPERATURE:
-                return new DecimalType(dashboard.getTemperature());
+                return toDecimalType(dashboard.getTemperature());
             case CHANNEL_DATE_MAX_TEMP:
                 return new DateTimeType(timestampToCalendar(dashboard.getDateMaxTemp()));
             case CHANNEL_DATE_MIN_TEMP:
                 return new DateTimeType(timestampToCalendar(dashboard.getDateMinTemp()));
             case CHANNEL_MAX_TEMP:
-                return new DecimalType(dashboard.getMaxTemp());
+                return toDecimalType(dashboard.getMaxTemp());
             case CHANNEL_MIN_TEMP:
-                return new DecimalType(dashboard.getMinTemp());
+                return toDecimalType(dashboard.getMinTemp());
             case CHANNEL_HUMIDEX:
-                return new DecimalType(WeatherUtils.getHumidex(dashboard.getTemperature(), dashboard.getHumidity()));
+                return toDecimalType(WeatherUtils.getHumidex(dashboard.getTemperature(), dashboard.getHumidity()));
             case CHANNEL_DEWPOINT:
-                return new DecimalType(WeatherUtils.getDewPoint(dashboard.getTemperature(), dashboard.getHumidity()));
+                return toDecimalType(WeatherUtils.getDewPoint(dashboard.getTemperature(), dashboard.getHumidity()));
             case CHANNEL_DEWPOINTDEP:
                 Double dewpoint = WeatherUtils.getDewPoint(dashboard.getTemperature(), dashboard.getHumidity());
-                return new DecimalType(WeatherUtils.getDewPointDep(dashboard.getTemperature(), dewpoint));
+                return toDecimalType(WeatherUtils.getDewPointDep(dashboard.getTemperature(), dewpoint));
             case CHANNEL_HEATINDEX:
-                return new DecimalType(WeatherUtils.getHeatIndex(dashboard.getTemperature(), dashboard.getHumidity()));
+                return toDecimalType(WeatherUtils.getHeatIndex(dashboard.getTemperature(), dashboard.getHumidity()));
             case CHANNEL_PRESSURE:
-                return new DecimalType(dashboard.getPressure());
+                return toDecimalType(dashboard.getPressure());
             case CHANNEL_ABSOLUTE_PRESSURE:
-                return new DecimalType(dashboard.getAbsolutePressure());
+                return toDecimalType(dashboard.getAbsolutePressure());
             case CHANNEL_CO2:
                 return new DecimalType(dashboard.getCO2());
             case CHANNEL_HUMIDITY:
@@ -131,6 +132,16 @@ abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(netatmoTS * 1000L);
         return calendar;
+    }
+
+    protected DecimalType toDecimalType(float value) {
+        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return new DecimalType(decimal);
+    }
+
+    protected DecimalType toDecimalType(double value) {
+        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return new DecimalType(decimal);
     }
 
     @Override
