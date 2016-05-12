@@ -37,7 +37,7 @@ public class ZWaveAlarmConverterTest {
         if (event != null) {
             args.put("event", event);
         }
-        return new ZWaveThingChannel(uid, DataType.OnOffType, CommandClass.ALARM.toString(), 0, args);
+        return new ZWaveThingChannel(null, uid, DataType.OnOffType, CommandClass.ALARM.toString(), 0, args);
     }
 
     private ZWaveCommandClassValueEvent createEvent(AlarmType type, Integer event, Integer status, Integer value) {
@@ -51,7 +51,7 @@ public class ZWaveAlarmConverterTest {
 
     @Test
     public void EventSmoke() {
-        ZWaveAlarmConverter converter = new ZWaveAlarmConverter();
+        ZWaveAlarmConverter converter = new ZWaveAlarmConverter(null);
         ZWaveThingChannel channel = createChannel(AlarmType.SMOKE.toString(), "0");
 
         ZWaveCommandClassValueEvent event = createEvent(ZWaveAlarmCommandClass.AlarmType.SMOKE, 0xff, 0, 0);

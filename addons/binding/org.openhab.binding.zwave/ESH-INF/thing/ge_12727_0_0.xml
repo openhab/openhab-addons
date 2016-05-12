@@ -38,8 +38,7 @@ GE 12727 Z-Wave Wireless Lighting Control Smart Toggle Switch<br /><h2>Inclusion
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Invert switch</label>
         <description><![CDATA[
 Invert switch<br /><h1>Overview</h1><p>If the switch is accidentally installed upside down with “On” at the bottom and “Off” at the top, the default On/Off rocker settings can be reversed by changing parameter 4’s value to “1”.</p>
@@ -49,6 +48,15 @@ Invert switch<br /><h1>Overview</h1><p>If the switch is accidentally installed u
           <option value="0">Normal switch install</option>
           <option value="1">Inverted switch</option>
         </options>
+      </parameter>
+
+      <parameter name="config_29_0" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>29: Load Sensing</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>Load Sensing Load sensing is disabled when shipped from the factory. This feature can be enabled if desired. Setting parameter 29 to a value of 1 will enable the Load Sense function</p>
+        ]]></description>
+        <default>0</default>
       </parameter>
 
     </config-description>

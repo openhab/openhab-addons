@@ -74,7 +74,7 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                 node.setApplicationUpdateReceived(true);
 
                 // If we're finished initialisation, then we can treat this like a HAIL
-                if (node.getNodeInitializationStage() == ZWaveNodeInitStage.DONE) {
+                if (node.getNodeInitStage() == ZWaveNodeInitStage.DONE) {
                     // If this node supports associations, then assume this should be handled through that mechanism
                     if (node.getCommandClass(CommandClass.ASSOCIATION) == null) {
                         // If we receive an Application Update Request and the node is already
@@ -87,19 +87,25 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                                 .notifyEventListeners(new ZWaveDelayedPollEvent(nodeId, 0, 75, TimeUnit.MILLISECONDS));
                     }
                 } else {
-                    List<Integer> nif = new ArrayList<Integer>();
+                    List<CommandClass> nifClasses = new ArrayList<CommandClass>();
 
                     for (int i = 6; i < length + 3; i++) {
                         int data = incomingMessage.getMessagePayloadByte(i);
-                        nif.add(data); // Keep a record
-                        if (data == 0xef) {
+
+                        CommandClass commandClass = CommandClass.getCommandClass(data);
+                        if (commandClass == null) {
+                            logger.trace(String.format("NODE %d: Command class 0x%02X is not known.", nodeId, data));
+                            continue;
+                        }
+
+                        // Check if this is the control marker
+                        if (commandClass == CommandClass.MARK) {
                             // TODO: Implement control command classes
                             break;
                         }
-                        logger.trace(String.format("NODE %d: Command class 0x%02X is supported.", nodeId, data));
-                        // Ensure the command class doesn't already exists on the node
-                        CommandClass commandClass = CommandClass.getCommandClass(data);
-                        if (node.getCommandClass(commandClass) == null) { // add it
+
+                        // Add the new class if it doesn't exist
+                        if (node.getCommandClass(commandClass) == null) {
                             ZWaveCommandClass zwaveCommandClass = ZWaveCommandClass.getInstance(data, node,
                                     zController);
                             if (zwaveCommandClass != null) {
@@ -108,9 +114,12 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                                 node.addCommandClass(zwaveCommandClass);
                             }
                         }
+
+                        // Keep a record in the node - mainly useful for the XML
+                        nifClasses.add(commandClass);
                     }
 
-                    node.updateNIF(nif);
+                    node.updateNifClasses(nifClasses);
                 }
 
                 // Treat the node information frame as a wakeup

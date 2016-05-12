@@ -198,7 +198,10 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
         DSCAlarmMessage apiMessage = dscAlarmEvent.getDSCAlarmMessage();
         DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
         ChannelUID channelUID = null;
-        int state = 0; /* 0=None, 1=User Closing, 2=Special Closing, 3=Partial Closing, 4=User Opening, 5=Special Opening */
+        int state = 0; /*
+                        * 0=None, 1=User Closing, 2=Special Closing, 3=Partial Closing, 4=User Opening, 5=Special
+                        * Opening
+                        */
 
         String strStatus = apiMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
 
@@ -266,7 +269,10 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                         updateProperties(channelUID, 0, "");
                         updateChannel(channelUID);
 
-                        /* arm mode:0=disarmed, 1=away armed, 2=stay armed, 3=away no delay, 4=stay no delay, 5=with user code */
+                        /*
+                         * arm mode:0=disarmed, 1=away armed, 2=stay armed, 3=away no delay, 4=stay no delay, 5=with
+                         * user code
+                         */
                         int armMode = Integer.parseInt(apiMode) + 1;
                         channelUID = new ChannelUID(getThing().getUID(), PARTITION_ARM_MODE);
                         updateProperties(channelUID, armMode, "");

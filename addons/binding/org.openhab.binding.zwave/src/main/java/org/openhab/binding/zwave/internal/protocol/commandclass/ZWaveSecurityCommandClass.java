@@ -710,7 +710,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
                                 // change flag to AGGRESSIVE, etc? or just remove..
                 useNonceGetMessage = bytesAreEqual(securityPayload.getMessageBytes()[0],
                         ZWaveCommandClass.CommandClass.DOOR_LOCK.getKey())
-                        && bytesAreEqual(securityPayload.getMessageBytes()[1], ZWaveDoorLockCommandClass.DOORLOCK_SET);
+                        && bytesAreEqual(securityPayload.getMessageBytes()[1], ZWaveDoorLockCommandClass.DOOR_LOCK_SET);
                 if (useNonceGetMessage) {
                     logger.debug(
                             "NODE {}: using SECURITY_MESSAGE_ENCAP_NONCE_GET since there will be a followup command",
@@ -818,7 +818,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
     void setupNetworkKey(boolean useSchemeZero) {
         logger.info("NODE {}: setupNetworkKey useSchemeZero={}", getNode().getNodeId(), useSchemeZero);
         if (useSchemeZero) {
-            logger.info("NODE {}: Using Scheme0 Network Key for Key Exchange since we are in inclusion mode.)",
+            logger.info("NODE {}: Using Scheme0 Network Key for Key Exchange since we are in inclusion mode.",
                     getNode().getNodeId());
             // Scheme0 network key is a key of all zeros
             networkKey = new SecretKeySpec(new byte[16], AES);
@@ -866,7 +866,7 @@ public abstract class ZWaveSecurityCommandClass extends ZWaveCommandClass {
     /**
      * Generate the MAC (message authentication code) from a security-encrypted message
      * TODO: Public for testing - look to remove
-     * 
+     *
      * @throws GeneralSecurityException
      */
     public byte[] generateMAC(byte commandClass, byte[] ciphertext, byte sendingNode, byte receivingNode, byte[] iv)

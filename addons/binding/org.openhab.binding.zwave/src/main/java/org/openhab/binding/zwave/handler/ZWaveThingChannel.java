@@ -37,8 +37,8 @@ public class ZWaveThingChannel {
     DataType dataType;
     Map<String, String> arguments;
 
-    public ZWaveThingChannel(ChannelUID uid, DataType dataType, String commandClassName, int endpoint,
-            Map<String, String> arguments) {
+    public ZWaveThingChannel(ZWaveControllerHandler controller, ChannelUID uid, DataType dataType,
+            String commandClassName, int endpoint, Map<String, String> arguments) {
         this.uid = uid;
         this.arguments = arguments;
         this.commandClass = commandClassName;
@@ -50,7 +50,7 @@ public class ZWaveThingChannel {
         if (commandClass == null) {
             // logger.warn("NODE {}: Error finding command class {} on channel {}", nodeId, uid, commandClassName);
         } else {
-            this.converter = ZWaveCommandClassConverter.getConverter(commandClass);
+            this.converter = ZWaveCommandClassConverter.getConverter(controller, commandClass);
             if (this.converter == null) {
                 // logger.warn("NODE {}: No converter found for {}, class {}", nodeId, uid, commandClassName);
             }

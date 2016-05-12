@@ -22,7 +22,8 @@ public class IT100BridgeConfiguration {
     public static final String POLL_PERIOD = "pollPeriod";
 
     /**
-     * DSC IT100 port name for a serial connection. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.
+     * DSC IT100 port name for a serial connection. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or
+     * /dev/ttyUSB0 for Linux.
      */
     public String serialPort;
 

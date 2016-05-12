@@ -40,8 +40,7 @@ Smart LED Light<br /><h1>Overview</h1><p>Domitech Smart LED Retrofit Kit ZE27EU 
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Dim level when the bulb is turned on</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>You may select the dim level whenever the light is turned back on to be either full brightness (100% dim level) or be the same as the last dim setting when the light is on by flicking the wall switch.</p>

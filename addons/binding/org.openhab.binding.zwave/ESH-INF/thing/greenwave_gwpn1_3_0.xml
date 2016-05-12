@@ -37,24 +37,6 @@ Single-socket PowerNode<br /><h1>Overview</h1><p>This Configuration is for the 1
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
-      <channel id="switch_binary1" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:1</property>
-        </properties>
-      </channel>
-      <channel id="meter_watts1" typeId="meter_watts">
-        <label>Electric meter (watts)</label>
-        <properties>
-          <property name="binding:*:DecimalType">METER:1</property>
-        </properties>
-      </channel>
-      <channel id="meter_kwh1" typeId="meter_kwh">
-        <label>Electric meter (kWh)</label>
-        <properties>
-          <property name="binding:*:DecimalType">METER:1</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->

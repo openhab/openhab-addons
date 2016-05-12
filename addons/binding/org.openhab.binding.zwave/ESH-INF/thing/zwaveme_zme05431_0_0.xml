@@ -36,8 +36,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="3">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Set LED indication mode</label>
         <default>3</default>
         <options>
@@ -55,8 +54,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="3">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Function of RF off command</label>
         <description>Defines how to interpret RF Off command. Can be used in conjunction with Auto Off function: Ignore - to switch on the light by motion detectors and switch it off after some amount of time: in case of multiple motion detectors each would try to switch the</description>
         <default>0</default>
@@ -68,8 +66,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Switch on dimming by buttons</label>
         <description>Defines if the switch should change it state to on/off if it is dimmed by buttons</description>
         <default>1</default>
@@ -79,8 +76,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Switch on dimming by buttons</label>
         <description>Defines if the switch should restore switch state to the last state prior to device power off (power cycle).</description>
         <default>1</default>
@@ -99,8 +95,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         <default>50</default>
       </parameter>
 
-      <parameter name="config_11_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_11_1" type="integer" groupName="configuration">
         <label>11: Invert buttons</label>
         <default>0</default>
         <options>
@@ -109,8 +104,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         </options>
       </parameter>
 
-      <parameter name="config_12_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_12_1" type="integer" groupName="configuration">
         <label>12: Switch by buttons</label>
         <description>If disabled, the local operations by buttons will not switch the load, but only send commands to On/Off association group. In this mode buttons are not linked with the switch anymore. They can be used separately: buttons to control remote device, switch w</description>
         <default>1</default>
@@ -121,8 +115,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         </options>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="5">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Action on button single press or hold</label>
         <description>Defines which command should be sent on button single press or hold. Basic commands are sent to Association group. Switch All commands are sent broadcast.</description>
         <default>4</default>
@@ -136,8 +129,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="5">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Action on button double press or hold</label>
         <description>Defines which command should be sent on button double press or press-hold. Basic commands are sent to Association group. Switch All commands are sent broadcast. If not disabled, the device will wait for a click timeout to see if the second click would be</description>
         <default>0</default>
@@ -151,8 +143,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         </options>
       </parameter>
 
-      <parameter name="config_15_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_15_1" type="integer" groupName="configuration">
         <label>15: Send the following switch all commands</label>
         <default>1</default>
         <options>
@@ -162,8 +153,7 @@ Typical time used to differentiate click, hold, double and triple clicks<br />De
         </options>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: What to do on button Down press</label>
         <default>1</default>
         <options>

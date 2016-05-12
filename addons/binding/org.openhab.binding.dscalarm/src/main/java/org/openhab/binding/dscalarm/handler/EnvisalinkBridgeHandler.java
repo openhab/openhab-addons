@@ -40,7 +40,7 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
      * @param bridge
      */
     public EnvisalinkBridgeHandler(Bridge bridge) {
-        super(bridge, DSCAlarmBridgeType.Envisalink);
+        super(bridge, DSCAlarmBridgeType.Envisalink, DSCAlarmProtocol.ENVISALINK_TPI);
     }
 
     // Variables for TCP connection.

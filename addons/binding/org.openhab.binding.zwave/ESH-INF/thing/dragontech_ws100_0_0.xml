@@ -37,8 +37,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: LED Indicator</label>
         <description>Controls LED behavior when switch state is on/off</description>
         <default>0</default>
@@ -49,8 +48,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Orientation</label>
         <description>Controls the on/off orientation of the rocker switch</description>
         <default>0</default>

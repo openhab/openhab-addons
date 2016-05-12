@@ -47,7 +47,7 @@ public class SerialMessage {
     private byte[] messagePayload;
     private int messageLength = 0;
     private SerialMessageType messageType;
-    private SerialMessageClass messageClass;
+    private int messageClassKey;
     private SerialMessagePriority priority;
     private SerialMessageClass expectedReply;
 
@@ -113,7 +113,7 @@ public class SerialMessage {
         logger.trace(String.format("NODE %d: Creating empty message of class = %s (0x%02X), type = %s (0x%02X)",
                 new Object[] { nodeId, messageClass, messageClass.key, messageType, messageType.ordinal() }));
         this.sequenceNumber = sequence.getAndIncrement();
-        this.messageClass = messageClass;
+        this.messageClassKey = messageClass.getKey();
         this.messageType = messageType;
         this.messagePayload = new byte[] {};
         this.messageNode = nodeId;
@@ -154,7 +154,7 @@ public class SerialMessage {
         }
         this.priority = SerialMessagePriority.High;
         this.messageType = buffer[2] == 0x00 ? SerialMessageType.Request : SerialMessageType.Response;
-        this.messageClass = SerialMessageClass.getMessageClass(buffer[3] & 0xFF);
+        this.messageClassKey = buffer[3] & 0xFF;
         this.messagePayload = ArrayUtils.subarray(buffer, 4, messageLength + 1);
         this.messageNode = nodeId;
         logger.trace("NODE {}: Message payload = {}", getMessageNode(), SerialMessage.bb2hex(messagePayload));
@@ -207,8 +207,9 @@ public class SerialMessage {
     public String toString() {
         return String.format(
                 "Message: class=%s[0x%02X], type=%s[0x%02X], priority=%s, dest=%d, callback=%d, payload=%s",
-                new Object[] { messageClass, messageClass.key, messageType, messageType.ordinal(), priority,
-                        messageNode, getCallbackId(), SerialMessage.bb2hex(this.getMessagePayload()) });
+                new Object[] { SerialMessageClass.getMessageClass(messageClassKey), messageClassKey, messageType,
+                        messageType.ordinal(), priority, messageNode, getCallbackId(),
+                        SerialMessage.bb2hex(this.getMessagePayload()) });
     };
 
     /**
@@ -220,13 +221,14 @@ public class SerialMessage {
         ByteArrayOutputStream resultByteBuffer = new ByteArrayOutputStream();
         byte[] result;
         resultByteBuffer.write((byte) 0x01);
+        final SerialMessageClass messageClass = SerialMessageClass.getMessageClass(messageClassKey);
         int messageLength = messagePayload.length
-                + (this.messageClass == SerialMessageClass.SendData && this.messageType == SerialMessageType.Request ? 5
+                + (messageClass == SerialMessageClass.SendData && this.messageType == SerialMessageType.Request ? 5
                         : 3); // calculate and set length
 
         resultByteBuffer.write((byte) messageLength);
         resultByteBuffer.write((byte) messageType.ordinal());
-        resultByteBuffer.write((byte) messageClass.getKey());
+        resultByteBuffer.write((byte) messageClassKey);
 
         try {
             resultByteBuffer.write(messagePayload);
@@ -235,7 +237,7 @@ public class SerialMessage {
         }
 
         // Callback ID and transmit options for a Send Data message.
-        if (this.messageClass == SerialMessageClass.SendData && this.messageType == SerialMessageType.Request) {
+        if (messageClass == SerialMessageClass.SendData && this.messageType == SerialMessageType.Request) {
             resultByteBuffer.write(transmitOptions);
             resultByteBuffer.write(callbackId);
         }
@@ -277,7 +279,7 @@ public class SerialMessage {
 
         SerialMessage other = (SerialMessage) obj;
 
-        if (other.messageClass != this.messageClass) {
+        if (other.messageClassKey != this.messageClassKey) {
             return false;
         }
 
@@ -307,7 +309,16 @@ public class SerialMessage {
      * @return
      */
     public SerialMessageClass getMessageClass() {
-        return messageClass;
+        return SerialMessageClass.getMessageClass(messageClassKey);
+    }
+
+    /**
+     * Gets the message class key.
+     *
+     * This function could be used to get the message class key if the message has been created by an unknown key.
+     */
+    public int getMessageClassKey() {
+        return messageClassKey;
     }
 
     /**
@@ -490,6 +501,10 @@ public class SerialMessage {
      * Serial message priority enumeration. Indicates the message priority.
      * Queue priority concept -:
      * <ul>
+     * <li>RealTime: Messages that must be sent at highest priority. Generally this is reserved for battery devices so
+     * we send messages while they are awake. The high priority allows their messages to jump the queue.
+     * <i>RealTime</i> messages will not be queued in the wakeup queue. This is meant to be used for time critical
+     * events that have no meaning if they are delayed.
      * <li>Immediate: Messages that must be sent at highest priority. Generally this is reserved for battery devices so
      * we send messages while they are awake. The high priority allows their messages to jump the queue.
      * <li>High: Other high priority messages
@@ -504,6 +519,7 @@ public class SerialMessage {
      *
      */
     public enum SerialMessagePriority {
+        RealTime,
         Immediate,
         High,
         Set,
@@ -569,6 +585,7 @@ public class SerialMessage {
         SendSucId(0x57, "SendSucId"),
         RequestNodeNeighborUpdateOptions(0x5a, "RequestNodeNeighborUpdateOptions"), // Allow options for request node
                                                                                     // neighbor update
+        ExploreRequestInclusion(0x5e, "ExploreRequestInclusion"), // Initiate a Network-Wide Inclusion process
         RequestNodeInfo(0x60, "RequestNodeInfo"), // Get info (supported command classes) for the specified node
         RemoveFailedNodeID(0x61, "RemoveFailedNodeID"), // Mark a specified node id as failed
         IsFailedNodeID(0x62, "IsFailedNodeID"), // Check to see if a specified node has failed
@@ -648,8 +665,6 @@ public class SerialMessage {
     /**
      * Comparator Class. Compares two serial messages with each other based on node status (awake / sleep), priority and
      * sequence number.
-     *
-     * @author Jan-Willem Spuij
      */
     public static class SerialMessageComparator implements Comparator<SerialMessage> {
 

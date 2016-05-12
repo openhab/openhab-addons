@@ -10,10 +10,11 @@ package org.openhab.binding.dscalarm.handler;
 
 /**
  * Enum class for the different bridge types.
- * 
+ *
  * @author Russell Stephens - Initial Contribution
  */
 public enum DSCAlarmBridgeType {
     Envisalink,
-    IT100;
+    IT100,
+    TCPServer;
 }

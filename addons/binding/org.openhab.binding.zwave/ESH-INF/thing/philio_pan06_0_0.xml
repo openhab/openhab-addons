@@ -60,8 +60,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Selected endpoint</label>
         <description>If Controller not using Multi_Channel command class to access the endpoint of PAN06, you may configure the endpoint value to react the Basic Command Class</description>
         <default>1</default>
@@ -72,8 +71,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Switch mode</label>
         <description>Change the external switch mode</description>
         <default>1</default>

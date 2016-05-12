@@ -40,6 +40,12 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
@@ -67,8 +73,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Acoustic and visual signals On / Off in case of alarm</label>
         <description>parameter allows for LED indicator and acoustic alarm deactivation in case of smoke detection</description>
         <default>3</default>
@@ -80,8 +85,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Type of alarm frame sent to 1-st association group (SMOKE)</label>
         <description>parameter determines a type of command frame sent by the Sensor in case smoke detection has been detected or cancelled</description>
         <default>-127</default>
@@ -113,8 +117,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <default>20</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
 Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
@@ -155,8 +158,7 @@ Time period between the consecutive Z-Wave network range tests.<br /> 0 10min[10
         <default>54</default>
       </parameter>
 
-      <parameter name="config_82_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_82_1" type="integer" groupName="configuration">
         <label>82: Smoke Sensor sensitivity</label>
         <description>There are 3 levels of sensitivity to smoke presence. Level 1 means the highest sensitivity.</description>
         <default>2</default>
@@ -167,8 +169,7 @@ Time period between the consecutive Z-Wave network range tests.<br /> 0 10min[10
         </options>
       </parameter>
 
-      <parameter name="config_83_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_83_1" type="integer" groupName="configuration">
         <label>83: Black Box sensitivity level</label>
         <description>Parameter specifies temperature and smoke level after which the Black Box starts recording them.</description>
         <default>0</default>
@@ -215,8 +216,7 @@ Time interval in which low battery alarm, if detected, is repeated using visual 
         <default>360</default>
       </parameter>
 
-      <parameter name="config_88_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_88_1" type="integer" groupName="configuration">
         <label>88: Temperature measurement compensation for report</label>
         <description>Consider temperature measurement compensation (parameter 73) when sending temperature report.</description>
         <default>0</default>
@@ -226,8 +226,7 @@ Time interval in which low battery alarm, if detected, is repeated using visual 
         </options>
       </parameter>
 
-      <parameter name="config_89_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_89_1" type="integer" groupName="configuration">
         <label>89: Tamper alarm</label>
         <description>Activates/inactivates temper switch alarm</description>
         <default>1</default>

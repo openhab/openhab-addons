@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.discovery.ZWaveDiscoveryService;
-import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -36,9 +35,11 @@ import org.openhab.binding.zwave.internal.protocol.ZWaveIoHandler;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInitializationStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStage;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,12 +59,10 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
     private volatile ZWaveController controller;
 
-    // Network monitoring class
-    ZWaveNetworkMonitor networkMonitor;
-
     private Boolean isMaster;
     private Boolean isSUC;
     private String networkKey;
+    private Integer healTime;
 
     public ZWaveControllerHandler(Bridge bridge) {
         super(bridge);
@@ -116,8 +115,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
         // We must set the state
         updateStatus(ThingStatus.OFFLINE);
-
-        // super.initialize();
     }
 
     /**
@@ -145,15 +142,10 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         controller = new ZWaveController(this, config);
         controller.addEventListener(this);
 
-        // The network monitor service needs to know the controller...
-        this.networkMonitor = new ZWaveNetworkMonitor(controller);
-        // if(healtime != null) {
-        // this.networkMonitor.setHealTime(healtime);
+        // if (aliveCheckPeriod != null) {
+        // networkMonitor.setPollPeriod(aliveCheckPeriod);
         // }
-        // if(aliveCheckPeriod != null) {
-        // this.networkMonitor.setPollPeriod(aliveCheckPeriod);
-        // }
-        // if(softReset != false) {
+        // if (softReset != false) {
         // this.networkMonitor.resetOnError(softReset);
         // }
 
@@ -214,17 +206,20 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 }
 
                 if (cfg[1].equals("softreset") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestSoftReset();
+                    value = "";
                 } else if (cfg[1].equals("hardreset") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestHardReset();
+                    value = "";
                 } else if (cfg[1].equals("exclude") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestRemoveNodesStart();
+                    value = "";
+                } else if (cfg[1].equals("suc") && value instanceof Boolean) {
+                    // TODO: Do we need to set this immediately
                 }
-
-                value = "";
             }
             if ("security".equals(cfg[0])) {
                 if (cfg[1].equals("networkkey")) {
@@ -284,14 +279,21 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (controller == null) {
             return;
         }
-        controller.requestAddNodesStart();
+
+        int inclusionMode = 2;
+        Object param = getConfig().get(CONFIGURATION_INCLUSION_MODE);
+        if (param instanceof BigDecimal && param != null) {
+            inclusionMode = ((BigDecimal) param).intValue();
+        }
+
+        controller.requestAddNodesStart(inclusionMode);
     }
 
     public void stopDeviceDiscovery() {
         if (controller == null) {
             return;
         }
-        controller.requestAddNodesStop();
+        controller.requestInclusionStop();
     }
 
     @Override
@@ -314,10 +316,25 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (event instanceof ZWaveNetworkEvent) {
             ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) event;
 
-            if (networkEvent.getNodeId() == getOwnNodeId()
-                    && networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
-                updateNeighbours();
-                logger.warn("");
+            switch (networkEvent.getEvent()) {
+                case NodeRoutingInfo:
+                    if (networkEvent.getNodeId() == getOwnNodeId()) {
+                        updateNeighbours();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Handle node discover inclusion events
+        if (event instanceof ZWaveInclusionEvent) {
+            ZWaveInclusionEvent incEvent = (ZWaveInclusionEvent) event;
+            switch (incEvent.getEvent()) {
+                case IncludeDone:
+                    discoveryService.deviceDiscovered(event.getNodeId());
+                default:
+                    break;
             }
         }
 
@@ -444,6 +461,26 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             return;
         }
         controller.reinitialiseNode(nodeId);
+    }
+
+    public boolean healNode(int nodeId) {
+        if (controller == null) {
+            return false;
+        }
+        ZWaveNode node = controller.getNode(nodeId);
+        if (node == null) {
+            logger.error("NODE {}: Can't be found!", nodeId);
+            return false;
+        }
+
+        // Only set the HEAL stage if the node is in DONE state
+        if (node.getNodeInitStage() != ZWaveNodeInitStage.DONE) {
+            logger.debug("NODE {}: Can't start heal when device initialisation is not complete", nodeId);
+            return false;
+        }
+
+        node.setNodeStage(ZWaveNodeInitStage.HEAL_START);
+        return true;
     }
 
     private void updateNeighbours() {
