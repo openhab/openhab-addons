@@ -32,7 +32,7 @@ Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 
 Manual Thing definition for AllOne devices is still optional, it is recommended to let the binding discover and add Orvibo devices.
 
-** However the AllOne Thing requires you to set the root folder configuration property.**  If you do no set the root folder the Thing will not change to "ONLINE".
+**However the AllOne Thing requires you to set the root folder configuration property.**  If you do no set the root folder the Thing will not change to "ONLINE".
 
 To manually configure an AllOne Thing you must specify its deviceId (MAC address) and rootFolder (for saving command data). 
  
