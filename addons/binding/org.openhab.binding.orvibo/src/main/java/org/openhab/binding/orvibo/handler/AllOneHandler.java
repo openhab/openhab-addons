@@ -9,7 +9,10 @@ package org.openhab.binding.orvibo.handler;
 
 import static org.openhab.binding.orvibo.OrviboBindingConstants.*;
 
+import java.io.IOException;
 import java.net.SocketException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.tavalin.orvibo.OrviboClient;
 import com.github.tavalin.orvibo.devices.AllOne;
-import com.github.tavalin.orvibo.exceptions.OrviboException;
 
 /**
  * The {@link AllOneHandler} is responsible for handling commands, which are
@@ -56,31 +58,6 @@ public class AllOneHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         configure();
-        /*
-         * logger.debug("Initializing Network handler.");
-         * Configuration conf = this.getConfig();
-         *
-         * super.initialize();
-         * this.orvibo = new OrviboMain();
-         * try {
-         * this.orvibo.setIP(String.valueOf(conf.get(OrviboBindingConstants.PARAMETER_HOSTNAME)));
-         * this.orvibo.setRoot(String.valueOf(conf.get(OrviboBindingConstants.PARAMETER_ROOT)));
-         * this.orvibo.setMac(String.valueOf(conf.get(OrviboBindingConstants.PARAMETER_MAC_ADDRESS)));
-         * this.orvibo.connect();
-         * } catch (IOException e) {
-         * logger.error("Orvibo init failed: " + e.getMessage());
-         * e.printStackTrace();
-         * this.updateStatus(ThingStatus.OFFLINE);
-         * } catch (NumberFormatException e) {
-         * logger.error("Orvibo init failed: Invalid Mac " + e.getMessage());
-         * e.printStackTrace();
-         * this.updateStatus(ThingStatus.OFFLINE);
-         * } catch (OrviboException e) {
-         * logger.error("Orvibo init failed: Invalid Mac " + e.getMessage());
-         * e.printStackTrace();
-         * this.updateStatus(ThingStatus.OFFLINE);
-         * }
-         */
     }
 
     @Override
@@ -104,54 +81,41 @@ public class AllOneHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case CHANNEL_ALLONE_LEARN_NAME: {
-                handleLearnName(command);
-
+            case CHANNEL_ALLONE_LEARN:
+                handleLearn(channelUID, command);
                 break;
-            }
+            case CHANNEL_ALLONE_EMIT:
+                handleEmit(channelUID, command);
+                break;
         }
-        /*
-         * // if uninitialized -> subscribe
-         * // send command
-         * switch (channelUID.getId()) {
-         * case OrviboBindingConstants.EMIT:
-         * try {
-         * orvibo.emit(command.toString());
-         * } catch (IOException e) {
-         * logger.error("Orvibo: Could not emit signal: " + e.getMessage());
-         * e.printStackTrace();
-         * }
-         * break;
-         * case OrviboBindingConstants.LEARN:
-         * try {
-         * orvibo.learnMode();
-         * } catch (IOException e) {
-         * logger.error("Orvibo: Could not enter learn mode: " + e.getMessage());
-         * e.printStackTrace();
-         * }
-         * case OrviboBindingConstants.LEARN_NAME:
-         * orvibo.setLearnName(command.toString());
-         * default:
-         * logger.debug("Command received for an unknown channel: {}", channelUID.getId());
-         * break;
-         * }
-         */
     }
 
-    private void handleLearnName(Command command) {
+    private void handleEmit(ChannelUID channelUID, Command command) {
         if (command instanceof StringType) {
+            try {
+                String filename = command.toString();
+                Configuration config = thing.getConfiguration();
+                String rootFolder = (String) config.get(CONFIG_PROPERTY_ROOT);
+                Path file = Paths.get(rootFolder, filename);
+                allone.emit(file);
+            } catch (IOException e) {
+                logger.error(e.toString());
+            }
+        } else {
+            logger.warn("Received invalid commandType for channel {}", channelUID.getAsString());
+        }
+    }
+
+    private void handleLearn(ChannelUID channelUID, Command command) {
+        if (command instanceof StringType) {
+            String filename = command.toString();
             Configuration config = thing.getConfiguration();
             String rootFolder = (String) config.get(CONFIG_PROPERTY_ROOT);
-            StringType string = (StringType) command;
-            String learnFilename = string.toString();
-            allone.setRootFolder(rootFolder);
-            allone.setLearnFilename(learnFilename);
-            try {
-                logger.debug(allone.getLearnFilename());
-            } catch (OrviboException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Path file = Paths.get(rootFolder, filename);
+            allone.learn(file);
+        } else {
+            logger.warn("Received invalid commandType for channel {}", channelUID.getAsString());
         }
     }
+
 }
