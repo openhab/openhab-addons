@@ -3,29 +3,31 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- DEFINITIONS of terms used in the binding: Feed is a XML document used for providing users with frequently updated content. 
-		It is located at URL. The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains 
-		reference (link), short description and other information like images, comments and etc. Entry in this binding is abstraction 
-		for RSS item element and Atom entry element. -->
+	<!-- DEFINITIONS of terms used in the binding: 
+	Feed is a XML document used for providing users with frequently updated content. 
+		The most popular feed formats are RSS and Atom. 
+	Entry is a single element in the Feed, that contains reference (link), short 
+		description and other information like images, comments and etc. Entry in this binding is abstraction for RSS item element 
+		and Atom entry element. -->
 
 	<!-- Feed Thing Type -->
 	<thing-type id="feed">
 		<label>Feed</label>
-		<description>Provides the content of the Feed in XML format.</description>
+		<description>Provides information about a feed.</description>
 
 		<channels>
-			<channel id="latest-content" typeId="latest-content" />
-			<channel id="author" typeId="author"/>
-			<channel id="description" typeId="description"/>
-			<channel id="title" typeId="title"/>
-			<channel id="published-date" typeId="published-date"/>
-			<channel id="number-of-entries" typeId="number-of-entries"/>
+			<channel id="latest-entry" typeId="latest-entry" />
+			<channel id="author" typeId="author" />
+			<channel id="description" typeId="description" />
+			<channel id="title" typeId="title" />
+			<channel id="last-update" typeId="last-update" />
+			<channel id="number-of-entries" typeId="number-of-entries" />
 		</channels>
 
 		<config-description>
 			<parameter name="URL" type="text" required="true">
 				<label>Feed URL</label>
-				<description>Feed URL used to localize the Feed.</description>
+				<description>The URL of the feed</description>
 			</parameter>
 
 			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not 
@@ -37,42 +39,13 @@
 				<default>20</default>
 			</parameter>
 
-			<!-- Feeds are converted to one of the following formats. Comparison between the two most popular formats - RSS 2.0 and 
-				Atom 1.0 can be found here- http://www.intertwingly.net/wiki/pie/Rss20AndAtom10Compared -->
-
-			<parameter name="format" type="text">
-				<label>Output format</label>
-				<description>The output format of the Feed.</description>
-				<default>"atom_1.0"</default>
-				<options>
-					<option value="rss_0.9">RSS 0.9</option>
-					<option value="rss_0.91U">RSS 0.91 Userland</option>
-					<option value="rss_0.91N">RSS 0.91 Netscape</option>
-					<option value="rss_0.92">RSS 0.92</option>
-					<option value="rss_0.93">RSS 0.93</option>
-					<option value="rss_0.94">RSS 0.94</option>
-					<option value="rss_1.0">RSS 1.0</option>
-					<option value="rss_2.0">RSS 2.0</option>
-					<option value="atom_0.3">Atom 0.3</option>
-					<option value="atom_1.0">Atom 1.0</option>
-				</options>
-			</parameter>
-
-			<!-- The user is able to configure the number of Entries, that the binding tracks and stores, with this parameter. -->
-
-			<parameter name="length" type="integer">
-				<label>Number of Entries</label>
-				<description>Number of Feed Entries stored</description>
-				<default>20</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
-
-	<channel-type id="latest-content">
+	<channel-type id="latest-entry">
 		<item-type>String</item-type>
-		<label>Latest content</label>
-		<description>Contains the latest feed content.</description>
+		<label>Latest entry</label>
+		<description>Contains title, description and published date for the last feed entry.</description>
 	</channel-type>
 
 	<channel-type id="author">
@@ -93,16 +66,16 @@
 		<description>Description of the feed</description>
 	</channel-type>
 
-	<channel-type id="published-date">
+	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
-		<label>Published date</label>
+		<label>Last update</label>
 		<description>The last update date of the feed</description>
 	</channel-type>
-	
+
 	<channel-type id="number-of-entries">
-        <item-type>Number</item-type>
-        <label>Number of entries</label>
-        <description>Number of entries in the feed</description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Number of entries</label>
+		<description>Number of entries in the feed</description>
+	</channel-type>
 
 </thing:thing-descriptions>

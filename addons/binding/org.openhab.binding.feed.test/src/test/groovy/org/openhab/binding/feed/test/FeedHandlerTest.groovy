@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.items.ItemRegistry
 import org.eclipse.smarthome.core.items.StateChangeListener
 import org.eclipse.smarthome.core.library.items.StringItem
 import org.eclipse.smarthome.core.library.types.StringType
+import org.eclipse.smarthome.core.thing.Channel
 import org.eclipse.smarthome.core.thing.ChannelUID
 import org.eclipse.smarthome.core.thing.ManagedThingProvider
 import org.eclipse.smarthome.core.thing.Thing
@@ -43,11 +44,10 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.openhab.binding.feed.FeedBindingConstants
 import org.openhab.binding.feed.handler.FeedHandler
 import org.osgi.service.http.HttpService
-
-import com.google.common.base.CharMatcher
 /**
  * Tests for {@link FeedHandler}
  *
@@ -72,27 +72,6 @@ public class FeedHandlerTest extends OSGiTest {
      * One new entry is added to {@link #DEFAULT_MOCK_CONTENT}
      */
     def MOCK_CONTENT_CHANGED = 'rss_2.0_changed.xml'
-
-
-    /**
-     * This file contains unescaped HTML in the entries. This is allowed in RSS, but not in Atom.
-     */
-    def MOCK_CONTENT_UNESCAPED = 'rss_2.0_unescaped.xml'
-
-    /**
-     * This file contains only XML declaration and empty RSS tag
-     */
-    def MOCK_CONTENT_EMPTY = 'rss_2.0_empty.xml'
-
-    /**
-     * This is invalid XML 1.0 file, because the {@literal <br>} tag is not closed
-     */
-    def MOCK_CONTENT_INVALID_XML = 'rss_2.0_invalid.xml'
-
-    /**
-     * This file does not contain {@literal <xml>} declaration
-     */
-    def MOCK_CONTENT_MISSING_XML_DECLARATION = 'rss_2.0_missing_xml_declaration.xml'
 
     def ITEM_NAME = 'testItem'
     def THING_NAME = 'testFeedThing'
@@ -178,7 +157,6 @@ public class FeedHandlerTest extends OSGiTest {
         assertThat thingRegistry, is(notNullValue())
 
         registerFeedTestServlet();
-        println ("Set Up finished");
     }
 
     private String generateURLString(String protocol,String hostname,int port,String path) {
@@ -188,37 +166,26 @@ public class FeedHandlerTest extends OSGiTest {
 
     private void initializeDefaultFeedHandler (){
         def mockServletURL = generateURLString(MOCK_SERVLET_PROTOCOL,MOCK_SERVLET_HOSTNAME,MOCK_SERVLET_PORT,MOCK_SERVLET_PATH)
-        def defaultFormat = FeedBindingConstants.DEFAULT_FEED_FORMAT
         //one minute update time is used for the tests
         def defaultTestRefreshInterval = new BigDecimal(DEFAULT_TEST_AUTOREFRESH_TIME)
-        def defaultNumberOfEntries = new BigDecimal(FeedBindingConstants.DEFAULT_NUMBER_OF_ENTRIES)
-        initializeFeedHandler(mockServletURL,defaultTestRefreshInterval,defaultFormat,defaultNumberOfEntries)
+        initializeFeedHandler(mockServletURL,defaultTestRefreshInterval)
     }
 
     private void initializeFeedHandler (String URL) {
-        initializeFeedHandler(URL,null,null,null)
+        initializeFeedHandler(URL,null)
     }
 
-    private void initializeFeedHandler (String URL,BigDecimal numberOfEntries) {
-        initializeFeedHandler(URL,null,null,numberOfEntries)
-    }
-
-    private initializeFeedHandler(String URL,String format) {
-        initializeFeedHandler(URL,null,format,null)
-    }
-
-    private void initializeFeedHandler(String URL,BigDecimal refreshTime,String format,BigDecimal numberOfEntries) {
+    private void initializeFeedHandler(String URL,BigDecimal refreshTime) {
         //set up configuration
         Configuration configuration = new Configuration()
         configuration.put((FeedBindingConstants.URL), URL)
         configuration.put((FeedBindingConstants.REFRESH_TIME),refreshTime)
-        configuration.put((FeedBindingConstants.FEED_FORMAT), format)
-        configuration.put((FeedBindingConstants.NUMBER_OF_ENTRIES), numberOfEntries)
 
         //create Feed Thing
         ThingUID feedUID = new ThingUID(FeedBindingConstants.FEED_THING_TYPE_UID,THING_NAME)
-        channelUID = new ChannelUID(feedUID,FeedBindingConstants.CHANNEL_LATEST_CONTENT)
-        feedThing = ThingBuilder.create(FeedBindingConstants.FEED_THING_TYPE_UID, feedUID).withConfiguration(configuration).build()
+        channelUID = new ChannelUID(feedUID,FeedBindingConstants.CHANNEL_LATEST_ENTRY)
+        Channel channel = new Channel(channelUID,"String")
+        feedThing = ThingBuilder.create(FeedBindingConstants.FEED_THING_TYPE_UID, feedUID).withConfiguration(configuration).withChannel(channel).build()
 
         managedThingProvider.add(feedThing)
 
@@ -227,9 +194,10 @@ public class FeedHandlerTest extends OSGiTest {
             feedHandler = getService(ThingHandler, FeedHandler)
             assertThat "FeedHandler is not registered",feedHandler, is(notNullValue())
         },  DEFAULT_MAX_WAIT_TIME)
+        initializeItem(channelUID)
     }
 
-    private void initializeItem (){
+    private void initializeItem (ChannelUID channelUID){
         //Create new item
         def ItemRegistry itemRegistry = getService(ItemRegistry)
         assertThat itemRegistry, is(notNullValue())
@@ -256,7 +224,6 @@ public class FeedHandlerTest extends OSGiTest {
 
     private void testIfItemStateIsUpdated (boolean commandReceived, boolean contentChanged) {
         initializeDefaultFeedHandler()
-        initializeItem()
 
         waitForAssert({
             assertThat "Feed Thing can not be initialized",feedThing.getStatus(),is(equalTo(ThingStatus.ONLINE))
@@ -295,28 +262,12 @@ public class FeedHandlerTest extends OSGiTest {
     @Test
     public void 'assert that invalid configuration falls back to default values'() {
         def String mockServletURL = generateURLString(MOCK_SERVLET_PROTOCOL,MOCK_SERVLET_HOSTNAME,MOCK_SERVLET_PORT,MOCK_SERVLET_PATH)
-        def defaultFormat = "none existing format"
         def defaultTestRefreshInterval = new BigDecimal(-10)
-        def defaultNumberOfEntries = new BigDecimal(0)
-        initializeFeedHandler(mockServletURL,defaultTestRefreshInterval,defaultFormat,defaultNumberOfEntries)
+        initializeFeedHandler(mockServletURL,defaultTestRefreshInterval)
 
         waitForAssert({
             assertThat feedThing.getStatus(),is(equalTo(ThingStatus.ONLINE))
         },DEFAULT_MAX_WAIT_TIME)
-
-        Configuration feedConfig = feedThing.getConfiguration();
-
-        def url = feedConfig.get(FeedBindingConstants.URL)
-        assertThat url, is(equalTo(mockServletURL))
-
-        def format =  feedConfig.get(FeedBindingConstants.FEED_FORMAT)
-        assertThat format, is(equalTo(FeedBindingConstants.DEFAULT_FEED_FORMAT))
-
-        def interval = feedConfig.get(FeedBindingConstants.REFRESH_TIME)
-        assertThat interval, is(equalTo(FeedBindingConstants.DEFAULT_REFRESH_TIME))
-
-        def numberOfEntries = feedConfig.get(FeedBindingConstants.NUMBER_OF_ENTRIES)
-        assertThat numberOfEntries, is(equalTo(FeedBindingConstants.DEFAULT_NUMBER_OF_ENTRIES))
     }
 
     @Test
@@ -333,6 +284,7 @@ public class FeedHandlerTest extends OSGiTest {
         testIfItemStateIsUpdated(commandRecevied,contentChanged);
     }
 
+    @Category(SlowTests.class)
     @Test
     public void 'assert that item\'s state is not updated on auto refresh if content is not changed' () {
         boolean commandRecevied = false;
@@ -340,6 +292,7 @@ public class FeedHandlerTest extends OSGiTest {
         testIfItemStateIsUpdated(commandRecevied,contentChanged);
     }
 
+    @Category(SlowTests.class)
     @Test
     public void 'assert that item\'s state is updated on auto refresh if content changed' () {
         boolean commandRecevied = false;
@@ -369,10 +322,12 @@ public class FeedHandlerTest extends OSGiTest {
 
 
     private void testIfThingStatusIsUpdated (Integer serverStatus) {
+
         initializeDefaultFeedHandler()
 
         servlet.httpStatus = serverStatus
 
+        //invalid channel UID is used for the test, because otherwise
         feedThing.handler.handleCommand(channelUID,RefreshType.REFRESH)
 
         waitForAssert({
@@ -424,193 +379,6 @@ public class FeedHandlerTest extends OSGiTest {
         },DEFAULT_MAX_WAIT_TIME)
     }
 
-    @Test
-    public void 'assert feed format is changed to RSS 2' () {
-        String ouputFormat = FeedBindingConstants.RSS_2_00
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to RSS 091 Netscape' () {
-        String ouputFormat = FeedBindingConstants.RSS_0_91_Netscape
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to RSS 091 Userland' () {
-        String ouputFormat = FeedBindingConstants.RSS_0_91_UserLand
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to RSS 092' () {
-        String ouputFormat = FeedBindingConstants.RSS_0_92
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to RSS 093' () {
-        String ouputFormat = FeedBindingConstants.RSS_0_93
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to RSS 094' () {
-        String ouputFormat = FeedBindingConstants.RSS_0_94
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to atom 1' () {
-        String ouputFormat = FeedBindingConstants.Atom_1_0
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    @Test
-    public void 'assert feed format is changed to atom 03' () {
-        String ouputFormat = FeedBindingConstants.Atom_0_3
-        testIfContentIsConverted(ouputFormat)
-    }
-
-    /**
-     * This method compares the default feed content in {@link #MOCK_CONTENT_URI} with the expected content for the selected format.
-     * @param outputFormat - output feed format - {@link #FeedBindingConstants.SUPPORTED_FEED_FORMATS}
-     * */
-
-    private void testIfContentIsConverted (String outputFormat) {
-        def String mockServletURL = generateURLString(MOCK_SERVLET_PROTOCOL,MOCK_SERVLET_HOSTNAME,MOCK_SERVLET_PORT,MOCK_SERVLET_PATH)
-        initializeFeedHandler(mockServletURL,outputFormat)
-        initializeItem()
-
-        waitForAssert({
-            assertThat "Feed Thing is not initalized",feedThing.getStatus(),is(equalTo(ThingStatus.ONLINE))
-            assertThat "Item's state is not updated on initialize", currentItemState, is(notNullValue())
-        },  DEFAULT_MAX_WAIT_TIME)
-
-        assertThat currentItemState,is(StringType)
-
-
-        String output = currentItemState;
-        output = CharMatcher.BREAKING_WHITESPACE.removeFrom(output)
-
-        def outputPath = "output/${outputFormat}.xml"
-        String expectedOutput = getClass().getClassLoader().getResourceAsStream(outputPath).getText()
-        expectedOutput = CharMatcher.BREAKING_WHITESPACE.removeFrom(expectedOutput)
-
-        assertThat (output,is(equalTo(expectedOutput)))
-    }
-
-    @Test
-    public void 'assert unescaped XML content is parsed'() {
-        servlet.setFeedContent(MOCK_CONTENT_UNESCAPED)
-        boolean shouldBeParsed = true
-        testIfContentIsParsed(shouldBeParsed)
-    }
-
-    @Test
-    public void 'assert empty XML file is not parsed' () {
-        servlet.setFeedContent(MOCK_CONTENT_EMPTY)
-        boolean shouldBeParsed = false
-        testIfContentIsParsed(shouldBeParsed)
-    }
-
-    @Test
-    public void 'assert content with missing XML declaration is parsed' () {
-        servlet.setFeedContent(MOCK_CONTENT_MISSING_XML_DECLARATION)
-        boolean shouldBeParsed = true
-        testIfContentIsParsed(shouldBeParsed)
-    }
-
-    @Test
-    public void 'assert invalid XML is not parsed' () {
-        servlet.setFeedContent(MOCK_CONTENT_INVALID_XML)
-        boolean shouldBeParsed = false
-        testIfContentIsParsed(shouldBeParsed)
-    }
-
-    /**
-     * This method test the functionality of the binding to parse content.
-     * Different feed formats introduce different range of required XML elements other XML attributes.
-     * If the parsing fails in {@link FeedHandler#getFeedContent(SyndFeed feed)} the status of the Thing
-     * is changed to {@link ThingStatus#OFFLINE}
-     * @param shouldBeParsed
-     */
-    private void testIfContentIsParsed(boolean shouldBeParsed) {
-        initializeDefaultFeedHandler()
-        initializeItem()
-
-        waitForAssert({
-            if(shouldBeParsed) {
-                assertThat "Feed content parsing failed",feedThing.getStatus(),is(equalTo(ThingStatus.ONLINE))
-            } else{
-                assertThat feedThing.getStatus(),is(equalTo(ThingStatus.OFFLINE))
-                assertThat feedThing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR))
-            }
-        },  DEFAULT_MAX_WAIT_TIME)
-
-        waitForAssert( {
-            if(shouldBeParsed) {
-                assertThat currentItemState, is(notNullValue())
-                assertThat currentItemState, is(StringType)
-            } else {
-                assertThat currentItemState, is(nullValue())
-            }
-
-        },DEFAULT_MAX_WAIT_TIME)
-    }
-
-    @Test
-    public void 'assert only 2 entries are stored' () {
-        testIfEntriesAreStored(2)
-    }
-
-    @Test
-    public void 'assert only 1 entry is stored' () {
-        testIfEntriesAreStored(1)
-    }
-
-    @Test
-    public void 'assert all entries are stored' () {
-        testIfEntriesAreStored(999)
-    }
-
-    /**
-     * This method tests the functionality of the binding to store only predefined
-     * number of entries in the item state and(not all available online)
-     * @param expectedNumberOfEntries -expected number of entries defined in the Thing configuration
-     */
-    private void testIfEntriesAreStored(int expectedNumberOfEntries) {
-        def String mockServletURL = "$MOCK_SERVLET_PROTOCOL://$MOCK_SERVLET_HOSTNAME:$MOCK_SERVLET_PORT$MOCK_SERVLET_PATH";
-        BigDecimal numberOfEntries = new BigDecimal(expectedNumberOfEntries);
-
-        initializeFeedHandler(mockServletURL,numberOfEntries)
-        initializeItem()
-
-        waitForAssert({
-            assertThat feedThing.getStatus(), is(equalTo(ThingStatus.ONLINE))
-        },DEFAULT_MAX_WAIT_TIME)
-
-        def rssInput = new XmlSlurper().parseText(servlet.feedContent)
-        def inputEntryNumber
-
-        inputEntryNumber = rssInput.channel.item.size()
-
-        if(expectedNumberOfEntries > inputEntryNumber) {
-            expectedNumberOfEntries = inputEntryNumber
-        }
-
-        waitForAssert({
-            assertThat currentItemState, is(notNullValue())
-            assertThat currentItemState, is(StringType)
-        },DEFAULT_MAX_WAIT_TIME)
-
-        def atomOutput = new XmlSlurper().parseText((String)currentItemState)
-        def outputEntryNumber
-
-        outputEntryNumber = atomOutput.entry.size()
-
-        assertThat(outputEntryNumber,is(equalTo(expectedNumberOfEntries)))
-    }
 
     @After
     public void tearDown() {

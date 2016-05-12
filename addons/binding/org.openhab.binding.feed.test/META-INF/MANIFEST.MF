@@ -31,5 +31,6 @@ Import-Package: groovy.json,
  org.osgi.service.http,
  org.apache.commons.httpclient,
  org.osgi.service.event,
- com.google.common.base
+ com.google.common.base,
+ org.junit.experimental.categories
  

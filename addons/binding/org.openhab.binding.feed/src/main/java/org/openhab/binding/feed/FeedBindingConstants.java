@@ -8,11 +8,8 @@
 package org.openhab.binding.feed;
 
 import java.math.BigDecimal;
-import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link FeedBindingConstants} class defines common constants, which are
@@ -28,12 +25,34 @@ public class FeedBindingConstants {
     public final static ThingTypeUID FEED_THING_TYPE_UID = new ThingTypeUID("feed", "feed");
 
     // List of all Channel IDs
-    // TODO javadoc
-    public final static String CHANNEL_LATEST_CONTENT = "latest-content";
+    /**
+     * Contains title, description and published date for the last feed entry.
+     */
+    public final static String CHANNEL_LATEST_ENTRY = "latest-entry";
+
+    /**
+     * Description of the feed
+     */
     public final static String CHANNEL_DESCRIPTION = "description";
-    public final static String CHANNEL_PUBLISHED_DATE = "published-date";
+
+    /**
+     * The last update date of the feed
+     */
+    public final static String CHANNEL_LAST_UPDATE = "last-update";
+
+    /**
+     * The name of the feed author, if author is present
+     */
     public final static String CHANNEL_AUTHOR = "author";
+
+    /**
+     * The title of the feed
+     */
     public final static String CHANNEL_TITLE = "title";
+
+    /**
+     * Number of entries in the feed
+     */
     public final static String CHANNEL_NUMBER_OF_ENTRIES = "number-of-entries";
 
     // Configuration parameters
@@ -48,46 +67,7 @@ public class FeedBindingConstants {
     public final static String REFRESH_TIME = "refresh";
 
     /**
-     * The output feed format.
-     */
-    public final static String FEED_FORMAT = "format";
-
-    /**
-     * The number of entries stored and tracked for updates.
-     */
-    public final static String NUMBER_OF_ENTRIES = "length";
-
-    // List of supported formats
-    public static final String RSS_2_00 = "rss_2.0";
-    public static final String RSS_1_00 = "rss_1.0";
-    public static final String RSS_0_94 = "rss_0.94";
-    public static final String RSS_0_93 = "rss_0.93";
-    public static final String RSS_0_92 = "rss_0.92";
-    public static final String RSS_0_91_Netscape = "rss_0.91N";
-    public static final String RSS_0_91_UserLand = "rss_0.91U";
-    public static final String RSS_0_90 = "rss_0.9";
-    public static final String Atom_1_0 = "atom_1.0";
-    public static final String Atom_0_3 = "atom_0.3";
-
-    /**
-     * Feed formats, supported form the binding.
-     */
-    public final static Set<String> SUPPORTED_FEED_FORMATS = Sets.newHashSet(RSS_2_00, RSS_1_00, RSS_0_94, RSS_0_93,
-            RSS_0_92, RSS_0_91_UserLand, RSS_0_91_Netscape, RSS_0_90, Atom_1_0, Atom_0_3);
-
-    // Default configuration parameters
-    /**
-     * The default output feed format.
-     */
-    public final static String DEFAULT_FEED_FORMAT = Atom_1_0;
-
-    /**
      * The default auto refresh time in minutes.
      */
     public final static BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
-
-    /**
-     * The default number of feed entries stored and tracked for updates.
-     */
-    public final static BigDecimal DEFAULT_NUMBER_OF_ENTRIES = new BigDecimal(20);
 }
