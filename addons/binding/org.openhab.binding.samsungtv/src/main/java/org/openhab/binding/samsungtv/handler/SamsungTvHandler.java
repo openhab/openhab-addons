@@ -187,24 +187,15 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
         if (result.getThingUID().equals(this.getThing().getUID())) {
             logger.debug("thingDiscovered");
-            if (configuration != null) {
-                updateStatus(ThingStatus.ONLINE);
-                updatePowerState(true);
-                updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.ON);
-            } else {
-                logger.debug("thingDiscovered: Thing not yet initialized");
-            }
+            putOnline();
         }
     }
 
     @Override
     public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
         if (thingUID.equals(this.getThing().getUID())) {
-            logger.debug("thingRemoved: shutdown services");
-            updateStatus(ThingStatus.OFFLINE);
-            stopServices();
-            updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.OFF);
-            updatePowerState(false);
+            logger.debug("thingRemoved: put thing offline");
+            putOffline();
         }
     }
 
@@ -218,6 +209,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
         logger.debug("remoteDeviceAdded: device={}", device);
         createService(device);
+        putOnline();
     }
 
     @Override
@@ -227,6 +219,12 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     @Override
     public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
         logger.debug("remoteDeviceRemoved: device={}", device);
+        removeService(device);
+
+        if (services.isEmpty()) {
+            logger.debug("remoteDeviceRemoved: all services removed, put thing offline");
+            putOffline();
+        }
     }
 
     @Override
@@ -262,6 +260,27 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         }
     }
 
+    private synchronized void removeService(RemoteDevice device) {
+        if (configuration != null) {
+            if (configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
+
+                String modelName = device.getDetails().getModelDetails().getModelName();
+                String udn = device.getIdentity().getUdn().getIdentifierString();
+                String type = device.getType().getType();
+
+                logger.debug(" modelName={}, udn={}, type={}", modelName, udn, type);
+
+                SamsungTvService service = findServiceInstance(type);
+                if (service != null) {
+                    stopService(service);
+                    services.remove(service);
+                }
+            }
+        } else {
+            logger.debug("Thing not yet initialized");
+        }
+    }
+
     private synchronized void createService(RemoteDevice device) {
         if (configuration != null) {
             if (configuration.hostName.equals(device.getIdentity().getDescriptorURL().getHost())) {
@@ -280,6 +299,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                     if (newService != null) {
                         startService(newService);
                         services.add(newService);
+                        putOnline();
                     }
                 } else {
                     logger.debug("Device rediscovered, clear caches");
@@ -326,6 +346,27 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             stopService(service);
         }
         services.clear();
+    }
+
+    public void putOnline() {
+        if (configuration != null) {
+            if (this.thing.getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+                updatePowerState(true);
+                updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.ON);
+            }
+        } else {
+            logger.debug("thingDiscovered: Thing not yet initialized");
+        }
+    }
+
+    public synchronized void putOffline() {
+        if (this.thing.getStatus() != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE);
+            stopServices();
+            updateState(new ChannelUID(getThing().getUID(), POWER), OnOffType.OFF);
+            updatePowerState(false);
+        }
     }
 
     @Override
