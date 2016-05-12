@@ -17,9 +17,9 @@ This binding does not require any special configuration.
 
 ## Thing Configuration
 
-This is optional, it is recommended to let the binding discover and add Orvibo devices.
- 
 ### S20: 
+
+This is optional, it is recommended to let the binding discover and add Orvibo devices.
  
 To manually configure an S20 Thing you must specify its deviceId (MAC address). 
  
@@ -30,7 +30,11 @@ Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 
 ### AllOne:
 
-To manually configure an AllOne Thing you must specify its deviceId (MAC address). 
+Manual Thing definition for AllOne devices is still optional, it is recommended to let the binding discover and add Orvibo devices.
+
+** However the AllOne Thing requires you to set the root folder configuration property.**  If you do no set the root folder the Thing will not change to "ONLINE".
+
+To manually configure an AllOne Thing you must specify its deviceId (MAC address) and rootFolder (for saving command data). 
  
 In the thing file, this looks e.g. like
 ```
