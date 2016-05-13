@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="homeseer_hswd100_00_000" listed="false">
-    <label>HS-WD100+ Scene Capable Wall Dimmer Switch</label>
-    <description>Scene Capable Wall Dimmer Switch</description>
+  <thing-type id="homeseer_hsws100_00_000" listed="false">
+    <label>HS-WS100+ Scene Capable Wall Switch</label>
+    <description>Scene Capable Wall Switch</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -17,11 +17,16 @@
           <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
         </properties>
       </channel>
-      <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label>Dimmer</label>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
         <properties>
-          <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY,BASIC</property>
+        </properties>
+      </channel>
+      <channel id="scene_number" typeId="scene_number">
+        <label>Scene Number</label>
+        <properties>
+          <property name="binding:*:DecimalType">CENTRAL_SCENE</property>
         </properties>
       </channel>
     </channels>
@@ -29,9 +34,9 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">HomeSeer Technologies</property>
-      <property name="model">HS-WD100+</property>
+      <property name="model">HS-WS100+</property>
       <property name="manufacturerId">000C</property>
-      <property name="manufacturerRef">4447:3034</property>
+      <property name="manufacturerRef">4447:3033</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -44,6 +49,19 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
+      <parameter name="config_3_1" type="integer" groupName="configuration">
+        <label>3: Indicator LED</label>
+        <description><![CDATA[
+Defines the behavior of the indicator LED.<br /><h1>Overview</h1><p>Defines the behavior of the indicator LED.  Default is Night Light mode where LED is on when switch is off.</p>
+        ]]></description>
+        <default>0</default>
+        <options>
+          <option value="0">LED on when switch is OFF</option>
+          <option value="1">LED on when switch is ON</option>
+          <option value="2">LED always off</option>
+        </options>
+      </parameter>
+
       <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Orientation</label>
         <description>Controls the on/off orientation of the rocker switch</description>
@@ -54,24 +72,6 @@
         </options>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="1" max="99">
-        <label>9: Dimming Level Increment</label>
-        <description><![CDATA[
-Indicates the number of levels (1-99) to change dimming each step<br /><h1>Overview</h1><p>Documentation indicates milliseconds, but Dragon device that this is an OEM for indicates value is based on 10s of milliseconds.</p>
-        ]]></description>
-        <default>1</default>
-      </parameter>
-
-      <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="1" max="255">
-        <label>10: Dimming Step Duration</label>
-        <description><![CDATA[
-Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels.  (Documentation suggests that the interval is in milliseconds.)</p>
-        ]]></description>
-        <default>3</default>
-      </parameter>
-
       <!-- ASSOCIATION DEFINITIONS -->
       <parameter-group name="association">
         <context>link</context>
@@ -80,7 +80,7 @@ Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval
 
       <parameter name="group_1" type="text" groupName="association" multiple="true">
         <label>1: Group 1</label>
-        <description>Lifeline association only supports the "manual reset" event.</description>
+        <description>Lifeline association only supports the "manual reset" and "central scene" event.</description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
