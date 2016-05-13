@@ -201,6 +201,7 @@ public class FeedHandler extends BaseThingHandler {
             URL url = new URL(urlString);
 
             URLConnection connection = url.openConnection();
+
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
             SyndFeedInput input = new SyndFeedInput();
@@ -281,6 +282,9 @@ public class FeedHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        refreshTask.cancel(true);
+        if (refreshTask != null) {
+            refreshTask.cancel(true);
+        }
+
     }
 }

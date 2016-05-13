@@ -194,6 +194,11 @@ public class FeedHandlerTest extends OSGiTest {
             feedHandler = getService(ThingHandler, FeedHandler)
             assertThat "FeedHandler is not registered",feedHandler, is(notNullValue())
         },  DEFAULT_MAX_WAIT_TIME)
+
+        //This will ensure that the configuration is read before the channelLinked() method in FeedHandler is called !
+        waitForAssert({
+            feedThing.getStatus() == ThingStatus.ONLINE;
+        })
         initializeItem(channelUID)
     }
 
@@ -264,10 +269,6 @@ public class FeedHandlerTest extends OSGiTest {
         def String mockServletURL = generateURLString(MOCK_SERVLET_PROTOCOL,MOCK_SERVLET_HOSTNAME,MOCK_SERVLET_PORT,MOCK_SERVLET_PATH)
         def defaultTestRefreshInterval = new BigDecimal(-10)
         initializeFeedHandler(mockServletURL,defaultTestRefreshInterval)
-
-        waitForAssert({
-            assertThat feedThing.getStatus(),is(equalTo(ThingStatus.ONLINE))
-        },DEFAULT_MAX_WAIT_TIME)
     }
 
     @Test

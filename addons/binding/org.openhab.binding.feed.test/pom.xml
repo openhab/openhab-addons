@@ -176,7 +176,7 @@
 					<!-- Setting ClientPlatformID. Otherwise the acs url will be got differently -->
 					<argLine> -Dorg.osgi.service.http.port=9090 -Dprm.platform.capability.ClientPlatformID=notSimulator</argLine>
 					<!-- All the println test output is redirected to target\surefire-reports\[test-class-fully-qualified-name]-output.txt -->
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<redirectTestOutputToFile>false</redirectTestOutputToFile>
 					<!-- Only this declaration is not enough. We have to do this in the argLine above. Otherwise the argument is not taken 
 						into account -->
 					<systemPropertyVariables>
