@@ -22,6 +22,9 @@ The binding supports only one thing type - **computer**. This thing represents a
 The thing has the following properties:
  - `cpu_logicalCores` - Number of CPU logical cores
  - `cpu_physicalCores` - Number of CPU physical cores
+ - `os_manufacturer` - The manufacturer of the operating system
+ - `os_version` - The version of the operating system
+ - `os_family` - The family of the operating system
 
 If multiple storage or display devices support is needed, new thing type has to be defined. This is workaround until [this issue] (https://github.com/eclipse/smarthome/issues/588) is resolved and it is possible to add dynamically channels to DSL defined thing.
 
@@ -52,8 +55,6 @@ For more info see [channel configuration](#channel-configuration)
 The binding support several channel group. Each channel group, contains one or more channels. In the list below, you can find, how are channel group and channels id`s related.
 
 **thing** `computer`
-   * **group** `os`
-         **channel** `family, manufacturer, version `
    * **group** `memory`
          **channel** `available, total, used, available_percent`
    * **group** `swap`
@@ -86,9 +87,6 @@ The binding introduces the following channels:
 
 | Chnanel ID | Channel Description | Supported item type | Default priority | Advanced |
 | ------------- | ------------- |------------|----------|----------|
-| manufacturer  | The manufacturer of the operating system  | String | Low | True |
-| version  | The version of the operating system  | String | Low | True |
-| family  | The family of the operating system | String | Low | True |
 | load  | Recent load in percents  | Number | High | False |
 | load1 | Load in percents for the last 1 minutes | Number | Medium | True |
 | load5 | Load in percents for the last 5 minutes | Number | Medium | True |
@@ -134,11 +132,6 @@ systeminfo:computer:work [interval_high=3, interval_medium=60]
 ```
 Items:
 ```
-/* Operating system */
-String OS_Family                    { channel="systeminfo:computer:work:os#family" }
-String OS_Manufacturer              { channel="systeminfo:computer:work:os#manufacturer" }
-String OS_Version                   { channel="systeminfo:computer:work:os#version" }
-
 /* Network information*/
 String Network_AdapterName          { channel="systeminfo:computer:work:network#networkDisplayName" }
 String Network_Name                 { channel="systeminfo:computer:work:network#networkName" }

@@ -6,16 +6,6 @@
 	<!-- This file contains channel specific information and describes how the different channel types should be rendered. Each 
 		channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
 
-	<channel-group-type id="osGroup" advanced="true">
-		<label>OS parameters</label>
-		<description>OS parameters</description>
-		<channels>
-			<channel id="family" typeId="family" />
-			<channel id="manufacturer" typeId="manufacturer" />
-			<channel id="version" typeId="version" />
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="memoryGroup">
 		<label>Physical memory</label>
 		<description>Physical memory information</description>
@@ -112,37 +102,13 @@
 			<channel id="name" typeId="name" />
 			<channel id="description" typeId="description" />
 			<channel id="load" typeId="load" />
-			<channel id="load1" typeId="loadAvarage" />
-			<channel id="load5" typeId="loadAvarage" />
-			<channel id="load15" typeId="loadAvarage" />
+			<channel id="load1" typeId="loadAverage" />
+			<channel id="load5" typeId="loadAverage" />
+			<channel id="load15" typeId="loadAverage" />
 			<channel id="uptime" typeId="uptime" />
 			<channel id="threads" typeId="threads" />
 		</channels>
 	</channel-group-type>
-
-	<channel-type id="manufacturer">
-		<item-type>String</item-type>
-		<label>Manufacturer</label>
-		<description>The manufacturer of the operating system</description>
-		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="version">
-		<item-type>String</item-type>
-		<label>Version</label>
-		<description>The version of the operating system</description>
-		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
-
-	<channel-type id="family">
-		<item-type>String</item-type>
-		<label>Family</label>
-		<description>The family of the operating system</description>
-		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
-	</channel-type>
 
 	<channel-type id="available">
 		<item-type>Number</item-type>
@@ -264,7 +230,7 @@
 		<config-description uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
-	<channel-type id="loadAvarage" advanced="true">
+	<channel-type id="loadAverage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Load average</label>
 		<description>Load in percents for the last 1,5 or 15 minutes</description>

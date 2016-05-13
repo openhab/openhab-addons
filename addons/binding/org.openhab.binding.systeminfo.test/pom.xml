@@ -99,6 +99,7 @@
 						<level>4</level>
 						<autoStart>true</autoStart>
 					</defaultStartLevel>
+					<redirectTestOutputToFile>false</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
 		</plugins>

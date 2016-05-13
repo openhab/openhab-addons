@@ -32,21 +32,22 @@ public class SysteminfoBindingConstants {
      */
     public final static String PROPERTY_CPU_PHYSICAL_CORES = "cpu_physicalCores";
 
-    // List of all Channel IDs
     /**
      * Contains information about the family /Windows, Linux, OS X etc/ of the operation system
      */
-    public final static String CHANNEL_OS_FAMILY = "os#family";
+    public final static String PROPERTY_OS_FAMILY = "os_family";
 
     /**
      * Name of the manufacturer of the operation system
      */
-    public final static String CHANNEL_OS_MANUFACTURER = "os#manufacturer";
+    public final static String PROPERTY_OS_MANUFACTURER = "os_manufacturer";
 
     /**
      * Version of the operation system
      */
-    public final static String CHANNEL_OS_VERSION = "os#version";
+    public final static String PROPERTY_OS_VERSION = "os_version";
+
+    // List of all Channel IDs
 
     /**
      * Size of the available memory

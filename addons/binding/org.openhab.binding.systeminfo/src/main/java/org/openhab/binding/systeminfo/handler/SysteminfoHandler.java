@@ -137,7 +137,10 @@ public class SysteminfoHandler extends BaseThingHandler {
         Map<String, String> properties = editProperties();
         properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
         properties.put(PROPERTY_CPU_PHYSICAL_CORES, systeminfo.getCpuPhysicalCores().toString());
-        updateProperties(properties);
+        properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
+        properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
+        properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
+
     }
 
     private void groupChannelsByPriority() {
@@ -234,15 +237,6 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
         try {
             switch (channelID) {
-                case CHANNEL_OS_FAMILY:
-                    state = systeminfo.getOsFamily();
-                    break;
-                case CHANNEL_OS_MANUFACTURER:
-                    state = systeminfo.getOsManufacturer();
-                    break;
-                case CHANNEL_OS_VERSION:
-                    state = systeminfo.getOsVersion();
-                    break;
                 case CHANNEL_DISPLAY_INFORMATION:
                     state = systeminfo.getDisplayInformation(deviceIndex);
                     break;

@@ -219,15 +219,6 @@ class SysteminfoOSGiTest extends OSGiTest{
         testInvalidConfiguration()
     }
 
-    @Test
-    public void 'assert missing thing configuration is handled'() {
-        Configuration configuration = new Configuration()
-
-        initializeThingWithConfiguration(configuration)
-        testInvalidConfiguration()
-    }
-
-
     private void testInvalidConfiguration() {
         waitForAssert({
             assertThat  "Invalid configuratuin is used !", systemInfoThing.getStatus(), is(equalTo(ThingStatus.OFFLINE))
@@ -374,33 +365,6 @@ class SysteminfoOSGiTest extends OSGiTest{
     @Test
     public void 'assert channel cpu#name is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_CPU_NAME;
-        String acceptedItemType = "String";
-
-        initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
-    }
-
-    @Test
-    public void 'assert channel os#version is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_OS_VERSION;
-        String acceptedItemType = "String";
-
-        initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
-    }
-
-    @Test
-    public void 'assert channel os#family is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_OS_FAMILY;
-        String acceptedItemType = "String";
-
-        initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
-    }
-
-    @Test
-    public void 'assert channel os#manufacturer is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_OS_MANUFACTURER
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
