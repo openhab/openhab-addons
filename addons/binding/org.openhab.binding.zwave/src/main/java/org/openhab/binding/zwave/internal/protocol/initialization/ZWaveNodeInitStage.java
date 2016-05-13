@@ -49,6 +49,7 @@ public enum ZWaveNodeInitStage {
     // States below are performed during initialisation, but also during heal
     HEAL_START(false),
     DELETE_ROUTES(false),
+    DELETE_SUC_ROUTES(false),
     SUC_ROUTE(false),
     RETURN_ROUTES(false),
     NEIGHBORS(false),
