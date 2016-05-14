@@ -859,7 +859,7 @@ public class ZWaveController {
             logger.debug("ZWave exclusion already in progress - aborted");
             return;
         }
-        enqueue(new RemoveNodeMessageClass().doRequestStart(true));
+        enqueue(new RemoveNodeMessageClass().doRequestStart());
         exclusion = true;
         startInclusionTimer();
         logger.debug("ZWave controller start exclusion");
