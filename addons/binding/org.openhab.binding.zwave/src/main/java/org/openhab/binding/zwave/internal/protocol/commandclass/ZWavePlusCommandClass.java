@@ -20,8 +20,8 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageTy
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
-import org.openhab.binding.zwave.internal.protocol.ZWavePlusDeviceType;
-import org.openhab.binding.zwave.internal.protocol.ZWavePlusDeviceType.ZWavePlusInfo;
+import org.openhab.binding.zwave.internal.protocol.ZWavePlusDeviceClass;
+import org.openhab.binding.zwave.internal.protocol.ZWavePlusDeviceClass.ZWavePlusInfo;
 import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,10 +119,10 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
         zwPlusDeviceType = (serialMessage.getMessagePayloadByte(offset + 5) << 8)
                 | serialMessage.getMessagePayloadByte(offset + 6);
 
-        ZWavePlusInfo info = ZWavePlusDeviceType.getZWavePlusInfo(zwPlusDeviceType);
+        ZWavePlusInfo info = ZWavePlusDeviceClass.getZWavePlusInfo(zwPlusDeviceType);
         if (info != null) {
-            logger.debug("NODE {}: Adding mandatory command classes for ZwavePlus device type \"{}\"",
-                    getNode().getNodeId(), info.getLabel());
+            logger.debug("NODE {}: Adding mandatory command classes for ZwavePlus device type {}",
+                    getNode().getNodeId(), info.getType());
 
             // all all missing mandatory plus command classes
             for (CommandClass commandClass : info.getMandatoryCommandClasses()) {
