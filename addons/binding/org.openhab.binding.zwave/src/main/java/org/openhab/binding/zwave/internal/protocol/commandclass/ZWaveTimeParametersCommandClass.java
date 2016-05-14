@@ -90,11 +90,8 @@ public class ZWaveTimeParametersCommandClass extends ZWaveCommandClass
      *
      * @return the serial message.
      */
-    public SerialMessage getSetMessage(Date date) {
+    public SerialMessage getSetMessage(Calendar cal) {
         logger.debug("NODE {}: Creating new message for command TIME_SET", getNode().getNodeId());
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
 
         SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.RealTime);

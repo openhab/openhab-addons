@@ -807,6 +807,11 @@ public class ZWaveController {
      *
      */
     public void requestAddNodesStart(int inclusionMode) {
+        if (exclusion == true || inclusion == true) {
+            logger.debug("ZWave exclusion already in progress - aborted");
+            return;
+        }
+
         logger.debug("ZWave controller start inclusion - mode {}", inclusionMode);
 
         // Check if the stick supports NWI - if not, revert to HPI
@@ -832,13 +837,15 @@ public class ZWaveController {
         }
 
         enqueue(new AddNodeMessageClass().doRequestStart(highPower, networkWide));
+        inclusion = true;
+        startInclusionTimer();
     }
 
     /**
      * Terminates the inclusion mode
      *
      */
-    public void requestAddNodesStop() {
+    private void requestAddNodesStop() {
         enqueue(new AddNodeMessageClass().doRequestStop());
         logger.debug("ZWave controller end inclusion");
     }
@@ -848,7 +855,13 @@ public class ZWaveController {
      *
      */
     public void requestRemoveNodesStart() {
+        if (exclusion == true || inclusion == true) {
+            logger.debug("ZWave exclusion already in progress - aborted");
+            return;
+        }
         enqueue(new RemoveNodeMessageClass().doRequestStart(true));
+        exclusion = true;
+        startInclusionTimer();
         logger.debug("ZWave controller start exclusion");
     }
 
@@ -856,9 +869,69 @@ public class ZWaveController {
      * Terminates the exclusion mode
      *
      */
-    public void requestRemoveNodesStop() {
+    private void requestRemoveNodesStop() {
         enqueue(new RemoveNodeMessageClass().doRequestStop());
         logger.debug("ZWave controller end exclusion");
+    }
+
+    /**
+     * Terminates inclusion or exclusion mode - which-ever is running
+     *
+     */
+    public void requestInclusionStop() {
+        stopInclusionTimer();
+    }
+
+    // The following timer class implements a re-triggerable timer to stop the inclusion
+    // mode after 30 seconds.
+    private Timer timer = new Timer();
+    private TimerTask timerTask = null;
+    private boolean inclusion = false;
+    private boolean exclusion = false;
+
+    private class InclusionTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            logger.debug("Ending inclusion mode.");
+            stopInclusionTimer();
+        }
+    }
+
+    private synchronized void startInclusionTimer() {
+        // Stop any existing timer
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
+
+        // Create the timer task
+        timerTask = new InclusionTimerTask();
+
+        // Start the timer for 30 seconds
+        timer.schedule(timerTask, 30000);
+    }
+
+    /**
+     * Stops any pending inclusion/exclusion.
+     * Resets flags, and signals to controller.
+     */
+    private synchronized void stopInclusionTimer() {
+        logger.debug("Stopping inclusion timer.");
+        if (inclusion) {
+            requestAddNodesStop();
+        } else if (exclusion) {
+            requestRemoveNodesStop();
+        } else {
+            logger.error("Neither inclusion nor exclusion was active!");
+        }
+
+        inclusion = false;
+        exclusion = false;
+
+        // Stop the timer
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
     }
 
     /**

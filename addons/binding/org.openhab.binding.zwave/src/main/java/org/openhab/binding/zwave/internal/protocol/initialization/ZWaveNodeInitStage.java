@@ -38,6 +38,8 @@ public enum ZWaveNodeInitStage {
     ASSOCIATIONS(false),
     SET_WAKEUP(false),
     SET_ASSOCIATION(false),
+    DELETE_SUC_ROUTES(false),
+    SUC_ROUTE(false),
     STATIC_END(false),
 
     // States below are not restored from the configuration files
@@ -49,7 +51,6 @@ public enum ZWaveNodeInitStage {
     // States below are performed during initialisation, but also during heal
     HEAL_START(false),
     DELETE_ROUTES(false),
-    SUC_ROUTE(false),
     RETURN_ROUTES(false),
     NEIGHBORS(false),
 

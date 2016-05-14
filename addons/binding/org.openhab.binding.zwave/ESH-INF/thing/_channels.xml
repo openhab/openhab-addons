@@ -427,6 +427,16 @@
         </state>
     </channel-type>
 
+    <!-- Seismic Channel -->
+    <channel-type id="sensor_seismicintensity">
+        <item-type>Number</item-type>
+        <label>Seismic Intensity</label>
+        <description>Indicates the current seismic intensity level</description>
+        <category>Humidity</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
     <!-- Temperature Channel -->
     <channel-type id="sensor_temperature">
         <item-type>Number</item-type>
