@@ -42,7 +42,7 @@ public class ReplaceFailedNodeMessageClass extends ZWaveCommandProcessor {
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessageClass.ReplaceFailedNode, SerialMessageType.Request,
                 SerialMessageClass.ReplaceFailedNode, SerialMessagePriority.High);
-        byte[] newPayload = { (byte) nodeId, (byte) 0xfe };
+        byte[] newPayload = { (byte) nodeId, (byte) 0x01 };
         newMessage.setMessagePayload(newPayload);
         return newMessage;
     }

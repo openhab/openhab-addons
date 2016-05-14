@@ -45,7 +45,7 @@ public class RemoveFailedNodeMessageClass extends ZWaveCommandProcessor {
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessageClass.RemoveFailedNodeID, SerialMessageType.Request,
                 SerialMessageClass.RemoveFailedNodeID, SerialMessagePriority.High);
-        byte[] newPayload = { (byte) nodeId, (byte) 0xfe };
+        byte[] newPayload = { (byte) nodeId, (byte) 0x01 };
         newMessage.setMessagePayload(newPayload);
         return newMessage;
     }
