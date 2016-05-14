@@ -37,6 +37,7 @@ public class DeleteReturnRouteMessageClass extends ZWaveCommandProcessor {
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(nodeId);
+        outputData.write(0x01); // callback id
         newMessage.setMessagePayload(outputData.toByteArray());
 
         return newMessage;
