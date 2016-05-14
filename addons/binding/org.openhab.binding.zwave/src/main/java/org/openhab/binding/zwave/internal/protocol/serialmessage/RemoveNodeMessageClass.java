@@ -37,7 +37,7 @@ public class RemoveNodeMessageClass extends ZWaveCommandProcessor {
     private final int REMOVE_NODE_STATUS_DONE = 6;
     private final int REMOVE_NODE_STATUS_FAILED = 7;
 
-    public SerialMessage doRequestStart(boolean highPower) {
+    public SerialMessage doRequestStart() {
         logger.debug("Setting controller into EXCLUSION mode.");
 
         // Queue the request
@@ -47,7 +47,7 @@ public class RemoveNodeMessageClass extends ZWaveCommandProcessor {
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(REMOVE_NODE_ANY);
-        outputData.write(255); // TODO: This should use the callbackId
+        outputData.write(0x01); // TODO: This should use the callbackId
         newMessage.setMessagePayload(outputData.toByteArray());
 
         return newMessage;

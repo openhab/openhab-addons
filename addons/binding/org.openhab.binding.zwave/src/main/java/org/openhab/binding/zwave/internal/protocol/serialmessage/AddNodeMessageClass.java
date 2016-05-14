@@ -66,7 +66,7 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(command);
-        outputData.write(255); // TODO: This should use the callbackId
+        outputData.write(0x01); // TODO: This should use the callbackId
         newMessage.setMessagePayload(outputData.toByteArray());
 
         return newMessage;
@@ -82,7 +82,7 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
         outputData.write(ADD_NODE_STOP);
-        outputData.write(254); // TODO: This should use the callbackId
+        outputData.write(0x01); // TODO: This should use the callbackId
         newMessage.setMessagePayload(outputData.toByteArray());
 
         return newMessage;
