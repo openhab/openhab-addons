@@ -830,6 +830,36 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     }
                     break;
 
+                case DELETE_SUC_ROUTES:
+                    // If the incoming frame is the DeleteSUCReturnRoute, then we continue
+                    if (eventClass == SerialMessageClass.DeleteSUCReturnRoute) {
+                        break;
+                    }
+
+                    // Only delete the route if this is not the controller and there is an SUC in the network
+                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
+                        // Update the route to the controller
+                        logger.debug("NODE {}: Node advancer is deleting SUC return route.", node.getNodeId());
+                        addToQueue(new DeleteSucReturnRouteMessageClass().doRequest(node.getNodeId()));
+                        break;
+                    }
+                    break;
+
+                case SUC_ROUTE:
+                    if (eventClass == SerialMessageClass.AssignSucReturnRoute) {
+                        break;
+                    }
+
+                    // Only set the route if this is not the controller and there is an SUC in the network
+                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
+                        // Update the route to the controller
+                        logger.debug("NODE {}: Node advancer is setting SUC route.", node.getNodeId());
+                        addToQueue(new AssignSucReturnRouteMessageClass().doRequest(node.getNodeId(),
+                                controller.getCallbackId()));
+                        break;
+                    }
+                    break;
+
                 case GET_CONFIGURATION:
                     ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
                             .getCommandClass(CommandClass.CONFIGURATION);
@@ -941,36 +971,6 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         // Delete all the return routes for the node
                         logger.debug("NODE {}: Node advancer is deleting return routes.", node.getNodeId());
                         addToQueue(new DeleteReturnRouteMessageClass().doRequest(node.getNodeId()));
-                        break;
-                    }
-                    break;
-
-                case DELETE_SUC_ROUTES:
-                    // If the incoming frame is the DeleteSUCReturnRoute, then we continue
-                    if (eventClass == SerialMessageClass.DeleteSUCReturnRoute) {
-                        break;
-                    }
-
-                    // Only delete the route if this is not the controller and there is an SUC in the network
-                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
-                        // Update the route to the controller
-                        logger.debug("NODE {}: Node advancer is deleting SUC return route.", node.getNodeId());
-                        addToQueue(new DeleteSucReturnRouteMessageClass().doRequest(node.getNodeId()));
-                        break;
-                    }
-                    break;
-
-                case SUC_ROUTE:
-                    if (eventClass == SerialMessageClass.AssignSucReturnRoute) {
-                        break;
-                    }
-
-                    // Only set the route if this is not the controller and there is an SUC in the network
-                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
-                        // Update the route to the controller
-                        logger.debug("NODE {}: Node advancer is setting SUC route.", node.getNodeId());
-                        addToQueue(new AssignSucReturnRouteMessageClass().doRequest(node.getNodeId(),
-                                controller.getCallbackId()));
                         break;
                     }
                     break;
