@@ -140,6 +140,21 @@
         </state>
     </channel-type>
 
+    <!-- Power Alarm Channel -->
+    <channel-type id="alarm_power">
+        <item-type>Switch</item-type>
+        <label>Power alarm</label>
+        <description>Indicates if a power alarm is triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="OFF">Ok</option>
+                <option value="ON">Alarm</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Smoke Alarm Channel -->
     <channel-type id="alarm_smoke">
         <item-type>Switch</item-type>
