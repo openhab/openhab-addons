@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.zwave.internal.protocol;
 
+import static org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,8 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Z-Wave Plus device type class. Defines the zwave plus device types and the mandatory command classes.
@@ -25,87 +25,85 @@ import org.slf4j.LoggerFactory;
  * @author Jorg de Jong
  */
 public class ZWavePlusDeviceType {
-    private static final Logger logger = LoggerFactory.getLogger(ZWavePlusDeviceType.class);
-
     private static Map<Integer, ZWavePlusInfo> zwavePlusDeviceTypes = new HashMap<>();
 
     private static void setup() {
         // @formatter:off
         List<ZWavePlusInfo> initdata = Arrays.asList(new ZWavePlusInfo(0x0000, "Unknown Type"),
-            new ZWavePlusInfo(0x0100, "Central Controller", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x56, 0x22),
-            new ZWavePlusInfo(0x0200, "Display Simple", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86),
-            new ZWavePlusInfo(0x0300, "Door Lock Keypad", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x62, 0x63, 0x80),
-            new ZWavePlusInfo(0x0400, "Fan Switch", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x26),
-            new ZWavePlusInfo(0x0500, "Gateway", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x56, 0x60, 0x8E, 0x84,0x22),
-            new ZWavePlusInfo(0x0600, "Light Dimmer Switch", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x26),
-            new ZWavePlusInfo(0x0700, "On/Off Power Switch", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x25),
-            new ZWavePlusInfo(0x0800, "Power Strip", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x60, 0x8E, 0x25),
-            new ZWavePlusInfo(0x0900, "Remote Control AV", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86),
-            new ZWavePlusInfo(0x0a00, "Remote Control Multi Purpose", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86,0x84),
-            new ZWavePlusInfo(0x0b00, "Remote Control Simple", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x5b),
-            new ZWavePlusInfo(0x0b01, "Key Fob", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x5b),
-            new ZWavePlusInfo(0x0c00, "Sensor Notification", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c01, "Smoke Alarm Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c02, "CO Alarm Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c03, "CO2 Alarm Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c04, "Heat Alarm Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c05, "Water Alarm Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c06, "Access Control Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c07, "Home Security Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c08, "Power Management Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c09, "System Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c0a, "Emergency Alarm Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0c0b, "Clock Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0cff, "MultiDevice Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30),
-            new ZWavePlusInfo(0x0d00, "Multilevel Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d01, "Air Temperature Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d02, "General Purpose Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d03, "Luminance Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d04, "Power Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d05, "Humidity Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d06, "Velocity Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d07, "Direction Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d08, "Atmospheric Pressure Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d09, "Barometric Pressure Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d0a, "Solar Radiation Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d0b, "Dew Point Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d0c, "Rain Rate Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d0d, "Tide Level Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d0e, "Weight Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d0f, "Voltage Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d10, "Current Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d11, "CO2 Level Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d12, "Air Flow Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d13, "Tank Capacity Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d14, "Distance Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d15, "Angle Postition Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d16, "Rotation Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d17, "Water Temperature Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d18, "Soil Temperature Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d19, "Seismic Intensity Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d1a, "Seismic Magnitude Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d1b, "Ultraviolet Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0d1c, "Electrical Resistivity Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0b1d, "Electrical Conductivity Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0b1e, "Loudness Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0b1f, "Moisture Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0b20, "Frequency Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0b21, "Time Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0b22, "Target Temperature Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0bff, "MultiDevice Sensor", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x30, 0x31),
-            new ZWavePlusInfo(0x0e00, "Set Top Box", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x56, 0x60, 0x8e, 0x84, 0x22),
-            new ZWavePlusInfo(0x0f00, "Siren", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86),
-            new ZWavePlusInfo(0x1000, "Sub Energy Meter", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x56, 0x32),
-            new ZWavePlusInfo(0x1100, "Sub System Controller", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x60, 0x84, 0x22),
-            new ZWavePlusInfo(0x1200, "Thermostat HVAC", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x43, 0x40),
-            new ZWavePlusInfo(0x1300, "Thermostat Setback", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x43),
-            new ZWavePlusInfo(0x1400, "TV", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x56, 0x60, 0x8e, 0x84, 0x22),
-            new ZWavePlusInfo(0x1500, "Valve open/close", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x26, 0x25),
-            new ZWavePlusInfo(0x1600, "Wall Controller", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x5b),
-            new ZWavePlusInfo(0x1700, "Whole Home Meter Simple", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x56, 0x32),
-            new ZWavePlusInfo(0x1800, "Window Covering No Position/Endpoint", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85,0x86, 0x26, 0x25),
-            new ZWavePlusInfo(0x1900, "Window Covering Endpoint Aware", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x26, 0x25),
-            new ZWavePlusInfo(0x1a00, "Window Covering Position/Endpoint Aware", 0x5a, 0x5e, 0x59, 0x72, 0x73, 0x85, 0x86, 0x26, 0x25));
+            new ZWavePlusInfo(0x0100, "Central Controller", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CRC_16_ENCAP, APPLICATION_STATUS),
+            new ZWavePlusInfo(0x0200, "Display Simple", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION),
+            new ZWavePlusInfo(0x0300, "Door Lock Keypad", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, DOOR_LOCK, USER_CODE, BATTERY),
+            new ZWavePlusInfo(0x0400, "Fan Switch", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SWITCH_MULTILEVEL),
+            new ZWavePlusInfo(0x0500, "Gateway", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CRC_16_ENCAP, MULTI_INSTANCE, MULTI_INSTANCE_ASSOCIATION, WAKE_UP,APPLICATION_STATUS),
+            new ZWavePlusInfo(0x0600, "Light Dimmer Switch", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SWITCH_MULTILEVEL),
+            new ZWavePlusInfo(0x0700, "On/Off Power Switch", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SWITCH_BINARY),
+            new ZWavePlusInfo(0x0800, "Power Strip", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, MULTI_INSTANCE, MULTI_INSTANCE_ASSOCIATION, SWITCH_BINARY),
+            new ZWavePlusInfo(0x0900, "Remote Control AV", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION),
+            new ZWavePlusInfo(0x0a00, "Remote Control Multi Purpose", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION,WAKE_UP),
+            new ZWavePlusInfo(0x0b00, "Remote Control Simple", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CENTRAL_SCENE),
+            new ZWavePlusInfo(0x0b01, "Key Fob", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CENTRAL_SCENE),
+            new ZWavePlusInfo(0x0c00, "Sensor Notification", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c01, "Smoke Alarm Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c02, "CO Alarm Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c03, "CO2 Alarm Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c04, "Heat Alarm Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c05, "Water Alarm Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c06, "Access Control Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c07, "Home Security Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c08, "Power Management Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c09, "System Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c0a, "Emergency Alarm Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0c0b, "Clock Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0cff, "MultiDevice Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY),
+            new ZWavePlusInfo(0x0d00, "Multilevel Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d01, "Air Temperature Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d02, "General Purpose Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d03, "Luminance Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d04, "Power Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d05, "Humidity Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d06, "Velocity Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d07, "Direction Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d08, "Atmospheric Pressure Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d09, "Barometric Pressure Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d0a, "Solar Radiation Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d0b, "Dew Point Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d0c, "Rain Rate Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d0d, "Tide Level Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d0e, "Weight Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d0f, "Voltage Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d10, "Current Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d11, "CO2 Level Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d12, "Air Flow Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d13, "Tank Capacity Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d14, "Distance Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d15, "Angle Postition Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d16, "Rotation Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d17, "Water Temperature Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d18, "Soil Temperature Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d19, "Seismic Intensity Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d1a, "Seismic Magnitude Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d1b, "Ultraviolet Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0d1c, "Electrical Resistivity Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0b1d, "Electrical Conductivity Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0b1e, "Loudness Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0b1f, "Moisture Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0b20, "Frequency Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0b21, "Time Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0b22, "Target Temperature Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0bff, "MultiDevice Sensor", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SENSOR_BINARY, SENSOR_MULTILEVEL),
+            new ZWavePlusInfo(0x0e00, "Set Top Box", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CRC_16_ENCAP, MULTI_INSTANCE, MULTI_INSTANCE_ASSOCIATION, WAKE_UP, APPLICATION_STATUS),
+            new ZWavePlusInfo(0x0f00, "Siren", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION),
+            new ZWavePlusInfo(0x1000, "Sub Energy Meter", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CRC_16_ENCAP, METER),
+            new ZWavePlusInfo(0x1100, "Sub System Controller", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, MULTI_INSTANCE, WAKE_UP, APPLICATION_STATUS),
+            new ZWavePlusInfo(0x1200, "Thermostat HVAC", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, THERMOSTAT_SETPOINT, THERMOSTAT_MODE),
+            new ZWavePlusInfo(0x1300, "Thermostat Setback", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, THERMOSTAT_SETPOINT),
+            new ZWavePlusInfo(0x1400, "TV", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CRC_16_ENCAP, MULTI_INSTANCE, MULTI_INSTANCE_ASSOCIATION, WAKE_UP, APPLICATION_STATUS),
+            new ZWavePlusInfo(0x1500, "Valve open/close", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SWITCH_MULTILEVEL, SWITCH_BINARY),
+            new ZWavePlusInfo(0x1600, "Wall Controller", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CENTRAL_SCENE),
+            new ZWavePlusInfo(0x1700, "Whole Home Meter Simple", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, CRC_16_ENCAP, METER),
+            new ZWavePlusInfo(0x1800, "Window Covering No Position/Endpoint", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION,VERSION, SWITCH_MULTILEVEL, SWITCH_BINARY),
+            new ZWavePlusInfo(0x1900, "Window Covering Endpoint Aware", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SWITCH_MULTILEVEL, SWITCH_BINARY),
+            new ZWavePlusInfo(0x1a00, "Window Covering Position/Endpoint Aware", DEVICE_RESET_LOCALLY, ZWAVE_PLUS_INFO, ASSOCIATION_GROUP_INFO, MANUFACTURER_SPECIFIC, POWERLEVEL, ASSOCIATION, VERSION, SWITCH_MULTILEVEL, SWITCH_BINARY));
         // @formatter:on
         for (ZWavePlusInfo c : initdata) {
             zwavePlusDeviceTypes.put(c.getKey(), c);
@@ -133,18 +131,10 @@ public class ZWavePlusDeviceType {
         private String label;
         private Set<CommandClass> mandatoryCommandClasses = new HashSet<>();
 
-        ZWavePlusInfo(int key, String label, int... keys) {
+        ZWavePlusInfo(int key, String label, CommandClass... classes) {
             this.key = key;
             this.label = label;
-
-            for (int k : keys) {
-                CommandClass cls = CommandClass.getCommandClass(k);
-                if (cls == null) {
-                    logger.debug("Unknown command class {} for ZwavePlus Device Type {}:{}", k, key, label);
-                } else {
-                    mandatoryCommandClasses.add(cls);
-                }
-            }
+            mandatoryCommandClasses.addAll(Arrays.asList(classes));
         }
 
         public int getKey() {
@@ -159,5 +149,4 @@ public class ZWavePlusDeviceType {
             return mandatoryCommandClasses;
         }
     }
-
 }
