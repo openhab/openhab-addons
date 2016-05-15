@@ -27,8 +27,8 @@ public enum ZWaveNodeInitStage {
     // For newly included devices, we start here
     INCLUSION_START(true),
     IDENTIFY_NODE(true),
-    SECURITY_REPORT(true),
     MANUFACTURER(true),
+    SECURITY_REPORT(true),
     APP_VERSION(true),
     DISCOVERY_COMPLETE(true),
     VERSION(true),
