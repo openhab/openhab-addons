@@ -249,11 +249,6 @@ Defines the time interval when the defined report of Reporting Group 1 is sent o
         <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association" multiple="true">
-        <label>3: Group 3</label>
-        <multipleLimit>5</multipleLimit>
-      </parameter>
-
     </config-description>
 
   </thing-type>
