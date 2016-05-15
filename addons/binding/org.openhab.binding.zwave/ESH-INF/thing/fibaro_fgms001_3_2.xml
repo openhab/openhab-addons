@@ -73,13 +73,13 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
+      <parameter name="config_1_2" type="integer" groupName="configuration"
                  min="8" max="255">
         <label>1: Motion Sensor's Sensitivity</label>
         <description><![CDATA[
 <br /><h1>Overview</h1><p>The lower the value, the more sensitive the PIR sensor. Available settings: 8 - 255.</p>
         ]]></description>
-        <default>10</default>
+        <default>15</default>
       </parameter>
 
       <parameter name="config_2_1" type="integer" groupName="configuration">
@@ -112,10 +112,10 @@
       </parameter>
 
       <parameter name="config_6_2" type="integer" groupName="configuration"
-                 min="1" max="65535">
+                 min="1" max="32767">
         <label>6: Motion Alarm Cancellation Delay</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>Motion alarm will be cancelled in the main controller and the associated devices after the period of time set in this parameter. Any motion detected during the cancellation delay time countdown will result in the countdown being restarted. In case of small values, below 10 seconds, the value of parameter 2 must be modified (PIR sensor’s “Blind Time”).<br />Available settings: 1 - 65535<br />Default setting: 30 (30 seconds)<br />Parameter size: 2 [bytes]</p>
+<br /><h1>Overview</h1><p>Motion alarm will be cancelled in the main controller and the associated devices after the period of time set in this parameter. Any motion detected during the cancellation delay time countdown will result in the countdown being restarted. In case of small values, below 10 seconds, the value of parameter 2 must be modified (PIR sensor’s “Blind Time”).<br />Available settings: 1 - 32767<br />Default setting: 30 (30 seconds)<br />Parameter size: 2 [bytes]</p>
         ]]></description>
         <default>30</default>
       </parameter>
@@ -134,10 +134,10 @@
       </parameter>
 
       <parameter name="config_9_2" type="integer" groupName="configuration"
-                 min="1" max="65535">
+                 min="1" max="32767">
         <label>9: NIGHT / DAY</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter defines the difference between night and day, in terms of light intensity, used in parameter 8. Available settings: 1 - 65535 Default setting: 200 (200 lux) Parameter size: 2 [bytes]</p>
+<br /><h1>Overview</h1><p>The parameter defines the difference between night and day, in terms of light intensity, used in parameter 8. Available settings: 1 - 32767 Default setting: 200 (200 lux) Parameter size: 2 [bytes]</p>
         ]]></description>
         <default>200</default>
       </parameter>
@@ -155,38 +155,47 @@
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
+      <parameter name="config_14_2" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>14: BASIC ON command frame value</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The value of 255 allows to turn ON a device. In case of the Dimmer, the value of 255 means turning ON at the last memorized state, e.g. the Dimmer turned ON at 30% and turned OFF using the value of 255, and then turned OFF, will be turned ON at 30%, i.e. the last memorized state.<br />Available settings: 0 - 255<br />Default setting: 255<br />Parameter size: 1 [byte]</p>
+<br /><h1>Overview</h1><p>The value of 255 allows to turn ON a device. In case of the Dimmer, the value of 255 means turning ON at the last memorized state, e.g. the Dimmer turned ON at 30% and turned OFF using the value of 255, and then turned OFF, will be turned ON at 30%, i.e. the last memorized state.<br />Available settings: 0 - 255<br />Default setting: 255<br />Parameter size: 2 [byte]</p>
         ]]></description>
         <default>255</default>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
+      <parameter name="config_16_2" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>16: BASIC OFF command frame value</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The command frame sent at the moment of motion alarm cancellation, after the cancellation delay time, specified in parameter 6, has passed. The value of 0 allows to turn a device OFF while the value of 255 allows to turn ON a device. In case of the Dimmer, the value of 255 means turning ON at the last memorized state, e.g. the Dimmer turned ON at 30% and turned OFF using the value of 255, and then turned OFF, will be turned ON at 30%, i.e. the last memorized state.<br />Available settings: 0 - 255<br />Default setting: 0<br />Parameter size: 1 [byte]</p>
+<br /><h1>Overview</h1><p>The command frame sent at the moment of motion alarm cancellation, after the cancellation delay time, specified in parameter 6, has passed. The value of 0 allows to turn a device OFF while the value of 255 allows to turn ON a device. In case of the Dimmer, the value of 255 means turning ON at the last memorized state, e.g. the Dimmer turned ON at 30% and turned OFF using the value of 255, and then turned OFF, will be turned ON at 30%, i.e. the last memorized state.<br />Available settings: 0 - 255<br />Default setting: 0<br />Parameter size: 2 [byte]</p>
         ]]></description>
         <default>0</default>
       </parameter>
 
+      <parameter name="config_18_1" type="integer" groupName="configuration"
+                 min="0" max="15">
+        <label>18: ASSOCIATIONS IN Z-WAVE NETWORK SECURITY MODE</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>This parameter defines how commands are sent in specified association groups: as secure or non-secure. Parameter is Active only in Z-Wave network security mode. It doesn’t apply to 1st Lifeline group.</p> <p>Available settings: 0 - 15<br />0 - all groups sent as non-secure<br />1 - 2nd group sent as secure<br />2 - 3rd group sent as secure<br />4 - 4th group sent as secure<br />8 - 5th group sent as secure</p> <p>Parameter values may be combined, e.g. 1+2=3 means that 2nd &amp;<br />3rd group are sent as secure.</p> <p>Default setting: 15 (all groups sent as secure)<br />Parameter size: 1 [byte]</p>
+        ]]></description>
+        <default>15</default>
+      </parameter>
+
       <parameter name="config_20_1" type="integer" groupName="configuration"
-                 min="0" max="122">
+                 min="0" max="121">
         <label>20: TAMPER SENSITIVITY</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines the chages in forces acting on the Fibaro Motion Sensor resulting in tamper alarm beig reported - g-force acceleration.<br />Available settigs: 0 - 122 (0.08 - 2g; multiply by 0.016g; 0 = tamper inactive)<br />Default setting: 15 (0.224g)<br />Parameter size: 1 [byte] </p>
+<br /><h1>Overview</h1><p>The parameter determines the changes in forces acting on the Fibaro Motion Sensor resulting in tamper alarm being reported - g-force acceleration.<br />Available settigs: 0 - 121 (0.08 - 2g; multiply by 0.016g; 0 = tamper inactive)<br />Default setting: 15 (0.320g)<br />Parameter size: 1 [byte] </p>
         ]]></description>
         <default>15</default>
       </parameter>
 
       <parameter name="config_22_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>22: TAMPER ALARM CANCELLATION DELAY</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>Time period after which a tamper alarm will be cacelled. Another tampering detected durig the countdown to cancellation will not extend the delay.<br />Available settings: 1 - 65535<br />Default setting: 30 (seconds)<br />Parameter size: 2 [bytes] </p>
+<br /><h1>Overview</h1><p>Time period after which a tamper alarm will be cacelled. Another tampering detected durig the countdown to cancellation will not extend the delay.<br />Available settings: 1 - 32767<br />Default setting: 30 (seconds)<br />Parameter size: 2 [bytes] </p>
         ]]></description>
         <default>30</default>
       </parameter>
@@ -194,71 +203,93 @@
       <parameter name="config_24_1" type="integer" groupName="configuration">
         <label>24: TAMPER OPERATING MODES</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines the behaviour of tamper and how it reports.</p>
+<br /><h1>Overview</h1><p>The parameter determines the behaviour of tamper alarm and how it reports. It is an advanced feature serving much more functions than<br />just detection of tampering.</p> <p><br />0 – Only tamper (default)<br />1 – Tamper and earthquake detector. Function may be used as a simple seismograph. Two reports including the strength of shock are<br />always sent. First, right after the detection and second (value=0) after tamper alarm cancellation delay time.<br />2 – Tamper and orientation in space. Three reports are sent right after tamper alarm cancellation delay time.</p> <p><br />Default setting: 0<br />Parameter size: 1 [byte]</p>
         ]]></description>
         <default>0</default>
         <options>
-          <option value="0">Tamper alarm is reported / Cancellation is not reported.</option>
-          <option value="1">Tamper alarm is reported / Cancellation is reported.</option>
-          <option value="2">Same as Value 0 / with unsupported Fibar Command Class.</option>
-          <option value="3">Same as Value 1 / with unsupported Fibar Command Class.</option>
-          <option value="4">The maximum level of vibrations recorded in the time period.</option>
+          <option value="0">Only tamper (default)</option>
+          <option value="1">Tamper and earthquake detector</option>
+          <option value="2">Tamper and orientation in space</option>
         </options>
       </parameter>
 
-      <parameter name="config_26_1" type="integer" groupName="configuration">
-        <label>26: TAMPER ALARM BROADCAST MODE</label>
+      <parameter name="config_25_1" type="integer" groupName="configuration">
+        <label>25: TAMPER CANCELLATION REPORTS</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines whether the tamper alarm frame will or will not be sent in broadcast mode.<br />Alarm frames sent in broadcast mode may be received by all of the devices within communication range (if they accept such frames). </p>
+<br /><h1>Overview</h1><p>0 - Do not send tamper cancellation report<br />1 - Send tamper cancellation report</p> <p>Default setting: 1<br />Parameter size: 1 [byte]</p>
+        ]]></description>
+        <default>1</default>
+        <options>
+          <option value="0">Do not send tamper cancellation report</option>
+          <option value="1">Send tamper cancellation report</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_28_1" type="integer" groupName="configuration">
+        <label>28: TAMPER ALARM BROADCAST MODE</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>The parameter determines whether the tamper alarm frame will or will not be sent in broadcast mode. Alarm frames sent in broadcast mode can be received by all of the devices within Communication range (if they accept such frames). When Fibaro Motion Sensor is operating in protected mode (secure mode), the value should remain default. Device operating in protected mode doesn’t send frames in broadcast mode.</p> <p>0 - Tamper alarm reported to association groups.<br />1 - Tamper alarm reported in broadcast mode to 3rd association group.</p> <p>Default setting: 0<br />Parameter size: 1 [byte]</p>
         ]]></description>
         <default>0</default>
         <options>
-          <option value="0">Tamper alarm is not sent in broadcast mode.</option>
-          <option value="1">Tamper alarm sent in broadcast mode.</option>
+          <option value="0">Reported to association groups.</option>
+          <option value="1">Reported in broadcast mode to 3rd association group.</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_29_1" type="integer" groupName="configuration">
+        <label>29: TAMPER ALARM BROADCAST MODE</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>The parameter determines whether the tamper alarm frame will or will not be sent in broadcast mode. Alarm frames sent in broadcast mode can be received by all of the devices within Communication range (if they accept such frames). When Fibaro Motion Sensor is operating in protected mode (secure mode), the value should remain default. Device operating in protected mode doesn’t send frames in broadcast mode.</p> <p>0 - Tamper alarm reported to association groups.<br />1 - Tamper alarm reported in broadcast mode to 5th association group.</p> <p>Default setting: 0<br />Parameter size: 1 [byte]</p>
+        ]]></description>
+        <default>0</default>
+        <options>
+          <option value="0">Reported to association groups.</option>
+          <option value="1">Reported in broadcast mode to 5th association group.</option>
         </options>
       </parameter>
 
       <parameter name="config_40_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>40: ILLUMINATION REPORT THRESHOLD</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines the change in light intensity level resulting in illumination report being sent to the main controller.</p>
+<br /><h1>Overview</h1><p>The parameter determines the change in light intensity level resulting in illumination report being sent to the main controller.</p> <p>Available settings: 0 - 32767 (1-32767 lux; 0=reports are not sent)</p>
         ]]></description>
         <default>200</default>
       </parameter>
 
       <parameter name="config_42_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>42: ILLUMINATION REPORTS INTERVAL</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>Time interval between consecutive illumination reports.<br />The reports are sent even if there are no changes in the light intensity.</p>
+<br /><h1>Overview</h1><p>Time interval between consecutive illumination reports.<br />The reports are sent even if there are no changes in the light intensity.</p> <p>Available settings: 0 - 32767 (1-32767 seconds; 0 = no reports)<br />Default setting: 3600</p>
         ]]></description>
-        <default>0</default>
+        <default>3600</default>
       </parameter>
 
-      <parameter name="config_60_1" type="integer" groupName="configuration"
+      <parameter name="config_60_2" type="integer" groupName="configuration"
                  min="0" max="255">
         <label>60: TEMPERATURE REPORT THRESHOLD</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines the change in level of temperature resulting in temperature report being sent to the main controller.<br />Available settings: 0 - 255 (0.1 - 25.5oC; 0 = reports are not sent)<br />Default setting: 10 (1oC) Parameter size: 1 [byte]</p>
+<br /><h1>Overview</h1><p>The parameter determines the change in level of temperature resulting in temperature report being sent to the main controller.<br />Available settings: 0 - 255 (0.1 - 25.5oC; 0 = reports are not sent)<br />Default setting: 10 (1oC) Parameter size: 2 [byte]</p>
         ]]></description>
         <default>10</default>
       </parameter>
 
       <parameter name="config_62_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>62: INTERVAL OF TEMPERATURE MEASURING</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines how often the temperature will be measured. The shorter the time, the more frequently the temperature will be measured, but the battery life will shorten.<br />Available settings: 0 - 65535 (1 - 65535 seconds; 0 = temperature will not be measured)<br />Default setting: 900 (900 seconds)<br />Parameter size: 2 [bytes]</p>
+<br /><h1>Overview</h1><p>The parameter determines how often the temperature will be measured. The shorter the time, the more frequently the temperature will be measured, but the battery life will shorten.<br />Available settings: 0 - 32767 (1 - 32767 seconds; 0 = temperature will not be measured)<br />Default setting: 900 (900 seconds)<br />Parameter size: 2 [bytes]</p>
         ]]></description>
         <default>900</default>
       </parameter>
 
       <parameter name="config_64_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>64: TEMPERATURE REPORTS INTERVAL</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The parameter determines how often the temperature reports will be sent to the main controller.<br />Available settings: 0 - 65535 (1 - 65535 seconds; 0 = reports are not sent)<br />Default setting: 0 Parameter size: 2 [byte] </p>
+<br /><h1>Overview</h1><p>The parameter determines how often the temperature reports will be sent to the main controller.<br />Available settings: 0 - 32767 (1 - 32767 seconds; 0 = no reports)<br />Default setting: 0 Parameter size: 2 [byte] </p>
         ]]></description>
         <default>0</default>
       </parameter>
@@ -267,7 +298,7 @@
                  min="0" max="65535">
         <label>66: TEMPERATURE OFFSET</label>
         <description><![CDATA[
-<br /><h1>Overview</h1><p>The value to be added to the actual temperature, measured by the sensor (temperature compensation).<br />Available settings: 0 - 100 (0 to 100oC) or 64536 - 65535 (-100 to -0.10oC)<br />Default setting: 0 Parameter size: 2 [bytes]</p>
+<br /><h1>Overview</h1><p>The value to be added to the actual temperature, measured by the sensor (temperature compensation).<br />Available settings: -1000 – 1000 (-100oC – 100oC)<br />Default setting: 0 Parameter size: 2 [bytes]</p>
         ]]></description>
         <default>0</default>
       </parameter>
@@ -336,20 +367,20 @@ AMBIENT ILLUMINATION LEVEL ABOVE WHICH LED BRIGHTNESS IS SET TO 100%<br /><h1>Ov
         <default>1000</default>
       </parameter>
 
-      <parameter name="config_86_1" type="integer" groupName="configuration"
+      <parameter name="config_86_2" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>86: BLUE LED ILLUMINATION</label>
         <description><![CDATA[
-MINIMUM TEMPERATURE RESULTING IN BLUE LED ILLUMINATION<br /><h1>Overview</h1><p>This parameter is relevant only when parameter 80 has been properly configured.<br />Available settings: 0 to parameter 87 value (degrees celsius)<br />Default setting: 18 (18oC)<br />Parameter size: 1 [byte]</p>
+MINIMUM TEMPERATURE RESULTING IN BLUE LED ILLUMINATION<br /><h1>Overview</h1><p>This parameter is relevant only when parameter 80 has been properly configured.<br />Available settings: 0 to parameter 87 value (degrees celsius)<br />Default setting: 18 (18oC)<br />Parameter size: 2 [byte]</p>
         ]]></description>
         <default>18</default>
       </parameter>
 
-      <parameter name="config_87_1" type="integer" groupName="configuration"
+      <parameter name="config_87_2" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>87: RED LED ILLUMINATION</label>
         <description><![CDATA[
-MINIMUM TEMPERATURE RESULTING IN BLUE LED ILLUMINATION<br /><h1>Overview</h1><p>This parameter is relevant only when parameter 80 has been properly configured.<br />Available settings: parameter 86 value to 255 (degrees celsius)<br />Default setting: 28 (28oC)<br />Parameter size: 1 [byte]</p>
+MINIMUM TEMPERATURE RESULTING IN BLUE LED ILLUMINATION<br /><h1>Overview</h1><p>This parameter is relevant only when parameter 80 has been properly configured.<br />Available settings: parameter 86 value to 255 (degrees celsius)<br />Default setting: 28 (28oC)<br />Parameter size: 2 [byte]</p>
         ]]></description>
         <default>28</default>
       </parameter>
