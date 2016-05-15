@@ -574,8 +574,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     for (ZWaveCommandClass zwaveVersionClass : node.getCommandClasses()) {
                         logger.debug("NODE {}: Node advancer: VERSION - checking {}, version is {}", node.getNodeId(),
                                 zwaveVersionClass.getCommandClass().getLabel(), zwaveVersionClass.getVersion());
-                        if (version != null && zwaveVersionClass.getMaxVersion() > 1
-                                && zwaveVersionClass.getVersion() == 0) {
+                        if (version != null && zwaveVersionClass.getVersion() == 0) {
                             logger.debug("NODE {}: Node advancer: VERSION - queued   {}", node.getNodeId(),
                                     zwaveVersionClass.getCommandClass().getLabel());
                             addToQueue(version.checkVersion(zwaveVersionClass));

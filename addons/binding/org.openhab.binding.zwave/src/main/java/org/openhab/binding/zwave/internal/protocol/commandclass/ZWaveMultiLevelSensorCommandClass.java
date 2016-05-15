@@ -73,6 +73,7 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
      */
     public ZWaveMultiLevelSensorCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -81,14 +82,6 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
     @Override
     public CommandClass getCommandClass() {
         return CommandClass.SENSOR_MULTILEVEL;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
     }
 
     /**
