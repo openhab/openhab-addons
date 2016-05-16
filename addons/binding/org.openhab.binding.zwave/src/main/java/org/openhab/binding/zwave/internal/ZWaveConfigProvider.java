@@ -55,6 +55,8 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
     private static Set<ThingTypeUID> zwaveThingTypeUIDList = new HashSet<ThingTypeUID>();
     private static List<ZWaveProduct> productIndex = new ArrayList<ZWaveProduct>();
 
+    private static final Object productIndexLock = new Object();
+
     // The following is a list of classes that are controllable.
     // This is used to filter endpoints so that when we display a list of nodes/endpoints
     // for configuring associations, we only list endpoints that are useful
@@ -279,7 +281,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             return;
         }
 
-        synchronized (productIndex) {
+        synchronized (productIndexLock) {
             zwaveThingTypeUIDList = new HashSet<ThingTypeUID>();
             productIndex = new ArrayList<ZWaveProduct>();
 
