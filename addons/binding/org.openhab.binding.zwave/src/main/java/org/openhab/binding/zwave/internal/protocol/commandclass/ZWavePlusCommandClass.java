@@ -120,14 +120,14 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
 
         ZWavePlusDeviceType deviceType = ZWavePlusDeviceType.getZWavePlusDeviceType(zwPlusDeviceType);
         if (deviceType != null) {
-            logger.debug("NODE {}: Adding mandatory command classes for ZwavePlus device type {}",
+            logger.debug("NODE {}: Adding mandatory command classes for ZWavePlus device type {}",
                     getNode().getNodeId(), deviceType);
 
-            // all all missing mandatory plus command classes
+            // Add all missing mandatory plus command classes
             for (CommandClass commandClass : deviceType.getMandatoryCommandClasses()) {
                 ZWaveCommandClass zwaveCommandClass = this.getNode().getCommandClass(commandClass);
 
-                // add the mandatory class missing, ie not set via NIF
+                // Add the mandatory class missing, ie not set via NIF
                 if (zwaveCommandClass == null) {
                     zwaveCommandClass = ZWaveCommandClass.getInstance(commandClass.getKey(), getNode(),
                             getController());
@@ -139,7 +139,7 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
                 }
             }
         } else {
-            logger.info("NODE {}: unknown zwaveplus device type: {}", getNode().getNodeId(), zwPlusDeviceType);
+            logger.info("NODE {}: unknown ZWavePlus device type: {}", getNode().getNodeId(), zwPlusDeviceType);
         }
 
         initialiseDone = true;
@@ -178,5 +178,19 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
         }
 
         return true;
+    }
+
+    /**
+     * Return the ZWave Plus Device Type
+     * 
+     * @return {@link ZWavePlusDeviceType}
+     */
+    public ZWavePlusDeviceType getZWavePlusDeviceType() {
+        ZWavePlusDeviceType deviceType = ZWavePlusDeviceType.getZWavePlusDeviceType(zwPlusDeviceType);
+        if (deviceType == null) {
+            deviceType = ZWavePlusDeviceType.UNKNOWN_TYPE;
+        }
+
+        return deviceType;
     }
 }
