@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.network.service;
 
+/**
+ * This exception is thrown if an invalid configuration is provided.
+ *
+ * @author David Graeff <david.graeff@web.de>
+ */
 public class InvalidConfigurationException extends Exception {
 	private static final long serialVersionUID = -4913760031378662737L;
 

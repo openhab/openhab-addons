@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.network.service.dhcp;
 
 import java.io.IOException;
@@ -55,9 +63,7 @@ public class ReceiveDHCPRequestPackets extends Thread {
             }
             try {
                 instance.join(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) { }
             instance.interrupt();
             instance.dsocket = null;
         }
@@ -114,7 +120,6 @@ public class ReceiveDHCPRequestPackets extends Thread {
                 return;
             }
             logger.error(e.getLocalizedMessage());
-            e.printStackTrace();
         }
     }
 

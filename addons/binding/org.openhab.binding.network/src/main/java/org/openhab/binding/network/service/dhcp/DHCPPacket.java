@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,19 +20,19 @@ import java.util.Map;
 /**
  * Parses a dhcp packet and extracts the OP code and all DHCP Options.
  *
- * @author David Gräff
+ * Example:
+ *   DatagramSocket socket = new DatagramSocket(67);
+ *   while (true) {
+ *      DatagramPacket packet = new DatagramPacket(new byte[1500], 1500);
+ *      socket.receive(packet);
+ *      DHCPPacket dhcp = new DHCPPacket(packet);
+ *      InetAddress requestedAddress = dhcp.getRequestedIPAddress();
+ *   }
  *
- *         DatagramSocket socket = new DatagramSocket(67);
- *         while (true) {
- *         DatagramPacket packet = new DatagramPacket(new byte[1500], 1500);
- *         socket.receive(packet);
- *         DHCPPacket dhcp = new DHCPPacket(packet);
- *         InetAddress requestedAddress = dhcp.getRequestedIPAddress();
- *         }
+ * If used this way, beware that a <tt>BadPacketExpcetion</tt> is thrown
+ * if the datagram contains invalid DHCP data.
  *
- *         In this way, beware that a <tt>BadPacketExpcetion</tt> is thrown
- *         if the datagram contains invalid DHCP data.
- *
+ * @author David Graeff <david.graeff@web.de>
  */
 class DHCPPacket {
     /** DHCP BOOTP CODES **/

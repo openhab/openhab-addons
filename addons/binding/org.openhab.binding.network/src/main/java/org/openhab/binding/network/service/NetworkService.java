@@ -129,7 +129,6 @@ public class NetworkService {
             try {
                 ReceiveDHCPRequestPackets.register(InetAddress.getByName(hostname).getHostAddress(), stateUpdate);
             } catch (SocketException | UnknownHostException e) {
-                e.printStackTrace();
                 logger.error("Cannot use DHCP listen: " + e.getMessage());
             }
         }
