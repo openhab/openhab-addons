@@ -164,6 +164,8 @@ public class ZWaveSecureNonceTracker {
 
     /**
      * Generate a new nonce, then build a SECURITY_NONCE_REPORT
+     *
+     * TODO: Move the generation of the message to the command class - just deal with the nonce in this class!
      */
     public SerialMessage generateAndBuildNonceReport() {
         Nonce nonce = ourNonceTable.generateNewUniqueNonceForDevice();
@@ -204,11 +206,12 @@ public class ZWaveSecureNonceTracker {
 
     public synchronized void receivedNonceFromDevice(byte[] nonceBytes) {
         if (requestNonceTimer == null) {
-            logger.warn("NODE {}: nonce was received, but we have no requestNonceTimer", node.getNodeId());
+            logger.warn("NODE {}: SECURITY_ERROR Nonce was received, but we have no requestNonceTimer.",
+                    node.getNodeId());
         } else if (requestNonceTimer.isExpired()) {
             // The nonce was not received within the alloted time of us sending the nonce request. Send it again
-            logger.warn("NODE {}: nonce was not received within {}ms, a new one will be requested.", node.getNodeId(),
-                    NonceTimerType.REQUESTED.validityInMillis);
+            logger.warn("NODE {}: SECURITY_ERROR Nonce was not received within {}ms, a new one will be requested.",
+                    node.getNodeId(), NonceTimerType.REQUESTED.validityInMillis);
             // The ZWaveSecurityEncapsulationThread will request a new one for us
             return;
         } else {
@@ -276,18 +279,16 @@ public class ZWaveSecureNonceTracker {
         REQUESTED(TimeUnit.SECONDS.toMillis(20)), // 20 seconds since this is optional anyway
 
         /**
-         * Required and is triggered when we generate a nonce to send to the device
-         * via a {@link ZWaveSecurityCommandClass#SECURITY_NONCE_REPORT}.
-         * Represents how long the device has to use the nonce we sent from the time we
-         * generated it (NOT the time we received the ack). min=3, recommended=10, max=20
+         * Required and is triggered when we generate a nonce to send to the device via a
+         * {@link ZWaveSecurityCommandClass#SECURITY_NONCE_REPORT}.
+         * Represents how long the device has to use the nonce we sent from the time we generated it (NOT the time we
+         * received the ack). min=3, recommended=10, max=20
          */
         GENERATED(TimeUnit.SECONDS.toMillis(10)),
         /**
-         * Is used to estimate if a nonce we received from a device is still
-         * useful. We have no way of knowing for sure, as nonces can be valid
-         * for as little as 3 but as many as 20 seconds. Also, the devices
-         * timer starts when it sends the nonce, not when we get it. So slow
-         * transmission time can also cause the nonce to be unusable.
+         * Is used to estimate if a nonce we received from a device is still useful. We have no way of knowing for sure,
+         * as nonces can be valid for as little as 3 but as many as 20 seconds. Also, the devices timer starts when it
+         * sends the nonce, not when we get it. So slow transmission time can also cause the nonce to be unusable.
          *
          */
         // TODO: DB track if nonce used are from ENCAP_GET_NONCE, and if those keep failing, disable the use
@@ -314,8 +315,7 @@ public class ZWaveSecureNonceTracker {
     }
 
     /**
-     * per the spec we must track how long it has been since we
-     * sent a nonce and only allow it's use within a specified
+     * per the spec we must track how long it has been since we sent a nonce and only allow it's use within a specified
      * time period.
      */
     static class NonceTimer {
@@ -366,7 +366,7 @@ public class ZWaveSecureNonceTracker {
     }
 
     /**
-     * Class to hold the nonce itself and the it's related data
+     * Class to hold the nonce itself and it's related data
      */
     public static class Nonce {
         private static final byte[] INSECURE_NONCE_BYTES = new byte[] { (byte) 0xAA, (byte) 0xAA, (byte) 0xAA,
@@ -499,20 +499,19 @@ public class ZWaveSecureNonceTracker {
             Nonce nonce = table.remove(id);
             if (nonce != null) {
                 usedNonceIdList.add(nonce.getNonceId());
-                logger.debug(String.format(
-                        "NODE %d: Device message contained nonce id of id=0x%02X, found matching nonce of: %s",
-                        node.getNodeId(), id, nonce));
+                logger.debug("NODE {}: Device message contained nonce id of id={}, found matching nonce of: {}",
+                        node.getNodeId(), id, nonce);
             } else if (expiredNonceIdList.contains(id)) {
-                logger.error(String.format("NODE %d: Device message contained expired nonce id=0x%02X",
-                        node.getNodeId(), id));
+                logger.error("NODE {}: SECURITY_ERROR Device message contained expired nonce id={}.", node.getNodeId(),
+                        id);
             } else if (usedNonceIdList.contains(id)) {
-                logger.error(
-                        String.format("NODE %d: Device message contained nonce that was previously used, id=0x%02X",
-                                node.getNodeId(), id));
+                logger.error("NODE {}: SECURITY_ERROR Device message contained nonce that was previously used, id={}.",
+                        node.getNodeId(), id);
             } else {
-                logger.error(String.format(
-                        "NODE %d: Device message contained nonce that is unknown to us, id=0x%02X, table=%s, expiredList=%s, usedList=%s",
-                        node.getNodeId(), id, table, expiredNonceIdList, usedNonceIdList));
+                logger.error("NODE {}: SECURITY_ERROR Device message contained nonce that is unknown to us, id={}.",
+                        node.getNodeId(), id);
+                logger.debug("NODE {}: Nonce id={} table={}, expiredList={}, usedList={}", node.getNodeId(), id, table,
+                        expiredNonceIdList, usedNonceIdList);
             }
             cleanup();
             return nonce;
@@ -530,8 +529,7 @@ public class ZWaveSecureNonceTracker {
                     // it to come back and be used
                     long removeAt = nonce.getTimer().getExpiresAt() + 10000;
                     if (System.currentTimeMillis() > removeAt) {
-                        logger.warn(String.format("NODE %s: Expiring nonce with id=0x%02X", node.getNodeId(),
-                                nonce.getNonceId()));
+                        logger.warn("NODE {}: Expiring nonce with id={}", node.getNodeId(), nonce.getNonceId());
                         iter.remove();
                         expiredNonceIdList.add(nonce.getNonceId());
                     }
