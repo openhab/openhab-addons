@@ -7,7 +7,7 @@ angular.module('PaperUI.constants', [])
   'restPath': '/rest',
   'eventPath': $('#authentication').data('access-token') != '{{ACCESS_TOKEN}}' ? '/rest/events?access_token=' + $('#authentication').data('access-token') : '/rest/events'
 }).constant('moduleConfig', {
-  'control': false,
+  'control': true,
   'configuration': true,
   'setup': true,
   'configuration': true,
