@@ -31,6 +31,7 @@ public class ZWaveBindingConstants {
     public final static String CONFIGURATION_MASTER = "controller_master";
     public final static String CONFIGURATION_SUC = "controller_suc";
     public final static String CONFIGURATION_NETWORKKEY = "security_networkkey";
+    public final static String CONFIGURATION_SECUREINCLUSION = "security_inclusionmode";
     public final static String CONFIGURATION_HEALTIME = "heal_time";
     public final static String CONFIGURATION_INCLUSION_MODE = "inclusion_mode";
 
