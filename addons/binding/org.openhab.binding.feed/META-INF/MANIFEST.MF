@@ -20,4 +20,7 @@ Import-Package: org.eclipse.smarthome.config.core,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.feed,
- org.openhab.binding.feed.handler
+ org.openhab.binding.feed.handler,
+ com.rometools.rome.io,
+ com.rometools.rome.feed.synd
+
