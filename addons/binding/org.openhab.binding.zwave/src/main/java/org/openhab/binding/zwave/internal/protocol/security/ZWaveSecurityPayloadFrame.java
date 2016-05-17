@@ -86,6 +86,7 @@ public class ZWaveSecurityPayloadFrame {
         if (payloadBuffer.length > SECURITY_PAYLOAD_ONE_PART_SIZE) {
             // Use this byte for both parts, but OR it for each frame
             byte messageSequnceByte = (byte) sequenceCounter.getAndIncrement();
+
             // Message must be split into two parts
             byte[] partOneBuffer = new byte[SECURITY_PAYLOAD_ONE_PART_SIZE];
             System.arraycopy(payloadBuffer, 0, partOneBuffer, 0, SECURITY_PAYLOAD_ONE_PART_SIZE);
@@ -112,6 +113,7 @@ public class ZWaveSecurityPayloadFrame {
         this.partNumber = partNumber;
         this.partBytes = partBuffer;
         this.totalParts = totalParts;
+
         // if (totalParts != 1) {
         // totalParts = totalParts;
         // logger.debug("More parts than I want to see!");
@@ -120,12 +122,14 @@ public class ZWaveSecurityPayloadFrame {
         this.expirationTime = System.currentTimeMillis() + MESSAGE_EXPIRATION_MS;
         // Replace the original payload bytes with ours
         String ourSerialMessageString = originalMessage.toString();
+
         int index = ourSerialMessageString.indexOf("payload");
         if (index > 0) {
             ourSerialMessageString = ourSerialMessageString.substring(0, index);
             ourSerialMessageString = new StringBuilder(ourSerialMessageString).append("payload = ")
                     .append(SerialMessage.bb2hex(partBytes)).toString();
         }
+
         this.logMessage = String.format("NODE %s: SecurityPayload (part %d of %d) for %s : %s", node.getNodeId(),
                 partNumber, totalParts, CommandClass.getCommandClass(originalMessage.getMessageBuffer()[6] & 0xff),
                 ourSerialMessageString);
