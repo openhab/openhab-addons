@@ -127,10 +127,13 @@ Each of the channels has a default configuration parameter - priority. It has th
 ## Full example
 
 Things:
+
 ```
 systeminfo:computer:work [interval_high=3, interval_medium=60] 
 ```
+
 Items:
+
 ```
 /* Network information*/
 String Network_AdapterName          { channel="systeminfo:computer:work:network#networkDisplayName" }
