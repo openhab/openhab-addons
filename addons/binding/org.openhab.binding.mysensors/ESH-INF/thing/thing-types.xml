@@ -621,6 +621,36 @@
         </config-description>
     </thing-type>
     
+    <thing-type id="waterMeter">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge-ser" />
+            <bridge-type-ref id="bridge-eth" />
+        </supported-bridge-type-refs>
+        
+        <label>WaterMeter</label>
+        <description>Water flow meter</description>
+
+        <channels>
+             <channel id="flow" typeId="flow-channel"/>
+             <channel id="volume" typeId="volume-channel"/>
+            <channel id="var1" typeId="var1-channel"/>
+            <channel id="battery" typeId="battery-channel"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="nodeId" type="text" required="true">
+                <label>NodeId</label>
+                <description>The ID of the node in the MySensors network
+                </description>
+            </parameter>
+            <parameter name="childId" type="text" required="true">
+                <label>ChildId</label>
+                <description>The ID of the child of a node in the MySensors network
+                </description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
     <!--  CHANNELS -->
 
     <channel-type id="hum-channel">
@@ -824,5 +854,15 @@
         <label>Variable</label>
         <description>MySensors var5 Channel</description>
         <category>Variable</category>
+    </channel-type>
+    <channel-type id="flow-channel">
+        <item-type>Number</item-type>
+        <label>Flow</label>
+        <description>MySensors Water Flow Channel</description>
+    </channel-type>
+        <channel-type id="volume-channel">
+        <item-type>Number</item-type>
+        <label>Volume</label>
+        <description>MySensors Water Volume Channel</description>
     </channel-type>
 </thing:thing-descriptions>

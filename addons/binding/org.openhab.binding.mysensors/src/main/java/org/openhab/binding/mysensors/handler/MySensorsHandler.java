@@ -170,6 +170,12 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         } else if (channelUID.getId().equals(CHANNEL_VAR5)) {
             subType = MYSENSORS_SUBTYPE_V_VAR5;
             msgPayload = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_FLOW)) {
+            subType = MYSENSORS_SUBTYPE_V_FLOW;
+            msgPayload = command.toString();
+        } else if (channelUID.getId().equals(CHANNEL_VOLUME)) {
+            subType = MYSENSORS_SUBTYPE_V_VOLUME;
+            msgPayload = command.toString();
         } else {
             msgPayload = "";
         }
