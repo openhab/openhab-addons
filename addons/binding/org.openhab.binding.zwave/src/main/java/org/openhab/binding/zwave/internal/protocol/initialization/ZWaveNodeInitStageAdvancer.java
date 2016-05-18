@@ -28,6 +28,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociation;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Generic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -451,6 +452,26 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     break;
 
                 case SECURITY_REPORT:
+                    // Check if we want to perform a secure inclusion...
+                    boolean doSecureInclusion = false;
+                    switch (controller.getSecureInclusionMode()) {
+                        default:
+                        case 0:
+                            // Only ENTRY_CONTROL
+                            if (node.getDeviceClass().getGenericDeviceClass() == Generic.ENTRY_CONTROL) {
+                                doSecureInclusion = true;
+                            }
+                            break;
+                        case 1:
+                            // All devices
+                            doSecureInclusion = true;
+                            break;
+                    }
+
+                    if (doSecureInclusion == false) {
+                        break;
+                    }
+
                     // For devices that use security. When invoked during secure inclusion, this
                     // method will go through all steps to give the device our zwave:networkKey from
                     // the config. This requires multiple steps as defined in
