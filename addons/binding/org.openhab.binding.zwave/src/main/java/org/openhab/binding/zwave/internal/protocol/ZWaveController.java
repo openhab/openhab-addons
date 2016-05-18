@@ -121,6 +121,7 @@ public class ZWaveController {
     private int sucID = 0;
     private boolean softReset = false;
     private boolean masterController = true;
+    private int secureInclusionMode = 0;
     private Set<SerialMessageClass> apiCapabilities = new HashSet<>();
 
     private AtomicInteger timeOutCount = new AtomicInteger(0);
@@ -146,20 +147,19 @@ public class ZWaveController {
      *             when a connection error occurs.
      */
     public ZWaveController(ZWaveIoHandler handler, Map<String, String> config) {
-        final boolean masterController = "true".equals(config.get("masterController"));
-        final boolean isSUC = "true".equals(config.get("isSUC"));
+        masterController = "true".equals(config.get("masterController"));
+        setSUC = "true".equals(config.get("isSUC"));
+        softReset = "true".equals(config.get("softReset"));
+        secureInclusionMode = config.containsKey("secureInclusion") ? Integer.parseInt(config.get("secureInclusion"))
+                : 0;
         final Integer timeout = config.containsKey("timeout") ? Integer.parseInt(config.get("timeout")) : 0;
-        final boolean reset = "true".equals(config.get("softReset"));
 
         logger.info("Starting ZWave controller");
-        this.masterController = masterController;
-        this.setSUC = isSUC;
-        this.softReset = reset;
 
         if (timeout != null && timeout >= 1500 && timeout <= 10000) {
             zWaveResponseTimeout = timeout;
         }
-        logger.info("ZWave timeout is set to {}ms. Soft reset is {}.", zWaveResponseTimeout, reset);
+        logger.info("ZWave timeout is set to {}ms. Soft reset is {}.", zWaveResponseTimeout, softReset);
         // this.watchdog = new Timer(true);
         // this.watchdog.schedule(new WatchDogTimerTask(), WATCHDOG_TIMER_PERIOD, WATCHDOG_TIMER_PERIOD);
 
@@ -170,10 +170,10 @@ public class ZWaveController {
         Timer initTimer = new Timer();
         initTimer.schedule(new InitializeDelayTask(), 3000);
 
-        this.sendThread = new ZWaveSendThread();
-        this.sendThread.start();
-        this.inputThread = new ZWaveInputThread();
-        this.inputThread.start();
+        sendThread = new ZWaveSendThread();
+        sendThread.start();
+        inputThread = new ZWaveInputThread();
+        inputThread.start();
     }
 
     private class InitializeDelayTask extends TimerTask {
@@ -299,34 +299,32 @@ public class ZWaveController {
                 break;
             case GetSucNodeId:
                 // Remember the SUC ID
-                this.sucID = ((GetSucNodeIdMessageClass) processor).getSucNodeId();
+                sucID = ((GetSucNodeIdMessageClass) processor).getSucNodeId();
 
                 // If we want to be the SUC, enable it here
-                if (this.setSUC == true && this.sucID == 0) {
+                if (setSUC == true && sucID == 0) {
                     // We want to be SUC
-                    this.enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.SERVER));
-                    this.enqueue(new SetSucNodeMessageClass().doRequest(this.ownNodeId,
-                            SetSucNodeMessageClass.SUCType.SERVER));
-                } else if (this.setSUC == false && this.sucID == this.ownNodeId) {
+                    enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.SERVER));
+                    enqueue(new SetSucNodeMessageClass().doRequest(ownNodeId, SetSucNodeMessageClass.SUCType.SERVER));
+                } else if (setSUC == false && sucID == ownNodeId) {
                     // We don't want to be SUC, but we currently are!
                     // Disable SERVER functionality, and set the node to 0
-                    this.enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.NONE));
-                    this.enqueue(new SetSucNodeMessageClass().doRequest(this.ownNodeId,
-                            SetSucNodeMessageClass.SUCType.NONE));
+                    enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.NONE));
+                    enqueue(new SetSucNodeMessageClass().doRequest(ownNodeId, SetSucNodeMessageClass.SUCType.NONE));
                 }
-                this.enqueue(new GetControllerCapabilitiesMessageClass().doRequest());
+                enqueue(new GetControllerCapabilitiesMessageClass().doRequest());
                 break;
             case GetControllerCapabilities:
-                this.controllerType = ((GetControllerCapabilitiesMessageClass) processor).getDeviceType();
+                controllerType = ((GetControllerCapabilitiesMessageClass) processor).getDeviceType();
                 break;
             case SerialApiGetCapabilities:
-                this.serialAPIVersion = ((SerialApiGetCapabilitiesMessageClass) processor).getSerialAPIVersion();
-                this.manufactureId = ((SerialApiGetCapabilitiesMessageClass) processor).getManufactureId();
-                this.deviceId = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceId();
-                this.deviceType = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceType();
-                this.apiCapabilities = ((SerialApiGetCapabilitiesMessageClass) processor).getApiCapabilities();
+                serialAPIVersion = ((SerialApiGetCapabilitiesMessageClass) processor).getSerialAPIVersion();
+                manufactureId = ((SerialApiGetCapabilitiesMessageClass) processor).getManufactureId();
+                deviceId = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceId();
+                deviceType = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceType();
+                apiCapabilities = ((SerialApiGetCapabilitiesMessageClass) processor).getApiCapabilities();
 
-                this.enqueue(new SerialApiGetInitDataMessageClass().doRequest());
+                enqueue(new SerialApiGetInitDataMessageClass().doRequest());
                 break;
             case SerialApiGetInitData:
                 // this.isConnected = true;
@@ -1203,6 +1201,17 @@ public class ZWaveController {
      */
     public boolean hasApiCapability(SerialMessageClass capability) {
         return apiCapabilities.contains(capability);
+    }
+
+    /**
+     * Returns the secure inclusion mode
+     * 
+     * @return
+     *         0 ENTRY_CONTROL
+     *         1 All Devices
+     */
+    public int getSecureInclusionMode() {
+        return secureInclusionMode;
     }
 
     /**
