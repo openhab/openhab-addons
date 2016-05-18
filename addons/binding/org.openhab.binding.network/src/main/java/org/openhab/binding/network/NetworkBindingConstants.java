@@ -14,15 +14,16 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link NetworkBindingConstants} class defines common constants, which are 
+ * The {@link NetworkBindingConstants} class defines common constants, which are
  * used across the whole binding.
- * 
+ *
  * @author Marc Mettke - Initial contribution
+ * @author David Gräff - 2016, Add dhcp listen
  */
 public class NetworkBindingConstants {
 
     public static final String BINDING_ID = "network";
-    
+
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
@@ -34,10 +35,11 @@ public class NetworkBindingConstants {
     public final static String PARAMETER_HOSTNAME = "hostname";
     public final static String PARAMETER_PORT = "port";
     public final static String PARAMETER_RETRY = "retry";
+    public final static String PARAMETER_DHCPLISTEN = "dhcplisten";
     public final static String PARAMETER_TIMEOUT = "timeout";
     public final static String PARAMETER_REFRESH_INTERVAL = "refresh_interval";
     public final static String PARAMETER_USE_SYSTEM_PING = "use_system_ping";
-    
+
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
-    
+
 }
