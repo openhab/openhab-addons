@@ -82,6 +82,7 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
      */
     public ZWaveProtectionCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -90,14 +91,6 @@ public class ZWaveProtectionCommandClass extends ZWaveCommandClass
     @Override
     public CommandClass getCommandClass() {
         return CommandClass.PROTECTION;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
     }
 
     /**

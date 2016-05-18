@@ -81,6 +81,7 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
      */
     public ZWaveMeterCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -89,14 +90,6 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
     @Override
     public CommandClass getCommandClass() {
         return CommandClass.METER;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
     }
 
     /**

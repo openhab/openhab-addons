@@ -99,6 +99,8 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
      */
     public ZWaveWakeUpCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
+
         wakeUpQueue = new ArrayBlockingQueue<SerialMessage>(MAX_BUFFFER_SIZE, true);
 
         timer = new Timer();
@@ -122,14 +124,6 @@ public class ZWaveWakeUpCommandClass extends ZWaveCommandClass
     public CommandClass getCommandClass() {
         return CommandClass.WAKE_UP;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
-    };
 
     /**
      * {@inheritDoc}

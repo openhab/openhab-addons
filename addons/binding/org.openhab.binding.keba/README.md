@@ -33,7 +33,8 @@ All devices support the following channels (non exhaustive):
 
 ## Full Example
 
-demo.things:
+demo.Things:
+
 ```
 Thing keba:kecontactp20:1 [ipAddress="192.168.0.64", refreshInterval=30]
 ```
