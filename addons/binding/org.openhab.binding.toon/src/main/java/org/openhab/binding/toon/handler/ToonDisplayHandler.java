@@ -133,8 +133,9 @@ public class ToonDisplayHandler extends AbstractToonHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_SETPOINT:
                     if (command instanceof DecimalType) {
-                        DecimalType d = (DecimalType) command;
-                        getToonBridgeHandler().getApiClient().setSetpoint(d.doubleValue());
+                        BigDecimal setpoint = ((DecimalType) command).toBigDecimal();
+                        setpoint = setpoint.setScale(2, BigDecimal.ROUND_HALF_UP).movePointRight(2);
+                        getToonBridgeHandler().getApiClient().setSetpoint(setpoint.intValue());
                     }
                     break;
                 case CHANNEL_SETPOINT_MODE:

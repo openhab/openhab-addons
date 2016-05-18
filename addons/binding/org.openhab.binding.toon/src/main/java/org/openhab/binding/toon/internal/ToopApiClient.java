@@ -194,7 +194,7 @@ public class ToopApiClient {
 
     }
 
-    public void setSetpoint(double value) throws ToonConnectionException {
+    public void setSetpoint(int value) throws ToonConnectionException {
         logger.debug("setSetpoint {}", value);
 
         if (clientId == null) {
@@ -203,8 +203,7 @@ public class ToopApiClient {
         }
 
         Response response = client.target(TOON_HOST).path(TOON_TEMPSET_PATH).queryParam("clientId", clientId)
-                .queryParam("clientIdChecksum", clientIdChecksum)
-                .queryParam("value", String.format("%d", (int) (value * 100.0)))
+                .queryParam("clientIdChecksum", clientIdChecksum).queryParam("value", String.format("%d", value))
                 .queryParam("random", UUID.randomUUID().toString()).request(MediaType.APPLICATION_JSON_TYPE).get();
 
         validateResponce(response);
