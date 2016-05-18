@@ -10,7 +10,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openhab.addons.io</groupId>
+	<groupId>org.openhab.io</groupId>
 	<artifactId>org.openhab.io.hueemulation</artifactId>
 
 	<name>Hue Emulation Service</name>
