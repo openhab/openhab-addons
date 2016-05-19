@@ -4,10 +4,10 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated.
-        High priority should be channels, which change its state dynamically at few seconds interval.
-        Medium priority channels usually need update of the state more often - at several minutes.
-        Low priority channels do not change their state at all, or very often. They do not need regular updates.-->
+	<!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated. 
+		High priority should be channels, which change its state dynamically at few seconds interval. Medium priority channels usually 
+		need update of the state more often - at several minutes. Low priority channels do not change their state at all, or very 
+		often. They do not need regular updates. -->
 
 	<config-description uri="systeminfo:channels:lowpriority">
 		<parameter name="priority" type="text">
@@ -19,6 +19,12 @@
 				<option value="Low">Low</option>
 			</options>
 			<default>Low</default>
+		</parameter>
+		<parameter name="pid" type="integer" min="-1" step="1">
+			<label>PID</label>
+			<description>The PID of the process. It is only used for channels from group 'process'.</description>
+			<default>-1</default>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
@@ -33,8 +39,14 @@
 			</options>
 			<default>Medium</default>
 		</parameter>
+		<parameter name="pid" type="integer" min="-1" step="1">
+			<label>PID</label>
+			<description>The PID of the process. It is only used for channels from group 'process'.</description>
+			<default>-1</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
-	
+
 	<config-description uri="systeminfo:channels:highpriority">
 		<parameter name="priority" type="text">
 			<label>Interval</label>
@@ -46,6 +58,12 @@
 			</options>
 			<default>High</default>
 		</parameter>
+		<parameter name="pid" type="integer" min="-1" step="1">
+			<label>PID</label>
+			<description>The PID of the process. It is only used for channels from group 'process'.</description>
+			<default>-1</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
-	
+
 </config-description:config-descriptions>

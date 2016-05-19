@@ -110,6 +110,26 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="processGroup" advanced="true">
+		<label>Process</label>
+		<description>System process information</description>
+		<channels>
+			<channel id="load" typeId="load" />
+			<channel id="used" typeId="used" />
+			<channel id="name" typeId="name" />
+			<channel id="threads" typeId="threads" />
+			<channel id="path" typeId="path" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="path">
+		<item-type>String</item-type>
+		<label>Path</label>
+		<description>The full path</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
 	<channel-type id="available">
 		<item-type>Number</item-type>
 		<label>Available</label>
@@ -145,7 +165,7 @@
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<description>Name of the device</description>
+		<description>Name of the device (process)</description>
 		<state readOnly="true" pattern="%s" />
 		<config-description uri="systeminfo:channels:lowpriority" />
 	</channel-type>

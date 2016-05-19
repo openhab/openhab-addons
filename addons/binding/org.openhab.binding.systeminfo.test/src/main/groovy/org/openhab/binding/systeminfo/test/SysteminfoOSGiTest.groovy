@@ -61,6 +61,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     def  DEFAULT_TEST_THING_NAME = "work";
     def  DEFAULT_TEST_ITEM_NAME = "test"
     def DEFAULT_CHANNEL_TEST_PRIORITY = "High"
+    def DEFAULT_CHANNEL_PID = "-1"
     def DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
     def DEFAULT_THING_INITIALIZE_MAX_TIME = 3000
 
@@ -93,21 +94,31 @@ class SysteminfoOSGiTest extends OSGiTest{
         itemRegistry = getService(ItemRegistry)
         assertThat itemRegistry, is(notNullValue())
     }
+    private void initializeThingWithChannelAndPID(String channelID,String acceptedItemType,int pid) {
+        Configuration thingConfig = new Configuration()
+        thingConfig.put(SysteminfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME, new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH))
+        thingConfig.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME, new BigDecimal(DEFAULT_TEST_INTERVAL_MEDIUM))
+        String priority = DEFAULT_CHANNEL_TEST_PRIORITY
+
+        initializeThing(thingConfig,channelID,acceptedItemType,priority,pid)
+    }
 
     private void initializeThingWithChannelAndPriority(String channelID,String acceptedItemType,String priority) {
         Configuration thingConfig = new Configuration()
         thingConfig.put(SysteminfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME, new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH))
         thingConfig.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME, new BigDecimal(DEFAULT_TEST_INTERVAL_MEDIUM))
+        int pid = DEFAULT_CHANNEL_PID
 
-        initializeThing(thingConfig,channelID,acceptedItemType,priority)
+        initializeThing(thingConfig,channelID,acceptedItemType,priority,pid)
     }
 
     private void initializeThingWithConfiguration(Configuration config) {
         String priority = DEFAULT_CHANNEL_TEST_PRIORITY
         String channelID = DEFAULT_TEST_CHANNEL_ID
         String acceptedItemType = "String";
+        int pid = DEFAULT_CHANNEL_PID
 
-        initializeThing(config,channelID,acceptedItemType,priority)
+        initializeThing(config,channelID,acceptedItemType,priority,pid)
     }
 
     private void initializeThingWithChannel(String channelID,String acceptedItemType) {
@@ -116,16 +127,18 @@ class SysteminfoOSGiTest extends OSGiTest{
         thingConfig.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME, new BigDecimal(DEFAULT_TEST_INTERVAL_MEDIUM))
 
         String priority = DEFAULT_CHANNEL_TEST_PRIORITY;
-        initializeThing(thingConfig,channelID,acceptedItemType,priority)
+        int pid = DEFAULT_CHANNEL_PID
+        initializeThing(thingConfig,channelID,acceptedItemType,priority,pid)
     }
 
-    private void initializeThing(Configuration thingConfiguration,String channelID,String acceptedItemType,String priority) {
+    private void initializeThing(Configuration thingConfiguration,String channelID,String acceptedItemType,String priority,int pid) {
         ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
         ThingUID thingUID = new ThingUID(thingTypeUID,DEFAULT_TEST_THING_NAME);
 
         ChannelUID channelUID = new ChannelUID(thingUID,channelID)
         Configuration channelConfig  = new Configuration()
         channelConfig.put("priority", priority)
+        channelConfig.put("pid",pid)
         Channel channel = new Channel(channelUID,acceptedItemType,channelConfig)
 
         systemInfoThing = ThingBuilder.create(thingTypeUID,thingUID).withConfiguration(thingConfiguration).withChannel(channel).build();
@@ -136,6 +149,11 @@ class SysteminfoOSGiTest extends OSGiTest{
             SysteminfoHandler thingHandler = getService(ThingHandler,SysteminfoHandler)
             assertThat thingHandler, is(notNullValue())
         },2000)
+
+        waitForAssert({
+            assertThat "Thing is not initilized, before an Item is created", systemInfoThing.getStatus(),
+                    anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE))
+        },DEFAULT_THING_INITIALIZE_MAX_TIME)
 
         intializeItem(channelUID,DEFAULT_TEST_ITEM_NAME,acceptedItemType)
     }
@@ -149,7 +167,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemState(acceptedItemType,itemName,true,priority)
     }
 
-    private void testItemState(String acceptedItemType,String itemName, boolean isNullExpected,String priority) {
+    private void testItemState(String acceptedItemType,String itemName, boolean isNullExpected, String priority) {
         waitForAssert({
             def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
             def description = systemInfoThing.getStatusInfo().getDescription();
@@ -779,6 +797,30 @@ class SysteminfoOSGiTest extends OSGiTest{
             assertThat systemInfoThing, is (notNullValue())
         }
     }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert chnanel process#load is not updated with no PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD
+        String acceptedItemType = "Number";
+        int pid = -1
+
+        initializeThingWithChannelAndPID(acceptedItemType, acceptedItemType,pid)
+        testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert channel process#load is updated with PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD
+        String acceptedItemType = "Number";
+        //The pid of the System idle process in Windows
+        int pid = 0
+
+        initializeThingWithChannelAndPID(acceptedItemType, acceptedItemType,pid)
+        testItemStateIsUpdated(acceptedItemType, acceptedItemType, acceptedItemType)
+    }
+
 
     @After
     public void tearDown () {

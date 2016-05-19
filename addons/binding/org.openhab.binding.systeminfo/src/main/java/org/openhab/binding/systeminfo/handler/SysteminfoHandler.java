@@ -227,14 +227,28 @@ public class SysteminfoHandler extends BaseThingHandler {
         State state = null;
         String channelID = channelUID.getId();
         String channelGroupID = channelUID.getGroupId();
-        int deviceIndex = getDeviceIndex(channelGroupID);
-        if (deviceIndex > 0) {
-            // The channelGroup contains deviceIndex. It must be deleted from the channelID, because otherwise the
-            // method
-            // will not find the correct method below.
-            // All digits are deleted from the ID
-            channelID = channelID.replaceAll("\\d+", "");
+
+        int deviceIndex;
+
+        // TODO description !!
+        if (channelGroupID.contains(CHANNEL_GROUP_PROCESS)) {
+            Channel channel = getThing().getChannel(channelID);
+            int pid = (int) channel.getConfiguration().get("pid");
+            if (pid > -1) {
+                deviceIndex = pid;
+                logger.debug("Channel with id {} tracks process with pid: {}", channelID, pid);
+            } else {
+                logger.debug("Channel with id {} will not be updated, it has no pid assigned !", channelID);
+                return null;
+            }
+        } else {
+            deviceIndex = getDeviceIndex(channelGroupID);
         }
+
+        // The channelGroup may contain deviceIndex. It must be deleted from the channelID, because otherwise the
+        // switch will not find the correct method below.
+        // All digits are deleted from the ID
+        channelID = channelID.replaceAll("\\d+", "");
         try {
             switch (channelID) {
                 case CHANNEL_DISPLAY_INFORMATION:
@@ -359,6 +373,21 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_NETWORK_PACKAGES_SENT:
                     state = systeminfo.getNetworkPackageSent(deviceIndex);
+                    break;
+                case CHANNEL_PROCESS_LOAD:
+                    state = systeminfo.getProcessCpuUsage(deviceIndex);
+                    break;
+                case CHANNEL_PROCESS_MEMORY:
+                    state = systeminfo.getProcessMemoryUsage(deviceIndex);
+                    break;
+                case CHANNEL_PROCESS_NAME:
+                    state = systeminfo.getProcessName(deviceIndex);
+                    break;
+                case CHANNEL_PROCESS_PATH:
+                    state = systeminfo.getProcessPath(deviceIndex);
+                    break;
+                case CHANNEL_PROCESS_THREADS:
+                    state = systeminfo.getProcessThreads(deviceIndex);
                     break;
                 default:
                     logger.error("Channel with unknown ID: {} !", channelID);

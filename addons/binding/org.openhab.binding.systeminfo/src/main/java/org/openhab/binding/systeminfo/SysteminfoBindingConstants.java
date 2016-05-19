@@ -255,6 +255,37 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_NETWORK_MAC = "network#mac";
 
     /**
+     * Name of the channel group for process information
+     */
+    public final static String CHANNEL_GROUP_PROCESS = "process";
+
+    /**
+     * CPU load used from a process
+     */
+
+    public final static String CHANNEL_PROCESS_LOAD = "process#load";
+
+    /**
+     * Size of memory used from a process in MB
+     */
+    public final static String CHANNEL_PROCESS_MEMORY = "process#used";
+
+    /**
+     * Name of the process
+     */
+    public final static String CHANNEL_PROCESS_NAME = "process#name";
+
+    /**
+     * Number of threads, used form the process
+     */
+    public final static String CHANNEL_PROCESS_THREADS = "process#threads";
+
+    /**
+     * The full path of the process
+     */
+    public final static String CHANNEL_PROCESS_PATH = "process#path";
+
+    /**
      * Name of the configuration parameter of the thing that defines refresh time for High priority channels
      */
     public final static String HIGH_PRIORITY_REFRESH_TIME = "interval_high";
