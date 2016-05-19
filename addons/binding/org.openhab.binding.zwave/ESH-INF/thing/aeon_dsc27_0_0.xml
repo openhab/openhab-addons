@@ -38,8 +38,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Notification on Status Change</label>
         <description>Parameter to Enable to send notification to associated devices (Group 1) when the state of Micro Dimmer's load changed</description>
         <default>0</default>
@@ -50,8 +49,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_120_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_120_1" type="integer" groupName="configuration">
         <label>120: Turn External Button Mode</label>
         <description>Parameter to set External button type</description>
         <default>255</default>

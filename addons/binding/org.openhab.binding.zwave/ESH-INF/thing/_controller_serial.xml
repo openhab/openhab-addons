@@ -42,8 +42,7 @@
                 <default></default>
             </parameter>
 
-            <parameter name="controller_master" type="boolean"
-				groupName="network">
+            <parameter name="controller_master" type="boolean" groupName="network">
 				<label>Controller is Master</label>
 				<description><![CDATA[This controller is the master controller in the network.<br/>
 				The binding will perform automatic configuration of the network.
@@ -56,8 +55,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="controller_suc" type="boolean"
-				groupName="network">
+			<parameter name="controller_suc" type="boolean" groupName="network">
 				<label>Controller is SUC</label>
 				<description>Controller is SUC and will receive updates from other controllers in the network</description>
 				<options>
@@ -68,21 +66,37 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="heal_enable" type="boolean" groupName="heal">
-				<label>Heal Enabled</label>
-				<description></description>
-                <options>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </options>
-				<default>false</default>
-			</parameter>
-
-			<parameter name="heal_time" type="integer" min="0" max="23"
-				groupName="heal">
+			<parameter name="heal_time" type="integer" groupName="heal">
 				<label>Heal Time</label>
 				<description></description>
 				<default>2</default>
+                <options>
+                    <option value="-1">Disabled</option>
+                    <option value="1">1 AM</option>
+                    <option value="2">2 AM</option>
+                    <option value="3">3 AM</option>
+                    <option value="4">4 AM</option>
+                    <option value="5">5 AM</option>
+                    <option value="6">6 AM</option>
+                    <option value="7">7 AM</option>
+                    <option value="8">8 AM</option>
+                    <option value="9">9 AM</option>
+                    <option value="10">10 AM</option>
+                    <option value="11">11 AM</option>
+                    <option value="12">Midday</option>
+                    <option value="13">1 PM</option>
+                    <option value="14">2 PM</option>
+                    <option value="15">3 PM</option>
+                    <option value="16">4 PM</option>
+                    <option value="17">5 PM</option>
+                    <option value="18">6 PM</option>
+                    <option value="19">7 PM</option>
+                    <option value="20">8 PM</option>
+                    <option value="21">9 PM</option>
+                    <option value="22">10 PM</option>
+                    <option value="23">11 PM</option>
+                    <option value="0">Midnight</option>
+                </options>
 			</parameter>
 			
 			<parameter-group name="actions">
@@ -120,7 +134,47 @@
                     <option value="-232323">send</option>
                 </options>
             </parameter>
-            
+
+            <parameter name="inclusion_mode" type="integer" groupName="network">
+                <label>Inclusion Mode</label>
+                <description>
+                    <![CDATA[Set the controller inclusion mode<br/>
+<h1>Low Power Inclusion</h1>
+In this mode, the device to be included must be brought close to the controller – normally the device must be within a meter or so of the controller.  Low Power Inclusion may be required for some older devices.
+<h1>High Power Inclusion</h1>
+In this mode, the controller and the device will use their nominal RF power, so they can be included into the network anywhere so long as the device can directly communicate with the controller. This would normally mean the device can be within 10 to 15m of the controller, however this will depend on the environment and it could require a shorter distance.
+<h1>Network Wide Inclusion</h1>
+In this mode, the controller uses high power, but also other devices within the network can route the inclusion messages within the mesh network. This means that devices can be included in their final location even if they are not in direct communication with the controller. This mode will only work when the routing devices also support NWI – generally this can be considered when the devices are Z-Wave Plus compatible.
+                    ]]>
+                </description>
+                <advanced>true</advanced>
+                <default>2</default>
+                <options>
+                    <option value="0">Low Power Inclusion</option>
+                    <option value="1">High Power Inclusion</option>
+                    <option value="2">Network Wide Inclusion</option>
+                </options>
+            </parameter>
+
+            <parameter name="security_inclusionmode" type="integer" groupName="network">
+                <label>Secure Inclusion Mode</label>
+                <description>
+                    <![CDATA[Sets the controller secure inclusion mode<br/>
+<h1>All Devices</h1>
+In this mode, all devices reporting the SECURITY command class will be securely included into the network.<br/>
+This may reduce the life of battery devices and slow down communications. For most devices, it is not necesary to include the device securely into the network since the same command classes can be used without security.
+<h1>Entry Control Devices</h1>
+In this mode, only <i>Entry Control Devices</i> such as locks will be securely included into the network.<br/>
+                    ]]>
+                </description>
+                <advanced>true</advanced>
+                <default>0</default>
+                <options>
+                    <option value="1">All Devices</option>
+                    <option value="0">Entry Control Devices</option>
+                </options>
+            </parameter>
+
             <parameter name="security_networkkey" type="text" groupName="network">
                 <label>Network Security Key</label>
                 <description>Set the network security key</description>

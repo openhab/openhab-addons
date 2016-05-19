@@ -51,8 +51,7 @@ Typical time used to differentiate click<br /><h1>Overview</h1><p>Typical time u
         <limitToOptions>false</limitToOptions>
       </parameter>
 
-      <parameter name="config_11_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_11_1" type="integer" groupName="configuration">
         <label>11: Invert buttons</label>
         <default>0</default>
         <options>
@@ -77,8 +76,7 @@ Defines which command should be sent on button single press or hold.<br /><h1>Ov
         <limitToOptions>false</limitToOptions>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Action on button double press or hold</label>
         <description><![CDATA[
 Defines which command should be sent on button double press or press-hold.<br /><h1>Overview</h1><p>Defines which command should be sent on button double press or press-hold.</p> <p>Basic and Scene commands are sent to Association group.</p> <p>Switch All commands are sent broadcast.</p> <p>If not disabled, the device will wait for a click timeout to see if the second click</p>
@@ -92,8 +90,7 @@ Defines which command should be sent on button double press or press-hold.<br />
         </options>
       </parameter>
 
-      <parameter name="config_15_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_15_1" type="integer" groupName="configuration">
         <label>15: Send the following Switch All commands</label>
         <default>0</default>
         <options>
@@ -103,8 +100,7 @@ Defines which command should be sent on button double press or press-hold.<br />
         </options>
       </parameter>
 
-      <parameter name="config_20_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_20_1" type="integer" groupName="configuration">
         <label>20: Send unsolicited Battery Report on Wake Up</label>
         <default>0</default>
         <options>

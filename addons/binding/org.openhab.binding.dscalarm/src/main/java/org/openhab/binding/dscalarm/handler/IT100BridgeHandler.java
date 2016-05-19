@@ -47,7 +47,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
      * @param bridge
      */
     public IT100BridgeHandler(Bridge bridge) {
-        super(bridge, DSCAlarmBridgeType.IT100);
+        super(bridge, DSCAlarmBridgeType.IT100, DSCAlarmProtocol.IT100_API);
     }
 
     private String serialPortName = "";

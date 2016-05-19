@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author Chris Jackson - Initial contribution
  *
  */
-@XStreamAlias("multiAssociationCommandClass")
+@XStreamAlias("associationMember")
 public class ZWaveAssociation {
     private int node;
     private int endpoint;

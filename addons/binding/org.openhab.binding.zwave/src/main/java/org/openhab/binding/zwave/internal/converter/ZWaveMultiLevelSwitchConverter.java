@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -42,8 +43,8 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveMultiLevelSwitchConverter} class.
      *
      */
-    public ZWaveMultiLevelSwitchConverter() {
-        super();
+    public ZWaveMultiLevelSwitchConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -173,7 +174,9 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         messages.add(serialMessage);
 
         // Poll an update once we've sent the command
-        messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
+        // Don't poll immediately since some devices return the original value, and some the new value.
+        // This conflicts with OH that will move the slider immediately.
+        // messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
         return messages;
     }
 }

@@ -56,8 +56,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_10_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_10_2" type="integer" groupName="configuration">
         <label>10: ALL ON/ALL OFF</label>
         <description>Flush shutter responds to commands ALL ON / ALL OFF that may be sent by the main controller or by other controllers belonging to the system</description>
         <default>255</default>
@@ -83,8 +82,7 @@
         <default>300</default>
       </parameter>
 
-      <parameter name="config_71_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_71_1" type="integer" groupName="configuration">
         <label>71: Operating modes</label>
         <description>This parameter defines selection between two available operating modes. default value 0, 0 – Shutter mode, 1 – Venetian mode (up/down and slate rotation) NOTE: When setting parameter, module needs to be reconfigured! Ple</description>
         <default>0</default>
@@ -101,8 +99,7 @@
         <default>150</default>
       </parameter>
 
-      <parameter name="config_73_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_73_1" type="integer" groupName="configuration">
         <label>73: – Slats position</label>
         <description>This parameter defines slats position after up/down movement through UI or push-buttons. Available configuration parameters: default value 2 0 - Slats return to previously set position only in case of UI control. 1</description>
         <default>2</default>
@@ -127,8 +124,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_78_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_78_1" type="integer" groupName="configuration">
         <label>78: Forced Shutter calibration</label>
         <description>By modifying the parameters setting from 0 to 1 a Shutter enters the calibration mode. Available configuration parameters : default value 0 1 - Start calibration process (after shutter performs the calibration process, completing</description>
         <default>0</default>
@@ -138,8 +134,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_80_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Reporting to Controller</label>
         <description>This parameter defines if reporting regarding power level, multilevel, etc,…is reported to controller or not. Available configuration parameters: default value 1 0 reporting to controller is disabled 1 reporting to controller</description>
         <default>1</default>

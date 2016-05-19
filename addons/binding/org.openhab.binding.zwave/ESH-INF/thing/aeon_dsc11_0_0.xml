@@ -265,8 +265,7 @@ Percentage change in wattage to induce a automatic report<br /><h1>Overview</h1>
         <default>5</default>
       </parameter>
 
-      <parameter name="config_80_4" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_80_4" type="integer" groupName="configuration">
         <label>80: Status of load changed report</label>
         <description><![CDATA[
 Status of load changed,send group 1<br /><h1>Overview</h1><p>Status of load changed,send group 1 associate nodes Hail CC or Basic report CC.           </p>
@@ -288,8 +287,7 @@ Get temperature of Smart Strip<br /><h1>Overview</h1><p>Get temperature of Smart
         <default>0</default>
       </parameter>
 
-      <parameter name="config_100_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_100_1" type="integer" groupName="configuration">
         <label>100: Reset 0x65~0x67 to default value</label>
         <description>Reset 0x65~0x67 to default value</description>
         <default>0</default>

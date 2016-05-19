@@ -142,9 +142,11 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID thingUID = new ThingUID(new ThingTypeUID(ZWaveBindingConstants.ZWAVE_THING), bridgeUID,
                 String.format("node%d", nodeId));
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(ZWaveBindingConstants.PROPERTY_NODEID, Integer.toString(nodeId));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                .withLabel(String.format("Node %d", nodeId)).build();
+                .withProperties(properties).withLabel(String.format("Node %d", nodeId)).build();
 
         thingDiscovered(discoveryResult);
     }

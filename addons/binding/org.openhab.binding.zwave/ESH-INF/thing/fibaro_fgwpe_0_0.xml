@@ -55,8 +55,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Always on function</label>
         <description><![CDATA[
 Once activated, Wall Plug will keep a connected device constantly ON, will stop reacting to alarm frames and B-button push.<br /> 'Always on' function turns the Plug into a power and energy meter. Also, connected device will not be turned off upon receivi
@@ -68,8 +67,7 @@ Once activated, Wall Plug will keep a connected device constantly ON, will stop 
         </options>
       </parameter>
 
-      <parameter name="config_16_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: Remember device status after power failure</label>
         <description><![CDATA[
 Define how will the Plug react after the power supply is back on.<br /> Default setting: 1<br /> Available settings:<br /> 0 - Wall Plug does not memorize its state after a power failure. Connected device will be off after the power supply is reconnected.
@@ -90,8 +88,7 @@ Define Z-Wave network alarms to which the Wall Plug will respond.<br /> Default 
         <default>63</default>
       </parameter>
 
-      <parameter name="config_35_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_35_1" type="integer" groupName="configuration">
         <label>35: Response to alarms</label>
         <description><![CDATA[
 Parameter defines how the Wall Plug will respond to alarms (device's status change).<br /> Available settings:<br /> 0 - no reaction<br /> 1 - turn on connected device. LED ring signals an alarm through defined time period (parameter 39) or untill the ala
@@ -153,8 +150,7 @@ Defines the required change in power to generate an unsolicited power report.<br
         <default>3600</default>
       </parameter>
 
-      <parameter name="config_49_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_49_1" type="integer" groupName="configuration">
         <label>49: Metering energy consumed by the Wall Plug itself.</label>
         <description><![CDATA[
 This parameter determines whether energy metering should include the amount of energy consumed by the Wall Plug itself.<br /> Results are being added to energy consumed by controlled device.<br /> Default setting: INACTIVE
@@ -184,8 +180,7 @@ Upper power threshold, used in parameter 52.<br /> Default setting: 500 (50 W)<b
         <default>500</default>
       </parameter>
 
-      <parameter name="config_52_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_52_1" type="integer" groupName="configuration">
         <label>52: Action in case defined power values exceeded</label>
         <description><![CDATA[
 Parameter defines the way 2nd association group devices are controlled, depending on the current power load.<br /> Values are defined in parameters 50 and 51.<br /> Available settings:<br /> 0 - function inactive<br /> 1 - turn the associated devices on
@@ -211,8 +206,7 @@ Function is active only when parameter 61 is set to 0 or 1.<br /> Default settin
         <default>25000</default>
       </parameter>
 
-      <parameter name="config_61_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_61_1" type="integer" groupName="configuration">
         <label>61: LED color when device is on</label>
         <default>1</default>
         <options>
@@ -229,8 +223,7 @@ Function is active only when parameter 61 is set to 0 or 1.<br /> Default settin
         </options>
       </parameter>
 
-      <parameter name="config_62_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_62_1" type="integer" groupName="configuration">
         <label>62: LED color when device is off</label>
         <default>8</default>
         <options>
@@ -246,8 +239,7 @@ Function is active only when parameter 61 is set to 0 or 1.<br /> Default settin
         </options>
       </parameter>
 
-      <parameter name="config_63_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_63_1" type="integer" groupName="configuration">
         <label>63: LED color when Z Wave alarm</label>
         <default>1</default>
         <options>

@@ -13,6 +13,7 @@ import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.*;
 import java.util.EventObject;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -86,8 +87,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     break;
                 case PANEL_COMMAND:
                     state = properties.getSystemCommand();
-                    str = String.valueOf(state);
-                    updateState(channelUID, new StringType(str));
+                    updateState(channelUID, new DecimalType(state));
                     break;
                 case PANEL_TROUBLE_MESSAGE:
                     str = properties.getTroubleMessage();

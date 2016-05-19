@@ -92,8 +92,7 @@
         <default>10000</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Ignore start level</label>
         <default>1</default>
         <options>
@@ -103,8 +102,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_11_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_11_1" type="integer" groupName="configuration">
         <label>11: Ignore start level</label>
         <default>1</default>
         <options>

@@ -65,15 +65,15 @@ public abstract class ZWaveCommandProcessor {
     protected void checkTransactionComplete(SerialMessage lastSentMessage, SerialMessage latestIncomingMessage) {
         // Put the message in our table so it will be processed now or later
         incomingMessageTable.put(System.currentTimeMillis(), latestIncomingMessage);
+
         // First, check if we're waiting for an ACK from the controller
         // This is used for multi-stage transactions to ensure we get all parts of the
         // transaction before completing.
-        if (lastSentMessage.isAckPending()) {
-            logger.trace("Checking transaction complete: Message has Ack Pending: {}", lastSentMessage);
-            // Return until we get the ack, then come back and compare. This is necessary since, per ZWaveSendThread, we
-            // sometimes
-            // get the response before the ack. See ZWaveSendThreadcomment starting with "A transaction consists of (up
-            // to) 4 parts"
+        if (lastSentMessage == null || lastSentMessage.isAckPending()) {
+            logger.debug("Checking transaction complete: Message has Ack Pending: {}", lastSentMessage);
+            // Return until we get the ack, then come back and compare. This is necessary since, per ZWaveSendThread,
+            // we sometimes get the response before the ack. See ZWaveSendThreadcomment starting with "A transaction
+            // consists of (up to) 4 parts"
             return;
         }
 
@@ -89,7 +89,7 @@ public abstract class ZWaveCommandProcessor {
             }
             final SerialMessage incomingMessage = entry.getValue();
             logger.debug("Checking transaction complete: Recv {}", incomingMessage.toString());
-            final boolean ignoreTransmissionCompleteMismatch = false; // TODO: chagne
+            final boolean ignoreTransmissionCompleteMismatch = false; // TODO: change
             if (incomingMessage.getMessageClass() == lastSentMessage.getExpectedReply()
                     && !incomingMessage.isTransactionCanceled()) {
                 logger.debug(
@@ -162,6 +162,8 @@ public abstract class ZWaveCommandProcessor {
             messageMap.put(SerialMessage.SerialMessageClass.AssignSucReturnRoute,
                     AssignSucReturnRouteMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.DeleteReturnRoute, DeleteReturnRouteMessageClass.class);
+            messageMap.put(SerialMessage.SerialMessageClass.DeleteSUCReturnRoute,
+                    DeleteSucReturnRouteMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.EnableSuc, EnableSucMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.GetRoutingInfo, GetRoutingInfoMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.GetVersion, GetVersionMessageClass.class);

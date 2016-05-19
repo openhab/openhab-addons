@@ -42,14 +42,14 @@ public class ZWaveBarrierOperatorCommandClass extends ZWaveCommandClass
 
     private static final Logger logger = LoggerFactory.getLogger(ZWaveBarrierOperatorCommandClass.class);
 
-    public static final int BARRIER_OPERATOR_SET = 0x01;
-    public static final int BARRIER_OPERATOR_GET = 0x02;
-    public static final int BARRIER_OPERATOR_REPORT = 0x03;
-    public static final int BARRIER_OPERATOR_SIGNAL_SUPPORTED_GET = 0x04;
-    public static final int BARRIER_OPERATOR_SIGNAL_SUPPORTED_REPORT = 0x05;
-    public static final int BARRIER_OPERATOR_SIGNAL_SET = 0x06;
-    public static final int BARRIER_OPERATOR_SIGNAL_GET = 0x07;
-    public static final int BARRIER_OPERATOR_SIGNAL_REPORT = 0x08;
+    public static final int BARRIER_OPERATOR_SET = 1;
+    public static final int BARRIER_OPERATOR_GET = 2;
+    public static final int BARRIER_OPERATOR_REPORT = 3;
+    public static final int BARRIER_OPERATOR_SIGNAL_SUPPORTED_GET = 4;
+    public static final int BARRIER_OPERATOR_SIGNAL_SUPPORTED_REPORT = 5;
+    public static final int BARRIER_OPERATOR_SIGNAL_SET = 6;
+    public static final int BARRIER_OPERATOR_SIGNAL_GET = 7;
+    public static final int BARRIER_OPERATOR_SIGNAL_REPORT = 8;
 
     @XStreamOmitField
     private boolean dynamicDone = false;
@@ -66,30 +66,29 @@ public class ZWaveBarrierOperatorCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Barrier Operator Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received BARRIER_OPERATOR command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case BARRIER_OPERATOR_REPORT:
                 logger.trace("Process Barrier Operator Report");
                 int value = serialMessage.getMessagePayloadByte(offset + 1);
-                logger.debug("NODE {}: Barrier Operator report, value = {}", this.getNode().getNodeId(), value);
+                logger.debug("NODE {}: Barrier Operator report, value = {}", getNode().getNodeId(), value);
 
-                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
-                        endpoint, this.getCommandClass(), value,
-                        BarrierOperatorStateType.getBarrierOperatorStateType(value));
+                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
+                        getCommandClass(), value, BarrierOperatorStateType.getBarrierOperatorStateType(value));
 
                 this.getController().notifyEventListeners(zEvent);
                 break;
             default:
                 logger.warn(String.format("Unsupported Command 0x%02X for command class %s (0x%02X).", command,
-                        this.getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                        getCommandClass().getLabel(), this.getCommandClass().getKey()));
         }
     }
 
     @Override
     public SerialMessage setValueMessage(int value) {
         logger.debug("NODE {}: Creating new message for application command BARRIER_OPERATOR_SET",
-                this.getNode().getNodeId());
+                getNode().getNodeId());
         SerialMessage message = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();

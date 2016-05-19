@@ -36,8 +36,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Night Light</label>
         <description>In night-light mode the LED on the switch will turn ON when the switch is turned OFF.</description>
         <default>1</default>

@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -40,8 +41,8 @@ public class ZWaveMultiLevelSensorConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveMultiLevelSensorConverter} class.
      *
      */
-    public ZWaveMultiLevelSensorConverter() {
-        super();
+    public ZWaveMultiLevelSensorConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -57,8 +58,17 @@ public class ZWaveMultiLevelSensorConverter extends ZWaveCommandClassConverter {
 
         logger.debug("NODE {}: Generating poll message for {}, endpoint {}", node.getNodeId(),
                 commandClass.getCommandClass().getLabel(), channel.getEndpoint());
-        SerialMessage serialMessage = node.encapsulate(commandClass.getValueMessage(), commandClass,
-                channel.getEndpoint());
+
+        String sensorType = channel.getArguments().get("type");
+
+        SerialMessage serialMessage;
+        if (sensorType != null) {
+            serialMessage = node.encapsulate(commandClass.getMessage(SensorType.valueOf(sensorType)), commandClass,
+                    channel.getEndpoint());
+        } else {
+            serialMessage = node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint());
+        }
+
         List<SerialMessage> response = new ArrayList<SerialMessage>(1);
         response.add(serialMessage);
         return response;

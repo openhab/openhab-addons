@@ -81,6 +81,7 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
      */
     public ZWaveMeterCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -93,21 +94,13 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
-    }
-
-    /**
-     * {@inheritDoc}
      *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Meter Request V{}", getNode().getNodeId(), getVersion());
+        logger.debug("NODE {}: Received METER command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         MeterScale scale;
         int meterTypeIndex;
@@ -127,17 +120,13 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
                     return;
                 }
 
+                int meterRateType = (serialMessage.getMessagePayloadByte(offset + 1) & 0x60) >> 5;
+
                 meterType = MeterType.getMeterType(meterTypeIndex);
                 int scaleIndex = (serialMessage.getMessagePayloadByte(offset + 2) & 0x18) >> 0x03;
 
-                int delta = 0;
-                if (getVersion() > 1) {
-                    int size = serialMessage.getMessagePayloadByte(offset + 2) & 0x07;
-                    delta = (serialMessage.getMessagePayloadByte(offset + 3 + size) << 8)
-                            + serialMessage.getMessagePayloadByte(offset + 4 + size);
-                }
-
-                if (getVersion() > 2) {
+                // TODO: Does it matter about version? V1 and V2 require this to be 0 anyway.
+                if (getVersion() >= 3) {
                     // In version 3, an extra scale bit is stored in the meter type byte.
                     scaleIndex |= ((serialMessage.getMessagePayloadByte(offset + 1) & 0x80) >> 0x05);
                 }
@@ -155,12 +144,12 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
 
                 try {
                     BigDecimal value = extractValue(serialMessage.getMessagePayload(), offset + 2);
-                    logger.debug("NODE {}: Meter: Type={}({}), Scale={}({}), Value={}, Delta={}", getNode().getNodeId(),
-                            meterType.getLabel(), meterTypeIndex, scale.getUnit(), scale.getScale(), value, delta);
+                    logger.debug("NODE {}: Meter: Type={}({}), Scale={}({}), Value={}", getNode().getNodeId(),
+                            meterType.getLabel(), meterTypeIndex, scale.getUnit(), scale.getScale(), value);
 
-                    ZWaveMeterValueEvent zEvent = new ZWaveMeterValueEvent(getNode().getNodeId(), endpoint, meterType,
+                    ZWaveMeterValueEvent event = new ZWaveMeterValueEvent(getNode().getNodeId(), endpoint, meterType,
                             scale, value);
-                    this.getController().notifyEventListeners(zEvent);
+                    getController().notifyEventListeners(event);
                 } catch (NumberFormatException e) {
                     logger.error("NODE {}: Meter Value Error {}", getNode().getNodeId(), e);
                     return;
@@ -256,8 +245,8 @@ public class ZWaveMeterCommandClass extends ZWaveCommandClass
                         scale.getUnit());
 
                 // Add scale to the list of supported scales.
-                if (!this.meterScales.contains(scale)) {
-                    this.meterScales.add(scale);
+                if (!meterScales.contains(scale)) {
+                    meterScales.add(scale);
                 }
             }
 

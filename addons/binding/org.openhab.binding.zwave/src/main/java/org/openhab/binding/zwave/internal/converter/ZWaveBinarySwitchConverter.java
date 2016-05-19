@@ -14,6 +14,7 @@ import java.util.List;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -39,8 +40,8 @@ public class ZWaveBinarySwitchConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveBinarySwitchConverter} class.
      *
      */
-    public ZWaveBinarySwitchConverter() {
-        super();
+    public ZWaveBinarySwitchConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -78,6 +79,9 @@ public class ZWaveBinarySwitchConverter extends ZWaveCommandClassConverter {
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
         ZWaveBinarySwitchCommandClass commandClass = (ZWaveBinarySwitchCommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.SWITCH_BINARY, channel.getEndpoint());
+        if (commandClass == null) {
+            return null;
+        }
 
         int value = 0;
         if (command instanceof OnOffType) {
