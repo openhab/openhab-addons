@@ -42,6 +42,7 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.mysensors</module>
     <module>org.openhab.binding.zwave</module>
+    <module>org.openhab.binding.mysensors.test</module>
   </modules>
 
 </project>
