@@ -50,7 +50,6 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.zwave.test</module>
->>>>>>> master
   </modules>
 
 </project>
