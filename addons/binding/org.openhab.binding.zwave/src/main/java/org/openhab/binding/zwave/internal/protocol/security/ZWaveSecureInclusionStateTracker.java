@@ -104,7 +104,7 @@ public class ZWaveSecureInclusionStateTracker {
             // message ahead
             if (newIndex != currentIndex && newIndex - currentIndex > 1) {
                 if (HALT_ON_IMPROPER_ORDER) {
-                    setErrorState(String.format("NODE %s: Commands received out of order, aborting current=%s, new=%s",
+                    setErrorState(String.format("NODE %d: Commands received out of order, aborting current=%s, new=%s",
                             node.getNodeId(), ZWaveSecurityCommandClass.commandToString(currentStep),
                             ZWaveSecurityCommandClass.commandToString(newStep)));
                     return false;
