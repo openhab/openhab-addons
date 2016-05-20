@@ -40,6 +40,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
     </feature>
     
+    <feature name="openhab-binding-gpio" description="GPIO IO Module Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gpio/${project.version}</bundle>
+    </feature>
+    
      <feature name="openhab-binding-harmonyhub" description="Harmony Hub Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
