@@ -27,7 +27,7 @@ The Samsung TV Thing requires the host name and port address as a configuration 
 
 E.g.
 ```
-Thing samsungtv:tv:livingroom [ hostname="192.168.1.10", port=55000, refreshInterval=1000]
+Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInterval=1000]
 ```
 
 ## Channels

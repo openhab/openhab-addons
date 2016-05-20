@@ -156,6 +156,25 @@ In this mode, the controller uses high power, but also other devices within the 
                 </options>
             </parameter>
 
+            <parameter name="security_inclusionmode" type="integer" groupName="network">
+                <label>Secure Inclusion Mode</label>
+                <description>
+                    <![CDATA[Sets the controller secure inclusion mode<br/>
+<h1>All Devices</h1>
+In this mode, all devices reporting the SECURITY command class will be securely included into the network.<br/>
+This may reduce the life of battery devices and slow down communications. For most devices, it is not necesary to include the device securely into the network since the same command classes can be used without security.
+<h1>Entry Control Devices</h1>
+In this mode, only <i>Entry Control Devices</i> such as locks will be securely included into the network.<br/>
+                    ]]>
+                </description>
+                <advanced>true</advanced>
+                <default>0</default>
+                <options>
+                    <option value="1">All Devices</option>
+                    <option value="0">Entry Control Devices</option>
+                </options>
+            </parameter>
+
             <parameter name="security_networkkey" type="text" groupName="network">
                 <label>Network Security Key</label>
                 <description>Set the network security key</description>

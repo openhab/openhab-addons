@@ -17,10 +17,11 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWavePlusDeviceClass.ZWavePlusDeviceType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
@@ -117,9 +118,31 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
         zwPlusDeviceType = (serialMessage.getMessagePayloadByte(offset + 5) << 8)
                 | serialMessage.getMessagePayloadByte(offset + 6);
 
-        initialiseDone = true;
+        ZWavePlusDeviceType deviceType = ZWavePlusDeviceType.getZWavePlusDeviceType(zwPlusDeviceType);
+        if (deviceType != null) {
+            logger.debug("NODE {}: Adding mandatory command classes for ZWavePlus device type {}",
+                    getNode().getNodeId(), deviceType);
 
-        // TODO: Set class types in node
+            // Add all missing mandatory plus command classes
+            for (CommandClass commandClass : deviceType.getMandatoryCommandClasses()) {
+                ZWaveCommandClass zwaveCommandClass = this.getNode().getCommandClass(commandClass);
+
+                // Add the mandatory class missing, ie not set via NIF
+                if (zwaveCommandClass == null) {
+                    zwaveCommandClass = ZWaveCommandClass.getInstance(commandClass.getKey(), getNode(),
+                            getController());
+                    if (zwaveCommandClass != null) {
+                        logger.debug(String.format("NODE %d: Adding command class %s (0x%02x)", getNode().getNodeId(),
+                                commandClass.getLabel(), commandClass.getKey()));
+                        getNode().addCommandClass(zwaveCommandClass);
+                    }
+                }
+            }
+        } else {
+            logger.info("NODE {}: unknown ZWavePlus device type: {}", getNode().getNodeId(), zwPlusDeviceType);
+        }
+
+        initialiseDone = true;
     }
 
     @Override
@@ -155,5 +178,19 @@ public class ZWavePlusCommandClass extends ZWaveCommandClass
         }
 
         return true;
+    }
+
+    /**
+     * Return the ZWave Plus Device Type
+     * 
+     * @return {@link ZWavePlusDeviceType}
+     */
+    public ZWavePlusDeviceType getZWavePlusDeviceType() {
+        ZWavePlusDeviceType deviceType = ZWavePlusDeviceType.getZWavePlusDeviceType(zwPlusDeviceType);
+        if (deviceType == null) {
+            deviceType = ZWavePlusDeviceType.UNKNOWN_TYPE;
+        }
+
+        return deviceType;
     }
 }

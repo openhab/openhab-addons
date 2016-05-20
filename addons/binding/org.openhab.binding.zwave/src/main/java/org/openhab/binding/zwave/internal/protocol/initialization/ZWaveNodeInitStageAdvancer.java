@@ -28,6 +28,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociation;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Generic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -55,6 +56,7 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveTransactionComplet
 import org.openhab.binding.zwave.internal.protocol.serialmessage.AssignReturnRouteMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.AssignSucReturnRouteMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.DeleteReturnRouteMessageClass;
+import org.openhab.binding.zwave.internal.protocol.serialmessage.DeleteSucReturnRouteMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.GetRoutingInfoMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.IdentifyNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.IsFailedNodeMessageClass;
@@ -450,6 +452,26 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     break;
 
                 case SECURITY_REPORT:
+                    // Check if we want to perform a secure inclusion...
+                    boolean doSecureInclusion = false;
+                    switch (controller.getSecureInclusionMode()) {
+                        default:
+                        case 0:
+                            // Only ENTRY_CONTROL
+                            if (node.getDeviceClass().getGenericDeviceClass() == Generic.ENTRY_CONTROL) {
+                                doSecureInclusion = true;
+                            }
+                            break;
+                        case 1:
+                            // All devices
+                            doSecureInclusion = true;
+                            break;
+                    }
+
+                    if (doSecureInclusion == false) {
+                        break;
+                    }
+
                     // For devices that use security. When invoked during secure inclusion, this
                     // method will go through all steps to give the device our zwave:networkKey from
                     // the config. This requires multiple steps as defined in
@@ -573,8 +595,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     for (ZWaveCommandClass zwaveVersionClass : node.getCommandClasses()) {
                         logger.debug("NODE {}: Node advancer: VERSION - checking {}, version is {}", node.getNodeId(),
                                 zwaveVersionClass.getCommandClass().getLabel(), zwaveVersionClass.getVersion());
-                        if (version != null && zwaveVersionClass.getMaxVersion() > 1
-                                && zwaveVersionClass.getVersion() == 0) {
+                        if (version != null && zwaveVersionClass.getVersion() == 0) {
                             logger.debug("NODE {}: Node advancer: VERSION - queued   {}", node.getNodeId(),
                                     zwaveVersionClass.getCommandClass().getLabel());
                             addToQueue(version.checkVersion(zwaveVersionClass));
@@ -829,6 +850,36 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     }
                     break;
 
+                case DELETE_SUC_ROUTES:
+                    // If the incoming frame is the DeleteSUCReturnRoute, then we continue
+                    if (eventClass == SerialMessageClass.DeleteSUCReturnRoute) {
+                        break;
+                    }
+
+                    // Only delete the route if this is not the controller and there is an SUC in the network
+                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
+                        // Update the route to the controller
+                        logger.debug("NODE {}: Node advancer is deleting SUC return route.", node.getNodeId());
+                        addToQueue(new DeleteSucReturnRouteMessageClass().doRequest(node.getNodeId()));
+                        break;
+                    }
+                    break;
+
+                case SUC_ROUTE:
+                    if (eventClass == SerialMessageClass.AssignSucReturnRoute) {
+                        break;
+                    }
+
+                    // Only set the route if this is not the controller and there is an SUC in the network
+                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
+                        // Update the route to the controller
+                        logger.debug("NODE {}: Node advancer is setting SUC route.", node.getNodeId());
+                        addToQueue(new AssignSucReturnRouteMessageClass().doRequest(node.getNodeId(),
+                                controller.getCallbackId()));
+                        break;
+                    }
+                    break;
+
                 case GET_CONFIGURATION:
                     ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
                             .getCommandClass(CommandClass.CONFIGURATION);
@@ -940,21 +991,6 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         // Delete all the return routes for the node
                         logger.debug("NODE {}: Node advancer is deleting return routes.", node.getNodeId());
                         addToQueue(new DeleteReturnRouteMessageClass().doRequest(node.getNodeId()));
-                        break;
-                    }
-                    break;
-
-                case SUC_ROUTE:
-                    if (eventClass == SerialMessageClass.AssignSucReturnRoute) {
-                        break;
-                    }
-
-                    // Only set the route if this is not the controller and there is an SUC in the network
-                    if (node.getNodeId() != controller.getOwnNodeId() && controller.getSucId() != 0) {
-                        // Update the route to the controller
-                        logger.debug("NODE {}: Node advancer is setting SUC route.", node.getNodeId());
-                        addToQueue(new AssignSucReturnRouteMessageClass().doRequest(node.getNodeId(),
-                                controller.getCallbackId()));
                         break;
                     }
                     break;
@@ -1183,6 +1219,8 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                 case GetRoutingInfo:
                 case AssignReturnRoute:
                 case DeleteReturnRoute:
+                case AssignSucReturnRoute:
+                case DeleteSUCReturnRoute:
                 case IsFailedNodeID:
                     logger.debug("NODE {}: Node advancer - {}: Transaction complete ({}:{}) success({})",
                             node.getNodeId(), currentStage, serialMessage.getMessageClass(),
