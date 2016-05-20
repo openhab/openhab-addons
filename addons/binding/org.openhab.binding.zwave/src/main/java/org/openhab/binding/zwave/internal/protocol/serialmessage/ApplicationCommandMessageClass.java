@@ -40,7 +40,7 @@ public class ApplicationCommandMessageClass extends ZWaveCommandProcessor {
                 return false;
             }
             logger.debug("NODE {}: Application Command Request ({}:{})", nodeId, node.getNodeState().toString(),
-                    node.getNodeInitializationStage().toString());
+                    node.getNodeInitStage().toString());
 
             // We've just received a message from a node, therefore it's ALIVE!
             node.setNodeState(ZWaveNodeState.ALIVE);

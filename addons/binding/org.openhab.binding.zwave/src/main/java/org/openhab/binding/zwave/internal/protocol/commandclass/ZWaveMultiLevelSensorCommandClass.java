@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,12 +44,16 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
 
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveMultiLevelSensorCommandClass.class);
-    private static final int MAX_SUPPORTED_VERSION = 5;
+    private static final int MAX_SUPPORTED_VERSION = 7;
 
     private static final int SENSOR_MULTI_LEVEL_SUPPORTED_GET = 0x01;
     private static final int SENSOR_MULTI_LEVEL_SUPPORTED_REPORT = 0x02;
     private static final int SENSOR_MULTI_LEVEL_GET = 0x04;
     private static final int SENSOR_MULTI_LEVEL_REPORT = 0x05;
+
+    // v5
+    public static final int SENSOR_MULTI_LEVEL_SUPPORTED_GET_SCALE = 0x03;
+    public static final int SENSOR_MULTI_LEVEL_SUPPORTED_SCALE_REPORT = 0x06;
 
     private final Map<SensorType, Sensor> sensors = new HashMap<SensorType, Sensor>();
 
@@ -68,6 +73,7 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
      */
     public ZWaveMultiLevelSensorCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -76,14 +82,6 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
     @Override
     public CommandClass getCommandClass() {
         return CommandClass.SENSOR_MULTILEVEL;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -240,9 +238,26 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
         logger.debug("NODE {}: Creating new message for command SENSOR_MULTI_LEVEL_GET", this.getNode().getNodeId());
         SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 3, (byte) getCommandClass().getKey(),
-                (byte) SENSOR_MULTI_LEVEL_GET, (byte) sensorType.getKey() };
-        result.setMessagePayload(newPayload);
+
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        if (getVersion() < 5) {
+            // pre v5 does not have a sensortype argument, but since we
+            // used to use it, lets not break things and keep doing so....
+            outputData.write(getNode().getNodeId());
+            outputData.write(3);
+            outputData.write(getCommandClass().getKey());
+            outputData.write(SENSOR_MULTI_LEVEL_GET);
+            outputData.write(sensorType.getKey());
+        } else {
+            outputData.write(getNode().getNodeId());
+            outputData.write(4);
+            outputData.write(getCommandClass().getKey());
+            outputData.write(SENSOR_MULTI_LEVEL_GET);
+            outputData.write(sensorType.getKey());
+            outputData.write(0); // first scale }
+
+        }
+        result.setMessagePayload(outputData.toByteArray());
         return result;
     }
 
@@ -338,7 +353,27 @@ public class ZWaveMultiLevelSensorCommandClass extends ZWaveCommandClass
         ELECTRICAL_CONDUCTIVITY(29, "ElectricalConductivity"),
         LOUDNESS(30, "Loudness"),
         MOISTURE(31, "Moisture"),
-        MAX_TYPE(32, "MaxType");
+        FREQUENCY(32, "Frequency"),
+        TIME(33, "Time"),
+        TARGET_TEMPERATURE(34, "Target Temperature"),
+        PARTICULATE_MATTER(35, "Particulate Matter"),
+        FORMALDEHYDE_LEVEL(36, "Formaldehyde Level"),
+        RADON_CONCENTRATION(37, "Radon Concentration"),
+        METHANE_DENSITY(38, "Methane Density"),
+        VOLATILE_ORGANIC_COMPOUND(39, "Volatile Organic Compound"),
+        CARBON_MONOXIDE(40, "Carbon Monoxide"),
+        SOIL_HUMIDITY(41, "Soil Humidity"),
+        SOIL_REACTIVITY(42, "Soil Reactivity"),
+        SOIL_SALINITY(43, "Soil Salinity"),
+        HEART_RATE(44, "Heart Rate"),
+        BLOOD_PRESSURE(45, "Blood Pressure"),
+        MUSCLE_MASS(46, "Muscle Mass"),
+        FAT_MASS(47, "Fat Mass"),
+        BONE_MASS(48, "Bone Mass"),
+        TOTAL_BODY_WATER(49, "Total Body Water"),
+        BASIC_METABOLIC_RATE(50, "Basic Metabolic Rate"),
+        BODY_MASS_INDEX(51, "Body Mass Index"),
+        MAX_TYPE(52, "MaxType");
 
         /**
          * A mapping between the integer code and its corresponding Sensor type to facilitate lookup by code.

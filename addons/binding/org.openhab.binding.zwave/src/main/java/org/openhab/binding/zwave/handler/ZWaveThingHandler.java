@@ -57,6 +57,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurati
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass.ZWaveConfigurationParameterEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveDoorLockCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNodeNamingCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePlusCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass.ZWavePowerLevelCommandClassChangeEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSwitchAllCommandClass;
@@ -862,16 +863,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
             } else if ("action".equals(cfg[0])) {
                 if ("failed".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controllerHandler.replaceFailedNode(nodeId);
                 }
                 if ("remove".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controllerHandler.removeFailedNode(nodeId);
                     controllerHandler.checkNodeFailed(nodeId);
                 }
                 if ("reinit".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     logger.debug("NODE {}: Re-initialising node!", nodeId);
 
                     // Delete the saved XML
@@ -882,7 +883,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
 
                 if ("heal".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     logger.debug("NODE {}: Starting heal on node!", nodeId);
 
                     controllerHandler.healNode(nodeId);
@@ -1226,6 +1227,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                             Boolean.toString(node.isFrequentlyListening()));
                     properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
                     properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+
+                    // If this is a Z-Wave Plus device, then also add its class
+                    // TODO: Also add icons etc - when we have enums for these!
+                    ZWavePlusCommandClass cmdClassZWavePlus = (ZWavePlusCommandClass) node
+                            .getCommandClass(CommandClass.ZWAVE_PLUS_INFO);
+                    if (cmdClassZWavePlus != null) {
+                        properties.put(ZWaveBindingConstants.PROPERTY_ZWPLUS_DEVICETYPE,
+                                cmdClassZWavePlus.getZWavePlusDeviceType().toString());
+                    }
+
                     updateProperties(properties);
 
                     // Do we need to change type?
@@ -1238,8 +1249,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         logger.debug("NODE {}: Setting ONLINE", nodeId);
                         updateStatus(ThingStatus.ONLINE);
 
-                        // Now that this node is completely initialised, we want to re-process all the
-                        // channels
+                        // Now that this node is completely initialised, we want to re-process all channels
                         initialiseNode();
                     }
                     break;

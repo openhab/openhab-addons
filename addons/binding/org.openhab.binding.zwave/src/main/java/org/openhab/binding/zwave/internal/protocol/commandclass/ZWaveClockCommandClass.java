@@ -92,11 +92,8 @@ public class ZWaveClockCommandClass extends ZWaveCommandClass
      *
      * @return the serial message.
      */
-    public SerialMessage getSetMessage(Date date) {
+    public SerialMessage getSetMessage(Calendar cal) {
         logger.debug("NODE {}: Creating new message for command CLOCK_SET", getNode().getNodeId());
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
 
         int day = cal.get(Calendar.DAY_OF_WEEK) == 1 ? 7 : cal.get(Calendar.DAY_OF_WEEK) - 1;
         int hour = cal.get(Calendar.HOUR_OF_DAY);

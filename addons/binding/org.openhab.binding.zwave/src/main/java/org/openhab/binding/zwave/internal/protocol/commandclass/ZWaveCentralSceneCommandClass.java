@@ -74,7 +74,7 @@ public class ZWaveCentralSceneCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received central scene command (v{})", this.getNode().getNodeId(), this.getVersion());
+        logger.debug("NODE {}: Received CENTRAL_SCENE command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SCENE_SET:

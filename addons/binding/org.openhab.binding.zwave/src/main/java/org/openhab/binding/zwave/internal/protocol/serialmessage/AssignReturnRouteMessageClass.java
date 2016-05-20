@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
+import java.io.ByteArrayOutputStream;
+
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +34,13 @@ public class AssignReturnRouteMessageClass extends ZWaveCommandProcessor {
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessageClass.AssignReturnRoute, SerialMessageType.Request,
                 SerialMessageClass.AssignReturnRoute, SerialMessagePriority.High);
-        byte[] newPayload = { (byte) nodeId, (byte) destinationId, (byte) callbackId };
-        newMessage.setMessagePayload(newPayload);
+
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(nodeId);
+        outputData.write(destinationId);
+        outputData.write(callbackId);
+        newMessage.setMessagePayload(outputData.toByteArray());
+
         return newMessage;
     }
 
@@ -46,6 +53,7 @@ public class AssignReturnRouteMessageClass extends ZWaveCommandProcessor {
 
         if (incomingMessage.getMessagePayloadByte(0) != 0x00) {
             logger.debug("NODE {}: AssignReturnRoute command in progress.", nodeId);
+            lastSentMessage.setAckRecieved();
         } else {
             logger.error("NODE {}: AssignReturnRoute command failed.", nodeId);
             zController.notifyEventListeners(new ZWaveNetworkEvent(ZWaveNetworkEvent.Type.AssignReturnRoute, nodeId,

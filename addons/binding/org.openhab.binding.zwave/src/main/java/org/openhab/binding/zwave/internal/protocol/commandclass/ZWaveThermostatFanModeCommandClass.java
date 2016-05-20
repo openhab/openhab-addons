@@ -19,10 +19,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +43,11 @@ public class ZWaveThermostatFanModeCommandClass extends ZWaveCommandClass
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveThermostatFanModeCommandClass.class);
 
-    private static final byte THERMOSTAT_FAN_MODE_SET = 0x1;
-    private static final byte THERMOSTAT_FAN_MODE_GET = 0x2;
-    private static final byte THERMOSTAT_FAN_MODE_REPORT = 0x3;
-    private static final byte THERMOSTAT_FAN_MODE_SUPPORTED_GET = 0x4;
-    private static final byte THERMOSTAT_FAN_MODE_SUPPORTED_REPORT = 0x5;
+    private static final byte THERMOSTAT_FAN_MODE_SET = 1;
+    private static final byte THERMOSTAT_FAN_MODE_GET = 2;
+    private static final byte THERMOSTAT_FAN_MODE_REPORT = 3;
+    private static final byte THERMOSTAT_FAN_MODE_SUPPORTED_GET = 4;
+    private static final byte THERMOSTAT_FAN_MODE_SUPPORTED_REPORT = 5;
 
     private final Set<FanModeType> fanModeTypes = new HashSet<FanModeType>();
 
@@ -87,13 +87,13 @@ public class ZWaveThermostatFanModeCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Thermostat Fan Mode Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received THERMOSTAT_FAN_MODE command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case THERMOSTAT_FAN_MODE_SUPPORTED_REPORT:

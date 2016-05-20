@@ -36,7 +36,8 @@ All devices support the following channels (non exhaustive):
 
 ## Full Example
 
-demo.things:
+demo.Things:
+
 ```
 Thing tesla:models:1 [ username="your.email@company.com", password="somepassword", vin="5YJSA7H25FFP53746"]
 ```

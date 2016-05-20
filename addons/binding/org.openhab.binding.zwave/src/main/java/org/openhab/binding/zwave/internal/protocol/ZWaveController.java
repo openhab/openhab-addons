@@ -22,10 +22,10 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Basic;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiInstanceCommandClass;
@@ -121,12 +121,10 @@ public class ZWaveController {
     private int sucID = 0;
     private boolean softReset = false;
     private boolean masterController = true;
+    private int secureInclusionMode = 0;
     private Set<SerialMessageClass> apiCapabilities = new HashSet<>();
 
     private AtomicInteger timeOutCount = new AtomicInteger(0);
-
-    // Network monitoring class
-    private ZWaveNetworkMonitor networkMonitor;
 
     private ZWaveIoHandler ioHandler;
 
@@ -149,20 +147,19 @@ public class ZWaveController {
      *             when a connection error occurs.
      */
     public ZWaveController(ZWaveIoHandler handler, Map<String, String> config) {
-        final boolean masterController = "true".equals(config.get("masterController"));
-        final boolean isSUC = "true".equals(config.get("isSUC"));
+        masterController = "true".equals(config.get("masterController"));
+        setSUC = "true".equals(config.get("isSUC"));
+        softReset = "true".equals(config.get("softReset"));
+        secureInclusionMode = config.containsKey("secureInclusion") ? Integer.parseInt(config.get("secureInclusion"))
+                : 0;
         final Integer timeout = config.containsKey("timeout") ? Integer.parseInt(config.get("timeout")) : 0;
-        final boolean reset = "true".equals(config.get("softReset"));
 
         logger.info("Starting ZWave controller");
-        this.masterController = masterController;
-        this.setSUC = isSUC;
-        this.softReset = reset;
 
         if (timeout != null && timeout >= 1500 && timeout <= 10000) {
             zWaveResponseTimeout = timeout;
         }
-        logger.info("ZWave timeout is set to {}ms. Soft reset is {}.", zWaveResponseTimeout, reset);
+        logger.info("ZWave timeout is set to {}ms. Soft reset is {}.", zWaveResponseTimeout, softReset);
         // this.watchdog = new Timer(true);
         // this.watchdog.schedule(new WatchDogTimerTask(), WATCHDOG_TIMER_PERIOD, WATCHDOG_TIMER_PERIOD);
 
@@ -173,16 +170,10 @@ public class ZWaveController {
         Timer initTimer = new Timer();
         initTimer.schedule(new InitializeDelayTask(), 3000);
 
-        this.sendThread = new ZWaveSendThread();
-        this.sendThread.start();
-        this.inputThread = new ZWaveInputThread();
-        this.inputThread.start();
-
-        // The network monitor service needs to know the controller...
-        networkMonitor = new ZWaveNetworkMonitor(this);
-        if (config.get("healTime") != null) {
-            networkMonitor.setHealTime(Integer.parseInt(config.get("healTime")));
-        }
+        sendThread = new ZWaveSendThread();
+        sendThread.start();
+        inputThread = new ZWaveInputThread();
+        inputThread.start();
     }
 
     private class InitializeDelayTask extends TimerTask {
@@ -308,34 +299,32 @@ public class ZWaveController {
                 break;
             case GetSucNodeId:
                 // Remember the SUC ID
-                this.sucID = ((GetSucNodeIdMessageClass) processor).getSucNodeId();
+                sucID = ((GetSucNodeIdMessageClass) processor).getSucNodeId();
 
                 // If we want to be the SUC, enable it here
-                if (this.setSUC == true && this.sucID == 0) {
+                if (setSUC == true && sucID == 0) {
                     // We want to be SUC
-                    this.enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.SERVER));
-                    this.enqueue(new SetSucNodeMessageClass().doRequest(this.ownNodeId,
-                            SetSucNodeMessageClass.SUCType.SERVER));
-                } else if (this.setSUC == false && this.sucID == this.ownNodeId) {
+                    enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.SERVER));
+                    enqueue(new SetSucNodeMessageClass().doRequest(ownNodeId, SetSucNodeMessageClass.SUCType.SERVER));
+                } else if (setSUC == false && sucID == ownNodeId) {
                     // We don't want to be SUC, but we currently are!
                     // Disable SERVER functionality, and set the node to 0
-                    this.enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.NONE));
-                    this.enqueue(new SetSucNodeMessageClass().doRequest(this.ownNodeId,
-                            SetSucNodeMessageClass.SUCType.NONE));
+                    enqueue(new EnableSucMessageClass().doRequest(EnableSucMessageClass.SUCType.NONE));
+                    enqueue(new SetSucNodeMessageClass().doRequest(ownNodeId, SetSucNodeMessageClass.SUCType.NONE));
                 }
-                this.enqueue(new GetControllerCapabilitiesMessageClass().doRequest());
+                enqueue(new GetControllerCapabilitiesMessageClass().doRequest());
                 break;
             case GetControllerCapabilities:
-                this.controllerType = ((GetControllerCapabilitiesMessageClass) processor).getDeviceType();
+                controllerType = ((GetControllerCapabilitiesMessageClass) processor).getDeviceType();
                 break;
             case SerialApiGetCapabilities:
-                this.serialAPIVersion = ((SerialApiGetCapabilitiesMessageClass) processor).getSerialAPIVersion();
-                this.manufactureId = ((SerialApiGetCapabilitiesMessageClass) processor).getManufactureId();
-                this.deviceId = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceId();
-                this.deviceType = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceType();
-                this.apiCapabilities = ((SerialApiGetCapabilitiesMessageClass) processor).getApiCapabilities();
+                serialAPIVersion = ((SerialApiGetCapabilitiesMessageClass) processor).getSerialAPIVersion();
+                manufactureId = ((SerialApiGetCapabilitiesMessageClass) processor).getManufactureId();
+                deviceId = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceId();
+                deviceType = ((SerialApiGetCapabilitiesMessageClass) processor).getDeviceType();
+                apiCapabilities = ((SerialApiGetCapabilitiesMessageClass) processor).getApiCapabilities();
 
-                this.enqueue(new SerialApiGetInitDataMessageClass().doRequest());
+                enqueue(new SerialApiGetInitDataMessageClass().doRequest());
                 break;
             case SerialApiGetInitData:
                 // this.isConnected = true;
@@ -467,8 +456,8 @@ public class ZWaveController {
             // Place nodes in the local ZWave Controller
             controller.zwaveNodes.putIfAbsent(nodeId, node);
 
-            // If we loaded from file, then we need to add this to the discovery since we bypass the initial discovery
-            // phases
+            // If we loaded from file, then we need to add this to the discovery
+            // since we bypass the initial discovery phases
             if (serializedOk == true) {
                 ZWaveEvent zEvent = new ZWaveInitializationStateEvent(node.getNodeId(),
                         ZWaveNodeInitStage.DISCOVERY_COMPLETE);
@@ -546,7 +535,7 @@ public class ZWaveController {
      */
     public void notifyEventListeners(ZWaveEvent event) {
         logger.debug("Notifying event listeners: {}", event.getClass().getSimpleName());
-        ArrayList<ZWaveEventListener> copy = new ArrayList<ZWaveEventListener>(this.zwaveEventListeners);
+        ArrayList<ZWaveEventListener> copy = new ArrayList<ZWaveEventListener>(zwaveEventListeners);
         for (ZWaveEventListener listener : copy) {
             listener.ZWaveIncomingEvent(event);
         }
@@ -556,19 +545,87 @@ public class ZWaveController {
             ZWaveInclusionEvent incEvent = (ZWaveInclusionEvent) event;
             switch (incEvent.getEvent()) {
                 case IncludeSlaveFound:
-                    // Use IncludeSlaveFound since security based devices need the
-                    // initial exchange to take place immediately or they will time out
+                    // When a device is found we get the IncludeSlaveFound notification.
+                    // Here we need to end inclusion.
+                    requestAddNodesStop();
                     logger.debug("NODE {}: Including node.", incEvent.getNodeId());
+
                     // First make sure this isn't an existing node
                     if (getNode(incEvent.getNodeId()) != null) {
                         logger.debug("NODE {}: Newly included node already exists - not initialising.",
                                 incEvent.getNodeId());
                         break;
                     }
-                    this.lastIncludeSlaveFoundEvent = incEvent;
-                    // Initialise the new node
-                    addNode(incEvent.getNodeId());
+
+                    // TODO: This can be removed once the key is added to the security class directly
+                    // TODO: a few lines below.
+                    lastIncludeSlaveFoundEvent = incEvent;
+
+                    // Create a new node
+                    ZWaveNode newNode = new ZWaveNode(homeId, incEvent.getNodeId(), this);
+
+                    // Add the device class
+                    ZWaveDeviceClass deviceClass = newNode.getDeviceClass();
+                    deviceClass.setBasicDeviceClass(incEvent.getBasic());
+                    deviceClass.setGenericDeviceClass(incEvent.getGeneric());
+                    deviceClass.setSpecificDeviceClass(incEvent.getSpecific());
+
+                    // If we have the NIF as part of the inclusion, use it
+                    // TODO: This code now appears in multiple places - consolidate into the node
+                    for (CommandClass commandClass : incEvent.getCommandClasses()) {
+                        ZWaveCommandClass zwaveCommandClass = ZWaveCommandClass.getInstance(commandClass.getKey(),
+                                newNode, this);
+                        if (zwaveCommandClass != null) {
+                            logger.debug("NODE {}: Inclusion is adding command class {}.", incEvent.getNodeId(),
+                                    commandClass);
+                            // TODO: Add the network key to the security class
+                            if (commandClass == CommandClass.SECURITY) {
+                                // ((ZWaveSecurityCommandClass)zwaveCommandClass).setRealNetworkKey(hexString);
+                            }
+                            newNode.addCommandClass(zwaveCommandClass);
+                        }
+                    }
+
+                    // Place nodes in the local ZWave Controller
+                    zwaveNodes.putIfAbsent(incEvent.getNodeId(), newNode);
                     break;
+
+                case IncludeDone:
+                    // Kick off the initialisation.
+                    // Since the node is awake, we jump straight into the initialisation sequence
+                    // without some of the initial stages like PING that are designed to detect if
+                    // the device is responding.
+                    // This is primarily designed to speed up the secure inclusion but is valid for all.
+                    // TODO: There's an assumption here that the whole NIF is provided with the inclusion method
+                    // -- we might want to keep an eye on this in case it's incorrect!
+                    ZWaveNode node = getNode(incEvent.getNodeId());
+                    if (node == null) {
+                        logger.debug("NODE {}: Newly included node doesn't exist - initialising from start.",
+                                incEvent.getNodeId());
+                        // Add the node using addNode()
+                        // This seems to happen if we exclude the node, then add it back in.
+                        // We don't get the IncludeSlaveFound notification, just the IncludeDone notification.
+                        addNode(incEvent.getNodeId());
+                        break;
+                    }
+
+                    // If this node is already initialising, then do nothing.
+                    // This might happen if a node is re-added even when we are aware of it
+                    if (node.getNodeInitStage() != ZWaveNodeInitStage.EMPTYNODE) {
+                        logger.debug("NODE {}: Newly included node already initialising at {}", incEvent.getNodeId(),
+                                node.getNodeInitStage());
+                        break;
+                    }
+
+                    // Start initialisation...
+                    // If we just included this through the IncludeSlaveFound, then we'll already know the device class
+                    if (node.getDeviceClass().getBasicDeviceClass() != Basic.NOT_KNOWN) {
+                        node.initialiseNode(ZWaveNodeInitStage.INCLUSION_START);
+                    } else {
+                        node.initialiseNode(ZWaveNodeInitStage.EMPTYNODE);
+                    }
+                    break;
+
                 case ExcludeDone:
                     logger.debug("NODE {}: Excluding node.", incEvent.getNodeId());
                     // Remove the node from the controller
@@ -576,7 +633,7 @@ public class ZWaveController {
                         logger.debug("NODE {}: Excluding node that doesn't exist.", incEvent.getNodeId());
                         break;
                     }
-                    this.zwaveNodes.remove(incEvent.getNodeId());
+                    zwaveNodes.remove(incEvent.getNodeId());
 
                     // Remove the XML file
                     ZWaveNodeSerializer nodeSerializer = new ZWaveNodeSerializer();
@@ -732,25 +789,62 @@ public class ZWaveController {
      *
      */
     public void requestNodeNeighborUpdate(int nodeId) {
-        this.enqueue(new RequestNodeNeighborUpdateMessageClass().doRequest(nodeId));
+        enqueue(new RequestNodeNeighborUpdateMessageClass().doRequest(nodeId));
     }
 
     /**
      * Puts the controller into inclusion mode to add new nodes
      *
+     * @param inclusionMode the mode to use for inclusion.
+     *            <br>
+     *            0=Low Power Inclusion
+     *            <br>
+     *            1=High Power Inclusion
+     *            <br>
+     *            2=Network Wide Inclusion
+     *
      */
-    public void requestAddNodesStart() {
-        this.enqueue(new AddNodeMessageClass().doRequestStart(true,
-                hasApiCapability(SerialMessageClass.ExploreRequestInclusion)));
-        logger.debug("ZWave controller start inclusion");
+    public void requestAddNodesStart(int inclusionMode) {
+        if (exclusion == true || inclusion == true) {
+            logger.debug("ZWave exclusion already in progress - aborted");
+            return;
+        }
+
+        logger.debug("ZWave controller start inclusion - mode {}", inclusionMode);
+
+        // Check if the stick supports NWI - if not, revert to HPI
+        if (inclusionMode == 2 && hasApiCapability(SerialMessageClass.ExploreRequestInclusion) == false) {
+            inclusionMode = 1;
+        }
+
+        boolean highPower;
+        boolean networkWide;
+        switch (inclusionMode) {
+            case 0:
+                highPower = false;
+                networkWide = false;
+                break;
+            case 1:
+                highPower = true;
+                networkWide = false;
+                break;
+            default:
+                highPower = true;
+                networkWide = true;
+                break;
+        }
+
+        enqueue(new AddNodeMessageClass().doRequestStart(highPower, networkWide));
+        inclusion = true;
+        startInclusionTimer();
     }
 
     /**
      * Terminates the inclusion mode
      *
      */
-    public void requestAddNodesStop() {
-        this.enqueue(new AddNodeMessageClass().doRequestStop());
+    private void requestAddNodesStop() {
+        enqueue(new AddNodeMessageClass().doRequestStop());
         logger.debug("ZWave controller end inclusion");
     }
 
@@ -759,7 +853,13 @@ public class ZWaveController {
      *
      */
     public void requestRemoveNodesStart() {
-        this.enqueue(new RemoveNodeMessageClass().doRequestStart(true));
+        if (exclusion == true || inclusion == true) {
+            logger.debug("ZWave exclusion already in progress - aborted");
+            return;
+        }
+        enqueue(new RemoveNodeMessageClass().doRequestStart());
+        exclusion = true;
+        startInclusionTimer();
         logger.debug("ZWave controller start exclusion");
     }
 
@@ -767,9 +867,69 @@ public class ZWaveController {
      * Terminates the exclusion mode
      *
      */
-    public void requestRemoveNodesStop() {
-        this.enqueue(new RemoveNodeMessageClass().doRequestStop());
+    private void requestRemoveNodesStop() {
+        enqueue(new RemoveNodeMessageClass().doRequestStop());
         logger.debug("ZWave controller end exclusion");
+    }
+
+    /**
+     * Terminates inclusion or exclusion mode - which-ever is running
+     *
+     */
+    public void requestInclusionStop() {
+        stopInclusionTimer();
+    }
+
+    // The following timer class implements a re-triggerable timer to stop the inclusion
+    // mode after 30 seconds.
+    private Timer timer = new Timer();
+    private TimerTask timerTask = null;
+    private boolean inclusion = false;
+    private boolean exclusion = false;
+
+    private class InclusionTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            logger.debug("Ending inclusion mode.");
+            stopInclusionTimer();
+        }
+    }
+
+    private synchronized void startInclusionTimer() {
+        // Stop any existing timer
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
+
+        // Create the timer task
+        timerTask = new InclusionTimerTask();
+
+        // Start the timer for 30 seconds
+        timer.schedule(timerTask, 30000);
+    }
+
+    /**
+     * Stops any pending inclusion/exclusion.
+     * Resets flags, and signals to controller.
+     */
+    private synchronized void stopInclusionTimer() {
+        logger.debug("Stopping inclusion timer.");
+        if (inclusion) {
+            requestAddNodesStop();
+        } else if (exclusion) {
+            requestRemoveNodesStop();
+        } else {
+            logger.error("Neither inclusion nor exclusion was active!");
+        }
+
+        inclusion = false;
+        exclusion = false;
+
+        // Stop the timer
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
     }
 
     /**
@@ -785,7 +945,7 @@ public class ZWaveController {
     public void requestSoftReset() {
         SerialMessage msg = new SerialApiSoftResetMessageClass().doRequest();
         msg.attempts = 1;
-        this.enqueue(msg);
+        enqueue(msg);
         logger.debug("ZWave controller soft reset");
     }
 
@@ -802,11 +962,11 @@ public class ZWaveController {
 
         SerialMessage msg = new ControllerSetDefaultMessageClass().doRequest();
         msg.attempts = 1;
-        this.enqueue(msg);
+        enqueue(msg);
 
         // Clear all the nodes and we'll reinitialise
-        this.zwaveNodes.clear();
-        this.enqueue(new SerialApiGetInitDataMessageClass().doRequest());
+        zwaveNodes.clear();
+        enqueue(new SerialApiGetInitDataMessageClass().doRequest());
         logger.debug("ZWave controller hard reset");
     }
 
@@ -817,7 +977,7 @@ public class ZWaveController {
      *            The address of the node to check
      */
     public void requestIsFailedNode(int nodeId) {
-        this.enqueue(new IsFailedNodeMessageClass().doRequest(nodeId));
+        enqueue(new IsFailedNodeMessageClass().doRequest(nodeId));
     }
 
     /**
@@ -828,7 +988,7 @@ public class ZWaveController {
      *            The address of the node to remove
      */
     public void requestRemoveFailedNode(int nodeId) {
-        this.enqueue(new RemoveFailedNodeMessageClass().doRequest(nodeId));
+        enqueue(new RemoveFailedNodeMessageClass().doRequest(nodeId));
     }
 
     /**
@@ -838,7 +998,7 @@ public class ZWaveController {
      *            The address of the node to set failed
      */
     public void requestSetFailedNode(int nodeId) {
-        this.enqueue(new ReplaceFailedNodeMessageClass().doRequest(nodeId));
+        enqueue(new ReplaceFailedNodeMessageClass().doRequest(nodeId));
     }
 
     /**
@@ -848,7 +1008,7 @@ public class ZWaveController {
      * @param nodeId
      */
     public void requestDeleteAllReturnRoutes(int nodeId) {
-        this.enqueue(new DeleteReturnRouteMessageClass().doRequest(nodeId));
+        enqueue(new DeleteReturnRouteMessageClass().doRequest(nodeId));
     }
 
     /**
@@ -860,7 +1020,7 @@ public class ZWaveController {
      *            Destination node
      */
     public void requestAssignReturnRoute(int nodeId, int destinationId) {
-        this.enqueue(new AssignReturnRouteMessageClass().doRequest(nodeId, destinationId, getCallbackId()));
+        enqueue(new AssignReturnRouteMessageClass().doRequest(nodeId, destinationId, getCallbackId()));
     }
 
     /**
@@ -871,7 +1031,7 @@ public class ZWaveController {
      *            Source node
      */
     public void requestAssignSucReturnRoute(int nodeId) {
-        this.enqueue(new AssignSucReturnRouteMessageClass().doRequest(nodeId, getCallbackId()));
+        enqueue(new AssignSucReturnRouteMessageClass().doRequest(nodeId, getCallbackId()));
     }
 
     /**
@@ -931,7 +1091,7 @@ public class ZWaveController {
         synchronized (zwaveEventListeners) {
             // First, check if this listener is already registered
             if (zwaveEventListeners.contains(eventListener)) {
-                logger.debug("Event Listerener {} already registered", eventListener);
+                logger.debug("Event Listener {} already registered", eventListener);
                 return;
             }
             zwaveEventListeners.add(eventListener);
@@ -1041,6 +1201,17 @@ public class ZWaveController {
      */
     public boolean hasApiCapability(SerialMessageClass capability) {
         return apiCapabilities.contains(capability);
+    }
+
+    /**
+     * Returns the secure inclusion mode
+     * 
+     * @return
+     *         0 ENTRY_CONTROL
+     *         1 All Devices
+     */
+    public int getSecureInclusionMode() {
+        return secureInclusionMode;
     }
 
     /**
