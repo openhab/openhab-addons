@@ -13,17 +13,17 @@ import java.util.Map;
 
 /**
  * Enum of the possible device types. The defined tag string can be used
- * as a homekit:{tag} tag on an item to enable it for Homekit.
+ * as a tag on an item to enable it for Homekit.
  *
  * @author Andy Lintner
  */
 public enum HomekitDeviceType {
 
-    DIMMABLE_LIGHTBULB("DimmableLightbulb"),
-    HUMIDITY_SENSOR("HumiditySensor"),
-    LIGHTBULB("Lightbulb"),
-    SWITCH("Switch"),
-    TEMPERATURE_SENSOR("TemperatureSensor"),
+    DIMMABLE_LIGHTBULB("DimmableLighting"),
+    HUMIDITY_SENSOR("CurrentHumidity"),
+    LIGHTBULB("Lighting"),
+    SWITCH("Switchable"),
+    TEMPERATURE_SENSOR("CurrentTemperature"),
     THERMOSTAT("Thermostat");
 
     private static final Map<String, HomekitDeviceType> tagMap = new HashMap<>();
