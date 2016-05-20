@@ -31,6 +31,7 @@ public class ZWaveBindingConstants {
     public final static String CONFIGURATION_MASTER = "controller_master";
     public final static String CONFIGURATION_SUC = "controller_suc";
     public final static String CONFIGURATION_NETWORKKEY = "security_networkkey";
+    public final static String CONFIGURATION_SECUREINCLUSION = "security_inclusionmode";
     public final static String CONFIGURATION_HEALTIME = "heal_time";
     public final static String CONFIGURATION_INCLUSION_MODE = "inclusion_mode";
 
@@ -75,6 +76,7 @@ public class ZWaveBindingConstants {
     public final static String PROPERTY_CLASS_BASIC = "zwave_class_basic";
     public final static String PROPERTY_CLASS_GENERIC = "zwave_class_generic";
     public final static String PROPERTY_CLASS_SPECIFIC = "zwave_class_specific";
+    public final static String PROPERTY_ZWPLUS_DEVICETYPE = "zwave_plus_devicetype";
     public final static String PROPERTY_WAKEUP_TIME = "zwave_wakeup_time";
 
     public final static String CHANNEL_SERIAL_SOF = "serial_sof";

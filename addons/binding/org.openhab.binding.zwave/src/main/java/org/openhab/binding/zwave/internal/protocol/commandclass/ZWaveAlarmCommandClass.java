@@ -77,6 +77,7 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
      */
     public ZWaveAlarmCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -220,11 +221,6 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
 
         return alarm;
     }
-
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
-    };
 
     /**
      * Gets a SerialMessage with the ALARM_GET command

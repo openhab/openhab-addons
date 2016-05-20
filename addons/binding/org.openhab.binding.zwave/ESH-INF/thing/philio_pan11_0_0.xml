@@ -61,6 +61,7 @@
       <property name="model">PAN11</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0001:0001,0001:0011</property>
+      <property name="commandClass:SWITCH_BINARY">getSupported=false</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -74,30 +75,32 @@
       </parameter-group>
 
       <parameter name="config_1_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>1: W meter report period</label>
-        <description>If the setting is configured for 1 hour (value = 720), the device will report its instant power consumption every 1 hour to Z-Wave Controller. Unit: 5 seconds</description>
+        <description>Default 1 hour (value = 720) Enable automatic interval in seconds reporting with an interval of 5s * the value. Set to 0 will disable the autoreporting function.</description>
         <default>720</default>
       </parameter>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="0" max="32767">
         <label>2: kWh meter report period</label>
-        <description>If the setting is configured for 1 hour (value = 6), the device will report its total power consumption every 1 hour to Z-Wave Controller. Unit: 10 minutes</description>
+        <description>Default 1 hour (value = 6) - Enable automatic interval in minutes reporting with an interval of 10min * the value. Set to 0 will disable the autoreporting function.</description>
         <default>6</default>
       </parameter>
 
       <parameter name="config_3_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="10" max="1300">
         <label>3: Threshold of Watt for Load Caution</label>
-        <description>If threshold of wattage is reached, a meter report will be generated</description>
+        <description>If threshold of wattage is reached, a meter report will be generated. 1300*0.01A = 13A</description>
         <default>1300</default>
       </parameter>
 
       <parameter name="config_4_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+                 min="1" max="10000">
         <label>4: Threshold of kWh for Load Caution</label>
-        <description>If threshold of kWh is reached, a Meter Report will be generated</description>
+        <description><![CDATA[
+If threshold of kWh is reached, a Meter Report will be generated<br /><h1>Overview</h1><p>Enable automatic warning when the accumulated kWh power consumption exceeds the setting value from 1KWh ~ 10000KWh.. Set to 0 will disable kWh load caution reporting.</p>
+        ]]></description>
         <default>10000</default>
       </parameter>
 
@@ -115,8 +118,8 @@
         <label>6: Mode of switch Off function</label>
         <default>1</default>
         <options>
-          <option value="0">Disabled</option>
-          <option value="1">Enabled</option>
+          <option value="0">SWITCH OFF commands received are ignored.</option>
+          <option value="1">SWITCH OFF commands received are honored.</option>
         </options>
       </parameter>
 
@@ -124,15 +127,16 @@
         <label>7: LED indication mode</label>
         <default>1</default>
         <options>
-          <option value="1">Show switch state</option>
-          <option value="2">Show night mode</option>
+          <option value="1">The LED follows the state of the switch.</option>
+          <option value="2">LED off with load ON</option>
           <option value="3">One flash mode</option>
         </options>
       </parameter>
 
       <parameter name="config_8_2" type="integer" groupName="configuration"
-                 min="0" max="32767">
+                 min="0" max="255">
         <label>8: Auto Off Timer</label>
+        <description>Auto off timer. 0 will disable the auto off function.</description>
         <default>0</default>
       </parameter>
 

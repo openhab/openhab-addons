@@ -20,7 +20,7 @@
       <channel id="switch_dimmer" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
-          <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
+          <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
@@ -64,10 +64,10 @@ Indicates the number of levels (1-99) to change dimming each step<br /><h1>Overv
       </parameter>
 
       <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+                 min="1" max="255">
         <label>10: Dimming Step Duration</label>
         <description><![CDATA[
-Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels.</p>
+Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels.  (Documentation suggests that the interval is in milliseconds.)</p>
         ]]></description>
         <default>3</default>
       </parameter>

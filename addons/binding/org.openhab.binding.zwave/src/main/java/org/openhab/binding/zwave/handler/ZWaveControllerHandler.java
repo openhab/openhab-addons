@@ -62,6 +62,7 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
     private Boolean isMaster;
     private Boolean isSUC;
     private String networkKey;
+    private Integer secureInclusionMode;
     private Integer healTime;
 
     public ZWaveControllerHandler(Bridge bridge) {
@@ -78,6 +79,13 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             isMaster = (Boolean) param;
         } else {
             isMaster = true;
+        }
+
+        param = getConfig().get(CONFIGURATION_SECUREINCLUSION);
+        if (param instanceof BigDecimal && param != null) {
+            secureInclusionMode = ((BigDecimal) param).intValue();
+        } else {
+            secureInclusionMode = 0;
         }
 
         param = getConfig().get(CONFIGURATION_SUC);
@@ -129,6 +137,8 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         Map<String, String> config = new HashMap<String, String>();
         config.put("masterController", isMaster.toString());
         config.put("isSUC", isSUC ? "true" : "false");
+        config.put("secureInclusion", secureInclusionMode.toString());
+        config.put("networkKey", networkKey);
 
         // MAJOR BODGE
         // The security class uses a static member to set the key so for now

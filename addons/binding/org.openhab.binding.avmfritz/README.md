@@ -62,7 +62,8 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 ## Full Example
 
-demo.things:
+demo.Things:
+
 ```
 Bridge avm:fritzbox:192.168.178.1 [ ipAddress="192.168.0.64" ] {
 	FRITZ_DECT_200 DECT1 [ ain="xxxxxxxxxxx" ]

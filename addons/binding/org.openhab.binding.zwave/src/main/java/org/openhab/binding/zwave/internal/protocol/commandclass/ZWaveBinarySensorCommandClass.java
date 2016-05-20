@@ -75,6 +75,7 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
      */
     public ZWaveBinarySensorCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -266,14 +267,6 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
         }
 
         return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
     }
 
     /**
