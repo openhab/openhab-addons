@@ -52,11 +52,14 @@ The things requires the geolocation (latitude, longitude) for which the calculat
 ## Full Example
 
 Things:
+
 ```
 astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
 astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
 ```
+
 Items:
+
 ```
 DateTime Sunrise_Time  "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
 DateTime Sunset_Time   "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
