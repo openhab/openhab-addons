@@ -414,9 +414,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 // parse out the MAC address first
                 String macAddress = null;
                 for (String parameter : parameterList) {
-
-                    // Decode each paramter
-                    // String parameter = decode(parameterTmp);
                     if (parameter.contains("playerid")) {
                         macAddress = parameter.substring(parameter.indexOf(":") + 1);
                         break;
