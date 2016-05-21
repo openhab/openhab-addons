@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Wolters
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
+ * @author Daniel Walters - Fix player discovery when player name contains spaces
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
