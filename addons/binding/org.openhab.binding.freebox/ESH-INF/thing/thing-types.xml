@@ -4,7 +4,7 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="server">
+    <bridge-type id="server">
         <label>Freebox Revolution Server</label>
         <description>Provides various informations regarding the status of the Freebox Server</description>
 
@@ -21,6 +21,11 @@
             <channel id="lcd_orientation" typeId="lcd_orientation" />
             <channel id="lcd_forced" typeId="lcd_forced" />
             <channel id="wifi_status" typeId="wifi_status" />
+            <channel id="ftp_status" typeId="ftp_status" />
+            <channel id="airmedia_status" typeId="airmedia_status" />
+            <channel id="upnpav_status" typeId="upnpav_status" />
+            <channel id="sambafileshare_status" typeId="sambafileshare_status" />
+            <channel id="sambaprintershare_status" typeId="sambaprintershare_status" />
             <channel id="xdsl_status" typeId="xdsl_status" />
             <channel id="line_status" typeId="line_status" />
             <channel id="ipv4" typeId="ipv4" />
@@ -28,13 +33,6 @@
             <channel id="rate_down" typeId="rate_down" />
             <channel id="bytes_up" typeId="bytes_up" />
             <channel id="bytes_down" typeId="bytes_down" />
-            <channel id="onhook" typeId="onhook" />
-            <channel id="ringing" typeId="ringing" />
-            <channel id="call_number" typeId="call_number" />
-            <channel id="call_duration" typeId="call_duration" />
-            <channel id="call_timestamp" typeId="call_timestamp" />
-            <channel id="call_status" typeId="call_status" />
-            <channel id="call_name" typeId="call_name" />
         </channels>
          
         <config-description>
@@ -52,23 +50,150 @@
  				<required>false</required>
  			</parameter>
  
-	 		<parameter name="refreshInterval" type="integer">
+	 		<parameter name="refreshInterval" type="integer" min="1">
  				<label>Refresh Interval</label>
- 				<description>The refresh interval in seconds which is used to poll given Freebox Server.</description>
+ 				<description>The refresh interval in seconds which is used to poll given Freebox Server</description>
  				<default>30</default>
  				<required>false</required>
  			</parameter>
  			
- 	 		<parameter name="refreshPhoneInterval" type="integer">
- 				<label>Phone Refresh Interval</label>
- 				<description>The refresh interval in seconds which is used to poll given Freebox Server for phone informations.</description>
- 				<default>2</default>
- 				<required>false</required>
- 			</parameter>
- 
  		</config-description>
-    </thing-type>
+    </bridge-type>
     
+    <thing-type id="phone">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="server" />
+        </supported-bridge-type-refs>
+
+        <label>Freebox Phone</label>
+        <description>Provides various informations regarding the phone state and the phone calls</description>
+
+        <channel-groups>
+            <channel-group id="state" typeId="state" />
+            <channel-group id="any" typeId="any" />
+            <channel-group id="accepted" typeId="accepted" />
+            <channel-group id="missed" typeId="missed" />
+            <channel-group id="outgoing" typeId="outgoing" />
+        </channel-groups>
+         
+        <config-description>
+            <parameter name="refreshPhoneInterval" type="integer" min="0">
+                <label>Phone State Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll given Freebox Server for phone state</description>
+                <default>2</default>
+                <required>false</required>
+            </parameter>
+ 
+            <parameter name="refreshPhoneCallsInterval" type="integer" min="0">
+                <label>Phone Calls Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll given Freebox Server for phone calls</description>
+                <default>60</default>
+                <required>false</required>
+            </parameter>
+            
+        </config-description>
+    </thing-type>
+
+    <thing-type id="net_device">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="server" />
+        </supported-bridge-type-refs>
+
+        <label>Freebox Network Device</label>
+        <description>Provides various informations regarding one network device</description>
+
+        <channels>
+            <channel id="reachable" typeId="reachable"/>
+        </channels>
+         
+        <config-description>
+            <parameter name="macAddress" type="text">
+                <label>MAC Address</label>
+                <description>The MAC address of the network device</description>
+                <default></default>
+                <required>true</required>
+            </parameter>
+
+        </config-description>
+    </thing-type>
+
+    <thing-type id="net_interface">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="server" />
+        </supported-bridge-type-refs>
+
+        <label>Freebox Network Interface</label>
+        <description>Provides various informations regarding one network interface</description>
+
+        <channels>
+            <channel id="reachable" typeId="reachable"/>
+        </channels>
+         
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <label>IP Address</label>
+                <description>The IP address (v4 or v6) of the network interface</description>
+                <default></default>
+                <required>true</required>
+            </parameter>
+
+        </config-description>
+    </thing-type>
+
+    <channel-group-type id="state">
+        <label>Phone</label>
+        <description>The phone state</description>
+        <channels>
+            <channel id="onhook" typeId="onhook" />
+            <channel id="ringing" typeId="ringing" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="any">
+        <label>Call</label>
+        <description>The last phone call</description>
+        <channels>
+            <channel id="call_number" typeId="call_number" />
+            <channel id="call_duration" typeId="call_duration" />
+            <channel id="call_timestamp" typeId="call_timestamp" />
+            <channel id="call_status" typeId="call_status" />
+            <channel id="call_name" typeId="call_name" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="accepted">
+        <label>Accepted call</label>
+        <description>The last accepted phone call</description>
+        <channels>
+            <channel id="call_number" typeId="caller_number" />
+            <channel id="call_duration" typeId="call_duration" />
+            <channel id="call_timestamp" typeId="call_timestamp" />
+            <channel id="call_name" typeId="caller_name" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="missed">
+        <label>Missed call</label>
+        <description>The last missed phone call</description>
+        <channels>
+            <channel id="call_number" typeId="caller_number" />
+            <channel id="call_duration" typeId="call_duration" />
+            <channel id="call_timestamp" typeId="call_timestamp" />
+            <channel id="call_name" typeId="caller_name" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="outgoing">
+        <label>Outgoing call</label>
+        <description>The last outgoing phone call</description>
+        <channels>
+            <channel id="call_number" typeId="called_number" />
+            <channel id="call_duration" typeId="call_duration" />
+            <channel id="call_timestamp" typeId="call_timestamp" />
+            <channel id="call_name" typeId="called_name" />
+        </channels>
+    </channel-group-type>
+
     <channel-type id="fwversion" advanced="true">
         <item-type>String</item-type>
         <label>Firmware Version</label>
@@ -165,6 +290,41 @@
 		<category>Switch</category>
 	</channel-type>
 	
+    <channel-type id="ftp_status" advanced="true">
+        <item-type>Switch</item-type>
+        <label>FTP Server Enabled</label>
+        <description>Indicates whether the FTP server is enabled</description>
+        <category>Switch</category>
+    </channel-type>
+    
+    <channel-type id="airmedia_status" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Air Media Enabled</label>
+        <description>Indicates whether Air Media is enabled</description>
+        <category>Switch</category>
+    </channel-type>
+    
+    <channel-type id="upnpav_status" advanced="true">
+        <item-type>Switch</item-type>
+        <label>UPnP AV Enabled</label>
+        <description>Indicates whether UPnP AV is enabled</description>
+        <category>Switch</category>
+    </channel-type>
+    
+    <channel-type id="sambafileshare_status" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Window File Sharing Enabled</label>
+        <description>Indicates whether Window File Sharing is enabled</description>
+        <category>Switch</category>
+    </channel-type>
+    
+    <channel-type id="sambaprintershare_status" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Window Printer Sharing Enabled</label>
+        <description>Indicates whether Window Printer Sharing is enabled</description>
+        <category>Switch</category>
+    </channel-type>
+    
 	<channel-type id="xdsl_status">
 		<item-type>String</item-type>
 		<label>xDSL Status</label>
@@ -233,10 +393,24 @@
 	<channel-type id="call_number">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
-		<description>Callee number for outgoing calls. Caller number for incoming calls</description>
+		<description>Called number for outgoing calls. Caller number for incoming calls</description>
 		<state readOnly="true" />
 	</channel-type>
 	
+    <channel-type id="called_number">
+        <item-type>String</item-type>
+        <label>Phone Number</label>
+        <description>Called number</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="caller_number">
+        <item-type>String</item-type>
+        <label>Phone Number</label>
+        <description>Caller number</description>
+        <state readOnly="true" />
+    </channel-type>
+    
 	<channel-type id="call_duration">
 		<item-type>Number</item-type>
 		<label>Duration</label>
@@ -266,8 +440,31 @@
 	
 	<channel-type id="call_name">
 		<item-type>String</item-type>
-		<label>Caller name</label>
-		<description>Callee name for outgoing calls. Caller name for incoming calls</description>
+		<label>Call name</label>
+		<description>Called name for outgoing calls. Caller name for incoming calls</description>
 		<state readOnly="true" />
 	</channel-type>
+    
+    <channel-type id="called_name">
+        <item-type>String</item-type>
+        <label>Called name</label>
+        <description>Called name</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="caller_name">
+        <item-type>String</item-type>
+        <label>Caller name</label>
+        <description>Caller name</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="reachable">
+        <item-type>Switch</item-type>
+        <label>Reachable</label>
+        <description>Indicates whether the network device is reachable</description>
+        <category>Switch</category>
+        <state readOnly="true" />
+    </channel-type>
+    
 </thing:thing-descriptions>
