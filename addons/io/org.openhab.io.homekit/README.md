@@ -20,7 +20,7 @@ org.openhab.homekit:networkInterface=192.168.0.6
 ```
 
 ## Item Configuration
-After setting this global configuration, you will need to tag your openHAB items in order to map them to the HomeKit ontology. For our purposes, you may consider HomeKit accessories to be of two forms: simple and complex.
+After setting this global configuration, you will need to tag your openHAB items in order to map them to an ontology. For our purposes, you may consider HomeKit accessories to be of two forms: simple and complex.
 
 A simple accessory will be mapped to a single openHAB item (i.e. a Lighbulb is mapped to a Switch, Dimmer, or Color item). A complex accessory will be made up of multiple openHAB items (i.e. a Thermostat is composed of Heating and Cooling thresholds, a mode, and current temperature). Complex accessories require a tag on a Group indicating the accessory type, as well as tags on the items it composes.
 
@@ -34,31 +34,25 @@ A full list of supported accessory types can be found in the table below.
   <td><b>description</b></td>
  </tr>
  <tr>
-  <td>Lightbulb</td>
+  <td>Lighting</td>
   <td>&nbsp;</td>
   <td>Switch, Dimmer, Color</td>
-  <td>A lightbulb</td>
+  <td>A lightbulb, either switchable or dimmable</td>
  </tr>
  <tr>
-  <td>DimmableLightbulb</td>
-  <td>&nbsp;</td>
-  <td>Dimmer, Color</td>
-  <td>A lightbulb with the ability to set an output level</td>
- </tr>
- <tr>
-  <td>Switch</td>
+  <td>Switchable</td>
   <td>&nbsp;</td>
   <td>Switch, Dimmer, Color</td>
   <td>An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps</td>
  </tr>
  <tr>
-  <td>TemperatureSensor</td>
+  <td>CurrentTemperature</td>
   <td>&nbsp;</td>
   <td>Number</td>
   <td>An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property</td>
  </tr>
  <tr>
-  <td>HumiditySensor</td>
+  <td>CurrentHumidity</td>
   <td>&nbsp;</td>
   <td>Number</td>
   <td>An accessory that provides a single read-only value indicating the relative humidity.</td>
@@ -71,34 +65,34 @@ A full list of supported accessory types can be found in the table below.
  </tr>
  <tr>
   <td>&nbsp;</td>
-  <td>currentTemperature</td>
+  <td>CurrentTemperature</td>
   <td>Number</td>
-  <td>The current temperature, using the same unit rules as TemperatureSensor</td>
+  <td>The current temperature, same as above</td>
  </tr>
  <tr>
   <td>&nbsp;</td>
-  <td>heatingCoolingMode</td>
+  <td>homekit:HeatingCoolingMode</td>
   <td>String</td>
-  <td>Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties.</td>
+  <td>Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a homekit-specific term and therefore the tags needs to be prefixed with "homekit:"</td>
  </tr>
  <tr>
   <td>&nbsp;</td>
-  <td>targetTemperature</td>
+  <td>TargetTemperature</td>
   <td>Number</td>
   <td>A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode</td>
  </tr>
 </table>
 
-Tags are applied to items using the prefix "homekit:". See the sample below for example items:
+See the sample below for example items:
 
 ```
-Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "homekit:Lightbulb" ]
-Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "homekit:DimmableLightbulb" ]
-Number BedroomTemperature "Bedroom Temperature" (gBedroom) [ "homekit:TemperatureSensor" ]
-Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "homekit:Thermostat" ]
-Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "homekit:currentTemperature" ]
-Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "homekit:targetTemperature" ]
-String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:heatingCoolingMode" ]
+Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
+Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
+Number BedroomTemperature "Bedroom Temperature" (gBedroom) [ "CurrentTemperature" ]
+Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "Thermostat" ]
+Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "CurrentTemperature" ]
+Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "TargetTemperature" ]
+String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:HeatingCoolingMode" ]
 ```
 
 ## Additional Notes

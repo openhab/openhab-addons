@@ -13,11 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps an Item with data derived from any homekit: tags defined.
+ * Wraps an Item with data derived from supported tags defined.
  *
  * @author Andy Lintner
  */
@@ -34,15 +35,12 @@ public class HomekitTaggedItem {
     public HomekitTaggedItem(Item item) {
         this.item = item;
         for (String tag : item.getTags()) {
-            if (tag.startsWith("homekit:")) {
-                String tagValue = tag.substring("homekit:".length()).trim();
-                homekitDeviceType = HomekitDeviceType.valueOfTag(tagValue);
-                if (homekitDeviceType == null) {
-                    homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tagValue);
-                    if (homekitCharacteristicType == null) {
-                        logger.error("Unrecognized homekit type: " + tagValue);
-                    }
-                }
+            if (item instanceof DimmerItem) {
+                tag = "Dimmable" + tag;
+            }
+            homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
+            if (homekitDeviceType == null) {
+                homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tag);
             }
         }
         if (homekitDeviceType != null) {
