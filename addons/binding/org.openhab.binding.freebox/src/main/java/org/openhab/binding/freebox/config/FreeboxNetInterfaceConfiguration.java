@@ -9,19 +9,16 @@
 package org.openhab.binding.freebox.config;
 
 /**
- * The {@link FreeboxServerConfiguration} is responsible for holding
- * configuration informations needed to access/poll the freebox server
+ * The {@link FreeboxNetInterfaceConfiguration} is responsible for holding
+ * configuration informations associated to a Freebox Network Interface
+ * thing type
  *
- * @author Gaël L'hopital
+ * @author Laurent Garnier
  */
-public class FreeboxServerConfiguration {
+public class FreeboxNetInterfaceConfiguration {
 
     public static final String IP_ADDRESS = "ipAddress";
-    public static final String APP_TOKEN = "appToken";
-    public static final String REFRESH_INTERVAL = "refreshInterval";
 
     public String ipAddress;
-    public String appToken;
-    public Integer refreshInterval;
 
 }
