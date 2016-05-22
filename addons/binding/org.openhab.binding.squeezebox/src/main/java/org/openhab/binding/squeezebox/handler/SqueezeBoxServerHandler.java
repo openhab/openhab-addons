@@ -538,9 +538,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Playing Time
-                else if (messagePart.startsWith("time%3A"))
-
-                {
+                else if (messagePart.startsWith("time%3A")) {
                     String value = messagePart.substring("time%3A".length());
                     final int time = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
@@ -551,9 +549,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Playing Playlist Index
-                else if (messagePart.startsWith("playlist_cur_index%3A"))
-
-                {
+                else if (messagePart.startsWith("playlist_cur_index%3A")) {
                     String value = messagePart.substring("playlist_cur_index%3A".length());
                     // player.setCurrentPlaylistIndex((int)
                     // Integer.parseInt(value));
@@ -566,9 +562,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Playlist Number Tracks
-                else if (messagePart.startsWith("playlist_tracks%3A"))
-
-                {
+                else if (messagePart.startsWith("playlist_tracks%3A")) {
                     String value = messagePart.substring("playlist_tracks%3A".length());
                     final int track = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
@@ -579,9 +573,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Playlist Repeat Mode
-                else if (messagePart.startsWith("playlist%20repeat%3A"))
-
-                {
+                else if (messagePart.startsWith("playlist%20repeat%3A")) {
                     String value = messagePart.substring("playlist%20repeat%3A".length());
                     final int repeat = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
@@ -592,9 +584,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Playlist Shuffle Mode
-                else if (messagePart.startsWith("playlist%20shuffle%3A"))
-
-                {
+                else if (messagePart.startsWith("playlist%20shuffle%3A")) {
                     String value = messagePart.substring("playlist%20shuffle%3A".length());
                     final int shuffle = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
@@ -605,9 +595,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Title
-                else if (messagePart.startsWith("title%3A"))
-
-                {
+                else if (messagePart.startsWith("title%3A")) {
                     final String value = messagePart.substring("title%3A".length());
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -630,9 +618,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Artist
-                else if (messagePart.startsWith("artist%3A"))
-
-                {
+                else if (messagePart.startsWith("artist%3A")) {
                     final String value = messagePart.substring("artist%3A".length());
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -642,9 +628,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Album
-                else if (messagePart.startsWith("album%3A"))
-
-                {
+                else if (messagePart.startsWith("album%3A")) {
                     final String value = messagePart.substring("album%3A".length());
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -654,9 +638,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Genre
-                else if (messagePart.startsWith("genre%3A"))
-
-                {
+                else if (messagePart.startsWith("genre%3A")) {
                     final String value = messagePart.substring("genre%3A".length());
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -666,9 +648,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Year
-                else if (messagePart.startsWith("year%3A"))
-
-                {
+                else if (messagePart.startsWith("year%3A")) {
                     final String value = messagePart.substring("year%3A".length());
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -678,9 +658,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                 }
                 // Parameter Artwork
-                else if (messagePart.startsWith("artwork_track_id%3A"))
-
-                {
+                else if (messagePart.startsWith("artwork_track_id%3A")) {
                     String url = messagePart.substring("artwork_track_id%3A".length());
                     // NOTE: what is returned if not an artwork id? i.e. if a
                     // space?
