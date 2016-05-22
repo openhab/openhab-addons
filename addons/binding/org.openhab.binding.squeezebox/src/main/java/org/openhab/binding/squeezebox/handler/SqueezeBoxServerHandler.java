@@ -517,7 +517,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     String value = messagePart.substring("mixer%20volume%3A".length());
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
-
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.volumeChangeEvent(mac, volume);
@@ -669,7 +668,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         }
                     });
                 }
-
             }
         }
 
