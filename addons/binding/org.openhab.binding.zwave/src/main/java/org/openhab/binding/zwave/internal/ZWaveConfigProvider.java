@@ -196,7 +196,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             parameters.add(ConfigDescriptionParameterBuilder
                     .create(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, Type.TEXT).withLabel("Switch All Mode")
                     .withDescription("Set the mode for the switch when receiving SWITCH ALL commands.").withDefault("0")
-                    .withGroupName("thingcfg").withOptions(options).build());
+                    .withGroupName("thingcfg").withOptions(options).withLimitToOptions(true).build());
         }
 
         // If we support the powerlevel class, then add the configuration
@@ -216,14 +216,14 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL, Type.INTEGER).withLabel("Power Level")
                     .withDescription(
                             "Set the RF output level - Normal is maximum power<br>Setting the power to a lower level may be useful to reduce overloading of the receiver in adjacent nodes where they are close together, or if maximum power is not required for battery devices, it may extend battery life by reducing the transmit power.")
-                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+                    .withDefault("0").withGroupName("thingcfg").withOptions(options).withLimitToOptions(true).build());
 
             parameters.add(ConfigDescriptionParameterBuilder
                     .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT, Type.INTEGER)
                     .withLabel("Power Level Timeout")
                     .withDescription(
                             "Set the power level timeout in seconds<br>The node will reset to the normal power level if communications is not made within the specified number of seconds.")
-                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+                    .withDefault("0").withGroupName("thingcfg").build());
         }
 
         // If we support DOOR_LOCK - add options
