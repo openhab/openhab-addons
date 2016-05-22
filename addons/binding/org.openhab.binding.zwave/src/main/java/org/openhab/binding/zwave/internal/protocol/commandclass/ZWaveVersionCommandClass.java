@@ -123,9 +123,33 @@ public class ZWaveVersionCommandClass extends ZWaveCommandClass {
                     logger.info("NODE {}: Command Class {} has version 0!", getNode().getNodeId(),
                             commandClass.getLabel());
 
-                    // TODO: We should remove the class
-                    // For now, just set the version to 1 to avoid a loop on initialisation
-                    commandClassVersion = 1;
+                    // Do not remove mandatory generic command classes.
+                    for (CommandClass mandatoryCommandClass : getNode().getDeviceClass().getGenericDeviceClass()
+                            .getMandatoryCommandClasses()) {
+                        if (mandatoryCommandClass == commandClass) {
+                            commandClassVersion = 1;
+                            break;
+                        }
+                    }
+
+                    // Do not remove mandatory specific command classes.
+                    if (commandClassVersion == 0) {
+                        for (CommandClass mandatoryCommandClass : getNode().getDeviceClass().getSpecificDeviceClass()
+                                .getMandatoryCommandClasses()) {
+                            if (mandatoryCommandClass == commandClass) {
+                                commandClassVersion = 1;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Remove other command classes.
+                    if (commandClassVersion == 0) {
+                        getNode().removeCommandClass(commandClass);
+                        logger.debug("NODE {}: Removed Command Class {}", getNode().getNodeId(),
+                                commandClass.getLabel());
+                        return;
+                    }
                 }
 
                 zwaveCommandClass.setVersion(commandClassVersion);
