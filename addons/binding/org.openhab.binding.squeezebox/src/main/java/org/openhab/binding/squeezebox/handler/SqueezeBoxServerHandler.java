@@ -606,9 +606,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
                 }
                 // Parameter Remote Title (radio)
-                else if (messagePart.startsWith("remote_title%3A"))
-
-                {
+                else if (messagePart.startsWith("remote_title%3A")) {
                     final String value = messagePart.substring("remote_title%3A".length());
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
@@ -717,7 +715,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 } else if (function.equals("volume")) {
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
-
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.volumeChangeEvent(mac, volume);
