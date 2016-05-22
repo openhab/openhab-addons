@@ -25,7 +25,7 @@
       <property name="model">DSC26</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:001A</property>
-      <property name="defaultAssociations">2</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -39,54 +39,20 @@
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
                  min="0" max="65535">
-        <label>2: Make Micro Smart Switch 2nd Edition Blink</label>
+        <label>2: Make Micro Switch 2nd Edition Blink</label>
         <description>This is a double byte value. The LSB defines the total time the device need to blink. The value if set in seconds. The MSB defines the on/off interval of the blinking. The unit is 0.1 s.</description>
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration">
-        <label>3: Current Overload Protection</label>
-        <description>Load will be closed when current more that 15.5A and time more than 2 minutes</description>
-        <default>0</default>
-        <options>
-          <option value="0">Deactivate</option>
-          <option value="1">Activate</option>
-        </options>
-      </parameter>
-
       <parameter name="config_80_1" type="integer" groupName="configuration">
         <label>80: Notification on Status Change</label>
-        <description>Parameter to Enable to send notification to associated devices (Group 1) when the state of Micro Smart Switch's load changed</description>
+        <description>Parameter to Enable to send notification to associated devices (Group 1) when the state of Micro Switch's load changed</description>
         <default>0</default>
         <options>
           <option value="0">Deactivate</option>
           <option value="1">Hail CC Sent</option>
           <option value="2">Basic CC Report Sent</option>
         </options>
-      </parameter>
-
-      <parameter name="config_90_1" type="integer" groupName="configuration">
-        <label>90: Automated sending of a Report triggered by minimal change of value.</label>
-        <description>Parameter to Enable/Disable automated sending of a Report triggered by minimal change of value.</description>
-        <default>0</default>
-        <options>
-          <option value="0">Deavtivate</option>
-          <option value="1">Activate</option>
-        </options>
-      </parameter>
-
-      <parameter name="config_91_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
-        <label>91: Minimum Change to send Report (Watt)</label>
-        <description>The value represents the minimum change in Wattage for a Report to be sent.</description>
-        <default>25</default>
-      </parameter>
-
-      <parameter name="config_92_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>92: Minimum Change to send Report (%)</label>
-        <description>The value represents the minimum change in Watage Percent for a report to be sent.</description>
-        <default>5</default>
       </parameter>
 
       <parameter name="config_101_4" type="integer" groupName="configuration"
@@ -139,6 +105,41 @@
         </options>
       </parameter>
 
+      <parameter name="config_200_1" type="integer" groupName="configuration">
+        <label>200: Partner ID</label>
+        <default>0</default>
+        <options>
+          <option value="0">Aeon Labs Standard Product</option>
+          <option value="1">AT&amp;T</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_252_1" type="integer" groupName="configuration">
+        <label>252: Enable/disable Lock Configuration</label>
+        <default>0</default>
+        <options>
+          <option value="0">Disable</option>
+          <option value="1">Enable</option>
+        </options>
+      </parameter>
+
+      <parameter name="config_254_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>254: Device Tag</label>
+        <default>0</default>
+      </parameter>
+
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_255_1_wo" type="integer" groupName="configuration">
+        <label>255: Reset configuration set up to default setting</label>
+        <default>5</default>
+      </parameter>
+
       <!-- ASSOCIATION DEFINITIONS -->
       <parameter-group name="association">
         <context>link</context>
@@ -146,12 +147,18 @@
       </parameter-group>
 
       <parameter name="group_1" type="text" groupName="association" multiple="true">
-        <label>1: Target for automatic meter reports</label>
+        <label>1: Lifeline</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>The Node IDs in Group 1 will receive Hail Command /Basic report (configurable) when the state of Micro Switch’s load changed.</p>
+        ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
       <parameter name="group_2" type="text" groupName="association" multiple="true">
-        <label>2: Target for automatic reports</label>
+        <label>2: Retransmit</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>When the Micro Switch receives the following commands, it will forward the commands to<br />all node IDs which are in Group 2. <br />Commands: Basic Set, Switch Binary Set, Scene Activation Set.</p>
+        ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
 

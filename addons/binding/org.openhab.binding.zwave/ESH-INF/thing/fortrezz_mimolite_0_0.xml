@@ -44,7 +44,7 @@ Digital or Analog Voltage input and/or Dry Contact Relay <br /><h1>Overview</h1>
       <property name="vendor">FortrezZ</property>
       <property name="model">MIMOlite</property>
       <property name="manufacturerId">0084</property>
-      <property name="manufacturerRef">0453:010E,0453:010F,0453:0110</property>
+      <property name="manufacturerRef">0453:010E,0453:010F,0453:0110,0453:0111</property>
       <property name="defaultAssociations">2,3</property>
     </properties>
 

@@ -61,7 +61,7 @@
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0801:1001</property>
       <property name="versionMin">3.2</property>
-      <property name="defaultAssociations">3</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -401,18 +401,43 @@ MINIMUM TEMPERATURE RESULTING IN BLUE LED ILLUMINATION<br /><h1>Overview</h1><p>
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association" multiple="true">
-        <label>1: Device Status</label>
-        <multipleLimit>16</multipleLimit>
+      <parameter name="group_1" type="text" groupName="association">
+        <label>1: Lifeline</label>
+        <description><![CDATA[
+Device status<br /><h1>Overview</h1><p>"Lifeline" is a reporting group, assigned to the device status. Main Z-Wave+ network controller should be added to this group. The "Lifeline" group can handle only one device. If Fibaro Motion Sensor operates in protected mode, outgoing messages are always encrypted.</p>
+        ]]></description>
       </parameter>
 
       <parameter name="group_2" type="text" groupName="association" multiple="true">
-        <label>2: Tamper Alarm</label>
-        <multipleLimit>16</multipleLimit>
+        <label>2: Motion</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>"Motion" is assigned to the motion sensor. At the moment of motion detection or alarm state cancellation, nodes added to this group will receive control frames. The "Motion" group can handle up to five devices (one or multi-channel). If Fibaro Motion Sensor operates in protected mode, outgoing messages are encrypted, depending on whether the added node also operates in secure mode.</p>
+        ]]></description>
+        <multipleLimit>5</multipleLimit>
       </parameter>
 
-      <parameter name="group_3" type="text" groupName="association">
-        <label>3: Controller Updates</label>
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
+        <label>3: Tamper</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>"Tamper" is assigned to the tamper alarm. Once tampering is detected or cancelled, nodes added to this group will receive alarm frames. The "Tamper" group can handle up to five devices (one or multi-channel). If Fibaro Motion Sensor operates in protected mode, outgoing messages are always encrypted.</p>
+        ]]></description>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
+        <label>4: Motion BC</label>
+        <description><![CDATA[
+Motion BC (backward compatibility)<br /><h1>Overview</h1><p>"Motion BC" is assigned to the motion sensor. Once motion is detected or alarm state cancelled, nodes added to this group will receive report frames. This group aims to provide backward compatibility with controllers not supporting the Z-Wave+ protocol. Only a main controller not supporting the Z-wave+ protocol should be added to this group. The "Motion BC" group can handle up to five devices (one or multi-channel). If Fibaro Motion Sensor operates in protected mode, outgoing messages are always encrypted.</p>
+        ]]></description>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
+        <label>5: Tamper BC</label>
+        <description><![CDATA[
+Tamper BC (backward compability)<br /><h1>Overview</h1><p>"Tamper BC" is assigned to the tamper alarm. Once tampering is detected or cancelled, nodes added to this group will receive alarm frames. This group aims to provide backward compatibility with devices not supporting the Z-Wave+ protocol. Only nodes not supporting the Z-wave+ protocol should be added to this group. The "Tamper BC" group can handle up to five devices (one or multi-channel). If Fibaro Motion Sensor operates in protected mode, outgoing messages are always encrypted. The Fibaro Motion Sensor allows for controlling 5 regular and 5 multichannel devices per an association group, out of which 1 field is reserved for the Z-Wave network main controller.</p>
+        ]]></description>
+        <multipleLimit>5</multipleLimit>
       </parameter>
 
     </config-description>
