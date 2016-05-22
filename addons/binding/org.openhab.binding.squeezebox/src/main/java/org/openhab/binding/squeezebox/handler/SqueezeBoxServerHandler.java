@@ -527,9 +527,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
                 // Parameter Mode
                 else if (messagePart.startsWith("mode%3A")) {
-
                     final String mode = messagePart.substring("mode%3A".length());
-
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
