@@ -5,13 +5,11 @@ Bundle-SymbolicName: org.openhab.binding.hyperion;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,
- lib/asm-1.0.2.jar,
- lib/json-path-2.0.0.jar,
- lib/json-smart-2.2.jar
+Bundle-ClassPath: .
 Import-Package: com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
+ com.jayway.jsonpath,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
