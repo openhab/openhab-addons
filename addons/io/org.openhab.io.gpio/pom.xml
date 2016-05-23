@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.openhab.addons.io</groupId>
     <artifactId>pom</artifactId>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -14,14 +14,5 @@
   <name>openHAB GPIO IO Module</name>
 
   <packaging>eclipse-plugin</packaging>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.vafer</groupId>
-        <artifactId>jdeb</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
