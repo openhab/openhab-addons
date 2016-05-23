@@ -1132,7 +1132,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
 
                 if (channel.converter == null) {
-                    logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
+                    logger.warn("NODE {}: No converter set for channel {}", nodeId, channel.getUID());
                     return;
                 }
 
@@ -1140,7 +1140,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 // channel.dataType);
                 State state = channel.converter.handleEvent(channel, event);
                 if (state != null) {
-                    logger.debug("Updating {} to {}", channel.getUID(), state);
+                    logger.debug("NODE {}: Updating channel state {} to {} [{}]", nodeId, channel.getUID(), state,
+                            state.getClass().getSimpleName());
 
                     updateState(channel.getUID(), state);
                 }
