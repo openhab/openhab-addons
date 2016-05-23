@@ -47,6 +47,9 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
             // Is there something to read?
 
             try {
+                if (!reads.ready()) {
+                    continue;
+                }
                 line = reads.readLine();
 
                 // We lost connection
