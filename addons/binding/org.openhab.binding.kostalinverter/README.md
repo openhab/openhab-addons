@@ -28,6 +28,7 @@ status
 ## Thing Configuration
 
 demo.things
+
 ```
 Thing kostalpico:kostalpico:inverter [ url="http://192.168.0.128" ]
 ```
@@ -38,6 +39,7 @@ it is offline you should see an error message.
 ## Items
 
 demo.items:
+
 ```
 Number SolarPower "Solar power [%.2f Watt]" <energy> (gGF) { channel="kostalpico:kostalpico:inverter:acPower" }
 Number SolarEnergyDay "Solar day energy[%.2f kwh]" <energy> (gGF)  { channel="kostalpico:kostalpico:inverter:dayEnergy" }

@@ -76,6 +76,7 @@ lutron:keypad:theater (lutron:ipbridge:radiora2) [ integrationId=10 ]
 ```
 
 demo.items:
+
 ```
 Dimmer TheaterLights { channel="lutron:dimmer:theater:lightlevel" }
 Switch TheaterMotion { channel="lutron:occupancysensor:theater:occupancystatus" }
