@@ -122,7 +122,7 @@ can be shown in the visu
 	</widgetinfo>
 </pagejump>
 ```
-###Charts:
+### Charts:
 * Items: see demo.items
 * Config:
 
@@ -176,7 +176,7 @@ sendCommand(Logger,"Call received|Received call from 123456789|0|Call,Incoming")
 # but you can also just use any string like
 sendCommand(Logger,"Received call from 123456789")
 ```
-###ColorItem (supported since CometVisu-Release 0.8.2) => 
+### ColorItem (supported since CometVisu-Release 0.8.2) => 
 
 ```
 <colorchooser>

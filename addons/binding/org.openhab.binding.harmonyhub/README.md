@@ -10,7 +10,7 @@ The Harmony binding represents a "Hub" as a bridge thing type and "Devices" as t
 
 A hub (bridge thing) represents a physical Harmony Hub.  The hub possesses a single channel with the id "activity" which is a StringType set to the name of the current activity.  This channel is dynamically generated with the possible activity strings listed as channel state options. 
 
-###Devices
+### Devices
 
 Devices are dynamically created. There is a single device thing for every physical device configured on the harmony hub.  Each device has a single channel with the id "button" which sends a string with the name of the button to press on the device.  This channel is dynamically generated with the possible button press strings listed as channel state options. 
 
@@ -64,7 +64,7 @@ Devices can send button presses
 ```
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
 ```
-##Example Sitemap
+## Example Sitemap
 
 Using the above things channels and items 
 Sitemap:
