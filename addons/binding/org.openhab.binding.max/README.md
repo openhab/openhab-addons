@@ -69,6 +69,7 @@ max:thermostat:KEQ0565026 [ serialNumber="KEQ0565123" ]
 ```
 
 max.items:
+
 ```
 Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
 
@@ -81,6 +82,7 @@ Number maxSetTemp "Thermostat temperature setpoint [%.1f �C]"  (gMAX) {channel
 ```
 
 demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {

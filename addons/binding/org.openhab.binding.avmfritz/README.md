@@ -72,12 +72,14 @@ Bridge avm:fritzbox:192.168.178.1 [ ipAddress="192.168.0.64" ] {
 ```
 
 demo.items:
+
 ```
 Number Temp { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
 Switch Outlet2 { channel="avmfritz:FRITZ_Powerline_546E:1:PL1:outlet" }
 ```
 
 demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {

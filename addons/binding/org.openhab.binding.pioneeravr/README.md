@@ -28,9 +28,10 @@ Configuration of serialAvr:
 * serialPort: the name of the serial port on your computer. (mandatory)
 
 Example:
+
 ```
 pioneeravr:ipAvr:vsx921IP [ address="192.168.1.25", tcpPort="23" ]
-pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ] 
+pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ]
 ```
 
 
@@ -81,6 +82,7 @@ pioneeravr:ipAvr:vsx921 [ address="192.168.188.89" ]
 ```
 
 *demo.items:
+
 ```
 /* Pioneer AVR Items */
 Switch vsx921PowerSwitch		"Power"								(All)	{ channel="pioneeravr:ipAvr:vsx921:power" }
@@ -92,6 +94,7 @@ String vsx921InformationDisplay "Information [%s]"		<none> 		(All)	{ channel="pi
 ```
 
 *demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {

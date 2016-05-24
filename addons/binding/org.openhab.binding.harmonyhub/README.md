@@ -28,6 +28,7 @@ This is optional, it is recommended to let the binding discover and add hubs and
 To manually configure a Harmony Hub thing you may specify its name ("name") as well as an optional search timeout value in seconds ("discoveryTimeout") . 
  
 In the thing file, this looks e.g. like
+
 ```
 Bridge harmonyhub:hub:GreatRoom [ name="Great Room"]
 ```
@@ -35,12 +36,14 @@ Bridge harmonyhub:hub:GreatRoom [ name="Great Room"]
 To manually configure a Harmony device thing you may specify its numeric id ("id") or its name ("name"), but not both. Note that this is prefixed by the hub the device is controlled from.
  
 In the thing file, this looks e.g. like
+
 ```
 Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ name="Denon AV Receiver"]
 }
 ```
 or
+
 ```
 Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ id=176254]
@@ -51,6 +54,7 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
 Hubs can report and change the current activity:
 
 items:
+
 ```
 String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:activity" }
 ```
@@ -64,6 +68,7 @@ String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="
 
 Using the above things channels and items 
 Sitemap:
+
 ```
 sitemap demo label="Main Menu" {
         Frame  {

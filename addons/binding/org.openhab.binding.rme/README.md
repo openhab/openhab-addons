@@ -31,6 +31,7 @@ Thing rme:manager:m1 [ port="/dev/tty.usbserial-FTGVQA6D" ]
 ```
 
 .items
+
 ```
 Number RMECisternLevel "Water level [%.1f %%]"(rme) {channel="rme:manager:m1:waterlevel"}
 String RMEMode (rme) {channel="rme:manager:m1:mode"}
