@@ -56,12 +56,14 @@ network:device:1 [ hostname="192.168.0.64", port="0", retry="1", timeout="5000",
 ```
 
 demo.items:
+
 ```
 Switch MyDevice { channel="network:device:1:online" }
 Number MyTime { channel="network:device:1:time" }
 ```
 
 demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {

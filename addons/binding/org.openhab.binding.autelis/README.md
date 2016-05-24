@@ -20,6 +20,7 @@ The binding requires no special configuration
 The Autelis binding requires the host, port, username and password
  
 In the thing file, this looks e.g. like
+
 ```
 Thing autelis:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
 ```

@@ -10,7 +10,7 @@ The Harmony binding represents a "Hub" as a bridge thing type and "Devices" as t
 
 A hub (bridge thing) represents a physical Harmony Hub.  The hub possesses a single channel with the id "activity" which is a StringType set to the name of the current activity.  This channel is dynamically generated with the possible activity strings listed as channel state options. 
 
-###Devices
+### Devices
 
 Devices are dynamically created. There is a single device thing for every physical device configured on the harmony hub.  Each device has a single channel with the id "button" which sends a string with the name of the button to press on the device.  This channel is dynamically generated with the possible button press strings listed as channel state options. 
 
@@ -28,6 +28,7 @@ This is optional, it is recommended to let the binding discover and add hubs and
 To manually configure a Harmony Hub thing you may specify its name ("name") as well as an optional search timeout value in seconds ("discoveryTimeout") . 
  
 In the thing file, this looks e.g. like
+
 ```
 Bridge harmonyhub:hub:GreatRoom [ name="Great Room"]
 ```
@@ -35,12 +36,14 @@ Bridge harmonyhub:hub:GreatRoom [ name="Great Room"]
 To manually configure a Harmony device thing you may specify its numeric id ("id") or its name ("name"), but not both. Note that this is prefixed by the hub the device is controlled from.
  
 In the thing file, this looks e.g. like
+
 ```
 Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ name="Denon AV Receiver"]
 }
 ```
 or
+
 ```
 Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ id=176254]
@@ -51,6 +54,7 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
 Hubs can report and change the current activity:
 
 items:
+
 ```
 String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:activity" }
 ```
@@ -60,10 +64,11 @@ Devices can send button presses
 ```
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
 ```
-##Example Sitemap
+## Example Sitemap
 
 Using the above things channels and items 
 Sitemap:
+
 ```
 sitemap demo label="Main Menu" {
         Frame  {
