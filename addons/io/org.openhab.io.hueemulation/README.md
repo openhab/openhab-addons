@@ -19,8 +19,8 @@ Pairing can be turned on and off:
 org.openhab.hueemulation:pairingEnabled=false
 ```
 
-##Device Taging
-To expose an item on the service apply a supported tag (which are "Lighting", "Switchable", "TargetTemperature") to it.  The item label will be used as the Hue device name.
+##Device Tagging
+To expose an item on the service, apply a supported tag (which are "Lighting", "Switchable", "TargetTemperature") to it.  The item label will be used as the Hue device name.
 
 ```
 Switch  TestSwitch1     "Kitchen Switch" [ "Switchable" ]
