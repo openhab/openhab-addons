@@ -4,9 +4,9 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>GPIO IO Module Binding</name>
-    <description>This is the binding for GPIO</description>
-    <author>Author Dancho Penev since 1.5.0, ported to OpenHab 2 by Daniel Barron</author>
+    <name>gpio Binding</name>
+    <description>This is the binding for gpio.</description>
+    <author>Daniel Barron since 2.0.0</author>
     
     <config-description>
         <parameter name="sysfs" type="text">

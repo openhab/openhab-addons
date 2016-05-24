@@ -11,7 +11,7 @@
   <groupId>org.openhab.io</groupId>
   <artifactId>org.openhab.io.gpio</artifactId>
 
-  <name>openHAB GPIO IO Module</name>
+  <name>gpio IO</name>
 
   <packaging>eclipse-plugin</packaging>
 
