@@ -233,7 +233,14 @@ public class SysteminfoHandler extends BaseThingHandler {
         // TODO description !!
         if (channelGroupID.contains(CHANNEL_GROUP_PROCESS)) {
             Channel channel = getThing().getChannel(channelID);
-            int pid = (int) channel.getConfiguration().get("pid");
+            int pid = -1;
+            try {
+                BigDecimal pidValue = (BigDecimal) channel.getConfiguration().get("pid");
+                pid = pidValue.intValue();
+            } catch (Exception e) {
+                logger.debug("Channel configuraiton can not be read!", e);
+            }
+
             if (pid > -1) {
                 deviceIndex = pid;
                 logger.debug("Channel with id {} tracks process with pid: {}", channelID, pid);

@@ -825,7 +825,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     @Test
     public void 'assert channel process#name is updated with PID set' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_NAME
-        String acceptedItemType = "Number";
+        String acceptedItemType = "String";
         //The pid of the System idle process in Windows
         int pid = 0
 
