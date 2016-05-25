@@ -61,11 +61,12 @@ class SysteminfoOSGiTest extends OSGiTest{
     def  DEFAULT_TEST_THING_NAME = "work";
     def  DEFAULT_TEST_ITEM_NAME = "test"
     def DEFAULT_CHANNEL_TEST_PRIORITY = "High"
-    def DEFAULT_CHANNEL_PID = "-1"
+    def DEFAULT_CHANNEL_PID = -1
     def DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
     def DEFAULT_THING_INITIALIZE_MAX_TIME = 3000
 
     Thing systemInfoThing
+    GenericItem testItem
 
     ManagedThingProvider managedThingProvider;
     ThingRegistry thingRegistry;
@@ -207,13 +208,12 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     private void intializeItem (ChannelUID channelUID,String itemName, String acceptedItemType) {
-        GenericItem itemType;
         if(acceptedItemType.equals("Number")) {
-            itemType = new NumberItem(itemName)
+            testItem = new NumberItem(itemName)
         } else if(acceptedItemType.equals("String")){
-            itemType = new StringItem(itemName)
+            testItem = new StringItem(itemName)
         }
-        itemRegistry.add(itemType)
+        itemRegistry.add(testItem)
 
         def ManagedItemChannelLinkProvider itemChannelLinkProvider = getService(ManagedItemChannelLinkProvider)
         assertThat itemChannelLinkProvider, is(notNullValue())
@@ -767,7 +767,6 @@ class SysteminfoOSGiTest extends OSGiTest{
         testDiscoveryService(expectedHostname,hostname)
     }
 
-
     private void testDiscoveryService(String expectedHostname, String hostname) {
         SysteminfoDiscoveryService discoveryService = getService(DiscoveryService,SysteminfoDiscoveryService)
         waitForAssert {
@@ -800,13 +799,50 @@ class SysteminfoOSGiTest extends OSGiTest{
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
-    public void 'assert chnanel process#load is not updated with no PID set' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD
+    public void 'assert channel process#threads is updated with PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_THREADS
         String acceptedItemType = "Number";
-        int pid = -1
+        //The pid of the System idle process in Windows
+        int pid = 0
 
-        initializeThingWithChannelAndPID(acceptedItemType, acceptedItemType,pid)
-        testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
+        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert channel process#path is updated with PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_PATH
+        String acceptedItemType = "String";
+        //The pid of the System idle process in Windows
+        int pid = 0
+
+        initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
+        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert channel process#name is updated with PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_NAME
+        String acceptedItemType = "Number";
+        //The pid of the System idle process in Windows
+        int pid = 0
+
+        initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
+        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+    }
+
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert channel process#memory is updated with PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_MEMORY
+        String acceptedItemType = "Number";
+        //The pid of the System idle process in Windows
+        int pid = 0
+
+        initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
+        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -817,10 +853,20 @@ class SysteminfoOSGiTest extends OSGiTest{
         //The pid of the System idle process in Windows
         int pid = 0
 
-        initializeThingWithChannelAndPID(acceptedItemType, acceptedItemType,pid)
-        testItemStateIsUpdated(acceptedItemType, acceptedItemType, acceptedItemType)
+        initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
+        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
+    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
+    @Test
+    public void 'assert chnanel process#load is not updated with no PID set' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD
+        String acceptedItemType = "Number";
+        int pid = -1
+
+        initializeThingWithChannelAndPID(channnelID, acceptedItemType,pid)
+        testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+    }
 
     @After
     public void tearDown () {
@@ -832,7 +878,10 @@ class SysteminfoOSGiTest extends OSGiTest{
         }
         waitForAssert({
             assertThat getService(ThingHandler, SysteminfoHandler), is(nullValue())
-        }, 1000)
+        })
 
+        if(testItem != null) {
+            itemRegistry.remove(DEFAULT_TEST_ITEM_NAME)
+        }
     }
 }

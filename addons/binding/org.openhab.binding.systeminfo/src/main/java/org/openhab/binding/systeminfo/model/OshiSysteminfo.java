@@ -13,6 +13,8 @@ import java.net.SocketException;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -36,6 +38,8 @@ import oshi.util.EdidUtil;
  *
  */
 public class OshiSysteminfo implements SysteminfoInterface {
+    private Logger logger = LoggerFactory.getLogger(OshiSysteminfo.class);
+
     private OperatingSystem operatingSystem;
     private NetworkIF[] networks;
     private Display[] displays;
@@ -55,18 +59,31 @@ public class OshiSysteminfo implements SysteminfoInterface {
      * @throws SocketException when it is not able to access the network information.
      */
     public OshiSysteminfo() {
-        SystemInfo systemInfo = new SystemInfo();
-        HardwareAbstractionLayer hal = systemInfo.getHardware();
-        operatingSystem = systemInfo.getOperatingSystem();
-        displays = hal.getDisplays();
-        fileStores = hal.getFileStores();
-        memory = hal.getMemory();
-        powerSources = hal.getPowerSources();
-        cpu = hal.getProcessor();
-        sensors = hal.getSensors();
-        networks = hal.getNetworkIFs();
-        drives = hal.getDiskStores();
-        processes = cpu.getProcesses();
+        try {
+            SystemInfo systemInfo = new SystemInfo();
+            HardwareAbstractionLayer hal = systemInfo.getHardware();
+            operatingSystem = systemInfo.getOperatingSystem();
+            displays = hal.getDisplays();
+            fileStores = hal.getFileStores();
+            memory = hal.getMemory();
+            powerSources = hal.getPowerSources();
+            cpu = hal.getProcessor();
+            sensors = hal.getSensors();
+            networks = hal.getNetworkIFs();
+            drives = hal.getDiskStores();
+            if (cpu != null) {
+                processes = cpu.getProcesses();
+            } else {
+                throw new Exception("Can not get processs information, because cpu info is missing !");
+            }
+        } catch (Exception e) {
+            // TODO better error messages
+            // TODO maybe Exception must be thrown
+            logger.debug(
+                    "Error while getting system information through OSHI interface library. Some of the provided functionality may be not available !",
+                    e);
+        }
+
     }
 
     @SuppressWarnings("null")
