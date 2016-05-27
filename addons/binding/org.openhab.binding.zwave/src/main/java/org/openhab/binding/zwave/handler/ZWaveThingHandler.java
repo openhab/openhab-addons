@@ -1217,6 +1217,13 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
                     // Update property information about this device
                     Map<String, String> properties = editProperties();
+
+                    properties.put(ZWaveBindingConstants.PROPERTY_MANUFACTURER,
+                            Integer.toString(node.getManufacturer()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_DEVICETYPE, Integer.toString(node.getDeviceType()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_DEVICEID, Integer.toString(node.getDeviceId()));
+                    properties.put(ZWaveBindingConstants.PROPERTY_VERSION, node.getApplicationVersion());
+
                     properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
                             node.getDeviceClass().getBasicDeviceClass().toString());
                     properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
