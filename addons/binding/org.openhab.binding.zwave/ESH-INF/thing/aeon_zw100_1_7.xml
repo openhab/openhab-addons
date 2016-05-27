@@ -5,16 +5,18 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="aeon_zw100_00_000" listed="false">
+  <thing-type id="aeon_zw100_01_007" listed="false">
     <label>ZW100 MultiSensor 6</label>
-    <description>MultiSensor 6</description>
+    <description><![CDATA[
+MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating distance:  Up to 500 feet/150 meters outdoors   Operating temperature: 0°C to 40°C   Relative humidity: 8% RH to 80% RH       Function of Z_Wave Button: Click one time: </p><ol><li>Send non-security Node Info Frame</li> <li>Add MultiSensor into Z-wave network (non security inclusion)</li> <li>Remove MultiSensor from Z-wave network</li> </ol>   Short press 2 times within 1 second: <ol><li>Send Security Node Info Frame</li> <li>Add Multisensor into Z-Wave network (security inclusion)</li> <li>Remove MultiSensor from network</li> </ol>   Press and hold for 3 seconds: <p>Enable/Disable wake up for 10 minutes.</p> <p>(when it is enabled, the orange Led will fast blink)</p>   Press and hold for 20 seconds: <p>Reset MultiSensor to factory default (see documentation)</p> <br /><h2>Inclusion Information</h2><p>see "Device Overview"</p> <br /><h2>Exclusion Information</h2><p>see "Device Overview"</p>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
       <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm (general)</label>
+        <label>Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;type=GENERAL</property>
+          <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
@@ -44,7 +46,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -59,8 +61,8 @@
       <property name="vendor">Aeon Labs</property>
       <property name="model">ZW100</property>
       <property name="manufacturerId">0086</property>
-      <property name="manufacturerRef">0002:0064,0102:0064,0202:0064</property>
-      <property name="versionMax">1.6</property>
+      <property name="manufacturerRef">0002:0064</property>
+      <property name="versionMin">1.7</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -117,6 +119,15 @@ Motion Sensor reset timeout<br /><h1>Overview</h1><ol><li>The default PIR time i
         </options>
       </parameter>
 
+      <parameter name="config_9_2" type="integer" groupName="configuration"
+                 min="0" max="1">
+        <label>9: Report the current power mode</label>
+        <description><![CDATA[
+Report the current power mode and the product state of battery power mode<br /><h1>Overview</h1><p>Value1 (MSB): 0x00=USB power mode, 0x01=Battery power mode</p> <p>Value2 (LSB): 0x00=keep sleep state for Battery power mode, 0x01=keep awake for 10 minutes for battery power mode</p> <p>NOTE: this parameter cannot be used as Get/Set usage</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
       <parameter name="config_39_1" type="integer" groupName="configuration"
                  min="10" max="50">
         <label>39: Low Battery Report</label>
@@ -129,7 +140,7 @@ Report Low Battery if below this value<br /><h1>Overview</h1><p>Configure low ba
       <parameter name="config_40_1" type="integer" groupName="configuration">
         <label>40: Selective Reporting</label>
         <description><![CDATA[
-Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selective reporting only when measurements reach a certain threshold or percentage set in 41-44 below. This is used to reduce network traffic. (0 == disable, 1 == enable)</p>
+Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selective reporting only when measurements reach a certain threshold or percentage set in 41-44 below. This is used to reduce network traffic. (0 == disable, 1 == enable)</p> <p>Note: If USB Power, the Sensor will check threshold every 10 seconds. If battery power, the Sensor will check the threshold when it is waken up.</p>
         ]]></description>
         <default>0</default>
         <options>
@@ -142,12 +153,12 @@ Select to report on thresholds<br /><h1>Overview</h1><p>Enable/disable the selec
                  min="0" max="100">
         <label>41: Temperature Threshold</label>
         <description><![CDATA[
-Temperature change threshold<br /><h1>Overview</h1><p>Threshold change in temperature to induce an automatic report.<br /><strong>Note</strong>:</p> <ol><li>The unit is Fahrenheit for US version, Celsius for EU/AU version.</li> <li>The value contains one decimal point. E.g. if the value is set to 20, the threshold value =2.0°C (EU/AU version) or 2.0 °F (US version). When the current temperature gap is more then 2.0, which will induce a temperature report to be sent out.</li> </ol>
+Temperature change threshold<br /><h1>Overview</h1><p>Threshold change in temperature to induce an automatic report.<br /><strong>Note</strong>:</p> <ol><li>The unit is Fahrenheit for US version, Celsius for EU/AU version.</li> <li>High byte is the threshold value. Low byte is the unit (0x01=Celsius, 0x02=Fahrenheit).</li> <li>The threshold value (high byte) contains one decimal point. E.g. if the value is set to 20 (0x1401), the threshold value =2.0°C (EU/AU version) or if the value is set to 20 (0x1402), the threshold value=2.0 °F (US version). When the current temperature gap is more then 2.0, which will induce a temperature report to be sent out.</li> </ol>
         ]]></description>
         <default>20</default>
       </parameter>
 
-      <parameter name="config_42_2" type="integer" groupName="configuration"
+      <parameter name="config_42_1" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>42: Humidity Threshold</label>
         <description><![CDATA[
@@ -165,7 +176,7 @@ Luminance change threshold<br /><h1>Overview</h1><p>Threshold change in luminanc
         <default>100</default>
       </parameter>
 
-      <parameter name="config_44_2" type="integer" groupName="configuration"
+      <parameter name="config_44_1" type="integer" groupName="configuration"
                  min="0" max="100">
         <label>44: Battery Threshold</label>
         <description><![CDATA[
@@ -185,7 +196,9 @@ Ultraviolet change threshold<br /><h1>Overview</h1><p>Threshold change in ultrav
 
       <parameter name="config_46_1" type="integer" groupName="configuration">
         <label>46: Send Alarm Report if low temperature</label>
-        <description>Send an alarm report if temperature is less than -15 °C</description>
+        <description><![CDATA[
+Send an alarm report if temperature is less than -15 °C<br /><h1>Overview</h1><p>Enable/Disable to send the alarm report of low temperature (&lt;-15°C)</p> <p>Value=0, disable</p> <p>Value=1, enable (The MultiSensor will send a report of Multi Level Temperature CC to controller if the current temperature is less then -15°C).</p> <p>Note: The battery activity will reduced at low temperatures (-15 degrees Celsius and below), wich will lead to the product may not work normally. It is recommended to use USB power at low temperatures.</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disable</option>
@@ -247,11 +260,11 @@ Group 3 Report Interval<br /><h1>Overview</h1><p>The interval time of sending re
         <default>3600</default>
       </parameter>
 
-      <parameter name="config_201_1" type="integer" groupName="configuration"
-                 min="-100" max="100">
+      <parameter name="config_201_2" type="integer" groupName="configuration"
+                 min="-128" max="127">
         <label>201: Temperature Calibration</label>
         <description><![CDATA[
-Temperature calibration in 0.1 deg steps<br /><h1>Overview</h1><p>Temperature calibration (the available value range is [-100,100] or [-10°C ,10 °C ] ).<br /><strong>Note</strong>:</p> <ol><li>The value contains one decimal point. E.g. if the value is set to 20, the calibration value is 2.0°C (EU/AU version) or 2.0 °F (US version)</li> <li>The calibration value = standard value - measure value. °C and the standard value = 23.2 °C , so the calibration value= 23.2 °C - 25.3 °C = -2.1 °C (0xEB).</li> </ol><p><br />If the measure value =30.1 °C and the standard value = 33.2 °C , so the calibration value= 33.2 °C - 30.1 °C =3.1 °C (0x1F).</p>
+Temperature calibration in 0.1 deg steps<br /><h1>Overview</h1><p>Temperature calibration (the available value range is [-128,127] or [-12.8°C ,12.7 °C ] ).<br /><strong>Note</strong>:</p> <ol><li>High byte is the calibration value. Low byte is the unit (0x01=Celsius, 0x02=Fahrenheit).</li> <li>The calibration value (high byte) contains one decimal point. E.g. if the value is set to 20 (0x1401), the calibration value is 2.0°C (EU/AU version) or if the value is set to 20 (0x1402), the calibration value is 2.0 °F (US version)</li> <li>The calibration value = standard value - measure value. °C and the standard value = 23.2 °C , so the calibration value= 23.2 °C - 25.3 °C = -2.1 °C (0xEB). If the measure value =30.1 °C and the standard value = 33.2 °C , so the calibration value= 33.2 °C - 30.1 °C =3.1 °C (0x1F).</li> </ol>
         ]]></description>
         <default>0</default>
       </parameter>
