@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="homeseer_hswd100_00_000" listed="false">
-    <label>HS-WD100+ Scene Capable Wall Dimmer Switch</label>
-    <description>Scene Capable Wall Dimmer Switch</description>
+  <thing-type id="domitech_zb22_00_000" listed="false">
+    <label>ZB22 Smart LED Light Bulb</label>
+    <description>Smart LED Light Bulb</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -18,20 +18,14 @@
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Number</label>
-        <properties>
-          <property name="binding:*:DecimalType">CENTRAL_SCENE</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
-      <property name="vendor">HomeSeer Technologies</property>
-      <property name="model">HS-WD100+</property>
-      <property name="manufacturerId">000C</property>
-      <property name="manufacturerRef">4447:3034</property>
+      <property name="vendor">Domitech</property>
+      <property name="model">ZB22</property>
+      <property name="manufacturerId">020E</property>
+      <property name="manufacturerRef">4C42:3135</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -44,32 +38,30 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration">
-        <label>4: Orientation</label>
-        <description>Controls the on/off orientation of the rocker switch</description>
+      <parameter name="config_1_1" type="integer" groupName="configuration">
+        <label>1: Dim level when the light bulb is turned On</label>
+        <description><![CDATA[
+Full brightness: The brightness level will be resume to full brightness when the Smart Bulb is turned ON every time.<br /> Last setting: The brightness level will maintain same dim level as the last setting when the Smar
+        ]]></description>
         <default>0</default>
         <options>
-          <option value="0">Normal</option>
-          <option value="1">Inverted</option>
+          <option value="0">Full brightness</option>
+          <option value="1">Last setting</option>
         </options>
       </parameter>
 
       <parameter name="config_9_1" type="integer" groupName="configuration"
                  min="1" max="99">
-        <label>9: Dimming Level Increment</label>
-        <description><![CDATA[
-Indicates the number of levels (1-99) to change dimming each step<br /><h1>Overview</h1><p>Documentation indicates milliseconds, but Dragon device that this is an OEM for indicates value is based on 10s of milliseconds.</p>
-        ]]></description>
-        <default>1</default>
+        <label>9: Dimming/Brightening Step Level</label>
+        <description>A low value provides gradual dimming and brightening, a high value makes it change rapidly.</description>
+        <default>50</default>
       </parameter>
 
       <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="1" max="255">
-        <label>10: Dimming Step Duration</label>
-        <description><![CDATA[
-Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels.  (Documentation suggests that the interval is in milliseconds.)</p>
-        ]]></description>
-        <default>3</default>
+                 min="1" max="10">
+        <label>10: Dimming/Brightening Step Timing</label>
+        <description>When the value is low, the step timing is quick. When the value is high, the step timing is slow.</description>
+        <default>5</default>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->
@@ -79,8 +71,7 @@ Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval
       </parameter-group>
 
       <parameter name="group_1" type="text" groupName="association" multiple="true">
-        <label>1: Group 1</label>
-        <description>Lifeline association only supports the "manual reset" event.</description>
+        <label>1: ZB22UK supports Group 1 with up to ﬁve devices for lifeline communicat</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 
