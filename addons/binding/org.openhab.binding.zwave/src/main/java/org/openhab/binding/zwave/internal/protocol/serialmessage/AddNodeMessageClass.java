@@ -142,12 +142,8 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
                     break;
                 case ADD_NODE_STATUS_DONE:
                     logger.debug("Add Node: Done.");
-                    // If the node ID is 0, ignore!
-                    if (incomingMessage.getMessagePayloadByte(2) > 0
-                            && incomingMessage.getMessagePayloadByte(2) <= 232) {
-                        zController.notifyEventListeners(new ZWaveInclusionEvent(ZWaveInclusionEvent.Type.IncludeDone,
-                                incomingMessage.getMessagePayloadByte(2)));
-                    }
+                    zController.notifyEventListeners(new ZWaveInclusionEvent(ZWaveInclusionEvent.Type.IncludeDone,
+                            incomingMessage.getMessagePayloadByte(2)));
                     break;
                 case ADD_NODE_STATUS_FAILED:
                     logger.debug("Add Node: Failed.");
