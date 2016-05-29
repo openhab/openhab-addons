@@ -72,11 +72,9 @@
       </parameter-group>
 
       <parameter name="config_2_2" type="integer" groupName="configuration"
-                 min="0" max="255">
+                 min="0" max="65535">
         <label>2: Blinking Behaviour</label>
-        <description><![CDATA[
-The LSB defines the total time the device need to blink.<br /> The value if set in seconds. 1 - 255 The MSB defines the on/off interval of the blinking.<br /> The unit is 0.1 s. This is a double byte value.
-        ]]></description>
+        <description>The LSB defines the total time the device need to blink. The value if set in seconds. 1 - 255 The MSB defines the on/off interval of the blinking. The unit is 0.1 s. This is a double byte value.</description>
         <default>0</default>
       </parameter>
 
