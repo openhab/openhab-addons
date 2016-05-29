@@ -60,6 +60,7 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_S_DISTANCE = 15;
     public static final int MYSENSORS_SUBTYPE_S_LIGHT_LEVEL = 16;
     public static final int MYSENSORS_SUBTYPE_S_WATER = 21;
+    public static final int MYSENSORS_SUBTYPE_S_CUSTOM = 23;
     public static final int MYSENSORS_SUBTYPE_S_HVAC = 29;
     public static final int MYSENSORS_SUBTYPE_S_MULTIMETER = 30;
 
@@ -153,6 +154,7 @@ public class MySensorsBindingConstants {
     public final static ThingTypeUID THING_TYPE_DISTANCE = new ThingTypeUID(BINDING_ID, "distance");
     public final static ThingTypeUID THING_TYPE_LIGHT_LEVEL = new ThingTypeUID(BINDING_ID, "light-level");
     public final static ThingTypeUID THING_TYPE_WATER = new ThingTypeUID(BINDING_ID, "waterMeter");
+    public final static ThingTypeUID THING_TYPE_CUSTOM = new ThingTypeUID(BINDING_ID, "customSensor");
 
     public final static ThingTypeUID THING_TYPE_HVAC = new ThingTypeUID(BINDING_ID, "hvacThermostat");
 
@@ -252,7 +254,7 @@ public class MySensorsBindingConstants {
             THING_TYPE_TEMPERATURE, THING_TYPE_LIGHT, THING_TYPE_MULTIMETER, THING_TYPE_POWER, THING_TYPE_BARO,
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
-            THING_TYPE_HVAC, THING_TYPE_WATER);
+            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM);
     /** Supported bridges */
     public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_BRIDGE_SER,
             THING_TYPE_BRIDGE_ETH);
@@ -262,5 +264,5 @@ public class MySensorsBindingConstants {
             THING_TYPE_TEMPERATURE, THING_TYPE_LIGHT, THING_TYPE_MULTIMETER, THING_TYPE_POWER, THING_TYPE_BARO,
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
-            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
+            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
 }

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="mysensors"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
- 
- <!-- GATEWAY -->
-    
-    <bridge-type id="bridge-ser">
+<thing:thing-descriptions bindingId="mysensors" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GATEWAY -->
+
+	<bridge-type id="bridge-ser">
 		<label>MySensors Serial Gateway</label>
 		<description>MySensors Gateway connected via serial port
 		</description>
@@ -25,27 +24,27 @@
 				<default>100</default>
 			</parameter>
 			<parameter name="baudRate" type="integer" required="false" min="300" max="250000">
-                <label>Baudrate</label>
-                <description>Baudrate for serial port
+				<label>Baudrate</label>
+				<description>Baudrate for serial port
                 </description>
-                <default>115200</default>
-            </parameter>
-            <parameter name="skipStartupCheck" type="boolean" required="false">
-                <context>skipstartupchek</context>
-                <label>Skip startup connection check</label>
-                <description>Allow the user to bypass the I_VERSION check on startup</description>
-                <default>false</default>
-            </parameter>
-            <parameter name="imperial" type="boolean" required="false">
-                <context>imperialconfig</context>
-                <label>Imperial/Metric selection</label>
-                <description>Metric answer with imperial instead of metric</description>
-                <default>false</default>
-            </parameter>
+				<default>115200</default>
+			</parameter>
+			<parameter name="skipStartupCheck" type="boolean" required="false">
+				<context>skipstartupchek</context>
+				<label>Skip startup connection check</label>
+				<description>Allow the user to bypass the I_VERSION check on startup</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+				<context>imperialconfig</context>
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
-	
+
 	<bridge-type id="bridge-eth">
 		<label>MySensors Ethernet Gateway</label>
 		<description>MySensors Gateway connected via ethernet/IP
@@ -72,38 +71,39 @@
 				<default>100</default>
 			</parameter>
 			<parameter name="skipStartupCheck" type="boolean" required="false">
-                <context>skipstartupchek</context>
-                <label>Skip startup connection check</label>
-                <description>Allow the user to bypass the I_VERSION check on startup</description>
-                <default>false</default>
-            </parameter>
+				<context>skipstartupchek</context>
+				<label>Skip startup connection check</label>
+				<description>Allow the user to bypass the I_VERSION check on startup</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="imperial" type="boolean" required="false">
-                <context>imperialconfig</context>
-                <label>Imperial/Metric selection</label>
-                <description>Metric answer with imperial instead of metric</description>
-                <default>false</default>
-            </parameter>
+				<context>imperialconfig</context>
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
- 
- <!-- SENSORS -->
 
-    <thing-type id="humidity">
-    	<supported-bridge-type-refs>
+	<!-- SENSORS -->
+
+	<thing-type id="humidity">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Humidity Sensor</label>
-        <description>Humidity sensor</description>
-		
+
+		<label>Humidity Sensor</label>
+		<description>Humidity sensor</description>
+
 		<channels>
-            <channel id="hum" typeId="hum-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-		        
-        <config-description>
+			<channel id="hum" typeId="hum-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="custom" typeId="var1-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<context>NodeId</context>
 				<label>NodeId</label>
@@ -118,23 +118,24 @@
 			</parameter>
 		</config-description>
 
-    </thing-type>
-    
-    <thing-type id="temperature">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="temperature">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Temperature Sensor</label>
-        <description>Temperature sensor</description>
 
-        <channels>
-            <channel id="temp" typeId="temp-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Temperature Sensor</label>
+		<description>Temperature sensor</description>
+
+		<channels>
+			<channel id="temp" typeId="temp-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="custom" typeId="var1-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -146,26 +147,26 @@
 				</description>
 			</parameter>
 		</config-description>
-        
-    </thing-type>
+
+	</thing-type>
 
 	<thing-type id="multimeter">
-    	<supported-bridge-type-refs>
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Multimeter Sensor</label>
-        <description>Multimeter sensor</description>
 
-        <channels>
-            <channel id="volt" typeId="volt-channel"/>
-            <channel id="current" typeId="current-channel"/>
-            <channel id="impedance" typeId="impedance-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Multimeter Sensor</label>
+		<description>Multimeter sensor</description>
+
+		<channels>
+			<channel id="volt" typeId="volt-channel" />
+			<channel id="current" typeId="current-channel" />
+			<channel id="impedance" typeId="impedance-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -178,22 +179,22 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	        
-    <thing-type id="light">
-    	<supported-bridge-type-refs>
+
+	<thing-type id="light">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Light</label>
-        <description>Light</description>
 
-        <channels>
-            <channel id="status" typeId="status-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Light</label>
+		<description>Light</description>
+
+		<channels>
+			<channel id="status" typeId="status-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -205,29 +206,29 @@
 				</description>
 			</parameter>
 			<parameter name="requestAck" type="boolean" required="true">
-			<label>Request ACK</label>
-			<description>Request ACK from Actuator</description>
-			<default>false</default>
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="power">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="power">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Power</label>
-        <description>Power-Sensor</description>
 
-        <channels>
-            <channel id="watt" typeId="watt-channel"/>
-            <channel id="kwh" typeId="kwh-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Power</label>
+		<description>Power-Sensor</description>
+
+		<channels>
+			<channel id="watt" typeId="watt-channel" />
+			<channel id="kwh" typeId="kwh-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -239,23 +240,23 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="baro">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="baro">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Barometer</label>
-        <description>Barometer</description>
 
-        <channels>
-            <channel id="baro" typeId="baro-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Barometer</label>
+		<description>Barometer</description>
+
+		<channels>
+			<channel id="baro" typeId="baro-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -267,24 +268,24 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="door">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="door">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Door</label>
-        <description>Door</description>
 
-        <channels>
-            <channel id="tripped" typeId="tripped-channel"/>
-            <channel id="armed"   typeId="armed-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Door</label>
+		<description>Door</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="armed" typeId="armed-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -296,24 +297,24 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="motion">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="motion">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Motion</label>
-        <description>Motion detection</description>
 
-        <channels>
-            <channel id="tripped" typeId="tripped-channel"/>
-            <channel id="armed"   typeId="armed-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Motion</label>
+		<description>Motion detection</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="armed" typeId="armed-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -325,23 +326,23 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="smoke">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="smoke">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Smoke</label>
-        <description>Smoke detection</description>
 
-        <channels>
-            <channel id="tripped" typeId="tripped-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Smoke</label>
+		<description>Smoke detection</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -353,24 +354,24 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="dimmer">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Dimmer</label>
-        <description>Dimmer</description>
 
-        <channels>
-            <channel id="dimmer" typeId="dimmer-channel"/>
-            <channel id="watt" typeId="watt-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Dimmer</label>
+		<description>Dimmer</description>
+
+		<channels>
+			<channel id="dimmer" typeId="dimmer-channel" />
+			<channel id="watt" typeId="watt-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -382,23 +383,23 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="cover">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="cover">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>RollerShutter</label>
-        <description>RollerShutter</description>
 
-        <channels>
-            <channel id="cover" typeId="cover-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>RollerShutter</label>
+		<description>RollerShutter</description>
+
+		<channels>
+			<channel id="cover" typeId="cover-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -410,24 +411,24 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="wind">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="wind">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Wind</label>
-        <description>Wind</description>
 
-        <channels>
-            <channel id="wind" typeId="wind-channel"/>
-            <channel id="gust" typeId="gust-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Wind</label>
+		<description>Wind</description>
+
+		<channels>
+			<channel id="wind" typeId="wind-channel" />
+			<channel id="gust" typeId="gust-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -439,24 +440,24 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="rain">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="rain">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Rain</label>
-        <description>Rain</description>
 
-        <channels>
-            <channel id="rain" typeId="rain-channel"/>
-            <channel id="rainrate" typeId="rainrate-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Rain</label>
+		<description>Rain</description>
+
+		<channels>
+			<channel id="rain" typeId="rain-channel" />
+			<channel id="rainrate" typeId="rainrate-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -468,23 +469,23 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="uv">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="uv">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>UV</label>
-        <description>UV</description>
 
-        <channels>
-            <channel id="uv" typeId="uv-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>UV</label>
+		<description>UV</description>
+
+		<channels>
+			<channel id="uv" typeId="uv-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -496,24 +497,24 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="weight">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="weight">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Weight</label>
-        <description>Weight</description>
 
-        <channels>
-            <channel id="weight" typeId="weight-channel"/>
-            <channel id="impedance" typeId="impedance-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Weight</label>
+		<description>Weight</description>
+
+		<channels>
+			<channel id="weight" typeId="weight-channel" />
+			<channel id="impedance" typeId="impedance-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -525,23 +526,23 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="distance">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="distance">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Distance</label>
-        <description>Distance</description>
 
-        <channels>
-            <channel id="distance" typeId="distance-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Distance</label>
+		<description>Distance</description>
+
+		<channels>
+			<channel id="distance" typeId="distance-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -553,23 +554,23 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="light-level">
-    	<supported-bridge-type-refs>
+	</thing-type>
+
+	<thing-type id="light-level">
+		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-ser" />
 			<bridge-type-ref id="bridge-eth" />
 		</supported-bridge-type-refs>
-		
-        <label>Light level</label>
-        <description>Light level</description>
 
-        <channels>
-            <channel id="light-level" typeId="light-level-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
+		<label>Light level</label>
+		<description>Light level</description>
+
+		<channels>
+			<channel id="light-level" typeId="light-level-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
 			<parameter name="nodeId" type="text" required="true">
 				<label>NodeId</label>
 				<description>The ID of the node in the MySensors network
@@ -581,134 +582,167 @@
 				</description>
 			</parameter>
 		</config-description>
-    </thing-type>
-    
-    <thing-type id="hvacThermostat">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge-ser" />
-            <bridge-type-ref id="bridge-eth" />
-        </supported-bridge-type-refs>
-        
-        <label>Thermostat</label>
-        <description>Thermostat</description>
+	</thing-type>
 
-        <channels>
-            <channel id="temp" typeId="temp-channel"/>
-            <channel id="hvac-flow-state" typeId="hvac-flow-state-channel"/>
-            <channel id="hvac-flow-mode" typeId="hvac-flow-mode-channel"/>
-            <channel id="hvac-setPoint-heat" typeId="hvac-setPoint-heat-channel"/>
-            <channel id="hvac-setPoint-cool" typeId="hvac-setPoint-cool-channel"/>
-            <channel id="hvac-speed" typeId="hvac-speed-channel"/>
-            <channel id="var1" typeId="var1-channel"/>
-            <channel id="var2" typeId="var2-channel"/>
-            <channel id="var3" typeId="var3-channel"/>
-            <channel id="var4" typeId="var4-channel"/>
-            <channel id="var5" typeId="var5-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="nodeId" type="text" required="true">
-                <label>NodeId</label>
-                <description>The ID of the node in the MySensors network
+	<thing-type id="hvacThermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Thermostat</label>
+		<description>Thermostat</description>
+
+		<channels>
+			<channel id="temp" typeId="temp-channel" />
+			<channel id="hvac-flow-state" typeId="hvac-flow-state-channel" />
+			<channel id="hvac-flow-mode" typeId="hvac-flow-mode-channel" />
+			<channel id="hvac-setPoint-heat" typeId="hvac-setPoint-heat-channel" />
+			<channel id="hvac-setPoint-cool" typeId="hvac-setPoint-cool-channel" />
+			<channel id="hvac-speed" typeId="hvac-speed-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="var5" typeId="var5-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
                 </description>
-            </parameter>
-            <parameter name="childId" type="text" required="true">
-                <label>ChildId</label>
-                <description>The ID of the child of a node in the MySensors network
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
                 </description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <thing-type id="waterMeter">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge-ser" />
-            <bridge-type-ref id="bridge-eth" />
-        </supported-bridge-type-refs>
-        
-        <label>WaterMeter</label>
-        <description>Water flow meter</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
-        <channels>
-             <channel id="flow" typeId="flow-channel"/>
-             <channel id="volume" typeId="volume-channel"/>
-            <channel id="var1" typeId="var1-channel"/>
-            <channel id="battery" typeId="battery-channel"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="nodeId" type="text" required="true">
-                <label>NodeId</label>
-                <description>The ID of the node in the MySensors network
-                </description>
-            </parameter>
-            <parameter name="childId" type="text" required="true">
-                <label>ChildId</label>
-                <description>The ID of the child of a node in the MySensors network
-                </description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <!--  CHANNELS -->
+	<thing-type id="waterMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
 
-    <channel-type id="hum-channel">
-        <item-type>Number</item-type>
-        <label>Humidity</label>
-        <description>MySensors Humidity Channel</description>
-        <category>Humidity</category>
-        <state pattern="%.1f %%" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="temp-channel">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>MySensors Temperature Channel</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="volt-channel">
-        <item-type>Number</item-type>
-        <label>Volt</label>
-        <description>MySensors Volt Channel</description>
-        <category>Energy</category>
-        <state pattern="%.1f V" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="current-channel">
-        <item-type>Number</item-type>
-        <label>Ampere</label>
-        <description>MySensors Current Channel</description>
-        <category>Energy</category>
-        <state pattern="%.1f A" readOnly="true"></state>
-    </channel-type>
+		<label>WaterMeter</label>
+		<description>Water flow meter</description>
+
+		<channels>
+			<channel id="flow" typeId="flow-channel" />
+			<channel id="volume" typeId="volume-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="battery" typeId="battery-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+                </description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+                </description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="customSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>CustomSensor</label>
+		<description>Custom Sensor with VAR1 - VAR5 channels -> Values are also transmitted to the sensor</description>
+
+		<channels>
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="var5" typeId="var5-channel" />
+
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+                </description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+                </description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<!-- CHANNELS -->
+
+	<channel-type id="hum-channel">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>MySensors Humidity Channel</description>
+		<category>Humidity</category>
+		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="temp-channel">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>MySensors Temperature Channel</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="volt-channel">
+		<item-type>Number</item-type>
+		<label>Volt</label>
+		<description>MySensors Volt Channel</description>
+		<category>Energy</category>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="current-channel">
+		<item-type>Number</item-type>
+		<label>Ampere</label>
+		<description>MySensors Current Channel</description>
+		<category>Energy</category>
+		<state pattern="%.1f A" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="status-channel">
-        <item-type>Switch</item-type>
-        <label>Status</label>
-        <description>Status</description>
-        <category>Light</category>
-		<state readOnly="false"/>
-    </channel-type>
-    <channel-type id="watt-channel">
-        <item-type>Number</item-type>
-        <label>Watt</label>
-        <description>MySensors Watt Channel</description>
-        <category>Energy</category>
-        <state pattern="%.2f W" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="kwh-channel">
-        <item-type>Number</item-type>
-        <label>KWH</label>
-        <description>MySensors KWH Channel</description>
-        <category>Energy</category>
-        <state pattern="%.2f KWH" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="baro-channel">
-        <item-type>String</item-type>
-        <label>Forecast</label>
-        <description>MySensors Forecast Channel</description>
-        <category>Weather</category>
-    </channel-type>
-    <channel-type id="tripped-channel">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>Status</description>
+		<category>Light</category>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="watt-channel">
+		<item-type>Number</item-type>
+		<label>Watt</label>
+		<description>MySensors Watt Channel</description>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="kwh-channel">
+		<item-type>Number</item-type>
+		<label>KWH</label>
+		<description>MySensors KWH Channel</description>
+		<category>Energy</category>
+		<state pattern="%.2f KWH" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="baro-channel">
+		<item-type>String</item-type>
+		<label>Forecast</label>
+		<description>MySensors Forecast Channel</description>
+		<category>Weather</category>
+	</channel-type>
+	<channel-type id="tripped-channel">
 		<item-type>Contact</item-type>
 		<label>Tripped Status</label>
 		<description>Tripped Status</description>
@@ -789,80 +823,80 @@
 		<description>MySensors Version</description>
 	</channel-type>
 	<channel-type id="battery-channel">
-        <item-type>Number</item-type>
-        <label>Battery Level</label>
-        <description>MySensors Battery Channel</description>
-        <category>Energy</category>
-        <state pattern="%d %%" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="hvac-setPoint-heat-channel">
-        <item-type>Number</item-type>
-        <label>Set point heat</label>
-        <description>MySensors Set point Heat Channel</description>
-        <category>Heating</category>
-    </channel-type>
-    <channel-type id="hvac-setPoint-cool-channel">
-        <item-type>Number</item-type>
-        <label>Set point cool</label>
-        <description>MySensors Set point Cool Channel</description>
-        <category>Heating</category>
-    </channel-type>
-    <channel-type id="hvac-flow-state-channel">
-        <item-type>String</item-type>
-        <label>Flow state</label>
-        <description>MySensors HVAC Flow State Channel</description>
-        <category>Heating</category>
-    </channel-type>
-    <channel-type id="hvac-speed-channel">
-        <item-type>String</item-type>
-        <label>Speed</label>
-        <description>MySensors HVAC Speed Channel</description>
-        <category>Heating</category>
-    </channel-type>
-    <channel-type id="hvac-flow-mode-channel">
-        <item-type>String</item-type>
-        <label>Flow mode</label>
-        <description>MySensors HVAC Flow Mode Channel</description>
-        <category>Heating</category>
-    </channel-type>
-        <channel-type id="var1-channel">
-        <item-type>Number</item-type>
-        <label>Variable</label>
-        <description>MySensors var1 Channel</description>
-        <category>Variable</category>
-    </channel-type>
-    <channel-type id="var2-channel">
-        <item-type>Number</item-type>
-        <label>Variable</label>
-        <description>MySensors var2 Channel</description>
-        <category>Variable</category>
-    </channel-type>
-    <channel-type id="var3-channel">
-        <item-type>Number</item-type>
-        <label>Variable</label>
-        <description>MySensors var3 Channel</description>
-        <category>Variable</category>
-    </channel-type>
-    <channel-type id="var4-channel">
-        <item-type>Number</item-type>
-        <label>Variable</label>
-        <description>MySensors var4 Channel</description>
-        <category>Variable</category>
-    </channel-type>
-    <channel-type id="var5-channel">
-        <item-type>Number</item-type>
-        <label>Variable</label>
-        <description>MySensors var5 Channel</description>
-        <category>Variable</category>
-    </channel-type>
-    <channel-type id="flow-channel">
-        <item-type>Number</item-type>
-        <label>Flow</label>
-        <description>MySensors Water Flow Channel</description>
-    </channel-type>
-        <channel-type id="volume-channel">
-        <item-type>Number</item-type>
-        <label>Volume</label>
-        <description>MySensors Water Volume Channel</description>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+		<description>MySensors Battery Channel</description>
+		<category>Energy</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="hvac-setPoint-heat-channel">
+		<item-type>Number</item-type>
+		<label>Set point heat</label>
+		<description>MySensors Set point Heat Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-setPoint-cool-channel">
+		<item-type>Number</item-type>
+		<label>Set point cool</label>
+		<description>MySensors Set point Cool Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-flow-state-channel">
+		<item-type>String</item-type>
+		<label>Flow state</label>
+		<description>MySensors HVAC Flow State Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-speed-channel">
+		<item-type>String</item-type>
+		<label>Speed</label>
+		<description>MySensors HVAC Speed Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-flow-mode-channel">
+		<item-type>String</item-type>
+		<label>Flow mode</label>
+		<description>MySensors HVAC Flow Mode Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="var1-channel">
+		<item-type>Number</item-type>
+		<label>Variable 1</label>
+		<description>MySensors var1 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var2-channel">
+		<item-type>Number</item-type>
+		<label>Variable 2</label>
+		<description>MySensors var2 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var3-channel">
+		<item-type>Number</item-type>
+		<label>Variable 3</label>
+		<description>MySensors var3 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var4-channel">
+		<item-type>Number</item-type>
+		<label>Variable 4</label>
+		<description>MySensors var4 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var5-channel">
+		<item-type>Number</item-type>
+		<label>Variable 5</label>
+		<description>MySensors var5 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="flow-channel">
+		<item-type>Number</item-type>
+		<label>Flow</label>
+		<description>MySensors Water Flow Channel</description>
+	</channel-type>
+	<channel-type id="volume-channel">
+		<item-type>Number</item-type>
+		<label>Volume</label>
+		<description>MySensors Water Volume Channel</description>
+	</channel-type>
 </thing:thing-descriptions>
