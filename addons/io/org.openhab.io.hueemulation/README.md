@@ -1,6 +1,4 @@
-
-
-#openHAB Hue Emulation Service
+# openHAB Hue Emulation Service
 
 Hue Emulation exposes openHAB items as Hue devices to other Hue HTTP API compatible applications like an Amazon Echo.  
 
