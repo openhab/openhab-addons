@@ -9,12 +9,12 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveController;
-import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
-import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
+import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * Handles the no operation command class. The No Operation command class is used to check if a node is reachable by
  * sending a serial message without a command to the specified node. This can for instance be used to check that a node
  * is non-responding.
- * 
+ *
  * @author Chris Jackson
  * @author Jan-Willem Spuij
  */
@@ -37,13 +37,16 @@ public class ZWaveNoOperationCommandClass extends ZWaveCommandClass {
 
     /**
      * Creates a new instance of the ZWaveNoOperationCommandClass class.
-     * 
+     *
      * @param node the node this command class belongs to
      * @param controller the controller to use
      * @param endpoint the endpoint this Command class belongs to
      */
     public ZWaveNoOperationCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+
+        // We don't want to request the version since some nodes won't respond and there's little point anyway!
+        setVersion(1);
     }
 
     /**
@@ -64,7 +67,7 @@ public class ZWaveNoOperationCommandClass extends ZWaveCommandClass {
 
     /**
      * Gets a SerialMessage with the No Operation command
-     * 
+     *
      * @return the serial message
      */
     public SerialMessage getNoOperationMessage() {
