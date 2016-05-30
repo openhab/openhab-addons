@@ -59,31 +59,22 @@ public class OshiSysteminfo implements SysteminfoInterface {
      * @throws SocketException when it is not able to access the network information.
      */
     public OshiSysteminfo() {
-        try {
-            SystemInfo systemInfo = new SystemInfo();
-            HardwareAbstractionLayer hal = systemInfo.getHardware();
-            operatingSystem = systemInfo.getOperatingSystem();
-            displays = hal.getDisplays();
-            fileStores = hal.getFileStores();
-            memory = hal.getMemory();
-            powerSources = hal.getPowerSources();
-            cpu = hal.getProcessor();
-            sensors = hal.getSensors();
-            networks = hal.getNetworkIFs();
-            drives = hal.getDiskStores();
-            if (cpu != null) {
-                processes = cpu.getProcesses();
-            } else {
-                throw new Exception("Can not get processs information, because cpu info is missing !");
-            }
-        } catch (Exception e) {
-            // TODO better error messages
-            // TODO maybe Exception must be thrown
-            logger.debug(
-                    "Error while getting system information through OSHI interface library. Some of the provided functionality may be not available !",
-                    e);
+        SystemInfo systemInfo = new SystemInfo();
+        HardwareAbstractionLayer hal = systemInfo.getHardware();
+        operatingSystem = systemInfo.getOperatingSystem();
+        displays = hal.getDisplays();
+        fileStores = hal.getFileStores();
+        memory = hal.getMemory();
+        powerSources = hal.getPowerSources();
+        cpu = hal.getProcessor();
+        sensors = hal.getSensors();
+        networks = hal.getNetworkIFs();
+        drives = hal.getDiskStores();
+        if (cpu != null) {
+            processes = cpu.getProcesses();
+        } else {
+            throw new NullPointerException("Can not get processs information, because cpu info is missing !");
         }
-
     }
 
     @SuppressWarnings("null")

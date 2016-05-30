@@ -66,10 +66,9 @@
 			</options>
 			<default>Low</default>
 		</parameter>
-		<parameter name="pid" type="integer" min="-1" step="1">
+		<parameter name="pid" type="integer" min="0" step="1">
 			<label>PID</label>
-			<description>The PID of the process. It 
-			is only used for channels from group 'process'.</description>
+			<description>The Process Identifier of the process.</description>
 			<default>0</default>
 		</parameter>
 	</config-description>
@@ -85,10 +84,9 @@
 			</options>
 			<default>Medium</default>
 		</parameter>
-		<parameter name="pid" type="integer" min="-1" step="1">
+		<parameter name="pid" type="integer" min="0" step="1">
 			<label>PID</label>
-			<description>The PID of the process. It 
-			is only used for channels from group 'process'.</description>
+			<description>The Process Identifier of the process.</description>
 			<default>0</default>
 		</parameter>
 	</config-description>
@@ -104,11 +102,10 @@
 			</options>
 			<default>High</default>
 		</parameter>
-		<parameter name="pid" type="integer" min="-1" step="1">
+		<parameter name="pid" type="integer" min="0" step="1">
 			<label>PID</label>
-			<description>The PID of the process. It 
-			is only used for channels from group 'process'.</description>
-			<default>-1</default>
+			<description>The Process Identifier of the process.</description>
+			<default>0</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

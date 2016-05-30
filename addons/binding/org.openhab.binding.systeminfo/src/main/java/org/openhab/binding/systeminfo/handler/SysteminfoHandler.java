@@ -174,7 +174,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
-    private void updatePriority(ChannelUID channelUID, String priority) {
+    private void changeChannelPriority(ChannelUID channelUID, String priority) {
         switch (priority) {
             case "High":
                 mediumPriorityChannels.remove(channelUID);
@@ -260,21 +260,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         String channelIDWithoutGroup = channelUID.getIdWithoutGroup();
         String channelGroupID = channelUID.getGroupId();
 
-        int deviceIndex;
-
-        // TODO description !!
-        if (channelGroupID.contains(CHANNEL_GROUP_PROCESS)) {
-            int pid = getPID(channelUID);
-            if (pid > -1) {
-                deviceIndex = pid;
-                logger.debug("Channel with id {} tracks process with pid: {}", channelID, pid);
-            } else {
-                logger.debug("Channel with id {} will not be updated, it has no pid assigned !", channelID);
-                return null;
-            }
-        } else {
-            deviceIndex = getDeviceIndex(channelGroupID);
-        }
+        int deviceIndex = getDeviceIndex(channelUID);
 
         // The channelGroup may contain deviceIndex. It must be deleted from the channelID, because otherwise the
         // switch will not find the correct method below.
@@ -439,25 +425,46 @@ public class SysteminfoHandler extends BaseThingHandler {
      * @param channelID - the ID of the channel
      * @return natural number (number >=0)
      */
-    private int getDeviceIndex(String channelID) {
+    private int getDeviceIndex(ChannelUID channelUID) {
         int deviceIndex = 0;
-        char lastChar = channelID.charAt(channelID.length() - 1);
-        if (Character.isDigit(lastChar)) {
-            // All non-digits are deleted from the ID
-            String deviceIndexPart = channelID.replaceAll("\\D+", "");
-            deviceIndex = Integer.parseInt(deviceIndexPart);
+        if (channelUID.getGroupId().contains(CHANNEL_GROUP_PROCESS)) {
+            // Only in this case the deviceIndex is part of the channel configuration - PID (Process Identifier)
+            int pid = getPID(channelUID);
+            deviceIndex = pid;
+            logger.debug("Channel with UID {} tracks process with PID: {}", channelUID.getAsString(), pid);
+        } else {
+            String channelGroupID = channelUID.getGroupId();
+            char lastChar = channelGroupID.charAt(channelGroupID.length() - 1);
+            if (Character.isDigit(lastChar)) {
+                // All non-digits are deleted from the ID
+                String deviceIndexPart = channelGroupID.replaceAll("\\D+", "");
+                deviceIndex = Integer.parseInt(deviceIndexPart);
+            }
         }
         return deviceIndex;
     }
 
+    /**
+     * This method gets the process identifier (PID) for specific process
+     *
+     * @param channelUID - channel unique identifier
+     * @return natural number
+     */
     private int getPID(ChannelUID channelUID) {
-        int pid = -1;
+        int pid = 0;
         try {
             Configuration channelProperties = currentChannelConfiguration.get(channelUID);
             BigDecimal pidValue = (BigDecimal) channelProperties.get(PID_PARAM);
-            pid = pidValue.intValue();
-        } catch (Exception e) {
-            logger.debug("Channel configuraiton can not be read!", e);
+            if (pidValue.intValue() < 0) {
+                throw new IllegalArgumentException("Invalid value for Process Identifier.");
+            } else {
+                pid = pidValue.intValue();
+            }
+
+        } catch (ClassCastException e) {
+            logger.debug("Channel configuraiton can not be read ! Fall back to default value.", e);
+        } catch (IllegalArgumentException e) {
+            logger.debug("PID (Process Identifier) must be positive number. Fall back to default value. ", e);
         }
         return pid;
     }
@@ -503,37 +510,25 @@ public class SysteminfoHandler extends BaseThingHandler {
     @Override
     public void thingUpdated(Thing thing) {
         boolean isChannelConfigChanged = false;
-
         List<Channel> channels = thing.getChannels();
         for (Channel channel : channels) {
             ChannelUID channelUID = channel.getUID();
             Configuration newChannelConfig = channel.getConfiguration();
             Configuration currentChannelConfig = currentChannelConfiguration.get(channelUID);
+
             if (isConfigurationKeyChanged(currentChannelConfig, newChannelConfig, PRIOIRITY_PARAM)) {
                 isChannelConfigChanged = true;
-                this.thing.getChannel(channel.getUID().getId()).getConfiguration()
-                        .setProperties(newChannelConfig.getProperties());
+
+                handleChannelConfigurationChange(channelUID, newChannelConfig, PRIOIRITY_PARAM);
 
                 String newPriority = (String) newChannelConfig.get(PRIOIRITY_PARAM);
-                updatePriority(channelUID, newPriority);
-                logger.debug("Channel with UID : {} has changed its priority to : {}", channelUID.getAsString(),
-                        newPriority);
-
-                publishDataForChannel(channelUID);
+                changeChannelPriority(channelUID, newPriority);
             }
 
             if (isConfigurationKeyChanged(currentChannelConfig, newChannelConfig, PID_PARAM)) {
                 isChannelConfigChanged = true;
-                this.thing.getChannel(channel.getUID().getId()).getConfiguration()
-                        .setProperties(newChannelConfig.getProperties());
-
-                BigDecimal pidValue = (BigDecimal) newChannelConfig.get(PID_PARAM);
-                logger.debug("PID of channel {} has been changed to {}", channelUID.getAsString(),
-                        pidValue.toPlainString());
-
-                publishDataForChannel(channelUID);
+                handleChannelConfigurationChange(channelUID, newChannelConfig, PID_PARAM);
             }
-
         }
 
         if (thingIsInitialized() && isChannelConfigChanged) {
@@ -541,8 +536,17 @@ public class SysteminfoHandler extends BaseThingHandler {
         } else {
             super.thingUpdated(thing);
         }
-
     };
+
+    private void handleChannelConfigurationChange(ChannelUID channelUID, Configuration newConfig, String parameter) {
+        Channel channel = this.thing.getChannel(channelUID.getId());
+        Configuration configuration = channel.getConfiguration();
+        configuration.setProperties(newConfig.getProperties());
+
+        Object value = newConfig.get(parameter);
+        logger.debug("Channel with UID : {} has changed its {} to : {}", channelUID.getAsString(), parameter, value);
+        publishDataForChannel(channelUID);
+    }
 
     private void stopScheduledUpdates() {
         if (highPriorityTasks != null) {
