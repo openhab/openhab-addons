@@ -6,9 +6,9 @@ layout: documentation
 
 # Kostal inverter Binding
 
-![LIFX E27](doc/kostalpico.jpg)
-
 Scrapes the web interface of the inverter for the metrics of the supported channels below.
+
+![Kostal Pico](doc/kostalpico.jpg)
 
 ## Supported Things
 
