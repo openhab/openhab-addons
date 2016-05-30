@@ -10,6 +10,13 @@
 		often. They do not need regular updates. -->
 
 	<config-description uri="systeminfo:channels:lowpriority">
+
+		<parameter-group name="priorityGroup">
+			<label>String</label>
+			<description>String</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
 		<parameter name="priority" type="text">
 			<label>Interval</label>
 			<description>Refresh interval in seconds.</description>
@@ -19,12 +26,6 @@
 				<option value="Low">Low</option>
 			</options>
 			<default>Low</default>
-		</parameter>
-		<parameter name="pid" type="integer" min="-1" step="1">
-			<label>PID</label>
-			<description>The PID of the process. It is only used for channels from group 'process'.</description>
-			<default>-1</default>
-			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
@@ -39,12 +40,6 @@
 			</options>
 			<default>Medium</default>
 		</parameter>
-		<parameter name="pid" type="integer" min="-1" step="1">
-			<label>PID</label>
-			<description>The PID of the process. It is only used for channels from group 'process'.</description>
-			<default>-1</default>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
 
 	<config-description uri="systeminfo:channels:highpriority">
@@ -58,12 +53,62 @@
 			</options>
 			<default>High</default>
 		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:lowpriority_process">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Low</default>
+		</parameter>
 		<parameter name="pid" type="integer" min="-1" step="1">
 			<label>PID</label>
-			<description>The PID of the process. It is only used for channels from group 'process'.</description>
-			<default>-1</default>
-			<advanced>true</advanced>
+			<description>The PID of the process. It 
+			is only used for channels from group 'process'.</description>
+			<default>0</default>
 		</parameter>
 	</config-description>
 
+	<config-description uri="systeminfo:channels:mediumpriority_process">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Medium</default>
+		</parameter>
+		<parameter name="pid" type="integer" min="-1" step="1">
+			<label>PID</label>
+			<description>The PID of the process. It 
+			is only used for channels from group 'process'.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:highpriority_process">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>High</default>
+		</parameter>
+		<parameter name="pid" type="integer" min="-1" step="1">
+			<label>PID</label>
+			<description>The PID of the process. It 
+			is only used for channels from group 'process'.</description>
+			<default>-1</default>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

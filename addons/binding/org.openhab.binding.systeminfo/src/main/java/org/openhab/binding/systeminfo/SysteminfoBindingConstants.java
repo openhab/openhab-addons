@@ -285,6 +285,7 @@ public class SysteminfoBindingConstants {
      */
     public final static String CHANNEL_PROCESS_PATH = "process#path";
 
+    // Thing configuraion
     /**
      * Name of the configuration parameter of the thing that defines refresh time for High priority channels
      */
@@ -294,4 +295,18 @@ public class SysteminfoBindingConstants {
      * Name of the configuration parameter of the thing that defines refresh time for Medium priority channels
      */
     public final static String MEDIUM_PRIORITY_REFRESH_TIME = "interval_medium";
+
+    // Channel configuration
+
+    /**
+     * Name of the channel configuration parameter priority
+     */
+    public final static String PRIOIRITY_PARAM = "priority";
+
+    /**
+     * Name of the channel configuration parameter pid
+     *
+     */
+    public final static String PID_PARAM = "pid";
+
 }
