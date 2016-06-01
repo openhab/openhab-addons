@@ -10,6 +10,8 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.smarthome.core.items.GenericItem;
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -39,7 +41,12 @@ class HomekitDimmableLightbulbImpl extends AbstractHomekitLightbulbImpl<DimmerIt
 
     @Override
     public CompletableFuture<Void> setBrightness(Integer value) throws Exception {
-        getItem().send(new PercentType(value));
+        GenericItem item = getItem();
+        if (item instanceof DimmerItem) {
+            ((DimmerItem) item).send(new PercentType(value));
+        } else if (item instanceof GroupItem) {
+            ((GroupItem) item).send(new PercentType(value));
+        }
         return CompletableFuture.completedFuture(null);
     }
 
