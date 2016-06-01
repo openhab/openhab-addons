@@ -15,7 +15,6 @@ import java.util.Date;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.types.State;
 
 /**
  * MAX! Heating thermostat & Heating thermostat+ .
@@ -78,8 +77,9 @@ public class HeatingThermostat extends Device {
     }
 
     void setMode(ThermostatModeType mode) {
-        if (this.mode != mode)
+        if (this.mode != mode) {
             setUpdated(true);
+        }
         this.mode = mode;
     }
 
@@ -89,8 +89,9 @@ public class HeatingThermostat extends Device {
      * @param valvePosition the valve position as provided by the L message
      */
     public void setValvePosition(int valvePosition) {
-        if (this.valvePosition != valvePosition)
+        if (this.valvePosition != valvePosition) {
             setUpdated(true);
+        }
         this.valvePosition = valvePosition;
     }
 
@@ -132,7 +133,7 @@ public class HeatingThermostat extends Device {
      * @return
      *         the actual temperature as <code>DecimalType</code>
      */
-    public State getTemperatureActual() {
+    public DecimalType getTemperatureActual() {
         BigDecimal temperatureActual = BigDecimal.valueOf(this.temperatureActual).setScale(1, RoundingMode.HALF_UP);
         return new DecimalType(temperatureActual);
     }
@@ -143,8 +144,9 @@ public class HeatingThermostat extends Device {
      * @param value the setpoint temperature raw value as provided by the L message
      */
     public void setTemperatureSetpoint(int value) {
-        if (Math.abs(this.temperatureSetpoint - (value / 2.0)) > 0.1)
+        if (Math.abs(this.temperatureSetpoint - (value / 2.0)) > 0.1) {
             setUpdated(true);
+        }
         this.temperatureSetpoint = value / 2.0;
     }
 
@@ -155,7 +157,7 @@ public class HeatingThermostat extends Device {
      * @return
      *         the setpoint temperature as <code>DecimalType</code>
      */
-    public State getTemperatureSetpoint() {
+    public DecimalType getTemperatureSetpoint() {
         return new DecimalType(this.temperatureSetpoint);
     }
 
