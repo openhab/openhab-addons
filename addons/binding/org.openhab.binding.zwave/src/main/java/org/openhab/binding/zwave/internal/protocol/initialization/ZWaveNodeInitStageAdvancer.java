@@ -61,6 +61,7 @@ import org.openhab.binding.zwave.internal.protocol.serialmessage.GetRoutingInfoM
 import org.openhab.binding.zwave.internal.protocol.serialmessage.IdentifyNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.IsFailedNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.RequestNodeInfoMessageClass;
+import org.openhab.binding.zwave.internal.protocol.serialmessage.RequestNodeNeighborUpdateMessageClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -388,6 +389,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     break;
 
                 case WAIT:
+                case WAIT_HEAL:
                     logger.debug("NODE {}: Node advancer: WAIT - Listening={}, FrequentlyListening={}",
                             node.getNodeId(), node.isListening(), node.isFrequentlyListening());
 
@@ -981,6 +983,24 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                             msgQueue.size());
                     break;
 
+                case DISCOVER_NEIGHBORS:
+                    // If the incoming frame is the RequestNodeNeighborUpdate, then we continue
+                    if (eventClass == SerialMessageClass.RequestNodeNeighborUpdate) {
+                        break;
+                    }
+
+                    // Requesting a node to rediscover their neighbors generates a lot of ZWave traffic
+                    // and can have significant impact on the network. The rediscovery can take a long
+                    // time (>1 minute) and fails sometimes for unknown reasons.
+                    // So only initiate a rediscovery if the node has zero neighbors.
+                    if (node.getNeighbors().isEmpty()) {
+                        // Start Neighbor discovery for the node
+                        logger.debug("NODE {}: Node advancer is requesting neighbor update.", node.getNodeId());
+                        addToQueue(new RequestNodeNeighborUpdateMessageClass().doRequest(node.getNodeId()));
+                        break;
+                    }
+                    break;
+
                 case DELETE_ROUTES:
                     // If the incoming frame is the DeleteReturnRoute, then we continue
                     if (eventClass == SerialMessageClass.DeleteReturnRoute) {
@@ -1221,6 +1241,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                 case DeleteReturnRoute:
                 case AssignSucReturnRoute:
                 case DeleteSUCReturnRoute:
+                case RequestNodeNeighborUpdate:
                 case IsFailedNodeID:
                     logger.debug("NODE {}: Node advancer - {}: Transaction complete ({}:{}) success({})",
                             node.getNodeId(), currentStage, serialMessage.getMessageClass(),
