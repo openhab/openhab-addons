@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:camel">
+		<parameter name="folderName" type="text" required="false">
+			<label>Rules folder</label>
+			<description>Defines folder where Camel routes are defined.</description>
+			<default>camel</default>
+		</parameter>
+		<parameter name="corePoolSize" type="integer" required="false">
+            <label>Core pool size</label>
+            <description>Defines task execution core pool size.</description>
+            <default>3</default>
+        </parameter>
+        <parameter name="maxPoolSize" type="integer" required="false">
+            <label>Max pool size</label>
+            <description>Defines task execution maximum pool size. Value should be bigger or equal than Core pool size</description>
+            <default>5</default>
+        </parameter>
+	</config-description>
+</config-description:config-descriptions>
