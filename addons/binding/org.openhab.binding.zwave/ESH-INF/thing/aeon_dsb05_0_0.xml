@@ -93,7 +93,7 @@ On time before sending off command<br /><h1>Overview</h1><p>How long should the 
         <default>1</default>
         <options>
           <option value="1">Send Basic Set</option>
-          <option value="16">send Sensor Binary report</option>
+          <option value="2">send Sensor Binary report</option>
         </options>
       </parameter>
 
