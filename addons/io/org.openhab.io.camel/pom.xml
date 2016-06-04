@@ -3,18 +3,91 @@
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.openhab.addons.io</groupId>
 		<artifactId>pom</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openhab.addons.io</groupId>
-	<artifactId>org.openhab.io.camel</artifactId>
+    <properties>
+        <bundle.symbolicName>org.openhab.io.camel</bundle.symbolicName>
+        <bundle.namespace>org.openhab.io.camel</bundle.namespace>
+    </properties>
 
-
-	<packaging>eclipse-plugin</packaging>
+    <artifactId>org.openhab.io.camel</artifactId>
 
 	<name>Apache Camel integration</name>
+    <packaging>eclipse-plugin</packaging>
+	
+        <dependencies>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+            <version>2.17.1</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.eclipse.tycho
+                                        </groupId>
+                                        <artifactId>
+                                            tycho-compiler-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [0.22.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>compile</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.eclipse.tycho
+                                        </groupId>
+                                        <artifactId>
+                                            tycho-packaging-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [0.22.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>build-qualifier</goal>
+                                            <goal>validate-id</goal>
+                                            <goal>
+                                                validate-version
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    
 </project>
