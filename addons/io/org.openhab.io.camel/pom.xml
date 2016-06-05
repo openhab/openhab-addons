@@ -21,7 +21,7 @@
 	<name>Apache Camel integration</name>
     <packaging>eclipse-plugin</packaging>
 	
-        <dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
