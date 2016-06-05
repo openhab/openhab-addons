@@ -20,11 +20,14 @@ The binding does not require any special configuration.
 To configure one Wifi Socket manually is only required the mac address from the socket. You can check it in your router or using some mobile app.
 
 Wifi Socket thing parameters:
-| Parameter ID    | Parameter Type   | Mandatory | Description               | Default  |
-|-----------------|------------------|-----------|---------------------------|----------|
-| macAddress | text | true | The socket MAC address |  |
-| hostAddress| text |false |The socket Host address. The binding is capable to discover the host address. |  |
-| wifiSocketOutletUpdateInterval | integer | false | Update time interval in seconds to request the status of the socket | 60 |
+
+| Parameter ID | Parameter Type | Mandatory | Description | Default |
+|--------------|----------------|------|------------------|-----|
+|macAddress|text|true|The socket MAC address| -- |
+|hostAddress| text|false|The socket Host address. The binding is capable to discover the host address.| -- |
+|wifiSocketOutletUpdateInterval|integer|false|Update time interval in seconds to request the status of the socket| 60 |
+
+
 E.g.
 
 ```
@@ -33,7 +36,7 @@ Thing silvercrest:wifiSocketOutlet:lamp [ macAddress="ACCF23343C50" ]
 
 ## Channels
 
-Silvercrest Binding support the following channels:
+TV's support the following channels:
 
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|
