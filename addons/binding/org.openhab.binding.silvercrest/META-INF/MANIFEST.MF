@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Silvercrest Binding
+Bundle-SymbolicName: org.openhab.binding.silvercrest;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: com.google.common.collect,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.types,
+ org.osgi.framework;version="1.8.0",
+ org.slf4j
+Service-Component: OSGI-INF/*
+Export-Package: org.openhab.binding.silvercrest,
+ org.openhab.binding.silvercrest.handler
+Require-Bundle: org.eclipse.smarthome.config.discovery

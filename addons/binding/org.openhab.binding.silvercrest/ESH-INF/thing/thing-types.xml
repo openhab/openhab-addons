@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="silvercrest"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Socket Thing Type -->
+    <thing-type id="wifiSocketOutlet">
+        <label>Silvercrest Wifi Socket Outlet Binding</label>
+        <description>This is one binding implementation for Silvercrest Wifi Socket Outlet sold by Lidl.</description>
+
+        <channels>
+            <channel id="wifiSocketOutletChannel" typeId="wifi-socket-outlet-switch"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="macAddress" type="text" required="true">
+                <label>MAC address</label>
+                <description>The socket MAC address.</description>
+            </parameter>
+            <parameter name="hostAddress" type="text">
+                <label>Host address</label>
+                <description>The socket Host address. The binding is capable to discover the host address.</description>
+            </parameter>
+            <parameter name="wifiSocketOutletUpdateInterval" type="integer" min="5">
+                <label>Update interval</label>
+                <description>Update time interval in seconds to request the status of the socket.</description>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+
+    <!-- Socket type Channel Type -->
+    <channel-type id="wifi-socket-outlet-switch">
+        <item-type>Switch</item-type>
+        <label>Silvercrest Wifi Socket Outlet Switch</label>
+        <description>Silvercrest Wifi Socket Outlet Switch</description>
+    </channel-type>
+
+</thing:thing-descriptions>
