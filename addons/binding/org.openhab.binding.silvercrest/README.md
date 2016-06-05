@@ -23,9 +23,9 @@ Wifi Socket thing parameters:
 
 | Parameter ID | Parameter Type | Mandatory | Description | Default |
 |--------------|----------------|------|------------------|-----|
-|macAddress|text|true|The socket MAC address| -- |
-|hostAddress| text|false|The socket Host address. The binding is capable to discover the host address.| -- |
-|wifiSocketOutletUpdateInterval|integer|false|Update time interval in seconds to request the status of the socket| 60 |
+| macAddress | text | true | The socket MAC address |  |
+| hostAddress | text | false | The socket Host address. The binding is capable to discover the host address. |  |
+| wifiSocketOutletUpdateInterval | integer | false | Update time interval in seconds to request the status of the socket. | 60 |
 
 
 E.g.
@@ -36,7 +36,7 @@ Thing silvercrest:wifiSocketOutlet:lamp [ macAddress="ACCF23343C50" ]
 
 ## Channels
 
-TV's support the following channels:
+The Silvercrest Wifi Socket support the following channel:
 
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|
