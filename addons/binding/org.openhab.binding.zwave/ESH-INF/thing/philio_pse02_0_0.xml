@@ -27,5 +27,41 @@
       <property name="manufacturerRef">0004:000A</property>
     </properties>
 
+    <!-- CONFIGURATION DESCRIPTIONS -->
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_7_4" type="integer" groupName="configuration"
+                 min="0" max="65535">
+        <label>7: Costumer Function</label>
+        <description><![CDATA[
+NotificationReport/BinaryReport<br /><h1>Overview</h1><p>Customer function switch, using bit control. 0       Bit4: Notification Type,       0: Using Notification Report.   1: Using Sensor Binary Report.</p>
+        ]]></description>
+        <default>4</default>
+        <advanced>true</advanced>
+      </parameter>
+
+      <parameter name="config_29_4" type="integer" groupName="configuration"
+                 min="0" max="4294967295">
+        <label>29: Disable Alarm</label>
+        <description><![CDATA[
+Disable the alarm function. 1: Disable Alarm, 0: Enable Alarm. Caution: After the power up, this configuration is always 0.<br /><h1>Overview</h1><p>Disable the alarm  function. 1: Disable  Alarm, 0: Enable Alarm.  Caution: After the power  up, this configuration is  always 0.</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_31_4_0000000C" type="integer" groupName="configuration"
+                 min="0" max="127">
+        <label>31: Alarm Duration</label>
+        <default>6</default>
+      </parameter>
+
+    </config-description>
+
   </thing-type>
 </thing:thing-descriptions>

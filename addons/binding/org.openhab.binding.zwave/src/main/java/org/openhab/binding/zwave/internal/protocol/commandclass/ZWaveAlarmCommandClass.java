@@ -533,8 +533,8 @@ public class ZWaveAlarmCommandClass extends ZWaveCommandClass
     @Override
     public boolean setOptions(Map<String, String> options) {
         // TODO: False logic!
-        if ("true".equals(options.get("getSupported"))) {
-            isGetSupported = true;
+        if ("false".equals(options.get("getSupported"))) {
+            isGetSupported = false;
         }
 
         return true;

@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Wolters
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
+ * @author Daniel Walters - Fix player discovery when player name contains spaces
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -399,9 +400,16 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handlePlayersList(String message) {
-            String[] playersList = decode(message).split("playerindex:\\d+\\s");
+
+            // Split out players
+            String[] playersList = message.split("playerindex\\S*\\s");
             for (String playerParams : playersList) {
+
+                // For each player, split out parameters and decode parameter
                 String[] parameterList = playerParams.split("\\s");
+                for (int i = 0; i < parameterList.length; i++) {
+                    parameterList[i] = decode(parameterList[i]);
+                }
 
                 // parse out the MAC address first
                 String macAddress = null;

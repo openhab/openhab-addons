@@ -21,26 +21,32 @@ You can customize some setting of the CometVisu backend in a configuration file 
 The following settings are available:
 
 Relative path to the folder the CometVisu client can be found:
+
 ```
 cometvisu:webFolder=runtime/web/src/
 ```
 
 The alias where you can access the client e.g http://\<openhab-server\>:8080/\<webAlias\>/
+
 ```
 cometvisu:webAlias=/cometvisu
 ```
 
 Enable icon mapping from openHAB-items to CometVisu-items (Note this is only needed if you use the automatic sitemap->config generation feature)
+
 ```
 cometvisu:icons>enableMapping=true
 ```
 
 List of mappings of structure: icons.mapping\>\<openhab-icon\>=\<cometvisu-icon\>
+
 ```
 cometvisu:icons.mapping>firstfloor=control_building_int_og
 cometvisu:icons.mapping>groundfloor=control_building_int_eg
+
 ```
 The list of icons in the CometVisu is available at:
+
 ```
 http://<openhab-server>:8080/<webAlias>/icon/knx-uf-iconset/showicons.php
 ```
@@ -49,11 +55,13 @@ http://<openhab-server>:8080/<webAlias>/icon/knx-uf-iconset/showicons.php
 You can create a folder called 'cometvisu' in openHAB's 'conf/' folder and create files there which should be used instead of CometVisu's own. For example you can put all your customizations there (e.g. you config, custom.css, etc.). So the CometVisu itself stays untouched and can easily be replaced with a new release.
 
 Please use the same folder structure and file names as they are used in the CometVisu package. For example if you want to replace the original config with your own copy the file to the following path:
+
 ```
 'conf/cometvisu/config/visu_config.xml'
 ```
 
 Or for design customizations use:
+
 ```
 'conf/cometvisu/designs/metal/custom.css'
 ```
@@ -63,6 +71,7 @@ If you don´t use the given example below, please make sure that you correctly c
 
 It is a good start to use the new sitemap support, to get a working example config, which you can store an customize for your needs.
 Open a sitemap in the CometVisu client like this:
+
 ```
 http://<openhab-server>:8080/<webAlias>/?config=<sitemap-name>
 ```
@@ -81,6 +90,7 @@ can be shown in the visu
 ### Show how many lights are switched on 
 * Items: uses the demo.items provided by openHAB2
 * Config (please add the infoaction-plugin in pages->meta->plugins in your config in order to use this):
+
 ```
 <infoaction>
 	<label>Lights</label>
@@ -97,6 +107,7 @@ can be shown in the visu
 </infoaction>
 ```
   * use it in navbar:
+
 ```
 <pagejump target="Lights">
 	<layout colspan="0" />
@@ -111,9 +122,10 @@ can be shown in the visu
 	</widgetinfo>
 </pagejump>
 ```
-###Charts:
+### Charts:
 * Items: see demo.items
 * Config:
+
 ```
 <diagram height="300px" series="day" refresh="600">
 <rrd consolidationFunction="AVERAGE">Weather_Temperature</rrd>
@@ -128,6 +140,7 @@ some notes:
 ###RSS-Log:
 * Items: no special item needed
 * Config:
+
 ```
 <rsslog src="plugins/rsslog/rsslog_pdo.php" refresh="60" mode="last">
 	<label>Events</label>
@@ -135,6 +148,7 @@ some notes:
 </rsslog>
 ``` 
   * Fill the log from a rule:
+
 ```
 var content = "Call recevied from 123456",encode("UTF-8")
 var tag = "Call".encode("UTF-8")
@@ -142,10 +156,12 @@ sendHttpGetRequest("http://<openhab-server>:8080/<webAlias>/plugins/rsslog_pdo.p
 ```
 ###RSS-Log from persisted item:
 * Items:
+
 ```
 String Logger
 ```
 * Config:
+
 ```
 <rsslog src="plugins/rsslog/rsslog_oh.php" refresh="60" filter="Logger">
 	<label>Events</label>
@@ -153,13 +169,15 @@ String Logger
 </rsslog>
 ``` 
   * Fill the log from a rule:
+
 ```
 # Message structure is <title>|<content>|<state>|<tags>
 sendCommand(Logger,"Call received|Received call from 123456789|0|Call,Incoming")
 # but you can also just use any string like
 sendCommand(Logger,"Received call from 123456789")
 ```
-###ColorItem (supported since CometVisu-Release 0.8.2) => 
+### ColorItem (supported since CometVisu-Release 0.8.2) => 
+
 ```
 <colorchooser>
   <label>Color</label>
@@ -186,6 +204,7 @@ For every change in the CometVisu XSD-schema the JAXB auto-generation job must b
 
 ## TODO
 Maybe it is possible to define a general structure (in addition to a sitemap), that maps and groups items based on their context, e.g. which floor/room/subsection the belong to
+
 ```
 <floor>
 	<room navbar="top">

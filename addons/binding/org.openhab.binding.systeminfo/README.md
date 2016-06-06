@@ -121,18 +121,19 @@ The binding introduces the following channels:
 | dataSent  | Data sent in MB | Number | Medium | True |
 | dataReceived  | Data received in MB | Number | Medium | True |
 
+## Channel configuration
 
-##Channel configuration
-All the channels can change its configuration parameters at runtime. The binding will trigger the necessary changes (reduce or increase the refresh time, change channel priority or the process that is being tracked).
+All channels can change its configuration parameters at runtime. The binding will trigger the necessary changes (reduce or increase the refresh time, change channel priority or the process that is being tracked).
 
 Each of the channels has a default configuration parameter - priority. It has the following options:
  - **High**
  - **Medium**
  - **Low**
  
- Channels from group ''process'' have additional configuration parameter - PID (Process identifier). This parameter is used as 'deviceIndex' and defines which process is tracked from the channel. This makes the channels from this groups very flexible - they can change its PID dynamically.
+Channels from group ''process'' have additional configuration parameter - PID (Process identifier). This parameter is used as 'deviceIndex' and defines which process is tracked from the channel. This makes the channels from this groups very flexible - they can change its PID dynamically.
  
- Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
+Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
+
 ## Full example
 
 Things:
