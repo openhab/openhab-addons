@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID
 import org.eclipse.smarthome.core.types.Command
 import org.eclipse.smarthome.core.types.RefreshType
 import org.eclipse.smarthome.core.types.State
@@ -44,7 +45,6 @@ import org.eclipse.smarthome.test.OSGiTest
 import org.eclipse.smarthome.test.storage.VolatileStorageService
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
@@ -63,7 +63,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     def DEFAULT_CHANNEL_TEST_PRIORITY = "High"
     def DEFAULT_CHANNEL_PID = -1
     def DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
-    def DEFAULT_THING_INITIALIZE_MAX_TIME = 3000
+    def DEFAULT_THING_INITIALIZE_MAX_TIME = 4000
 
     Thing systemInfoThing
     GenericItem testItem
@@ -137,10 +137,11 @@ class SysteminfoOSGiTest extends OSGiTest{
         ThingUID thingUID = new ThingUID(thingTypeUID,DEFAULT_TEST_THING_NAME);
 
         ChannelUID channelUID = new ChannelUID(thingUID,channelID)
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID,channelUID.getIdWithoutGroup())
         Configuration channelConfig  = new Configuration()
         channelConfig.put("priority", priority)
-        channelConfig.put("pid",pid)
-        Channel channel = new Channel(channelUID,acceptedItemType,channelConfig)
+        channelConfig.put("pid",new BigDecimal(pid))
+        Channel channel = new Channel(channelUID,channelTypeUID,acceptedItemType,channelConfig,new HashSet(),new HashMap(),null,null)
 
         systemInfoThing = ThingBuilder.create(thingTypeUID,thingUID).withConfiguration(thingConfiguration).withChannel(channel).build();
 
@@ -241,7 +242,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         waitForAssert({
             assertThat  "Invalid configuratuin is used !", systemInfoThing.getStatus(), is(equalTo(ThingStatus.OFFLINE))
             assertThat systemInfoThing.getStatusInfo().getStatusDetail() , is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR))
-            assertThat systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing can not be initialized! Configuration is invalid !"))
+            assertThat systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing can not be initialized!"))
         }, DEFAULT_THING_INITIALIZE_MAX_TIME)
     }
 
@@ -639,7 +640,6 @@ class SysteminfoOSGiTest extends OSGiTest{
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
-    @Ignore
     @Test
     public void 'assert channel network#ip is updated' () {
         String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_IP
@@ -795,6 +795,12 @@ class SysteminfoOSGiTest extends OSGiTest{
             systemInfoThing = thingRegistry.get(computerUID)
             assertThat systemInfoThing, is (notNullValue())
         }
+
+        waitForAssert({
+            assertThat "Thing is not initilized.", systemInfoThing.getStatus(),
+                    is (equalTo(ThingStatus.ONLINE))
+        },DEFAULT_THING_INITIALIZE_MAX_TIME)
+
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -855,17 +861,6 @@ class SysteminfoOSGiTest extends OSGiTest{
 
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
         testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
-    }
-
-    @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
-    @Test
-    public void 'assert chnanel process#load is not updated with no PID set' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD
-        String acceptedItemType = "Number";
-        int pid = -1
-
-        initializeThingWithChannelAndPID(channnelID, acceptedItemType,pid)
-        testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @After

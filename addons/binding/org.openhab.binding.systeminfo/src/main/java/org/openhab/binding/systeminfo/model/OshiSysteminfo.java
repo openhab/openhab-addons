@@ -13,8 +13,6 @@ import java.net.SocketException;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -38,7 +36,6 @@ import oshi.util.EdidUtil;
  *
  */
 public class OshiSysteminfo implements SysteminfoInterface {
-    private Logger logger = LoggerFactory.getLogger(OshiSysteminfo.class);
 
     private OperatingSystem operatingSystem;
     private NetworkIF[] networks;

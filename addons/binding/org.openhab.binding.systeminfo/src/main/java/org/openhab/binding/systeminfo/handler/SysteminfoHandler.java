@@ -99,32 +99,37 @@ public class SysteminfoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        try {
-            this.systeminfo = new OshiSysteminfo();
-        } catch (Exception e) {
-            logger.error("Can not instantate Systeminfo object", e);
-        }
+
         updateThingConfiguration();
         updateChannelConfiguration();
 
-        if (isConfigurationValid(currentThingConfiguration)) {
+        if (instantiateSysteminfoLibrary() && isConfigurationValid() && updateProperties()) {
             groupChannelsByPriority(currentChannelConfiguration);
-            updateProperties();
             scheduleUpdates();
             logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Thing can not be initialized! Configuration is invalid !");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Thing can not be initialized!");
         }
 
     }
 
-    private boolean isConfigurationValid(Configuration configuraiton) {
+    private boolean instantiateSysteminfoLibrary() {
+        try {
+            this.systeminfo = new OshiSysteminfo();
+            logger.debug("OSHI Systeminfo library is instatiated!");
+            return true;
+        } catch (Exception e) {
+            logger.error("Can not instantate Systeminfo object!", e);
+            return false;
+        }
+    }
+
+    private boolean isConfigurationValid() {
         logger.debug("Start reading Thing configuration.");
         try {
-            refreshIntervalMediumPriority = (BigDecimal) configuraiton.get(MEDIUM_PRIORITY_REFRESH_TIME);
-            refreshIntervalHighPriority = (BigDecimal) configuraiton.get(HIGH_PRIORITY_REFRESH_TIME);
+            refreshIntervalMediumPriority = (BigDecimal) currentThingConfiguration.get(MEDIUM_PRIORITY_REFRESH_TIME);
+            refreshIntervalHighPriority = (BigDecimal) currentThingConfiguration.get(HIGH_PRIORITY_REFRESH_TIME);
 
             if (refreshIntervalHighPriority.intValue() <= 0 || refreshIntervalMediumPriority.intValue() <= 0) {
                 throw new IllegalArgumentException("Refresh time must be positive number!");
@@ -132,19 +137,29 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Refresh time for medium priority channels set to {} s", refreshIntervalMediumPriority);
             logger.debug("Refresh time for high priority channels set to {} s", refreshIntervalHighPriority);
             return true;
-        } catch (Exception e) {
-            logger.error("Refresh time value is invalid!. Please change the thing configuration!", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Refresh time value is invalid! Please change the thing configuration!", e);
+            return false;
+        } catch (ClassCastException e) {
+            logger.error("Channel configuration can not be read !");
             return false;
         }
     }
 
-    private void updateProperties() {
+    private boolean updateProperties() {
         Map<String, String> properties = editProperties();
-        properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
-        properties.put(PROPERTY_CPU_PHYSICAL_CORES, systeminfo.getCpuPhysicalCores().toString());
-        properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
-        properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
-        properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
+        try {
+            properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
+            properties.put(PROPERTY_CPU_PHYSICAL_CORES, systeminfo.getCpuPhysicalCores().toString());
+            properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
+            properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
+            properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
+            logger.debug("Properties updated!");
+            return true;
+        } catch (Exception e) {
+            logger.debug("Can not get system properties!. Please try to restart the binding.", e);
+            return false;
+        }
 
     }
 
@@ -412,6 +427,10 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
         } catch (DeviceNotFoundException e) {
             logger.error("No information for channel " + channelID + deviceIndex, e);
+        } catch (Exception e) {
+            logger.error("Unexpected error occure while getting system information!", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    "Can not get systeminfo as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
         return state;
     }

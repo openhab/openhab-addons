@@ -373,7 +373,6 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    // TODO this exception may be irrelevant
     public StringType getProcessName(int pid) throws DeviceNotFoundException;
 
     /**
