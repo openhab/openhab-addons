@@ -39,7 +39,7 @@
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.samsungtv</module>
-	<module>org.openhab.binding.silvercrest</module>
+	<module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.tesla</module>
