@@ -139,6 +139,7 @@ Defines which actions result in sending scenes to 1st “Lifeline” group. <br 
           <option value="8">Scenes for flick RIGHT gesture enabled</option>
           <option value="16">Scenes for clockwise circular gesture enabled</option>
           <option value="32">Scenes for counter-clockwise circular gesture enabled</option>
+          <option value="63">All commands enabled</option>
         </options>
         <limitToOptions>false</limitToOptions>
       </parameter>

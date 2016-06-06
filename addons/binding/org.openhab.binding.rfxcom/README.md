@@ -48,11 +48,13 @@ Apple OS X note:
 Apple provides build-in FTDI drivers for OS X, which need to be disabled to get JD2XX work properly.
 
 FTDI driver disabling can be done by the following command
+
 ```
 sudo kextload -b com.apple.driver.AppleUSBFTDI
 ```
 
 FTDI driver can be enabled by the following command
+
 ```
 sudo kextunload -b com.apple.driver.AppleUSBFTDI
 ```

@@ -84,10 +84,9 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution OH2 version
  * @author Andreas Heil (info@aheil.de) - OH1 version
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
- * @param <updateNtpConfigData>
  *
  */
-public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler {
+public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public MaxCubeBridgeHandler(Bridge br) {
         super(br);

@@ -65,6 +65,7 @@
             <channel id="chlor-chlorerr" typeId="chlor-chlorerr" />
             <channel id="chlor-chlorname" typeId="chlor-chlorname" />
             <channel id="lightscmd" typeId="lightscmd" />
+            <channel id="reboot" typeId="reboot" />
         </channels>
         <config-description>
             <parameter name="host" type="text" required="true">
@@ -522,5 +523,10 @@
                 <option value="recall">Recall</option>
             </options>
         </state>
+    </channel-type>
+    <channel-type id="reboot">
+        <item-type>Switch</item-type>
+        <label>Reboot Autelis Device</label>
+        <description>Reboots the Autelis device. This will not reboot any actual pool equipment.</description>
     </channel-type>
 </thing:thing-descriptions>

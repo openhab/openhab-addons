@@ -117,7 +117,7 @@ The binding introduces the following channels:
 | dataSent  | Data sent in MB | Number | Medium | True |
 | dataReceived  | Data received in MB | Number | Medium | True |
 
-##Channel configuration
+## Channel configuration
 
 Each of the channels has a default configuration parameter - priority. It has the following options:
  - **High**

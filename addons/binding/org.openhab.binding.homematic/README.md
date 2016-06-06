@@ -81,8 +81,10 @@ The port number of the HMIP server (default = 2010)
 The port number of the CUxD daemon (default = 8701)
 
 The syntax for a bridge is:
+
 ```
 homematic:bridge:NAME
+
 ```
 - **homematic** the binding id, fixed
 - **bridge** the type, fixed
@@ -90,16 +92,19 @@ homematic:bridge:NAME
 
 #### Example
 - minimum configuration
+
 ```
 Bridge homematic:bridge:ccu [ gatewayAddress="..."]
 ```
 
 - with callback settings
+
 ```
 Bridge homematic:bridge:ccu [ gatewayAddress="...", callbackHost="...", callbackPort=... ]
 ```
 
 - multiple bridges
+
 ```
 Bridge homematic:bridge:lxccu [ gatewayAddress="..."]
 Bridge homematic:bridge:occu  [ gatewayAddress="..."]
@@ -109,6 +114,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 Things are all discovered automatically, you can handle them in PaperUI.  
 
 If you really like to manually configure a thing:
+
 ```
 Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 {
@@ -116,15 +122,19 @@ Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
 }
 ```
 The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type.
+
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
+
 ```
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
 ### Items
 In the items file, you can map the datapoints, the syntax is:
+
 ```
 homematic:TYPE:BRIDGE:SERIAL:CHANNELNUMBER#DATAPOINTNAME
+
 ```
 * **homematic:** the binding id, fixed  
 * **type:** the type of the Homematic device  
@@ -188,31 +198,42 @@ You can combine any option, they must be separated by a comma. If you specify mo
  
 **Examples:**  
 Assumed you mapped the virtual datapoint to a String item called Display_Options   
+
 ```
 String Display_Options "Display_Options" { channel="homematic:HM-RC-19-B:ccu:KEQ0099999:18#DISPLAY_OPTIONS" }
 ```
 show message TEST:
+
 ```
 smarthome send Display_Options "TEST"
+
 ```
 show message TEXT, beep once and turn backlight on:
+
 ```
 smarthome send Display_Options "TEXT, TONE1, BACKLIGHT_ON"
+
 ```
  
 show message 15, beep once, turn backlight on and shows the celsius unit:
+
 ```
 smarthome send Display_Options "15, TONE1, BACKLIGHT_ON, CELSIUS"
+
 ```
  
 show message ALARM, beep three times, let the backlight blink fast and shows a bell symbol:
+
 ```
 smarthome send Display_Options "ALARM, TONE3, BLINK_FAST, BELL"
+
 ```
  
 Duplicate options: TONE3 is ignored, because TONE1 is specified previously.
+
 ```
 smarthome send Display_Options "TEXT, TONE1, BLINK_FAST, TONE3"
+
 ```
 
 ### Troubleshooting

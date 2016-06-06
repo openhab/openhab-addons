@@ -24,6 +24,7 @@ This is optional, it is recommended to let the binding discover and add Orvibo d
 To manually configure an S20 Thing you must specify its deviceId (MAC address). 
  
 In the thing file, this looks e.g. like
+
 ```
 Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 ```
@@ -55,6 +56,7 @@ Thing orvibo:allone:myallone [ deviceId="FFEEDDCCBBAA", rootFolder="/home/pi"]
 |emit	 | String | The file to emit | orvibo:allone:myallone:emit |
 
 ## Items:
+
 ```
 Switch MySwitch              "Switch state [%s]"	{channel="orvibo:s20:mysocket:power"}
 String LearnString           "Learn file [%s]"		{channel="orvibo:allone:myallone:learn"}
@@ -65,6 +67,7 @@ String EmitString            "Emit file [%s]"	  	{channel="orvibo:allone:myallon
 
 Using the above things channels and items 
 Sitemap:
+
 ```
 sitemap demo label="Main Menu" {
         Frame  {
