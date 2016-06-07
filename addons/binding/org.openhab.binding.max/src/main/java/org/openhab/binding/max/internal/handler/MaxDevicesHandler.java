@@ -167,7 +167,8 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         boolean temperaturePropertyUpdateNeeded = false;
         HashMap<String, Object> deviceProperties = new HashMap<String, Object>();
         try {
-            deviceProperties = new HashMap<String, Object>(getDevice().getProperties());
+            Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
+            deviceProperties = new HashMap<String, Object>(device.getProperties());
         } catch (Error e) {
             // ignore
         }
@@ -218,7 +219,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     private void sendPropertyUpdate(Map<String, Object> configurationParameters,
             HashMap<String, Object> deviceProperties) {
         try {
-            Device device = getDevice();
+            Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
             rfAddress = device.getRFAddress();
             int roomId = device.getRoomId();
             BigDecimal tempComfort = (BigDecimal) configurationParameters.getOrDefault(PROPERTY_THERMO_COMFORT_TEMP,
@@ -280,7 +281,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      */
     private void updateDeviceName(Entry<String, Object> configurationParameter) {
         try {
-            Device device = getDevice();
+            Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
             String name = configurationParameter.getValue().toString();
             if (configurationParameter.getKey().equals(PROPERTY_DEVICENAME) && !(name.equals(device.getName()))) {
                 logger.info("Updating device name for {} to {}", getThing().getUID().toString(), name);
@@ -338,14 +339,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             }
         }
         return this.bridgeHandler;
-    }
-
-    private Device getDevice() throws NullPointerException {
-        Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
-        if (device == null) {
-            throw new NullPointerException();
-        }
-        return device;
     }
 
     /**

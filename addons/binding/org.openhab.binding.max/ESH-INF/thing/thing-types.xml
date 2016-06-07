@@ -42,24 +42,22 @@
 				<label>Actions</label>
 				<description>Action Buttons</description>
 			</parameter-group>
-            <!-- Experimental - Enable when also removing rooms is implemented 
-			<parameter name="roomId" type="integer" required="false" groupName="device">
-				<label>Room Id</label>
-				<description>The room name Id.</description>
-				<advanced>true</advanced>
-			</parameter>
-            -->
+<!-- Experimental - Enable when also removing rooms is implemented 
+            <parameter name="roomId" type="integer" required="false" groupName="device">
+                <label>Room Id</label>
+                <description>The room name Id.</description>
+                <advanced>true</advanced>
+            </parameter>
+-->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
 				<advanced>true</advanced>
-
 			</parameter>
 			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
 				<advanced>true</advanced>
-
 			</parameter>
 			<parameter name="comfortTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
 				<label>Comfort Temperature</label>
@@ -76,16 +74,18 @@
 				<description>Set the Thermostat offset.</description>
 				<advanced>true</advanced>
 			</parameter>
-            <parameter name="maxTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
-                <label>Max Temperature</label>
-                <description>Set the Thermostat maximum temperature.</description>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="minTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
-                <label>Min Temperature</label>
-                <description>Set the Thermostat minimum temperature.</description>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="maxTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Max Temperature</label>
+				<description>Set the Thermostat maximum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="minTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Min Temperature</label>
+				<description>Set the Thermostat minimum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="windowOpenTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
 				<label>Window Open Temp</label>
 				<description>Set the Window Open Temperature.</description>
