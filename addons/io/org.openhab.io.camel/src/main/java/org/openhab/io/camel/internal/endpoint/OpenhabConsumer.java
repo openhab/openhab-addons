@@ -59,8 +59,7 @@ public class OpenhabConsumer extends DefaultConsumer {
                     logger.debug("Exchange '{}' done", exchange);
 
                     if (exchange.getException() != null) {
-                        getExceptionHandler().handleException("Error processing exchange.", exchange,
-                                exchange.getException());
+                        log.warn("Error occured during exchange '{}' processing", exchange, exchange.getException());
                     }
                 }
             });
@@ -70,7 +69,7 @@ public class OpenhabConsumer extends DefaultConsumer {
 
         if (sync) {
             if (exchange.getException() != null) {
-                getExceptionHandler().handleException("Error processing exchange.", exchange, exchange.getException());
+                log.warn("Error occured during exchange '{}' processing", exchange, exchange.getException());
             }
         }
     }
