@@ -495,9 +495,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                             } else {
                                 socketClose();
                             }
-
                         }
-
                     }
                 }
 
@@ -643,6 +641,26 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     configurations.add(DeviceConfiguration.create(message));
                 } else {
                     c.setValues((C_Message) message);
+                    Device di = getDevice(((C_Message) message).getSerialNumber());
+                    if (di != null) {
+                        di.setProperties(((C_Message) message).getProperties());
+                        ;
+                    }
+                }
+                if (exclusive == true) {
+                    for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+                        try {
+                            Device di = getDevice(((C_Message) message).getSerialNumber());
+                            if (di != null) {
+                                deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
+                            }
+                        } catch (NullPointerException e) {
+                            // ignore
+                        } catch (Exception e) {
+                            logger.error("An exception occurred while calling the DeviceStatusListener", e);
+                            unregisterDeviceStatusListener(deviceStatusListener);
+                        }
+                    }
                 }
             } else if (message.getType() == MessageType.L) {
                 ((L_Message) message).updateDevices(devices, configurations);
