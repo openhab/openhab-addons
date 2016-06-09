@@ -84,7 +84,7 @@ public class HyperionConnection {
         this.address = address;
     }
 
-    public String send(HyperionCommand command) {
+    public String send(HyperionCommand command) throws IOException {
         Gson gson = new Gson();
         String sCommand = gson.toJson(command);
         String response = null;
@@ -96,7 +96,7 @@ public class HyperionConnection {
             outToServer.flush();
             response = inFromServer.readLine();
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            throw e;
         }
         logger.debug(response);
         return response;
@@ -127,12 +127,12 @@ public class HyperionConnection {
         send(command);
     }
 
-    public String serverInfo() {
+    public String serverInfo() throws IOException {
         HyperionCommand command = new ServerInfoCommand();
         return send(command);
     }
 
-    public void synchronize() {
+    public void synchronize() throws IOException {
         String info = serverInfo();
         double valueGain = JsonPath.read(info, JSONPATH_VALUEGAIN);
         valueGainChangeTo(valueGain);

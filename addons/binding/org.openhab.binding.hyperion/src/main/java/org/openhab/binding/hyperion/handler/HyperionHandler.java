@@ -62,10 +62,14 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
             refreshHandler = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    server.synchronize();
+                    try {
+                        server.synchronize();
+                    } catch (IOException e) {
+                        logger.error("Could not connect to server.");
+                        updateStatus(ThingStatus.OFFLINE);
+                    }
                 }
             }, 0, refreshInterval, TimeUnit.SECONDS);
-
             updateStatus(ThingStatus.ONLINE);
         } catch (UnknownHostException e) {
             logger.error("Could not resolve host: {}", e.getMessage());
