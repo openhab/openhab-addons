@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="fortrezz_ssa1_00_000" listed="false">
+    <label>SSA1/SSA2 Siren and Strobe Alarm</label>
+    <description>Siren and Strobe Alarm</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="switch_dimmer" typeId="switch_dimmer">
+        <label>Dimmer</label>
+        <properties>
+          <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+        </properties>
+      </channel>
+      <channel id="alarm_burglar" typeId="alarm_burglar">
+        <label>Alarm (burglar)</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM;type=BURGLAR</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">FortrezZ</property>
+      <property name="model">SSA1/SSA2</property>
+      <property name="manufacturerId">0084</property>
+      <property name="manufacturerRef">0313:0108,0313:010B</property>
+    </properties>
+
+    <!-- CONFIGURATION DESCRIPTIONS -->
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>1: Delay before accept of Basic Set Off</label>
+        <description><![CDATA[
+Delay, from the time the siren-strobe turns on, before the Basic Set Off command is accepted.<br /><h1>Overview</h1><p>Delay, from the time the siren-strobe turns on, before the Basic Set Off command is accepted; 1 Byte (in seconds, default is 0, interpreted as unsigned integer for negative values sent in set command). This could be used, for example, to avoid the situation where an associated window/door sensor turns the SSA1 alarm on and then immediately off when the window/door is opened and then quickly closed.</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>
