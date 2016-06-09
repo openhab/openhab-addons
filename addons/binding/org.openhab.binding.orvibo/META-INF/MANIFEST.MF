@@ -6,7 +6,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
-    lib/orvibo-sdk-1.0.4-SNAPSHOT.jar
+    lib/orvibo-sdk-1.1.1-SNAPSHOT.jar
 Import-Package: com.google.common.collect,
  javax.xml.bind,
  org.apache.commons.lang,
