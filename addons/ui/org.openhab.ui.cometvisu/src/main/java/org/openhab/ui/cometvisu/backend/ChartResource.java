@@ -173,7 +173,7 @@ public class ChartResource implements RESTResource {
 
     public Object getPersistenceSeries(QueryablePersistenceService persistenceService, Item item, Date timeBegin,
             Date timeEnd, long resolution) {
-        Map<Long, ArrayList<String>> data = new HashMap<Long, ArrayList<String>>();
+        ArrayList<Object> rrd = new ArrayList<Object>();
 
         // Define the data filter
         FilterCriteria filter = new FilterCriteria();
@@ -187,20 +187,21 @@ public class ChartResource implements RESTResource {
         Iterator<HistoricItem> it = result.iterator();
 
         // Iterate through the data
-        int dataCounter = 0;
         while (it.hasNext()) {
-            dataCounter++;
             HistoricItem historicItem = it.next();
             org.eclipse.smarthome.core.types.State state = historicItem.getState();
             if (state instanceof DecimalType) {
                 ArrayList<String> vals = new ArrayList<String>();
                 vals.add(formatDouble(((DecimalType) state).doubleValue(), "null", true));
-                data.put(historicItem.getTimestamp().getTime(), vals);
+                Object[] entry = new Object[2];
+                entry[0] = historicItem.getTimestamp().getTime();
+                entry[1] = vals;
+                rrd.add(entry);
             }
         }
         logger.debug("'{}' querying item '{}' from '{}' to '{}' => '{}' results", persistenceService.getName(),
-                filter.getItemName(), filter.getBeginDate(), filter.getEndDate(), dataCounter);
-        return convertToRrd(data);
+                filter.getItemName(), filter.getBeginDate(), filter.getEndDate(), rrd.size());
+        return rrd;
     }
 
     /**
