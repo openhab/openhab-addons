@@ -17,7 +17,7 @@ Things file under "conf/things/demo.things".
 SerialGateway:
 
 ```
-  mysensors:bridge-ser:gateway [ serialPort="/dev/pts/2", sendDelay=200 ] {
+  Bridge mysensors:bridge-ser:gateway [ serialPort="/dev/pts/2", sendDelay=200 ] {
     /** define things connected to that bridge here */
   }
 ```
@@ -25,7 +25,7 @@ SerialGateway:
 The serial gateway from MySensors works with a baud rate of 115.200. If you're using a different baud rate you need to add an additional parameter "baudRate":
 
 ```
-  mysensors:bridge-ser:gateway [ serialPort="/dev/pts/2", sendDelay=200, baudRate=115200 ] {
+  Bridge mysensors:bridge-ser:gateway [ serialPort="/dev/pts/2", sendDelay=200, baudRate=115200 ] {
     /** define things connected to that bridge here */
   }
 ```
@@ -34,7 +34,7 @@ The serial gateway from MySensors works with a baud rate of 115.200. If you're u
 EthernetGateway:
 
 ```
-  mysensors:bridge-eth:gateway [ ipAddress="127.0.0.1", tcpPort=5003, sendDelay=200 ] {
+  Bridge mysensors:bridge-eth:gateway [ ipAddress="127.0.0.1", tcpPort=5003, sendDelay=200 ] {
      /** define things connected to that bridge here */
   }
 ```
