@@ -43,8 +43,8 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private static Logger logger = LoggerFactory.getLogger(NetatmoBridgeHandler.class);
     private NetatmoBridgeConfiguration configuration;
     private ApiClient apiClient;
-    private StationApi stationApi;
-    private ThermostatApi thermostatApi;
+    private StationApi stationApi = null;
+    private ThermostatApi thermostatApi = null;
 
     public NetatmoBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -79,42 +79,40 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     private void updateChannels() {
         NAUserResponse user = null;
-        try {
-            getStationApi();
-            if (stationApi != null) {
-                user = stationApi.getuser();
-            } else {
-                getThermostatApi();
-                if (thermostatApi != null) {
-                    user = thermostatApi.getuser();
-                }
-            }
 
-            if (user != null) {
-                NAUserAdministrative admin = user.getBody().getAdministrative();
-                for (Channel channel : getThing().getChannels()) {
-                    String chanelId = channel.getUID().getId();
-                    switch (chanelId) {
-                        case CHANNEL_UNIT: {
-                            updateState(channel.getUID(), new DecimalType(admin.getUnit()));
-                            break;
-                        }
-                        case CHANNEL_WIND_UNIT: {
-                            updateState(channel.getUID(), new DecimalType(admin.getWindunit()));
-                            break;
-                        }
-                        case CHANNEL_PRESSURE_UNIT: {
-                            updateState(channel.getUID(), new DecimalType(admin.getPressureunit()));
-                            break;
-                        }
+        getStationApi();
+        if (stationApi != null) {
+            user = stationApi.getuser();
+        } else {
+            getThermostatApi();
+            if (thermostatApi != null) {
+                user = thermostatApi.getuser();
+            }
+        }
+
+        if (user != null) {
+            NAUserAdministrative admin = user.getBody().getAdministrative();
+            for (Channel channel : getThing().getChannels()) {
+                String chanelId = channel.getUID().getId();
+                switch (chanelId) {
+                    case CHANNEL_UNIT: {
+                        updateState(channel.getUID(), new DecimalType(admin.getUnit()));
+                        break;
+                    }
+                    case CHANNEL_WIND_UNIT: {
+                        updateState(channel.getUID(), new DecimalType(admin.getWindunit()));
+                        break;
+                    }
+                    case CHANNEL_PRESSURE_UNIT: {
+                        updateState(channel.getUID(), new DecimalType(admin.getPressureunit()));
+                        break;
                     }
                 }
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                throw new Exception("Not able to initialize Netatmo API connexion with current credentials");
             }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    "Unable to initialize Netatmo API connection (check credentials)");
         }
     }
 
@@ -134,28 +132,21 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("This Bridge is read-only and cannot handle commands");
+        logger.warn("This Bridge is read-only and does not handle commands");
     }
 
-    public StationApi getStationApi() throws Exception {
-        if (configuration.readStation) {
-            if (stationApi == null) {
-                stationApi = apiClient.createService(StationApi.class);
-            }
-            return stationApi;
+    public StationApi getStationApi() {
+        if (configuration.readStation && stationApi == null) {
+            stationApi = apiClient.createService(StationApi.class);
         }
-
-        throw new Exception("Configuration does not allow access to StationApi");
+        return stationApi;
     }
 
-    public ThermostatApi getThermostatApi() throws Exception {
-        if (configuration.readThermostat) {
-            if (thermostatApi == null) {
-                thermostatApi = apiClient.createService(ThermostatApi.class);
-            }
-            return thermostatApi;
+    public ThermostatApi getThermostatApi() {
+        if (configuration.readThermostat && thermostatApi == null) {
+            thermostatApi = apiClient.createService(ThermostatApi.class);
         }
-        throw new Exception("Configuration does not allow access to ThermostatApi");
+        return thermostatApi;
     }
 
 }
