@@ -157,6 +157,10 @@ public class MySensorsDiscoveryService extends AbstractDiscoveryService {
                     uid = new ThingUID(THING_TYPE_WATER, bridgeHandler.getThing().getUID(),
                             "WaterMeter_" + msg.getNodeId() + "_" + msg.getChildId());
                     break;
+                case MYSENSORS_SUBTYPE_S_CUSTOM:
+                    uid = new ThingUID(THING_TYPE_CUSTOM, bridgeHandler.getThing().getUID(),
+                            "CustomSensor_" + msg.getNodeId() + "_" + msg.getChildId());
+                    break;
             }
             if (uid != null) {
                 Map<String, Object> properties = new HashMap<>(2);
