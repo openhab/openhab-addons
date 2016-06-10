@@ -216,7 +216,10 @@ public class CometVisuServlet extends HttpServlet {
 
                     return;
                 } else {
-                    throw new ServletException("Sitemap '" + matcher.group(1) + "' could not be found");
+                    logger.debug("Config file not found. Neither as normal config ('{}') nor as sitemap ('{}.sitemap')",
+                            requestedFile, matcher.group(2));
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    return;
                 }
             }
         }
