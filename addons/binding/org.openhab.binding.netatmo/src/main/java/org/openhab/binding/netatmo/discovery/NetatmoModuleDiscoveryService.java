@@ -20,9 +20,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import io.swagger.client.api.StationApi;
+import io.swagger.client.api.ThermostatApi;
 import io.swagger.client.model.NADevice;
 import io.swagger.client.model.NADeviceListResponse;
 import io.swagger.client.model.NAModule;
@@ -35,7 +35,6 @@ import io.swagger.client.model.NAModule;
  *
  */
 public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
-    private static Logger logger = LoggerFactory.getLogger(NetatmoModuleDiscoveryService.class);
     private final static int SEARCH_TIME = 2;
     private NetatmoBridgeHandler netatmoBridgeHandler;
 
@@ -64,14 +63,17 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
     @Override
     public void startScan() {
         NADeviceListResponse deviceList;
-        try {
-            deviceList = netatmoBridgeHandler.getStationApi().devicelist("app_station", null, false);
-            screenDevicesAndModules(deviceList);
 
-            deviceList = netatmoBridgeHandler.getThermostatApi().devicelist("app_thermostat", null, false);
+        StationApi stationApi = netatmoBridgeHandler.getStationApi();
+        if (stationApi != null) {
+            deviceList = stationApi.devicelist("app_station", null, false);
             screenDevicesAndModules(deviceList);
-        } catch (Exception e) {
-            logger.warn(e.getMessage());
+        }
+
+        ThermostatApi thermostatApi = netatmoBridgeHandler.getThermostatApi();
+        if (thermostatApi != null) {
+            deviceList = thermostatApi.devicelist("app_thermostat", null, false);
+            screenDevicesAndModules(deviceList);
         }
 
         stopScan();
