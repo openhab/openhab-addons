@@ -686,8 +686,6 @@ public class CometVisuServlet extends HttpServlet {
             disposition = accept != null && accepts(accept, contentType) ? "inline" : "attachment";
         }
 
-        // Initialize response.
-        response.reset();
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
         response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
         response.setHeader("Accept-Ranges", "bytes");
