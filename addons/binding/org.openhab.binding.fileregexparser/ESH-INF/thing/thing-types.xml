@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fileregexparser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="filetoparse">
+		<label>FileToParseThing</label>
+		<description>Watches a file and matches a regular expression to each new line. Channels are generated automatically for each matcher group </description>
+
+		<channels>
+			<channel id="groupCount" typeId="groupCount" />
+		</channels>
+		<config-description>
+			<parameter name="fileName" type="text" required="true">
+				<label>Filename</label>
+				<description>Filename including full path</description>
+			</parameter>
+			<parameter name="regEx" type="text" required="true">
+				<label>RegEx</label>
+				<description>Regular expression to be applied to each line of the file</description>
+			</parameter>
+	        <parameter name="matchingGroupTypes" type="text" required="false">
+                <label>Matching Group Types</label>
+                <description>Types of matching groups str or num, comma separated list. - number must match the number of the matching groups defined in the RegEx  e.g.: str,num,num,str</description>
+            </parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="groupCount">
+		<item-type>Number</item-type>
+		<label>groupCount</label>
+		<description>Number of matching groups</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="matchingGroupStr">
+		<item-type>String</item-type>
+		<label>matchingGroup String</label>
+		<description>Result of MatchingGroup, type String </description>
+		<state readOnly="true"></state>
+	</channel-type>
+    <channel-type id="matchingGroupNum">
+        <item-type>Number</item-type>
+        <label>matchingGroup Number</label>
+        <description>Result of MatchingGroup x, type Number</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+
+</thing:thing-descriptions>
