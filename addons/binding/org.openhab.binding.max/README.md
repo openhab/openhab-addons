@@ -1,4 +1,4 @@
-#MAX! Binding
+# MAX! Binding
 
 This is the binding for the [eQ-3 MAX! Home Solution](http://www.eq-3.de/).
 This binding allows you to integrate, view and control the MAX! Thermostats in the Openhab environment
@@ -69,6 +69,7 @@ max:thermostat:KEQ0565026 [ serialNumber="KEQ0565123" ]
 ```
 
 max.items:
+
 ```
 Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
 
@@ -81,6 +82,7 @@ Number maxSetTemp "Thermostat temperature setpoint [%.1f �C]"  (gMAX) {channel
 ```
 
 demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {
@@ -104,19 +106,24 @@ There is an experimental mode that does this automatically. This can be enabled 
 When clicking the discovery button for MAX! devices manually in the UI, you  will start New Device Inclusion mode for 60s. During this time holding the _boost_ button on your device will link it to the Cube.
 
 ## Device configuration
-In the _Configuration Parameters_ section of the device things you can update some of the device configuration parameters. Currently the following parameters can be updated: 
+In the _Configuration Parameters_ section of the device things you can update some of the device configuration parameters. Currently the following parameters can be updated:
+
 * _name_ Name of the thermostat stored in the Cube (also used by the eq3 software).
 
 _Cube device configurable parameters_ 
+
 * _ntpServer1_ The hostname for NTP Server 1 used by the Cube to get the time
 * _ntpServer2_ The hostname for NTP Server 2 used by the Cube to get the time
 
 ## Action Buttons (visible in Habmin)
 In the Habmin thing configuration screen several action buttons are available to trigger special actions on the Cube
+
 * _Reset Cube Configuration_. This resets the MAX! Cube room and device information. Devices will need to be included again! To use this button you need to enable 'Advanced settings'
+
 * _Restart Cube_, triggers the reboot of a Cube. This can be used if a Cube became unresponsive to commands or no connection can be made. (e.g. if you tried to connect to the Cube with multiple applications at the same time)
 
 On the MAX! devices you can trigger the following action
+
 * _Delete Device from Cube_. Deletes the device from the MAX! Cube. Device will need to be included again! To use this button you need to enable 'Advanced settings'
 
 Note: In PaperUI there are no action buttons. You can trigger these actions changing from 'No Action' in the dropdown to the action value. 

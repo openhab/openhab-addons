@@ -14,7 +14,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
@@ -61,12 +61,6 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>1: Sensor report type on Get without endpoint</label>
-        <default>0</default>
-      </parameter>
-
       <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Wake up for 10 minutes when batteries are inserted</label>
         <default>0</default>
@@ -99,7 +93,7 @@ On time before sending off command<br /><h1>Overview</h1><p>How long should the 
         <default>1</default>
         <options>
           <option value="1">Send Basic Set</option>
-          <option value="16">send Sensor Binary report</option>
+          <option value="2">send Sensor Binary report</option>
         </options>
       </parameter>
 
@@ -107,7 +101,7 @@ On time before sending off command<br /><h1>Overview</h1><p>How long should the 
                  min="0" max="225">
         <label>101: Which reports to send to group 1</label>
         <description><![CDATA[
-Group 1 automatic report list<br /><h1>Overview</h1><p>The value is a combination number made up of the sum of the values for the individual sensors and battery.</p> <p>The sensors have the values:</p> <p>Temperature=32</p> <p>Humidity=64</p> <p>Lightlevel=128</p> <p>Battery=1                           </p> <p>Therefore if you want all sensors and the battery report set this value to 225 (recommended)</p>
+Group 1 automatic report list<br /><h1>Overview</h1><p>The value is a combination number made up of the sum of the values for the individual sensors and battery.</p> <p>The sensors have the values:</p> <p>Temperature=32</p> <p>Humidity=64</p> <p>Lightlevel=128</p> <p>Battery=1                           </p> <p>Therefore if you want all sensors and the battery report set this value to <strong>225</strong> (recommended)</p>
         ]]></description>
         <default>0</default>
       </parameter>
@@ -146,6 +140,18 @@ Group 3 automatic report list<br /><h1>Overview</h1><p>The value is a combinatio
                  min="1" max="2678400">
         <label>113: Interval to send out reports of group 3</label>
         <default>720</default>
+      </parameter>
+
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_255_1_wo" type="integer" groupName="configuration">
+        <label>255: Reset to the default Configuration of all parameters</label>
+        <description>Set to 1 to reset to factory default</description>
+        <default>0</default>
       </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->

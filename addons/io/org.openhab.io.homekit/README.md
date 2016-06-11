@@ -8,6 +8,7 @@ Using this add-on, you will be able to control your openHAB system using Apple's
 Your first step will be to create the homekit.cfg in your conf/services folder. At the very least, you will need to define a pin number for the bridge. This will be used in iOS when pairing. The pin code is in the form "###-##-###". Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS. At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes. If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
 
 Other settings, such as using fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the Homekit bridge on are also illustrated in the following sample:
+
 ```
 org.openhab.homekit:port=9124
 org.openhab.homekit:pin=031-45-154
@@ -17,6 +18,7 @@ org.openhab.homekit:thermostatHeatMode=HeatOn
 org.openhab.homekit:thermostatAutoMode=Auto
 org.openhab.homekit:thermostatOffMode=Off
 org.openhab.homekit:networkInterface=192.168.0.6
+
 ```
 
 ## Item Configuration
@@ -101,4 +103,5 @@ HomeKit allows only a single pairing to be established with the bridge. This pai
 HomeKit requires a unique identifier for each accessory advertised by the bridge. This unique identifier is hashed from the Item's name. For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 
 If you encounter any issues with the add-on and need support, it may be important to get detailed logs of your device's communication with openHAB. In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following command:
+
 ```openhab> log:set TRACE com.beowulfe.hap```
