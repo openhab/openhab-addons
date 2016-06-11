@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="fileregexparser"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>FileRegexParser Binding</name>
+    <description>Watches a file and matches a regular expression to each new line. Channels are generated automatically for each matcher group</description>
+    <author>Juergen Messmer</author>
+
+</binding:binding>
