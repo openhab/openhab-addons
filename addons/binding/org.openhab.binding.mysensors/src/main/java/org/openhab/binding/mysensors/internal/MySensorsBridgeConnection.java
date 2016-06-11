@@ -136,7 +136,7 @@ public abstract class MySensorsBridgeConnection {
         if (iterator != null) {
             while (iterator.hasNext()) {
                 MySensorsMessage msgInQueue = iterator.next();
-                logger.debug("Msg in Queue: " + msgInQueue.getDebugInfo());
+                // logger.debug("Msg in Queue: " + msgInQueue.getDebugInfo());
                 if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()
                         && msgInQueue.getMsgType() == msg.getMsgType() && msgInQueue.getSubType() == msg.getSubType()
                         && msgInQueue.getAck() == msg.getAck() && msgInQueue.getMsg().equals(msg.getMsg())) {
