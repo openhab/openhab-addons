@@ -11,4 +11,5 @@ public class MySensorsSensorConfiguration {
     public String nodeId;
     public String childId;
     public boolean requestAck;
+    public boolean revertState;
 }

@@ -138,7 +138,8 @@ public abstract class MySensorsBridgeConnection {
                 MySensorsMessage msgInQueue = iterator.next();
                 if (msgInQueue.getNodeId() == msg.getNodeId() && msgInQueue.getChildId() == msg.getChildId()
                         && msgInQueue.getMsgType() == msg.getMsgType() && msgInQueue.getSubType() == msg.getSubType()
-                        && msgInQueue.getAck() == msg.getAck() && msgInQueue.getMsg().equals(msg.getMsg())) {
+                        && msgInQueue.getAck() == msg.getAck() && msgInQueue.getRevert() == msg.getRevert()
+                        && msgInQueue.getMsg().equals(msg.getMsg())) {
                     iterator.remove();
                 } else {
                     logger.debug("Message NOT removed");

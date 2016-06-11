@@ -202,6 +202,11 @@ public class MySensorsBindingConstants {
     public final static int RESET_TIME = 5000;
 
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7970323220036599380L;
+
         {
             put(MYSENSORS_SUBTYPE_V_TEMP, CHANNEL_TEMP);
             put(MYSENSORS_SUBTYPE_V_HUM, CHANNEL_HUM);
@@ -243,6 +248,11 @@ public class MySensorsBindingConstants {
     };
 
     public final static Map<Number, String> CHANNEL_MAP_INTERNAL = new HashMap<Number, String>() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 6273187523631143905L;
+
         {
             put(MYSENSORS_SUBTYPE_I_VERSION, CHANNEL_VERSION);
             put(MYSENSORS_SUBTYPE_I_BATTERY_LEVEL, CHANNEL_BATTERY);

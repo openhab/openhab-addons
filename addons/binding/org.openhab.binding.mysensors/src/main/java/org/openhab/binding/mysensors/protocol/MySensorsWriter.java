@@ -35,7 +35,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
     protected ExecutorService executor = Executors.newSingleThreadExecutor();
     protected Future<?> future = null;
 
-    private static final MySensorsMessage I_VERSION_MESSAGE = new MySensorsMessage(0, 0, 3, 0, 2, "");
+    private static final MySensorsMessage I_VERSION_MESSAGE = new MySensorsMessage(0, 0, 3, 0, 0, 2, "");
 
     protected int sendDelay = 0;
 
@@ -69,13 +69,15 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                                     logger.warn("NO ACK from nodeId: " + msg.getNodeId());
                                     if (msg.getOldMsg().isEmpty()) {
                                         logger.debug("No old status know to revert to!");
-                                    } else {
+                                    } else if (msg.getRevert() == 1) {
                                         logger.debug("Reverting status!");
                                         msg.setMsg(msg.getOldMsg());
                                         MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
                                         for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
                                             mySensorsEventListener.statusUpdateReceived(event);
                                         }
+                                    } else if (msg.getRevert() == 0) {
+                                        logger.debug("Not reverted due to configuration!");
                                     }
                                     continue;
                                 }
