@@ -93,15 +93,8 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         String msgPayload = "";
         int subType = 0;
         int int_requestack = 0;
-        int int_revertstate = 1;
         if (requestAck) {
             int_requestack = 1;
-        }
-        if (!revertState) {
-            int_revertstate = 0;
-            logger.debug("revert state false");
-        } else {
-            logger.debug("revert state true");
         }
         if (channelUID.getId().equals(CHANNEL_STATUS)) {
 
@@ -190,7 +183,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         }
 
         MySensorsMessage newMsg = new MySensorsMessage(nodeId, childId, MYSENSORS_MSG_TYPE_SET, int_requestack,
-                int_revertstate, subType, msgPayload);
+                revertState, subType, msgPayload);
 
         String oldPayload = oldMsgContent.get(subType);
         if (oldPayload == null) {

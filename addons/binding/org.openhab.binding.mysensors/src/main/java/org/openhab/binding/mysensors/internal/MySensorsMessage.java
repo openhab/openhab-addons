@@ -24,7 +24,7 @@ public class MySensorsMessage {
     public int childId = 0;
     public int msgType = 0;
     public int ack = 0;
-    public int revert = 1;
+    public boolean revert = true;
     public int subType = 0;
     public String msg = "";
     public String oldMsg = "";
@@ -35,7 +35,7 @@ public class MySensorsMessage {
 
     }
 
-    public MySensorsMessage(int nodeId, int childId, int msgType, int ack, int revert, int subType, String msg) {
+    public MySensorsMessage(int nodeId, int childId, int msgType, int ack, boolean revert, int subType, String msg) {
         this.nodeId = nodeId;
         this.childId = childId;
         this.msgType = msgType;
@@ -43,17 +43,16 @@ public class MySensorsMessage {
         this.revert = revert;
         this.subType = subType;
         this.msg = msg;
-        this.printDebug();
     }
 
     public void printDebug() {
-        logger.debug("nodeId: " + this.nodeId);
-        logger.debug("childId: " + this.childId);
-        logger.debug("msgType: " + this.msgType);
-        logger.debug("ack: " + this.ack);
-        logger.debug("revert: " + this.revert);
-        logger.debug("subType: " + this.subType);
-        logger.debug("msg: " + this.msg);
+        logger.debug(String.format("nodeId: %d, childId: %d, msgType: %d, ack: %d, revert: %b, subType: %d ,msg: %s",
+                this.nodeId, this.childId, this.msgType, this.ack, this.revert, this.subType, this.msg));
+    }
+
+    public String getDebugInfo() {
+        return String.format("nodeId: %d, childId: %d, msgType: %d, ack: %d, revert: %b, subType: %d ,msg: %s",
+                this.nodeId, this.childId, this.msgType, this.ack, this.revert, this.subType, this.msg);
     }
 
     public int getNodeId() {
@@ -84,7 +83,7 @@ public class MySensorsMessage {
         return ack;
     }
 
-    public int getRevert() {
+    public boolean getRevert() {
         return revert;
     }
 
