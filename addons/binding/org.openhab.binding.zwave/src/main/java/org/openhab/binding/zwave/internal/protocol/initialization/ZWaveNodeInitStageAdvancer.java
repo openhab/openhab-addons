@@ -571,7 +571,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                             .getCommandClass(CommandClass.VERSION);
 
                     if (versionCommandClass == null) {
-                        logger.debug("NODE {}: Node advancer: APP_VERSION - VERSION node supported", node.getNodeId());
+                        logger.debug("NODE {}: Node advancer: APP_VERSION - VERSION not supported", node.getNodeId());
                         break;
                     }
 
@@ -590,11 +590,48 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     ZWaveVersionCommandClass version = (ZWaveVersionCommandClass) node
                             .getCommandClass(CommandClass.VERSION);
 
+                    thingType = ZWaveConfigProvider.getThingType(node);
+                    if (thingType == null) {
+                        logger.debug("NODE {}: Node advancer: VERSION - thing is null!", node.getNodeId());
+                    }
+
                     // Loop through all command classes, requesting their version
                     // using the Version command class
                     for (ZWaveCommandClass zwaveVersionClass : node.getCommandClasses()) {
                         logger.debug("NODE {}: Node advancer: VERSION - checking {}, version is {}", node.getNodeId(),
                                 zwaveVersionClass.getCommandClass().getLabel(), zwaveVersionClass.getVersion());
+
+                        // See if we want to force the version of this command class
+                        if (thingType != null) {
+                            Map<String, String> properties = thingType.getProperties();
+                            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                                String key = entry.getKey();
+                                String value = entry.getValue();
+
+                                String cmds[] = key.split(":");
+                                if ("commandClass".equals(cmds[0]) == false) {
+                                    continue;
+                                }
+                                String args[] = value.split("=");
+
+                                if ("setVersion".equals(args[0])) {
+                                    if (zwaveVersionClass.getCommandClass().getLabel().equals(cmds[1])) {
+                                        logger.debug("NODE {}: Node advancer: VERSION - Set {} to Version {}",
+                                                node.getNodeId(), CommandClass.getCommandClass(cmds[1]).getLabel(),
+                                                args[1]);
+
+                                        // TODO: This ignores endpoint
+                                        try {
+                                            zwaveVersionClass.setVersion(Integer.parseInt(args[1]));
+                                        } catch (NumberFormatException e) {
+                                            logger.error("NODE {}: Node advancer: VERSION - number format exception {}",
+                                                    args[1]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         if (version != null && zwaveVersionClass.getVersion() == 0) {
                             logger.debug("NODE {}: Node advancer: VERSION - queued   {}", node.getNodeId(),
                                     zwaveVersionClass.getCommandClass().getLabel());
@@ -886,7 +923,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                     // If the node doesn't support configuration class, then we better let people know!
                     if (configurationCommandClass == null) {
-                        logger.error("NODE {}: Node advancer: GET_CONFIGURATION - CONFIGURATION class not supported",
+                        logger.debug("NODE {}: Node advancer: GET_CONFIGURATION - CONFIGURATION class not supported",
                                 node.getNodeId());
                         break;
                     }
