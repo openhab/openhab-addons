@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="leviton_vrs051lx_00_000" listed="false">
+    <label>VRS05-1LX Scene Capable Switch</label>
+    <description>Scene Capable Switch</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Leviton</property>
+      <property name="model">VRS05-1LX</property>
+      <property name="manufacturerId">001D</property>
+      <property name="manufacturerRef">010F:0209</property>
+      <property name="commandClass:SCENE_ACTUATOR_CONF">setVersion=1</property>
+    </properties>
+
+  </thing-type>
+</thing:thing-descriptions>
