@@ -135,10 +135,10 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     @Override
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
         MySensorsMessage msg = event.getData();
-
+        // logger.debug("updateRecieved: " + msg.getDebugInfo());
         // Do we get an ACK?
         if (msg.getAck() == 1) {
-            logger.debug("ACK received!");
+            logger.debug(String.format("ACK received! Node: %d, Child: %d", msg.nodeId, msg.childId));
             mysCon.removeMySensorsOutboundMessage(msg);
         }
 
@@ -200,7 +200,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         logger.info("I_TIME request received from {}, answering...", msg.nodeId);
 
         String time = Long.toString(System.currentTimeMillis() / 1000);
-        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
+        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0, false,
                 MYSENSORS_SUBTYPE_I_TIME, time);
         mysCon.addMySensorsOutboundMessage(newMsg);
 
@@ -214,7 +214,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
     private void answerIConfigMessage(MySensorsMessage msg) {
         logger.info("I_CONFIG request received from {}, answering...", msg.nodeId);
 
-        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0,
+        MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0, false,
                 MYSENSORS_SUBTYPE_I_CONFIG, iConfig);
         mysCon.addMySensorsOutboundMessage(newMsg);
 
@@ -228,7 +228,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         int newId = getFreeId();
         givenIds.add(newId);
-        MySensorsMessage newMsg = new MySensorsMessage(255, 255, 3, 0, 4, newId + "");
+        MySensorsMessage newMsg = new MySensorsMessage(255, 255, 3, 0, false, 4, newId + "");
         mysCon.addMySensorsOutboundMessage(newMsg);
         logger.info("New Node in the MySensors network has requested an ID. ID is: {}", newId);
     }
