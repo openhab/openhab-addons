@@ -48,7 +48,7 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
 
             try {
                 if (!reads.ready()) {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                     continue;
                 }
                 line = reads.readLine();
