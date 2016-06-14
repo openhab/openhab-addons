@@ -19,6 +19,12 @@ Aeon Labs Garage Door Controller Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage
           <property name="binding:*:OnOffType">SWITCH_BINARY,BASIC</property>
         </properties>
       </channel>
+      <channel id="barrier_position" typeId="barrier_position">
+        <label>Barrier Position</label>
+        <properties>
+          <property name="binding:*:DecimalType">BARRIER_OPERATOR</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->

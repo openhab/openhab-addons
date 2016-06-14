@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="leviton_vrs051lx_00_000" listed="false">
+  <thing-type id="leviton_vrs05_00_000" listed="false">
     <label>VRS05-1LX Scene Capable Switch</label>
     <description>Scene Capable Switch</description>
 
@@ -20,6 +20,7 @@
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">010F:0209</property>
       <property name="commandClass:SCENE_ACTUATOR_CONF">setVersion=1</property>
+      <property name="commandClass:SCENE_ACTIVATION">setVersion=1</property>
     </properties>
 
   </thing-type>
