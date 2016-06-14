@@ -172,6 +172,7 @@ In this mode, only <i>Entry Control Devices</i> such as locks will be securely i
                 <options>
                     <option value="1">All Devices</option>
                     <option value="0">Entry Control Devices</option>
+                    <option value="2">Do Not Use Security</option>
                 </options>
             </parameter>
 
