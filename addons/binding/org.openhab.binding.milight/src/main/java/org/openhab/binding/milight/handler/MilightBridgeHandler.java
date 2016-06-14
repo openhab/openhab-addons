@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -92,7 +91,7 @@ public class MilightBridgeHandler extends BaseBridgeHandler implements DiscoverR
 
         BigDecimal interval_config = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_REFRESH);
         if (interval_config != null && interval_config.intValue() != refrehInterval) {
-            setupRefrehTimer();
+            setupRefreshTimer();
         }
     }
 
@@ -107,7 +106,7 @@ public class MilightBridgeHandler extends BaseBridgeHandler implements DiscoverR
         thingDiscoveryService.start(bundleContext);
 
         createCommunicationObject();
-        setupRefrehTimer();
+        setupRefreshTimer();
     }
 
     private void createCommunicationObject() {
@@ -153,7 +152,7 @@ public class MilightBridgeHandler extends BaseBridgeHandler implements DiscoverR
      * Sets up the periodically refresh via the scheduler. If the user set CONFIG_REFRESH to 0, no refresh will be
      * done.
      */
-    private void setupRefrehTimer() {
+    private void setupRefreshTimer() {
         // Version 1/2 do not support response messages / detection.
         if (bridgeid == null) {
             return;
@@ -172,7 +171,7 @@ public class MilightBridgeHandler extends BaseBridgeHandler implements DiscoverR
         refrehInterval = interval_config.intValue();
 
         // This timer will do the state update periodically.
-        discoverTimer = scheduler.scheduleAtFixedRate(new TimerTask() {
+        discoverTimer = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 discover.sendDiscover(scheduler);

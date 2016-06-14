@@ -44,9 +44,9 @@ public class MilightBindingConstants {
     public static final int PORT_SEND_DISCOVER = 48899;
     // public static final int PORT_SEND = 8899;
 
-    public static final Object CONFIG_HOST_NAME = "ADDR";
-    public static final Object CONFIG_PORT = "PORT";
-    public static final Object CONFIG_ID = "ID";
-    public static final Object CONFIG_REFRESH = "REFRESH";
+    public static final String CONFIG_HOST_NAME = "ADDR";
+    public static final String CONFIG_PORT = "PORT";
+    public static final String CONFIG_ID = "ID";
+    public static final String CONFIG_REFRESH = "REFRESH";
 
 }

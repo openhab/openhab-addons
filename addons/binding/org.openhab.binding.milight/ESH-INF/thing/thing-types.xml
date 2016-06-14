@@ -71,39 +71,39 @@
 
     <channel-type id="ledcolor">
         <item-type>Color</item-type>
-        <label>Farbe</label>
-        <description>Farbe der LED</description>
+        <label>Color</label>
+        <description>Color of the LED</description>
         <category>ColorLight</category>
     </channel-type>
     
     <channel-type id="ledbrightness">
         <item-type>Dimmer</item-type>
-        <label>Helligkeit</label>
-        <description>Helligkeit der LED</description>
+        <label>Brightness</label>
+        <description>The brightness can be set in 16 steps</description>
         <category>DimmableLight</category>
         <state min="0" max="30" step="1" pattern="%d"></state>
     </channel-type>
     
     <channel-type id="ledtemperature">
         <item-type>Dimmer</item-type>
-        <label>Farbtemperatur</label>
-        <description>Farbtemperatur zwischen warm und kaltweiß</description>
+        <label>Color temperature</label>
+        <description>The "white" leds allow to change between a cold and a warm color temperature</description>
         <category>DimmableLight</category>
         <state min="0" max="30" step="1" pattern="%d"></state>
     </channel-type>
     
     <channel-type id="discospeed">
         <item-type>Number</item-type>
-        <label>Animationsgeschwindigkeit</label>
-        <description>Animationsgeschwindigkeit der LED</description>
+        <label>Animation speed</label>
+        <description>The speed of some animations can be changed</description>
         <category>Light</category>
         <state min="1" max="299" step="1" pattern="%d ms"></state>
     </channel-type>
     
     <channel-type id="discomode">
         <item-type>String</item-type>
-        <label>Animationsmodus</label>
-        <description>Animationsmodus der LED</description>
+        <label>Animation mode</label>
+        <description>Animation mode of your LED. The color leds supports more animations than the white ones</description>
         <category>Light</category>
         <state>
             <options>
