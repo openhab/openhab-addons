@@ -466,6 +466,9 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                             // All devices
                             doSecureInclusion = true;
                             break;
+                        case 2:
+                            // No secure inclusion
+                            break;
                     }
 
                     if (doSecureInclusion == false) {

@@ -8,7 +8,7 @@
   <thing-type id="aeon_zw062_00_000" listed="false">
     <label>ZW062 Aeon Labs Garage Door Controller Gen5</label>
     <description><![CDATA[
-Aeon Labs Garage Door Controller Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage Door Controller is a smart and wireless Garage Door Control system, you can control the garage door to open, close, or stop moving via wireless signal on your gateway client or phone application.</p> <p>The Garage Door Controller allows you to configure different alarm sounds to indicate the door ’s action.</p> <p>Each action alarm sound can be customized. To change or update new alarm sounds for the Garage Door Controller, connect the Garage Door Controller to your PC host with a USB cable and download your sound files to the flash memory (128 MB) of the Garage Door Controller.</p> <p>It can be included and operated in any Z-wave network with other Z-wave certified devices from other manufacturers and/or other applications. All non-battery operated nodes within the network will act as repeaters regardless of vendor to increase reliability of the network.</p> <p>It is also a security Z-wave device and supports the Over The Air (OTA) feature for the product’s firmware upgrade.</p> <br /><h2>Inclusion Information</h2><p>Add Garage Door Controller into Z-Wave Network:</p> <ol><li>Install Garage Door Controller, and connect it to the 5V DC Adapter.</li> <li>Let the primary controller into inclusion mode (If you don’t know how to do this, please refer to its manual).</li> <li>Press the Z-Wave Button.</li> </ol><br /><h2>Exclusion Information</h2><p>Remove Garage Door Controller from Z-Wave Network:</p> <ol><li>Install Garage Door Controller, and connect it to the 5V DC Adapter.</li> <li>Let the primary controller into exclusion mode (If you don’t know how to do this, refer to its manual).</li> <li>Press the Z-Wave Button.</li> <li>If the remove is failed, please repeat the process from step 2.</li> </ol><p>Note: If Garage Door Controller is removed from Z-wave network, it will be reset to factory default.</p>
+Aeon Labs Garage Door Controller Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage Door Controller is a smart and wireless Garage Door Control system, you can control the garage door to open, close, or stop moving via wireless signal on your gateway client or phone application.</p> <p>The Garage Door Controller allows you to configure different alarm sounds to indicate the door ’s action.</p> <p>Each action alarm sound can be customized. To change or update new alarm sounds for the Garage Door Controller, connect the Garage Door Controller to your PC host with a USB cable and download your sound files to the flash memory (128 MB) of the Garage Door Controller.</p> <p>It can be included and operated in any Z-wave network with other Z-wave certified devices from other manufacturers and/or other applications. All non-battery operated nodes within the network will act as repeaters regardless of vendor to increase reliability of the network.</p> <p>It is also a security Z-wave device and supports the Over The Air (OTA) feature for the product’s firmware upgrade.</p> <br /><h2>Inclusion Information</h2><p>Add Garage Door Controller into Z-Wave Network:</p> <ol><li>Install Garage Door Controller, and connect it to the 5V DC Adapter.</li> <li>Let the primary controller into inclusion mode (If you don’t know how to do this, please refer to its manual).</li> <li>Press the Z-Wave Button.</li> </ol><br /><h2>Exclusion Information</h2><p>Remove Garage Door Controller from Z-Wave Network:</p> <ol><li>Install Garage Door Controller, and connect it to the 5V DC Adapter.</li> <li>Let the primary controller into exclusion mode (If you don’t know how to do this, refer to its manual).</li> <li>Press the Z-Wave Button.</li> <li>If the remove is failed, please repeat the process from step 2.</li> </ol><p>Note: If Garage Door Controller is removed from Z-wave network, it will be reset to factory default.</p>
     ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -17,6 +17,12 @@ Aeon Labs Garage Door Controller Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage
         <label>Switch</label>
         <properties>
           <property name="binding:*:OnOffType">SWITCH_BINARY,BASIC</property>
+        </properties>
+      </channel>
+      <channel id="barrier_position" typeId="barrier_position">
+        <label>Barrier Position</label>
+        <properties>
+          <property name="binding:*:DecimalType">BARRIER_OPERATOR</property>
         </properties>
       </channel>
     </channels>
@@ -70,7 +76,7 @@ Get the numbers of alarm music.(not support Set CC)<br /><h1>Overview</h1><p>Get
                  min="1" max="10">
         <label>37: Opening alarm LED mode</label>
         <description><![CDATA[
-alarm LED mode (opening)<br /><h1>Overview</h1><p>Configure the alarm mode for when the garage door is opening.</p> <p><br />This is Value1: configure the frequency of blinking for the Alarm<br />LED , there are 10 levels from 1 to 10, the minimum<br />frequency is level 1 and the max frequency is level 10.</p> <p>Note to maintainer, LSB and MSB are not declared.  The masks may be backward and need adjusting after testing.</p>
+alarm LED mode (opening)<br /><h1>Overview</h1><p>Configure the alarm mode for when the garage door is opening.</p> <p><br />This is Value1: configure the frequency of blinking for the Alarm<br />LED , there are 10 levels from 1 to 10, the minimum<br />frequency is level 1 and the max frequency is level 10.</p> <p>Note to maintainer, LSB and MSB are not declared.  The masks may be backward and need adjusting after testing.</p>
         ]]></description>
         <default>10</default>
       </parameter>
@@ -216,7 +222,7 @@ Enable/disable configuration locked<br /><h1>Overview</h1><p>Enable/disable conf
       <parameter name="config_34_1_wo" type="integer" groupName="configuration">
         <label>34: Sensor Calibration (see overview)</label>
         <description><![CDATA[
-Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration Steps:</p> <ol><li>Let the garage door move to full close position.</li> <li>Send this parameter (0x22) with “value=1” to Garage Door Controller.</li> <li>Let the garage door move to full open position.</li> <li>Let the garage door move to full close position after the step 3 is completed.</li> </ol><p>After the step 4 is completed, all calibration steps are complete.</p> <p>Note: This process should be implemented when the Garage Door Controller just only has one Sensor is installed on the garage door.</p>
+Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration Steps:</p> <ol><li>Let the garage door move to full close position.</li> <li>Send this parameter (0x22) with “value=1” to Garage Door Controller.</li> <li>Let the garage door move to full open position.</li> <li>Let the garage door move to full close position after the step 3 is completed.</li> </ol><p>After the step 4 is completed, all calibration steps are complete.</p> <p>Note: This process should be implemented when the Garage Door Controller just only has one Sensor is installed on the garage door.</p>
         ]]></description>
         <default>0</default>
         <options>
@@ -258,7 +264,7 @@ position status changed<br /><h1>Overview</h1><p>When the state of load(position
       <parameter name="group_2" type="text" groupName="association" multiple="true">
         <label>2: Group 2</label>
         <description><![CDATA[
-Forward the Basic Set<br /><h1>Overview</h1><p>Forward the Basic Set, Switch Binary Set commands to associated nodes in Group 2 when the Garage Door Controller receives the Basic Set, Switch Binary Set commands from main controller.</p>
+Forward the Basic Set<br /><h1>Overview</h1><p>Forward the Basic Set, Switch Binary Set commands to associated nodes in Group 2 when the Garage Door Controller receives the Basic Set, Switch Binary Set commands from main controller.</p>
         ]]></description>
         <multipleLimit>5</multipleLimit>
       </parameter>
