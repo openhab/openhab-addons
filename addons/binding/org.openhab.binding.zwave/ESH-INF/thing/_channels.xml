@@ -170,7 +170,6 @@
         </state>
     </channel-type>
 
-
     <!-- Tamper Alarm Channel -->
     <channel-type id="alarm_tamper">
         <item-type>Switch</item-type>
@@ -184,6 +183,15 @@
                 <option value="ON">Alarm</option>
             </options>
         </state>
+    </channel-type>
+
+    <!-- Barrier Position -->
+    <channel-type id="barrier_position">
+        <item-type>Number</item-type>
+        <label>Barrier Position</label>
+        <description>Indicates the position of the barrier
+        </description>
+        <category>Door</category>
     </channel-type>
 
     <!-- Color Setting Channel -->
