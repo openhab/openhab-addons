@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zwave.internal.converter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
-import org.openhab.binding.zwave.handler.ZWaveThingChannel.DataType;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
@@ -36,9 +36,36 @@ import org.slf4j.LoggerFactory;
 public class FibaroFGRM222Converter extends ZWaveCommandClassConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(FibaroFGRM222Converter.class);
+    private static String INVERT = "invert";
 
     public FibaroFGRM222Converter(ZWaveControllerHandler controller) {
         super(controller);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T handleInvert(ZWaveThingChannel channel, T obj) {
+        final T rv;
+        if ("true".equalsIgnoreCase(channel.getArguments().get(INVERT))) {
+            if (obj instanceof PercentType) {
+                rv = (T) new PercentType(new BigDecimal(100).subtract(((PercentType) obj).toBigDecimal()));
+            } else if (obj instanceof DecimalType) {
+                rv = (T) new DecimalType(new BigDecimal(255).subtract(((DecimalType) obj).toBigDecimal()));
+            } else if (obj instanceof UpDownType) {
+                if (obj == UpDownType.UP) {
+                    rv = (T) UpDownType.DOWN;
+                } else if (obj == UpDownType.DOWN) {
+                    rv = (T) UpDownType.UP;
+                } else {
+                    rv = obj;
+                }
+            } else {
+                rv = obj;
+            }
+        } else {
+            rv = obj;
+        }
+        logger.debug("FibaroFGRM222: [{}={}] {} => {}", INVERT, channel.getArguments().get(INVERT), obj, rv);
+        return rv;
     }
 
     @Override
@@ -50,56 +77,64 @@ public class FibaroFGRM222Converter extends ZWaveCommandClassConverter {
             return null;
         }
 
-        State state = new DecimalType(((Integer) event.getValue()).intValue());
-        if (channel.getDataType() == DataType.DecimalType) {
-            state = new PercentType(100 - ((DecimalType) state).intValue());
+        logger.debug("FibaroFGRM222: channel data type: {}, event value: {}, event type: {}", channel.getDataType(),
+                event.getValue(), event.getType());
+
+        final Integer value = ((Integer) event.getValue()).intValue();
+
+        final State state;
+        switch (channel.getDataType()) {
+            case PercentType:
+                state = new PercentType(value);
+                break;
+            case DecimalType:
+                state = new DecimalType(value);
+                break;
+            default:
+                state = new DecimalType(value);
+                break;
         }
 
-        return state;
+        return handleInvert(channel, state);
     }
 
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
         FibaroFGRM222CommandClass commandClass = (FibaroFGRM222CommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.FIBARO_FGRM_222, channel.getEndpoint());
+        if (commandClass == null) {
+            logger.warn("NODE {}: Cannot resolve command class (endpoint: {}).", node.getNodeId(),
+                    channel.getEndpoint());
+            return null;
+        }
 
         logger.debug("NODE {}: receiveCommand()", node.getNodeId());
-        Command internalCommand = command;
         SerialMessage serialMessage = null;
 
-        if (internalCommand instanceof StopMoveType && (StopMoveType) internalCommand == StopMoveType.STOP) {
+        if (command instanceof StopMoveType && (StopMoveType) command == StopMoveType.STOP) {
             // Special handling for the STOP command
             serialMessage = commandClass.stopLevelChangeMessage(channel.getArguments().get("type"));
         } else {
             int value;
 
+            command = handleInvert(channel, command);
+
             if (command instanceof PercentType) {
-                if ("true".equalsIgnoreCase(channel.getArguments().get("invert_percent"))) {
-                    value = 100 - ((PercentType) command).intValue();
-                } else {
-                    value = ((PercentType) command).intValue();
-                }
-
+                value = ((PercentType) command).intValue();
+            } else if (command instanceof DecimalType) {
+                value = ((DecimalType) command).intValue();
             } else if (command instanceof UpDownType) {
-                if ("true".equalsIgnoreCase(channel.getArguments().get("invert_state"))) {
-                    if (command == UpDownType.UP) {
-                        command = UpDownType.DOWN;
-                    } else {
-                        command = UpDownType.UP;
-                    }
-                }
-
                 value = command != UpDownType.DOWN ? 0x63 : 0x00;
-
             } else {
                 logger.warn("NODE {}: No conversion for channel {}", node.getNodeId(), channel.getUID());
                 return null;
             }
-            if (value == 0) {
-                value = 1;
-            }
-            logger.trace("NODE {}: Converted command '{}' to value {} for item = {}, endpoint = {}.", node.getNodeId(),
-                    internalCommand.toString(), channel.getEndpoint());
+
+            // if (value == 0) {
+            // value = 1;
+            // }
+            logger.debug("NODE {}: Converted command '{}' to value {} for item = {}, endpoint = {}.", node.getNodeId(),
+                    command, channel.getEndpoint());
 
             serialMessage = commandClass.setValueMessage(value, channel.getArguments().get("type"));
         }
