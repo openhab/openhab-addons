@@ -6,21 +6,35 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
   <thing-type id="leviton_vrs05_00_000" listed="false">
-    <label>VRS05-1LX Scene Capable Switch</label>
+    <label>VRS05 Scene Capable Switch</label>
     <description>Scene Capable Switch</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">VRS05-1LX</property>
+      <property name="model">VRS05</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">010F:0209</property>
       <property name="commandClass:SCENE_ACTUATOR_CONF">setVersion=1</property>
       <property name="commandClass:SCENE_ACTIVATION">setVersion=1</property>
+      <property name="commandClass:BASIC">setVersion=1</property>
+      <property name="commandClass:SWITCH_ALL">setVersion=1</property>
+      <property name="commandClass:POWERLEVEL">setVersion=1</property>
+      <property name="commandClass:ASSOCIATION">setVersion=1</property>
+      <property name="commandClass:HAIL">setVersion=1</property>
+      <property name="commandClass:NODE_NAMING">setVersion=1</property>
+      <property name="commandClass:SWITCH_BINARY">setVersion=1</property>
+      <property name="commandClass:VERSION">setVersion=1</property>
     </properties>
 
   </thing-type>
