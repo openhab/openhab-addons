@@ -58,6 +58,12 @@
           <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
         </properties>
       </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">CLOCK</property>
+        </properties>
+      </channel>
       <channel id="sensor_temperature1" typeId="sensor_temperature">
         <label>Sensor (temperature) 1</label>
         <properties>
