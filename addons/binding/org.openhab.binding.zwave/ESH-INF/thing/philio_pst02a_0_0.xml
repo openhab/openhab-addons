@@ -29,9 +29,16 @@
           <property name="binding:*:OnOffType">SENSOR_BINARY;type=TAMPER</property>
         </properties>
       </channel>
-      <channel id="battery-level" typeId="system.battery-level">
+      <channel id="sensor_luminance" typeId="sensor_luminance">
+        <label>Sensor (luminance)</label>
         <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=LUMINANCE</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature" typeId="sensor_temperature">
+        <label>Sensor (temperature)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="alarm_access" typeId="alarm_access">
@@ -46,16 +53,9 @@
           <property name="binding:*:OnOffType">ALARM;type=BURGLAR</property>
         </properties>
       </channel>
-      <channel id="sensor_luminance" typeId="sensor_luminance">
-        <label>Sensor (luminance)</label>
+      <channel id="battery-level" typeId="system.battery-level">
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=LUMINANCE</property>
-        </properties>
-      </channel>
-      <channel id="sensor_temperature" typeId="sensor_temperature">
-        <label>Sensor (temperature)</label>
-        <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>

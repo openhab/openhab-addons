@@ -11,24 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="thermostat_mode" typeId="eurotronic_stellaz_00_000_thermostat_mode">
-        <label>Thermostat mode</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_setpoint_furnace" typeId="thermostat_setpoint">
-        <label>Setpoint (furnace)</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=FURNACE</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
-        <label>Setpoint (heating)</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
-        </properties>
-      </channel>
       <channel id="switch_dimmer" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
@@ -46,6 +28,24 @@
         <label>Sensor (temperature)</label>
         <properties>
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_mode" typeId="eurotronic_stellaz_00_000_thermostat_mode">
+        <label>Thermostat mode</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_setpoint_furnace" typeId="thermostat_setpoint">
+        <label>Setpoint (furnace)</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=FURNACE</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+        <label>Setpoint (heating)</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">

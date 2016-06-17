@@ -18,10 +18,10 @@
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
-        <label>Setpoint (heating)</label>
+      <channel id="sensor_power" typeId="sensor_power">
+        <label>Sensor (power)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
@@ -36,10 +36,10 @@
           <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="sensor_power" typeId="sensor_power">
-        <label>Sensor (power)</label>
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+        <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">

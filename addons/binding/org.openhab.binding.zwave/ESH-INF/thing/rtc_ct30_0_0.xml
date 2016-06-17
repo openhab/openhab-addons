@@ -11,17 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_state" typeId="thermostat_state">
-        <label>Thermostat Operating State</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
-        </properties>
-      </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
@@ -34,16 +23,10 @@
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanmode" typeId="rtc_ct30_00_000_thermostat_fanmode">
-        <label>Thermostat fan mode</label>
+      <channel id="thermostat_state" typeId="thermostat_state">
+        <label>Thermostat Operating State</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
-        </properties>
-      </channel>
-      <channel id="time_offset" typeId="time_offset">
-        <label>Clock Time Offset</label>
-        <properties>
-          <property name="binding:*:DecimalType">CLOCK</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
         </properties>
       </channel>
       <channel id="thermostat_setpoint_cooling" typeId="thermostat_setpoint">
@@ -56,6 +39,23 @@
         <label>Setpoint (heating)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_fanmode" typeId="rtc_ct30_00_000_thermostat_fanmode">
+        <label>Thermostat fan mode</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">CLOCK</property>
         </properties>
       </channel>
     </channels>

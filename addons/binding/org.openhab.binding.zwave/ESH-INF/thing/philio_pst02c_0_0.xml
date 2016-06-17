@@ -29,15 +29,15 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM;type=GENERAL</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>

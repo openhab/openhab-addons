@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="vision_zm1602_01_000" listed="false">
+  <thing-type id="vision_zm1602_00_000" listed="false">
     <label>ZM1602 AC/DC Siren</label>
     <description>AC/DC Siren</description>
 
@@ -24,9 +24,8 @@
       <property name="vendor">Vision Security</property>
       <property name="model">ZM1602</property>
       <property name="manufacturerId">0109</property>
-      <property name="manufacturerRef">2009:0903,2009:0908</property>
-      <property name="versionMin">1.0</property>
-      <property name="versionMax">15.2</property>
+      <property name="manufacturerRef">2009:0903,2009:0908,2005:0503</property>
+      <property name="versionMax">14.0</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->

@@ -13,15 +13,15 @@ Door/Window Sensor 6<br /><h1>Overview</h1><p>Aeon Labs Door/ Window Sensor 6 is
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_door" typeId="sensor_door">
         <label>Door Sensor</label>
         <properties>
           <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>

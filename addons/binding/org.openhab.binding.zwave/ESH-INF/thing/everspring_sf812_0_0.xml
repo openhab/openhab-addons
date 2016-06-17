@@ -14,7 +14,7 @@
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=SMOKE</property>
+          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -25,7 +25,7 @@
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=SMOKE</property>
         </properties>
       </channel>
     </channels>

@@ -13,11 +13,6 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
@@ -28,6 +23,11 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
         <label>Alarm</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>

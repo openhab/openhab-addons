@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
+        </properties>
+      </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
@@ -26,12 +32,6 @@
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
-        <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
     </channels>

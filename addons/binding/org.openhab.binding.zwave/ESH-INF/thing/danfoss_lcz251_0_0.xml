@@ -11,15 +11,15 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
         <label>Setpoint (heating)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT,BASIC;type=HEATING</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>

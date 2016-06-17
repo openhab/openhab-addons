@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
@@ -39,12 +45,6 @@
         <label>Electric meter (kWh)</label>
         <properties>
           <property name="binding:*:DecimalType">METER;type=E_KWh</property>
-        </properties>
-      </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">

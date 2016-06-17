@@ -11,11 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
@@ -32,6 +27,11 @@
         <label>Alarm (burglar)</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM;type=BURGLAR</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
