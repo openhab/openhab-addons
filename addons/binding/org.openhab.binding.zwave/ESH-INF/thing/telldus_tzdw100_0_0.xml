@@ -22,10 +22,10 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
         </properties>
       </channel>
     </channels>

@@ -14,7 +14,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY;type=DOORWINDOW</property>
         </properties>
       </channel>
       <channel id="alarm_motion" typeId="alarm_motion">

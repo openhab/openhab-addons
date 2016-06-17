@@ -6,7 +6,7 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
   <thing-type id="eurotronic_stellaz_00_000" listed="false">
-    <label>STELLAZ Thermostatic Valve</label>
+    <label>StellaZ Thermostatic Valve</label>
     <description>Thermostatic Valve</description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -58,7 +58,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">EUROtronic Technology</property>
-      <property name="model">STELLAZ</property>
+      <property name="model">StellaZ</property>
       <property name="manufacturerId">0148</property>
       <property name="manufacturerRef">0001:0001</property>
     </properties>
