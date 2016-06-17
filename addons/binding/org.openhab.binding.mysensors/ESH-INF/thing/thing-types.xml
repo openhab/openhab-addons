@@ -258,6 +258,7 @@
 
 		<channels>
 			<channel id="baro" typeId="baro-channel" />
+			<channel id="pressure" typeId="pressure-channel" />
 			<channel id="battery" typeId="battery-channel" />
 		</channels>
 
@@ -760,6 +761,12 @@
 		<description>MySensors KWH Channel</description>
 		<category>Energy</category>
 		<state pattern="%.2f KWH" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pressure-channel">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>MySensors Pressure Channel</description>
+		<category>Weather</category>
 	</channel-type>
 	<channel-type id="baro-channel">
 		<item-type>String</item-type>

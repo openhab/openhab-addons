@@ -147,26 +147,30 @@ echo "172;14;1;0;23;1543.98" > $serialPort
 #echo "3;1;1;0;18;106.2550" > $serialPort # the overall power usage since sensor boot (KWH)
 
 # Representation of a S_BARO
-#echo "6;3;0;0;8;1.4.1" > $serialPort
+echo "6;3;0;0;8;1.4.1" > $serialPort
 
 # Barometer forecast V_BARO
-#echo "6;3;1;0;5;stable" > $serialPort
+echo "6;3;1;0;5;stable" > $serialPort
+
+# Barometer pressure V_PRESSURE
+echo "6;3;1;0;4;1.2" > $serialPort
+
 
 # Representation of S_MULTIMETER Sensor
-echo "12;3;0;0;30;1.5.0" > $serialPort
+#echo "12;3;0;0;30;1.5.0" > $serialPort
 
 # set volt
-echo "12;3;1;0;38;5678" > $serialPort
+#echo "12;3;1;0;38;5678" > $serialPort
 
 # set current
-echo "12;3;1;0;39;1234" > $serialPort
+#echo "12;3;1;0;39;1234" > $serialPort
 
 # set impedance
-echo "12;3;1;0;14;1000000" > $serialPort
+#echo "12;3;1;0;14;1000000" > $serialPort
 
 #get time
-echo "172;255;3;0;1;0" > $serialPort # I_TIME
+#echo "172;255;3;0;1;0" > $serialPort # I_TIME
 
 # INTERNAL
 # batteryLevel
-echo "12;255;3;0;0;100" > $serialPort
+#echo "12;255;3;0;0;100" > $serialPort

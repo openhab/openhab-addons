@@ -168,6 +168,7 @@ public class MySensorsBindingConstants {
     public final static String CHANNEL_WATT = "watt";
     public final static String CHANNEL_KWH = "kwh";
     public final static String CHANNEL_STATUS = "status";
+    public final static String CHANNEL_PRESSURE = "pressure";
     public final static String CHANNEL_BARO = "baro";
     public final static String CHANNEL_TRIPPED = "tripped";
     public final static String CHANNEL_ARMED = "armed";
@@ -214,6 +215,7 @@ public class MySensorsBindingConstants {
             put(MYSENSORS_SUBTYPE_V_VOLTAGE, CHANNEL_VOLT);
             put(MYSENSORS_SUBTYPE_V_WATT, CHANNEL_WATT);
             put(MYSENSORS_SUBTYPE_V_KWH, CHANNEL_KWH);
+            put(MYSENSORS_SUBTYPE_V_PRESSURE, CHANNEL_PRESSURE);
             put(MYSENSORS_SUBTYPE_V_FORECAST, CHANNEL_BARO);
             put(MYSENSORS_SUBTYPE_V_TRIPPED, CHANNEL_TRIPPED);
             put(MYSENSORS_SUBTYPE_V_ARMED, CHANNEL_ARMED);
