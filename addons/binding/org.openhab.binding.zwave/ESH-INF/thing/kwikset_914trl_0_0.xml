@@ -13,11 +13,6 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="lock_door" typeId="lock_door">
         <label>Door Lock</label>
         <properties>
@@ -28,6 +23,11 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
         <label>Alarm</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
