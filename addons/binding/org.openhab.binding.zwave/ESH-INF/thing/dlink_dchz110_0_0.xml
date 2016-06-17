@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door / Window Status</label>
+        <properties>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
+        </properties>
+      </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
         <label>Sensor (luminance)</label>
         <properties>
@@ -32,12 +38,6 @@
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="sensor_door" typeId="sensor_door">
-        <label>Door / Window Status</label>
-        <properties>
-          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
         </properties>
       </channel>
     </channels>

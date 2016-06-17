@@ -13,11 +13,6 @@ Door Window Sensor<br /><h1>Overview</h1><p>This sensor monitors door/ window an
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="alarm_burglar" typeId="alarm_burglar">
         <label>Tamper Alarm</label>
         <properties>
@@ -28,6 +23,11 @@ Door Window Sensor<br /><h1>Overview</h1><p>This sensor monitors door/ window an
         <label>Door Sensor</label>
         <properties>
           <property name="binding:*:OpenClosedType">ALARM;type=ACCESS_CONTROL</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>

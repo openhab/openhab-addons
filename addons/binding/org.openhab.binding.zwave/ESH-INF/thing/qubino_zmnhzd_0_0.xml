@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="qubino_zmnhzd_00_000" listed="false">
+    <label>ZMNHZD Multifunctional Weather Station</label>
+    <description>Multifunctional Weather Station</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="sensor_velocity" typeId="sensor_velocity">
+        <label>Sensor (velocity)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=VELOCITY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature" typeId="sensor_temperature">
+        <label>Sensor (temperature)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
+        <label>Sensor (relative humidity)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=RELATIVE_HUMIDITY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_direction" typeId="sensor_direction">
+        <label>Sensor (direction)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=DIRECTION</property>
+        </properties>
+      </channel>
+      <channel id="" typeId="">
+        <label>Sensor (rain rate)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=RAIN_RATE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature1" typeId="sensor_temperature">
+        <label>Sensor (temperature) 1</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1,BASIC:1;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_direction2" typeId="sensor_direction">
+        <label>Sensor (direction) 2</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:2,BASIC:2;type=DIRECTION</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_velocity3" typeId="sensor_velocity">
+        <label>Sensor (velocity) 3</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:3,BASIC:3;type=VELOCITY</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_velocity4" typeId="sensor_velocity">
+        <label>Sensor (velocity) 4</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:4,BASIC:4;type=VELOCITY</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature5" typeId="sensor_temperature">
+        <label>Sensor (temperature) 5</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:5,BASIC:5;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature6" typeId="sensor_temperature">
+        <label>Sensor (temperature) 6</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:6,BASIC:6;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="7" typeId="">
+        <label>Sensor (rain rate) 7</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:7,BASIC:7;type=RAIN_RATE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_relhumidity8" typeId="sensor_relhumidity">
+        <label>Sensor (relative humidity) 8</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:8,BASIC:8;type=RELATIVE_HUMIDITY</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_temperature9" typeId="sensor_temperature">
+        <label>Sensor (temperature) 9</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:9,BASIC:9;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="sensor_relhumidity10" typeId="sensor_relhumidity">
+        <label>Sensor (relative humidity) 10</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:10,BASIC:10;type=RELATIVE_HUMIDITY</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Qubino</property>
+      <property name="model">ZMNHZD</property>
+      <property name="manufacturerId">0159</property>
+      <property name="manufacturerRef">0007:0053</property>
+    </properties>
+
+    <!-- CONFIGURATION DESCRIPTIONS -->
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_2" type="integer" groupName="configuration"
+                 min="0" max="8800">
+        <label>1: Wind Gauge</label>
+        <description><![CDATA[
+Wind Gust Top Value<br /><h1>Overview</h1><p>Wind Gust Top Value, if the Wind Gust is Higher than the Parameter Value, a device triggers an Association</p>
+        ]]></description>
+        <default>100</default>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>

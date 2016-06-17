@@ -13,10 +13,10 @@ Digital or Analog Voltage input and/or Dry Contact Relay <br /><h1>Overview</h1>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="sensor_general" typeId="sensor_general">
-        <label>Sensor (general)</label>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=GENERAL</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
@@ -25,10 +25,10 @@ Digital or Analog Voltage input and/or Dry Contact Relay <br /><h1>Overview</h1>
           <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
+      <channel id="sensor_general" typeId="sensor_general">
+        <label>Sensor (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
