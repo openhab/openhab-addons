@@ -399,6 +399,16 @@
         </state>
     </channel-type>
 
+    <!-- Direction Channel -->
+    <channel-type id="sensor_direction">
+        <item-type>Number</item-type>
+        <label>Direction</label>
+        <description>Indicates the direction</description>
+        <category>Temperature</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
     <!-- Door / Window Channel -->
     <channel-type id="sensor_door">
         <item-type>Contact</item-type>
@@ -468,6 +478,16 @@
         </state>
     </channel-type>
 
+    <!-- Humidity Channel -->
+    <channel-type id="sensor_rainrate">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Indicates the current relative humidity</description>
+        <category>Humidity</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
     <!-- Seismic Channel -->
     <channel-type id="sensor_seismicintensity">
         <item-type>Number</item-type>
@@ -504,6 +524,16 @@
         <item-type>Number</item-type>
         <label>Temperature</label>
         <description>Indicates the current ultraviolet level</description>
+        <category>Temperature</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Velocity Channel -->
+    <channel-type id="sensor_velocity">
+        <item-type>Number</item-type>
+        <label>Velocity</label>
+        <description>Indicates the current velocity</description>
         <category>Temperature</category>
         <state pattern="%.1f" readOnly="true">
         </state>
