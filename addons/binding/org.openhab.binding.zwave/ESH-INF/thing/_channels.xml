@@ -194,6 +194,24 @@
         <category>Door</category>
     </channel-type>
 
+    <!-- Barrier State -->
+    <channel-type id="barrier_state">
+        <item-type>Number</item-type>
+        <label>Barrier State</label>
+        <description>Indicates the state of the barrier
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Closed</option>
+                <option value="252">Closing</option>
+                <option value="253">Stopped</option>
+                <option value="254">Opening</option>
+                <option value="255">Open</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Color Setting Channel -->
     <channel-type id="color_color">
         <item-type>Color</item-type>
