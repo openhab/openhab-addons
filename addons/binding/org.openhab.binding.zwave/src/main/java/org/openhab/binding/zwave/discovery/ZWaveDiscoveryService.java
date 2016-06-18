@@ -131,8 +131,8 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void deviceDiscovered(int nodeId) {
-        // Don't add the controller as a thing
-        if (controllerHandler.getOwnNodeId() == nodeId) {
+        // Don't add the controller as a thing, and only add valid nodes
+        if (controllerHandler.getOwnNodeId() == nodeId || nodeId == 0 || nodeId > 232) {
             return;
         }
 
@@ -152,10 +152,11 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void deviceAdded(ZWaveNode node) {
-        // Don't add the controller as a thing
-        if (controllerHandler.getOwnNodeId() == node.getNodeId()) {
+        // Don't add the controller as a thing, and only add valid nodes
+        if (controllerHandler.getOwnNodeId() == node.getNodeId() || node.getNodeId() == 0 || node.getNodeId() > 232) {
             return;
         }
+
         logger.debug("NODE {}: Device discovery completed", node.getNodeId());
 
         // if (node.getManufacturer() == Integer.MAX_VALUE || node.getDeviceId() == Integer.MAX_VALUE
