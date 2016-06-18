@@ -19,8 +19,8 @@ Aeon Labs Garage Door Controller Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage
           <property name="binding:*:OnOffType">SWITCH_BINARY,BASIC</property>
         </properties>
       </channel>
-      <channel id="barrier_position" typeId="barrier_position">
-        <label>Barrier Position</label>
+      <channel id="barrier_state" typeId="barrier_state">
+        <label>Barrier State</label>
         <properties>
           <property name="binding:*:DecimalType">BARRIER_OPERATOR</property>
         </properties>
@@ -72,43 +72,43 @@ Get the numbers of alarm music.(not support Set CC)<br /><h1>Overview</h1><p>Get
         <default>1</default>
       </parameter>
 
-      <parameter name="config_37_4_000000FF" type="integer" groupName="configuration"
-                 min="1" max="10">
-        <label>37: Opening alarm LED mode</label>
-        <description><![CDATA[
-alarm LED mode (opening)<br /><h1>Overview</h1><p>Configure the alarm mode for when the garage door is opening.</p> <p><br />This is Value1: configure the frequency of blinking for the Alarm<br />LED , there are 10 levels from 1 to 10, the minimum<br />frequency is level 1 and the max frequency is level 10.</p> <p>Note to maintainer, LSB and MSB are not declared.  The masks may be backward and need adjusting after testing.</p>
-        ]]></description>
-        <default>10</default>
-      </parameter>
-
-      <parameter name="config_37_4_0000FF00" type="integer" groupName="configuration"
-                 min="1" max="4">
-        <label>37: opening alarm choice (value 2)</label>
-        <description><![CDATA[
-alarm mode for when the garage door is opening (value 2)<br /><h1>Overview</h1><p>Value2: configure the alarm sound (there are 4 types sound<br />saved in EEPROM and user also can update it).</p>
-        ]]></description>
-        <default>1</default>
-      </parameter>
-
-      <parameter name="config_37_4_00FF0000" type="integer" groupName="configuration"
-                 min="1" max="10">
-        <label>37: alarm opening volume (value 3)</label>
-        <description><![CDATA[
-alarm opening volume (value 3)<br /><h1>Overview</h1><p>Value3: configure the volume of alarm sound (there are 10<br />levels, the min volume is 1 level and the max volume is 10<br />levels).</p>
-        ]]></description>
-        <default>8</default>
-      </parameter>
-
-      <parameter name="config_37_4_7F000000" type="integer" groupName="configuration">
+      <parameter name="config_37_4_000000FF" type="integer" groupName="configuration">
         <label>37: Disable alarm</label>
         <description><![CDATA[
 Disable alarm<br /><h1>Overview</h1><p>Value4=0, disable the alarm prompt. Value4=1, enable the<br />alarm prompt.</p>
         ]]></description>
         <default>1</default>
         <options>
-          <option value="0">disable alarm prompt</option>
-          <option value="1">enable alarm prompt</option>
+          <option value="0">Disable alarm prompt</option>
+          <option value="1">Enable alarm prompt</option>
         </options>
+      </parameter>
+
+      <parameter name="config_37_4_0000FF00" type="integer" groupName="configuration"
+                 min="1" max="10">
+        <label>37: Alarm opening volume</label>
+        <description><![CDATA[
+Alarm opening volume (value 3)<br /><h1>Overview</h1><p>Value3: configure the volume of alarm sound (there are 10<br />levels, the min volume is 1 level and the max volume is 10<br />levels).</p>
+        ]]></description>
+        <default>8</default>
+      </parameter>
+
+      <parameter name="config_37_4_00FF0000" type="integer" groupName="configuration"
+                 min="1" max="4">
+        <label>37: Opening alarm choice</label>
+        <description><![CDATA[
+Alarm mode for when the garage door is opening (value 2)<br /><h1>Overview</h1><p>Value2: configure the alarm sound (there are 4 types sound<br />saved in EEPROM and user also can update it).</p>
+        ]]></description>
+        <default>1</default>
+      </parameter>
+
+      <parameter name="config_37_4_0F000000" type="integer" groupName="configuration"
+                 min="1" max="10">
+        <label>37: Opening alarm LED mode</label>
+        <description><![CDATA[
+alarm LED mode (opening)<br /><h1>Overview</h1><p>Configure the alarm mode for when the garage door is opening.</p> <p><br />This is Value1: configure the frequency of blinking for the Alarm<br />LED , there are 10 levels from 1 to 10, the minimum<br />frequency is level 1 and the max frequency is level 10.</p>
+        ]]></description>
+        <default>10</default>
       </parameter>
 
       <parameter name="config_38_4" type="integer" groupName="configuration"
@@ -226,8 +226,8 @@ Sensor Calibration<br /><h1>Overview</h1><p>Sensor Calibration.<br />Calibration
         ]]></description>
         <default>0</default>
         <options>
-          <option value="0">calibration not active</option>
-          <option value="1">begin calibration</option>
+          <option value="0">Calibration not active</option>
+          <option value="1">Begin calibration</option>
         </options>
       </parameter>
 
