@@ -14,7 +14,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">BeNext</property>
-      <property name="model">Molite</property>
+      <property name="modelId">Molite</property>
       <property name="manufacturerId">008A</property>
       <property name="manufacturerRef">0003:0101</property>
       <property name="defaultAssociations">1</property>
@@ -78,7 +78,7 @@
                  min="0" max="65535">
         <label>3: Switch off time</label>
         <description>The switch off time will start running as soon as mode timeout is done. The Motion sensor is turned on and when movement is detected again. The mode timeout (cfg param 1) will start running all over again. When switch off time is done a basic off message</description>
-        <default>45</default>
+        <default>2700</default>
       </parameter>
 
       <parameter name="config_4_1" type="integer" groupName="configuration"

@@ -40,7 +40,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wintop</property>
-      <property name="model">iModuleDouble</property>
+      <property name="modelId">iModuleDouble</property>
       <property name="manufacturerId">0097</property>
       <property name="manufacturerRef">1122:5501</property>
       <property name="versionMin">1.4</property>

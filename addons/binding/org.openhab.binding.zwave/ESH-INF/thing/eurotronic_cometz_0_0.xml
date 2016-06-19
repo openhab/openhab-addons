@@ -51,7 +51,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">EUROtronic Technology</property>
-      <property name="model">CometZ</property>
+      <property name="modelId">CometZ</property>
       <property name="manufacturerId">0148</property>
       <property name="manufacturerRef">0002:0001</property>
     </properties>

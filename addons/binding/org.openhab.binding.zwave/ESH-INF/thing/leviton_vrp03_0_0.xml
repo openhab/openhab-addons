@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">VRP03</property>
+      <property name="modelId">VRP03</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">0202:030B</property>
     </properties>

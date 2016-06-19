@@ -70,7 +70,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGBS001</property>
+      <property name="modelId">FGBS001</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0501:0102,0501:1002,0501:3002</property>
       <property name="commandClass:SENSOR_ALARM:1">supportedGetSupported=false</property>

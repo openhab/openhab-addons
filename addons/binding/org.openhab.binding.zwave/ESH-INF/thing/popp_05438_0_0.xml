@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">POPP</property>
-      <property name="model">05438</property>
+      <property name="modelId">05438</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0003:0001</property>
       <property name="defaultAssociations">1</property>

@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZM1601</property>
+      <property name="modelId">ZM1601</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2005:0503</property>
     </properties>

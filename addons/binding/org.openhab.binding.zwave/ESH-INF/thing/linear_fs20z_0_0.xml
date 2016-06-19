@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">FS20Z</property>
+      <property name="modelId">FS20Z</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">5246:3133</property>
     </properties>

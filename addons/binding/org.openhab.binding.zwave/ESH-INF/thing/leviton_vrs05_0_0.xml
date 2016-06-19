@@ -28,7 +28,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">VRS05</property>
+      <property name="modelId">VRS05</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">0F01:0209</property>
       <property name="commandClass:BASIC">setVersion=1</property>

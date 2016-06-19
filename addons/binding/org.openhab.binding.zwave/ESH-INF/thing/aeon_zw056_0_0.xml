@@ -24,7 +24,7 @@ Doorbell<br /><h1>Overview</h1><p>Aeon Labs Doorbell is a switch binary device b
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW056</property>
+      <property name="modelId">ZW056</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0004:0038,0104:0038,0204:0038,0304:0038,0904:0038,0A04:0038,1A04:0038,1D04:0038</property>
       <property name="defaultAssociations">1</property>

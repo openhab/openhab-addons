@@ -63,7 +63,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Residential Control Systems</property>
-      <property name="model">TBZ48</property>
+      <property name="modelId">TBZ48</property>
       <property name="manufacturerId">0010</property>
       <property name="manufacturerRef">5442:5432</property>
     </properties>

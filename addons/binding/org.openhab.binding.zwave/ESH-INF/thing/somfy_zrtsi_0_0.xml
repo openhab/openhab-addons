@@ -16,7 +16,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Somfy</property>
-      <property name="model">ZRTSI</property>
+      <property name="modelId">ZRTSI</property>
       <property name="manufacturerId">0047</property>
       <property name="manufacturerRef">5A52:5400</property>
     </properties>

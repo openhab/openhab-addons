@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSB54</property>
+      <property name="modelId">DSB54</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0036</property>
       <property name="defaultAssociations">1,2</property>

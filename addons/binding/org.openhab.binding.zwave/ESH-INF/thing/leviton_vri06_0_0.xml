@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">VRI06</property>
+      <property name="modelId">VRI06</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">0401:0209,0401:0334</property>
       <property name="commandClass:BASIC">setVersion=1</property>

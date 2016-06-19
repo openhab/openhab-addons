@@ -39,7 +39,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Danfoss</property>
-      <property name="model">014G0160</property>
+      <property name="modelId">014G0160</property>
       <property name="manufacturerId">0002</property>
       <property name="manufacturerRef">0003:8010</property>
     </properties>

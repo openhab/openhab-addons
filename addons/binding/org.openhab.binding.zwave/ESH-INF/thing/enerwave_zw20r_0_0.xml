@@ -24,7 +24,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Enerwave</property>
-      <property name="model">ZW20R</property>
+      <property name="modelId">ZW20R</property>
       <property name="manufacturerId">011A</property>
       <property name="manufacturerRef">0101:0603</property>
     </properties>

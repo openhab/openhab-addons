@@ -60,7 +60,7 @@ P1-dongle<br /><h1>Overview</h1><p>The P1-dongle sends smart meter data wireless
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">BeNext</property>
-      <property name="model">P1-dongle</property>
+      <property name="modelId">P1-dongle</property>
       <property name="manufacturerId">008A</property>
       <property name="manufacturerRef">002F:0100</property>
     </properties>

@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">PD300Z-2</property>
+      <property name="modelId">PD300Z-2</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">4450:3030</property>
     </properties>

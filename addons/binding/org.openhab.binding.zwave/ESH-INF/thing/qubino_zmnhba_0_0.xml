@@ -70,7 +70,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Qubino</property>
-      <property name="model">ZMNHBA</property>
+      <property name="modelId">ZMNHBA</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0002:0001</property>
       <property name="commandClass:SENSOR_MULTILEVEL">getSupported=false</property>
