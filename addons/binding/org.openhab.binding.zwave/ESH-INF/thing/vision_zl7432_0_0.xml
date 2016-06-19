@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZL7432</property>
+      <property name="modelId">ZL7432</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2017:1717</property>
       <property name="defaultAssociations">1</property>

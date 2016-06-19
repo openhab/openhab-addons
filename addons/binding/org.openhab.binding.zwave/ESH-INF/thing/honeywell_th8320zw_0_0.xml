@@ -58,7 +58,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Honeywell</property>
-      <property name="model">TH8320ZW</property>
+      <property name="modelId">TH8320ZW</property>
       <property name="manufacturerId">0039</property>
       <property name="manufacturerRef">0011:0001</property>
       <property name="defaultAssociations">1</property>

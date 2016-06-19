@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">DZS15</property>
+      <property name="modelId">DZS15</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">1C02:0334</property>
     </properties>

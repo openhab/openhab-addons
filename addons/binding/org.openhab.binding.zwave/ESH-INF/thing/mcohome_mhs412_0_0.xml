@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">MCO Home</property>
-      <property name="model">MH-S412</property>
+      <property name="modelId">MH-S412</property>
       <property name="manufacturerId">015F</property>
       <property name="manufacturerRef">4102:0202</property>
       <property name="defaultAssociations">3</property>

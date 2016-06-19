@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Evolve</property>
-      <property name="model">LFM-20</property>
+      <property name="modelId">LFM-20</property>
       <property name="manufacturerId">0113</property>
       <property name="manufacturerRef">5246:3133</property>
     </properties>

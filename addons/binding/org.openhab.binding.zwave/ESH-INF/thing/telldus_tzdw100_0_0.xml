@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Telldus</property>
-      <property name="model">TZDW-100</property>
+      <property name="modelId">TZDW-100</property>
       <property name="manufacturerId">0176</property>
       <property name="manufacturerRef">0005:0001</property>
       <property name="defaultAssociations">1</property>

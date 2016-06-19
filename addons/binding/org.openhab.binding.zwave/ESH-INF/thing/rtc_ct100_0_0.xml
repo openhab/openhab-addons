@@ -64,12 +64,6 @@
           <property name="binding:*:DecimalType">CLOCK</property>
         </properties>
       </channel>
-      <channel id="time_offset" typeId="time_offset">
-        <label>Time Offset</label>
-        <properties>
-          <property name="binding:*:DecimalType">CLOCK</property>
-        </properties>
-      </channel>
       <channel id="sensor_temperature1" typeId="sensor_temperature">
         <label>Sensor (temperature) 1</label>
         <properties>
@@ -87,7 +81,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Radio Thermostat Company of America</property>
-      <property name="model">CT100</property>
+      <property name="modelId">CT100</property>
       <property name="manufacturerId">0098</property>
       <property name="manufacturerRef">6401:0015,6401:0106,6401:0107,6401:01FD</property>
       <property name="defaultAssociations">1</property>

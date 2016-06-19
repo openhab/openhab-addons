@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZL7101</property>
+      <property name="modelId">ZL7101</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2008:0801</property>
     </properties>

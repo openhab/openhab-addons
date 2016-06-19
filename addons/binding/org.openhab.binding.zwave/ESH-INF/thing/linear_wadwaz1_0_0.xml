@@ -41,7 +41,7 @@ Door/Windows Sensor<br /><h1>Overview</h1><p>Linear Z-Wave products are easy to 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">WADWAZ-1</property>
+      <property name="modelId">WADWAZ-1</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">2001:0102</property>
       <property name="defaultAssociations">1</property>

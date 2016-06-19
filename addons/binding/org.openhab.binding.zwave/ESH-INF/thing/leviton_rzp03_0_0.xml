@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">RZP03</property>
+      <property name="modelId">RZP03</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">0201:0206</property>
       <property name="commandClass:BASIC">setVersion=1</property>

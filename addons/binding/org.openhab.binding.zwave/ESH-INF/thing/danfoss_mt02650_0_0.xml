@@ -35,7 +35,7 @@ Devolo Thermostat (09356)<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br /
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Danfoss</property>
-      <property name="model">MT02650</property>
+      <property name="modelId">MT02650</property>
       <property name="manufacturerId">0002</property>
       <property name="manufacturerRef">0005:0175</property>
       <property name="defaultAssociations">1</property>

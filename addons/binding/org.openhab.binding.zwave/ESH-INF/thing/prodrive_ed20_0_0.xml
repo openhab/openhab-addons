@@ -60,7 +60,7 @@ Eneco Meter Adapter<br /><h1>Overview</h1><p>The meter adapter measures gas and 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Prodrive</property>
-      <property name="model">ED2.0</property>
+      <property name="modelId">ED2.0</property>
       <property name="manufacturerId">0128</property>
       <property name="manufacturerRef">0000:0000</property>
     </properties>

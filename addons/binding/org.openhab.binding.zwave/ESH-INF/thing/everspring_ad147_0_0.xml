@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">AD147</property>
+      <property name="modelId">AD147</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0003:0003</property>
       <property name="defaultAssociations">1</property>

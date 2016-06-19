@@ -41,7 +41,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSC08</property>
+      <property name="modelId">DSC08</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:0008</property>
     </properties>

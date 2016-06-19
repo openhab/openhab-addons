@@ -71,7 +71,7 @@ Door Opening Sensor<br /><h2>Inclusion Information</h2><p><strong>Prepare the se
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGK101</property>
+      <property name="modelId">FGK101</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0700:1000,0700:2000,0700:3000</property>
       <property name="defaultAssociations">3</property>

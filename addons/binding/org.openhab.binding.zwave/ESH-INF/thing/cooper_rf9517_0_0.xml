@@ -24,7 +24,7 @@ Accessory Switch<br /><h1>Overview</h1><p>Aspire RF Accessory Switch Compatible 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Cooper Wiring Devices</property>
-      <property name="model">RF9517</property>
+      <property name="modelId">RF9517</property>
       <property name="manufacturerId">001A</property>
       <property name="manufacturerRef">5352:0000</property>
       <property name="defaultAssociations">1</property>

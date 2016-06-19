@@ -53,7 +53,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Qubino</property>
-      <property name="model">ZMNHJD</property>
+      <property name="modelId">ZMNHJD</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0004:0051</property>
       <property name="defaultAssociations">1</property>

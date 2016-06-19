@@ -35,7 +35,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">BeNext</property>
-      <property name="model">plugInDimmer</property>
+      <property name="modelId">plugInDimmer</property>
       <property name="manufacturerId">008A</property>
       <property name="manufacturerRef">0018:0100</property>
       <property name="defaultAssociations">2</property>

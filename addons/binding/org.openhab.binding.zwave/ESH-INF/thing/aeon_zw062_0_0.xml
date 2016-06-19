@@ -30,7 +30,7 @@ Aeon Labs Garage Door Controller Gen5 <br /><h1>Overview</h1><p>Aeon Labs Garage
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW062</property>
+      <property name="modelId">ZW062</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:003E,0103:003E</property>
       <property name="defaultAssociations">1</property>

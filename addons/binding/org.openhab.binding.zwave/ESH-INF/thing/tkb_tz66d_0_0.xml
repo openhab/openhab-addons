@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wenzhou TKB Control System</property>
-      <property name="model">TZ66D</property>
+      <property name="modelId">TZ66D</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0102:1020</property>
       <property name="defaultAssociations">4</property>

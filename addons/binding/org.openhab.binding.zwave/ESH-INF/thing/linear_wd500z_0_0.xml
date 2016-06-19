@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">WD500Z-1</property>
+      <property name="modelId">WD500Z-1</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">4457:3034</property>
     </properties>

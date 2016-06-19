@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Philio Technology Corporation</property>
-      <property name="model">PST02B</property>
+      <property name="modelId">PST02B</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0002:000D</property>
     </properties>

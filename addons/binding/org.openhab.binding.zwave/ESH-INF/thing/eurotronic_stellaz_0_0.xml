@@ -58,7 +58,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">EUROtronic Technology</property>
-      <property name="model">StellaZ</property>
+      <property name="modelId">StellaZ</property>
       <property name="manufacturerId">0148</property>
       <property name="manufacturerRef">0001:0001</property>
     </properties>

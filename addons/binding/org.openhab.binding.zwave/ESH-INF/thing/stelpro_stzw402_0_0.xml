@@ -40,7 +40,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Stelpro</property>
-      <property name="model">STZW402</property>
+      <property name="modelId">STZW402</property>
       <property name="manufacturerId">0239</property>
       <property name="manufacturerRef">0001:0001</property>
       <property name="defaultAssociations">1</property>

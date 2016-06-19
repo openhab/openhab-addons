@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YRD210</property>
+      <property name="modelId">YRD210</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0004:0000,0004:AA00</property>
       <property name="defaultAssociations">1</property>

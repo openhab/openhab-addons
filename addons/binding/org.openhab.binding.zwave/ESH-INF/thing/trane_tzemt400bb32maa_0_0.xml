@@ -16,7 +16,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Trane</property>
-      <property name="model">TZEMT400BB32MAA</property>
+      <property name="modelId">TZEMT400BB32MAA</property>
       <property name="manufacturerId">008B</property>
       <property name="manufacturerRef">5452:5433</property>
       <property name="defaultAssociations">1</property>

@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Nodon</property>
-      <property name="model">CRC-3100</property>
+      <property name="modelId">CRC-3100</property>
       <property name="manufacturerId">0165</property>
       <property name="manufacturerRef">0002:0001</property>
       <property name="defaultAssociations">1</property>

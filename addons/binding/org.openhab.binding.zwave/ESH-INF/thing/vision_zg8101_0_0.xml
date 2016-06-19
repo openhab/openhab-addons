@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZG8101</property>
+      <property name="modelId">ZG8101</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">200A:0A02</property>
     </properties>

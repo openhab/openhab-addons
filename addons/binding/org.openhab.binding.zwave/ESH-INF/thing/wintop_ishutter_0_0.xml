@@ -16,7 +16,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wintop</property>
-      <property name="model">iShutter</property>
+      <property name="modelId">iShutter</property>
       <property name="manufacturerId">0097</property>
       <property name="manufacturerRef">0024:0045</property>
       <property name="commandClass:SWITCH_ALL:1">getSupported=false</property>
