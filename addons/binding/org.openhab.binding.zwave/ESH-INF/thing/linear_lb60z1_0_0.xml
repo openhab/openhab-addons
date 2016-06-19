@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">LB60Z-1</property>
+      <property name="modelId">LB60Z-1</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">4754:3038</property>
       <property name="defaultAssociations">1</property>

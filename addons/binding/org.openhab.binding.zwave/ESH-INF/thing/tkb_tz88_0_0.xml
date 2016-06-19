@@ -52,7 +52,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wenzhou TKB Control System</property>
-      <property name="model">TZ88</property>
+      <property name="modelId">TZ88</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0001:0001,0001:0011</property>
       <property name="defaultAssociations">1</property>

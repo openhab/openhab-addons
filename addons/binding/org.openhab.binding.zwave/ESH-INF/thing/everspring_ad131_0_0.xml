@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">AD131</property>
+      <property name="modelId">AD131</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0003:0001</property>
     </properties>

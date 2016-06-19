@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Danfoss</property>
-      <property name="model">LCZ251</property>
+      <property name="modelId">LCZ251</property>
       <property name="manufacturerId">0002</property>
       <property name="manufacturerRef">0005:0003</property>
       <property name="defaultAssociations">1</property>

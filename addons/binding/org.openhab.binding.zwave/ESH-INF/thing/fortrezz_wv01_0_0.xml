@@ -28,7 +28,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">FortrezZ</property>
-      <property name="model">WV-01</property>
+      <property name="modelId">WV-01</property>
       <property name="manufacturerId">0084</property>
       <property name="manufacturerRef">0213:0215</property>
     </properties>

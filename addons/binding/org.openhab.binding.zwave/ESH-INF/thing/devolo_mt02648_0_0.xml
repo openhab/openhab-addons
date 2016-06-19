@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Devolo</property>
-      <property name="model">MT02648</property>
+      <property name="modelId">MT02648</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0002:000E</property>
       <property name="defaultAssociations">1</property>

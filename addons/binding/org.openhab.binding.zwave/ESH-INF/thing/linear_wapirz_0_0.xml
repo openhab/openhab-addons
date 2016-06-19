@@ -39,7 +39,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">WAPIRZ-1</property>
+      <property name="modelId">WAPIRZ-1</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">2002:0203</property>
       <property name="defaultAssociations">1</property>

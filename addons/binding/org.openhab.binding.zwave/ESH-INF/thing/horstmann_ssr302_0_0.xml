@@ -52,7 +52,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">SSR-302</property>
+      <property name="modelId">SSR-302</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0003:0002</property>
     </properties>

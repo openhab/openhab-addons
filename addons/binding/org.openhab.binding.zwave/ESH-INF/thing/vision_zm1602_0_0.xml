@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZM1602</property>
+      <property name="modelId">ZM1602</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2009:0903,2009:0908,2005:0503</property>
       <property name="versionMax">14.0</property>

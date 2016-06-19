@@ -35,7 +35,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Somfy</property>
-      <property name="model">ZRTSI-VNODE</property>
+      <property name="modelId">ZRTSI-VNODE</property>
       <property name="manufacturerId">0047</property>
       <property name="manufacturerRef">5A52:5401,5A52:5402,5A52:5403,5A52:5404,5A52:5405,5A52:5406,5A52:5407,5A52:5408,5A52:5409,5A52:5410,5A52:5411,5A52:5412,5A52:5413,5A52:5414,5A52:5415,5A52:5416</property>
     </properties>

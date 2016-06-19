@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">ZWave.me</property>
-      <property name="model">WALLC-S</property>
+      <property name="modelId">WALLC-S</property>
       <property name="manufacturerId">0115</property>
       <property name="manufacturerRef">0100:0101</property>
       <property name="defaultAssociations">1</property>

@@ -28,7 +28,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">PS15Z</property>
+      <property name="modelId">PS15Z</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">5250:3030</property>
     </properties>

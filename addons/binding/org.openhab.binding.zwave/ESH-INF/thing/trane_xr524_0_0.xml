@@ -58,7 +58,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Trane</property>
-      <property name="model">Trane XR524</property>
+      <property name="modelId">Trane XR524</property>
       <property name="manufacturerId">008B</property>
       <property name="manufacturerRef">5452:5442</property>
     </properties>

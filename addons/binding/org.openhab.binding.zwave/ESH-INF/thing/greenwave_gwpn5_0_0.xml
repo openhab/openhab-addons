@@ -132,7 +132,7 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GreenWave</property>
-      <property name="model">GWPN5</property>
+      <property name="modelId">GWPN5</property>
       <property name="manufacturerId">0099</property>
       <property name="manufacturerRef">0003:0003</property>
       <property name="defaultAssociations">3,4</property>

@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YKFCON</property>
+      <property name="modelId">YKFCON</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0006:0000</property>
       <property name="defaultAssociations">1</property>

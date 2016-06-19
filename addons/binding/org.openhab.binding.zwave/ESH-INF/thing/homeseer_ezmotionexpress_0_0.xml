@@ -39,7 +39,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Homeseer</property>
-      <property name="model">EZMotion Express</property>
+      <property name="modelId">EZMotion Express</property>
       <property name="manufacturerId">001E</property>
       <property name="manufacturerRef">0002:0002,0002:0001</property>
       <property name="defaultAssociations">1</property>

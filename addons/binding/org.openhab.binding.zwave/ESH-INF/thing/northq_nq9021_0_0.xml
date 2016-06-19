@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">NorthQ</property>
-      <property name="model">NQ-9021</property>
+      <property name="modelId">NQ-9021</property>
       <property name="manufacturerId">0096</property>
       <property name="manufacturerRef">0001:0001</property>
     </properties>

@@ -88,7 +88,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Qubino</property>
-      <property name="model">ZMNHAD</property>
+      <property name="modelId">ZMNHAD</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0002:0052</property>
       <property name="defaultAssociations">1</property>

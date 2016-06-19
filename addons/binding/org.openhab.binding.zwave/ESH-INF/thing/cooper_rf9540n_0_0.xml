@@ -35,7 +35,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Cooper Wiring Devices</property>
-      <property name="model">RF9540-N</property>
+      <property name="modelId">RF9540-N</property>
       <property name="manufacturerId">001A</property>
       <property name="manufacturerRef">4449:0101</property>
       <property name="defaultAssociations">1</property>

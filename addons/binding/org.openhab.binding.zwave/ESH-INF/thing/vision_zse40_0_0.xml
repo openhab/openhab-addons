@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZSE40</property>
+      <property name="modelId">ZSE40</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2021:2101</property>
       <property name="commandClass:SENSOR_MULTILEVEL">getSupported=false</property>

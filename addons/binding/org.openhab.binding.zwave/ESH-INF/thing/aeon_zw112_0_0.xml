@@ -29,7 +29,7 @@ Door/Window Sensor 6<br /><h1>Overview</h1><p>Aeon Labs Door/ Window Sensor 6 is
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW112</property>
+      <property name="modelId">ZW112</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0070,0102:0070,0202:0070,1D02:0070</property>
       <property name="defaultAssociations">1</property>

@@ -57,7 +57,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW100</property>
+      <property name="modelId">ZW100</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0064,0102:0064,0202:0064</property>
       <property name="versionMax">1.6</property>

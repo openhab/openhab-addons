@@ -40,7 +40,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Qubino</property>
-      <property name="model">ZMNHID</property>
+      <property name="modelId">ZMNHID</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0005:0051</property>
       <property name="defaultAssociations">5,6</property>

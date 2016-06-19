@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">45609</property>
+      <property name="modelId">45609</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">5257:3533</property>
     </properties>

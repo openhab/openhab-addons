@@ -39,7 +39,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZP3102</property>
+      <property name="modelId">ZP3102</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2002:0201,2002:0202,2002:0203,2002:0204,2002:0205</property>
       <property name="defaultAssociations">1</property>

@@ -57,7 +57,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">ST814</property>
+      <property name="modelId">ST814</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0006:0001</property>
       <property name="defaultAssociations">1</property>

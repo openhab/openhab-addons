@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">HomeSeer Technologies</property>
-      <property name="model">HS-WS100+</property>
+      <property name="modelId">HS-WS100+</property>
       <property name="manufacturerId">000C</property>
       <property name="manufacturerRef">4447:3033</property>
       <property name="defaultAssociations">1</property>

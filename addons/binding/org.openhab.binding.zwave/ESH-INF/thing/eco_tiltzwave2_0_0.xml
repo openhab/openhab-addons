@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Ecolink</property>
-      <property name="model">TILTZWAVE2</property>
+      <property name="modelId">TILTZWAVE2</property>
       <property name="manufacturerId">014A</property>
       <property name="manufacturerRef">0001:0003</property>
       <property name="defaultAssociations">1</property>

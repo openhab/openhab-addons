@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Chromagic Technologies</property>
-      <property name="model">HSM02</property>
+      <property name="modelId">HSM02</property>
       <property name="manufacturerId">0116</property>
       <property name="manufacturerRef">0002:0001</property>
       <property name="defaultAssociations">1</property>

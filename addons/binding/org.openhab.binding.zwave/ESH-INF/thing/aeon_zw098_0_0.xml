@@ -40,7 +40,7 @@ LED Bulb<br /><h2>Inclusion Information</h2><p>Non-secure inclusion:<br />1. Pow
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW098</property>
+      <property name="modelId">ZW098</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:0062,0103:0062,0203:0062</property>
       <property name="defaultAssociations">1,2</property>

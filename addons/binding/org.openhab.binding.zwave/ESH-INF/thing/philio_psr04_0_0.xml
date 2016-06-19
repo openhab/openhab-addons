@@ -29,7 +29,7 @@ Smart Color Button<br /><h2>Wakeup Information</h2><p>By default, this device on
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Philio Technology Corporation</property>
-      <property name="model">PSR04</property>
+      <property name="modelId">PSR04</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0009:0022</property>
       <property name="defaultAssociations">1</property>

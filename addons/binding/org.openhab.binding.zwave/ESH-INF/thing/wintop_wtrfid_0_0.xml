@@ -39,7 +39,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wintop</property>
-      <property name="model">WTRFID</property>
+      <property name="modelId">WTRFID</property>
       <property name="manufacturerId">0097</property>
       <property name="manufacturerRef">6131:4501</property>
       <property name="defaultAssociations">1</property>

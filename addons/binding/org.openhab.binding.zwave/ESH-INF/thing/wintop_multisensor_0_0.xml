@@ -14,7 +14,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
@@ -51,9 +51,10 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wintop</property>
-      <property name="model">Multisensor</property>
+      <property name="modelId">Multisensor</property>
       <property name="manufacturerId">0097</property>
       <property name="manufacturerRef">1180:5501</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -108,9 +109,9 @@ The mode that is entered after detection<br /><h1>Overview</h1><p>Normal operati
 
       <parameter name="config_6_2" type="integer" groupName="configuration"
                  min="-10" max="10">
-        <label>6: The temperature off set</label>
+        <label>6: The temperature offset</label>
         <description><![CDATA[
-An off set for the temperature.<br /><h1>Overview</h1><p>Param1,2: A signed integer to determine the off set off the temperature.</p>
+An offset for the temperature.<br /><h1>Overview</h1><p>Param1,2: A signed integer to determine the offset off the temperature.</p>
         ]]></description>
         <default>0</default>
       </parameter>

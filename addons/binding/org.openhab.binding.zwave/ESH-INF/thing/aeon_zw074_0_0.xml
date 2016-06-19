@@ -51,7 +51,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW074</property>
+      <property name="modelId">ZW074</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:004A,0102:004A,0202:004A</property>
       <property name="defaultAssociations">1</property>

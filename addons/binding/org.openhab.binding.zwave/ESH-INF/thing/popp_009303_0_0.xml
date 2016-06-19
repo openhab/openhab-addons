@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">POPP</property>
-      <property name="model">009303</property>
+      <property name="modelId">009303</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0100:0101</property>
       <property name="defaultAssociations">1</property>

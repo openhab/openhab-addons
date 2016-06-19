@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">D-Link</property>
-      <property name="model">DCH-Z120</property>
+      <property name="modelId">DCH-Z120</property>
       <property name="manufacturerId">0108</property>
       <property name="manufacturerRef">0002:000D</property>
       <property name="defaultAssociations">1</property>
