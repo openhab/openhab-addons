@@ -138,6 +138,10 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         // Get its handler and node
         ZWaveControllerHandler handler = (ZWaveControllerHandler) bridge.getHandler();
         ZWaveNode node = handler.getNode(nodeId);
+        if (node == null) {
+            logger.error("NODE {}: Node not found in getConfigDescription", nodeId);
+            return null;
+        }
 
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<ConfigDescriptionParameterGroup>();
         List<ConfigDescriptionParameter> parameters = new ArrayList<ConfigDescriptionParameter>();
