@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Bundle activator to register the zwve service providers
- * 
+ * Bundle activator to register the zwave service providers
+ *
  * @author Chris Jackson
  */
 public final class ZWaveActivator implements BundleActivator {
@@ -25,27 +25,23 @@ public final class ZWaveActivator implements BundleActivator {
 
     private static BundleContext context;
 
-    // private ZWaveConfigProvider configProvider;
-
     /**
      * Called whenever the OSGi framework starts our bundle
-     * 
+     *
      * @param bc the bundle's execution context within the framework
      */
+    @Override
     public void start(BundleContext bc) throws Exception {
         context = bc;
-        logger.debug("ZWave binding started. Version {}", ZWaveActivator.getVersion());
-
-        // configProvider = new ZWaveConfigProvider();
-        // bc.registerService(ConfigDescriptionProvider.class.getName(), configProvider, new Hashtable<String,
-        // Object>());
+        logger.debug("Z-Wave binding started. Version {}", ZWaveActivator.getVersion());
     }
 
     /**
      * Called whenever the OSGi framework stops our bundle
-     * 
+     *
      * @param bc the bundle's execution context within the framework
      */
+    @Override
     public void stop(BundleContext bc) throws Exception {
         context = null;
         logger.debug("ZWave binding stopped.");
@@ -53,7 +49,7 @@ public final class ZWaveActivator implements BundleActivator {
 
     /**
      * Returns the bundle context of this bundle
-     * 
+     *
      * @return the bundle context
      */
     public static BundleContext getContext() {
@@ -62,7 +58,7 @@ public final class ZWaveActivator implements BundleActivator {
 
     /**
      * Returns the current version of the bundle.
-     * 
+     *
      * @return the current version of the bundle.
      */
     public static Version getVersion() {

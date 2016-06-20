@@ -172,7 +172,7 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
             if (product == null) {
                 continue;
             }
-            logger.debug("Checking {}", product.getThingTypeUID());
+            logger.debug("NODE {}: Checking {}", node.getNodeId(), product.getThingTypeUID());
             if (product.match(node) == true) {
                 foundProduct = product;
                 break;
@@ -188,7 +188,7 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
         // If we didn't find the product, then add the unknown thing
         String label = String.format("Z-Wave Node %d", node.getNodeId());
         if (foundProduct == null) {
-            logger.warn("NODE {}: Device could not be resolved to a thingType! {}:{}:{}::{}", node.getNodeId(),
+            logger.warn("NODE {}: Device discovery could not resolve to a thingType! {}:{}:{}::{}", node.getNodeId(),
                     String.format("%04X", node.getManufacturer()), String.format("%04X", node.getDeviceType()),
                     String.format("%04X", node.getDeviceId()), node.getApplicationVersion());
 
@@ -197,6 +197,8 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
                         node.getDeviceId(), node.getApplicationVersion());
             }
         } else {
+            logger.debug("NODE {}: Device discovery resolved to thingType {}", foundProduct.getThingTypeUID());
+
             // And create the new thing
             ThingType thingType = ZWaveConfigProvider.getThingType(foundProduct.getThingTypeUID());
             label += String.format(": %s", thingType.getLabel());

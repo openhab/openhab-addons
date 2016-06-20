@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableSet;
 
 public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOptionProvider {
-    private final Logger logger = LoggerFactory.getLogger(ZWaveConfigProvider.class);
+    private final static Logger logger = LoggerFactory.getLogger(ZWaveConfigProvider.class);
 
     private static ThingRegistry thingRegistry;
     private static ThingTypeRegistry thingTypeRegistry;
@@ -304,6 +304,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                 Map<String, String> thingProperties = thingType.getProperties();
 
                 if (thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES) == null) {
+                    logger.debug("ZWave product {} has no references!", thingType.getUID());
                     continue;
                 }
 
@@ -313,6 +314,8 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     Integer type;
                     Integer id = null;
                     if (values.length != 2) {
+                        logger.debug("ZWave product {} has invalid references! '{}'", thingType.getUID(),
+                                thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES));
                         continue;
                     }
 
@@ -326,22 +329,21 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                             Integer.parseInt(thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_MANUFACTURER), 16),
                             type, id, versionMin, versionMax));
                 }
-
             }
         }
     }
 
     public static synchronized List<ZWaveProduct> getProductIndex() {
-        // if (productIndex.size() == 0) {
-        initialiseZWaveThings();
-        // }
+        if (productIndex.size() == 0) {
+            initialiseZWaveThings();
+        }
         return productIndex;
     }
 
     public static Set<ThingTypeUID> getSupportedThingTypes() {
-        // if (zwaveThingTypeUIDList.size() == 0) {
-        initialiseZWaveThings();
-        // }
+        if (zwaveThingTypeUIDList.size() == 0) {
+            initialiseZWaveThings();
+        }
         return zwaveThingTypeUIDList;
     }
 
