@@ -10,13 +10,10 @@ package org.openhab.binding.dscalarm.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.config.EnvisalinkBridgeConfiguration;
@@ -33,25 +30,14 @@ import org.slf4j.LoggerFactory;
 public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final static Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
-    // private long refreshInterval = 600;
-    // private long intialDelay = 30;
-    // private ScheduledFuture<?> envisalinkBridgeDiscoveryJob;
-    // private ScheduledFuture<?> it100BridgeDiscoveryJob;
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
     private IT100BridgeDiscovery it100BridgeDiscovery = new IT100BridgeDiscovery(this);
-
-    public ThingRegistry thingRegistry;
 
     /**
      * Constructor.
      */
     public DSCAlarmBridgeDiscovery() {
         super(DSCAlarmBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, true);
-    }
-
-    @Override
-    public Set<ThingTypeUID> getSupportedThingTypes() {
-        return DSCAlarmBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
     }
 
     @Override
@@ -133,7 +119,8 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             if (thingUID != null) {
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel("DSC IT-100 Bridge - " + port).build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withLabel("DSC IT-100 Bridge - " + port).build();
                 thingDiscovered(result);
 
                 logger.trace("addBridge(): '{}' was added to Smarthome inbox.", result.getThingUID());
@@ -141,13 +128,5 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
         } catch (Exception e) {
             logger.error("addBridge(): Error: {}", e);
         }
-    }
-
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
-
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
     }
 }
