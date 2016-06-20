@@ -32,7 +32,37 @@
       <property name="modelId">VRP03</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">0202:030B</property>
+      <property name="commandClass:BASIC">setVersion=1</property>
+      <property name="commandClass:SWITCH_MULTILEVEL">setVersion=1</property>
+      <property name="commandClass:SWITCH_ALL">setVersion=1</property>
+      <property name="commandClass:SCENE_ACTIVATION">setVersion=1</property>
+      <property name="commandClass:SCENE_ACTUATOR_CONF">setVersion=1</property>
+      <property name="commandClass:MANUFACTURER_SPECIFIC">setVersion=1</property>
+      <property name="commandClass:POWERLEVEL">setVersion=1</property>
+      <property name="commandClass:NODE_NAMING">setVersion=1</property>
+      <property name="commandClass:HAIL">setVersion=1</property>
+      <property name="commandClass:ASSOCIATION">setVersion=1</property>
+      <property name="commandClass:VERSION">setVersion=1</property>
+      <property name="commandClass:MANUFACTURER_PROPRIETARY">setVersion=1</property>
+      <property name="commandClass:MARK">setVersion=1</property>
+      <property name="defaultAssociations">1</property>
     </properties>
+
+    <!-- CONFIGURATION DESCRIPTIONS -->
+    <config-description>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
+        <label>1: Group 1</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+    </config-description>
 
   </thing-type>
 </thing:thing-descriptions>
