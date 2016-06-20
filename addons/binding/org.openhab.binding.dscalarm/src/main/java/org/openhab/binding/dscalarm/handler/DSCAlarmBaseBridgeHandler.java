@@ -432,7 +432,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.debug("findThing(): Error Seaching Thing - {}", e);
+                logger.debug("findThing(): Error Seaching Thing - {} ", e.getMessage(), e);
             }
         }
 

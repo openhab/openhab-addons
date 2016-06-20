@@ -20,7 +20,7 @@ import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
-import org.openhab.binding.dscalarm.internal.DSCAlarmProperties.LEDStateType;
+//import org.openhab.binding.dscalarm.internal.DSCAlarmProperties.LEDStateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,94 +47,42 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
      * {@inheritDoc}
      */
     @Override
-    public void updateChannel(ChannelUID channelUID) {
+    public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Keypad Channel UID: {}", channelUID);
 
-        int state;
+        // int state;
 
         if (channelUID != null) {
             switch (channelUID.getId()) {
                 case KEYPAD_READY_LED:
-                    state = properties.getLEDState(LEDStateType.READY_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_ARMED_LED:
-                    state = properties.getLEDState(LEDStateType.ARMED_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_MEMORY_LED:
-                    state = properties.getLEDState(LEDStateType.MEMORY_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_BYPASS_LED:
-                    state = properties.getLEDState(LEDStateType.BYPASS_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_TROUBLE_LED:
-                    state = properties.getLEDState(LEDStateType.TROUBLE_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_PROGRAM_LED:
-                    state = properties.getLEDState(LEDStateType.PROGRAM_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_FIRE_LED:
-                    state = properties.getLEDState(LEDStateType.FIRE_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_BACKLIGHT_LED:
-                    state = properties.getLEDState(LEDStateType.BACKLIGHT_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case KEYPAD_AC_LED:
-                    state = properties.getLEDState(LEDStateType.AC_LED_STATE);
                     updateState(channelUID, new DecimalType(state));
                     break;
                 default:
                     logger.debug("updateChannel(): Keypad Channel not updated - {}.", channelUID);
-                    break;
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateProperties(ChannelUID channelUID, int state, String description) {
-        logger.debug("updateProperties(): Keypad Channel UID: {}", channelUID);
-
-        if (channelUID != null) {
-            switch (channelUID.getId()) {
-                case KEYPAD_READY_LED:
-                    properties.setLEDState(LEDStateType.READY_LED_STATE, state);
-                    break;
-                case KEYPAD_ARMED_LED:
-                    properties.setLEDState(LEDStateType.ARMED_LED_STATE, state);
-                    break;
-                case KEYPAD_MEMORY_LED:
-                    properties.setLEDState(LEDStateType.MEMORY_LED_STATE, state);
-                    break;
-                case KEYPAD_BYPASS_LED:
-                    properties.setLEDState(LEDStateType.BYPASS_LED_STATE, state);
-                    break;
-                case KEYPAD_TROUBLE_LED:
-                    properties.setLEDState(LEDStateType.TROUBLE_LED_STATE, state);
-                    break;
-                case KEYPAD_PROGRAM_LED:
-                    properties.setLEDState(LEDStateType.PROGRAM_LED_STATE, state);
-                    break;
-                case KEYPAD_FIRE_LED:
-                    properties.setLEDState(LEDStateType.FIRE_LED_STATE, state);
-                    break;
-                case KEYPAD_BACKLIGHT_LED:
-                    properties.setLEDState(LEDStateType.BACKLIGHT_LED_STATE, state);
-                    break;
-                case KEYPAD_AC_LED:
-                    properties.setLEDState(LEDStateType.AC_LED_STATE, state);
-                    break;
-                default:
-                    logger.debug("updateProperties(): Keypad property not updated.");
                     break;
             }
         }
@@ -177,18 +125,16 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
 
                 switch (dscAlarmCode) {
                     case KeypadLEDState: /* 510 */
-                        updateProperties(channelUID, bits[i] != 0 ? 1 : 0, "");
+                        updateChannel(channelUID, bits[i] != 0 ? 1 : 0, "");
                         break;
                     case KeypadLEDFlashState: /* 511 */
                         if (bits[i] != 0) {
-                            updateProperties(channelUID, 2, "");
+                            updateChannel(channelUID, 2, "");
                         }
                         break;
                     default:
                         break;
                 }
-
-                updateChannel(channelUID);
             }
         }
     }
@@ -221,48 +167,39 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                         switch (data) {
                             case 1:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_READY_LED);
-                                properties.setLEDState(LEDStateType.READY_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 2:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_ARMED_LED);
-                                properties.setLEDState(LEDStateType.ARMED_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 3:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_MEMORY_LED);
-                                properties.setLEDState(LEDStateType.MEMORY_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 4:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_BYPASS_LED);
-                                properties.setLEDState(LEDStateType.BYPASS_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 5:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_TROUBLE_LED);
-                                properties.setLEDState(LEDStateType.TROUBLE_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 6:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_PROGRAM_LED);
-                                properties.setLEDState(LEDStateType.PROGRAM_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 7:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_FIRE_LED);
-                                properties.setLEDState(LEDStateType.FIRE_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 8:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_BACKLIGHT_LED);
-                                properties.setLEDState(LEDStateType.BACKLIGHT_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             case 9:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_AC_LED);
-                                properties.setLEDState(LEDStateType.AC_LED_STATE, state);
-                                updateChannel(channelUID);
+                                updateChannel(channelUID, state, "");
                                 break;
                             default:
                                 break;

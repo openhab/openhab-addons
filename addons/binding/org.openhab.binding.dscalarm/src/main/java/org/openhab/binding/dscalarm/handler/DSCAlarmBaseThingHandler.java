@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.dscalarm.config.DSCAlarmPanelConfiguration;
 import org.openhab.binding.dscalarm.config.DSCAlarmPartitionConfiguration;
 import org.openhab.binding.dscalarm.config.DSCAlarmZoneConfiguration;
-import org.openhab.binding.dscalarm.internal.DSCAlarmProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
     private DSCAlarmThingType dscAlarmThingType = null;
 
     /** DSC Alarm Properties. */
-    public DSCAlarmProperties properties = null;
 
     private boolean thingRefreshed = false;
 
@@ -102,10 +100,8 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
                 List<Channel> channels = thing.getChannels();
                 logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
 
-                this.properties = new DSCAlarmProperties();
-
                 for (Channel channel : channels) {
-                    updateChannel(channel.getUID());
+                    updateChannel(channel.getUID(), 0, "");
                 }
 
                 if (dscAlarmThingType.equals(DSCAlarmThingType.PANEL)) {
@@ -155,8 +151,10 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * Method to Update a Channel
      *
      * @param channel
+     * @param state
+     * @param description
      */
-    public abstract void updateChannel(ChannelUID channel);
+    public abstract void updateChannel(ChannelUID channel, int state, String description);
 
     /**
      * Method to Update Device Properties.
@@ -165,7 +163,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
      * @param state
      * @param description
      */
-    public abstract void updateProperties(ChannelUID channelUID, int state, String description);
+    // public abstract void updateProperties(ChannelUID channelUID, int state, String description);
 
     /**
      * Receives DSC Alarm Events from the bridge.
