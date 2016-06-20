@@ -15,6 +15,8 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -43,7 +45,6 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
     /** DSC Alarm Properties. */
     public DSCAlarmProperties properties = null;
 
-    /** This refresh status. */
     private boolean thingRefreshed = false;
 
     /** User Code for some DSC Alarm commands. */
@@ -94,25 +95,30 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
     public void refreshThing() {
 
         if (getDSCAlarmBridgeHandler() != null) {
-            logger.debug("refreshThing(): Bridge '{}' Found for Thing '{}'!", dscAlarmBridgeHandler.getThing().getUID(), this.getThing().getUID());
 
-            Thing thing = getThing();
-            List<Channel> channels = thing.getChannels();
-            logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
+            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
 
-            this.properties = new DSCAlarmProperties();
+                Thing thing = getThing();
+                List<Channel> channels = thing.getChannels();
+                logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
 
-            for (Channel channel : channels) {
-                updateChannel(channel.getUID());
+                this.properties = new DSCAlarmProperties();
+
+                for (Channel channel : channels) {
+                    updateChannel(channel.getUID());
+                }
+
+                if (dscAlarmThingType.equals(DSCAlarmThingType.PANEL)) {
+                    dscAlarmBridgeHandler.setUserCode(getUserCode());
+                }
+
+                this.setThingRefreshed(true);
+
+                logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
+            } else {
+                logger.debug("refreshThing(): Thing '{}' Unable To Be Refreshed!: Status - {}", thing.getUID(), thing.getStatus());
             }
-
-            if (dscAlarmThingType.equals(DSCAlarmThingType.PANEL)) {
-                dscAlarmBridgeHandler.setUserCode(getUserCode());
-            }
-
-            this.setThingRefreshed(true);
         }
-        logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
     }
 
     /**
@@ -173,19 +179,14 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public void onBridgeConnected(DSCAlarmBaseBridgeHandler bridge) {
-        logger.debug("onBridgeConnected(): Bridge '{}' is connected", bridge.getThing().getUID());
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged(): '{}' - Bridge Status Changed to '{}'!", getThing().getUID(), bridgeStatusInfo);
 
-        if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
-            updateStatus(bridge.getThing().getStatus());
-            refreshThing();
-        }
-    }
-
-    public void onBridgeDisconnected(DSCAlarmBaseBridgeHandler bridge) {
-        logger.debug("onBridgeDisconnected(): Bridge '{}' disconnected", bridge.getThing().getUID());
-
-        if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
+        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+            updateStatus(bridgeStatusInfo.getStatus());
+            this.refreshThing();
+        } else {
             this.setThingRefreshed(false);
         }
     }

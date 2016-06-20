@@ -11,12 +11,11 @@ package org.openhab.binding.dscalarm.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
@@ -34,12 +33,14 @@ import org.slf4j.LoggerFactory;
 public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final static Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
-    private long refreshInterval = 600;
-    private long intialDelay = 30;
-    private ScheduledFuture<?> envisalinkBridgeDiscoveryJob;
-    private ScheduledFuture<?> it100BridgeDiscoveryJob;
+    // private long refreshInterval = 600;
+    // private long intialDelay = 30;
+    // private ScheduledFuture<?> envisalinkBridgeDiscoveryJob;
+    // private ScheduledFuture<?> it100BridgeDiscoveryJob;
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
     private IT100BridgeDiscovery it100BridgeDiscovery = new IT100BridgeDiscovery(this);
+
+    public ThingRegistry thingRegistry;
 
     /**
      * Constructor.
@@ -58,33 +59,6 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
         logger.trace("Start DSC Alarm Bridge discovery.");
         scheduler.execute(envisalinkBridgeDiscoveryRunnable);
         scheduler.execute(it100BridgeDiscoveryRunnable);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        logger.debug("Start DSC Alarm Bridge background discovery");
-        if (envisalinkBridgeDiscoveryJob == null || envisalinkBridgeDiscoveryJob.isCancelled()) {
-            envisalinkBridgeDiscoveryJob = scheduler.scheduleAtFixedRate(envisalinkBridgeDiscoveryRunnable, intialDelay, refreshInterval, TimeUnit.SECONDS);
-        }
-
-        if (it100BridgeDiscoveryJob == null || it100BridgeDiscoveryJob.isCancelled()) {
-            it100BridgeDiscoveryJob = scheduler.scheduleAtFixedRate(it100BridgeDiscoveryRunnable, intialDelay, refreshInterval, TimeUnit.SECONDS);
-        }
-
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stop DSC Alarm Bridge background discovery");
-        if (envisalinkBridgeDiscoveryJob != null && !envisalinkBridgeDiscoveryJob.isCancelled()) {
-            envisalinkBridgeDiscoveryJob.cancel(true);
-            envisalinkBridgeDiscoveryJob = null;
-        }
-
-        if (it100BridgeDiscoveryJob != null && !it100BridgeDiscoveryJob.isCancelled()) {
-            it100BridgeDiscoveryJob.cancel(true);
-            it100BridgeDiscoveryJob = null;
-        }
     }
 
     private Runnable envisalinkBridgeDiscoveryRunnable = new Runnable() {
@@ -167,5 +141,13 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
         } catch (Exception e) {
             logger.error("addBridge(): Error: {}", e);
         }
+    }
+
+    protected void setThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
+
+    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+        this.thingRegistry = null;
     }
 }

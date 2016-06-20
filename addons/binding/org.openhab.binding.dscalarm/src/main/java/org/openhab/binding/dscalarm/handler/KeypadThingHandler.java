@@ -155,14 +155,14 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
      */
     private void keypadLEDStateEventHandler(EventObject event) {
         DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
-        DSCAlarmMessage apiMessage = dscAlarmEvent.getDSCAlarmMessage();
+        DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
         String[] channelTypes = { KEYPAD_READY_LED, KEYPAD_ARMED_LED, KEYPAD_MEMORY_LED, KEYPAD_BYPASS_LED, KEYPAD_TROUBLE_LED, KEYPAD_PROGRAM_LED, KEYPAD_FIRE_LED, KEYPAD_BACKLIGHT_LED };
 
         String channel;
         ChannelUID channelUID = null;
-        DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
 
-        int bitField = Integer.decode("0x" + apiMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA));
+        int bitField = Integer.decode("0x" + dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA));
         int[] masks = { 1, 2, 4, 8, 16, 32, 64, 128 };
         int[] bits = new int[8];
 
@@ -175,7 +175,7 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
 
                 channelUID = new ChannelUID(getThing().getUID(), channel);
 
-                switch (apiCode) {
+                switch (dscAlarmCode) {
                     case KeypadLEDState: /* 510 */
                         updateProperties(channelUID, bits[i] != 0 ? 1 : 0, "");
                         break;
@@ -202,23 +202,23 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
         if (thing != null) {
             if (getThing() == thing) {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
-                DSCAlarmMessage apiMessage = dscAlarmEvent.getDSCAlarmMessage();
+                DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
                 ChannelUID channelUID = null;
-                DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                String apiData = apiMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
 
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), apiCode);
+                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
-                switch (apiCode) {
+                switch (dscAlarmCode) {
                     case KeypadLEDState: /* 510 */
                     case KeypadLEDFlashState: /* 511 */
                         keypadLEDStateEventHandler(event);
                         break;
                     case LEDStatus: /* 903 */
-                        int aData = Integer.parseInt(apiData.substring(0, 1));
-                        int state = Integer.parseInt(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA).substring(1));
-                        switch (aData) {
+                        int data = Integer.parseInt(dscAlarmMessageData.substring(0, 1));
+                        int state = Integer.parseInt(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA).substring(1));
+                        switch (data) {
                             case 1:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_READY_LED);
                                 properties.setLEDState(LEDStateType.READY_LED_STATE, state);

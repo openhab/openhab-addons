@@ -155,22 +155,22 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                     int partitionNumber = getPartitionNumber();
                     if (command.toString().equals("0")) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl, String.valueOf(partitionNumber));
-                        updateProperties(channelUID, 0, "Partition Disarmed");
+                        // updateProperties(channelUID, 0, "Partition Disarmed");
                     } else if (command.toString().equals("1")) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway, String.valueOf(partitionNumber));
-                        updateProperties(channelUID, 1, "Partition Armed (Away)");
+                        // updateProperties(channelUID, 1, "Partition Armed (Away)");
                     } else if (command.toString().equals("2")) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay, String.valueOf(partitionNumber));
-                        updateProperties(channelUID, 2, "Partition Armed (Stay)");
+                        // updateProperties(channelUID, 2, "Partition Armed (Stay)");
                     } else if (command.toString().equals("3")) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay, String.valueOf(partitionNumber));
-                        updateProperties(channelUID, 3, "Partition Armed (Away - No Entry Delay)");
+                        // updateProperties(channelUID, 3, "Partition Armed (Away - No Entry Delay)");
                     } else if (command.toString().equals("4")) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay, String.valueOf(partitionNumber));
-                        updateProperties(channelUID, 4, "Partition Armed (Stay - No Entry Delay)");
+                        // updateProperties(channelUID, 4, "Partition Armed (Stay - No Entry Delay)");
                     } else if (command.toString().equals("5")) {
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode, String.valueOf(partitionNumber));
-                        updateProperties(channelUID, 5, "Partition Armed (With User Code)");
+                        // updateProperties(channelUID, 5, "Partition Armed (With User Code)");
                     }
                     break;
                 default:
@@ -195,17 +195,17 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
      */
     private void partitionOpenCloseModeEventHandler(EventObject event) {
         DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
-        DSCAlarmMessage apiMessage = dscAlarmEvent.getDSCAlarmMessage();
-        DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+        DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
         ChannelUID channelUID = null;
         int state = 0; /*
                         * 0=None, 1=User Closing, 2=Special Closing, 3=Partial Closing, 4=User Opening, 5=Special
                         * Opening
                         */
 
-        String strStatus = apiMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
+        String strStatus = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
 
-        switch (apiCode) {
+        switch (dscAlarmCode) {
             case UserClosing: /* 700 */
                 state = 1;
                 break;
@@ -239,22 +239,21 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
         if (thing != null) {
             if (getThing() == thing) {
                 DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
-                DSCAlarmMessage apiMessage = dscAlarmEvent.getDSCAlarmMessage();
+                DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
                 ChannelUID channelUID = null;
-                DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                String apiName = apiMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
-                String apiMode = apiMessage.getMessageInfo(DSCAlarmMessageInfoType.MODE);
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                String dscAlarmMessageName = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
+                String dscAlarmMessageMode = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.MODE);
 
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), apiCode);
+                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
-                switch (apiCode) {
+                switch (dscAlarmCode) {
                     case PartitionReady: /* 650 */
                     case PartitionNotReady: /* 651 */
                     case PartitionReadyForceArming: /* 653 */
-                    case FailureToArm: /* 672 */
                     case SystemArmingInProgress: /* 674 */
-                        partitionStatus(apiName);
+                        partitionStatus(dscAlarmMessageName);
                         break;
                     case PartitionArmed: /* 652 */
                         channelUID = new ChannelUID(getThing().getUID(), PARTITION_ARMED);
@@ -273,12 +272,12 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                          * arm mode:0=disarmed, 1=away armed, 2=stay armed, 3=away no delay, 4=stay no delay, 5=with
                          * user code
                          */
-                        int armMode = Integer.parseInt(apiMode) + 1;
+                        int armMode = Integer.parseInt(dscAlarmMessageMode) + 1;
                         channelUID = new ChannelUID(getThing().getUID(), PARTITION_ARM_MODE);
                         updateProperties(channelUID, armMode, "");
                         updateChannel(channelUID);
 
-                        partitionStatus(apiName);
+                        partitionStatus(dscAlarmMessageName);
                         break;
                     case PartitionDisarmed: /* 655 */
                         channelUID = new ChannelUID(getThing().getUID(), PARTITION_ARMED);
@@ -301,14 +300,20 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                         updateProperties(channelUID, 0, "");
                         updateChannel(channelUID);
 
-                        partitionStatus(apiName);
+                        partitionStatus(dscAlarmMessageName);
                         break;
                     case PartitionInAlarm: /* 654 */
                         channelUID = new ChannelUID(getThing().getUID(), PARTITION_IN_ALARM);
                         updateProperties(channelUID, 1, "");
                         updateChannel(channelUID);
 
-                        partitionStatus(apiName);
+                        partitionStatus(dscAlarmMessageName);
+                        break;
+                    case FailureToArm: /* 672 */
+                        channelUID = new ChannelUID(getThing().getUID(), PARTITION_ARM_MODE);
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
+                        partitionStatus(dscAlarmMessageName);
                         break;
                     case UserClosing: /* 700 */
                     case SpecialClosing: /* 701 */

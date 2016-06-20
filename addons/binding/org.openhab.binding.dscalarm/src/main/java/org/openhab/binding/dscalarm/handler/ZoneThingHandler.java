@@ -192,13 +192,13 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                 DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
                 ChannelUID channelUID = null;
-                DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), apiCode);
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 int state = 0;
                 String status = "";
 
-                switch (apiCode) {
+                switch (dscAlarmCode) {
                     case ZoneAlarm: /* 601 */
                         state = 1;
                         status = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DESCRIPTION);

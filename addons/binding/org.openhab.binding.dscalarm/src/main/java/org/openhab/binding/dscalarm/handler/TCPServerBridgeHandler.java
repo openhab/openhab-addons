@@ -119,7 +119,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.error("openConnection(): IO Exception: ", ioException);
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("openConnection(): Exception: ", exception);
+            logger.error("openConnection(): Unable to open a connection: ", exception);
             setConnected(false);
         }
     }
@@ -207,7 +207,11 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             try {
                 while (isConnected()) {
                     if ((messageLine = read()) != null) {
-                        handleIncomingMessage(messageLine);
+                        try {
+                            handleIncomingMessage(messageLine);
+                        } catch (Exception e) {
+                            logger.error("TCPListener(): Message not handled by bridge: ", e);
+                        }
                     } else {
                         setConnected(false);
                     }

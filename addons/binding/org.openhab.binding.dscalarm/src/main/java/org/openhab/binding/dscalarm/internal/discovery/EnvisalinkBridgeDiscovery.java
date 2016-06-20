@@ -17,9 +17,14 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.dscalarm.handler.EnvisalinkBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +44,7 @@ public class EnvisalinkBridgeDiscovery {
 
     private DSCAlarmBridgeDiscovery dscAlarmBridgeDiscovery = null;
     private String ipAddress;
+    private List<String> exemptIPAddresses = new ArrayList<String>();
 
     /**
      * Constructor.
@@ -80,33 +86,56 @@ public class EnvisalinkBridgeDiscovery {
         logger.debug("   Low IP:           {}", convertNumberToIP(lowIP));
         logger.debug("   High IP:          {}", convertNumberToIP(highIP));
 
+        Collection<Thing> things = dscAlarmBridgeDiscovery.thingRegistry.getAll();
+
+        for (Thing thing : things) {
+            if (thing.getThingTypeUID().toString().equals("dscalarm:envisalink")) {
+                logger.debug("discoverBridge(): Envisalink Found - [{}]!", thing.getUID());
+
+                EnvisalinkBridgeHandler envisalinkBridgeHandler = (EnvisalinkBridgeHandler) thing.getHandler();
+
+                if (envisalinkBridgeHandler != null) {
+                    String ip = envisalinkBridgeHandler.getIPAddress();
+                    if (!ip.isEmpty()) {
+                        exemptIPAddresses.add(ip);
+                        logger.debug("discoverBridge(): Added IP Address [{}] to Exempt List!", ip);
+                    }
+                }
+            }
+        }
+
         for (long ip = lowIP; ip <= highIP; ip++) {
+
             try (Socket socket = new Socket()) {
                 ipAddress = convertNumberToIP(ip);
-                socket.setReuseAddress(true);
-                socket.setReceiveBufferSize(32);
-                socket.connect(new InetSocketAddress(ipAddress, ENVISALINK_BRIDGE_PORT), CONNECTION_TIMEOUT);
 
-                if (socket.isConnected()) {
+                if (!exemptIPAddresses.contains(ipAddress)) {
+                    socket.setReuseAddress(true);
+                    socket.setReceiveBufferSize(32);
+                    socket.connect(new InetSocketAddress(ipAddress, ENVISALINK_BRIDGE_PORT), CONNECTION_TIMEOUT);
+                    if (socket.isConnected()) {
 
-                    String message = "";
-                    socket.setSoTimeout(SO_TIMEOUT);
-                    try (BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                        message = input.readLine();
-                    } catch (SocketTimeoutException e) {
-                        logger.debug("discoverBridge(): No Message Read from Socket at [{}] - {}", ipAddress, e.getMessage());
-                        continue;
-                    } catch (Exception e) {
-                        logger.debug("discoverBridge(): Exception Reading from Socket! {}", e.toString());
-                        continue;
+                        String message = "";
+                        socket.setSoTimeout(SO_TIMEOUT);
+                        try (BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                            message = input.readLine();
+                        } catch (SocketTimeoutException e) {
+                            logger.debug("discoverBridge(): No Message Read from Socket at [{}] - {}", ipAddress, e.getMessage());
+                            continue;
+                        } catch (Exception e) {
+                            logger.debug("discoverBridge(): Exception Reading from Socket! {}", e.toString());
+                            continue;
+                        }
+
+                        if (message.substring(0, 3).equals(ENVISALINK_DISCOVERY_RESPONSE)) {
+                            logger.debug("discoverBridge(): Bridge Found - [{}]!  Message - '{}'", ipAddress, message);
+                            dscAlarmBridgeDiscovery.addEnvisalinkBridge(ipAddress);
+                        } else {
+                            logger.debug("discoverBridge(): No Response from Connection -  [{}]!  Message - '{}'", ipAddress, message);
+                        }
                     }
-
-                    if (message.substring(0, 3).equals(ENVISALINK_DISCOVERY_RESPONSE)) {
-                        logger.debug("discoverBridge(): Bridge Found - [{}]!  Message - '{}'", ipAddress, message);
-                        dscAlarmBridgeDiscovery.addEnvisalinkBridge(ipAddress);
-                    } else {
-                        logger.debug("discoverBridge(): No Response from Connection -  [{}]!  Message - '{}'", ipAddress, message);
-                    }
+                } else {
+                    logger.debug("discoverBridge(): IP Address already in Use by Envisalink Bridge [{}]", ipAddress);
                 }
             } catch (IllegalArgumentException e) {
                 logger.debug("discoverBridge(): Illegal Argument Exception - {}", e.toString());
@@ -118,6 +147,7 @@ public class EnvisalinkBridgeDiscovery {
                 logger.debug("discoverBridge(): IO Exception! [{}] - {}", ipAddress, e.toString());
             }
         }
+
     }
 
     /**

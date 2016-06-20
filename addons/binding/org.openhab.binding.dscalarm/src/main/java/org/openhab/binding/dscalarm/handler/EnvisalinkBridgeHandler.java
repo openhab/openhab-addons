@@ -57,9 +57,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
         EnvisalinkBridgeConfiguration configuration = getConfigAs(EnvisalinkBridgeConfiguration.class);
 
-        ipAddress = configuration.ipAddress;
-
         if (configuration.ipAddress != null) {
+
+            ipAddress = configuration.ipAddress;
             tcpPort = configuration.port.intValue();
             setPassword(configuration.password);
             connectionTimeout = configuration.connectionTimeout.intValue();
@@ -120,7 +120,7 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.error("openConnection(): IO Exception: ", ioException);
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("openConnection(): Exception: ", exception);
+            logger.error("openConnection(): Unable to open a connection: ", exception);
             setConnected(false);
         }
     }
@@ -131,9 +131,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
     @Override
     public void write(String writeString) {
         try {
+            logger.debug("write(): Attempting to Send Message: {}", writeString);
             tcpOutput.write(writeString);
             tcpOutput.flush();
-            logger.debug("write(): Message Sent: {}", writeString);
         } catch (IOException ioException) {
             logger.error("write(): {}", ioException);
             setConnected(false);
@@ -171,14 +171,17 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
     public void closeConnection() {
         try {
             if (tcpSocket != null) {
+                logger.debug("closeConnection(): Closing Socket!");
                 tcpSocket.close();
                 tcpSocket = null;
             }
             if (tcpInput != null) {
+                logger.debug("closeConnection(): Closing Output Writer!");
                 tcpInput.close();
                 tcpInput = null;
             }
             if (tcpOutput != null) {
+                logger.debug("closeConnection(): Closing Input Reader!");
                 tcpOutput.close();
                 tcpOutput = null;
             }
@@ -190,6 +193,15 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         } catch (Exception exception) {
             logger.error("closeConnection(): Error closing connection - " + exception.getMessage());
         }
+    }
+
+    /**
+     * Gets the IP Address of the Envisalink
+     *
+     * @return ipAddress
+     */
+    public String getIPAddress() {
+        return ipAddress;
     }
 
     /**
@@ -208,7 +220,11 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             try {
                 while (isConnected()) {
                     if ((messageLine = read()) != null) {
-                        handleIncomingMessage(messageLine);
+                        try {
+                            handleIncomingMessage(messageLine);
+                        } catch (Exception e) {
+                            logger.error("TCPListener(): Message not handled by bridge: ", e);
+                        }
                     } else {
                         setConnected(false);
                     }

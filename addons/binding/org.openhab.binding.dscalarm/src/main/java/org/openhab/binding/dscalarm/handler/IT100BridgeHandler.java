@@ -216,6 +216,15 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
     }
 
     /**
+     * Gets the Serial Port Name of the IT-100
+     *
+     * @return serialPortName
+     */
+    public String getSerialPortName() {
+        return serialPortName;
+    }
+
+    /**
      * Receives Serial Port Events and reads Serial Port Data.
      *
      * @param serialPortEvent

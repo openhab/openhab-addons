@@ -11,6 +11,7 @@ package org.openhab.binding.dscalarm.handler;
 import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.*;
 
 import java.util.EventObject;
+import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -486,23 +487,40 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         if (thing != null) {
             DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
             DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
+            String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
             setTimeStampState(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.TIME_STAMP));
             boolean suppressPanelMsg = false;
 
             if (getThing() == thing) {
                 ChannelUID channelUID = null;
-                DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), apiCode);
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 int state = 0;
 
-                switch (apiCode) {
+                switch (dscAlarmCode) {
                     case CommandAcknowledge: /* 500 */
                         if (getSuppressAcknowledgementMsgs()) {
                             suppressPanelMsg = true;
                         }
                         break;
                     case SystemError: /* 502 */
+                        int errorCode = Integer.parseInt(dscAlarmMessageData);
+
+                        if (errorCode == 23 || errorCode == 24) {
+                            List<Thing> things = dscAlarmBridgeHandler.getThing().getThings();
+                            for (Thing thg : things) {
+                                if (thg.getThingTypeUID().equals(PARTITION_THING_TYPE)) {
+                                    DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thg.getHandler();
+                                    if (handler != null) {
+                                        channelUID = new ChannelUID(thg.getUID(), PARTITION_ARM_MODE);
+                                        handler.updateProperties(channelUID, 0, "");
+                                        handler.updateChannel(channelUID);
+                                    }
+                                }
+                            }
+                        }
+
                         panelSystemError(dscAlarmMessage);
                         break;
                     case TimeDateBroadcast: /* 550 */
