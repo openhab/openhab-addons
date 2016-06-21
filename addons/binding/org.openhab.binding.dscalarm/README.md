@@ -27,7 +27,7 @@ There are essentially no overall binding configuration settings that need to be 
 
 ## Discovery
 
-The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.  Second, there is The IT-100 bridge discovery mode which will search serial ports for any  IT-100 adapters and add them to the discovery inbox.  Third, after a bridge is discovered and available to OpenHAB, the binding will attempt to discover DSC Alarm devices and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize device discovery once it is online.  
+The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.  Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.  The bridge discovery modes are started manually through PaperUI.  Third, after a bridge is discovered and available to OpenHAB, the binding will attempt to discover DSC Alarm devices and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize device discovery once it is online.  
 
 ## Thing Configuration
 
@@ -47,7 +47,7 @@ DSC Alarm things can be configured either through the online configuration utili
 The binding can be configured manually if discovery is not used.  A thing configuration file in the format 'bindingName.thing' would need to be created, and placed in the 'conf/things' folder.  Here is an example of a thing configuration file called 'dscalarm.thing':
 
 ```
-Bridge dscalarm:envisalink:mybridge [ ipAddress="192.168.0.100" ]
+Bridge dscalarm:envisalink:MyBridgeName [ ipAddress="192.168.0.100" ]
 {
 	Thing panel panel
 	Thing partition partition1 [ partitionNumber=1 ]
@@ -180,197 +180,197 @@ Group:Contact:OR(OPEN, CLOSED) DSCAlarmSmoke <smokeDetector>
 
 /* DSC Alarm Items */
 
-Switch BRIDGE_CONNECTION {channel="dscalarm:envisalink:192_168_0_100:bridge_reset"}
+Switch BRIDGE_CONNECTION {channel="dscalarm:envisalink:MyBridgeName:bridge_reset"}
 
 /* DSC Alarm Panel Items */
-String PANEL_MESSAGE "Panel Message: [%s]" (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_message"}
-Number PANEL_COMMAND "Panel Commands" (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_command"}
-String PANEL_SYSTEM_ERROR "Panel System Error: [%s]" (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_system_error"}
+String PANEL_MESSAGE "Panel Message: [%s]" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_message"}
+Number PANEL_COMMAND "Panel Commands" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_command"}
+String PANEL_SYSTEM_ERROR "Panel System Error: [%s]" (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_system_error"}
 
-String PANEL_TROUBLE_MESSAGE "Panel Trouble Message: [%s]" <"shieldGreen"> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_trouble_message"}
-Switch PANEL_TROUBLE_LED "Panel Trouble LED" <warning> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_trouble_led"}
-Switch PANEL_SERVICE_REQUIRED <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_service_required"}
-Switch PANEL_AC_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_ac_trouble"}
-Switch PANEL_TELEPHONE_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_telephone_trouble"}
-Switch PANEL_FTC_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_ftc_trouble"}
-Switch PANEL_ZONE_FAULT <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_zone_fault"}
-Switch PANEL_ZONE_TAMPER <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_zone_tamper"}
-Switch PANEL_ZONE_LOW_BATTERY <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_zone_low_battery"}
-Switch PANEL_TIME_LOSS <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_time_loss"}
+String PANEL_TROUBLE_MESSAGE "Panel Trouble Message: [%s]" <"shieldGreen"> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_message"}
+Switch PANEL_TROUBLE_LED "Panel Trouble LED" <warning> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_trouble_led"}
+Switch PANEL_SERVICE_REQUIRED <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_service_required"}
+Switch PANEL_AC_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_ac_trouble"}
+Switch PANEL_TELEPHONE_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_telephone_trouble"}
+Switch PANEL_FTC_TROUBLE <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_ftc_trouble"}
+Switch PANEL_ZONE_FAULT <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_zone_fault"}
+Switch PANEL_ZONE_TAMPER <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_zone_tamper"}
+Switch PANEL_ZONE_LOW_BATTERY <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_zone_low_battery"}
+Switch PANEL_TIME_LOSS <yellowLED> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_time_loss"}
 
-DateTime PANEL_TIME "Panel Time [%1$tA, %1$tm/%1$td/%1$tY %1tT]" <calendar> (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_time"}
-Switch PANEL_TIME_STAMP (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_time_stamp"}
-Switch PANEL_TIME_BROADCAST (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_time_broadcast"}
+DateTime PANEL_TIME "Panel Time [%1$tA, %1$tm/%1$td/%1$tY %1tT]" <calendar> (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_time"}
+Switch PANEL_TIME_STAMP (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_time_stamp"}
+Switch PANEL_TIME_BROADCAST (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_time_broadcast"}
 
-Switch PANEL_FIRE_KEY_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_fire_key_alarm"}
-Switch PANEL_PANIC_KEY_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_panic_key_alarm"}
-Switch PANEL_AUX_KEY_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_aux_key_alarm"}
-Switch PANEL_AUX_INPUT_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:192_168_0_100:panel:panel_aux_input_alarm"}
+Switch PANEL_FIRE_KEY_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_fire_key_alarm"}
+Switch PANEL_PANIC_KEY_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_panic_key_alarm"}
+Switch PANEL_AUX_KEY_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_aux_key_alarm"}
+Switch PANEL_AUX_INPUT_ALARM (DSCAlarmPanel) {channel="dscalarm:panel:MyBridgeName:panel:panel_aux_input_alarm"}
 
 /* DSC Alarm Partition Items */
-String PARTITION1_STATUS "Partition 1 Status: [%s]" (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_status"}
-Number PARTITION1_ARM_MODE "Partition 1 Arm Mode: [%d]" (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_arm_mode"}
-Switch PARTITION1_ARMED (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_armed"}
-Switch PARTITION1_ENTRY_DELAY (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_entry_delay"}
-Switch PARTITION1_EXIT_DELAY (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_exit_delay"}
-Switch PARTITION1_IN_ALARM (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_in_alarm"}
-String PARTITION1_OPENING_CLOSING_MODE "Opening/Closing Mode: [%s]" (DSCAlarmPartitions) {channel="dscalarm:partition:192_168_0_100:partition1:partition_opening_closing_mode"}
+String PARTITION1_STATUS "Partition 1 Status: [%s]" (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_status"}
+Number PARTITION1_ARM_MODE "Partition 1 Arm Mode: [%d]" (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_arm_mode"}
+Switch PARTITION1_ARMED (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_armed"}
+Switch PARTITION1_ENTRY_DELAY (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_entry_delay"}
+Switch PARTITION1_EXIT_DELAY (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_exit_delay"}
+Switch PARTITION1_IN_ALARM (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_in_alarm"}
+String PARTITION1_OPENING_CLOSING_MODE "Opening/Closing Mode: [%s]" (DSCAlarmPartitions) {channel="dscalarm:partition:MyBridgeName:partition1:partition_opening_closing_mode"}
 
 /* DSC Alarm Zones Items */
-Contact ZONE1_STATUS "Tamper Switch (Zone 1)" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_status"}
-String ZONE1_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_message"}
-Switch ZONE1_BYPASS_MODE "Tamper Switch Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_bypass_mode"}
-Switch ZONE1_IN_ALARM "Zone 1 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_in_alarm"}
-Switch ZONE1_TAMPER "Zone 1 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_tamper"}
-Switch ZONE1_FAULT "Zone 1 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_fault"}
-Switch ZONE1_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone1:zone_tripped"}
+Contact ZONE1_STATUS "Tamper Switch (Zone 1)" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_status"}
+String ZONE1_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_message"}
+Switch ZONE1_BYPASS_MODE "Tamper Switch Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_bypass_mode"}
+Switch ZONE1_IN_ALARM "Zone 1 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_in_alarm"}
+Switch ZONE1_TAMPER "Zone 1 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_tamper"}
+Switch ZONE1_FAULT "Zone 1 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_fault"}
+Switch ZONE1_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_tripped"}
 
-Contact ZONE9_STATUS "Front Door Sensor (Zone 9)" <door> (DSCAlarmZones, FrontFoyer, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone9:zone_status"}
-String ZONE9_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone9:zone_message"}
-Switch ZONE9_BYPASS_MODE "Front Door Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone9:zone_bypass_mode"}
-Switch ZONE9_IN_ALARM "Zone 9 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone9:zone_in_alarm"}
-Switch ZONE9_TAMPER "Zone 9 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone9:zone_tamper"}
-Switch ZONE9_FAULT "Zone 9 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone9:zone_fault"}
-Switch ZONE9_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone9:zone_tripped"}
+Contact ZONE9_STATUS "Front Door Sensor (Zone 9)" <door> (DSCAlarmZones, FrontFoyer, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone9:zone_status"}
+String ZONE9_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_message"}
+Switch ZONE9_BYPASS_MODE "Front Door Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_bypass_mode"}
+Switch ZONE9_IN_ALARM "Zone 9 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_in_alarm"}
+Switch ZONE9_TAMPER "Zone 9 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_tamper"}
+Switch ZONE9_FAULT "Zone 9 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_fault"}
+Switch ZONE9_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_tripped"}
 
-Contact ZONE10_STATUS "Deck Door Sensor (Zone 10)" <door> (DSCAlarmZones, FamilyRoom, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone10:zone_status"}
-String ZONE10_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone10:zone_message"}
-Switch ZONE10_BYPASS_MODE "Deck Door Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone10:zone_bypass_mode"}
-Switch ZONE10_IN_ALARM "Zone 10 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone10:zone_in_alarm"}
-Switch ZONE10_TAMPER "Zone 10 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone10:zone_tamper"}
-Switch ZONE10_FAULT "Zone 10 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone10:zone_fault"}
-Switch ZONE10_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone10:zone_tripped"}
+Contact ZONE10_STATUS "Deck Door Sensor (Zone 10)" <door> (DSCAlarmZones, FamilyRoom, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone10:zone_status"}
+String ZONE10_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_message"}
+Switch ZONE10_BYPASS_MODE "Deck Door Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_bypass_mode"}
+Switch ZONE10_IN_ALARM "Zone 10 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_in_alarm"}
+Switch ZONE10_TAMPER "Zone 10 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_tamper"}
+Switch ZONE10_FAULT "Zone 10 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_fault"}
+Switch ZONE10_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_tripped"}
 
-Contact ZONE11_STATUS "Back Door Sensor (Zone 11)" <door> (DSCAlarmZones, UtilityRoom, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone11:zone_status"}
-String ZONE11_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone11:zone_message"}
-Switch ZONE11_BYPASS_MODE "Back Door Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone11:zone_bypass_mode"}
-Switch ZONE11_IN_ALARM "Zone 11 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone11:zone_in_alarm"}
-Switch ZONE11_TAMPER "Zone 11 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone11:zone_tamper"}
-Switch ZONE11_FAULT "Zone 11 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone11:zone_fault"}
-Switch ZONE11_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone11:zone_tripped"}
+Contact ZONE11_STATUS "Back Door Sensor (Zone 11)" <door> (DSCAlarmZones, UtilityRoom, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone11:zone_status"}
+String ZONE11_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_message"}
+Switch ZONE11_BYPASS_MODE "Back Door Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_bypass_mode"}
+Switch ZONE11_IN_ALARM "Zone 11 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_in_alarm"}
+Switch ZONE11_TAMPER "Zone 11 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_tamper"}
+Switch ZONE11_FAULT "Zone 11 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_fault"}
+Switch ZONE11_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_tripped"}
 
-Contact ZONE12_STATUS "Side Door Sensor (Zone 12)" <door> (DSCAlarmZones, SideFoyer, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone12:zone_status"}
-String ZONE12_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone12:zone_message"}
-Switch ZONE12_BYPASS_MODE "Side Door Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone12:zone_bypass_mode"}
-Switch ZONE12_IN_ALARM "Zone 12 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone12:zone_in_alarm"}
-Switch ZONE12_TAMPER "Zone 12 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone12:zone_tamper"}
-Switch ZONE12_FAULT "Zone 12 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone12:zone_fault"}
-Switch ZONE12_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone12:zone_tripped"}
+Contact ZONE12_STATUS "Side Door Sensor (Zone 12)" <door> (DSCAlarmZones, SideFoyer, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone12:zone_status"}
+String ZONE12_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_message"}
+Switch ZONE12_BYPASS_MODE "Side Door Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_bypass_mode"}
+Switch ZONE12_IN_ALARM "Zone 12 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_in_alarm"}
+Switch ZONE12_TAMPER "Zone 12 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_tamper"}
+Switch ZONE12_FAULT "Zone 12 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_fault"}
+Switch ZONE12_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_tripped"}
 
-Contact ZONE13_STATUS "Garage Door 1 Sensor (Zone 13)" <door> (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone13:zone_status"}
-String ZONE13_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone13:zone_message"}
-Switch ZONE13_BYPASS_MODE "Garage Door 1 Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone13:zone_bypass_mode"}
-Switch ZONE13_IN_ALARM "Zone 13 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone13:zone_in_alarm"}
-Switch ZONE13_TAMPER "Zone 13 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone13:zone_tamper"}
-Switch ZONE13_FAULT "Zone 13 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone13:zone_fault"}
-Switch ZONE13_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone13:zone_tripped"}
+Contact ZONE13_STATUS "Garage Door 1 Sensor (Zone 13)" <door> (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone13:zone_status"}
+String ZONE13_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_message"}
+Switch ZONE13_BYPASS_MODE "Garage Door 1 Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_bypass_mode"}
+Switch ZONE13_IN_ALARM "Zone 13 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_in_alarm"}
+Switch ZONE13_TAMPER "Zone 13 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_tamper"}
+Switch ZONE13_FAULT "Zone 13 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_fault"}
+Switch ZONE13_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_tripped"}
 
-Contact ZONE14_STATUS "Garage Door 2 Sensor (Zone 14)" <garagedoor> (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone14:zone_status"}
-String ZONE14_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone14:zone_message"}
-Switch ZONE14_BYPASS_MODE "Garage Door 2 Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone14:zone_bypass_mode"}
-Switch ZONE14_IN_ALARM "Zone 14 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone14:zone_in_alarm"}
-Switch ZONE14_TAMPER "Zone 14 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone14:zone_tamper"}
-Switch ZONE14_FAULT "Zone 14 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone14:zone_fault"}
-Switch ZONE14_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone14:zone_tripped"}
+Contact ZONE14_STATUS "Garage Door 2 Sensor (Zone 14)" <garagedoor> (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone14:zone_status"}
+String ZONE14_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_message"}
+Switch ZONE14_BYPASS_MODE "Garage Door 2 Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_bypass_mode"}
+Switch ZONE14_IN_ALARM "Zone 14 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_in_alarm"}
+Switch ZONE14_TAMPER "Zone 14 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_tamper"}
+Switch ZONE14_FAULT "Zone 14 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_fault"}
+Switch ZONE14_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_tripped"}
 
-Contact ZONE15_STATUS "Garage Window Sensor (Zone 15)" (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:192_168_0_100:zone15:zone_status"}
-String ZONE15_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone15:zone_message"}
-Switch ZONE15_BYPASS_MODE "Garage Window Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone15:zone_bypass_mode"}
-Switch ZONE15_IN_ALARM "Zone 15 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone15:zone_in_alarm"}
-Switch ZONE15_TAMPER "Zone 15 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone15:zone_tamper"}
-Switch ZONE15_FAULT "Zone 15 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone15:zone_fault"}
-Switch ZONE15_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone15:zone_tripped"}
+Contact ZONE15_STATUS "Garage Window Sensor (Zone 15)" (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone15:zone_status"}
+String ZONE15_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_message"}
+Switch ZONE15_BYPASS_MODE "Garage Window Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_bypass_mode"}
+Switch ZONE15_IN_ALARM "Zone 15 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_in_alarm"}
+Switch ZONE15_TAMPER "Zone 15 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_tamper"}
+Switch ZONE15_FAULT "Zone 15 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_fault"}
+Switch ZONE15_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_tripped"}
 
-Contact ZONE21_STATUS "Family Room Motion Sensor (Zone 21)" <motionDetector> (DSCAlarmZones,  FamilyRoom, DSCAlarmMotion) {channel="dscalarm:zone:192_168_0_100:zone21:zone_status"}
-String ZONE21_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone21:zone_message"}
-Switch ZONE21_BYPASS_MODE "Family Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone21:zone_bypass_mode"}
-Switch ZONE21_IN_ALARM "Zone 21 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone21:zone_in_alarm"}
-Switch ZONE21_TAMPER "Zone 21 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone21:zone_tamper"}
-Switch ZONE21_FAULT "Zone 21 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone21:zone_fault"}
-Switch ZONE21_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone21:zone_tripped"}
+Contact ZONE21_STATUS "Family Room Motion Sensor (Zone 21)" <motionDetector> (DSCAlarmZones,  FamilyRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone21:zone_status"}
+String ZONE21_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_message"}
+Switch ZONE21_BYPASS_MODE "Family Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_bypass_mode"}
+Switch ZONE21_IN_ALARM "Zone 21 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_in_alarm"}
+Switch ZONE21_TAMPER "Zone 21 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_tamper"}
+Switch ZONE21_FAULT "Zone 21 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_fault"}
+Switch ZONE21_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_tripped"}
 
-Contact ZONE22_STATUS "Office Motion Sensor (Zone 22)" <motionDetector> (DSCAlarmZones,  Office, DSCAlarmMotion) {channel="dscalarm:zone:192_168_0_100:zone22:zone_status"}
-String ZONE22_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone22:zone_message"}
-Switch ZONE22_BYPASS_MODE "Office Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone22:zone_bypass_mode"}
-Switch ZONE22_IN_ALARM "Zone 22 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone22:zone_in_alarm"}
-Switch ZONE22_TAMPER "Zone 22 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone22:zone_tamper"}
-Switch ZONE22_FAULT "Zone 22 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone22:zone_fault"}
-Switch ZONE22_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone22:zone_tripped"}
+Contact ZONE22_STATUS "Office Motion Sensor (Zone 22)" <motionDetector> (DSCAlarmZones,  Office, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone22:zone_status"}
+String ZONE22_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_message"}
+Switch ZONE22_BYPASS_MODE "Office Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_bypass_mode"}
+Switch ZONE22_IN_ALARM "Zone 22 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_in_alarm"}
+Switch ZONE22_TAMPER "Zone 22 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_tamper"}
+Switch ZONE22_FAULT "Zone 22 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_fault"}
+Switch ZONE22_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_tripped"}
 
-Contact ZONE23_STATUS "Dining Room Motion Sensor (Zone 23)" <motionDetector> (DSCAlarmZones, DiningRoom, DSCAlarmMotion) {channel="dscalarm:zone:192_168_0_100:zone23:zone_status"}
-String ZONE23_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone23:zone_message"}
-Switch ZONE23_BYPASS_MODE "Dining Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone23:zone_bypass_mode"}
-Switch ZONE23_IN_ALARM "Zone 23 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone23:zone_in_alarm"}
-Switch ZONE23_TAMPER "Zone 23 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone23:zone_tamper"}
-Switch ZONE23_FAULT "Zone 23 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone23:zone_fault"}
-Switch ZONE23_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone23:zone_tripped"}
+Contact ZONE23_STATUS "Dining Room Motion Sensor (Zone 23)" <motionDetector> (DSCAlarmZones, DiningRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone23:zone_status"}
+String ZONE23_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_message"}
+Switch ZONE23_BYPASS_MODE "Dining Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_bypass_mode"}
+Switch ZONE23_IN_ALARM "Zone 23 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_in_alarm"}
+Switch ZONE23_TAMPER "Zone 23 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_tamper"}
+Switch ZONE23_FAULT "Zone 23 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_fault"}
+Switch ZONE23_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_tripped"}
 
-Contact ZONE24_STATUS "Living Room Motion Sensor (Zone 24)" <motionDetector> (DSCAlarmZones,  LivingRoom, DSCAlarmMotion) {channel="dscalarm:zone:192_168_0_100:zone24:zone_status"}
-String ZONE24_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone24:zone_message"}
-Switch ZONE24_BYPASS_MODE "Living Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone24:zone_bypass_mode"}
-Switch ZONE24_IN_ALARM "Zone 24 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone24:zone_in_alarm"}
-Switch ZONE24_TAMPER "Zone 24 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone24:zone_tamper"}
-Switch ZONE24_FAULT "Zone 24 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone24:zone_fault"}
-Switch ZONE24_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone24:zone_tripped"}
+Contact ZONE24_STATUS "Living Room Motion Sensor (Zone 24)" <motionDetector> (DSCAlarmZones,  LivingRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone24:zone_status"}
+String ZONE24_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_message"}
+Switch ZONE24_BYPASS_MODE "Living Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_bypass_mode"}
+Switch ZONE24_IN_ALARM "Zone 24 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_in_alarm"}
+Switch ZONE24_TAMPER "Zone 24 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_tamper"}
+Switch ZONE24_FAULT "Zone 24 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_fault"}
+Switch ZONE24_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_tripped"}
 
-Contact ZONE25_STATUS "Utility Room Motion Sensor (Zone 25)" <motionDetector> (DSCAlarmZones,  UtilityRoom, DSCAlarmMotion) {channel="dscalarm:zone:192_168_0_100:zone25:zone_status"}
-String ZONE25_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone25:zone_message"}
-Switch ZONE25_BYPASS_MODE "Utility Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone25:zone_bypass_mode"}
-Switch ZONE25_IN_ALARM "Zone 25 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone25:zone_in_alarm"}
-Switch ZONE25_TAMPER "Zone 25 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone25:zone_tamper"}
-Switch ZONE25_FAULT "Zone 25 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone25:zone_fault"}
-Switch ZONE25_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone25:zone_tripped"}
+Contact ZONE25_STATUS "Utility Room Motion Sensor (Zone 25)" <motionDetector> (DSCAlarmZones,  UtilityRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone25:zone_status"}
+String ZONE25_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_message"}
+Switch ZONE25_BYPASS_MODE "Utility Room Motion Sensor Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_bypass_mode"}
+Switch ZONE25_IN_ALARM "Zone 25 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_in_alarm"}
+Switch ZONE25_TAMPER "Zone 25 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_tamper"}
+Switch ZONE25_FAULT "Zone 25 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_fault"}
+Switch ZONE25_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_tripped"}
 
-Contact ZONE51_STATUS "Utility Room Smoke Detector (Zone 51)" <smokeDetector> (DSCAlarmZones,  UtilityRoom, DSCAlarmSmoke) {channel="dscalarm:zone:192_168_0_100:zone51:zone_status"}
-String ZONE51_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone51:zone_message"}
-Switch ZONE51_BYPASS_MODE "Utility Room Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone51:zone_bypass_mode"}
-Switch ZONE51_IN_ALARM "Zone 51 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone51:zone_in_alarm"}
-Switch ZONE51_TAMPER "Zone 51 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone51:zone_tamper"}
-Switch ZONE51_FAULT "Zone 51 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone51:zone_fault"}
-Switch ZONE51_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone51:zone_tripped"}
+Contact ZONE51_STATUS "Utility Room Smoke Detector (Zone 51)" <smokeDetector> (DSCAlarmZones,  UtilityRoom, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone51:zone_status"}
+String ZONE51_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_message"}
+Switch ZONE51_BYPASS_MODE "Utility Room Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_bypass_mode"}
+Switch ZONE51_IN_ALARM "Zone 51 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_in_alarm"}
+Switch ZONE51_TAMPER "Zone 51 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_tamper"}
+Switch ZONE51_FAULT "Zone 51 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_fault"}
+Switch ZONE51_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_tripped"}
 
-Contact ZONE52_STATUS "Dining Room Smoke Detector (Zone 52)" <smokeDetector> (DSCAlarmZones, DiningRoom, DSCAlarmSmoke) {channel="dscalarm:zone:192_168_0_100:zone52:zone_status"}
-String ZONE52_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone52:zone_message"}
-Switch ZONE52_BYPASS_MODE "Dining Room Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone52:zone_bypass_mode"}
-Switch ZONE52_IN_ALARM "Zone 52 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone52:zone_in_alarm"}
-Switch ZONE52_TAMPER "Zone 52 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone52:zone_tamper"}
-Switch ZONE52_FAULT "Zone 52 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone52:zone_fault"}
-Switch ZONE52_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone52:zone_tripped"}
+Contact ZONE52_STATUS "Dining Room Smoke Detector (Zone 52)" <smokeDetector> (DSCAlarmZones, DiningRoom, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone52:zone_status"}
+String ZONE52_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_message"}
+Switch ZONE52_BYPASS_MODE "Dining Room Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_bypass_mode"}
+Switch ZONE52_IN_ALARM "Zone 52 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_in_alarm"}
+Switch ZONE52_TAMPER "Zone 52 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_tamper"}
+Switch ZONE52_FAULT "Zone 52 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_fault"}
+Switch ZONE52_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_tripped"}
 
-Contact ZONE53_STATUS "Front Foyer Smoke Detector (Zone 53)" <smokeDetector> (DSCAlarmZones, FrontFoyer, DSCAlarmSmoke) {channel="dscalarm:zone:192_168_0_100:zone53:zone_status"}
-String ZONE53_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone53:zone_message"}
-Switch ZONE53_BYPASS_MODE "Front Foyer Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone53:zone_bypass_mode"}
-Switch ZONE53_IN_ALARM "Zone 53 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone53:zone_in_alarm"}
-Switch ZONE53_TAMPER "Zone 53 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone53:zone_tamper"}
-Switch ZONE53_FAULT "Zone 53 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone53:zone_fault"}
-Switch ZONE53_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone53:zone_tripped"}
+Contact ZONE53_STATUS "Front Foyer Smoke Detector (Zone 53)" <smokeDetector> (DSCAlarmZones, FrontFoyer, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone53:zone_status"}
+String ZONE53_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_message"}
+Switch ZONE53_BYPASS_MODE "Front Foyer Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_bypass_mode"}
+Switch ZONE53_IN_ALARM "Zone 53 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_in_alarm"}
+Switch ZONE53_TAMPER "Zone 53 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_tamper"}
+Switch ZONE53_FAULT "Zone 53 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_fault"}
+Switch ZONE53_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_tripped"}
 
-Contact ZONE54_STATUS "Upstairs Hall Smoke Detector (Zone 54)" <smokeDetector> (DSCAlarmZones, UpstairsHall, DSCAlarmSmoke) {channel="dscalarm:zone:192_168_0_100:zone54:zone_status"}
-String ZONE54_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone54:zone_message"}
-Switch ZONE54_BYPASS_MODE "Upstairs Hall Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone54:zone_bypass_mode"}
-Switch ZONE54_IN_ALARM "Zone 54 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone54:zone_in_alarm"}
-Switch ZONE54_TAMPER "Zone 54 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone54:zone_tamper"}
-Switch ZONE54_FAULT "Zone 54 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone54:zone_fault"}
-Switch ZONE54_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone54:zone_tripped"}
+Contact ZONE54_STATUS "Upstairs Hall Smoke Detector (Zone 54)" <smokeDetector> (DSCAlarmZones, UpstairsHall, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone54:zone_status"}
+String ZONE54_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_message"}
+Switch ZONE54_BYPASS_MODE "Upstairs Hall Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_bypass_mode"}
+Switch ZONE54_IN_ALARM "Zone 54 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_in_alarm"}
+Switch ZONE54_TAMPER "Zone 54 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_tamper"}
+Switch ZONE54_FAULT "Zone 54 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_fault"}
+Switch ZONE54_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_tripped"}
 
-Contact ZONE55_STATUS "Master Bedroom Smoke Detector (Zone 55)" <smokeDetector> (DSCAlarmZones, Bedroom, DSCAlarmSmoke) {channel="dscalarm:zone:192_168_0_100:zone55:zone_status"}
-String ZONE55_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone55:zone_message"}
-Switch ZONE55_BYPASS_MODE "Master Bedroom Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone55:zone_bypass_mode"}
-Switch ZONE55_IN_ALARM "Zone 55 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone55:zone_in_alarm"}
-Switch ZONE55_TAMPER "Zone 55 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone55:zone_tamper"}
-Switch ZONE55_FAULT "Zone 55 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone55:zone_fault"}
-Switch ZONE55_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:192_168_0_100:zone55:zone_tripped"}
+Contact ZONE55_STATUS "Master Bedroom Smoke Detector (Zone 55)" <smokeDetector> (DSCAlarmZones, Bedroom, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone55:zone_status"}
+String ZONE55_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_message"}
+Switch ZONE55_BYPASS_MODE "Master Bedroom Smoke Detector Bypass Mode" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_bypass_mode"}
+Switch ZONE55_IN_ALARM "Zone 55 Alarm Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_in_alarm"}
+Switch ZONE55_TAMPER "Zone 55 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_tamper"}
+Switch ZONE55_FAULT "Zone 55 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_fault"}
+Switch ZONE55_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_tripped"}
 
 /* DSC Alarm Keypad Items */
-Number KEYPAD_READY_LED "Ready LED Status" <readyLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_ready_led"}
-Number KEYPAD_ARMED_LED "Armed LED Status" <armedLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_armed_led"}
-Number KEYPAD_MEMORY_LED "Memory LED Status" <memoryLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_memory_led"}
-Number KEYPAD_BYPASS_LED "Bypass LED Status" <bypassLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_bypass_led"}
-Number KEYPAD_TROUBLE_LED "Trouble LED Status" <troubleLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_trouble_led"}
-Number KEYPAD_PROGRAM_LED "Program LED Status" <programLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_program_led"}
-Number KEYPAD_FIRE_LED "Fire LED Status" <fireLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_fire_led"}
-Number KEYPAD_BACKLIGHT_LED "Backlight LED Status" <backlightLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_backlight_led"}
-Number KEYPAD_AC_LED "AC LED Status" <acLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:192_168_0_100:keypad:keypad_ac_led"}
+Number KEYPAD_READY_LED "Ready LED Status" <readyLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_ready_led"}
+Number KEYPAD_ARMED_LED "Armed LED Status" <armedLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_armed_led"}
+Number KEYPAD_MEMORY_LED "Memory LED Status" <memoryLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_memory_led"}
+Number KEYPAD_BYPASS_LED "Bypass LED Status" <bypassLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_bypass_led"}
+Number KEYPAD_TROUBLE_LED "Trouble LED Status" <troubleLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_trouble_led"}
+Number KEYPAD_PROGRAM_LED "Program LED Status" <programLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_program_led"}
+Number KEYPAD_FIRE_LED "Fire LED Status" <fireLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_fire_led"}
+Number KEYPAD_BACKLIGHT_LED "Backlight LED Status" <backlightLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_backlight_led"}
+Number KEYPAD_AC_LED "AC LED Status" <acLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_ac_led"}
 ```
 
 Here is an example sitemap:
@@ -583,6 +583,16 @@ Here is an example sitemap:
 
 ## Change Log
 
-###OpenHAB 2.0.0 Beta 1
+### OpenHAB 2.0.0 Beta 1
 
 * Initial commit of the DSC Alarm Binding. ([#324](https://github.com/openhab/openhab2-addons/pull/324))
+
+### OpenHAB 2.0.0 Beta 3
+
+* Added support for the DSC Alarm binding to communicate with an IT-100 through a TCP/IP serial server.  Also, fixed a bug where the IT-100 serial interface requires a 6 digit usercode but was only receiving 4 digits.  The channel named `PANEL_COMMAND` was changed from type String to type Number.  Fixed bug where the IT-100 bridge would not connect.  ([#846](https://github.com/openhab/openhab2-addons/pull/846))
+
+### OpenHAB 2.0.0 Beta 4
+
+* Fixed bug where the binding would prematurely set the channel `PARTITION_ARM_MODE` when issuing a partition arm command.
+* Fixed issue where the binding stopped handling incoming messages from the DSC Alarm system.
+* Disabled background discovery of DSC Alarm bridges as this may create network issues.  Manual discovery is still available.

@@ -61,7 +61,8 @@ public class EnvisalinkBridgeDiscovery {
         try {
             InetAddress localHost = InetAddress.getLocalHost();
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
-            subnetUtils = new SubnetUtils(localHost.getHostAddress() + "/" + networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
+            subnetUtils = new SubnetUtils(localHost.getHostAddress() + "/"
+                    + networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
             subnetInfo = subnetUtils.getInfo();
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
@@ -73,20 +74,23 @@ public class EnvisalinkBridgeDiscovery {
             return;
         }
 
-        logger.debug("   Local IP Address: {} - {}", subnetInfo.getAddress(), convertIPToNumber(subnetInfo.getAddress()));
-        logger.debug("   Subnet:           {} - {}", subnetInfo.getNetworkAddress(), convertIPToNumber(subnetInfo.getNetworkAddress()));
+        logger.debug("   Local IP Address: {} - {}", subnetInfo.getAddress(),
+                convertIPToNumber(subnetInfo.getAddress()));
+        logger.debug("   Subnet:           {} - {}", subnetInfo.getNetworkAddress(),
+                convertIPToNumber(subnetInfo.getNetworkAddress()));
         logger.debug("   Network Prefix:   {}", subnetInfo.getCidrSignature().split("/")[1]);
         logger.debug("   Network Mask:     {}", subnetInfo.getNetmask());
         logger.debug("   Low IP:           {}", convertNumberToIP(lowIP));
         logger.debug("   High IP:          {}", convertNumberToIP(highIP));
 
         for (long ip = lowIP; ip <= highIP; ip++) {
+
             try (Socket socket = new Socket()) {
                 ipAddress = convertNumberToIP(ip);
+
                 socket.setReuseAddress(true);
                 socket.setReceiveBufferSize(32);
                 socket.connect(new InetSocketAddress(ipAddress, ENVISALINK_BRIDGE_PORT), CONNECTION_TIMEOUT);
-
                 if (socket.isConnected()) {
 
                     String message = "";
@@ -94,10 +98,12 @@ public class EnvisalinkBridgeDiscovery {
                     try (BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                         message = input.readLine();
                     } catch (SocketTimeoutException e) {
-                        logger.debug("discoverBridge(): No Message Read from Socket at [{}] - {}", ipAddress, e.getMessage());
+                        logger.debug("discoverBridge(): No Message Read from Socket at [{}] - {}", ipAddress,
+                                e.getMessage());
                         continue;
                     } catch (Exception e) {
-                        logger.debug("discoverBridge(): Exception Reading from Socket! {}", e.toString());
+                        logger.debug("discoverBridge(): Exception Reading from Socket at [{}]! {}", ipAddress,
+                                e.toString());
                         continue;
                     }
 
@@ -105,7 +111,8 @@ public class EnvisalinkBridgeDiscovery {
                         logger.debug("discoverBridge(): Bridge Found - [{}]!  Message - '{}'", ipAddress, message);
                         dscAlarmBridgeDiscovery.addEnvisalinkBridge(ipAddress);
                     } else {
-                        logger.debug("discoverBridge(): No Response from Connection -  [{}]!  Message - '{}'", ipAddress, message);
+                        logger.debug("discoverBridge(): No Response from Connection -  [{}]!  Message - '{}'",
+                                ipAddress, message);
                     }
                 }
             } catch (IllegalArgumentException e) {
