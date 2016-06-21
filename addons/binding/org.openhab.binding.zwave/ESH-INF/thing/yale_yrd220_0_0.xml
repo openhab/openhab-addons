@@ -13,11 +13,6 @@ Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To i
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="lock_door" typeId="lock_door">
         <label>Door Lock</label>
         <properties>
@@ -30,12 +25,17 @@ Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To i
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YRD220</property>
+      <property name="modelId">YRD220</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0002:AA00</property>
       <property name="defaultAssociations">1</property>

@@ -11,11 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
@@ -34,12 +29,17 @@
           <property name="binding:*:OnOffType">ALARM;type=ACCESS_CONTROL</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wintop</property>
-      <property name="model">WTRFID</property>
+      <property name="modelId">WTRFID</property>
       <property name="manufacturerId">0097</property>
       <property name="manufacturerRef">6131:4501</property>
       <property name="defaultAssociations">1</property>

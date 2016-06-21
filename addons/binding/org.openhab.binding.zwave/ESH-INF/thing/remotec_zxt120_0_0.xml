@@ -11,27 +11,16 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="thermostat_mode" typeId="remotec_zxt120_00_000_thermostat_mode">
-        <label>Thermostat mode</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
-        </properties>
-      </channel>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanmode" typeId="remotec_zxt120_00_000_thermostat_fanmode">
-        <label>Thermostat fan mode</label>
+      <channel id="thermostat_mode" typeId="remotec_zxt120_00_000_thermostat_mode">
+        <label>Thermostat mode</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
       <channel id="thermostat_setpoint_cooling" typeId="thermostat_setpoint">
@@ -46,12 +35,23 @@
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
+      <channel id="thermostat_fanmode" typeId="remotec_zxt120_00_000_thermostat_fanmode">
+        <label>Thermostat fan mode</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Remotec</property>
-      <property name="model">ZXT-120</property>
+      <property name="modelId">ZXT-120</property>
       <property name="manufacturerId">5254</property>
       <property name="manufacturerRef">0101:8377,0102:8377</property>
     </properties>

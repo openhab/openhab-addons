@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">ST812</property>
+      <property name="modelId">ST812</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">000B:0001</property>
       <property name="defaultAssociations">1</property>

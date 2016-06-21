@@ -17,16 +17,16 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
-      <channel id="thermostat_state" typeId="thermostat_state">
-        <label>Thermostat Operating State</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
-        </properties>
-      </channel>
       <channel id="thermostat_mode" typeId="stelpro_stzw402_00_000_thermostat_mode">
         <label>Thermostat mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_state" typeId="thermostat_state">
+        <label>Thermostat Operating State</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
         </properties>
       </channel>
       <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
@@ -40,7 +40,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Stelpro</property>
-      <property name="model">STZW402</property>
+      <property name="modelId">STZW402</property>
       <property name="manufacturerId">0239</property>
       <property name="manufacturerRef">0001:0001</property>
       <property name="defaultAssociations">1</property>

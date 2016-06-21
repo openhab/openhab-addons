@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Homeseer</property>
-      <property name="model">EZMultiPli</property>
+      <property name="modelId">EZMultiPli</property>
       <property name="manufacturerId">001E</property>
       <property name="manufacturerRef">0004:0001</property>
       <property name="defaultAssociations">1,2</property>

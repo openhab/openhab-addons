@@ -11,9 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
@@ -34,10 +35,9 @@
           <property name="binding:*:OnOffType">ALARM;type=GENERAL</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="battery-level" typeId="system.battery-level">
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">D-Link</property>
-      <property name="model">DCH-Z120</property>
+      <property name="modelId">DCH-Z120</property>
       <property name="manufacturerId">0108</property>
       <property name="manufacturerRef">0002:000D</property>
       <property name="defaultAssociations">1</property>

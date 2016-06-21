@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">MCO Home</property>
-      <property name="model">MH-S411</property>
+      <property name="modelId">MH-S411</property>
       <property name="manufacturerId">015F</property>
       <property name="manufacturerRef">4102:0201</property>
       <property name="defaultAssociations">2</property>

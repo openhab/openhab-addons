@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">HomeSeer Technologies</property>
-      <property name="model">HS-WD100+</property>
+      <property name="modelId">HS-WD100+</property>
       <property name="manufacturerId">000C</property>
       <property name="manufacturerRef">4447:3034</property>
       <property name="defaultAssociations">1</property>

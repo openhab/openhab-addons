@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="reitz_064367_00_000" listed="false">
-    <label>064367 Insert blind control</label>
-    <description>Insert blind control</description>
+  <thing-type id="vision_zl7101_00_000" listed="false">
+    <label>ZL7101 Lamp Dimmer Module</label>
+    <description>Lamp Dimmer Module</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -18,20 +18,14 @@
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
-      <property name="vendor">Reitz Group</property>
-      <property name="model">064367</property>
-      <property name="manufacturerId">0064</property>
-      <property name="manufacturerRef">4001:0000</property>
+      <property name="vendor">Vision Security</property>
+      <property name="modelId">ZL7101</property>
+      <property name="manufacturerId">0109</property>
+      <property name="manufacturerRef">2008:0801</property>
     </properties>
 
   </thing-type>

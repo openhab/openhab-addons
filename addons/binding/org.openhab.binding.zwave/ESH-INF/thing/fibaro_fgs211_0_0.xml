@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGS211</property>
+      <property name="modelId">FGS211</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0400:0102,0400:0104,0400:0105,0400:0106,0400:0107,0400:0108,0400:0109,0400:100A,0400:300A,0402:3002</property>
       <property name="defaultAssociations">3</property>

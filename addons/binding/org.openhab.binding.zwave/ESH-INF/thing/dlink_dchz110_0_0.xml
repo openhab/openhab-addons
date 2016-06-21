@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door / Window Status</label>
+        <properties>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
+        </properties>
+      </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
         <label>Sensor (luminance)</label>
         <properties>
@@ -34,18 +40,12 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="sensor_door" typeId="sensor_door">
-        <label>Door / Window Status</label>
-        <properties>
-          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">D-Link</property>
-      <property name="model">DCH-Z110</property>
+      <property name="modelId">DCH-Z110</property>
       <property name="manufacturerId">0108</property>
       <property name="manufacturerRef">0002:000E</property>
       <property name="defaultAssociations">1</property>

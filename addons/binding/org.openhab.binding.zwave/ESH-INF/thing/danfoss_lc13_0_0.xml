@@ -13,21 +13,15 @@ Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm (general)</label>
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+        <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM;type=GENERAL</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
-        <label>Setpoint (heating)</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="time_offset" typeId="time_offset">
@@ -36,12 +30,18 @@ Living Connect Z Thermostat<br /><h1>Overview</h1><p>Radiator Thermostat</p> <br
           <property name="binding:*:DecimalType">CLOCK</property>
         </properties>
       </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm (general)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM;type=GENERAL</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Danfoss</property>
-      <property name="model">LC-13</property>
+      <property name="modelId">LC-13</property>
       <property name="manufacturerId">0002</property>
       <property name="manufacturerRef">0005:0004,8005:0001,8005:0002</property>
       <property name="defaultAssociations">1</property>

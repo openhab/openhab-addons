@@ -38,7 +38,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Zipato</property>
-      <property name="model">RGBWE27ZW</property>
+      <property name="modelId">RGBWE27ZW</property>
       <property name="manufacturerId">0131</property>
       <property name="manufacturerRef">0002:0002</property>
       <property name="commandClass:COLOR">getSupported=false</property>

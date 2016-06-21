@@ -13,10 +13,10 @@ MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating dista
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
@@ -43,10 +43,10 @@ MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating dista
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -59,7 +59,7 @@ MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating dista
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW100</property>
+      <property name="modelId">ZW100</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0064</property>
       <property name="versionMin">1.7</property>
