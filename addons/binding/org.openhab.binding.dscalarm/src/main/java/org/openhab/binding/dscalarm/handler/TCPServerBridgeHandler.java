@@ -109,17 +109,17 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             tcpListener.start();
 
             setConnected(true);
-        } catch (UnknownHostException exception) {
-            logger.error("openConnection(): Unknown Host Exception: ", exception);
+        } catch (UnknownHostException unknownHostException) {
+            logger.error("openConnection(): Unknown Host Exception: {}", unknownHostException.getMessage());
             setConnected(false);
         } catch (SocketException socketException) {
-            logger.error("openConnection(): Socket Exception: ", socketException);
+            logger.error("openConnection(): Socket Exception: {}", socketException.getMessage());
             setConnected(false);
         } catch (IOException ioException) {
-            logger.error("openConnection(): IO Exception: ", ioException);
+            logger.error("openConnection(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("openConnection(): Exception: ", exception);
+            logger.error("openConnection(): Unable to open a connection: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
     }
@@ -134,10 +134,10 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             tcpOutput.flush();
             logger.debug("write(): Message Sent: {}", writeString);
         } catch (IOException ioException) {
-            logger.error("write(): {}", ioException);
+            logger.error("write(): {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("write(): Unable to write to socket: {} ", exception);
+            logger.error("write(): Unable to write to socket: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
     }
@@ -153,10 +153,10 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             message = tcpInput.readLine();
             logger.debug("read(): Message Received: {}", message);
         } catch (IOException ioException) {
-            logger.error("read(): IO Exception: ", ioException);
+            logger.error("read(): IO Exception: ", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("read(): Exception: ", exception);
+            logger.error("read(): Exception: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
 
@@ -185,9 +185,9 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {
-            logger.error("closeConnection(): Unable to close connection - " + ioException.getMessage());
+            logger.error("closeConnection(): Unable to close connection - {}" + ioException.getMessage());
         } catch (Exception exception) {
-            logger.error("closeConnection(): Error closing connection - " + exception.getMessage());
+            logger.error("closeConnection(): Error closing connection - {}" + exception.getMessage());
         }
     }
 
@@ -207,13 +207,17 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             try {
                 while (isConnected()) {
                     if ((messageLine = read()) != null) {
-                        handleIncomingMessage(messageLine);
+                        try {
+                            handleIncomingMessage(messageLine);
+                        } catch (Exception e) {
+                            logger.error("TCPListener(): Message not handled by bridge: {}", e.getMessage());
+                        }
                     } else {
                         setConnected(false);
                     }
                 }
             } catch (Exception e) {
-                logger.error("TCPListener(): Unable to read message: ", e);
+                logger.error("TCPListener(): Unable to read message: {} ", e.getMessage(), e);
                 closeConnection();
             }
         }

@@ -60,11 +60,14 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
     /** Connection status for the bridge. */
     private boolean connected = false;
 
-    /** Determines if a thing has changed. */
+    /** Determines if things have changed. */
     private boolean thingsHaveChanged = false;
 
     /** Determines if all things have been refreshed. */
     private boolean allThingsRefreshed = false;
+
+    /** Thing count. */
+    private int thingCount = 0;
 
     /** Password for bridge connection authentication. */
     private String password = null;
@@ -157,21 +160,25 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Connect The Bridge.
      */
     private void connect() {
-        onDisconnected();
 
         openConnection();
 
         if (isConnected()) {
-            if (dscAlarmBridgeType == DSCAlarmBridgeType.Envisalink) {
-                if (sendCommand(DSCAlarmCode.NetworkLogin)) {
-                    onConnected();
-                } else {
-                    closeConnection();
-                }
-            } else {
+            if (dscAlarmBridgeType != DSCAlarmBridgeType.Envisalink) {
                 onConnected();
             }
         }
+    }
+
+    /**
+     * Runs when connected.
+     */
+    public void onConnected() {
+        logger.debug("onConnected(): Bridge Connected!");
+
+        setBridgeStatus(true);
+
+        thingsHaveChanged = true;
     }
 
     /**
@@ -182,82 +189,36 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         closeConnection();
 
         if (!isConnected()) {
-            onDisconnected();
+            setBridgeStatus(false);
         }
     }
 
     /**
-     * Returns connection status.
+     * Returns Connected.
      */
     public boolean isConnected() {
-        return connected;
+        return this.connected;
     }
 
     /**
-     * Set connection status.
-     *
-     * @param connected
+     * Sets Connected.
      */
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
 
     /**
-     * Set channel 'bridge_connection'.
+     * Set Bridge Status.
      *
-     * @param connected
+     * @param isOnline
      */
-    public void setBridgeConnection(boolean connected) {
-        logger.debug("setBridgeConnection(): Set Bridge to {}", connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+    public void setBridgeStatus(boolean isOnline) {
+        logger.debug("setBridgeConnection(): Setting Bridge to {}", isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+
+        updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), BRIDGE_RESET);
-
-        setConnected(connected);
-
-        updateState(channelUID, connected ? OnOffType.ON : OnOffType.OFF);
-        updateStatus(connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-    }
-
-    /**
-     * Runs when connected.
-     */
-    public void onConnected() {
-        logger.debug("onConnected(): Bridge Connected!");
-
-        setBridgeConnection(true);
-
-        // Inform thing handlers of connection
-        List<Thing> things = getThing().getThings();
-
-        for (Thing thing : things) {
-            DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
-
-            if (thingHandler != null) {
-                thingHandler.onBridgeConnected(this);
-                logger.trace("onConnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(), thing.getUID(), thingHandler);
-            }
-        }
-    }
-
-    /**
-     * Runs when disconnected.
-     */
-    public void onDisconnected() {
-        logger.debug("onDisconnected(): Bridge Disconnected!");
-
-        setBridgeConnection(false);
-
-        // Inform thing handlers of disconnection
-        List<Thing> things = getThing().getThings();
-
-        for (Thing thing : things) {
-            DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
-
-            if (thingHandler != null) {
-                thingHandler.onBridgeDisconnected(this);
-                logger.trace("onDisconnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(), thing.getUID(), thingHandler);
-            }
-        }
+        updateState(channelUID, isOnline ? OnOffType.ON : OnOffType.OFF);
     }
 
     /**
@@ -339,7 +300,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * Method for polling the DSC Alarm System.
      */
     public synchronized void polling() {
-        logger.debug("DSC Alarm Polling Task - '{}'", getThing().getUID());
+        logger.debug("DSC Alarm Polling Task - '{}' is {}", getThing().getUID(), getThing().getStatus());
 
         if (isConnected()) {
 
@@ -359,9 +320,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
             if (thingsHaveChanged) {
                 if (allThingsRefreshed) {
-                    this.setBridgeConnection(isConnected());
+                    this.setBridgeStatus(isConnected());
                     thingsHaveChanged = false;
-                    // Get a status report from API.
+                    // Get a status report from DSC Alarm.
                     sendCommand(DSCAlarmCode.StatusReport);
                 }
             }
@@ -381,6 +342,11 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
         List<Thing> things = getThing().getThings();
 
+        if (things.size() != thingCount) {
+            thingsHaveChanged = true;
+            thingCount = things.size();
+        }
+
         for (Thing thing : things) {
 
             DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thing.getHandler();
@@ -390,10 +356,10 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
                 if (!handler.isThingRefreshed()) {
 
-                    handler.onBridgeConnected(this);
-
-                    if (handler.isThingRefreshed()) {
-                        thingsHaveChanged = true;
+                    if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
+                        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                            handler.bridgeStatusChanged(getThing().getStatusInfo());
+                        }
                     }
 
                     if (handler.getDSCAlarmThingType().equals(DSCAlarmThingType.PANEL)) {
@@ -409,6 +375,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 logger.error("checkThings(): Thing handler not found!");
             }
         }
+
     }
 
     /**
@@ -420,6 +387,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * @return thing
      */
     public Thing findThing(DSCAlarmThingType dscAlarmThingType, int partitionId, int zoneId) {
+
         List<Thing> things = getThing().getThings();
 
         Thing thing = null;
@@ -464,7 +432,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.debug("findThing(): Error Seaching Thing - {}", e);
+                logger.debug("findThing(): Error Seaching Thing - {} ", e.getMessage(), e);
             }
         }
 
@@ -477,27 +445,37 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
      * @param incomingMessage
      */
     public synchronized void handleIncomingMessage(String incomingMessage) {
-        if (incomingMessage != null && incomingMessage != "") {
-            DSCAlarmMessage apiMessage = new DSCAlarmMessage(incomingMessage);
-            DSCAlarmMessageType apiMessageType = apiMessage.getDSCAlarmMessageType();
+        if (incomingMessage != null && !incomingMessage.isEmpty()) {
+            DSCAlarmMessage dscAlarmMessage = new DSCAlarmMessage(incomingMessage);
+            DSCAlarmMessageType dscAlarmMessageType = dscAlarmMessage.getDSCAlarmMessageType();
 
-            logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage, apiMessage.toString());
+            logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage, dscAlarmMessage.toString());
 
             DSCAlarmEvent event = new DSCAlarmEvent(this);
-            event.dscAlarmEventMessage(apiMessage);
+            event.dscAlarmEventMessage(dscAlarmMessage);
             DSCAlarmThingType dscAlarmThingType = null;
             int partitionId = 0;
             int zoneId = 0;
 
-            DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(apiMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-            if (apiCode == DSCAlarmCode.CommandAcknowledge) {
-                String apiData = apiMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if (apiData.equals("000")) {
-                    setBridgeConnection(true);
+            DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+
+            if (dscAlarmCode == DSCAlarmCode.LoginResponse) {
+                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+                if (dscAlarmMessageData.equals("3")) {
+                    sendCommand(DSCAlarmCode.NetworkLogin);
+                    // onConnected();
+                } else if (dscAlarmMessageData.equals("1")) {
+                    onConnected();
+                }
+                return;
+            } else if (dscAlarmCode == DSCAlarmCode.CommandAcknowledge) {
+                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+                if (dscAlarmMessageData.equals("000")) {
+                    setBridgeStatus(true);
                 }
             }
 
-            switch (apiMessageType) {
+            switch (dscAlarmMessageType) {
                 case PANEL_EVENT:
                     dscAlarmThingType = DSCAlarmThingType.PANEL;
                     break;
@@ -526,12 +504,16 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
 
                     if (thingHandler != null) {
-                        thingHandler.dscAlarmEventReceived(event, thing);
+                        if (thingHandler.isThingRefreshed()) {
+                            thingHandler.dscAlarmEventReceived(event, thing);
 
-                        if (panelThingHandler != null) {
-                            if (!thingHandler.equals(panelThingHandler)) {
-                                panelThingHandler.dscAlarmEventReceived(event, thing);
+                            if (panelThingHandler != null) {
+                                if (!thingHandler.equals(panelThingHandler)) {
+                                    panelThingHandler.dscAlarmEventReceived(event, thing);
+                                }
                             }
+                        } else {
+                            logger.debug("handleIncomingMessage(): Thing '{}' Not Refreshed!", thing.getUID());
                         }
                     }
                 } else {
@@ -542,6 +524,8 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
+        } else {
+            logger.debug("handleIncomingMessage(): No Message Received!");
         }
     }
 
