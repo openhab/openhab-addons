@@ -8,7 +8,7 @@
   <thing-type id="aeon_zw100_01_007" listed="false">
     <label>ZW100 MultiSensor 6</label>
     <description><![CDATA[
-MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating distance:  Up to 500 feet/150 meters outdoors   Operating temperature: 0°C to 40°C   Relative humidity: 8% RH to 80% RH       Function of Z_Wave Button: Click one time: </p><ol><li>Send non-security Node Info Frame</li> <li>Add MultiSensor into Z-wave network (non security inclusion)</li> <li>Remove MultiSensor from Z-wave network</li> </ol>   Short press 2 times within 1 second: <ol><li>Send Security Node Info Frame</li> <li>Add Multisensor into Z-Wave network (security inclusion)</li> <li>Remove MultiSensor from network</li> </ol>   Press and hold for 3 seconds: <p>Enable/Disable wake up for 10 minutes.</p> <p>(when it is enabled, the orange Led will fast blink)</p>   Press and hold for 20 seconds: <p>Reset MultiSensor to factory default (see documentation)</p> <br /><h2>Inclusion Information</h2><p>see "Device Overview"</p> <br /><h2>Exclusion Information</h2><p>see "Device Overview"</p>
+MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating distance:  Up to 500 feet/150 meters outdoors   Operating temperature: 0°C to 40°C   Relative humidity: 8% RH to 80% RH       Function of Z_Wave Button: Click one time:</p> <ol><li>Send non-security Node Info Frame</li> <li>Add MultiSensor into Z-wave network (non security inclusion)</li> <li>Remove MultiSensor from Z-wave network</li> </ol><p>  Short press 2 times within 1 second:</p> <ol><li>Send Security Node Info Frame</li> <li>Add Multisensor into Z-Wave network (security inclusion)</li> <li>Remove MultiSensor from network</li> </ol><p>  Press and hold for 3 seconds:</p> <p>Enable/Disable wake up for 10 minutes.</p> <p>(when it is enabled, the orange Led will fast blink)</p> <p>  Press and hold for 20 seconds:</p> <p>Reset MultiSensor to factory default (see documentation)</p> <br /><h2>Inclusion Information</h2><p>see "Device Overview"</p> <br /><h2>Exclusion Information</h2><p>see "Device Overview"</p>
     ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -63,6 +63,7 @@ MultiSensor 6<br /><h1>Overview</h1><p>Technical Specifications: Operating dista
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0064</property>
       <property name="versionMin">1.7</property>
+      <property name="versionMax">1.7</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
