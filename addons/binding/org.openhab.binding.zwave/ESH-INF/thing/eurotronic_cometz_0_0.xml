@@ -6,7 +6,8 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
   <thing-type id="eurotronic_cometz_00_000" listed="false">
-    <label>CometZ</label>
+    <label>CometZ Thermostatic Valve</label>
+    <description>Thermostatic Valve</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
