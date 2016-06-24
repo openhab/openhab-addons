@@ -47,7 +47,7 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
             baseItem = ((GroupItem) baseItem).getBaseItem();
         }
         if (expectedItemClass != taggedItem.getItem().getClass()
-                && expectedItemClass.isAssignableFrom(baseItem.getClass())) {
+                && !expectedItemClass.isAssignableFrom(baseItem.getClass())) {
             logger.error("Type " + taggedItem.getItem().getName() + " is a " + baseItem.getClass().getName()
                     + " instead of the expected " + expectedItemClass.getName());
         }
