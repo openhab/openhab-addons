@@ -12,7 +12,7 @@
     <!-- CHANNEL DEFINITIONS -->
     <channels>
       <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
@@ -43,38 +43,38 @@
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 1</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:1,BASIC:1</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1,BASIC:1</property>
         </properties>
       </channel>
       <channel id="switch_dimmer2" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 2</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:2,BASIC:2</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2,BASIC:2</property>
         </properties>
       </channel>
       <channel id="switch_dimmer3" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 3</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:3,BASIC:3</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:3</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:3,BASIC:3</property>
         </properties>
       </channel>
       <channel id="switch_dimmer4" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 4</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:4,BASIC:4</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:4</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:4,BASIC:4</property>
         </properties>
       </channel>
       <channel id="switch_dimmer5" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 5</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:5,BASIC:5</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:5</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:5,BASIC:5</property>
         </properties>
       </channel>
     </channels>
