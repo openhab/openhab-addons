@@ -238,13 +238,13 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     }
 
                     // First time round, then add the polling class
+                    // TODO: Probably should check for duplicates
                     if (first) {
                         thingChannelsPoll.add(chan);
                         logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
                     }
 
                     // Add the state and polling handlers
-                    // TODO: Probably should check for duplicates
                     if ("*".equals(bindingType[1]) || "State".equals(bindingType[1])) {
                         logger.debug("NODE {}: Initialising state channel {}", nodeId, channel.getUID());
                         thingChannelsState.add(chan);
