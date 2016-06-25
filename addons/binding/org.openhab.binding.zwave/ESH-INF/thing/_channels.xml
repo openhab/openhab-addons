@@ -212,6 +212,38 @@
         </state>
     </channel-type>
 
+    <!-- Blinds Control -->
+    <channel-type id="blinds_control">
+        <item-type>Rollershutter</item-type>
+        <label>Blinds Position</label>
+        <description>Provides start / stop control of blinds
+        </description>
+        <category>Blinds</category>
+        <config-description>
+            <parameter name="config_invert" type="boolean">
+                <label>Invert</label>
+                <description>Invert the blinds control</description>
+                <default>false</default>
+                <options>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </options>
+                <limitToOptions>true</limitToOptions>
+            </parameter>
+            <parameter name="config_duration" type="integer" min="1" max="254">
+                <label>Step duration</label>
+                <description><![CDATA[Sets the dim rate speed<br>Values from 1 to 127 are defined in seconds,
+                while values from 128 to 254 are defined in minutes.]]></description>
+                <default>255</default>
+                <options>
+                    <option value="255">Device Default</option>
+                    <option value="0">Change Instantly</option>
+                </options>
+                <limitToOptions>false</limitToOptions>
+            </parameter>
+        </config-description>
+    </channel-type>
+
     <!-- Color Setting Channel -->
     <channel-type id="color_color">
         <item-type>Color</item-type>
@@ -716,5 +748,4 @@
         </state>
     </channel-type>
 
-    
 </thing:thing-descriptions>

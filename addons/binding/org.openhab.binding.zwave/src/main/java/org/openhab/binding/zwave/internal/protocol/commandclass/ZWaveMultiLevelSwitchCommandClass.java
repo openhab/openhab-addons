@@ -86,31 +86,23 @@ public class ZWaveMultiLevelSwitchCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Switch Multi Level Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received Switch Multi Level Request", getNode().getNodeId());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
-            case SWITCH_MULTILEVEL_START_LEVEL_CHANGE:
-                return;
-            case SWITCH_MULTILEVEL_STOP_LEVEL_CHANGE:
-                logger.debug("NODE {}: Process Switch Multi Level Stop Level Change", this.getNode().getNodeId());
-                // request level after dimming
-                logger.debug("NODE {}: Requesting level from endpoint {}", this.getNode().getNodeId(), endpoint);
-                this.getController().sendData(this.getNode().encapsulate(this.getValueMessage(), this, endpoint));
-                break;
             case SWITCH_MULTILEVEL_SET:
-                logger.debug("NODE {}: Switch Multi Level SET", this.getNode().getNodeId());
+                logger.debug("NODE {}: Switch Multi Level SET", getNode().getNodeId());
             case SWITCH_MULTILEVEL_REPORT:
                 int value = serialMessage.getMessagePayloadByte(offset + 1);
-                logger.debug("NODE {}: Switch Multi Level report, value = {}", this.getNode().getNodeId(), value);
-                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(this.getNode().getNodeId(),
-                        endpoint, this.getCommandClass(), value);
-                this.getController().notifyEventListeners(zEvent);
+                logger.debug("NODE {}: Switch Multi Level report, value = {}", getNode().getNodeId(), value);
+                ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
+                        getCommandClass(), value);
+                getController().notifyEventListeners(zEvent);
 
                 dynamicDone = true;
                 break;
             default:
                 logger.warn(String.format("Unsupported Command %d for command class %s (0x%02X).", command,
-                        this.getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                        getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -122,14 +114,14 @@ public class ZWaveMultiLevelSwitchCommandClass extends ZWaveCommandClass
     @Override
     public SerialMessage getValueMessage() {
         if (isGetSupported == false) {
-            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            logger.debug("NODE {}: Node doesn't support get requests", getNode().getNodeId());
             return null;
         }
 
-        logger.debug("NODE {}: Creating new message for command SWITCH_MULTILEVEL_GET", this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for command SWITCH_MULTILEVEL_GET", getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
+        byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
                 (byte) SWITCH_MULTILEVEL_GET };
         result.setMessagePayload(newPayload);
         return result;
@@ -173,6 +165,31 @@ public class ZWaveMultiLevelSwitchCommandClass extends ZWaveCommandClass
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
         byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
                 (byte) SWITCH_MULTILEVEL_STOP_LEVEL_CHANGE };
+        result.setMessagePayload(newPayload);
+        return result;
+    }
+
+    /**
+     * Gets a SerialMessage with the SWITCH_MULTILEVEL_START_LEVEL_CHANGE command
+     * 
+     * @param increase true to increase the level, false to decrease
+     * @param duration sets the dimming duration
+     * @return the serial message
+     */
+    public SerialMessage startLevelChangeMessage(boolean increase, int duration) {
+        logger.debug("NODE {}: Creating new message for command SWITCH_MULTILEVEL_START_LEVEL_CHANGE",
+                getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
+                SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
+        byte[] newPayload = { (byte) getNode().getNodeId(), 5, (byte) getCommandClass().getKey(),
+                (byte) SWITCH_MULTILEVEL_START_LEVEL_CHANGE, 0, 0, 0 };
+        if (increase) {
+            newPayload[4] = 32;
+        } else {
+            newPayload[4] = 96;
+        }
+        newPayload[5] = 0; // Start level - ignored
+        newPayload[6] = (byte) duration;
         result.setMessagePayload(newPayload);
         return result;
     }
