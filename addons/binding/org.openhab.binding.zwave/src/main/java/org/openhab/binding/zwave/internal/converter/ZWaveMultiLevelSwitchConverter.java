@@ -72,11 +72,13 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
+        boolean configInvert = "true".equalsIgnoreCase(channel.getArguments().get("config_invert"));
+
         int value = (int) event.getValue();
         State state;
         switch (channel.getDataType()) {
             case PercentType:
-                if ("true".equalsIgnoreCase(channel.getArguments().get("invertPercent"))) {
+                if (configInvert) {
                     state = new PercentType(100 - value);
                 } else {
                     state = new PercentType(value);
@@ -93,6 +95,14 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                     state = OnOffType.OFF;
                 } else {
                     state = OnOffType.ON;
+                }
+
+                if (configInvert) {
+                    if (state == OnOffType.ON) {
+                        state = OnOffType.OFF;
+                    } else {
+                        state = OnOffType.ON;
+                    }
                 }
                 break;
             case IncreaseDecreaseType:
@@ -116,42 +126,49 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.SWITCH_MULTILEVEL, channel.getEndpoint());
 
         SerialMessage serialMessage = null;
-        boolean restoreLastValue = "true".equalsIgnoreCase(channel.getArguments().get("restoreLastValue"));
+        // boolean restoreLastValue = "true".equalsIgnoreCase(channel.getArguments().get("restoreLastValue"));
 
-        if (command instanceof StopMoveType && (StopMoveType) command == StopMoveType.STOP) {
+        boolean configInvert = "true".equalsIgnoreCase(channel.getArguments().get("config_invert"));
+
+        if (command instanceof StopMoveType && command == StopMoveType.STOP) {
             // Special handling for the STOP command
             serialMessage = commandClass.stopLevelChangeMessage();
-        } else {
-            int value;
-            if (command instanceof OnOffType) {
-                if (restoreLastValue) {
-                    value = command == OnOffType.ON ? 0xff : 0x00;
+        } else if (command instanceof UpDownType) {
+            if (configInvert == false) {
+                if (command == UpDownType.UP) {
+                    serialMessage = commandClass.startLevelChangeMessage(true, 0xff);
                 } else {
-                    value = command == OnOffType.ON ? 0x63 : 0x00;
+                    serialMessage = commandClass.startLevelChangeMessage(false, 0xff);
                 }
-            } else if (command instanceof PercentType) {
-                if ("true".equalsIgnoreCase(channel.getArguments().get("invertPercent"))) {
-                    value = 100 - ((PercentType) command).intValue();
-                } else {
-                    value = ((PercentType) command).intValue();
-                }
-                // zwave has a max vale of 99 for percentages.
-                if (value >= 100) {
-                    value = 99;
-                }
-            } else if (command instanceof UpDownType) {
-                if ("true".equalsIgnoreCase(channel.getArguments().get("invertState"))) {
-                    if (command == UpDownType.UP) {
-                        command = UpDownType.DOWN;
-                    } else {
-                        command = UpDownType.UP;
-                    }
-                }
-
-                value = command != UpDownType.DOWN ? 0x63 : 0x00;
             } else {
-                logger.warn("NODE {}: No conversion for channel {}", node.getNodeId(), channel.getUID());
-                return null;
+                if (command == UpDownType.UP) {
+                    serialMessage = commandClass.startLevelChangeMessage(false, 0xff);
+                } else {
+                    serialMessage = commandClass.startLevelChangeMessage(true, 0xff);
+                }
+            }
+        } else if (command instanceof PercentType) {
+            int value;
+            if (configInvert) {
+                value = 100 - ((PercentType) command).intValue();
+            } else {
+                value = ((PercentType) command).intValue();
+            }
+            // zwave has a max value of 99 for percentages.
+            if (value >= 100) {
+                value = 99;
+            }
+
+            logger.trace("NODE {}: Converted command '{}' to value {} for channel = {}, endpoint = {}.",
+                    node.getNodeId(), command.toString(), value, channel.getUID(), channel.getEndpoint());
+
+            serialMessage = commandClass.setValueMessage(value);
+        } else if (command instanceof OnOffType) {
+            int value;
+            if (configInvert) {
+                value = command == OnOffType.ON ? 0 : 99;
+            } else {
+                value = command == OnOffType.ON ? 99 : 0;
             }
 
             logger.trace("NODE {}: Converted command '{}' to value {} for channel = {}, endpoint = {}.",
@@ -173,10 +190,12 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         List<SerialMessage> messages = new ArrayList<SerialMessage>(2);
         messages.add(serialMessage);
 
-        // Poll an update once we've sent the command
+        // Poll an update once we've sent the command if this is a STOP
         // Don't poll immediately since some devices return the original value, and some the new value.
         // This conflicts with OH that will move the slider immediately.
-        // messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
+        if (command instanceof StopMoveType && command == StopMoveType.STOP) {
+            messages.add(node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint()));
+        }
         return messages;
     }
 }
