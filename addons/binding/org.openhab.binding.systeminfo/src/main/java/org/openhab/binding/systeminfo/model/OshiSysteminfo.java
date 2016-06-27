@@ -24,6 +24,7 @@ import oshi.hardware.NetworkIF;
 import oshi.hardware.PowerSource;
 import oshi.hardware.Sensors;
 import oshi.software.os.OSFileStore;
+import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
 
@@ -35,6 +36,7 @@ import oshi.util.EdidUtil;
  *
  */
 public class OshiSysteminfo implements SysteminfoInterface {
+
     private OperatingSystem operatingSystem;
     private NetworkIF[] networks;
     private Display[] displays;
@@ -44,6 +46,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private CentralProcessor cpu;
     private HWDiskStore[] drives;
     private Sensors sensors;
+    private OSProcess[] processes;
 
     public final static int PRECISION_AFTER_DECIMAl_SIGN = 1;
 
@@ -64,6 +67,11 @@ public class OshiSysteminfo implements SysteminfoInterface {
         sensors = hal.getSensors();
         networks = hal.getNetworkIFs();
         drives = hal.getDiskStores();
+        if (cpu != null) {
+            processes = cpu.getProcesses();
+        } else {
+            throw new NullPointerException("Can not get processs information, because cpu info is missing !");
+        }
     }
 
     @SuppressWarnings("null")
@@ -471,6 +479,43 @@ public class OshiSysteminfo implements SysteminfoInterface {
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         long bytesRecv = network.getBytesRecv();
         return new DecimalType(getSizeInMB(bytesRecv));
+    }
+
+    @Override
+    public StringType getProcessName(int pid) throws DeviceNotFoundException {
+        OSProcess process = (OSProcess) getDevice(processes, pid);
+        String name = process.getName();
+        return new StringType(name);
+    }
+
+    @Override
+    public DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
+        OSProcess process = (OSProcess) getDevice(processes, pid);
+        double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
+        BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
+        return new DecimalType(cpuUsage);
+    }
+
+    @Override
+    public DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
+        OSProcess process = (OSProcess) getDevice(processes, pid);
+        long memortInBytes = process.getResidentSetSize();
+        long memoryInMB = getSizeInMB(memortInBytes);
+        return new DecimalType(memoryInMB);
+    }
+
+    @Override
+    public StringType getProcessPath(int pid) throws DeviceNotFoundException {
+        OSProcess process = (OSProcess) getDevice(processes, pid);
+        String path = process.getPath();
+        return new StringType(path);
+    }
+
+    @Override
+    public DecimalType getProcessThreads(int pid) throws DeviceNotFoundException {
+        OSProcess process = (OSProcess) getDevice(processes, pid);
+        int threadCount = process.getThreadCount();
+        return new DecimalType(threadCount);
     }
 
 }

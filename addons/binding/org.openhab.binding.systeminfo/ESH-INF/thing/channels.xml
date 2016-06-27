@@ -110,12 +110,32 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="processGroup" advanced="true">
+		<label>Process</label>
+		<description>System process information</description>
+		<channels>
+			<channel id="load" typeId="load_process" />
+			<channel id="used" typeId="used_process" />
+			<channel id="name" typeId="name_process" />
+			<channel id="threads" typeId="threads_process" />
+			<channel id="path" typeId="path_process" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="path_process">
+		<item-type>String</item-type>
+		<label>Path</label>
+		<description>The full path</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description-ref uri="systeminfo:channels:lowpriority_process" />
+	</channel-type>
+
 	<channel-type id="available">
 		<item-type>Number</item-type>
 		<label>Available</label>
 		<description>Available size in MB</description>
 		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:highpriority" />
+		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
 	<channel-type id="used">
@@ -123,7 +143,15 @@
 		<label>Used</label>
 		<description>Used size in MB</description>
 		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:highpriority" />
+		<config-description-ref uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="used_process">
+		<item-type>Number</item-type>
+		<label>Used</label>
+		<description>Used size in MB</description>
+		<state readOnly="true" pattern="%d MB" />
+		<config-description-ref uri="systeminfo:channels:highpriority_process" />
 	</channel-type>
 
 	<channel-type id="total">
@@ -131,7 +159,7 @@
 		<label>Total</label>
 		<description>Total size in MB</description>
 		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="availablePercent">
@@ -139,15 +167,23 @@
 		<label>Available (%)</label>
 		<description>Available size in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
-		<config-description uri="systeminfo:channels:highpriority" />
+		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
-		<description>Name of the device</description>
+		<description>Name of the device (process)</description>
 		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
+	</channel-type>
+
+	<channel-type id="name_process">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the device (process)</description>
+		<state readOnly="true" pattern="%s" />
+		<config-description-ref uri="systeminfo:channels:lowpriority_process" />
 	</channel-type>
 
 	<channel-type id="model" advanced="true">
@@ -155,7 +191,7 @@
 		<label>Model</label>
 		<description>The model of the device</description>
 		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="serial" advanced="true">
@@ -163,7 +199,7 @@
 		<label>Serial number</label>
 		<description>The serial number of the device</description>
 		<state readOnly="true" pattern="%s" />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="description" advanced="true">
@@ -171,7 +207,7 @@
 		<label>Description</label>
 		<description>Description of the device</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="type" advanced="true">
@@ -179,7 +215,7 @@
 		<label>Type</label>
 		<description>Storage type</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="cpuTemp" advanced="true">
@@ -187,7 +223,7 @@
 		<label>CPU Temperature</label>
 		<description>CPU Temperature in Celsius degrees</description>
 		<state readOnly="true" pattern="%.1f °" />
-		<config-description uri="systeminfo:channels:highpriority" />
+		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
 
 	<channel-type id="cpuVoltage" advanced="true">
@@ -195,7 +231,7 @@
 		<label>CPU Voltage</label>
 		<description>CPU Voltage in V</description>
 		<state readOnly="true" pattern="%.1f V" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="fanSpeed" advanced="true">
@@ -203,7 +239,7 @@
 		<label>Fan speed</label>
 		<description>Fan speed in rpm</description>
 		<state readOnly="true" pattern="%d rpm" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="remainingTime">
@@ -211,7 +247,7 @@
 		<label>Remaining time</label>
 		<description>Remaining time in minutes</description>
 		<state readOnly="true" pattern="%.1f Minutes" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="remainingCapacity">
@@ -219,7 +255,7 @@
 		<label>Remaining capacity</label>
 		<description>Remaining capacity in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="load">
@@ -227,7 +263,15 @@
 		<label>Load</label>
 		<description>Load in percents</description>
 		<state readOnly="true" pattern="%.1f %%" />
-		<config-description uri="systeminfo:channels:highpriority" />
+		<config-description-ref uri="systeminfo:channels:highpriority" />
+	</channel-type>
+
+	<channel-type id="load_process">
+		<item-type>Number</item-type>
+		<label>Load</label>
+		<description>Load in percents</description>
+		<state readOnly="true" pattern="%.1f %%" />
+		<config-description-ref uri="systeminfo:channels:highpriority_process" />
 	</channel-type>
 
 	<channel-type id="loadAverage" advanced="true">
@@ -235,7 +279,7 @@
 		<label>Load average</label>
 		<description>Load in percents for the last 1,5 or 15 minutes</description>
 		<state readOnly="true" pattern="%.1f %%" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
@@ -243,7 +287,7 @@
 		<label>System uptime</label>
 		<description>System uptime (time after start) in minutes</description>
 		<state readOnly="true" pattern="%.1f Minutes" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="threads" advanced="true">
@@ -251,7 +295,15 @@
 		<label>Number of threads</label>
 		<description>Number of threads currently running</description>
 		<state readOnly="true" pattern="%d" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
+	</channel-type>
+
+	<channel-type id="threads_process" advanced="true">
+		<item-type>Number</item-type>
+		<label>Number of threads</label>
+		<description>Number of threads currently running</description>
+		<state readOnly="true" pattern="%d" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority_process" />
 	</channel-type>
 
 	<channel-type id="information" advanced="true">
@@ -259,7 +311,7 @@
 		<label>Display information</label>
 		<description>Product, manufacturer, SN, width and height of the display in cm</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="ip">
@@ -267,7 +319,7 @@
 		<label>IP address </label>
 		<description>Host IP address of the network</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="mac" advanced="true">
@@ -275,7 +327,7 @@
 		<label>Mac address </label>
 		<description>Mac address of the network</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="networkName">
@@ -283,7 +335,7 @@
 		<label>Network name</label>
 		<description>The name of the network.</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="networkDisplayName">
@@ -291,7 +343,7 @@
 		<label>Network display name</label>
 		<description>The display name of the network</description>
 		<state readOnly="true" pattern="%s " />
-		<config-description uri="systeminfo:channels:lowpriority" />
+		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
 	<channel-type id="packagesSent" advanced="true">
@@ -299,7 +351,7 @@
 		<label>Packages sent</label>
 		<description>Number of packages sent</description>
 		<state readOnly="true" pattern="%d " />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="packagesReceived" advanced="true">
@@ -307,7 +359,7 @@
 		<label>Packages received</label>
 		<description>Number of packages received</description>
 		<state readOnly="true" pattern="%d " />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="dataSent" advanced="true">
@@ -315,7 +367,7 @@
 		<label>Data sent</label>
 		<description>Data sent in MB</description>
 		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 	<channel-type id="dataReceived" advanced="true">
@@ -323,7 +375,7 @@
 		<label>Data received</label>
 		<description>Data received in MB</description>
 		<state readOnly="true" pattern="%d MB" />
-		<config-description uri="systeminfo:channels:mediumpriority" />
+		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
 </thing:thing-descriptions>
