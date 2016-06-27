@@ -6,21 +6,20 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: Openhab
 Fragment-Host: org.openhab.binding.max
-Import-Package: org.openhab.binding.max,
- org.slf4j,
- groovy.json,
+Import-Package: groovy.json,
  groovy.lang,
  org.codehaus.groovy.reflection,
  org.codehaus.groovy.runtime,
  org.codehaus.groovy.runtime.callsite,
  org.codehaus.groovy.runtime.typehandling,
  org.eclipse.smarthome.core.events,
- org.eclipse.smarthome.core.thing.setup,
  org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
- org.osgi.service.device
+ org.openhab.binding.max,
+ org.osgi.service.device,
+ org.slf4j
 Require-Bundle: org.junit;bundle-version="4.11.0"
 Export-Package: org.openhab.binding.max.internal.message;x-internal:=true,
  org.openhab.binding.max.test;uses:="org.eclipse.smarthome.test"
