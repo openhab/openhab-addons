@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.discovery.ZoneDiscoveryService;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverState;
@@ -41,8 +42,9 @@ public class YamahaReceiverHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(YamahaReceiverHandler.class);
     private String host;
-    private int refrehInterval = 1; // Default: Every 1min
+    private int refrehInterval = 60; // Default: Every 1min
     private float relativeVolumeChangeFactor = 0.5f; // Default: 0.5 percent
+    private long lastRefreshInMS = 0;
     private YamahaReceiverState state = null;
     private ScheduledFuture<?> refreshTimer;
     private ZoneDiscoveryService zoneDiscoveryService;
@@ -164,7 +166,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             public void run() {
                 updateReceiverState();
             }
-        }, initial_wait_time, interval_config, TimeUnit.MINUTES);
+        }, initial_wait_time, interval_config, TimeUnit.SECONDS);
 
         refrehInterval = interval_config;
     }
@@ -172,8 +174,16 @@ public class YamahaReceiverHandler extends BaseThingHandler {
     /**
      * All channels of this thing will be updated after a response from the Yamaha device.
      * If the device does not respond it be assumed to be offline.
+     * We cannot refresh just a single channel, but only all
+     * channels at a time. Because that is a costly operation, we only allow a refresh every
+     * 3 seconds.
      */
     private void updateReceiverState() {
+        if (lastRefreshInMS + 3000 > System.currentTimeMillis()) {
+            return;
+        }
+        lastRefreshInMS = System.currentTimeMillis();
+
         try {
             state.updateState();
             updateStatus(ThingStatus.ONLINE);
@@ -197,6 +207,14 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         }
 
         String id = channelUID.getId();
+
+        // The user want to refresh a value. We cannot refresh just a single channel, but only all
+        // channels at a time. Because that is a costly operation, we only allow a user requested refresh every
+        // 3 seconds.
+        if (command instanceof RefreshType) {
+            updateReceiverState();
+            return;
+        }
 
         try {
             switch (id) {
