@@ -496,10 +496,10 @@ public class SysteminfoHandler extends BaseThingHandler {
                 logger.debug("Refresh command received for channel {}!", channelUID);
                 publishDataForChannel(channelUID);
             } else {
-                logger.debug("Unsuported command {}! Supported commands: REFRESH", command);
+                logger.debug("Unsupported command {}! Supported commands: REFRESH", command);
             }
         } else {
-            logger.debug("Can not handle command. Thing is not ONLINE.");
+            logger.debug("Cannot handle command. Thing is not ONLINE.");
         }
     }
 
