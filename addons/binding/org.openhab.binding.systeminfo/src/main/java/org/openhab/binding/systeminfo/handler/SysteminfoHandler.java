@@ -109,7 +109,8 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Thing can not be initialized!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "Thing can not be initialized!");
         }
 
     }
@@ -428,8 +429,8 @@ public class SysteminfoHandler extends BaseThingHandler {
         } catch (DeviceNotFoundException e) {
             logger.error("No information for channel " + channelID + deviceIndex, e);
         } catch (Exception e) {
-            logger.error("Unexpected error occure while getting system information!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            logger.error("Unexpected error occured while getting system information!", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Can not get systeminfo as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
         return state;
@@ -490,11 +491,15 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            logger.debug("Refresh command received for channel {}!", channelUID);
-            publishDataForChannel(channelUID);
+        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
+            if (command instanceof RefreshType) {
+                logger.debug("Refresh command received for channel {}!", channelUID);
+                publishDataForChannel(channelUID);
+            } else {
+                logger.debug("Unsupported command {}! Supported commands: REFRESH", command);
+            }
         } else {
-            logger.debug("Unsuported command {}! Supported commands: REFRESH", command);
+            logger.debug("Cannot handle command. Thing is not ONLINE.");
         }
     }
 

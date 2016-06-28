@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.items.ItemRegistry
 import org.eclipse.smarthome.core.library.items.NumberItem
 import org.eclipse.smarthome.core.library.items.StringItem
 import org.eclipse.smarthome.core.library.types.DecimalType
-import org.eclipse.smarthome.core.library.types.OnOffType
 import org.eclipse.smarthome.core.library.types.StringType
 import org.eclipse.smarthome.core.thing.Channel
 import org.eclipse.smarthome.core.thing.ChannelUID
@@ -37,8 +36,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID
-import org.eclipse.smarthome.core.types.Command
-import org.eclipse.smarthome.core.types.RefreshType
 import org.eclipse.smarthome.core.types.State
 import org.eclipse.smarthome.core.types.UnDefType
 import org.eclipse.smarthome.test.OSGiTest
@@ -153,6 +150,8 @@ class SysteminfoOSGiTest extends OSGiTest{
             assertThat thingHandler, is(notNullValue())
         },2000)
 
+        println systemInfoThing.getStatus()
+        println systemInfoThing.getStatusInfo().statusDetail
         waitForAssert({
             assertThat "Thing is not initilized, before an Item is created", systemInfoThing.getStatus(),
                     anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE))
@@ -242,19 +241,9 @@ class SysteminfoOSGiTest extends OSGiTest{
     private void testInvalidConfiguration() {
         waitForAssert({
             assertThat  "Invalid configuratuin is used !", systemInfoThing.getStatus(), is(equalTo(ThingStatus.OFFLINE))
-            assertThat systemInfoThing.getStatusInfo().getStatusDetail() , is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR))
+            assertThat systemInfoThing.getStatusInfo().getStatusDetail() , is(equalTo(ThingStatusDetail.HANDLER_INITIALIZING_ERROR))
             assertThat systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing can not be initialized!"))
         }, DEFAULT_THING_INITIALIZE_MAX_TIME)
-    }
-
-    @Test
-    public void 'assert low priority channel is updated on REFESH' () {
-        testItemStateOnCommand(RefreshType.REFRESH,true)
-    }
-
-    @Test
-    public void 'assert low priority channel is not updated on not supported command' () {
-        testItemStateOnCommand(OnOffType.ON,false)
     }
 
     @Test
@@ -267,37 +256,6 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,priority);
     }
 
-    private void testItemStateOnCommand(Command command,boolean mustItemStateChange) {
-        String channnelID = DEFAULT_TEST_CHANNEL_ID
-        String acceptedItemType = "Number"
-
-        //Priority is set to low, so after initialize () channel state will be updated only on REFRESH
-        String priority = "Low"
-        initializeThingWithChannelAndPriority(channnelID, acceptedItemType,priority)
-
-        //new item is created
-        Channel channel = systemInfoThing.getChannel(channnelID);
-        ChannelUID channelUID = channel.getUID()
-        String newItemName = "New_item";
-
-        //New item is initialized after the first refresh task has finished
-        sleep(SysteminfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT * 1000 + DEFAULT_THING_INITIALIZE_MAX_TIME)
-
-        intializeItem(channelUID,newItemName,acceptedItemType)
-
-        //New item state is null
-        testItemStateIsNull(acceptedItemType,newItemName,priority)
-
-        //post command
-        systemInfoThing.handler.handleCommand(channelUID,command)
-
-        if(mustItemStateChange) {
-            testItemStateIsUpdated(acceptedItemType,newItemName,priority)
-        } else {
-            testItemStateIsNull(acceptedItemType,newItemName,priority)
-        }
-    }
-
     @Test
     public void 'assert state of not existing device is not updated' () {
         int deviceIndex = 520;
@@ -307,6 +265,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         initializeThingWithChannel(channnelID,acceptedItemType);
         testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
+
     @Category(PlatformDependentTestsInterface.class)
     @Test
     public void 'assert state of second device is updated' () {
