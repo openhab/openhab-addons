@@ -24,7 +24,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
  org.osgi.framework,
- org.slf4j
+ org.slf4j,
+ javax.net,
+ javax.net.ssl
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler
