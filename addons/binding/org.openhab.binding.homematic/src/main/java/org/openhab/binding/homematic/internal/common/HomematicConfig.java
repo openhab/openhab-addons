@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.homematic.internal.common;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -48,6 +50,8 @@ public class HomematicConfig {
     private int reconnectInterval = 0;
 
     private HmGatewayInfo gatewayInfo;
+
+    private ScheduledExecutorService scheduledPool;
 
     /**
      * Returns the Homematic gateway address.
@@ -253,6 +257,20 @@ public class HomematicConfig {
         } else {
             return ISO_ENCODING;
         }
+    }
+
+    /**
+     * Returns the scheduled pool.
+     */
+    public ScheduledExecutorService getScheduledPool() {
+        return scheduledPool;
+    }
+
+    /**
+     * Sets the scheduled pool.
+     */
+    public void setScheduledPool(ScheduledExecutorService scheduledPool) {
+        this.scheduledPool = scheduledPool;
     }
 
     /**

@@ -19,13 +19,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
@@ -80,8 +78,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private long lastEventTime = System.currentTimeMillis();
     private DelayedExecuter delayedExecutor = new DelayedExecuter();
     private Set<HmDatapointInfo> echoEvents = Collections.synchronizedSet(new HashSet<HmDatapointInfo>());
-    // FIXME: dependency to openHab
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("homematicGateway");
     private ScheduledFuture<?> eventTrackerThread;
     private ScheduledFuture<?> connectionTrackerThread;
     private ScheduledFuture<?> reconnectThread;
@@ -166,7 +162,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     @Override
     public void dispose() {
         stopWatchdogs();
-        scheduler.shutdownNow();
         delayedExecutor.stop();
         stopServer();
         stopClient();
@@ -235,15 +230,16 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private void startWatchdogs() {
         if (config.getReconnectInterval() == 0) {
             logger.debug("Starting event tracker for gateway with id '{}'", id);
-            eventTrackerThread = scheduler.scheduleWithFixedDelay(new EventTrackerThread(), 1, 1, TimeUnit.MINUTES);
+            eventTrackerThread = config.getScheduledPool().scheduleWithFixedDelay(new EventTrackerThread(), 1, 1,
+                    TimeUnit.MINUTES);
         } else {
             // schedule fixed delay restart
             logger.debug("Starting reconnect tracker for gateway with id '{}'", id);
-            reconnectThread = scheduler.scheduleWithFixedDelay(new ReconnectThread(), config.getReconnectInterval(),
-                    config.getReconnectInterval(), TimeUnit.SECONDS);
+            reconnectThread = config.getScheduledPool().scheduleWithFixedDelay(new ReconnectThread(),
+                    config.getReconnectInterval(), config.getReconnectInterval(), TimeUnit.SECONDS);
         }
         logger.debug("Starting connection tracker for gateway with id '{}'", id);
-        connectionTrackerThread = scheduler.scheduleWithFixedDelay(new ConnectionTrackerThread(), 30,
+        connectionTrackerThread = config.getScheduledPool().scheduleWithFixedDelay(new ConnectionTrackerThread(), 30,
                 CONNECTION_TRACKER_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
