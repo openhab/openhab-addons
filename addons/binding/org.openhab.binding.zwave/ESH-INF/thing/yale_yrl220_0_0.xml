@@ -5,10 +5,10 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="yale_yrd220_00_000" listed="false">
-    <label>YRD220 Yale Real Living Touchscreen Deadbolt</label>
+  <thing-type id="yale_yrl220_00_000" listed="false">
+    <label>YRL220 Yale Real Living Touchscreen Lever Lock</label>
     <description><![CDATA[
-Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To include the lock in a Z-Wave Network (taken from the installation manual:</p> <ol><li>Touch the lock screen to activate</li> <li>Enter the master pin and press #</li> <li>Press 7, then #</li> <li>Press 1, then #</li> </ol><p>The lock will now be in inclusion mode.</p> <br /><h2>Exclusion Information</h2><p>To exclude the lock from a Z-Wave Network (taken from the installation manual:</p> <ol><li>Touch the lock screen to activate</li> <li>Enter the master pin and press #</li> <li>Press 7, then #</li> <li>Press 3, then #</li> </ol><p>The lock will now be in exclusion mode.</p>
+Yale Real Living Touchscreen Lever Lock<br /><h2>Inclusion Information</h2><p>To include the lock in a Z-Wave Network (taken from the installation manual:</p> <ol><li>Touch the lock screen to activate</li> <li>Enter the master pin and press #</li> <li>Press 7, then #</li> <li>Press 1, then #</li> </ol><p>The lock will now be in inclusion mode.</p> <br /><h2>Exclusion Information</h2><p>To exclude the lock from a Z-Wave Network (taken from the installation manual:</p> <ol><li>Touch the lock screen to activate</li> <li>Enter the master pin and press #</li> <li>Press 7, then #</li> <li>Press 3, then #</li> </ol><p>The lock will now be in exclusion mode.</p>
     ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -35,9 +35,9 @@ Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To i
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="modelId">YRD220</property>
+      <property name="modelId">YRL220</property>
       <property name="manufacturerId">0129</property>
-      <property name="manufacturerRef">0002:AA00</property>
+      <property name="manufacturerRef">0001:0409</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -61,15 +61,6 @@ Sets the volume level of the beeps and voice prompts<br /><h1>Overview</h1><p>1 
           <option value="2">Low</option>
           <option value="3">High</option>
         </options>
-      </parameter>
-
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
-        <label>2: Auto Re-lock</label>
-        <description><![CDATA[
-When enabled, the unit will automatically re-lock<br /><h1>Overview</h1><p>0 = Off</p> <p>255 = On</p>
-        ]]></description>
-        <default>0</default>
       </parameter>
 
       <parameter name="config_2_1" type="integer" groupName="configuration">
@@ -127,7 +118,7 @@ Sets if the unit operates normal, or disables keypad and Z-Wave lock/unlock<br /
         <options>
           <option value="0">Normal</option>
           <option value="1">Vacation Mode</option>
-          <option value="2">Privacy Mode</option>
+          <option value="3">Privacy Mode</option>
         </options>
       </parameter>
 
