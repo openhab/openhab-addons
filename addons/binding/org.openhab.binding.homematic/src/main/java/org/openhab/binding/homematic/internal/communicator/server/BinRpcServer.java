@@ -39,7 +39,7 @@ public class BinRpcServer implements RpcServer {
     public void start() throws IOException {
         logger.debug("Initializing BIN-RPC server at port {}", config.getCallbackPort());
 
-        networkService = new BinRpcNetworkService(listener, config.getCallbackPort(), config.getEncoding());
+        networkService = new BinRpcNetworkService(listener, config);
         networkServiceThread = new Thread(networkService);
         networkServiceThread.setName("HomematicRpcServer");
         networkServiceThread.start();
