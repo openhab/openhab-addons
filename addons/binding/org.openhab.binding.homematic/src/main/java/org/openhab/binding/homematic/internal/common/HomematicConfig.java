@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.homematic.internal.common;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -51,7 +49,7 @@ public class HomematicConfig {
 
     private HmGatewayInfo gatewayInfo;
 
-    private ScheduledExecutorService scheduledPool;
+    private ThreadPoolFactory threadPoolFactory;
 
     /**
      * Returns the Homematic gateway address.
@@ -260,17 +258,17 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the scheduled pool.
+     * Returns the ThreadPoolFactory.
      */
-    public ScheduledExecutorService getScheduledPool() {
-        return scheduledPool;
+    public ThreadPoolFactory getThreadPoolFactory() {
+        return threadPoolFactory;
     }
 
     /**
-     * Sets the scheduled pool.
+     * Sets the ThreadPoolFactory.
      */
-    public void setScheduledPool(ScheduledExecutorService scheduledPool) {
-        this.scheduledPool = scheduledPool;
+    public void setThreadPoolFactory(ThreadPoolFactory threadPoolFactory) {
+        this.threadPoolFactory = threadPoolFactory;
     }
 
     /**
