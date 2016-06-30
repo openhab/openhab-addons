@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
@@ -69,6 +70,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private static final Logger logger = LoggerFactory.getLogger(HomematicGateway.class);
     public static final double DEFAULT_DISABLE_DELAY = 2.0;
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
+    private static final String GATEWAY_POOL_NAME = "homematicGateway";
 
     protected RpcClient rpcClient;
     protected HomematicConfig config;
@@ -79,7 +81,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private long lastEventTime = System.currentTimeMillis();
     private DelayedExecuter delayedExecutor = new DelayedExecuter();
     private Set<HmDatapointInfo> echoEvents = Collections.synchronizedSet(new HashSet<HmDatapointInfo>());
-    private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> eventTrackerThread;
     private ScheduledFuture<?> connectionTrackerThread;
     private ScheduledFuture<?> reconnectThread;
@@ -114,8 +115,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     @Override
     public void initialize() throws IOException {
         logger.debug("Initializing gateway with id '{}'", id);
-
-        scheduler = config.getThreadPoolFactory().getScheduledPool("homematicGateway");
 
         // available interface lookup is done with XML-RPC, because HMIP does not support BIN-RPC
         rpcClient = new XmlRpcClient(config);
@@ -232,6 +231,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Starts the connection and event tracker threads.
      */
     private void startWatchdogs() {
+        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
+
         if (config.getReconnectInterval() == 0) {
             logger.debug("Starting event tracker for gateway with id '{}'", id);
             eventTrackerThread = scheduler.scheduleWithFixedDelay(new EventTrackerThread(), 1, 1, TimeUnit.MINUTES);

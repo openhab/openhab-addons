@@ -49,8 +49,6 @@ public class HomematicConfig {
 
     private HmGatewayInfo gatewayInfo;
 
-    private ThreadPoolFactory threadPoolFactory;
-
     /**
      * Returns the Homematic gateway address.
      */
@@ -255,20 +253,6 @@ public class HomematicConfig {
         } else {
             return ISO_ENCODING;
         }
-    }
-
-    /**
-     * Returns the ThreadPoolFactory.
-     */
-    public ThreadPoolFactory getThreadPoolFactory() {
-        return threadPoolFactory;
-    }
-
-    /**
-     * Sets the ThreadPoolFactory.
-     */
-    public void setThreadPoolFactory(ThreadPoolFactory threadPoolFactory) {
-        this.threadPoolFactory = threadPoolFactory;
     }
 
     /**

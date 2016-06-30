@@ -11,8 +11,8 @@ package org.openhab.binding.homematic.internal.communicator.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
 
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 
 /**
@@ -21,7 +21,7 @@ import org.openhab.binding.homematic.internal.common.HomematicConfig;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcNetworkService implements Runnable {
-    private ExecutorService pool;
+    private static final String RPC_POOL_NAME = "homematicRpc";
     private ServerSocket serverSocket;
     private boolean accept = true;
     private RpcEventListener listener;
@@ -33,7 +33,6 @@ public class BinRpcNetworkService implements Runnable {
     public BinRpcNetworkService(RpcEventListener listener, HomematicConfig config) throws IOException {
         this.listener = listener;
         this.config = config;
-        this.pool = config.getThreadPoolFactory().getPool("homematicRpc");
 
         serverSocket = new ServerSocket(config.getCallbackPort());
         serverSocket.setReuseAddress(true);
@@ -48,7 +47,7 @@ public class BinRpcNetworkService implements Runnable {
             try {
                 Socket cs = serverSocket.accept();
                 BinRpcCallbackHandler rpcHandler = new BinRpcCallbackHandler(cs, listener, config.getEncoding());
-                pool.execute(rpcHandler);
+                ThreadPoolManager.getPool(RPC_POOL_NAME).execute(rpcHandler);
             } catch (IOException ex) {
                 // ignore
             }
