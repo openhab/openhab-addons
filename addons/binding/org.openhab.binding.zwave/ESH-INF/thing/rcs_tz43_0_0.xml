@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="trane_tzemt400bb32maa_00_000" listed="false">
-    <label>TZEMT400BB32MAA Trane Z-Wave Programmable Thermostat</label>
-    <description>Trane Z-Wave Programmable Thermostat</description>
+  <thing-type id="rcs_tz43_00_000" listed="false">
+    <label>TZ43 Thermostat</label>
+    <description>Thermostat</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
@@ -17,7 +17,7 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
-      <channel id="thermostat_mode" typeId="trane_tzemt400bb32maa_00_000_thermostat_mode">
+      <channel id="thermostat_mode" typeId="rcs_tz43_00_000_thermostat_mode">
         <label>Thermostat mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
@@ -29,25 +29,25 @@
           <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
-        <label>Setpoint (heating)</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
-        </properties>
-      </channel>
       <channel id="thermostat_setpoint_cooling" typeId="thermostat_setpoint">
         <label>Setpoint (cooling)</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=COOLING</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanmode" typeId="trane_tzemt400bb32maa_00_000_thermostat_fanmode">
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+        <label>Setpoint (heating)</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_fanmode" typeId="rcs_tz43_00_000_thermostat_fanmode">
         <label>Thermostat fan mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanstate" typeId="trane_tzemt400bb32maa_00_000_thermostat_fanstate">
+      <channel id="thermostat_fanstate" typeId="rcs_tz43_00_000_thermostat_fanstate">
         <label>Thermostat fan state</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_FAN_STATE</property>
@@ -63,45 +63,14 @@
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
-      <property name="vendor">Trane</property>
-      <property name="modelId">TZEMT400BB32MAA</property>
-      <property name="manufacturerId">008B</property>
-      <property name="manufacturerRef">5452:5433</property>
-      <property name="defaultAssociations">1</property>
+      <property name="vendor">Residential Control Systems</property>
+      <property name="modelId">TZ43</property>
+      <property name="manufacturerId">0010</property>
+      <property name="manufacturerRef">0001:0002</property>
     </properties>
 
-    <!-- CONFIGURATION DESCRIPTIONS -->
-    <config-description>
-
-      <!-- PARAMETER DEFINITIONS -->
-      <parameter-group name="configuration">
-        <context>setup</context>
-        <label>Configuration Parameters</label>
-      </parameter-group>
-
-      <parameter name="config_132_1" type="integer" groupName="configuration">
-        <label>132: Schedule Mode</label>
-        <default>0</default>
-        <options>
-          <option value="0">Hold</option>
-          <option value="1">Schedule</option>
-        </options>
-      </parameter>
-
-      <!-- ASSOCIATION DEFINITIONS -->
-      <parameter-group name="association">
-        <context>link</context>
-        <label>Association Groups</label>
-      </parameter-group>
-
-      <parameter name="group_1" type="text" groupName="association">
-        <label>1: Reports</label>
-      </parameter>
-
-    </config-description>
-
   </thing-type>
-    <channel-type id="trane_tzemt400bb32maa_00_000_thermostat_mode">
+    <channel-type id="rcs_tz43_00_000_thermostat_mode">
       <item-type>Number</item-type>
       <label>Thermostat Mode</label>
       <description>Sets the thermostat mode</description>
@@ -109,15 +78,15 @@
       <state pattern="%s">
         <options>
           <option value="3">Auto</option>
-          <option value="4">Aux Heat</option>
+          <option value="0">Off</option>
           <option value="1">Heat</option>
           <option value="2">Cool</option>
-          <option value="0">Off</option>
+          <option value="4">Aux Heat</option>
         </options>
       </state>
     </channel-type>
 
-    <channel-type id="trane_tzemt400bb32maa_00_000_thermostat_fanmode">
+    <channel-type id="rcs_tz43_00_000_thermostat_fanmode">
       <item-type>Number</item-type>
       <label>Thermostat Fan Mode</label>
       <description>Sets the thermostat fan mode</description>
@@ -130,14 +99,14 @@
       </state>
     </channel-type>
 
-    <channel-type id="trane_tzemt400bb32maa_00_000_thermostat_fanstate">
+    <channel-type id="rcs_tz43_00_000_thermostat_fanstate">
       <item-type>Number</item-type>
       <label>Thermostat Fan State</label>
       <description>Sets the thermostat fan state</description>
       <category>Temperature</category>
       <state pattern="%s">
         <options>
-          <option value="0">Idle</option>
+          <option value="1">Running</option>
         </options>
       </state>
     </channel-type>

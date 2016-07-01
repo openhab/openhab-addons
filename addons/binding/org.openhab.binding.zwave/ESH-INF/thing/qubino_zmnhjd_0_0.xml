@@ -6,8 +6,8 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
   <thing-type id="qubino_zmnhjd_00_000" listed="false">
-    <label>ZMNHJD Qubino Flush Pilot</label>
-    <description>Qubino Flush Pilot</description>
+    <label>ZMNHJD Flush Pilot</label>
+    <description>Flush Pilot</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
