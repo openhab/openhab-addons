@@ -1322,22 +1322,17 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
 
         // Process ASSOCIATION
-        ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
-                .getCommandClass(CommandClass.ASSOCIATION);
-        if (associationCommandClass != null) {
-            for (int groupId : associationCommandClass.getAssociations().keySet()) {
-                List<String> group = new ArrayList<String>();
+        for (ZWaveAssociationGroup group : node.getAssociationGroups().values()) {
+            List<String> members = new ArrayList<String>();
 
-                // Build the configuration value
-                for (ZWaveAssociation groupMember : associationCommandClass.getGroupMembers(groupId)
-                        .getAssociations()) {
-                    logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, groupId,
-                            groupMember.getNode(), groupMember.getEndpoint());
-                    group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
-                }
-
-                config.put("group_" + groupId, group);
+            // Build the configuration value
+            for (ZWaveAssociation groupMember : group.getAssociations()) {
+                logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, group,
+                        groupMember.getNode(), groupMember.getEndpoint());
+                members.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
             }
+
+            config.put("group_" + group, members);
         }
 
         // Process WAKE_UP
