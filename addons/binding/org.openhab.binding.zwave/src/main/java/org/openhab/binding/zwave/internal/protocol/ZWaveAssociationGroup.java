@@ -45,18 +45,39 @@ public class ZWaveAssociationGroup {
         this.index = index;
     }
 
+    /**
+     * Return the group index
+     * 
+     * @return group index
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Set the group index
+     * 
+     * @param newIndex the group index
+     */
     public void setIndex(int newIndex) {
         index = newIndex;
     }
 
+    /**
+     * Adds an association node
+     * 
+     * @param node
+     */
     public void addAssociation(int node) {
         addAssociation(node, 0);
     }
 
+    /**
+     * Adds an association node and endpoint
+     * 
+     * @param node
+     * @param endpoint
+     */
     public void addAssociation(int node, int endpoint) {
         // Check if we're already associated
         if (isAssociated(node, endpoint)) {
@@ -68,10 +89,23 @@ public class ZWaveAssociationGroup {
         associations.add(newAssociation);
     }
 
+    /**
+     * Removes an association node
+     * 
+     * @param node
+     * @return
+     */
     public boolean removeAssociation(int node) {
         return removeAssociation(node, 0);
     }
 
+    /**
+     * Removes an association node and endpoint
+     * 
+     * @param node
+     * @param endpoint
+     * @return
+     */
     public boolean removeAssociation(int node, int endpoint) {
         int associationCnt = associations.size();
         for (int index = 0; index < associationCnt; index++) {
@@ -85,10 +119,23 @@ public class ZWaveAssociationGroup {
         return false;
     }
 
+    /**
+     * Tests if a node is associated to this group
+     * 
+     * @param node
+     * @return
+     */
     public boolean isAssociated(int node) {
         return isAssociated(node, 0);
     }
 
+    /**
+     * Tests if a node and endpoint are associated to this group
+     * 
+     * @param node
+     * @param endpoint
+     * @return
+     */
     public boolean isAssociated(int node, int endpoint) {
         int associationCnt = associations.size();
         for (int index = 0; index < associationCnt; index++) {
@@ -101,23 +148,38 @@ public class ZWaveAssociationGroup {
         return false;
     }
 
+    /**
+     * Returns the list of association group members
+     * 
+     * @return
+     */
     public List<ZWaveAssociation> getAssociations() {
         return associations;
     }
 
+    /**
+     * Sets the list of association group members
+     * 
+     * @param associations
+     */
     public void setAssociations(List<ZWaveAssociation> associations) {
         this.associations = associations;
     }
 
+    /**
+     * Returns the number of members in the group
+     * 
+     * @return
+     */
     public int getAssociationCnt() {
         return associations.size();
     }
 
-    public Set<CommandClass> getCommands() {
+    public Set<CommandClass> getCommandClasses() {
         return commands;
     }
 
-    public void setCommands(Set<CommandClass> commands) {
+    public void setCommandClasses(Set<CommandClass> commands) {
         this.commands = commands;
     }
 

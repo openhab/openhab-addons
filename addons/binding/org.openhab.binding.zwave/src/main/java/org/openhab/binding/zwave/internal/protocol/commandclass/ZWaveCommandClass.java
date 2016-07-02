@@ -471,7 +471,7 @@ public abstract class ZWaveCommandClass {
         TIME_PARAMETERS(0x8B, "TIME_PARAMETERS", ZWaveTimeParametersCommandClass.class),
         GEOGRAPHIC_LOCATION(0x8C, "GEOGRAPHIC_LOCATION", null),
         COMPOSITE(0x8D, "COMPOSITE", null),
-        MULTI_INSTANCE_ASSOCIATION(0x8E, "MULTI_INSTANCE_ASSOCIATION", null), // ZWaveMultiAssociationCommandClass.class),
+        MULTI_INSTANCE_ASSOCIATION(0x8E, "MULTI_INSTANCE_ASSOCIATION", ZWaveMultiAssociationCommandClass.class),
         MULTI_CMD(0x8F, "MULTI_CMD", ZWaveMultiCommandCommandClass.class),
         ENERGY_PRODUCTION(0x90, "ENERGY_PRODUCTION", ZWaveEnergyProductionCommandClass.class),
         // Note that MANUFACTURER_PROPRIETARY shouldn't be instantiated directly

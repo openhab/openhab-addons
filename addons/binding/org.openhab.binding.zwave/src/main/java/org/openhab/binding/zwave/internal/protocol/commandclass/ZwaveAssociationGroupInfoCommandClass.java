@@ -240,7 +240,7 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
                         serialMessage.getMessagePayloadByte(offset + 4 + i));
             }
         }
-        getNode().getAssociationGroup(groupid).setCommands(commands);
+        getNode().getAssociationGroup(groupid).setCommandClasses(commands);
     }
 
     /**
@@ -351,7 +351,7 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
             if (refresh == true || group.getProfile() == null) {
                 result.add(getInfoMessage(group.getIndex()));
             }
-            if (refresh == true || group.getCommands() == null) {
+            if (refresh == true || group.getCommandClasses() == null) {
                 result.add(getCommandListMessage(group.getIndex()));
             }
         }
