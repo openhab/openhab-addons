@@ -197,7 +197,8 @@ public class ZWaveDiscoveryService extends AbstractDiscoveryService {
                         node.getDeviceId(), node.getApplicationVersion());
             }
         } else {
-            logger.debug("NODE {}: Device discovery resolved to thingType {}", foundProduct.getThingTypeUID());
+            logger.debug("NODE {}: Device discovery resolved to thingType {}", node.getNodeId(),
+                    foundProduct.getThingTypeUID());
 
             // And create the new thing
             ThingType thingType = ZWaveConfigProvider.getThingType(foundProduct.getThingTypeUID());
