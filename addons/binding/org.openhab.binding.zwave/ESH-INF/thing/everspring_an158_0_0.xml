@@ -40,7 +40,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">AN158</property>
+      <property name="modelId">AN158</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0004:0002</property>
       <property name="defaultAssociations">1</property>

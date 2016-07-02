@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">BRK Brands</property>
-      <property name="model">ZCOMBO</property>
+      <property name="modelId">ZCOMBO</property>
       <property name="manufacturerId">0138</property>
       <property name="manufacturerRef">0001:0002</property>
       <property name="defaultAssociations">1</property>

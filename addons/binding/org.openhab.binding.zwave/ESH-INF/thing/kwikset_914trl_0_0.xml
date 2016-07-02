@@ -13,11 +13,6 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="lock_door" typeId="lock_door">
         <label>Door Lock</label>
         <properties>
@@ -30,14 +25,20 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Kwikset</property>
-      <property name="model">914TRL</property>
+      <property name="modelId">914TRL</property>
       <property name="manufacturerId">0090</property>
       <property name="manufacturerRef">0001:0001</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -103,6 +104,17 @@ Reset to factory default settings.<br /><h1>Overview</h1><p>Reset factory defaul
         </options>
         <advanced>true</advanced>
         <limitToOptions>false</limitToOptions>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
+        <label>1: Group 1</label>
+        <multipleLimit>5</multipleLimit>
       </parameter>
 
     </config-description>

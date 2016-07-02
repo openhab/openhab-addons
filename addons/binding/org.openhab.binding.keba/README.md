@@ -14,6 +14,7 @@ The binding uses the default UDP port number to connect to the Keba Charging Sta
 
 The Keba KeContact P20 requires the ip address as a configuration value in order for the binding to know where to access it. Optionally, a refresh interval (in seconds) can be defined that steers the polling of the actual state of the charging station
 In the thing file, this looks e.g. like
+
 ```
 Thing keba:kecontactp20:1 [ ipAddress="192.168.0.64", refreshInterval=30 ]
 ```
@@ -33,12 +34,14 @@ All devices support the following channels (non exhaustive):
 
 ## Full Example
 
-demo.things:
+demo.Things:
+
 ```
 Thing keba:kecontactp20:1 [ipAddress="192.168.0.64", refreshInterval=30]
 ```
 
 demo.items:
+
 ```
 Dimmer KebaCurrentRange  {channel="keba:kecontactp20:1:maxpresetcurrentrange", autoupdate="false"} 
 Number KebaCurrent  {channel="keba:kecontactp20:1:maxpresetcurrent", autoupdate="false"}
@@ -64,6 +67,7 @@ Switch KebaOutputSwitch  {channel="keba:kecontactp20:1:output"}
 ```
 
 demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {

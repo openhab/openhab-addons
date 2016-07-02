@@ -67,7 +67,8 @@ Currently there is only one keypad thing type to cover all keypads. Not all chan
 
 ## Full Example
 
-demo.things:
+demo.Things:
+
 ```
 lutron:dimmer:theater (lutron:ipbridge:radiora2) [ integrationId=8, fadeOutTime=2 ]
 lutron:occupancysensor:theater (lutron:ipbridge:radiora2) [ integrationId=9 ]
@@ -75,6 +76,7 @@ lutron:keypad:theater (lutron:ipbridge:radiora2) [ integrationId=10 ]
 ```
 
 demo.items:
+
 ```
 Dimmer TheaterLights { channel="lutron:dimmer:theater:lightlevel" }
 Switch TheaterMotion { channel="lutron:occupancysensor:theater:occupancystatus" }

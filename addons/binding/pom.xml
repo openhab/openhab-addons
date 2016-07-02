@@ -30,6 +30,7 @@
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
+    <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.opensprinkler</module>
@@ -46,6 +47,8 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zwave</module>
+    <module>org.openhab.binding.systeminfo</module>
+    <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.zwave.test</module>
   </modules>
 

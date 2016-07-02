@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -57,8 +58,12 @@ public class ZWaveClockCommandClassTest extends ZWaveCommandClassTest {
     public void setTime() {
         ZWaveClockCommandClass cls = (ZWaveClockCommandClass) getCommandClass(CommandClass.CLOCK);
 
-        byte[] expectedResponse = { 99, 4, -127, 4, -127, 0 };
-        SerialMessage msg = cls.getSetMessage(new Date(0));
+        byte[] expectedResponse = { 99, 4, -127, 4, -128, 0 };
+
+        Calendar utc = Calendar.getInstance();
+        utc.setTimeZone(TimeZone.getTimeZone("UTC"));
+        utc.setTime(new Date(0));
+        SerialMessage msg = cls.getSetMessage(utc);
 
         assertTrue(Arrays.equals(msg.getMessagePayload(), expectedResponse));
 

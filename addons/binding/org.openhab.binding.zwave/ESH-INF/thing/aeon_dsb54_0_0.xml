@@ -11,10 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSB54</property>
+      <property name="modelId">DSB54</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0036</property>
       <property name="defaultAssociations">1,2</property>

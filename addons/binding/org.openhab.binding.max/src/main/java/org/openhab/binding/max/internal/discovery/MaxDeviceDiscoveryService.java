@@ -117,4 +117,9 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implemen
     public void onDeviceRemoved(MaxCubeBridgeHandler bridge, Device device) {
         // this can be ignored here
     }
+
+    @Override
+    public void onDeviceConfigUpdate(Bridge bridge, Device device) {
+        // this can be ignored here
+    }
 }

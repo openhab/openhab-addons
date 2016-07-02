@@ -18,6 +18,12 @@
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
+      <channel id="sensor_power" typeId="sensor_power">
+        <label>Sensor (power)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
+        </properties>
+      </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
@@ -30,18 +36,12 @@
           <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
-      <channel id="sensor_power" typeId="sensor_power">
-        <label>Sensor (power)</label>
-        <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSC08</property>
+      <property name="modelId">DSC08</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:0008</property>
     </properties>

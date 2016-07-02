@@ -118,24 +118,24 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received NodeNaming Command Class Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received NODE_NAMING command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
 
             case NAME_REPORT:
-                logger.trace("NODE {}: Process Name Report", this.getNode().getNodeId());
+                logger.trace("NODE {}: Process Name Report", getNode().getNodeId());
                 processNameReport(serialMessage, offset, endpoint);
                 initialiseName = true;
                 break;
             case LOCATION_REPORT:
-                logger.trace("NODE {}: Process Location Report", this.getNode().getNodeId());
+                logger.trace("NODE {}: Process Location Report", getNode().getNodeId());
                 processLocationReport(serialMessage, offset, endpoint);
                 initialiseLocation = true;
                 break;
 
             default:
                 logger.warn(String.format("Unsupported Command 0x%02X for command class %s (0x%02X).", command,
-                        this.getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                        getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -148,6 +148,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @throws ZWaveSerialMessageException
      */
     protected String getString(SerialMessage serialMessage, int offset) throws ZWaveSerialMessageException {
+        if (serialMessage.getMessagePayload().length <= offset + 1) {
+            return new String();
+        }
+
         int charPresentation = serialMessage.getMessagePayloadByte(offset + 1);
 
         // First 5 bits are reserved so 0 them
@@ -155,25 +159,25 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
 
         switch (charPresentation) {
             case ENCODING_ASCII:
-                logger.debug("NODE {} : Node Name is encoded with standard ASCII codes", this.getNode().getNodeId());
+                logger.debug("NODE {} : Node Name is encoded with standard ASCII codes", getNode().getNodeId());
                 break;
             case ENCODING_EXTENDED_ASCII:
                 logger.debug("NODE {} : Node Name is encoded with standard and OEM Extended ASCII codes",
-                        this.getNode().getNodeId());
+                        getNode().getNodeId());
                 break;
             case ENCODING_UTF16:
-                logger.debug("NODE {} : Node Name is encoded with Unicode UTF-16", this.getNode().getNodeId());
+                logger.debug("NODE {} : Node Name is encoded with Unicode UTF-16", getNode().getNodeId());
                 break;
             default:
-                logger.error("NODE {} : Node Name encoding is unsupported. Encoding code {}",
-                        this.getNode().getNodeId(), charPresentation);
+                logger.error("NODE {} : Node Name encoding is unsupported. Encoding code {}", getNode().getNodeId(),
+                        charPresentation);
                 return null;
         }
 
         int numBytes = serialMessage.getMessagePayload().length - (offset + 2);
 
         if (numBytes < 0) {
-            logger.error("NODE {} : Node Name report error in message length ({})", this.getNode().getNodeId(),
+            logger.error("NODE {} : Node Name report error in message length ({})", getNode().getNodeId(),
                     serialMessage.getMessagePayload().length);
             return null;
         }
@@ -184,7 +188,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
 
         // Maximum length is 16 bytes
         if (numBytes > MAX_STRING_LENGTH) {
-            logger.warn("NODE {} : Node Name is too big; maximum is {} characters {}", this.getNode().getNodeId(),
+            logger.warn("NODE {} : Node Name is too big; maximum is {} characters {}", getNode().getNodeId(),
                     MAX_STRING_LENGTH, numBytes);
             numBytes = MAX_STRING_LENGTH;
         }
@@ -289,8 +293,8 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @return the serial message
      */
     public SerialMessage getNameMessage() {
-        logger.debug("NODE {}: Creating new message for application command NAME_GET", this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for application command NAME_GET", getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
         byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(), (byte) NAME_GET };
         result.setMessagePayload(newPayload);
@@ -303,8 +307,8 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @return the serial message
      */
     public SerialMessage getLocationMessage() {
-        logger.debug("NODE {}: Creating new message for application command LOCATION_GET", this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for application command LOCATION_GET", getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
         byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(), (byte) LOCATION_GET };
         result.setMessagePayload(newPayload);
@@ -318,7 +322,7 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
      * @return the serial message
      */
     private SerialMessage setValueMessage(String str, int command) {
-        logger.debug("NODE {}: Creating new message for application command NAME_SET to {}", this.getNode().getNodeId(),
+        logger.debug("NODE {}: Creating new message for application command NAME_SET to {}", getNode().getNodeId(),
                 str);
 
         byte[] nameBuffer = null;
@@ -338,10 +342,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
             len = 16;
         }
 
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), (byte) ((byte) len + 3),
-                (byte) getCommandClass().getKey(), (byte) command, encoding };
+        byte[] newPayload = { (byte) getNode().getNodeId(), (byte) ((byte) len + 3), (byte) getCommandClass().getKey(),
+                (byte) command, encoding };
 
         byte[] msg = new byte[newPayload.length + len];
         System.arraycopy(newPayload, 0, msg, 0, newPayload.length);
@@ -369,10 +373,10 @@ public class ZWaveNodeNamingCommandClass extends ZWaveCommandClass implements ZW
         }
 
         if (initialiseName == false) {
-            result.add(this.getNameMessage());
+            result.add(getNameMessage());
         }
         if (initialiseLocation == false) {
-            result.add(this.getLocationMessage());
+            result.add(getLocationMessage());
         }
 
         return result;

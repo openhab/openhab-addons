@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">HAC01</property>
+      <property name="modelId">HAC01</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0010:0001</property>
     </properties>

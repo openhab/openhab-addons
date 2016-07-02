@@ -81,7 +81,8 @@ public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
         String thingLabel = "";
         Map<String, Object> properties = null;
 
-        int partitionNumber = Integer.parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.PARTITION));
+        int partitionNumber = Integer
+                .parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.PARTITION));
         int zoneNumber = Integer.parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.ZONE));
 
         switch (dscAlarmThingType) {
@@ -122,9 +123,11 @@ public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
             DiscoveryResult discoveryResult;
 
             if (properties != null) {
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withBridge(bridge.getUID()).withLabel(thingLabel).build();
+                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(bridge.getUID()).withLabel(thingLabel).build();
             } else {
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getUID()).withLabel(thingLabel).build();
+                discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getUID())
+                        .withLabel(thingLabel).build();
             }
 
             thingDiscovered(discoveryResult);

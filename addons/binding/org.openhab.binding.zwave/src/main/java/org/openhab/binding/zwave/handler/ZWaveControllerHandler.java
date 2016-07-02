@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.zwave.ZWaveBindingConstants;
 import org.openhab.binding.zwave.discovery.ZWaveDiscoveryService;
-import org.openhab.binding.zwave.internal.ZWaveNetworkMonitor;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -40,6 +39,7 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInitializationStateEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNetworkStateEvent;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStage;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +59,10 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
 
     private volatile ZWaveController controller;
 
-    // Network monitoring class
-    ZWaveNetworkMonitor networkMonitor;
-
     private Boolean isMaster;
     private Boolean isSUC;
     private String networkKey;
+    private Integer secureInclusionMode;
     private Integer healTime;
 
     public ZWaveControllerHandler(Bridge bridge) {
@@ -81,6 +79,13 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
             isMaster = (Boolean) param;
         } else {
             isMaster = true;
+        }
+
+        param = getConfig().get(CONFIGURATION_SECUREINCLUSION);
+        if (param instanceof BigDecimal && param != null) {
+            secureInclusionMode = ((BigDecimal) param).intValue();
+        } else {
+            secureInclusionMode = 0;
         }
 
         param = getConfig().get(CONFIGURATION_SUC);
@@ -132,6 +137,8 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         Map<String, String> config = new HashMap<String, String>();
         config.put("masterController", isMaster.toString());
         config.put("isSUC", isSUC ? "true" : "false");
+        config.put("secureInclusion", secureInclusionMode.toString());
+        config.put("networkKey", networkKey);
 
         // MAJOR BODGE
         // The security class uses a static member to set the key so for now
@@ -145,11 +152,6 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         controller = new ZWaveController(this, config);
         controller.addEventListener(this);
 
-        // The network monitor service needs to know the controller...
-        this.networkMonitor = new ZWaveNetworkMonitor(controller);
-        if (healTime != null) {
-            networkMonitor.setHealTime(healTime);
-        }
         // if (aliveCheckPeriod != null) {
         // networkMonitor.setPollPeriod(aliveCheckPeriod);
         // }
@@ -214,15 +216,15 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
                 }
 
                 if (cfg[1].equals("softreset") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestSoftReset();
                     value = "";
                 } else if (cfg[1].equals("hardreset") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestHardReset();
                     value = "";
                 } else if (cfg[1].equals("exclude") && value instanceof BigDecimal
-                        && value.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) value).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controller.requestRemoveNodesStart();
                     value = "";
                 } else if (cfg[1].equals("suc") && value instanceof Boolean) {
@@ -287,14 +289,21 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         if (controller == null) {
             return;
         }
-        controller.requestAddNodesStart();
+
+        int inclusionMode = 2;
+        Object param = getConfig().get(CONFIGURATION_INCLUSION_MODE);
+        if (param instanceof BigDecimal && param != null) {
+            inclusionMode = ((BigDecimal) param).intValue();
+        }
+
+        controller.requestAddNodesStart(inclusionMode);
     }
 
     public void stopDeviceDiscovery() {
         if (controller == null) {
             return;
         }
-        controller.requestAddNodesStop();
+        controller.requestInclusionStop();
     }
 
     @Override
@@ -464,11 +473,24 @@ public abstract class ZWaveControllerHandler extends BaseBridgeHandler implement
         controller.reinitialiseNode(nodeId);
     }
 
-    public void healNode(int nodeId) {
-        if (networkMonitor == null) {
-            return;
+    public boolean healNode(int nodeId) {
+        if (controller == null) {
+            return false;
         }
-        networkMonitor.startNodeHeal(nodeId);
+        ZWaveNode node = controller.getNode(nodeId);
+        if (node == null) {
+            logger.error("NODE {}: Can't be found!", nodeId);
+            return false;
+        }
+
+        // Only set the HEAL stage if the node is in DONE state
+        if (node.getNodeInitStage() != ZWaveNodeInitStage.DONE) {
+            logger.debug("NODE {}: Can't start heal when device initialisation is not complete", nodeId);
+            return false;
+        }
+
+        node.setNodeStage(ZWaveNodeInitStage.HEAL_START);
+        return true;
     }
 
     private void updateNeighbours() {

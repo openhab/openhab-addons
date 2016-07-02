@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNodeState;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpCommandClass;
@@ -36,6 +36,9 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
         logger.trace("Handle Message Send Data Response");
         if (incomingMessage.getMessagePayloadByte(0) != 0x00) {
             logger.debug("NODE {}: Sent Data successfully placed on stack.", lastSentMessage.getMessageNode());
+
+            // This response is our controller ACK
+            lastSentMessage.setAckRecieved();
         } else {
             // This is an error. This means that the transaction is complete!
             // Set the flag, and return false.
@@ -78,9 +81,6 @@ public class SendDataMessageClass extends ZWaveCommandProcessor {
                     node.getNodeId());
             return false;
         }
-
-        // This response is our controller ACK
-        lastSentMessage.setAckRecieved();
 
         switch (status) {
             case COMPLETE_OK:

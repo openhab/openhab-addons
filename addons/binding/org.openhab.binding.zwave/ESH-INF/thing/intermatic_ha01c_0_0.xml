@@ -24,7 +24,7 @@ In-Wall Dual Receptacle<br /><h1>Overview</h1><p>The Intermatic HA01C Wall Recep
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Intermatic</property>
-      <property name="model">HA-01C</property>
+      <property name="modelId">HA-01C</property>
       <property name="manufacturerId">0005</property>
       <property name="manufacturerRef">0001:0003</property>
     </properties>

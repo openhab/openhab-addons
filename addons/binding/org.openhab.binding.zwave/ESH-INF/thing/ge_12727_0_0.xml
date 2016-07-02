@@ -24,7 +24,7 @@ GE 12727 Z-Wave Wireless Lighting Control Smart Toggle Switch<br /><h2>Inclusion
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">12727</property>
+      <property name="modelId">12727</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">4952:3033</property>
     </properties>

@@ -11,16 +11,22 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_temperature" typeId="sensor_temperature">
+        <label>Sensor (temperature)</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
+        </properties>
+      </channel>
       <channel id="thermostat_mode" typeId="trane_xr524_00_000_thermostat_mode">
         <label>Thermostat mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
-      <channel id="thermostat_fanmode" typeId="trane_xr524_00_000_thermostat_fanmode">
-        <label>Thermostat fan mode</label>
+      <channel id="thermostat_state" typeId="thermostat_state">
+        <label>Thermostat Operating State</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
         </properties>
       </channel>
       <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
@@ -35,16 +41,10 @@
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=COOLING</property>
         </properties>
       </channel>
-      <channel id="sensor_temperature" typeId="sensor_temperature">
-        <label>Sensor (temperature)</label>
+      <channel id="thermostat_fanmode" typeId="trane_xr524_00_000_thermostat_fanmode">
+        <label>Thermostat fan mode</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_state" typeId="thermostat_state">
-        <label>Thermostat Operating State</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
         </properties>
       </channel>
       <channel id="thermostat_fanstate" typeId="trane_xr524_00_000_thermostat_fanstate">
@@ -58,7 +58,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Trane</property>
-      <property name="model">Trane XR524</property>
+      <property name="modelId">Trane XR524</property>
       <property name="manufacturerId">008B</property>
       <property name="manufacturerRef">5452:5442</property>
     </properties>

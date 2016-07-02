@@ -88,6 +88,7 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
      */
     public ZWaveMultiInstanceCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -97,14 +98,6 @@ public class ZWaveMultiInstanceCommandClass extends ZWaveCommandClass {
     public CommandClass getCommandClass() {
         return CommandClass.MULTI_INSTANCE;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
-    };
 
     /**
      * Gets the endpoint object using it's endpoint ID as key.

@@ -11,12 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
@@ -29,12 +23,18 @@
           <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
         </properties>
       </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Cooper Wiring Devices</property>
-      <property name="model">RF9501</property>
+      <property name="modelId">RF9501</property>
       <property name="manufacturerId">001A</property>
       <property name="manufacturerRef">534C:0000</property>
       <property name="defaultAssociations">1</property>

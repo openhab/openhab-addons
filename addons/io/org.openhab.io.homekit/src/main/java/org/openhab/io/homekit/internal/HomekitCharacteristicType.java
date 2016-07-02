@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public enum HomekitCharacteristicType {
 
-    CURRENT_TEMPERATURE("currentTemperature"),
-    TARGET_TEMPERATURE("targetTemperature"),
-    HEATING_COOLING_MODE("heatingCoolingMode");
+    CURRENT_TEMPERATURE("CurrentTemperature"),
+    TARGET_TEMPERATURE("TargetTemperature"),
+    HEATING_COOLING_MODE("homekit:HeatingCoolingMode");
 
     private static final Map<String, HomekitCharacteristicType> tagMap = new HashMap<>();
 

@@ -14,7 +14,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW097</property>
+      <property name="modelId">ZW097</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0061,0102:0061,0202:0061</property>
       <property name="defaultAssociations">1</property>

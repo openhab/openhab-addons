@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.zwave.test.internal.protocol.commandclass;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMeterPulseCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 
@@ -25,7 +28,7 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 public class ZWaveMeterPulseCommandClassTest extends ZWaveCommandClassTest {
 
     @Test
-    public void reportTime() {
+    public void reportValue() {
         byte[] packetData = { 0x01, 0x0F, 0x00, 0x04, 0x00, 0x01, 0x07, (byte) 0x35, 0x05, 0x00, 0x01, 0x00, 0x00,
                 (byte) 0xC3 };
 
@@ -37,5 +40,16 @@ public class ZWaveMeterPulseCommandClassTest extends ZWaveCommandClassTest {
         assertEquals(event.getCommandClass(), CommandClass.METER_PULSE);
         assertEquals(event.getEndpoint(), 0);
         assertEquals((int) event.getValue(), 65536);
+    }
+
+    @Test
+    public void getValueMessage() {
+        ZWaveMeterPulseCommandClass cls = (ZWaveMeterPulseCommandClass) getCommandClass(CommandClass.METER_PULSE);
+        SerialMessage msg;
+
+        byte[] expectedResponseV1 = { 1, 9, 0, 19, 99, 2, 53, 4, 0, 0, -75 };
+        cls.setVersion(1);
+        msg = cls.getValueMessage();
+        assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
     }
 }

@@ -11,12 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
@@ -53,12 +47,18 @@
           <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Devolo</property>
-      <property name="model">MT02646</property>
+      <property name="modelId">MT02646</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0001:0011</property>
       <property name="commandClass:SWITCH_BINARY">getSupported=false</property>

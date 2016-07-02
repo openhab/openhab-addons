@@ -58,6 +58,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurati
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveDoorLockCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiAssociationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNodeNamingCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePlusCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass.ZWavePowerLevelCommandClassChangeEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSwitchAllCommandClass;
@@ -122,6 +123,11 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             nodeId = Integer.parseInt(nodeParm);
         } catch (final NumberFormatException ex) {
             logger.error("NodeID ({}) cannot be parsed in {}", nodeParm, this.getThing().getUID());
+            return;
+        }
+
+        if (nodeId == 0) {
+            logger.error("NodeID ({}) cannot be 0", nodeParm, this.getThing().getUID());
             return;
         }
 
@@ -233,6 +239,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     }
 
                     // First time round, then add the polling class
+                    // TODO: Probably should check for duplicates
                     if (first) {
                         thingChannelsPoll.add(chan);
                         logger.debug("NODE {}: Initialising poll channel {}", nodeId, channel.getUID());
@@ -397,7 +404,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("NODE {}: Controller status changed.", nodeId, bridgeStatusInfo.getStatus());
+        logger.debug("NODE {}: Controller status changed to {}.", nodeId, bridgeStatusInfo.getStatus());
 
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE);
@@ -431,76 +438,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
 
         if (node != null) {
-            updateNeighbours();
-
-            // We need to synchronise the configuration between the ZWave library and ESH.
-            // This is especially important when the device is first added as the ESH representation of the config
-            // will be set to defaults. We will also not have any defaults for association groups, wakeup etc.
-            Configuration config = editConfiguration();
-
-            // Process CONFIGURATION
-            ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
-                    .getCommandClass(CommandClass.CONFIGURATION);
-            if (configurationCommandClass != null) {
-                // Iterate over all parameters and process
-                for (int paramId : configurationCommandClass.getParameters().keySet()) {
-                    ZWaveConfigurationParameter parameter = configurationCommandClass.getParameter(paramId);
-                    updateConfigurationParameter(config, parameter.getIndex(), parameter.getSize(),
-                            parameter.getValue());
-                }
-            }
-
-            // Process ASSOCIATION
-            for (ZWaveAssociationGroup group : node.getAssociationGroups().values()) {
-                List<String> configGroup = new ArrayList<String>();
-
-                // Build the configuration value
-                for (ZWaveAssociation groupMember : group.getAssociations()) {
-                    logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, group.getIndex(),
-                            groupMember.getNode(), groupMember.getEndpoint());
-                    configGroup.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
-                }
-
-                config.put("group_" + group.getIndex(), configGroup);
-            }
-
-            // Process WAKE_UP
-            ZWaveWakeUpCommandClass wakeupCommandClass = (ZWaveWakeUpCommandClass) node
-                    .getCommandClass(CommandClass.WAKE_UP);
-            if (wakeupCommandClass != null) {
-                config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, wakeupCommandClass.getInterval());
-                config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, wakeupCommandClass.getTargetNodeId());
-            }
-
-            // Process SWITCH_ALL
-            ZWaveSwitchAllCommandClass switchallCommandClass = (ZWaveSwitchAllCommandClass) node
-                    .getCommandClass(CommandClass.SWITCH_ALL);
-            if (switchallCommandClass != null) {
-                config.put(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, switchallCommandClass.getMode());
-            }
-
-            // Process NODE_NAMING
-            ZWaveNodeNamingCommandClass nodenamingCommandClass = (ZWaveNodeNamingCommandClass) node
-                    .getCommandClass(CommandClass.NODE_NAMING);
-            if (nodenamingCommandClass != null) {
-                config.put(ZWaveBindingConstants.CONFIGURATION_NODELOCATION, nodenamingCommandClass.getLocation());
-                config.put(ZWaveBindingConstants.CONFIGURATION_NODENAME, nodenamingCommandClass.getName());
-            }
-
-            // Only update if configuration has changed
-            Configuration originalConfig = editConfiguration();
-
-            boolean update = false;
-            for (String property : config.getProperties().keySet()) {
-                if (config.get(property).equals(originalConfig.get(property)) == false) {
-                    update = true;
-                    break;
-                }
-            }
-
-            if (update == true) {
-                updateConfiguration(config);
-            }
+            updateNodeNeighbours();
+            updateNodeProperties();
         }
         controllerHandler = bridgeHandler;
 
@@ -871,16 +810,16 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
             } else if ("action".equals(cfg[0])) {
                 if ("failed".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controllerHandler.replaceFailedNode(nodeId);
                 }
                 if ("remove".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     controllerHandler.removeFailedNode(nodeId);
                     controllerHandler.checkNodeFailed(nodeId);
                 }
                 if ("reinit".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     logger.debug("NODE {}: Re-initialising node!", nodeId);
 
                     // Delete the saved XML
@@ -891,7 +830,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
 
                 if ("heal".equals(cfg[1]) && valueObject instanceof BigDecimal
-                        && valueObject.equals(ZWaveBindingConstants.ACTION_CHECK_VALUE)) {
+                        && ((BigDecimal) valueObject).intValue() == ZWaveBindingConstants.ACTION_CHECK_VALUE) {
                     logger.debug("NODE {}: Starting heal on node!", nodeId);
 
                     controllerHandler.healNode(nodeId);
@@ -1140,7 +1079,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
 
                 if (channel.converter == null) {
-                    logger.warn("NODE {}: No converter set for state {}", nodeId, channel.getUID());
+                    logger.warn("NODE {}: No converter set for channel {}", nodeId, channel.getUID());
                     return;
                 }
 
@@ -1148,7 +1087,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 // channel.dataType);
                 State state = channel.converter.handleEvent(channel, event);
                 if (state != null) {
-                    logger.debug("Updating {} to {}", channel.getUID(), state);
+                    logger.debug("NODE {}: Updating channel state {} to {} [{}]", nodeId, channel.getUID(), state,
+                            state.getClass().getSimpleName());
 
                     updateState(channel.getUID(), state);
                 }
@@ -1215,27 +1155,8 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             switch (initEvent.getStage()) {
                 case DONE:
                     // Update some properties first...
-                    updateNeighbours();
-
-                    ZWaveNode node = controllerHandler.getNode(nodeId);
-                    if (node == null) {
-                        return;
-                    }
-
-                    // Update property information about this device
-                    Map<String, String> properties = editProperties();
-                    properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
-                            node.getDeviceClass().getBasicDeviceClass().toString());
-                    properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
-                            node.getDeviceClass().getGenericDeviceClass().toString());
-                    properties.put(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
-                            node.getDeviceClass().getSpecificDeviceClass().toString());
-                    properties.put(ZWaveBindingConstants.PROPERTY_LISTENING, Boolean.toString(node.isListening()));
-                    properties.put(ZWaveBindingConstants.PROPERTY_FREQUENT,
-                            Boolean.toString(node.isFrequentlyListening()));
-                    properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
-                    properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
-                    updateProperties(properties);
+                    updateNodeNeighbours();
+                    updateNodeProperties();
 
                     // Do we need to change type?
                     if (finalTypeSet == false) {
@@ -1247,8 +1168,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                         logger.debug("NODE {}: Setting ONLINE", nodeId);
                         updateStatus(ThingStatus.ONLINE);
 
-                        // Now that this node is completely initialised, we want to re-process all the
-                        // channels
+                        // Now that this node is completely initialised, we want to re-process all channels
                         initialiseNode();
                     }
                     break;
@@ -1264,7 +1184,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             ZWaveNetworkEvent networkEvent = (ZWaveNetworkEvent) incomingEvent;
 
             if (networkEvent.getEvent() == ZWaveNetworkEvent.Type.NodeRoutingInfo) {
-                updateNeighbours();
+                updateNodeNeighbours();
             }
 
             if (networkEvent.getEvent() == ZWaveNetworkEvent.Type.DeleteNode) {
@@ -1308,7 +1228,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
     }
 
-    private void updateNeighbours() {
+    private void updateNodeNeighbours() {
         if (controllerHandler == null) {
             return;
         }
@@ -1326,6 +1246,144 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
             neighbours += neighbour;
         }
         updateProperty(ZWaveBindingConstants.PROPERTY_NEIGHBOURS, neighbours);
+    }
+
+    private void updateNodeProperties() {
+        if (controllerHandler == null) {
+            return;
+        }
+
+        ZWaveNode node = controllerHandler.getNode(nodeId);
+        if (node == null) {
+            return;
+        }
+
+        // Update property information about this device
+        Map<String, String> properties = editProperties();
+
+        if (node.getManufacturer() != Integer.MAX_VALUE) {
+            properties.put(ZWaveBindingConstants.PROPERTY_MANUFACTURER, Integer.toString(node.getManufacturer()));
+        }
+        if (node.getDeviceType() != Integer.MAX_VALUE) {
+            properties.put(ZWaveBindingConstants.PROPERTY_DEVICETYPE, Integer.toString(node.getDeviceType()));
+        }
+        if (node.getDeviceId() != Integer.MAX_VALUE) {
+            properties.put(ZWaveBindingConstants.PROPERTY_DEVICEID, Integer.toString(node.getDeviceId()));
+        }
+        properties.put(ZWaveBindingConstants.PROPERTY_VERSION, node.getApplicationVersion());
+
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_BASIC,
+                node.getDeviceClass().getBasicDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_GENERIC,
+                node.getDeviceClass().getGenericDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_CLASS_SPECIFIC,
+                node.getDeviceClass().getSpecificDeviceClass().toString());
+        properties.put(ZWaveBindingConstants.PROPERTY_LISTENING, Boolean.toString(node.isListening()));
+        properties.put(ZWaveBindingConstants.PROPERTY_FREQUENT, Boolean.toString(node.isFrequentlyListening()));
+        properties.put(ZWaveBindingConstants.PROPERTY_BEAMING, Boolean.toString(node.isBeaming()));
+        properties.put(ZWaveBindingConstants.PROPERTY_ROUTING, Boolean.toString(node.isRouting()));
+
+        // If this is a Z-Wave Plus device, then also add its class
+        ZWavePlusCommandClass cmdClassZWavePlus = (ZWavePlusCommandClass) node
+                .getCommandClass(CommandClass.ZWAVE_PLUS_INFO);
+        if (cmdClassZWavePlus != null) {
+            properties.put(ZWaveBindingConstants.PROPERTY_ZWPLUS_DEVICETYPE,
+                    cmdClassZWavePlus.getZWavePlusDeviceType().toString());
+        }
+
+        boolean update = false;
+        Map<String, String> originalProperties = editProperties();
+        for (String property : originalProperties.keySet()) {
+            if (properties.get(property).equals(originalProperties.get(property)) == false) {
+                update = true;
+                break;
+            }
+        }
+
+        if (update == true) {
+            logger.debug("NODE {}: Properties synchronised", nodeId);
+            updateProperties(properties);
+        }
+
+        // We need to synchronise the configuration between the ZWave library and ESH.
+        // This is especially important when the device is first added as the ESH representation of the config
+        // will be set to defaults. We will also not have any defaults for association groups, wakeup etc.
+        Configuration config = editConfiguration();
+
+        // Process CONFIGURATION
+        ZWaveConfigurationCommandClass configurationCommandClass = (ZWaveConfigurationCommandClass) node
+                .getCommandClass(CommandClass.CONFIGURATION);
+        if (configurationCommandClass != null) {
+            // Iterate over all parameters and process
+            for (int paramId : configurationCommandClass.getParameters().keySet()) {
+                ZWaveConfigurationParameter parameter = configurationCommandClass.getParameter(paramId);
+                updateConfigurationParameter(config, parameter.getIndex(), parameter.getSize(), parameter.getValue());
+            }
+        }
+
+        // Process ASSOCIATION
+        ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
+                .getCommandClass(CommandClass.ASSOCIATION);
+        if (associationCommandClass != null) {
+            for (int groupId : associationCommandClass.getAssociations().keySet()) {
+                List<String> group = new ArrayList<String>();
+
+                // Build the configuration value
+                for (ZWaveAssociation groupMember : associationCommandClass.getGroupMembers(groupId)
+                        .getAssociations()) {
+                    logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, groupId,
+                            groupMember.getNode(), groupMember.getEndpoint());
+                    group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
+                }
+
+                config.put("group_" + groupId, group);
+            }
+        }
+
+        // Process WAKE_UP
+        ZWaveWakeUpCommandClass wakeupCommandClass = (ZWaveWakeUpCommandClass) node
+                .getCommandClass(CommandClass.WAKE_UP);
+        if (wakeupCommandClass != null) {
+            config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPINTERVAL, wakeupCommandClass.getInterval());
+            config.put(ZWaveBindingConstants.CONFIGURATION_WAKEUPNODE, wakeupCommandClass.getTargetNodeId());
+        }
+
+        // Process SWITCH_ALL
+        ZWaveSwitchAllCommandClass switchallCommandClass = (ZWaveSwitchAllCommandClass) node
+                .getCommandClass(CommandClass.SWITCH_ALL);
+        if (switchallCommandClass != null) {
+            if (switchallCommandClass.getMode() != null) {
+                config.put(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, switchallCommandClass.getMode());
+            }
+        }
+
+        // Process NODE_NAMING
+        ZWaveNodeNamingCommandClass nodenamingCommandClass = (ZWaveNodeNamingCommandClass) node
+                .getCommandClass(CommandClass.NODE_NAMING);
+        if (nodenamingCommandClass != null) {
+            if (nodenamingCommandClass.getLocation() != null) {
+                config.put(ZWaveBindingConstants.CONFIGURATION_NODELOCATION, nodenamingCommandClass.getLocation());
+            }
+            if (nodenamingCommandClass.getName() != null) {
+                config.put(ZWaveBindingConstants.CONFIGURATION_NODENAME, nodenamingCommandClass.getName());
+            }
+        }
+
+        // Only update if configuration has changed
+        Configuration originalConfig = editConfiguration();
+
+        update = false;
+        for (String property : config.getProperties().keySet()) {
+            if (config.get(property).equals(originalConfig.get(property)) == false) {
+                update = true;
+                break;
+            }
+        }
+
+        if (update == true) {
+            logger.debug("NODE {}: Configuration synchronised", nodeId);
+            updateConfiguration(config);
+        }
     }
 
     private boolean updateConfigurationParameter(Configuration configuration, int paramIndex, int paramSize,

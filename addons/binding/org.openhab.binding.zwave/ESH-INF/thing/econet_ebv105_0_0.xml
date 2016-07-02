@@ -24,7 +24,7 @@ Wireless Water Shutoff Valve<br /><h1>Overview</h1><p>The EBV105 water shutoff c
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">EcoNet Controls</property>
-      <property name="model">EBV-105</property>
+      <property name="modelId">EBV-105</property>
       <property name="manufacturerId">0157</property>
       <property name="manufacturerRef">0003:0512</property>
       <property name="defaultAssociations">1</property>

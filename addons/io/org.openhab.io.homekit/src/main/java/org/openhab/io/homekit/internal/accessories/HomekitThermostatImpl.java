@@ -170,13 +170,13 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
                 break;
         }
         StringItem item = getGenericItem(heatingCoolingModeItemName);
-        item.setState(new StringType(modeString));
+        item.send(new StringType(modeString));
     }
 
     @Override
     public void setTargetTemperature(Double value) throws Exception {
         NumberItem item = getGenericItem(targetTemperatureItemName);
-        item.setState(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
+        item.send(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
     }
 
     @Override

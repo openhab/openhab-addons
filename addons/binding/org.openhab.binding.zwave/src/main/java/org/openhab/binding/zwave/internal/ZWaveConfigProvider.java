@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableSet;
 
 public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOptionProvider {
-    private final Logger logger = LoggerFactory.getLogger(ZWaveConfigProvider.class);
+    private final static Logger logger = LoggerFactory.getLogger(ZWaveConfigProvider.class);
 
     private static ThingRegistry thingRegistry;
     private static ThingTypeRegistry thingTypeRegistry;
@@ -54,6 +54,8 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
 
     private static Set<ThingTypeUID> zwaveThingTypeUIDList = new HashSet<ThingTypeUID>();
     private static List<ZWaveProduct> productIndex = new ArrayList<ZWaveProduct>();
+
+    private static final Object productIndexLock = new Object();
 
     // The following is a list of classes that are controllable.
     // This is used to filter endpoints so that when we display a list of nodes/endpoints
@@ -136,6 +138,10 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         // Get its handler and node
         ZWaveControllerHandler handler = (ZWaveControllerHandler) bridge.getHandler();
         ZWaveNode node = handler.getNode(nodeId);
+        if (node == null) {
+            logger.error("NODE {}: Node not found in getConfigDescription", nodeId);
+            return null;
+        }
 
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<ConfigDescriptionParameterGroup>();
         List<ConfigDescriptionParameter> parameters = new ArrayList<ConfigDescriptionParameter>();
@@ -194,7 +200,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             parameters.add(ConfigDescriptionParameterBuilder
                     .create(ZWaveBindingConstants.CONFIGURATION_SWITCHALLMODE, Type.TEXT).withLabel("Switch All Mode")
                     .withDescription("Set the mode for the switch when receiving SWITCH ALL commands.").withDefault("0")
-                    .withGroupName("thingcfg").withOptions(options).build());
+                    .withGroupName("thingcfg").withOptions(options).withLimitToOptions(true).build());
         }
 
         // If we support the powerlevel class, then add the configuration
@@ -214,14 +220,14 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_LEVEL, Type.INTEGER).withLabel("Power Level")
                     .withDescription(
                             "Set the RF output level - Normal is maximum power<br>Setting the power to a lower level may be useful to reduce overloading of the receiver in adjacent nodes where they are close together, or if maximum power is not required for battery devices, it may extend battery life by reducing the transmit power.")
-                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+                    .withDefault("0").withGroupName("thingcfg").withOptions(options).withLimitToOptions(true).build());
 
             parameters.add(ConfigDescriptionParameterBuilder
                     .create(ZWaveBindingConstants.CONFIGURATION_POWERLEVEL_TIMEOUT, Type.INTEGER)
                     .withLabel("Power Level Timeout")
                     .withDescription(
                             "Set the power level timeout in seconds<br>The node will reset to the normal power level if communications is not made within the specified number of seconds.")
-                    .withDefault("0").withGroupName("thingcfg").withOptions(options).build());
+                    .withDefault("0").withGroupName("thingcfg").build());
         }
 
         // If we support DOOR_LOCK - add options
@@ -279,7 +285,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
             return;
         }
 
-        synchronized (productIndex) {
+        synchronized (productIndexLock) {
             zwaveThingTypeUIDList = new HashSet<ThingTypeUID>();
             productIndex = new ArrayList<ZWaveProduct>();
 
@@ -298,6 +304,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                 Map<String, String> thingProperties = thingType.getProperties();
 
                 if (thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES) == null) {
+                    logger.debug("ZWave product {} has no references!", thingType.getUID());
                     continue;
                 }
 
@@ -307,6 +314,8 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                     Integer type;
                     Integer id = null;
                     if (values.length != 2) {
+                        logger.debug("ZWave product {} has invalid references! '{}'", thingType.getUID(),
+                                thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_REFERENCES));
                         continue;
                     }
 
@@ -320,22 +329,21 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
                             Integer.parseInt(thingProperties.get(ZWaveBindingConstants.PROPERTY_XML_MANUFACTURER), 16),
                             type, id, versionMin, versionMax));
                 }
-
             }
         }
     }
 
     public static synchronized List<ZWaveProduct> getProductIndex() {
-        // if (productIndex.size() == 0) {
-        initialiseZWaveThings();
-        // }
+        if (productIndex.size() == 0) {
+            initialiseZWaveThings();
+        }
         return productIndex;
     }
 
     public static Set<ThingTypeUID> getSupportedThingTypes() {
-        // if (zwaveThingTypeUIDList.size() == 0) {
-        initialiseZWaveThings();
-        // }
+        if (zwaveThingTypeUIDList.size() == 0) {
+            initialiseZWaveThings();
+        }
         return zwaveThingTypeUIDList;
     }
 

@@ -14,7 +14,7 @@
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=SMOKE</property>
+          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -25,7 +25,7 @@
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=SMOKE</property>
         </properties>
       </channel>
     </channels>
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">SF812</property>
+      <property name="modelId">SF812</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">000D:0001</property>
       <property name="defaultAssociations">1</property>

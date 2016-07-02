@@ -51,4 +51,14 @@ public interface DeviceStatusListener {
      */
     public void onDeviceAdded(Bridge bridge, Device device);
 
+    /**
+     * This method us called whenever a device config is updated.
+     *
+     * @param bridge
+     *            The MAX! Cube bridge the device was connected to.
+     * @param device
+     *            The device which config is changed.
+     */
+    public void onDeviceConfigUpdate(Bridge bridge, Device device);
+
 }

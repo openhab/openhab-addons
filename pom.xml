@@ -48,11 +48,11 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
 
     <properties>
-        <esh.version>0.8.0-SNAPSHOT</esh.version>
+        <esh.version>0.9.0-SNAPSHOT</esh.version>
         <kat.version>1.4.1</kat.version>
         <ohc.version>2.0.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.0.0.x</ohcp2.version>
-        <ohdr.version>1.0.3</ohdr.version>
+        <ohdr.version>1.0.6</ohdr.version>
         <karaf.version>4.0.4</karaf.version>
         <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>

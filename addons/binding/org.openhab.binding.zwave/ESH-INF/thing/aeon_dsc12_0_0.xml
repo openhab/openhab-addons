@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
       <channel id="sensor_power" typeId="sensor_power">
         <label>Sensor (power)</label>
         <properties>
@@ -29,18 +35,12 @@
           <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSC12</property>
+      <property name="modelId">DSC12</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:000C</property>
       <property name="defaultAssociations">1,2</property>

@@ -58,6 +58,7 @@ public class IT100BridgeDiscovery {
 
         while (ports.hasMoreElements()) {
             CommPortIdentifier portIdentifier = (CommPortIdentifier) ports.nextElement();
+
             if (portIdentifier.getPortType() == CommPortIdentifier.PORT_SERIAL) {
                 SerialPort serialPort = null;
                 OutputStreamWriter serialOutput = null;
@@ -66,7 +67,8 @@ public class IT100BridgeDiscovery {
                 try {
                     CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
                     serialPort = (SerialPort) commPort;
-                    serialPort.setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+                    serialPort.setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                            SerialPort.PARITY_NONE);
                     serialPort.enableReceiveThreshold(1);
 
                     serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), "US-ASCII");
@@ -81,7 +83,8 @@ public class IT100BridgeDiscovery {
                     try {
                         message = serialInput.readLine();
                     } catch (IOException e) {
-                        logger.debug("discoverBridge(): No Message Read from Serial Port '{}'", portIdentifier.getName());
+                        logger.debug("discoverBridge(): No Message Read from Serial Port '{}'",
+                                portIdentifier.getName());
                         continue;
                     }
 
@@ -89,15 +92,19 @@ public class IT100BridgeDiscovery {
                         logger.debug("discoverBridge(): Serial Port '{}' Found!", portIdentifier.getName());
                         dscAlarmBridgeDiscovery.addIT100Bridge(portIdentifier.getName());
                     } else {
-                        logger.debug("discoverBridge(): Incorrect Response from Serial Port! '{}' - {}", portIdentifier.getName(), message);
+                        logger.debug("discoverBridge(): Incorrect Response from Serial Port! '{}' - {}",
+                                portIdentifier.getName(), message);
                     }
 
                 } catch (UnsupportedCommOperationException e) {
-                    logger.debug("discoverBridge(): Unsupported Comm Operation Exception - '{}': {}", portIdentifier.getName(), e.toString());
+                    logger.debug("discoverBridge(): Unsupported Comm Operation Exception - '{}': {}",
+                            portIdentifier.getName(), e.toString());
                 } catch (PortInUseException e) {
-                    logger.debug("discoverBridge(): Port in Use Exception - '{}': {}", portIdentifier.getName(), e.toString());
+                    logger.debug("discoverBridge(): Port in Use Exception - '{}': {}", portIdentifier.getName(),
+                            e.toString());
                 } catch (UnsupportedEncodingException e) {
-                    logger.debug("discoverBridge(): Unsupported Encoding Exception - '{}': {}", portIdentifier.getName(), e.toString());
+                    logger.debug("discoverBridge(): Unsupported Encoding Exception - '{}': {}",
+                            portIdentifier.getName(), e.toString());
                 } catch (IOException e) {
                     logger.debug("discoverBridge(): IO Exception - '{}': ", portIdentifier.getName(), e.toString());
                 } finally {
@@ -116,7 +123,6 @@ public class IT100BridgeDiscovery {
                         serialPort = null;
                     }
                 }
-
             }
         }
     }

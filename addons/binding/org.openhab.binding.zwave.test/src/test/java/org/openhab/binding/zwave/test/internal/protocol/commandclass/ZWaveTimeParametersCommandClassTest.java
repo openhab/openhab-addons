@@ -11,8 +11,10 @@ package org.openhab.binding.zwave.test.internal.protocol.commandclass;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -52,8 +54,12 @@ public class ZWaveTimeParametersCommandClassTest extends ZWaveCommandClassTest {
         ZWaveTimeParametersCommandClass cls = (ZWaveTimeParametersCommandClass) getCommandClass(
                 CommandClass.TIME_PARAMETERS);
 
-        byte[] expectedResponse = { 99, 9, -117, 1, 7, -78, 1, 1, 1, 0, 0 };
-        SerialMessage msg = cls.getSetMessage(new Date(0));
+        byte[] expectedResponse = { 99, 9, -117, 1, 7, -78, 1, 1, 0, 0, 0 };
+
+        Calendar utc = Calendar.getInstance();
+        utc.setTimeZone(TimeZone.getTimeZone("UTC"));
+        utc.setTime(new Date(0));
+        SerialMessage msg = cls.getSetMessage(utc);
 
         assertTrue(Arrays.equals(msg.getMessagePayload(), expectedResponse));
     }

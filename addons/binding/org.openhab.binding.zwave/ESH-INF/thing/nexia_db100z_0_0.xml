@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Nexia</property>
-      <property name="model">DB100Z</property>
+      <property name="modelId">DB100Z</property>
       <property name="manufacturerId">0178</property>
       <property name="manufacturerRef">4442:3130</property>
       <property name="defaultAssociations">1</property>

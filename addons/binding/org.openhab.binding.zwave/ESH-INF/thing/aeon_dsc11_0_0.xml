@@ -108,7 +108,7 @@ Smart Strip<br /><h1>Overview</h1><p>Update command classes -:<br />METER:5 :: A
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSC11</property>
+      <property name="modelId">DSC11</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:000B</property>
       <property name="defaultAssociations">1</property>

@@ -15,7 +15,7 @@
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSC27</property>
+      <property name="modelId">DSC27</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:001B</property>
       <property name="defaultAssociations">1</property>

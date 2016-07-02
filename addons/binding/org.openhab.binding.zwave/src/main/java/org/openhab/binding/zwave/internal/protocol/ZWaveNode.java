@@ -11,6 +11,7 @@ package org.openhab.binding.zwave.internal.protocol;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveWakeUpComma
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveNodeStatusEvent;
 import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStage;
-import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeStageAdvancer;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStageAdvancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class ZWaveNode {
     @XStreamOmitField
     private ZWaveController controller;
     @XStreamOmitField
-    private ZWaveNodeStageAdvancer nodeStageAdvancer;
+    private ZWaveNodeInitStageAdvancer nodeInitStageAdvancer;
     @XStreamOmitField
     private ZWaveNodeState nodeState;
 
@@ -75,10 +76,8 @@ public class ZWaveNode {
     private boolean listening; // i.e. sleeping
     private boolean frequentlyListening;
     private boolean routing;
-    private String healState;
     @SuppressWarnings("unused")
     private boolean security;
-    @SuppressWarnings("unused")
     private boolean beaming;
     @SuppressWarnings("unused")
     private int maxBaudRate;
@@ -126,7 +125,7 @@ public class ZWaveNode {
         this.homeId = homeId;
         this.nodeId = nodeId;
         this.controller = controller;
-        this.nodeStageAdvancer = new ZWaveNodeStageAdvancer(this, controller);
+        this.nodeInitStageAdvancer = new ZWaveNodeInitStageAdvancer(this, controller);
         this.deviceClass = new ZWaveDeviceClass(Basic.NOT_KNOWN, Generic.NOT_KNOWN, Specific.NOT_USED);
     }
 
@@ -144,9 +143,9 @@ public class ZWaveNode {
         this.controller = controller;
 
         // Create the initialisation advancer and tell it we've loaded from file
-        this.nodeStageAdvancer = new ZWaveNodeStageAdvancer(this, controller);
-        this.nodeStageAdvancer.setRestoredFromConfigfile();
-        nodeStageAdvancer.setCurrentStage(ZWaveNodeInitStage.EMPTYNODE);
+        nodeInitStageAdvancer = new ZWaveNodeInitStageAdvancer(this, controller);
+        nodeInitStageAdvancer.setRestoredFromConfigfile();
+        nodeInitStageAdvancer.startInitialisation(ZWaveNodeInitStage.EMPTYNODE);
     }
 
     /**
@@ -203,24 +202,6 @@ public class ZWaveNode {
     }
 
     /**
-     * Gets the Heal State of the node.
-     *
-     * @return String indicating the node Heal State.
-     */
-    public String getHealState() {
-        return healState;
-    }
-
-    /**
-     * Sets the Heal State of the node.
-     *
-     * @param healState
-     */
-    public void setHealState(String healState) {
-        this.healState = healState;
-    }
-
-    /**
      * Gets whether the node is dead.
      *
      * @return
@@ -237,9 +218,6 @@ public class ZWaveNode {
      * Sets the node to be 'undead'.
      */
     public void setNodeState(ZWaveNodeState state) {
-        if (nodeId == 8) {
-            nodeId = 8;
-        }
         // Make sure we only handle real state changes
         if (state == nodeState) {
             return;
@@ -247,11 +225,10 @@ public class ZWaveNode {
 
         switch (state) {
             case ALIVE:
-                logger.debug("NODE {}: Node is ALIVE. Init stage is {}:{}.", nodeId,
-                        this.getNodeInitializationStage().toString());
+                logger.debug("NODE {}: Node is ALIVE. Init stage is {}:{}.", nodeId, getNodeInitStage().toString());
 
                 // Reset the resend counter
-                this.resendCount = 0;
+                resendCount = 0;
                 break;
 
             case DEAD:
@@ -367,7 +344,7 @@ public class ZWaveNode {
      * @return the nodeState
      */
     public ZWaveNodeState getNodeState() {
-        return this.nodeState;
+        return nodeState;
     }
 
     /**
@@ -375,8 +352,8 @@ public class ZWaveNode {
      *
      * @return the nodeStage
      */
-    public ZWaveNodeInitStage getNodeInitializationStage() {
-        return this.nodeStageAdvancer.getCurrentStage();
+    public ZWaveNodeInitStage getNodeInitStage() {
+        return nodeInitStageAdvancer.getCurrentStage();
     }
 
     /**
@@ -385,7 +362,7 @@ public class ZWaveNode {
      * @return true if initialization has been completed
      */
     public boolean isInitializationComplete() {
-        return this.nodeStageAdvancer.isInitializationComplete();
+        return nodeInitStageAdvancer.isInitializationComplete();
     }
 
     /**
@@ -394,7 +371,7 @@ public class ZWaveNode {
      * @param nodeStage the nodeStage to set
      */
     public void setNodeStage(ZWaveNodeInitStage nodeStage) {
-        nodeStageAdvancer.setCurrentStage(nodeStage);
+        nodeInitStageAdvancer.startInitialisation(nodeStage);
     }
 
     /**
@@ -460,7 +437,7 @@ public class ZWaveNode {
      * @return the queryStageTimeStamp
      */
     public Date getQueryStageTimeStamp() {
-        return this.nodeStageAdvancer.getQueryStageTimeStamp();
+        return nodeInitStageAdvancer.getQueryStageTimeStamp();
     }
 
     /**
@@ -473,7 +450,7 @@ public class ZWaveNode {
         if (++resendCount >= 3) {
             setNodeState(ZWaveNodeState.DEAD);
         }
-        this.retryCount++;
+        retryCount++;
     }
 
     /**
@@ -483,9 +460,9 @@ public class ZWaveNode {
      * Note that if the node is DEAD, then the nodeStage stays DEAD
      */
     public void resetResendCount() {
-        this.resendCount = 0;
-        if (this.nodeStageAdvancer.isInitializationComplete() && this.isDead() == false) {
-            nodeStageAdvancer.setCurrentStage(ZWaveNodeInitStage.DONE);
+        resendCount = 0;
+        if (nodeInitStageAdvancer.isInitializationComplete() && isDead() == false) {
+            nodeInitStageAdvancer.startInitialisation(ZWaveNodeInitStage.DONE);
         }
     }
 
@@ -611,7 +588,11 @@ public class ZWaveNode {
      * Initialise the node
      */
     public void initialiseNode() {
-        nodeStageAdvancer.startInitialisation();
+        nodeInitStageAdvancer.startInitialisation();
+    }
+
+    public void initialiseNode(ZWaveNodeInitStage startStage) {
+        nodeInitStageAdvancer.startInitialisation(startStage);
     }
 
     /**
@@ -687,16 +668,16 @@ public class ZWaveNode {
      *
      * @param nodeId
      */
-    public ArrayList<Integer> getRoutingList() {
-        logger.debug("NODE {}: Update return routes", nodeId);
+    public Set<Integer> getRoutingList() {
+        logger.debug("NODE {}: Generate return routes list", nodeId);
 
         // Create a list of nodes this device is configured to talk to
-        ArrayList<Integer> routedNodes = new ArrayList<Integer>();
+        Set<Integer> routedNodes = new HashSet<Integer>();
 
         // Only update routes if this is a routing node
         if (isRouting() == false) {
             logger.debug("NODE {}: Node is not a routing node. No routes can be set.", nodeId);
-            return null;
+            return Collections.emptySet();
         }
 
         // Get the number of association groups reported by this node
@@ -723,7 +704,7 @@ public class ZWaveNode {
         // Are there any nodes to which we need to set routes?
         if (routedNodes.size() == 0) {
             logger.debug("NODE {}: No return routes required.", nodeId);
-            return null;
+            return Collections.emptySet();
         }
 
         return routedNodes;
@@ -772,7 +753,7 @@ public class ZWaveNode {
      */
     public void incrementSendCount() {
         sendCount++;
-        this.lastSent = Calendar.getInstance().getTime();
+        lastSent = Calendar.getInstance().getTime();
     }
 
     /**
@@ -782,7 +763,7 @@ public class ZWaveNode {
      */
     public void incrementReceiveCount() {
         receiveCount++;
-        this.lastReceived = Calendar.getInstance().getTime();
+        lastReceived = Calendar.getInstance().getTime();
     }
 
     /**
@@ -820,6 +801,11 @@ public class ZWaveNode {
                 deviceId);
     }
 
+    /**
+     * Updates the list of classes in the NIF.
+     *
+     * @param nif
+     */
     public void updateNifClasses(List<CommandClass> nif) {
         nodeInformationFrame = nif;
     }

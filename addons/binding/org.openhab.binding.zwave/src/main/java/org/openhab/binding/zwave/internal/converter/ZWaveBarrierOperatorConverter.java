@@ -14,13 +14,13 @@ import java.util.List;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBarrierOperatorCommandClass.BarrierOperatorStateType;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBasicCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
@@ -70,26 +70,20 @@ public class ZWaveBarrierOperatorConverter extends ZWaveCommandClassConverter {
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
         State state = null;
-        int value = (int) event.getValue();
+        BarrierOperatorStateType value = (BarrierOperatorStateType) event.getValue();
         switch (channel.getDataType()) {
             case DecimalType:
-                state = new DecimalType(value);
+                state = new DecimalType(value.getKey());
                 break;
             case PercentType:
-                if ("true".equalsIgnoreCase(channel.getArguments().get("invertPercent"))) {
-                    state = new PercentType(100 - value);
-                } else {
-                    state = new PercentType(value);
-                }
-                break;
             case OnOffType:
-                state = (Integer) event.getValue() == 0 ? OnOffType.OFF : OnOffType.ON;
+                state = value == BarrierOperatorStateType.STATE_CLOSED ? OnOffType.OFF : OnOffType.ON;
                 break;
             case OpenClosedType:
-                state = (Integer) event.getValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                state = value == BarrierOperatorStateType.STATE_CLOSED ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 break;
             default:
-                logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                logger.warn("No conversion in {} to {}", getClass().getSimpleName(), channel.getDataType());
                 break;
         }
 
