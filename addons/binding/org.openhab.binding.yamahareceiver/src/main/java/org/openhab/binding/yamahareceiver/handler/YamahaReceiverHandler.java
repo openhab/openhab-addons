@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -190,7 +191,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             updateState(YamahaReceiverBindingConstants.CHANNEL_POWER, state.isPower() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_INPUT, new StringType(state.getInput()));
             updateState(YamahaReceiverBindingConstants.CHANNEL_SURROUND, new StringType(state.getSurroundProgram()));
-            updateState(YamahaReceiverBindingConstants.CHANNEL_VOLUME, new DecimalType(state.getVolume()));
+            updateState(YamahaReceiverBindingConstants.CHANNEL_VOLUME, new PercentType((int) state.getVolume()));
             updateState(YamahaReceiverBindingConstants.CHANNEL_MUTE, state.isMute() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_TUNE, new DecimalType(state.netRadioChannel));
             logger.trace("State upddated!");

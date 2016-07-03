@@ -272,17 +272,17 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         // Get the properties for the comparison
         String parmManufacturer = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_MANUFACTURER);
         if (parmManufacturer == null) {
-            logger.debug("NODE {}: MANUFACTURER not set {}", nodeId);
+            logger.debug("NODE {}: MANUFACTURER not set", nodeId);
             return;
         }
         String parmDeviceType = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICETYPE);
         if (parmDeviceType == null) {
-            logger.debug("NODE {}: TYPE not set {}", nodeId);
+            logger.debug("NODE {}: TYPE not set", nodeId);
             return;
         }
         String parmDeviceId = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICEID);
         if (parmDeviceId == null) {
-            logger.debug("NODE {}: ID not set {}", nodeId);
+            logger.debug("NODE {}: ID not set", nodeId);
             return;
         }
         String parmVersion = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_VERSION);
