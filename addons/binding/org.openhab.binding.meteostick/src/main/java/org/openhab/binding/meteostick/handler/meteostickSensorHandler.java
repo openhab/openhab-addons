@@ -60,7 +60,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     }
 
     @Override
-    protected void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         bridgeHandler = (meteostickBridgeHandler) thingHandler;
 
         if (channel != 0) {
