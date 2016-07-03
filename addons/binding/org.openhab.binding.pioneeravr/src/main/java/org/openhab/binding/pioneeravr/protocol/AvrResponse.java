@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,65 +18,71 @@ import org.openhab.binding.pioneeravr.internal.protocol.Response.ResponseType;
  */
 public interface AvrResponse {
 
-	/**
-	 * Represent the type of a response.
-	 * 
-	 * @author Antoine Besnard
-	 *
-	 */
-	public interface RepsonseType {
-		
-		/**
-		 * Return the prefix of the command of this type.
-		 * @return
-		 */
-		public String getResponsePrefix();
+    /**
+     * Represent the type of a response.
+     * 
+     * @author Antoine Besnard
+     *
+     */
+    public interface RepsonseType {
 
-		/**
-		 * Return true if the responses of this type has to have a parameter.
-		 * @return
-		 */
-		public boolean hasParameter();
+        /**
+         * Return the prefix of the command of this type.
+         * 
+         * @return
+         */
+        public String getResponsePrefix();
 
-		/**
-		 * Return the parameter pattern (RegEx) of the response. 
-		 * @return
-		 */
-		public String getParameterPattern();
+        /**
+         * Return true if the responses of this type has to have a parameter.
+         * 
+         * @return
+         */
+        public boolean hasParameter();
 
-		/**
-		 * Return true if the responseData matches with this responseType
-		 * 
-		 * @param responseData
-		 * @return
-		 */
-		public boolean match(String responseData);
+        /**
+         * Return the parameter pattern (RegEx) of the response.
+         * 
+         * @return
+         */
+        public String getParameterPattern();
 
-		/**
-		 * Return the parameter value of the given responseData.
-		 * 
-		 * @param responseData
-		 * @return
-		 */
-		public String parseParameter(String responseData);
-	}
-	
-	/**
-	 * Return the response type of this response
-	 * @return
-	 */
-	public ResponseType getResponseType();
+        /**
+         * Return true if the responseData matches with this responseType
+         * 
+         * @param responseData
+         * @return
+         */
+        public boolean match(String responseData);
 
-	/**
-	 * Return the parameter of this response or null if the resposne has no parameter.
-	 * @return
-	 */
-	public String getParameterValue();
+        /**
+         * Return the parameter value of the given responseData.
+         * 
+         * @param responseData
+         * @return
+         */
+        public String parseParameter(String responseData);
+    }
 
-	/**
-	 * Return true if this response has a parameter.
-	 * @return
-	 */
-	public boolean hasParameter();
-	
+    /**
+     * Return the response type of this response
+     * 
+     * @return
+     */
+    public ResponseType getResponseType();
+
+    /**
+     * Return the parameter of this response or null if the resposne has no parameter.
+     * 
+     * @return
+     */
+    public String getParameterValue();
+
+    /**
+     * Return true if this response has a parameter.
+     * 
+     * @return
+     */
+    public boolean hasParameter();
+
 }

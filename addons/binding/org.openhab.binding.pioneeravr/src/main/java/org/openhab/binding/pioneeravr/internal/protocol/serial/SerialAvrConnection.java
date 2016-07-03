@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,75 +26,75 @@ import org.slf4j.LoggerFactory;
  */
 public class SerialAvrConnection extends StreamAvrConnection {
 
-	private static final Logger logger = LoggerFactory.getLogger(SerialAvrConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(SerialAvrConnection.class);
 
-	private static final Integer LINK_SPEED = 9600;
+    private static final Integer LINK_SPEED = 9600;
 
-	private String portName;
+    private String portName;
 
-	private NRSerialPort serialPort;
+    private NRSerialPort serialPort;
 
-	public SerialAvrConnection(String portName) {
-		this.portName = portName;
-	}
+    public SerialAvrConnection(String portName) {
+        this.portName = portName;
+    }
 
-	@Override
-	protected void openConnection() throws IOException {
-		if (isPortNameExist(portName)) {
+    @Override
+    protected void openConnection() throws IOException {
+        if (isPortNameExist(portName)) {
 
-			serialPort = new NRSerialPort(portName, LINK_SPEED);
+            serialPort = new NRSerialPort(portName, LINK_SPEED);
 
-			boolean isConnected = serialPort.connect();
+            boolean isConnected = serialPort.connect();
 
-			if (!isConnected) {
-				throw new IOException("Failed to connect on port " + portName);
-			}
+            if (!isConnected) {
+                throw new IOException("Failed to connect on port " + portName);
+            }
 
-			logger.debug("Connected to {}", getConnectionName());
-		} else {
-			throw new IOException("Serial port with name " + portName + " does not exist. Available port names: "
-					+ NRSerialPort.getAvailableSerialPorts());
-		}
-	}
+            logger.debug("Connected to {}", getConnectionName());
+        } else {
+            throw new IOException("Serial port with name " + portName + " does not exist. Available port names: "
+                    + NRSerialPort.getAvailableSerialPorts());
+        }
+    }
 
-	/**
-	 * Check if the Serial with the given name exist.
-	 * 
-	 * @param portName
-	 * @return
-	 */
-	private boolean isPortNameExist(String portName) {
-		return NRSerialPort.getAvailableSerialPorts().contains(portName);
-	}
+    /**
+     * Check if the Serial with the given name exist.
+     * 
+     * @param portName
+     * @return
+     */
+    private boolean isPortNameExist(String portName) {
+        return NRSerialPort.getAvailableSerialPorts().contains(portName);
+    }
 
-	@Override
-	public boolean isConnected() {
-		return serialPort != null && serialPort.isConnected();
-	}
+    @Override
+    public boolean isConnected() {
+        return serialPort != null && serialPort.isConnected();
+    }
 
-	@Override
-	public void close() {
-		super.close();
-		if (serialPort != null) {
-			serialPort.disconnect();
-			serialPort = null;
-			logger.debug("Closed port {}", portName);
-		}
-	}
+    @Override
+    public void close() {
+        super.close();
+        if (serialPort != null) {
+            serialPort.disconnect();
+            serialPort = null;
+            logger.debug("Closed port {}", portName);
+        }
+    }
 
-	@Override
-	public String getConnectionName() {
-		return portName;
-	}
+    @Override
+    public String getConnectionName() {
+        return portName;
+    }
 
-	@Override
-	protected InputStream getInputStream() throws IOException {
-		return serialPort.getInputStream();
-	}
+    @Override
+    protected InputStream getInputStream() throws IOException {
+        return serialPort.getInputStream();
+    }
 
-	@Override
-	protected OutputStream getOutputStream() throws IOException {
-		return serialPort.getOutputStream();
-	}
+    @Override
+    protected OutputStream getOutputStream() throws IOException {
+        return serialPort.getOutputStream();
+    }
 
 }

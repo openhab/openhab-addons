@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,73 +20,75 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
  */
 public class ParameterizedCommand extends SimpleCommand {
 
-	/**
-	 * List of the commands with a parameter.
-	 * 
-	 * @author Antoine Besnard
-	 *
-	 */
-	public enum ParameterizedCommandType implements AvrCommand.CommandType {
+    /**
+     * List of the commands with a parameter.
+     * 
+     * @author Antoine Besnard
+     *
+     */
+    public enum ParameterizedCommandType implements AvrCommand.CommandType {
 
-		VOLUME_SET("VL", "[0-9]{3}"), INPUT_CHANNEL_SET("FN", "[0-9]{2}");
+        VOLUME_SET("VL", "[0-9]{3}"),
+        INPUT_CHANNEL_SET("FN", "[0-9]{2}");
 
-		private String command;
-		private String parameterPattern;
+        private String command;
+        private String parameterPattern;
 
-		private ParameterizedCommandType(String command, String parameterPattern) {
-			this.command = command;
-			this.parameterPattern = parameterPattern;
-		}
+        private ParameterizedCommandType(String command, String parameterPattern) {
+            this.command = command;
+            this.parameterPattern = parameterPattern;
+        }
 
-		@Override
-		public String getCommand() {
-			return command;
-		}
+        @Override
+        public String getCommand() {
+            return command;
+        }
 
-		public String getParameterPattern() {
-			return parameterPattern;
-		}
-	}
+        public String getParameterPattern() {
+            return parameterPattern;
+        }
+    }
 
-	private String parameter;
+    private String parameter;
 
-	private String parameterPattern;
+    private String parameterPattern;
 
-	protected ParameterizedCommand(ParameterizedCommandType command) {
-		super(command);
-		this.parameterPattern = command.getParameterPattern();
-	}
+    protected ParameterizedCommand(ParameterizedCommandType command) {
+        super(command);
+        this.parameterPattern = command.getParameterPattern();
+    }
 
-	/**
-	 * Return the command to send to the AVR with the parameter value configured.
-	 * 
-	 * throws {@link AvrConnectionException} if the parameter is null, empty or has a bad format.
-	 */
-	@Override
-	public String getCommand() throws AvrConnectionException {
-		if (parameter == null) {
-			throw new AvrConnectionException("The parameter of the command " + super.getCommand() + " must not be null.");
-		}
+    /**
+     * Return the command to send to the AVR with the parameter value configured.
+     * 
+     * throws {@link AvrConnectionException} if the parameter is null, empty or has a bad format.
+     */
+    @Override
+    public String getCommand() throws AvrConnectionException {
+        if (parameter == null) {
+            throw new AvrConnectionException(
+                    "The parameter of the command " + super.getCommand() + " must not be null.");
+        }
 
-		if (StringUtils.isNotEmpty(parameterPattern) && !parameter.matches(parameterPattern)) {
-			throw new AvrConnectionException("The parameter value " + parameter + " of the command " + super.getCommand()
-					+ " does not match the pattern " + parameterPattern);
-		}
+        if (StringUtils.isNotEmpty(parameterPattern) && !parameter.matches(parameterPattern)) {
+            throw new AvrConnectionException("The parameter value " + parameter + " of the command "
+                    + super.getCommand() + " does not match the pattern " + parameterPattern);
+        }
 
-		return parameter + super.getCommand();
-	}
+        return parameter + super.getCommand();
+    }
 
-	public ParameterizedCommand setParameter(String parameter) {
-		this.parameter = parameter;
-		return this;
-	}
+    public ParameterizedCommand setParameter(String parameter) {
+        this.parameter = parameter;
+        return this;
+    }
 
-	public String getParameter() {
-		return this.parameter;
-	}
+    public String getParameter() {
+        return this.parameter;
+    }
 
-	public String getParameterPattern() {
-		return parameterPattern;
-	}
+    public String getParameterPattern() {
+        return parameterPattern;
+    }
 
 }

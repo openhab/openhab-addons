@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Netatmo Thermostat and Relay/Plug -->
+    <thing-type id="NAPlug">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Thermostat relay/plug</label>
+        <description>This represents the thermostat relay</description>
+
+        <channels>
+            <!--  Common to all devices -->
+            <channel id="LastStatusStore" typeId="lastStatusStore" />
+            <channel id="WifiStatus" typeId="system.signal-strength" />
+            <channel id="Location" typeId="location" />      
+        </channels>
+        
+        <properties>
+             <property name="signalLevels">86,71,56</property>
+             <property name="actualApp">app_thermostat</property>
+        </properties>             
+       
+        <config-description-ref uri="thing-type:netatmo:device" />
+        
+    </thing-type>
+    
+    <thing-type id="NATherm1">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Thermostat module</label>
+        <description>This represents the thermostat module itself</description>
+        
+        <channels>           
+            <channel id="Temperature" typeId="temperature" />
+            <channel id="SetpointTemperature" typeId="setpointTemp" />
+            <channel id="BoilerOn" typeId="boilerOn" />
+            <channel id="BoilerOff" typeId="boilerOff" />
+            <channel id="SetpointMode" typeId="setpointMode" />
+            
+            <channel id="TimeStamp" typeId="timeUtc" />             
+            
+            <!--  channel id="last_therm_seen" typeId="lastThermSeen" / Deactivated channel as equal to last_message store of NATherm1 -->
+            <!--  channel id="last_plug_seen" typeId="lastPlugSeen" / Deactivated channel as equal to last status store of NAPlug -->
+            <!--  channel id="setpoint_endtime" typeId="setpointEndTime" / Deactivated because not provided in current version of swagger netatmo api-->
+            
+            <!--  Common to all modules -->
+            <channel id="LastMessage" typeId="lastMessage" />
+            <channel id="LowBattery" typeId="system.low-battery" />                    
+            <channel id="BatteryVP" typeId="system.battery-level" />
+            <channel id="RfStatus" typeId="system.signal-strength" />          
+        </channels>
+        
+        <properties>
+             <property name="batteryMin">2700</property>
+             <property name="batteryLow">3300</property>
+             <property name="batteryMax">4500</property>
+             <property name="signalLevels">90,80,70,60</property>
+             <property name="actualApp">app_thermostat</property>
+        </properties>        
+                
+        <config-description-ref uri="thing-type:netatmo:module" />
+    </thing-type>    
+    
+</thing:thing-descriptions>

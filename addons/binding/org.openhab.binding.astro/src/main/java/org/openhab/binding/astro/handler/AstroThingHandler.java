@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 
 import java.util.Date;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,6 @@ import org.openhab.binding.astro.internal.config.AstroThingConfig;
 import org.openhab.binding.astro.internal.job.DailyJob;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
-import org.openhab.binding.astro.internal.util.DelayedExecutor;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobDataMap;
@@ -45,13 +45,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base ThingHandler for all Astro handlers.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AstroThingHandler extends BaseThingHandler {
     private static final Logger logger = LoggerFactory.getLogger(AstroThingHandler.class);
     private Scheduler quartzScheduler;
-    private DelayedExecutor delayedExecutor = new DelayedExecutor();
+    private ScheduledFuture<?> schedulerFuture;
     private int linkedPositionalChannels = 0;
     protected AstroThingConfig thingConfig;
 
@@ -70,14 +70,17 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         boolean validConfig = true;
 
         if (StringUtils.trimToNull(thingConfig.getGeolocation()) == null) {
-            logger.error("Astro parameter geolocation is mandatory and must be configured, disabling thing '{}'", thingUid);
+            logger.error("Astro parameter geolocation is mandatory and must be configured, disabling thing '{}'",
+                    thingUid);
             validConfig = false;
         } else {
             thingConfig.parseGeoLocation();
         }
 
         if (thingConfig.getLatitude() == null || thingConfig.getLongitude() == null) {
-            logger.error("Astro parameters geolocation could not be split into latitude and longitude, disabling thing '{}'", thingUid);
+            logger.error(
+                    "Astro parameters geolocation could not be split into latitude and longitude, disabling thing '{}'",
+                    thingUid);
             validConfig = false;
         }
         if (thingConfig.getInterval() == null || thingConfig.getInterval() < 1 || thingConfig.getInterval() > 86400) {
@@ -88,6 +91,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         if (validConfig) {
             logger.debug(thingConfig.toString());
             updateStatus(ThingStatus.ONLINE);
+            restartJobs();
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -138,7 +142,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Publishes the channel with data if it's linked.
      */
     private void publishChannelIfLinked(Channel channel) {
-        if (channel.isLinked()) {
+        if (isLinked(channel.getUID().getId()) && getPlanet() != null) {
             try {
                 updateState(channel.getUID(), PropertyUtils.getState(channel.getUID(), getPlanet()));
             } catch (Exception ex) {
@@ -152,9 +156,12 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * already scheduled jobs first.
      */
     private void restartJobs() {
-        delayedExecutor.cancel();
-        delayedExecutor.schedule(new TimerTask() {
 
+        if (schedulerFuture != null) {
+            schedulerFuture.cancel(true);
+        }
+
+        schedulerFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -173,13 +180,15 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         String jobIdentity = DailyJob.class.getSimpleName();
                         Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
                                 .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
-                        JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid).usingJobData(jobDataMap).build();
+                        JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
+                                .usingJobData(jobDataMap).build();
                         quartzScheduler.scheduleJob(jobDetail, trigger);
                         logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
 
                         // startupJob
                         trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
-                        jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid).usingJobData(jobDataMap).build();
+                        jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
+                                .usingJobData(jobDataMap).build();
                         quartzScheduler.scheduleJob(jobDetail, trigger);
 
                         if (linkedPositionalChannels > 0) {
@@ -187,18 +196,21 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                             jobIdentity = PositionalJob.class.getSimpleName();
                             Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
                             trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
-                                    .withSchedule(simpleSchedule().repeatForever().withIntervalInSeconds(thingConfig.getInterval())).build();
-                            jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid).usingJobData(jobDataMap).build();
+                                    .withSchedule(simpleSchedule().repeatForever()
+                                            .withIntervalInSeconds(thingConfig.getInterval()))
+                                    .build();
+                            jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
+                                    .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
-                            logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity, thingConfig.getInterval(),
-                                    thingUid);
+                            logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
+                                    thingConfig.getInterval(), thingUid);
                         }
                     }
                 } catch (SchedulerException ex) {
                     logger.error(ex.getMessage(), ex);
                 }
             }
-        }, 2000);
+        }, 2000, TimeUnit.MILLISECONDS);
     }
 
     private void stopJobs() {

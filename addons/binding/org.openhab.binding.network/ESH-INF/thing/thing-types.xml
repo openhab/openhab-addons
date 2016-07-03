@@ -9,6 +9,7 @@
 
         <channels>
             <channel id="online" typeId="online"></channel>
+            <channel id="time" typeId="time"></channel>
         </channels>
         <config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -53,6 +54,13 @@
         <label>Online</label>
         <description>States whether a device is online or not</description>
         <category>Switch</category>
+	    <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="time">
+        <item-type>Number</item-type>
+        <label>Time</label>
+        <description>States the Ping time</description>
+        <category>Number</category>
 	    <state readOnly="true"></state>
     </channel-type>
 

@@ -1,9 +1,9 @@
-# Freebox Binding Configuration
+# Freebox Binding
 
 This binding integrates the [Freebox Revolution](http://www.free.fr/adsl/freebox-revolution.html) to your openHab installation.
 
 
-##Binding configuration
+## Binding configuration
 
 The binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
 
@@ -30,7 +30,7 @@ will be displayed in the OSGi console :
 
 Once initialized, the Item will generate all available chanels.
 
-##Channels
+## Channels
 
 * fwversion
 * uptime

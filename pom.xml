@@ -1,68 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
-    
+
     <groupId>org.openhab</groupId>
     <artifactId>pom</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <name>openHAB</name>
-    
+
     <organization>
         <name>openHAB.org</name>
         <url>http://www.openhab.org</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>Eclipse Public License</name>
             <url>http://www.eclipse.org/legal/epl-v10.html</url>
         </license>
     </licenses>
-    
+
     <scm>
-        <connection>scm:git:https://github.com/openhab/openhab2.git</connection>
-        <developerConnection>scm:git:https://github.com/openhab/openhab2.git</developerConnection>
-        <url>https://github.com/openhab/openhab2</url>
+        <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
+        <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
+        <url>https://github.com/openhab/openhab2-addons</url>
     </scm>
-        
+
     <issueManagement>
-        <url>https://github.com/openhab/openhab2/issues</url>
+        <url>https://github.com/openhab/openhab2-addons/issues</url>
         <system>Github</system>
     </issueManagement>
-    
+
+    <distributionManagement>
+        <repository>
+            <id>bintray</id>
+            <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
+        </repository>
+        <snapshotRepository>
+            <id>jfrog</id>
+            <url>http://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <description>This is the open Home Automation Bus (openHAB)</description>
-    
+
     <properties>
-        <esh.version>0.8.0-SNAPSHOT</esh.version>
-        <tycho-version>0.22.0</tycho-version>
+        <esh.version>0.9.0-SNAPSHOT</esh.version>
+        <kat.version>1.4.1</kat.version>
+        <ohc.version>2.0.0-SNAPSHOT</ohc.version>
+        <ohcp2.version>2.0.0.x</ohcp2.version>
+        <ohdr.version>1.0.6</ohdr.version>
+        <karaf.version>4.0.4</karaf.version>
+        <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
+        <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <packaging>pom</packaging>
-    
+
     <modules>
-	<module>addons</module>
-        <module>bundles</module>
+        <module>addons</module>
         <module>features</module>
-        <module>products</module>
-        <module>targetplatform</module>
-        <module>distribution</module>
     </modules>
-        
-    <!-- dependencies, which are not available in a p2-repository -->
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.fileinstall</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-    </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -79,14 +83,6 @@
                     <resolver>p2</resolver>
                     <ignoreTychoRepositories>true</ignoreTychoRepositories>
                     <pomDependencies>consider</pomDependencies>
-                    <target>
-                        <artifact>
-                            <groupId>org.openhab</groupId>
-                            <artifactId>targetplatform</artifactId>
-                            <version>${project.version}</version>
-                            <classifier>openhab</classifier>
-                        </artifact>
-                    </target>
                     <environments>
                         <environment>
                             <os>linux</os>
@@ -120,9 +116,15 @@
                 </configuration>
             </plugin>
         </plugins>
-        
+
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${karaf.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
                 <plugin>
                     <groupId>${tycho-groupid}</groupId>
                     <artifactId>tycho-compiler-plugin</artifactId>
@@ -132,6 +134,11 @@
                         <source>1.7</source>
                         <target>1.7</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build.helper.maven.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.mycila</groupId>
@@ -156,7 +163,7 @@
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <properties>
-                            <year>2015</year>
+                            <year>2016</year>
                         </properties>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -173,10 +180,23 @@
                     <artifactId>tycho-versions-plugin</artifactId>
                     <version>${tycho-version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <supportedProjectTypes>
+                            <supportedProjectType>jar</supportedProjectType>
+                            <supportedProjectType>bundle</supportedProjectType>
+                            <supportedProjectType>eclipse-plugin</supportedProjectType>
+                        </supportedProjectTypes>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <profiles>
         <profile>
             <id>prepare-release</id>
@@ -199,7 +219,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>deploy</id>
             <distributionManagement>
@@ -231,7 +251,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>prepare-next-snapshot</id>
             <build>
@@ -255,16 +275,115 @@
         </profile>
     </profiles>
 
-	<repositories>
-		<repository>
-			<id>eclipse</id>
-			<name>Eclipse Snapshot Repository</name>
-			<layout>default</layout>
-			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-    
+
+    <repositories>
+
+        <!-- ESH releases -->
+        <repository>
+            <id>eclipse-releases</id>
+            <name>Eclipse Release Repository</name>
+            <layout>default</layout>
+            <url>https://repo.eclipse.org/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- ESH Snapshots -->
+        <repository>
+            <id>eclipse-snapshots</id>
+            <name>Eclipse Snapshot Repository</name>
+            <layout>default</layout>
+            <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
+        <!-- openHAB releases -->
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>openhab-bintray</id>
+            <name>Bintray Repository for openHAB</name>
+            <url>https://dl.bintray.com/openhab/mvn/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- openHAB snapshots -->
+        <repository>
+            <id>jfrog</id>
+            <name>JFrog OSS Repository</name>
+            <url>http://oss.jfrog.org/libs-snapshot/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
+        <!-- maggu2810's maven repository -->
+        <repository>
+            <id>maggu2810-bintray</id>
+            <name>Bintray Repository of maggu2810</name>
+            <url>https://dl.bintray.com/maggu2810/maven</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- SmartHome p2 repository -->
+        <repository>
+            <id>p2-smarthome</id>
+            <url>http://download.eclipse.org/smarthome/updates-stable</url>
+            <layout>p2</layout>
+        </repository>
+
+        <!-- openHAB core p2 repository -->
+        <repository>
+            <id>p2-openhab-core</id>
+            <url>https://dl.bintray.com/openhab/p2/openhab-core/${ohcp2.version}</url>
+            <layout>p2</layout>
+        </repository>
+
+        <!-- openHAB dependencies p2 repository -->
+        <repository>
+            <id>p2-openhab-deps-repo</id>
+            <url>https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version}</url>
+            <layout>p2</layout>
+        </repository>
+
+    </repositories>
+
 </project>
