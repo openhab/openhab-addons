@@ -9,6 +9,7 @@
 package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -34,8 +35,9 @@ public class BinRpcNetworkService implements Runnable {
         this.listener = listener;
         this.config = config;
 
-        serverSocket = new ServerSocket(config.getCallbackPort());
+        serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);
+        serverSocket.bind(new InetSocketAddress(config.getCallbackPort()));
     }
 
     /**
