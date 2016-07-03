@@ -102,6 +102,9 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     }
 
     protected void subscribeEvents(int channel, meteostickEventListener handler) {
+        if (eventListeners.containsKey(channel)) {
+            return;
+        }
         eventListeners.put(channel, handler);
 
         createChannelCommand();

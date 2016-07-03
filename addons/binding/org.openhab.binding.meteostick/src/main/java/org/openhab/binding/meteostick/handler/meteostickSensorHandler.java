@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -61,7 +62,17 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
     @Override
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        bridgeHandler = (meteostickBridgeHandler) thingHandler;
+        bridgeStatusChanged(bridge.getStatusInfo());
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+
+        bridgeHandler = (meteostickBridgeHandler) getBridge().getHandler();
 
         if (channel != 0) {
             if (bridgeHandler != null) {
