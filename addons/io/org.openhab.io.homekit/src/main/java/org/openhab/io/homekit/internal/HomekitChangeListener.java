@@ -35,11 +35,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     @Override
     public synchronized void added(Item item) {
-        HomekitTaggedItem taggedItem = new HomekitTaggedItem(item);
+        HomekitTaggedItem taggedItem = new HomekitTaggedItem(item, itemRegistry);
         if (taggedItem.isTagged()) {
             if (taggedItem.isRootDevice()) {
                 createRootDevice(taggedItem);
-            } else {
+            }
+            if (taggedItem.isCharacteristic()) {
                 createCharacteristic(taggedItem);
             }
         }
@@ -52,7 +53,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     @Override
     public synchronized void removed(Item item) {
-        HomekitTaggedItem taggedItem = new HomekitTaggedItem(item);
+        HomekitTaggedItem taggedItem = new HomekitTaggedItem(item, itemRegistry);
         if (taggedItem.isTagged()) {
             accessoryRegistry.remove(taggedItem);
         }
