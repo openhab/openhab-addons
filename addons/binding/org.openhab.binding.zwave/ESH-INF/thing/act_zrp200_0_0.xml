@@ -14,9 +14,9 @@ HomePro Applicance Module ZRP200<br /><h1>Overview</h1><p>This is a very old app
     <!-- CHANNEL DEFINITIONS -->
     <channels>
       <channel id="switch_binary" typeId="switch_binary">
-        <label></label>
+        <label>Switch</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY,BASIC</property>
         </properties>
       </channel>
     </channels>
