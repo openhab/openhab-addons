@@ -32,13 +32,13 @@ public class PowerMeterModel {
 	private BigDecimal energy;
 
 	public BigDecimal getPower() {
-		return power != null ? power.multiply(POWER_FACTOR) : new BigDecimal("0");
+		return power != null ? power.multiply(POWER_FACTOR) : BigDecimal.ZERO;
 	}
 	public void setPower(BigDecimal power) {
 		this.power = power;
 	}
 	public BigDecimal getEnergy() {
-		return energy != null ? energy.multiply(ENERGY_FACTOR) : new BigDecimal("0");
+		return energy != null ? energy.multiply(ENERGY_FACTOR) : BigDecimal.ZERO;
 	}
 	public void setEnergy(BigDecimal energy) {
 		this.energy = energy;
