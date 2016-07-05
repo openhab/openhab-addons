@@ -27,7 +27,7 @@ HomePro ZDP200 Wall Dimmer<br /><h2>Inclusion Information</h2><p>Use the button 
       <property name="vendor">ACT</property>
       <property name="modelId">ZDP200</property>
       <property name="manufacturerId">0001</property>
-      <property name="manufacturerRef">7FFF:7FFF</property>
+      <property name="manufacturerRef">4450:3030</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
