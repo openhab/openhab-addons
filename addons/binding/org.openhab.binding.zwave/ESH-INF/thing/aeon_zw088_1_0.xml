@@ -16,25 +16,7 @@
       <channel id="scene_number" typeId="scene_number">
         <label>Scene Number</label>
         <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
-        </properties>
-      </channel>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Two</label>
-        <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION;scene=2,state=1</property>
-        </properties>
-      </channel>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Three</label>
-        <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION;scene=03</property>
-        </properties>
-      </channel>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Four</label>
-        <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION;scene=04</property>
+          <property name="binding:*:DecimalType">SCENE_ACTIVATION,BASIC</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -51,6 +33,7 @@
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0001:0058,0101:0058,0201:0058</property>
       <property name="versionMin">1.0</property>
+      <property name="commandClass:SCENE_ACTIVATION">ccAdd</property>
       <property name="defaultAssociations">1,2,3,4</property>
     </properties>
 
