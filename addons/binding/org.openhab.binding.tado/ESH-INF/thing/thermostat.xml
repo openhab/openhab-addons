@@ -63,6 +63,7 @@
         <item-type>String</item-type>
         <label>Mode</label>
         <description>"AUTO", "AWAY", "MANUAL", "OFF"</description>
+        <state readOnly="true"></state>
     </channel-type>
     
     <channel-type id="humidity">
@@ -104,6 +105,7 @@
         <item-type>Switch</item-type>
         <label>Link State</label>
         <description>Tado Thermostat's link state to the Tado Servers</description>
+        <state readOnly="true"></state>
     </channel-type>
     
     <channel-type id="heatingState">
