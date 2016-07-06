@@ -1,12 +1,16 @@
 branches:
-    only:
-      - tado
-
+  only:
+  - tado
 language: java
 script: mvn test -B -f addons/binding/org.openhab.binding.tado/pom.xml
-
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 notifications:
   email: false
+deploy:
+  provider: releases
+  skip_cleanup: true
+  file:
+  - addons/binding/org.openhab.binding.tado/target/org.openhab.binding.tado-2.0.0-SNAPSHOT.jar
+  api_key:
+    secure: XLO6PBei3qt0UJfWPYUhF0K0bOTq3THvsgYg7m27/Tx/u+utQSsIexCMd72rQ+SPa8z3sirUGOlTvZBEruMaT8HhVpnsk3tEizdOvh9IotpfkTnFIqBrwAWdL2qfgii0R5dE47dbQaERGAK1JU2WZ0ZB9WTkdVERnCjh4yK/1mQ=
