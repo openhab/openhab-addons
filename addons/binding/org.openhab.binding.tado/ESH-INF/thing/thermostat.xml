@@ -119,6 +119,7 @@
         <item-type>Number</item-type>
         <label>Target Temperature</label>
         <description>Current Target Temperature</description>
+        <state readOnly="true"></state>
     </channel-type>
 
 </thing:thing-descriptions>
