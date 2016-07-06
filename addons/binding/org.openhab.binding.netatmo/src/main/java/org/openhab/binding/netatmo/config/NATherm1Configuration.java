@@ -9,16 +9,11 @@
 package org.openhab.binding.netatmo.config;
 
 /**
- * The {@link NetatmoBridgeConfiguration} is responsible for holding
- * configuration informations needed to access Netatmo API
+ * The {@link NATherm1Configuration} is responsible for holding specific
+ * informations needed to configure the Thermostat module
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class NetatmoBridgeConfiguration {
-    public String clientId;
-    public String clientSecret;
-    public String username;
-    public String password;
-    public Boolean readStation;
-    public Boolean readThermostat;
+public class NATherm1Configuration extends NetatmoModuleConfiguration {
+    public Integer setpointDefaultDuration;
 }

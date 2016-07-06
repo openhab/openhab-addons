@@ -14,7 +14,7 @@ Bundle-ClassPath: .,
  lib/json-20131018.jar,
  lib/commons-codec-1.8.jar,
  lib/gson-2.3.1.jar,
- lib/netatmo-java-retrofit-1.0.4.jar
+ lib/netatmo-java-retrofit-1.0.6.jar
 Import-Package: 
  com.google.common.collect,
  org.eclipse.smarthome.config.core.validation,
