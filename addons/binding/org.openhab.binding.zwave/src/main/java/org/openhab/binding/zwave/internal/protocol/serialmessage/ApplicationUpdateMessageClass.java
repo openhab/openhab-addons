@@ -60,8 +60,8 @@ public class ApplicationUpdateMessageClass extends ZWaveCommandProcessor {
                     // We handle this the same way as if included through an AddNode packet.
                     // This allows everyone to be notified.
                     if (nodeId > 0 && nodeId <= 232) {
-                        zController.notifyEventListeners(new ZWaveInclusionEvent(ZWaveInclusionEvent.Type.IncludeDone,
-                                incomingMessage.getMessagePayloadByte(2)));
+                        zController.notifyEventListeners(
+                                new ZWaveInclusionEvent(ZWaveInclusionEvent.Type.IncludeDone, nodeId));
                     }
                     break;
                 }
