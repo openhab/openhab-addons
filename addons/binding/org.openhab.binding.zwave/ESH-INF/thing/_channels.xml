@@ -220,9 +220,19 @@
         </description>
         <category>Blinds</category>
         <config-description>
-            <parameter name="config_invert" type="boolean">
-                <label>Invert</label>
+            <parameter name="config_invert_control" type="boolean">
+                <label>Invert control</label>
                 <description>Invert the blinds control</description>
+                <default>false</default>
+                <options>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </options>
+                <limitToOptions>true</limitToOptions>
+            </parameter>
+            <parameter name="config_invert_percent" type="boolean">
+                <label>Invert percentage value</label>
+                <description>Invert the blinds percentage value</description>
                 <default>false</default>
                 <options>
                     <option value="true">Yes</option>
