@@ -33,7 +33,6 @@ public class ZWaveSwitchAllCommandClassTest extends ZWaveCommandClassTest {
         byte[] expectedResponseV1 = { 1, 9, 0, 19, 99, 2, 39, 2, 0, 0, -95 };
         cls.setVersion(1);
         msg = cls.getValueMessage();
-        byte[] x = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
     }
 
@@ -45,7 +44,6 @@ public class ZWaveSwitchAllCommandClassTest extends ZWaveCommandClassTest {
         byte[] expectedResponseV1 = { 1, 10, 0, 19, 99, 3, 39, 1, 2, 0, 0, -94 };
         cls.setVersion(1);
         msg = cls.setValueMessage(SwitchAllMode.SWITCH_ALL_INCLUDE_OFF_ONLY.ordinal());
-        byte[] x = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
     }
 
@@ -70,5 +68,4 @@ public class ZWaveSwitchAllCommandClassTest extends ZWaveCommandClassTest {
         msg = cls.allOffMessage();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
     }
-
 }
