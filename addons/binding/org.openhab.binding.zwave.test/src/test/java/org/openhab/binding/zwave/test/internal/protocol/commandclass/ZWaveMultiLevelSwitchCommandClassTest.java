@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.zwave.test.internal.protocol.commandclass;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -69,5 +70,32 @@ public class ZWaveMultiLevelSwitchCommandClassTest extends ZWaveCommandClassTest
         cls.setVersion(1);
         msg = cls.stopLevelChangeMessage();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
+    }
+
+    @Test
+    public void getSupportedMessage() {
+        ZWaveMultiLevelSwitchCommandClass cls = (ZWaveMultiLevelSwitchCommandClass) getCommandClass(
+                CommandClass.SWITCH_MULTILEVEL);
+        SerialMessage msg;
+
+        byte[] expectedResponseV3 = { 1, 9, 0, 19, 99, 2, 38, 6, 0, 0, -92 };
+        cls.setVersion(3);
+        msg = cls.getSupportedMessage();
+        assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV3));
+    }
+
+    @Test
+    public void initialize() {
+        ZWaveMultiLevelSwitchCommandClass cls = (ZWaveMultiLevelSwitchCommandClass) getCommandClass(
+                CommandClass.SWITCH_MULTILEVEL);
+        Collection<SerialMessage> msgs;
+
+        cls.setVersion(1);
+        msgs = cls.initialize(true);
+        assertEquals(0, msgs.size());
+
+        cls.setVersion(3);
+        msgs = cls.initialize(true);
+        assertEquals(1, msgs.size());
     }
 }

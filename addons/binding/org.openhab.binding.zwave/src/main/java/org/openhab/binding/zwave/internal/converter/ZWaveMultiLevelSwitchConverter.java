@@ -76,9 +76,20 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         boolean configInvertPercent = "true".equalsIgnoreCase(channel.getArguments().get("config_invert_percent"));
 
         int value = (int) event.getValue();
-        State state;
+
+        // A value of 254 means the device doesn't know it's current position
+        if (value == 254) {
+            // TODO: Should this return UNDEFINED?
+            return null;
+        }
+
+        State state = null;
         switch (channel.getDataType()) {
             case PercentType:
+                if (value < 0 || value > 100) {
+                    break;
+                }
+
                 if (configInvertPercent) {
                     state = new PercentType(100 - value);
                 } else {
@@ -107,11 +118,9 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                 }
                 break;
             case IncreaseDecreaseType:
-                state = null;
                 break;
             default:
-                state = null;
-                logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                logger.warn("No conversion in {} to {}", getClass().getSimpleName(), channel.getDataType());
                 break;
         }
 
