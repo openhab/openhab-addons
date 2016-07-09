@@ -90,7 +90,7 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                     break;
                 }
 
-                if (configInvert) {
+                if (configInvertPercent) {
                     state = new PercentType(100 - value);
                 } else {
                     state = new PercentType(value);
@@ -120,7 +120,7 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
             case IncreaseDecreaseType:
                 break;
             default:
-                logger.warn("No conversion in {} to {}", this.getClass().getSimpleName(), channel.getDataType());
+                logger.warn("No conversion in {} to {}", getClass().getSimpleName(), channel.getDataType());
                 break;
         }
 
