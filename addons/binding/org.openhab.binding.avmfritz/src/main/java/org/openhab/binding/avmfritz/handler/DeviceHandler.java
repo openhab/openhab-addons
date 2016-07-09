@@ -156,10 +156,10 @@ implements IFritzHandler {
 			}
 			if( fritzBox != null && this.getThing().getConfiguration().get(THING_AIN) != null ) {
 				FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(
-						this.getWebInterface(), this.getThing().getConfiguration()
+						fritzBox, this.getThing().getConfiguration()
 								.get(THING_AIN).toString(),
 						command.equals(OnOffType.ON) ? true : false);
-				this.getWebInterface().asyncGet(callback);
+				fritzBox.asyncGet(callback);
 			}
 		} else {
 			logger.error("unknown channel uid " + channelUID);
