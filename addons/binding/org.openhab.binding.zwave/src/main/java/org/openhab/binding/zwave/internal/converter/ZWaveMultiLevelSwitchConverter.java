@@ -72,7 +72,8 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public State handleEvent(ZWaveThingChannel channel, ZWaveCommandClassValueEvent event) {
-        boolean configInvert = "true".equalsIgnoreCase(channel.getArguments().get("config_invert"));
+        boolean configInvertControl = "true".equalsIgnoreCase(channel.getArguments().get("config_invert_control"));
+        boolean configInvertPercent = "true".equalsIgnoreCase(channel.getArguments().get("config_invert_percent"));
 
         int value = (int) event.getValue();
 
@@ -85,7 +86,7 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         State state = null;
         switch (channel.getDataType()) {
             case PercentType:
-                if (value > 100 || value < 0) {
+                if (value < 0 || value > 100) {
                     break;
                 }
 
@@ -108,7 +109,7 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
                     state = OnOffType.ON;
                 }
 
-                if (configInvert) {
+                if (configInvertControl) {
                     if (state == OnOffType.ON) {
                         state = OnOffType.OFF;
                     } else {
@@ -137,13 +138,14 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
         SerialMessage serialMessage = null;
         // boolean restoreLastValue = "true".equalsIgnoreCase(channel.getArguments().get("restoreLastValue"));
 
-        boolean configInvert = "true".equalsIgnoreCase(channel.getArguments().get("config_invert"));
+        boolean configInvertControl = "true".equalsIgnoreCase(channel.getArguments().get("config_invert_control"));
+        boolean configInvertPercent = "true".equalsIgnoreCase(channel.getArguments().get("config_invert_percent"));
 
         if (command instanceof StopMoveType && command == StopMoveType.STOP) {
             // Special handling for the STOP command
             serialMessage = commandClass.stopLevelChangeMessage();
         } else if (command instanceof UpDownType) {
-            if (configInvert == false) {
+            if (configInvertControl == false) {
                 if (command == UpDownType.UP) {
                     serialMessage = commandClass.startLevelChangeMessage(true, 0xff);
                 } else {
@@ -158,7 +160,7 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
             }
         } else if (command instanceof PercentType) {
             int value;
-            if (configInvert) {
+            if (configInvertPercent) {
                 value = 100 - ((PercentType) command).intValue();
             } else {
                 value = ((PercentType) command).intValue();
@@ -174,7 +176,7 @@ public class ZWaveMultiLevelSwitchConverter extends ZWaveCommandClassConverter {
             serialMessage = commandClass.setValueMessage(value);
         } else if (command instanceof OnOffType) {
             int value;
-            if (configInvert) {
+            if (configInvertControl) {
                 value = command == OnOffType.ON ? 0 : 99;
             } else {
                 value = command == OnOffType.ON ? 99 : 0;
