@@ -45,6 +45,9 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private static final Integer MONITOR_PROMPT = 12;
     private static final Integer MONITOR_DISABLE = 2;
 
+    private static final String DEFAULT_USER = "lutron";
+    private static final String DEFAULT_PASSWORD = "integration";
+
     private Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private TelnetSession session;
@@ -201,9 +204,9 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         this.session.open(config.getIpAddress());
 
         this.session.waitFor("login:");
-        this.session.writeLine(config.getUser());
+        this.session.writeLine(config.getUser() != null ? config.getUser() : DEFAULT_USER);
         this.session.waitFor("password:");
-        this.session.writeLine(config.getPassword());
+        this.session.writeLine(config.getPassword() != null ? config.getPassword() : DEFAULT_PASSWORD);
 
         MatchResult matchResult = this.session.waitFor("(login:|GNET>)");
 

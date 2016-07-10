@@ -12,6 +12,7 @@ Import-Package:
  org.apache.commons.net,
  org.apache.commons.net.telnet,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
