@@ -54,6 +54,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
         // String x = (String)getConfig().get(PARAMETER_CHANNEL);
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
+        logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
     }
 
     @Override
@@ -62,12 +63,15 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
     @Override
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+        logger.debug("MeteoStick handler {}: bridgeHandlerInitialized", channel);
         bridgeStatusChanged(bridge.getStatusInfo());
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("MeteoStick handler {}: bridgeStatusChanged to {}", channel, bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("MeteoStick handler {}: bridgeStatusChanged but bridge offline", channel);
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
@@ -112,6 +116,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
     @Override
     public void onDataReceived(String[] data) {
+        logger.debug("MeteoStick received channel {}: {}", channel, data);
         updateStatus(ThingStatus.ONLINE);
 
         switch (data[0]) {

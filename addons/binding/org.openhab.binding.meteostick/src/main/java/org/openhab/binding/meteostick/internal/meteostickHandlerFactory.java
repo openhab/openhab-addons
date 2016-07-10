@@ -7,20 +7,23 @@
  */
 package org.openhab.binding.meteostick.internal;
 
-import org.openhab.binding.meteostick.handler.meteostickBridgeHandler;
-import org.openhab.binding.meteostick.handler.meteostickSensorHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.meteostick.handler.meteostickBridgeHandler;
+import org.openhab.binding.meteostick.handler.meteostickSensorHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link meteostickHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Chris Jackson - Initial contribution
  */
 public class meteostickHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(meteostickHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -30,6 +33,7 @@ public class meteostickHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+        logger.debug("MeteoStick thing factory: createHandler {} of type {}", thing.getThingTypeUID(), thing.getUID());
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 

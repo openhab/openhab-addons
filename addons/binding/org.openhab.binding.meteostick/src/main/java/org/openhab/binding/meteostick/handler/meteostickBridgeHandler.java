@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,16 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     }
 
     @Override
+    public void setCallback(ThingHandlerCallback thingHandlerCallback) {
+        logger.debug("Callback is set to: {}.", thingHandlerCallback, new RuntimeException("log stacktrace"));
+        logger.debug("identity: {}", System.identityHashCode(this));
+        super.setCallback(thingHandlerCallback);
+    }
+
+    @Override
     public void initialize() {
-        logger.debug("Initializing MeteoStick handler.");
+        logger.debug("Initializing MeteoStick Bridge handler.");
+        logger.debug("identity: {}", System.identityHashCode(this));
         super.initialize();
 
         updateStatus(ThingStatus.OFFLINE);
@@ -75,7 +84,6 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
         String port = (String) config.get("port");
         connectPort(port);
-
     }
 
     @Override
@@ -102,7 +110,10 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     }
 
     protected void subscribeEvents(int channel, meteostickEventListener handler) {
+        logger.debug("MeteoStick bridge: subscribeEvents to channel {} with {}", channel, handler);
+
         if (eventListeners.containsKey(channel)) {
+            logger.debug("MeteoStick bridge: subscribeEvents to channel {} already registered", channel);
             return;
         }
         eventListeners.put(channel, handler);
@@ -112,6 +123,8 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     }
 
     protected void unsubscribeEvents(int channel, meteostickEventListener handler) {
+        logger.debug("MeteoStick bridge: unsubscribeEvents to channel {} with {}", channel, handler);
+
         eventListeners.remove(channel, handler);
 
         createChannelCommand();
@@ -125,7 +138,8 @@ public class meteostickBridgeHandler extends BaseThingHandler {
      * @throws SerialInterfaceException when a connection error occurs.
      */
     public void connectPort(final String serialPortName) {
-        logger.info("Connecting to serial port {}", serialPortName);
+        logger.info("MeteoStick Connecting to serial port {}", serialPortName);
+
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
             CommPort commPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
@@ -209,7 +223,8 @@ public class meteostickBridgeHandler extends BaseThingHandler {
          */
         @Override
         public void run() {
-            logger.debug("Starting MeteoStick Recieve Thread");
+            logger.debug("Starting MeteoStick Receive Thread");
+            logger.debug("identity: {}", System.identityHashCode(this));
             byte[] rxPacket = new byte[100];
             int rxCnt = 0;
             int rxByte;
@@ -225,6 +240,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                     if (rxByte == 13 && rxCnt > 0) {
                         String inputString = new String(rxPacket, 0, rxCnt);
                         logger.debug("MeteoStick received: {}", inputString);
+                        logger.debug("identity: {}", System.identityHashCode(this));
                         String p[] = inputString.split("\\s+");
 
                         switch (p[0]) {
@@ -244,11 +260,15 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                                 break;
                             default:
                                 if (p.length < 3) {
+                                    logger.debug("MeteoStick bridge: short data ({})", p.length);
                                     break;
                                 }
                                 meteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
                                 if (listener != null) {
                                     listener.onDataReceived(p);
+                                } else {
+                                    logger.debug("MeteoStick bridge: data from channel {} with no handler",
+                                            Integer.parseInt(p[1]));
                                 }
                                 break;
                         }
