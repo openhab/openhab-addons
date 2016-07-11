@@ -34,7 +34,7 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     private Logger logger = LoggerFactory.getLogger(FreeboxServerDiscoveryParticipant.class);
 
-    private static final String SERVICE_TYPE = "_fbx-api._tcp";
+    private static final String SERVICE_TYPE = "_fbx-api._tcp.local.";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -49,10 +49,10 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
         if (service != null) {
-            if ((service.getType() != null) && service.getType().equals(getServiceType())) {
-                logger.info("Discovered a Freebox Server thing with name '{}'", service.getName());
-                String uid = service.getName().replaceAll("[^A-Za-z0-9_]", "_");
-                return new ThingUID(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER, uid);
+            if ((service.getType() != null) && service.getType().equals(getServiceType())
+                    && (service.getPropertyString("uid") != null)) {
+                return new ThingUID(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER,
+                        service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_"));
             }
         }
         return null;
@@ -66,15 +66,18 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
         if (service.getHostAddresses() != null && service.getHostAddresses().length > 0
                 && !service.getHostAddresses()[0].isEmpty()) {
             ip = service.getHostAddresses()[0];
-        } else if (service.getInet4Addresses() != null && service.getInet4Addresses().length > 0
-                && !service.getInet4Addresses()[0].getCanonicalHostName().isEmpty()) {
-            ip = service.getInet4Addresses()[0].getCanonicalHostName();
         }
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null && ip != null) {
             logger.info("Created a DiscoveryResult for Freebox Server {} on IP {}", thingUID, ip);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(FreeboxServerConfiguration.IP_ADDRESS, ip);
+            if (service.getPropertyString("api_base_url") != null) {
+                properties.put(FreeboxServerConfiguration.API_BASE_URL, service.getPropertyString("api_base_url"));
+            }
+            if (service.getPropertyString("api_version") != null) {
+                properties.put(FreeboxServerConfiguration.API_VERSION, service.getPropertyString("api_version"));
+            }
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(service.getName())
                     .build();
         }
