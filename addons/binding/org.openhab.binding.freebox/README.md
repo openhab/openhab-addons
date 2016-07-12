@@ -89,66 +89,80 @@ Once initialized, the thing will generate all available channels.
 
 The following channels are supported:
 
-| Thing         | Channel Type ID               | Item Type    | Description                                          |
-|---------------|-------------------------------|--------------|------------------------------------------------------|
-| server        | fwversion                     | String       | Version of the Freebox Server firmware               |
-| server        | uptime                        | Number       | Time since last reboot of the Freebox Server         |
-| server        | restarted                     | Switch       | Indicates whether the Freebox server hase restarted during the last poll period |
-| server        | tempcpum                      | Number       | Actual measured CPU Marvell temperature              |
-| server        | tempcpub                      | Number       | Actual measured CPU Broadcom (xDSL) temperature      |
-| server        | tempswitch                    | Number       | Actual measured switch temperature                   |
-| server        | fanspeed                      | Number       | Actual measured fan speed (rpm)                      |
-| server        | reboot                        | Switch       | Reboots the Freebox server                           |
-| server        | lcd_brightness                | Number       | Brightness level of the screen in percent            |
-| server        | lcd_orientation               | Number       | Screen Orientation in degrees (0 or 90 or 180 or 270) |
-| server        | lcd_forced                    | Switch       | Indicates whether the screen orientation forced      |
-| server        | wifi_status                   | Switch       | Indicates whether the WiFi network is enabled        |
-| server        | ftp_status                    | Switch       | Indicates whether the FTP server  is enabled         |
-| server        | airmedia_status               | Switch       | Indicates whether Air Media  is enabled              |
-| server        | upnpav_status                 | Switch       | Indicates whether UPnP AV  is enabled                |
-| server        | sambafileshare_status         | Switch       | Indicates whether Window File Sharing  is enabled    |
-| server        | sambaprintershare_status      | Switch       | Indicates whether Window Printer Sharing  is enabled |
-| server        | xdsl_status                   | String       | Status of the xDSL line                              |
-| server        | line_status                   | String       | Status of network line connexion                     |
-| server        | ipv4                          | String       | Public IP Address of the Freebox Server              |
-| server        | rate_up                       | Number       | Current upload rate in byte/s                        |
-| server        | rate_down                     | Number       | Current download  rate in byte/s                     |
-| server        | bytes_up                      | Number       | Total uploaded bytes since last connection           |
-| server        | bytes_down                    | Number       | Total downloaded  bytes since last connection        |
-| phone         | state#onhook                  | Switch       | Indicates whether the phone is on hook               |
-| phone         | state#ringing                 | Switch       | Is the phone ringing                                 |
-| phone         | any#call_number               | String       | Last call: number                                    |
-| phone         | any#call_duration             | Number       | Last call: duration in seconds                       |
-| phone         | any#call_timestamp            | DateTime     | Last call: creation timestamp                        |
-| phone         | any#call_status               | String       | Last call: type (ingoing, outgoing, missed)          |
-| phone         | any#call_name                 | String       | Last call: called name for outgoing calls. Caller name for incoming calls |
-| phone         | accepted#call_number          | String       | Last accepted call: number                           |
-| phone         | accepted#call_duration        | Number       | Last accepted call: duration in seconds              |
-| phone         | accepted#call_timestamp       | DateTime     | Last accepted call: creation timestamp               |
-| phone         | accepted#call_name            | String       | Last accepted call: caller name                      |
-| phone         | missed#call_number            | String       | Last missed call: number                             |
-| phone         | missed#call_duration          | Number       | Last missed call: duration in seconds                |
-| phone         | missed#call_timestamp         | DateTime     | Last missed call: creation timestamp                 |
-| phone         | missed#call_name              | String       | Last missed call: caller name                        |
-| phone         | outgoing#call_number          | String       | Last outgoing call: number                           |
-| phone         | outgoing#call_duration        | Number       | Last outgoing call: duration in seconds              |
-| phone         | outgoing#call_timestamp       | DateTime     | Last outgoing call: creation timestamp               |
-| phone         | outgoing#call_name            | String       | Last outgoing call: called name                      |
-| net_device    | reachable                     | Switch       | Indicates whether the network device is reachable    |
-| net_interface | reachable                     | Switch       | Indicates whether the network interface is reachable |
+| Thing         | Channel Type ID          | Item Type    | Access Mode | Description                                          |
+|---------------|--------------------------|--------------|--------|------------------------------------------------------|
+| server        | fwversion                | String       | R      | Version of the Freebox Server firmware               |
+| server        | uptime                   | Number       | R      | Time since last reboot of the Freebox Server         |
+| server        | restarted                | Switch       | R      | Indicates whether the Freebox server hase restarted during the last poll period |
+| server        | tempcpum                 | Number       | R      | Actual measured CPU Marvell temperature              |
+| server        | tempcpub                 | Number       | R      | Actual measured CPU Broadcom (xDSL) temperature      |
+| server        | tempswitch               | Number       | R      | Actual measured switch temperature                   |
+| server        | fanspeed                 | Number       | R      | Actual measured fan speed (rpm)                      |
+| server        | reboot                   | Switch       | W      | Reboots the Freebox server                           |
+| server        | lcd_brightness           | Number       | RW     | Brightness level of the screen in percent            |
+| server        | lcd_orientation          | Number       | RW     | Screen Orientation in degrees (0 or 90 or 180 or 270) |
+| server        | lcd_forced               | Switch       | RW     | Indicates whether the screen orientation forced      |
+| server        | wifi_status              | Switch       | RW     | Indicates whether the WiFi network is enabled        |
+| server        | ftp_status               | Switch       | RW     | Indicates whether the FTP server  is enabled         |
+| server        | airmedia_status          | Switch       | RW     | Indicates whether Air Media  is enabled              |
+| server        | upnpav_status            | Switch       | RW     | Indicates whether UPnP AV  is enabled                |
+| server        | sambafileshare_status    | Switch       | RW     | Indicates whether Window File Sharing  is enabled    |
+| server        | sambaprintershare_status | Switch       | RW     | Indicates whether Window Printer Sharing  is enabled |
+| server        | xdsl_status              | String       | R      | Status of the xDSL line                              |
+| server        | line_status              | String       | R      | Status of network line connexion                     |
+| server        | ipv4                     | String       | R      | Public IP Address of the Freebox Server              |
+| server        | rate_up                  | Number       | R      | Current upload rate in byte/s                        |
+| server        | rate_down                | Number       | R      | Current download  rate in byte/s                     |
+| server        | bytes_up                 | Number       | R      | Total uploaded bytes since last connection           |
+| server        | bytes_down               | Number       | R      | Total downloaded  bytes since last connection        |
+| phone         | state#onhook             | Switch       | R      | Indicates whether the phone is on hook               |
+| phone         | state#ringing            | Switch       | R      | Is the phone ringing                                 |
+| phone         | any#call_number          | String       | R      | Last call: number                                    |
+| phone         | any#call_duration        | Number       | R      | Last call: duration in seconds                       |
+| phone         | any#call_timestamp       | DateTime     | R      | Last call: creation timestamp                        |
+| phone         | any#call_status          | String       | R      | Last call: type (ingoing, outgoing, missed)          |
+| phone         | any#call_name            | String       | R      | Last call: called name for outgoing calls. Caller name for incoming calls |
+| phone         | accepted#call_number     | String       | R      | Last accepted call: number                           |
+| phone         | accepted#call_duration   | Number       | R      | Last accepted call: duration in seconds              |
+| phone         | accepted#call_timestamp  | DateTime     | R      | Last accepted call: creation timestamp               |
+| phone         | accepted#call_name       | String       | R      | Last accepted call: caller name                      |
+| phone         | missed#call_number       | String       | R      | Last missed call: number                             |
+| phone         | missed#call_duration     | Number       | R      | Last missed call: duration in seconds                |
+| phone         | missed#call_timestamp    | DateTime     | R      | Last missed call: creation timestamp                 |
+| phone         | missed#call_name         | String       | R      | Last missed call: caller name                        |
+| phone         | outgoing#call_number     | String       | R      | Last outgoing call: number                           |
+| phone         | outgoing#call_duration   | Number       | R      | Last outgoing call: duration in seconds              |
+| phone         | outgoing#call_timestamp  | DateTime     | R      | Last outgoing call: creation timestamp               |
+| phone         | outgoing#call_name       | String       | R      | Last outgoing call: called name                      |
+| net_device    | reachable                | Switch       | R      | Indicates whether the network device is reachable    |
+| net_interface | reachable                | Switch       | R      | Indicates whether the network interface is reachable |
 
 ## Example
 
-Things:
+### Things
+
+Here is an example with minimal configuration parameters (using default values):
+
 ```
 Bridge freebox:server:fb "Freebox Revolution" [ appToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ] {
-    Thing phone Phone "Phone" [ refreshPhoneInterval=10 ]
+    Thing phone Phone "Phone"
     Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
     Thing net_interface tv2 "TV bedroom" [ ipAddress="192.168.0.100" ]
 }
 ```
 
-Items:
+Here is another example overwritting default configuration parameters:
+
+```
+Bridge freebox:server:fb "Freebox Revolution" [ ipAddress="192.168.0.254", appToken="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", refreshInterval=20 ] {
+    Thing phone Phone "Phone" [ refreshPhoneInterval=10, refreshPhoneCallsInterval=120 ]
+    Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
+    Thing net_interface tv2 "TV bedroom" [ ipAddress="192.168.0.100" ]
+}
+```
+
+### Items
+
 ```
 String Freebox_xdsl_status "Freebox state [%s]" {channel="freebox:server:fb:xdsl_status"}
 String Freebox_cs_state "State [%s]" {channel="freebox:server:fb:line_status"}
