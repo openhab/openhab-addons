@@ -11,6 +11,8 @@ import static org.openhab.binding.coolmasternet.config.coolmasternetConfiguratio
 import static org.openhab.binding.coolmasternet.coolmasternetBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.coolmasternet.internal.CoolMasterNetClient;
+import org.openhab.binding.coolmasternet.internal.CoolMasterNetClient.CoolMasterClientError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,22 +50,32 @@ public class coolmasternetHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String uid = (String) this.getConfig().get(UID);
+        Configuration config = this.getConfig();
+        String uid = (String) config.get(UID);
+        String channel = channelUID.getId();
 
-        if (!client.isConnected()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to CoolMasterNet");
-        } else {
-            String channel = channelUID.getId();
-
-            if (channel.endsWith(ON) && command instanceof OnOffType) {
-                OnOffType onoff = (OnOffType) command;
-                client.sendCommand(String.format("%s %s", onoff == OnOffType.ON ? "on" : "off", uid));
-            } else if (channel.endsWith(SET_TEMP) && command instanceof DecimalType) {
-                DecimalType temp = (DecimalType) command;
-                client.sendCommand(String.format("temp %s %s", uid, temp));
-            } else if (channel.endsWith(CURRENT_TEMP) && command instanceof DecimalType) {
+        try {
+            if (!client.isConnected()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+                        .format("Could not connect to CoolMasterNet unit %s:%d", config.get(HOST), config.get(PORT)));
+            } else {
+                if (channel.endsWith(ON) && command instanceof OnOffType) {
+                    OnOffType onoff = (OnOffType) command;
+                    client.sendCommand(String.format("%s %s", onoff == OnOffType.ON ? "on" : "off", uid));
+                } else if (channel.endsWith(SET_TEMP) && command instanceof DecimalType) {
+                    DecimalType temp = (DecimalType) command;
+                    client.sendCommand(String.format("temp %s %s", uid, temp));
+                } else if (channel.endsWith(MODE) && command instanceof StringType) {
+                    /* the mode value in the command is the actual coolmasternet protocol command */
+                    client.sendCommand(String.format("%s %s", command, uid));
+                } else if (channel.endsWith(FAN) && command instanceof StringType) {
+                    client.sendCommand(String.format("fspeed %s %s", uid, command));
+                } else if (channel.endsWith(LOUVRE) && command instanceof StringType) {
+                    client.sendCommand(String.format("swing %s %s", uid, command));
+                }
             }
+        } catch (CoolMasterClientError e) {
+            logger.error("Failed to set channel {} -> {}: {}", channel, command, e.getMessage());
         }
     }
 
@@ -79,7 +92,7 @@ public class coolmasternetHandler extends BaseThingHandler {
         } catch (NullPointerException e) {
             // keep default
         }
-        client = new CoolMasterNetClient(host, port);
+        client = CoolMasterNetClient.getClient(host, port);
 
         int refresh = 5;
         try {
@@ -95,30 +108,34 @@ public class coolmasternetHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
-                    if (client.isConnected()) {
-                        updateStatus(ThingStatus.ONLINE);
-                        ThingUID thinguid = getThing().getUID();
+                    client.checkConnection();
+                    updateStatus(ThingStatus.ONLINE);
+                    ThingUID thinguid = getThing().getUID();
 
-                        OnOffType on = "1".equals(query("o")) ? OnOffType.ON : OnOffType.OFF;
-                        updateState(new ChannelUID(thinguid, ON), on);
-                        updateState(new ChannelUID(thinguid, CURRENT_TEMP), new DecimalType(query("a")));
-                        updateState(new ChannelUID(thinguid, SET_TEMP), new DecimalType(query("t")));
-                        updateState(new ChannelUID(thinguid, MODE), new StringType(query("m")));
-                        updateState(new ChannelUID(thinguid, LOUVRE), new StringType(query("s")));
-                        updateState(new ChannelUID(thinguid, FAN), new StringType(query("f")));
-                        // TODO: e == failure code
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Could not connect to CoolMasterNet");
-                    }
-                } catch (Exception e) {
-                    logger.debug("Exception occurred while refreshing: {}", e.getMessage(), e);
+                    OnOffType on = "1".equals(query("o")) ? OnOffType.ON : OnOffType.OFF;
+                    updateState(new ChannelUID(thinguid, ON), on);
+                    updateState(new ChannelUID(thinguid, CURRENT_TEMP), new DecimalType(query("a")));
+                    updateState(new ChannelUID(thinguid, SET_TEMP), new DecimalType(query("t")));
+                    String mode = modeNumToStr.getOrDefault(query("m"), null);
+                    updateState(new ChannelUID(thinguid, MODE), new StringType(mode));
+                    updateState(new ChannelUID(thinguid, LOUVRE), new StringType(query("s")));
+                    String fan = fanNumToStr.getOrDefault(query("f"), null);
+                    updateState(new ChannelUID(thinguid, FAN), new StringType(fan));
+                } catch (CoolMasterClientError e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            String.format("Could not connect to CoolMasterNet: {}", e.getMessage()));
                 }
             }
 
             private String query(String query_char) {
                 String cmn_uid = (String) getConfig().get(UID);
-                return client.sendCommand(String.format("query %s %s", cmn_uid, query_char));
+                String command = String.format("query %s %s", cmn_uid, query_char);
+                try {
+                    return client.sendCommand(command);
+                } catch (CoolMasterClientError e) {
+                    logger.error("Query {} failed: {}", command, e.getMessage());
+                    return null; /* passing back null sets an invalid value on the channel */
+                }
             }
         };
         refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh, TimeUnit.SECONDS);
@@ -131,4 +148,34 @@ public class coolmasternetHandler extends BaseThingHandler {
         super.dispose();
     }
 
+    /*
+     * The coolmasternet query command returns numbers 0-5 for operation modes,
+     * but these don't map to any mode you can set on the device, so we use this
+     * lookup table.
+     */
+    private static final Map<String, String> modeNumToStr;
+    static {
+        modeNumToStr = new HashMap<>();
+        modeNumToStr.put("0", "cool");
+        modeNumToStr.put("1", "heat");
+        modeNumToStr.put("2", "auto");
+        modeNumToStr.put("3", "dry");
+        /* 4=='haux' but this mode doesn't have an equivalent command to set it! */
+        modeNumToStr.put("4", "heat");
+        modeNumToStr.put("5", "fan");
+    }
+
+    /*
+     * The coolmasternet query command returns numbers 0-5 for fan speed,
+     * but the fan command uses single-letter abbreviations. Yay consistency?
+     */
+    private static final Map<String, String> fanNumToStr;
+    static {
+        fanNumToStr = new HashMap<>();
+        fanNumToStr.put("0", "l"); /* Low */
+        fanNumToStr.put("1", "m"); /* Medium */
+        fanNumToStr.put("2", "h"); /* High */
+        fanNumToStr.put("3", "a"); /* Auto */
+        fanNumToStr.put("4", "t"); /* Top */
+    }
 }

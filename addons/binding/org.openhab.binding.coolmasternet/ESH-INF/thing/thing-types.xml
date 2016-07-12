@@ -40,12 +40,12 @@
 				<required>true</required>
 			</parameter>
 
-            <parameter name="refresh" type="integer">
-                <label>Refresh frequency</label>
-                <description>Frequency to poll the HVAC unit for updates, in seconds. Defaults to every 5 seconds.</description>
-                <default>5<</default>
-                <required>false</required>
-            </parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh frequency</label>
+				<description>Frequency to poll the HVAC unit for updates, in seconds. Defaults to every 5 seconds.</description>
+				<default>5</default>
+				<required>false</required>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -63,12 +63,12 @@
 		<description>HVAC unit operation mode</description>
 		<state>
 			<options>
-			    <option value="0">Cool</option>
-                <option value="1">Heat</option>
-				<option value="2">Auto</option>
-				<option value="3">Dry</option>
-                <option value="4">Heat Aux</option>
-                <option value="5">Fan Only</option>
+				<!-- Note: The value fields here map directly to coolmasternet commands -->
+				<option value="cool">Cool</option>
+				<option value="heat">Heat</option>
+				<option value="auto">Auto</option>
+				<option value="dry">Dry</option>
+				<option value="fan">Fan Only</option>
 			</options>
 		</state>
 	</channel-type>
@@ -94,11 +94,11 @@
 		<label>Fan Speed</label>
 		<state>
 			<options>
-				<option value="0">Low</option>
-				<option value="1">Medium</option>
-				<option value="2">High</option>
-                <option value="3">Auto</option>
-				<option value="4">Top</option>
+				<option value="l">Low</option>
+				<option value="m">Medium</option>
+				<option value="h">High</option>
+				<option value="t">Top</option>
+				<option value="a">Auto</option>
 			</options>
 		</state>
 	</channel-type>
@@ -108,13 +108,13 @@
 		<label>Louvre Position</label>
 		<state>
 			<options>
-                <option value="0">No Control</option>
-                <option value="a">Auto Swing</option>
+				<option value="0">No Control</option>
+				<option value="a">Auto Swing</option>
 				<option value="h">Horizontal</option>
 				<option value="3">30 degrees</option>
 				<option value="4">45 degrees</option>
 				<option value="6">60 degrees</option>
-                <option value="v">Vertical</option>
+				<option value="v">Vertical</option>
 			</options>
 		</state>
 	</channel-type>

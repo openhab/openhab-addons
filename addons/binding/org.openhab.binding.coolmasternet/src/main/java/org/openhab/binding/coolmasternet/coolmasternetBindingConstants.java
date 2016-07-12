@@ -26,8 +26,8 @@ public class coolmasternetBindingConstants {
     public final static String ON = "on";
     public final static String MODE = "mode";
     public final static String SET_TEMP = "set_temp";
-    public final static String FAN = "fan";
-    public final static String LOUVRE = "louvre";
+    public final static String FAN = "fan_speed";
+    public final static String LOUVRE = "louvre_angle";
     public final static String CURRENT_TEMP = "current_temp";
 
 }
