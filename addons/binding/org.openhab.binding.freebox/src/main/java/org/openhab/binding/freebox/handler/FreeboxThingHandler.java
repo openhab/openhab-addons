@@ -116,8 +116,8 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
                 } else if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)) {
                     netAddress = getConfigAs(FreeboxNetDeviceConfiguration.class).macAddress;
-                } else
-                    if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
+                } else if (getThing().getThingTypeUID()
+                        .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
                     netAddress = getConfigAs(FreeboxNetInterfaceConfiguration.class).ipAddress;
                 }
             } else {
@@ -131,13 +131,26 @@ public class FreeboxThingHandler extends BaseThingHandler {
     private Runnable phoneRunnable = new Runnable() {
         @Override
         public void run() {
+            logger.debug("Polling phone state...");
 
             try {
                 fetchPhone();
 
-            } catch (FreeboxException e) {
-                logger.error(e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+
+            } catch (Throwable t) {
+                if (t instanceof Exception) {
+                    logger.error(((Exception) t).getMessage());
+                } else if (t instanceof Error) {
+                    logger.error(((Error) t).getMessage());
+                } else {
+                    logger.error("Unexpected error");
+                }
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
 
         }
@@ -146,13 +159,26 @@ public class FreeboxThingHandler extends BaseThingHandler {
     private Runnable callsRunnable = new Runnable() {
         @Override
         public void run() {
+            logger.debug("Polling phone calls...");
 
             try {
                 fetchNewCalls();
 
-            } catch (FreeboxException e) {
-                logger.error(e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+
+            } catch (Throwable t) {
+                if (t instanceof Exception) {
+                    logger.error(((Exception) t).getMessage());
+                } else if (t instanceof Error) {
+                    logger.error(((Error) t).getMessage());
+                } else {
+                    logger.error("Unexpected error");
+                }
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
 
         }
