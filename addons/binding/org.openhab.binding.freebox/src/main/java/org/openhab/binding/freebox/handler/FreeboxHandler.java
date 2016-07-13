@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.matmaul.freeboxos.FreeboxException;
@@ -189,6 +190,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private Runnable globalRunnable = new Runnable() {
         @Override
         public void run() {
+            logger.debug("Polling server state...");
 
             try {
                 fetchSystemConfig();
@@ -207,9 +209,21 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     dataListener.onDataFetched(getThing().getUID(), lanHostsConfiguration);
                 }
 
-            } catch (FreeboxException e) {
-                logger.error(e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+
+            } catch (Throwable t) {
+                if (t instanceof Exception) {
+                    logger.error(((Exception) t).getMessage());
+                } else if (t instanceof Error) {
+                    logger.error(((Error) t).getMessage());
+                } else {
+                    logger.error("Unexpected error");
+                }
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
 
         }
