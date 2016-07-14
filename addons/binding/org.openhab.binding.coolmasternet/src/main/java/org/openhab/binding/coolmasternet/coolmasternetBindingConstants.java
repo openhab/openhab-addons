@@ -20,6 +20,7 @@ public class coolmasternetBindingConstants {
     public static final String BINDING_ID = "coolmasternet";
 
     // List of all Thing Type UIDs
+    public final static ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
     public final static ThingTypeUID THING_TYPE_HVAC = new ThingTypeUID(BINDING_ID, "hvac");
 
     // List of all Channel ids

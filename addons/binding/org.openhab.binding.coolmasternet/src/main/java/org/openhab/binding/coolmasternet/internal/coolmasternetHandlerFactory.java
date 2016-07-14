@@ -7,16 +7,19 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.coolmasternetBindingConstants.THING_TYPE_HVAC;
+import static org.openhab.binding.coolmasternet.coolmasternetBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.coolmasternet.handler.coolmasternetHandler;
+import org.openhab.binding.coolmasternet.handler.HVACHandler;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link coolmasternetHandlerFactory} is responsible for creating things and thing
@@ -26,7 +29,8 @@ import org.openhab.binding.coolmasternet.handler.coolmasternetHandler;
  */
 public class coolmasternetHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_HVAC);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+            .union(Collections.singleton(THING_TYPE_HVAC), Collections.singleton(THING_TYPE_CONTROLLER));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,8 +42,10 @@ public class coolmasternetHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_HVAC)) {
-            return new coolmasternetHandler(thing);
+        if (thingTypeUID.equals(THING_TYPE_CONTROLLER)) {
+            return new ControllerHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HVAC)) {
+            return new HVACHandler(thing);
         }
 
         return null;

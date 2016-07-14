@@ -3,19 +3,9 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- CoolMasterNet device thing -->
-	<thing-type id="hvac">
-		<label>HVAC System</label>
-		<description>An HVAC system connected to a CoolMasterNet Controller</description>
-
-		<channels>
-			<channel id="on" typeId="power" />
-			<channel id="mode" typeId="hvac_mode" />
-			<channel id="fan" typeId="fan_speed" />
-			<channel id="set_temp" typeId="temperature_setpoint" />
-			<channel id="current_temp" typeId="temperature_readback" />
-			<channel id="louvre" typeId="louvre_angle" />
-		</channels>
+	<bridge-type id="controller">
+		<label>CoolMasterNet Controller</label>
+		<description>A CoolMasterNet Controller (connected to one or more HVAC systems)</description>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -33,18 +23,39 @@
 				<required>false</required>
 			</parameter>
 
+			<parameter name="refresh" type="integer">
+				<label>Refresh frequency</label>
+				<description>Frequency to poll the controller for updates, in seconds. Defaults to every 5 seconds.</description>
+				<default>5</default>
+				<required>false</required>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="hvac">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+
+		<label>HVAC System</label>
+		<description>HVAC System connected to a controller (unique UID)</description>
+
+		<channels>
+			<channel id="on" typeId="power" />
+			<channel id="mode" typeId="hvac_mode" />
+			<channel id="fan" typeId="fan_speed" />
+			<channel id="set_temp" typeId="temperature_setpoint" />
+			<channel id="current_temp" typeId="temperature_readback" />
+			<channel id="louvre" typeId="louvre_angle" />
+		</channels>
+
+		<config-description>
 			<parameter name="uid" type="text">
 				<label>HVAC Unit ID</label>
 				<description>Unit ID of the HVAC Unit to control. Example: L1.100.</description>
 				<default>L1.100</default>
 				<required>true</required>
-			</parameter>
-
-			<parameter name="refresh" type="integer">
-				<label>Refresh frequency</label>
-				<description>Frequency to poll the HVAC unit for updates, in seconds. Defaults to every 5 seconds.</description>
-				<default>5</default>
-				<required>false</required>
 			</parameter>
 		</config-description>
 

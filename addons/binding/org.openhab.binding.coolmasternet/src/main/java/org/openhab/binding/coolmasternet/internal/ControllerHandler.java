@@ -1,64 +1,97 @@
 package org.openhab.binding.coolmasternet.internal;
 
+import static org.openhab.binding.coolmasternet.config.coolmasternetConfiguration.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/* Class to access CoolMasterNet ASCII protocol via TCP socket.
+/* Bridge to access a CoolMasterNet unit'sASCII protocol via TCP socket.
  *
- * Abstracts protocol access in a way that allows a single client to be shared across multiple Things
- * (because a single CoolMasterNet unit can contain multiple independent UIDs representing different
- * HVAC units.)
+ * A single CoolMasterNet can be connected to one or more HVAC units, each with a unique UID.
+ * These are individual Things inside the bridge.
  */
-public class CoolMasterNetClient {
+public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
-    private static final Logger logger = LoggerFactory.getLogger(CoolMasterNetClient.class);
-    private static final Map<String, WeakReference<CoolMasterNetClient>> clientCache = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
     private String host;
     private int port;
     private Socket socket;
     private final Object lock = new Object();
+    private ScheduledFuture<?> refreshJob;
 
-    /*
-     * Returns a client for this host/port combination. Reuses an existing
-     * client if one exists, otherwise creates a new client.
-     *
-     * This allows for sharing a single TCP connection among multiple
-     * CoolMasterNet UIDs on the same device.
-     */
-    public static CoolMasterNetClient getClient(String host, int port) {
-        String key = String.format("%s:%d", host, port);
-        WeakReference<CoolMasterNetClient> ref = clientCache.getOrDefault(key, null);
-        CoolMasterNetClient result = (ref != null) ? ref.get() : null;
-        if (result == null) {
-            result = new CoolMasterNetClient(host, port);
-            clientCache.put(key, new WeakReference<>(result));
-        }
-        return result;
+    public ControllerHandler(Bridge thing) {
+        super(thing);
     }
 
-    private CoolMasterNetClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+    @Override
+    public void initialize() {
+        logger.debug("Initialising CoolMasterNet Controller handler...");
+        super.initialize();
 
+        Configuration config = this.getConfig();
+        host = (String) config.get(HOST);
+        port = 10102;
         try {
-            connect();
-        } catch (IOException e) {
-            logger.error(e.getLocalizedMessage(), e);
+            port = ((BigDecimal) config.get(PORT)).intValue();
+        } catch (NullPointerException e) {
+            // keep default
         }
+
+        int refresh = 5;
+        try {
+            refresh = ((BigDecimal) config.get(REFRESH)).intValue();
+        } catch (NullPointerException e) {
+            // keep default
+        }
+
+        Runnable refreshHVACUnits = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    checkConnection();
+                    updateStatus(ThingStatus.ONLINE);
+                    for (Thing t : getThing().getThings()) {
+                        HVACHandler h = (HVACHandler) t.getHandler();
+                        h.refresh();
+                    }
+                } catch (CoolMasterClientError e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            String.format("Could not connect to CoolMasterNet: {}", e.getMessage()));
+                }
+            }
+        };
+        refreshJob = scheduler.scheduleAtFixedRate(refreshHVACUnits, 0, refresh, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
+        super.dispose();
     }
 
     /*
@@ -93,7 +126,7 @@ public class CoolMasterNetClient {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while (true) {
                     String line = in.readLine();
-                    logger.debug(String.format("Read result '%s'", line));
+                    logger.trace(String.format("Read result '%s'", line));
                     if ("OK".equals(line)) {
                         return response.toString();
                     }
@@ -192,5 +225,10 @@ public class CoolMasterNetClient {
         public CoolMasterClientError(String message) {
             super(message);
         }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+
     }
 }
