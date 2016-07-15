@@ -34,26 +34,16 @@
 			<channel id="bytes_down" typeId="bytes_down" />
 		</channels>
 
+		<properties>
+			<property name="vendor">Freebox SAS</property>
+		</properties>
+
 		<config-description>
-			<parameter name="ipAddress" type="text">
-				<label>Freebox Network Address</label>
+			<parameter name="fqdn" type="text">
+				<label>Freebox Server FQDN</label>
 				<context>network_address</context>
 				<description>The IP address / FQDN of the Freebox Server (can include port number)</description>
 				<default>mafreebox.freebox.fr</default>
-				<required>false</required>
-			</parameter>
-
-			<parameter name="apiBaseUrl" type="text">
-				<label>API base URL</label>
-				<description>The base URL to use the Freebox Server API</description>
-				<default>/api/</default>
-				<required>false</required>
-			</parameter>
-
-			<parameter name="apiVersion" type="text">
-				<label>API version</label>
-				<description>The Freebox Server API version</description>
-				<default>3.0</default>
 				<required>false</required>
 			</parameter>
 

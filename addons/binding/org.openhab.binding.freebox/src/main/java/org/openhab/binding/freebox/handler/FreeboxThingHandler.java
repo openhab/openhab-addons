@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -74,6 +75,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        logger.debug("initialize");
         Bridge bridge = getBridge();
         if (bridge == null) {
             initializeThing(null, null);
@@ -84,10 +86,12 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
         initializeThing((getBridge() == null) ? null : getBridge().getHandler(), bridgeStatusInfo.getStatus());
     }
 
     private void initializeThing(ThingHandler thingHandler, ThingStatus bridgeStatus) {
+        logger.debug("initializeThing {}", bridgeStatus);
         if (thingHandler != null && bridgeStatus != null) {
 
             if (bridgeStatus == ThingStatus.ONLINE) {
@@ -101,6 +105,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     if (phoneJob == null || phoneJob.isCancelled()) {
                         long polling_interval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
                         if (polling_interval > 0) {
+                            logger.debug("Scheduling phone state job every {} seconds...", polling_interval);
                             phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, polling_interval,
                                     TimeUnit.SECONDS);
                         }
@@ -109,6 +114,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     if (callsJob == null || callsJob.isCancelled()) {
                         long polling_interval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
                         if (polling_interval > 0) {
+                            logger.debug("Scheduling phone calls job every {} seconds...", polling_interval);
                             callsJob = scheduler.scheduleAtFixedRate(callsRunnable, 1, polling_interval,
                                     TimeUnit.SECONDS);
                         }
@@ -124,7 +130,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
@@ -141,10 +147,12 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 }
 
             } catch (Throwable t) {
-                if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                if (t instanceof FreeboxException) {
+                    logger.error("FreeboxException: {}", ((FreeboxException) t).getMessage());
+                } else if (t instanceof Exception) {
+                    logger.error("Exception: {}", ((Exception) t).getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("Error: {}", ((Error) t).getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }
@@ -169,10 +177,12 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 }
 
             } catch (Throwable t) {
-                if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                if (t instanceof FreeboxException) {
+                    logger.error("FreeboxException: {}", ((FreeboxException) t).getMessage());
+                } else if (t instanceof Exception) {
+                    logger.error("Exception: {}", ((Exception) t).getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("Error: {}", ((Error) t).getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }
@@ -186,6 +196,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        logger.debug("dispose");
         if (phoneJob != null && !phoneJob.isCancelled()) {
             phoneJob.cancel(true);
             phoneJob = null;
@@ -248,16 +259,20 @@ public class FreeboxThingHandler extends BaseThingHandler {
     }
 
     public void updateNetInfo(LanHostsConfig config) {
-        if ((config != null) && (getThing().getThingTypeUID()
-                .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
-                || getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE))) {
+        if ((config != null) && (getThing().getStatus() == ThingStatus.ONLINE)
+                && (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
+                        || getThing().getThingTypeUID()
+                                .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE))) {
+            logger.debug("netAddress {}", netAddress);
             boolean found = false;
             boolean reachable = false;
+            String vendor = null;
             for (LanHostConfig hostConfig : config.getConfig()) {
                 if ((getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE))
                         && (hostConfig.getMAC() != null) && hostConfig.getMAC().equals(netAddress)) {
                     found = true;
                     reachable = hostConfig.getReachable();
+                    vendor = hostConfig.getVendorName();
                     break;
                 }
                 if (hostConfig.getL3connectivities() != null) {
@@ -268,20 +283,23 @@ public class FreeboxThingHandler extends BaseThingHandler {
                             found = true;
                             if (l3.getReachable()) {
                                 reachable = true;
+                                vendor = hostConfig.getVendorName();
                                 break;
                             }
                         }
                     }
                 }
             }
-            if ((getThing().getStatus() == ThingStatus.ONLINE) || found) {
+            if (found) {
                 updateState(new ChannelUID(getThing().getUID(), FreeboxBindingConstants.REACHABLE),
                         reachable ? OnOffType.ON : OnOffType.OFF);
             }
-            if ((getThing().getStatus() == ThingStatus.ONLINE) && !found) {
-                updateStatus(ThingStatus.OFFLINE);
-            } else if ((getThing().getStatus() == ThingStatus.OFFLINE) && found) {
-                updateStatus(ThingStatus.ONLINE);
+            if ((vendor != null) && !vendor.isEmpty()) {
+                Map<String, String> properties = editProperties();
+                if ((properties.get(Thing.PROPERTY_VENDOR) == null)
+                        || !properties.get(Thing.PROPERTY_VENDOR).equals(vendor)) {
+                    updateProperty(Thing.PROPERTY_VENDOR, vendor);
+                }
             }
         }
     }
