@@ -80,6 +80,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Handler disposed.");
 
+        for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
+            unregisterDeviceStatusListener(deviceStatusListener);
+        }
+
         if (connector != null) {
             connector.removeEventListener(eventListener);
             connector.disconnect();
@@ -408,7 +412,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.add(deviceStatusListener);
+        return deviceStatusListeners.contains(deviceStatusListener) ? false
+                : deviceStatusListeners.add(deviceStatusListener);
     }
 
     public boolean unregisterDeviceStatusListener(DeviceMessageListener deviceStatusListener) {
