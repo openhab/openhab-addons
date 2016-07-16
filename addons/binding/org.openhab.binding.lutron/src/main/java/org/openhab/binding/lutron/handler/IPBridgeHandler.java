@@ -361,6 +361,24 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void thingUpdated(Thing thing) {
+        IPBridgeConfig newConfig = thing.getConfiguration().as(IPBridgeConfig.class);
+        boolean validConfig = validConfiguration(newConfig);
+        boolean needsReconnect = validConfig && !this.config.sameConnectionParameters(newConfig);
+
+        if (!validConfig || needsReconnect) {
+            dispose();
+        }
+
+        this.thing = thing;
+        this.config = newConfig;
+
+        if (needsReconnect) {
+            initialize();
+        }
+    }
+
+    @Override
     public void dispose() {
         disconnect();
 

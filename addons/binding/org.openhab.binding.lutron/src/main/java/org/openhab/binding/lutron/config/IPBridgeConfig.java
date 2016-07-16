@@ -8,15 +8,22 @@
  */
 package org.openhab.binding.lutron.config;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Configuration settings for an {@link org.openhab.binding.lutron.handler.IPBridgeHandler}.
- * 
+ *
  * @author Allan Tong - Initial contribution
  */
 public class IPBridgeConfig {
     private String ipAddress;
     private String user;
     private String password;
+
+    public boolean sameConnectionParameters(IPBridgeConfig config) {
+        return StringUtils.equals(this.ipAddress, config.ipAddress) && StringUtils.equals(this.user, config.user)
+                && StringUtils.equals(this.password, config.password);
+    }
 
     public String getIpAddress() {
         return this.ipAddress;
