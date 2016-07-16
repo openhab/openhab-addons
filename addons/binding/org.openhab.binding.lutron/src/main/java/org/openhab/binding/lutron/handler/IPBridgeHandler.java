@@ -189,13 +189,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             this.logger.error("Error disconnecting", e);
         }
-
-        updateStatus(ThingStatus.OFFLINE);
     }
 
     private synchronized void reconnect() {
         this.logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
         disconnect();
         connect();
     }
