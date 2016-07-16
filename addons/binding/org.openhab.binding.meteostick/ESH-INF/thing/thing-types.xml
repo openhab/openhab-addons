@@ -41,7 +41,9 @@
 			<channel id="humidity" typeId="humidity" />
 			<channel id="wind-direction" typeId="wind-direction" />
 			<channel id="wind-speed" typeId="wind-speed" />
-			<channel id="rain" typeId="rain" />
+            <channel id="rain-raw" typeId="rain-raw" />
+            <channel id="rain-currenthour" typeId="rain-currenthour" />
+            <channel id="rain-lasthour" typeId="rain-lasthour" />
 			<channel id="solar-power" typeId="solar-power" />
 			<channel id="signal-strength" typeId="system.signal-strength" />
 			<channel id="low-battery" typeId="system.low-battery" />
@@ -119,14 +121,32 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="rain">
-		<item-type>Number</item-type>
-		<label>Rain</label>
-		<description>Rain</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f mm">
-		</state>
-	</channel-type>
+    <channel-type id="rain-raw">
+        <item-type>Number</item-type>
+        <label>Raw rainfall tipping buckett count</label>
+        <description>A counter between 0 and 255 in 0.01mm steps</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%.1f">
+        </state>
+    </channel-type>
+
+    <channel-type id="rain-lasthour">
+        <item-type>Number</item-type>
+        <label>Rainfall in the previous hour</label>
+        <description>Rainfall in the previous hour</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%.1f mm">
+        </state>
+    </channel-type>
+
+    <channel-type id="rain-currenthour">
+        <item-type>Number</item-type>
+        <label>Rainfall in the past 60 minutes</label>
+        <description>Rainfall in the last 60 minutes</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%.1f mm">
+        </state>
+    </channel-type>
 
 	<channel-type id="solar-power">
 		<item-type>Number</item-type>

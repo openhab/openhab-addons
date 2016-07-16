@@ -68,14 +68,12 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     @Override
     public void setCallback(ThingHandlerCallback thingHandlerCallback) {
         logger.debug("Callback is set to: {}.", thingHandlerCallback, new RuntimeException("log stacktrace"));
-        logger.debug("identity: {}", System.identityHashCode(this));
         super.setCallback(thingHandlerCallback);
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing MeteoStick Bridge handler.");
-        logger.debug("identity: {}", System.identityHashCode(this));
         super.initialize();
 
         updateStatus(ThingStatus.OFFLINE);
@@ -88,6 +86,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        disconnect();
     }
 
     @Override
@@ -137,19 +136,19 @@ public class meteostickBridgeHandler extends BaseThingHandler {
      * @param serialPortName the port name to open
      * @throws SerialInterfaceException when a connection error occurs.
      */
-    public void connectPort(final String serialPortName) {
+    private void connectPort(final String serialPortName) {
         logger.info("MeteoStick Connecting to serial port {}", serialPortName);
 
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
             CommPort commPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
-            this.serialPort = (SerialPort) commPort;
-            this.serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+            serialPort = (SerialPort) commPort;
+            serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            this.serialPort.enableReceiveThreshold(1);
-            this.serialPort.enableReceiveTimeout(RECEIVE_TIMEOUT);
-            this.receiveThread = new ReceiveThread();
-            this.receiveThread.start();
+            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveTimeout(RECEIVE_TIMEOUT);
+            receiveThread = new ReceiveThread();
+            receiveThread.start();
 
             // RXTX serial port library causes high CPU load
             // Start event listener, which will just sleep and slow down event loop
@@ -176,7 +175,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
      * Disconnects from the serial interface and stops
      * send and receive threads.
      */
-    public void disconnect() {
+    private void disconnect() {
         if (receiveThread != null) {
             receiveThread.interrupt();
             try {
@@ -206,7 +205,6 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     }
 
     private class ReceiveThread extends Thread implements SerialPortEventListener {
-
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
 
         @Override
@@ -224,7 +222,6 @@ public class meteostickBridgeHandler extends BaseThingHandler {
         @Override
         public void run() {
             logger.debug("Starting MeteoStick Receive Thread");
-            logger.debug("identity: {}", System.identityHashCode(this));
             byte[] rxPacket = new byte[100];
             int rxCnt = 0;
             int rxByte;
@@ -240,7 +237,6 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                     if (rxByte == 13 && rxCnt > 0) {
                         String inputString = new String(rxPacket, 0, rxCnt);
                         logger.debug("MeteoStick received: {}", inputString);
-                        logger.debug("identity: {}", System.identityHashCode(this));
                         String p[] = inputString.split("\\s+");
 
                         switch (p[0]) {

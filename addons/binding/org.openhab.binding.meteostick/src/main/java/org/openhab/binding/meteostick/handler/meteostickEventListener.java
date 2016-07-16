@@ -9,19 +9,14 @@ package org.openhab.binding.meteostick.handler;
 
 /**
  * This interface provides notifications between the bridge and the sensors.
- * 
+ *
  * @author Chris Jackson - Initial Implementation
  *
  */
 public interface meteostickEventListener {
     /**
-     * Called when the port state changes
-     */
-    public void onStateChange();
-
-    /**
      * Called each time a new line of data is received
-     * 
+     *
      * @param data a line of data from the meteoStick
      */
     public void onDataReceived(String data[]);

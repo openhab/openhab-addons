@@ -10,8 +10,11 @@ package org.openhab.binding.meteostick.handler;
 import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -40,6 +43,8 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
     private int channel = 0;
     private meteostickBridgeHandler bridgeHandler;
+    private SlidingWindow rainHourlyWindow = new SlidingWindow(60);
+    private ScheduledFuture<?> pollingJob = null;
 
     public meteostickSensorHandler(Thing thing) {
         super(thing);
@@ -52,9 +57,32 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
         updateStatus(ThingStatus.OFFLINE);
 
-        // String x = (String)getConfig().get(PARAMETER_CHANNEL);
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
         logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
+
+        Runnable pollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+                rainfall.setScale(1, RoundingMode.CEILING);
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType());
+            }
+        };
+
+        // Scheduling a job on each hour to update the last hour rainfall
+        long start = 3600 - ((System.currentTimeMillis() % 3600000) / 1000);
+        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, start, 3600, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+        }
+
+        if (bridgeHandler != null) {
+            bridgeHandler.unsubscribeEvents(channel, this);
+        }
     }
 
     @Override
@@ -121,10 +149,16 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
         switch (data[0]) {
             case "R": // Rain
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN),
-                        new DecimalType(Integer.parseInt(data[2])));
+                int rain = Integer.parseInt(data[2]);
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_RAW), new DecimalType(rain));
                 processSignalStrength(data[3]);
                 processBattery(data.length == 5);
+
+                rainHourlyWindow.put(rain);
+
+                BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
+                rainfall.setScale(1, RoundingMode.CEILING);
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR), new DecimalType());
                 break;
             case "W": // Wind
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
@@ -151,9 +185,43 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
         }
     }
 
-    @Override
-    public void onStateChange() {
-        // TODO Auto-generated method stub
+    class SlidingWindow {
+        int count = 0;
+        int[] storage;
 
+        public SlidingWindow(int size) {
+            storage = new int[size];
+            for (int cnt = 0; cnt < storage.length; cnt++) {
+                storage[cnt] = -1;
+            }
+        }
+
+        public void put(int i) {
+            storage[count % storage.length] = i;
+            count++;
+        }
+
+        public int getTotal() {
+            int last;
+            int total;
+
+            last = storage[0];
+            total = 0;
+            for (int cnt = 1; cnt < storage.length; cnt++) {
+                if (storage[cnt] == -1) {
+                    break;
+                }
+                if (storage[cnt] > last) {
+                    total += storage[cnt] - last;
+                }
+                if (storage[cnt] < last) {
+                    total += (255 - last) + storage[cnt];
+                }
+
+                last = storage[cnt];
+            }
+
+            return total;
+        }
     }
 }
