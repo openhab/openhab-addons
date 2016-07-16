@@ -50,6 +50,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
+    private IPBridgeConfig config;
+
     private TelnetSession session;
     private BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
 
@@ -74,25 +76,42 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         });
     }
 
+    public IPBridgeConfig getIPBridgeConfig() {
+        return this.config;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     @Override
     public void initialize() {
-        this.scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-        }, 0, TimeUnit.SECONDS);
+        this.config = getThing().getConfiguration().as(IPBridgeConfig.class);
 
-        this.keepAlive = this.scheduler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                sendKeepAlive();
-            }
-        }, 5, 5, TimeUnit.MINUTES);
+        if (validConfiguration(this.config)) {
+            this.scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    connect();
+                }
+            }, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    private boolean validConfiguration(IPBridgeConfig config) {
+        if (this.config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge configuration missing");
+
+            return false;
+        }
+
+        if (StringUtils.isEmpty(this.config.getIpAddress())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
+
+            return false;
+        }
+
+        return true;
     }
 
     private synchronized void connect() {
@@ -100,21 +119,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        IPBridgeConfig config = getThing().getConfiguration().as(IPBridgeConfig.class);
-
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge configuration missing");
-
-            return;
-        }
-
-        if (StringUtils.isEmpty(config.getIpAddress())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
-
-            return;
-        }
-
-        this.logger.debug("Connecting to bridge at " + config.getIpAddress());
+        this.logger.debug("Connecting to bridge at {}", config.getIpAddress());
 
         try {
             if (!login(config)) {
@@ -148,6 +153,13 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         }, 0, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
+
+        this.keepAlive = this.scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                sendKeepAlive();
+            }
+        }, 5, 5, TimeUnit.MINUTES);
     }
 
     private void sendCommands() {
@@ -179,6 +191,16 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void disconnect() {
         this.logger.debug("Disconnecting from bridge");
+
+        if (this.keepAlive != null) {
+            this.keepAlive.cancel(true);
+        }
+
+        if (this.keepAliveReconnect != null) {
+            // This method can be called from the keepAliveReconnect thread. Make sure
+            // we don't interrupt ourselves, as that may prevent the reconnection attempt.
+            this.keepAliveReconnect.cancel(false);
+        }
 
         if (this.messageSender != null) {
             this.messageSender.cancel(true);
@@ -288,7 +310,6 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        this.keepAlive.cancel(true);
         disconnect();
     }
 }
