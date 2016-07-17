@@ -11,6 +11,7 @@ import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TooManyListenersException;
@@ -241,10 +242,16 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
                         switch (p[0]) {
                             case "B": // Barometer
+                                BigDecimal temperature = new BigDecimal(p[1]);
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
-                                        new DecimalType(new BigDecimal(p[1])));
+                                        new DecimalType(temperature.setScale(1)));
+
+                                BigDecimal pressure = new BigDecimal(p[2]);
+                                // pressure.round(new MathContext(1, RoundingMode.HALF_UP));
+                                // pressure.setScale(1, RoundingMode.HALF_UP);
+
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
-                                        new DecimalType(new BigDecimal(p[2])));
+                                        new DecimalType(pressure.setScale(1, RoundingMode.HALF_UP)));
                                 break;
                             case "#":
                                 break;
@@ -259,12 +266,16 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                                     logger.debug("MeteoStick bridge: short data ({})", p.length);
                                     break;
                                 }
-                                meteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
-                                if (listener != null) {
-                                    listener.onDataReceived(p);
-                                } else {
-                                    logger.debug("MeteoStick bridge: data from channel {} with no handler",
-                                            Integer.parseInt(p[1]));
+
+                                try {
+                                    meteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
+                                    if (listener != null) {
+                                        listener.onDataReceived(p);
+                                    } else {
+                                        logger.debug("MeteoStick bridge: data from channel {} with no handler",
+                                                Integer.parseInt(p[1]));
+                                    }
+                                } catch (NumberFormatException e) {
                                 }
                                 break;
                         }

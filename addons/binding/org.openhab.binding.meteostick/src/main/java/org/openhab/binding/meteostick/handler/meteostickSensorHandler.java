@@ -12,7 +12,10 @@ import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +46,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
     private int channel = 0;
     private meteostickBridgeHandler bridgeHandler;
-    private SlidingWindow rainHourlyWindow = new SlidingWindow(60);
+    private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
     private ScheduledFuture<?> pollingJob = null;
 
     public meteostickSensorHandler(Thing thing) {
@@ -64,8 +67,9 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
             @Override
             public void run() {
                 BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
-                rainfall.setScale(1, RoundingMode.CEILING);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType());
+                rainfall.setScale(1, RoundingMode.DOWN);
+                // rainfall.round(new MathContext(1, RoundingMode.DOWN));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
             }
         };
 
@@ -157,68 +161,82 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
                 rainHourlyWindow.put(rain);
 
                 BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
-                rainfall.setScale(1, RoundingMode.CEILING);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR), new DecimalType());
+                rainfall.setScale(1, RoundingMode.DOWN);
+                // rainfall.round(new MathContext(1, RoundingMode.DOWN));
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR), new DecimalType(rainfall));
                 break;
             case "W": // Wind
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
                         new DecimalType(new BigDecimal(data[2])));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
                         new DecimalType(Integer.parseInt(data[3])));
+
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
                 break;
             case "T": // Temperature
+                BigDecimal temperature = new BigDecimal(data[1]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
-                        new DecimalType(new BigDecimal(data[2])));
+                        new DecimalType(temperature.setScale(1)));
+
+                BigDecimal humidity = new BigDecimal(data[3]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
-                        new DecimalType(new BigDecimal(data[3])));
+                        new DecimalType(humidity.setScale(1)));
+
                 processSignalStrength(data[4]);
                 processBattery(data.length == 6);
                 break;
             case "P": // Solar panel power
+                BigDecimal power = new BigDecimal(data[1]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER),
-                        new DecimalType(new BigDecimal(data[2])));
+                        new DecimalType(power.setScale(1)));
+
                 processSignalStrength(data[3]);
                 processBattery(data.length == 5);
                 break;
         }
     }
 
-    class SlidingWindow {
-        int count = 0;
-        int[] storage;
+    class SlidingTimeWindow {
+        int period = 0;
+        private final Map<Long, Integer> storage = new TreeMap<Long, Integer>();
 
-        public SlidingWindow(int size) {
-            storage = new int[size];
-            for (int cnt = 0; cnt < storage.length; cnt++) {
-                storage[cnt] = -1;
-            }
+        /**
+         *
+         * @param period window period in milliseconds
+         */
+        public SlidingTimeWindow(int period) {
+            this.period = period;
         }
 
-        public void put(int i) {
-            storage[count % storage.length] = i;
-            count++;
+        public void put(int value) {
+            storage.put(System.currentTimeMillis(), value);
         }
 
         public int getTotal() {
-            int last;
-            int total;
+            int last = -1;
+            int total = 0;
 
-            last = storage[0];
-            total = 0;
-            for (int cnt = 1; cnt < storage.length; cnt++) {
-                if (storage[cnt] == -1) {
-                    break;
-                }
-                if (storage[cnt] > last) {
-                    total += storage[cnt] - last;
-                }
-                if (storage[cnt] < last) {
-                    total += (255 - last) + storage[cnt];
+            long old = System.currentTimeMillis() - period;
+            for (Iterator<Long> iterator = storage.keySet().iterator(); iterator.hasNext();) {
+                long time = iterator.next();
+                if (time < old) {
+                    // Remove
+                    iterator.remove();
+                    continue;
                 }
 
-                last = storage[cnt];
+                int value = storage.get(time);
+                if (last == -1) {
+                    last = value;
+                    continue;
+                }
+
+                if (value < last) {
+                    total += 256 - last + value;
+                } else {
+                    total += value - last;
+                }
             }
 
             return total;
