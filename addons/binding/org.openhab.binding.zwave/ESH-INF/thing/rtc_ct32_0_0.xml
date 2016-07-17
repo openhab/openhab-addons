@@ -200,18 +200,6 @@ Sets the reporting threshold for changes in ambient temperature.<br /><h1>Overvi
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration">
-        <label>3: Utility Lock Enable/Disable</label>
-        <description><![CDATA[
-Enables or Disables the Utility Lock.<br /><h1>Overview</h1><p>The Utility Lock Configuration Set command enables or disables the utility lock. If the utility lock is enabled, the setpoint cannot be modified directly via the thermostat screen.</p>
-        ]]></description>
-        <default>0</default>
-        <options>
-          <option value="0">Utility lock disable</option>
-          <option value="1">Utility lock enable</option>
-        </options>
-      </parameter>
-
       <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Humidity Reporting Threshold</label>
         <description><![CDATA[
@@ -233,7 +221,7 @@ Enables or Disables the Aux / Emergency Heat.<br /><h1>Overview</h1><p>The Auxil
         ]]></description>
         <default>0</default>
         <options>
-          <option value="0">Auxiliary/Emergency heat disabled</option>
+          <option value="0">Auxiliary/Emergency heat disable</option>
           <option value="1">Auxiliary/Emergency heat enable</option>
         </options>
       </parameter>
@@ -292,8 +280,26 @@ Enables or Disables Simple UI Mode<br /><h1>Overview</h1><p>If set to 0, Simple 
         <description>If set to 0, multicast is disabled, if set to 1, will enable the multicast.</description>
         <default>0</default>
         <options>
-          <option value="0">Function is disabled.</option>
+          <option value="0">Multicast Disabled</option>
           <option value="1">Function is enabled.</option>
+        </options>
+      </parameter>
+
+      <!-- ACTION DEFINITIONS -->
+      <parameter-group name="actions">
+        <context>setup</context>
+        <label>Actions</label>
+      </parameter-group>
+
+      <parameter name="config_3_1_wo" type="integer" groupName="configuration">
+        <label>3: Utility Lock Enable/Disable</label>
+        <description><![CDATA[
+Enables or Disables the Utility Lock.<br /><h1>Overview</h1><p>The Utility Lock Configuration Set command enables or disables the utility lock. If the utility lock is enabled, the setpoint cannot be modified directly via the thermostat screen.</p>
+        ]]></description>
+        <default>0</default>
+        <options>
+          <option value="0">Utility lock disable</option>
+          <option value="1">Utility lock enable</option>
         </options>
       </parameter>
 
