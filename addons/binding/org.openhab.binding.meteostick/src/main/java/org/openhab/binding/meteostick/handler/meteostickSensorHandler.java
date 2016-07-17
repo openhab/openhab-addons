@@ -12,9 +12,12 @@ import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +28,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -47,7 +51,11 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     private int channel = 0;
     private meteostickBridgeHandler bridgeHandler;
     private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
-    private ScheduledFuture<?> pollingJob = null;
+    private ScheduledFuture<?> rainHourlyJob = null;
+
+    private Timer offlineTimer = new Timer();
+    private TimerTask offlineTimerTask = null;
+    private Date lastData;
 
     public meteostickSensorHandler(Thing thing) {
         super(thing);
@@ -57,8 +65,6 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     public void initialize() {
         logger.debug("Initializing MeteoStick handler.");
         super.initialize();
-
-        updateStatus(ThingStatus.OFFLINE);
 
         channel = ((BigDecimal) getConfig().get(PARAMETER_CHANNEL)).intValue();
         logger.debug("Initializing MeteoStick handler - Channel {}.", channel);
@@ -75,13 +81,15 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
         // Scheduling a job on each hour to update the last hour rainfall
         long start = 3600 - ((System.currentTimeMillis() % 3600000) / 1000);
-        pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, start, 3600, TimeUnit.SECONDS);
+        rainHourlyJob = scheduler.scheduleAtFixedRate(pollingRunnable, start, 3600, TimeUnit.SECONDS);
+
+        updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        if (rainHourlyJob != null) {
+            rainHourlyJob.cancel(true);
         }
 
         if (bridgeHandler != null) {
@@ -117,8 +125,9 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
             }
         }
 
-        // Until we get an update put the Thing offline
-        updateStatus(ThingStatus.OFFLINE);
+        // Put the thing online and start our "no data" timer
+        updateStatus(ThingStatus.ONLINE);
+        startTimeoutCheck();
     }
 
     private void processSignalStrength(String dbmString) {
@@ -150,6 +159,9 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     public void onDataReceived(String[] data) {
         logger.debug("MeteoStick received channel {}: {}", channel, data);
         updateStatus(ThingStatus.ONLINE);
+        lastData = new Date();
+
+        startTimeoutCheck();
 
         switch (data[0]) {
             case "R": // Rain
@@ -175,7 +187,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
                 processBattery(data.length == 6);
                 break;
             case "T": // Temperature
-                BigDecimal temperature = new BigDecimal(data[1]);
+                BigDecimal temperature = new BigDecimal(data[2]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
                         new DecimalType(temperature.setScale(1)));
 
@@ -187,7 +199,7 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
                 processBattery(data.length == 6);
                 break;
             case "P": // Solar panel power
-                BigDecimal power = new BigDecimal(data[1]);
+                BigDecimal power = new BigDecimal(data[2]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER),
                         new DecimalType(power.setScale(1)));
 
@@ -241,5 +253,32 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
 
             return total;
         }
+    }
+
+    private class OfflineTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            String detail;
+            if (lastData == null) {
+                detail = "No data received";
+            } else {
+                detail = "No data received since " + lastData.toString();
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        }
+    }
+
+    private synchronized void startTimeoutCheck() {
+        // Stop any existing timer
+        if (offlineTimerTask != null) {
+            offlineTimerTask.cancel();
+            offlineTimerTask = null;
+        }
+
+        // Create the timer task
+        offlineTimerTask = new OfflineTimerTask();
+
+        // Start the timer
+        offlineTimer.schedule(offlineTimerTask, 90000);
     }
 }

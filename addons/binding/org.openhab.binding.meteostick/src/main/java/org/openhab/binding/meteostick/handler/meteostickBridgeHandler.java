@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -59,6 +62,10 @@ public class meteostickBridgeHandler extends BaseThingHandler {
     private String meteostickMode = "m1";
     private String meteostickChannels = "t0";
     private final String meteostickFormat = "o1";
+
+    private Date lastData;
+    private Timer offlineTimer = new Timer();
+    private TimerTask offlineTimerTask = null;
 
     private ConcurrentMap<Integer, meteostickEventListener> eventListeners = new ConcurrentHashMap<Integer, meteostickEventListener>();
 
@@ -234,6 +241,9 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                         continue;
                     }
 
+                    lastData = new Date();
+                    startTimeoutCheck();
+
                     // Check for end of line
                     if (rxByte == 13 && rxCnt > 0) {
                         String inputString = new String(rxPacket, 0, rxCnt);
@@ -300,5 +310,32 @@ public class meteostickBridgeHandler extends BaseThingHandler {
             logger.debug("Stopping MeteoStick Recieve Thread");
             serialPort.removeEventListener();
         }
+    }
+
+    private class OfflineTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            String detail;
+            if (lastData == null) {
+                detail = "No data received";
+            } else {
+                detail = "No data received since " + lastData.toString();
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        }
+    }
+
+    private synchronized void startTimeoutCheck() {
+        // Stop any existing timer
+        if (offlineTimerTask != null) {
+            offlineTimerTask.cancel();
+            offlineTimerTask = null;
+        }
+
+        // Create the timer task
+        offlineTimerTask = new OfflineTimerTask();
+
+        // Start the timer
+        offlineTimer.schedule(offlineTimerTask, 75000);
     }
 }
