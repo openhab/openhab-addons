@@ -75,13 +75,13 @@ public class ZWaveBarrierOperatorCommandClass extends ZWaveCommandClass
                 logger.debug("NODE {}: Barrier Operator report, value = {}", getNode().getNodeId(), value);
 
                 ZWaveCommandClassValueEvent zEvent = new ZWaveCommandClassValueEvent(getNode().getNodeId(), endpoint,
-                        getCommandClass(), value, BarrierOperatorStateType.getBarrierOperatorStateType(value));
+                        getCommandClass(), BarrierOperatorStateType.getBarrierOperatorStateType(value));
 
-                this.getController().notifyEventListeners(zEvent);
+                getController().notifyEventListeners(zEvent);
                 break;
             default:
                 logger.warn(String.format("Unsupported Command 0x%02X for command class %s (0x%02X).", command,
-                        getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                        getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -89,10 +89,10 @@ public class ZWaveBarrierOperatorCommandClass extends ZWaveCommandClass
     public SerialMessage setValueMessage(int value) {
         logger.debug("NODE {}: Creating new message for application command BARRIER_OPERATOR_SET",
                 getNode().getNodeId());
-        SerialMessage message = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        SerialMessage message = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.SendData, SerialMessagePriority.Set);
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
-        outputData.write((byte) this.getNode().getNodeId());
+        outputData.write((byte) getNode().getNodeId());
         outputData.write(3);
         outputData.write((byte) getCommandClass().getKey());
         outputData.write(BARRIER_OPERATOR_SET);
@@ -104,12 +104,12 @@ public class ZWaveBarrierOperatorCommandClass extends ZWaveCommandClass
 
     @Override
     public SerialMessage getValueMessage() {
-        logger.debug("NODE {}: Creating new message for command BARRIER_OPERATOR_GET", this.getNode().getNodeId());
-        SerialMessage message = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for command BARRIER_OPERATOR_GET", getNode().getNodeId());
+        SerialMessage message = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
 
         ByteArrayOutputStream outputData = new ByteArrayOutputStream();
-        outputData.write((byte) this.getNode().getNodeId());
+        outputData.write((byte) getNode().getNodeId());
         outputData.write(2);
         outputData.write((byte) getCommandClass().getKey());
         outputData.write(BARRIER_OPERATOR_GET);

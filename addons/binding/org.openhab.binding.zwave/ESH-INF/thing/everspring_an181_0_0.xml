@@ -13,6 +13,12 @@ Mini Plug Switch with Metering (Gen5)<br /><h1>Overview</h1><p>The Metering Plug
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
@@ -43,12 +49,6 @@ Mini Plug Switch with Metering (Gen5)<br /><h1>Overview</h1><p>The Metering Plug
           <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
-        </properties>
-      </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm</label>
         <properties>
@@ -60,7 +60,7 @@ Mini Plug Switch with Metering (Gen5)<br /><h1>Overview</h1><p>The Metering Plug
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">AN181</property>
+      <property name="modelId">AN181</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0004:0006</property>
       <property name="defaultAssociations">1,2</property>

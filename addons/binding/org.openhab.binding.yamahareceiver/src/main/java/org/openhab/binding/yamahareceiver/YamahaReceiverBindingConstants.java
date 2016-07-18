@@ -36,7 +36,7 @@ public class YamahaReceiverBindingConstants {
 
     public static final CharSequence UPNP_MANUFACTURER = "YAMAHA";
 
-    public static final String CONFIG_REFRESH = "REFRESH";
+    public static final String CONFIG_REFRESH = "REFRESH_IN_SEC";
     public static final String CONFIG_HOST_NAME = "HOST";
     public static final String CONFIG_ZONE = "ZONE";
     public static final String CONFIG_RELVOLUMECHANGE = "RELVOLUMECHANGE";

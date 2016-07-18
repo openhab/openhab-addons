@@ -15,7 +15,7 @@
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Dragon Tech Industrial, Ltd.</property>
-      <property name="model">WD-100</property>
+      <property name="modelId">WD-100</property>
       <property name="manufacturerId">0184</property>
       <property name="manufacturerRef">4447:3034</property>
       <property name="defaultAssociations">1</property>

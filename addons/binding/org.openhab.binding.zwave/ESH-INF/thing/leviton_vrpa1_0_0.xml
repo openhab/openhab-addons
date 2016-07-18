@@ -6,23 +6,23 @@
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
   <thing-type id="leviton_vrpa1_00_000" listed="false">
-    <label>Leviton Scene Capable Plug-In Module (VRPA1) Vizia RF + Scene Capable Plug-in Module</label>
+    <label>VRPA1 Vizia RF + Scene Capable Plug-in Module</label>
     <description><![CDATA[
 Vizia RF + Scene Capable Plug-in Module<br /><h1>Overview</h1><p>The Vizia RF + Scene Capable Plug-in Appliance Module (VRPA1-1LW) is ideal for any residential setting where remote ON/OFF switching of appliances, motor loads up to 1/2 HP, or freestanding lights, including Incandescent, Magnetic Low Voltage, Fluorescent and Compact Fluorescent loads is needed. Typical applications include switching of fluorescent lamps, portable fans, kitchen appliances, indoor fountains and more. The Vizia RF + Scene Capable Plug-in Appliance Module also allows users to incorporate small appliances into scene and zone home control applications. </p> <br /><h2>Inclusion Information</h2><ol><li>Plug in the device</li> <li>Press and hold the front button until the light changes to a flashing amber</li> </ol>
     ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Number</label>
-        <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="scene_number" typeId="scene_number">
+        <label>Scene Number</label>
+        <properties>
+          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
         </properties>
       </channel>
     </channels>
@@ -30,7 +30,7 @@ Vizia RF + Scene Capable Plug-in Module<br /><h1>Overview</h1><p>The Vizia RF + 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">Leviton Scene Capable Plug-In Module (VRPA1)</property>
+      <property name="modelId">VRPA1</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">1805:0334</property>
       <property name="defaultAssociations">1</property>

@@ -13,6 +13,12 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
         <label>Electric meter (kWh)</label>
         <properties>
@@ -43,18 +49,12 @@ Smart Switch 6<br /><h1>Overview</h1><p>Aeon Labs Smart Switch is a Z-Wave power
           <property name="binding:*:OnOffType">METER;reset=true</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW096</property>
+      <property name="modelId">ZW096</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0003:0060,0103:0060,0203:0060,1D03:0060</property>
       <property name="defaultAssociations">1,2</property>

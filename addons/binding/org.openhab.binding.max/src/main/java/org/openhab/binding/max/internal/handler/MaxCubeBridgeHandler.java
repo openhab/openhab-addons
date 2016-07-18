@@ -21,11 +21,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -150,7 +150,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private boolean previousOnline = false;
 
-    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private ScheduledFuture<?> pollingJob;
     private Runnable pollingRunnable = new Runnable() {
@@ -206,7 +206,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
         updateStatus(ThingStatus.OFFLINE);
-        initializeMaxDevices();
         startAutomaticRefresh();
     }
 
@@ -280,6 +279,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.udpCommandType.RESET, maxConfiguration.serialNumber);
         reset.setIpAddress(maxConfiguration.ipAddress);
         reset.send();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
+
     }
 
     public void deviceInclusion() {
@@ -413,19 +414,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void onConnection() {
         logger.debug("Bridge connected. Updating thing status to ONLINE.");
         updateStatus(ThingStatus.ONLINE);
-        initializeMaxDevices();
-    }
-
-    /**
-     * Initializes the devices for this bridge
-     */
-    private void initializeMaxDevices() {
-        for (Thing thing : getThing().getThings()) {
-            ThingHandler handler = thing.getHandler();
-            if (handler != null) {
-                handler.initialize();
-            }
-        }
     }
 
     public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {

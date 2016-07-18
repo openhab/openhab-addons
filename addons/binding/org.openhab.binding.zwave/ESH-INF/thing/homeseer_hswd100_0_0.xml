@@ -15,7 +15,7 @@
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
       <channel id="scene_number" typeId="scene_number">
@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">HomeSeer Technologies</property>
-      <property name="model">HS-WD100+</property>
+      <property name="modelId">HS-WD100+</property>
       <property name="manufacturerId">000C</property>
       <property name="manufacturerRef">4447:3034</property>
       <property name="defaultAssociations">1</property>
@@ -54,20 +54,38 @@
         </options>
       </parameter>
 
+      <parameter name="config_7_1" type="integer" groupName="configuration"
+                 min="1" max="99">
+        <label>7: Remote Dimming Level Increment</label>
+        <description><![CDATA[
+Number of levels (1-99) to change dimming each step when controlled remotely<br /><h1>Overview</h1><p>This is the step value that the dimmer level is incremented or decremented for each step duration when controlled remotely.</p> <p>(This parameter was added in firmware version 5.14)</p>
+        ]]></description>
+        <default>1</default>
+      </parameter>
+
+      <parameter name="config_8_1" type="integer" groupName="configuration"
+                 min="1" max="255">
+        <label>8: Remote Dimming Step Duration</label>
+        <description><![CDATA[
+Time interval (in tens of ms) of brightness change when controlled remotely<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels. </p> <p>(This parameter was added in firmware version 5.14)</p>
+        ]]></description>
+        <default>3</default>
+      </parameter>
+
       <parameter name="config_9_1" type="integer" groupName="configuration"
                  min="1" max="99">
-        <label>9: Dimming Level Increment</label>
+        <label>9: Local Dimming Level Increment</label>
         <description><![CDATA[
-Indicates the number of levels (1-99) to change dimming each step<br /><h1>Overview</h1><p>Documentation indicates milliseconds, but Dragon device that this is an OEM for indicates value is based on 10s of milliseconds.</p>
+Number of levels (1-99) to change dimming each step when controlled locally<br /><h1>Overview</h1><p>This is the step value that the dimmer level is incremented or decremented for each step duration when controlled locally.</p>
         ]]></description>
         <default>1</default>
       </parameter>
 
       <parameter name="config_10_1" type="integer" groupName="configuration"
                  min="1" max="255">
-        <label>10: Dimming Step Duration</label>
+        <label>10: Local Dimming Step Duration</label>
         <description><![CDATA[
-Time interval of brightness change<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels.  (Documentation suggests that the interval is in milliseconds.)</p>
+Time interval (in tens of ms) of brightness change when controlled locally<br /><h1>Overview</h1><p>Select time interval to move to the next brightness level. The larger the number, the slower the adjustment to dim levels. </p>
         ]]></description>
         <default>3</default>
       </parameter>

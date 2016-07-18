@@ -17,6 +17,17 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
       <channel id="alarm_smoke" typeId="alarm_smoke">
         <label>Alarm (smoke)</label>
         <properties>
@@ -35,23 +46,12 @@
           <property name="binding:*:OnOffType">SENSOR_ALARM;type=HEAT</property>
         </properties>
       </channel>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="time_offset" typeId="time_offset">
-        <label>Clock Time Offset</label>
-        <properties>
-          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGSS001</property>
+      <property name="modelId">FGSS001</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0C00:1000,0C00:3000</property>
       <property name="defaultAssociations">3</property>

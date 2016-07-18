@@ -16,7 +16,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSD37</property>
+      <property name="modelId">DSD37</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0004:0025,0019:0004</property>
     </properties>

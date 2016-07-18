@@ -367,4 +367,46 @@ public interface SysteminfoInterface {
      */
     public StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
 
+    /**
+     * Returns the name of the process
+     *
+     * @param pid - the PID of the process
+     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     */
+    public StringType getProcessName(int pid) throws DeviceNotFoundException;
+
+    /**
+     * Returns the CPU usage of the process
+     *
+     * @param pid - the PID of the process
+     * @return - percentage value /0-100/
+     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     */
+    public DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
+
+    /**
+     * Returns the size of RAM memory only usage of the process
+     *
+     * @param pid - the PID of the process
+     * @return memory size in MB
+     * @throws DeviceNotFoundException- thrown if process with this PID can not be found
+     */
+    public DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
+
+    /**
+     * Returns the full path of the executing process.
+     *
+     * @param pid - the PID of the process
+     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     */
+    public StringType getProcessPath(int pid) throws DeviceNotFoundException;
+
+    /**
+     * Returns the number of threads in this process.
+     *
+     * @param pid - the PID of the process
+     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     */
+    public DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
+
 }

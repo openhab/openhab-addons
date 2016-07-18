@@ -41,6 +41,12 @@
           <property name="binding:*:OnOffType">ALARM;type=POWER_MANAGEMENT</property>
         </properties>
       </channel>
+      <channel id="switch_binary1" typeId="switch_binary">
+        <label>Switch 1</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:1</property>
+        </properties>
+      </channel>
       <channel id="meter_watts1" typeId="meter_watts">
         <label>Electric meter (watts) 1</label>
         <properties>
@@ -53,10 +59,10 @@
           <property name="binding:*:DecimalType">METER:1;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary1" typeId="switch_binary">
-        <label>Switch 1</label>
+      <channel id="sensor_binary2" typeId="sensor_binary">
+        <label>Binary Sensor 2</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:1</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY:2</property>
         </properties>
       </channel>
       <channel id="alarm_power2" typeId="alarm_power">
@@ -65,10 +71,10 @@
           <property name="binding:*:OnOffType">ALARM:2;type=POWER_MANAGEMENT</property>
         </properties>
       </channel>
-      <channel id="sensor_binary2" typeId="sensor_binary">
-        <label>Binary Sensor 2</label>
+      <channel id="sensor_binary3" typeId="sensor_binary">
+        <label>Binary Sensor 3</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY:2</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY:3</property>
         </properties>
       </channel>
       <channel id="alarm_power3" typeId="alarm_power">
@@ -77,18 +83,12 @@
           <property name="binding:*:OnOffType">ALARM:3;type=POWER_MANAGEMENT</property>
         </properties>
       </channel>
-      <channel id="sensor_binary3" typeId="sensor_binary">
-        <label>Binary Sensor 3</label>
-        <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY:3</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Qubino</property>
-      <property name="model">ZMNHAD</property>
+      <property name="modelId">ZMNHAD</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0002:0052</property>
       <property name="defaultAssociations">1</property>

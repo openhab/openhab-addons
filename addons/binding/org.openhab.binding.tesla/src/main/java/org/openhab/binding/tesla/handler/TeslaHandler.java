@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tesla.TeslaBindingConstants.EventKeys;
@@ -217,125 +218,137 @@ public class TeslaHandler extends BaseThingHandler {
         String channelID = channelUID.getId();
         TeslaChannelSelector selector = TeslaChannelSelector.getValueSelectorFromChannelID(channelID);
 
-        if (selector != null) {
-            try {
-                switch (selector) {
-                    case CHARGE_LIMIT_SOC: {
-                        if (command instanceof PercentType) {
-                            setChargeLimit(((PercentType) command).intValue());
-                        } else if (command instanceof OnOffType && command == OnOffType.ON) {
-                            setChargeLimit(100);
-                        } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                            setChargeLimit(0);
-                        } else
-                            if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
-                            setChargeLimit(Math.min(chargeState.charge_limit_soc + 1, 100));
-                        } else if (command instanceof IncreaseDecreaseType
-                                && command == IncreaseDecreaseType.DECREASE) {
-                            setChargeLimit(Math.max(chargeState.charge_limit_soc - 1, 0));
-                        }
-                        break;
-                    }
-                    case TEMPERATURE: {
-                        if (command instanceof DecimalType) {
-                            setTemperature(((DecimalType) command).floatValue());
-                        }
-                        break;
-                    }
-                    case SUN_ROOF_STATE: {
-                        if (command instanceof StringType) {
-                            setSunroof(command.toString());
-                        }
-                        break;
-                    }
-                    case SUN_ROOF: {
-                        if (command instanceof PercentType) {
-                            moveSunroof(((PercentType) command).intValue());
-                        } else if (command instanceof OnOffType && command == OnOffType.ON) {
-                            moveSunroof(100);
-                        } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                            moveSunroof(0);
-                        } else
-                            if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
-                            moveSunroof(Math.min(chargeState.charge_limit_soc + 1, 100));
-                        } else if (command instanceof IncreaseDecreaseType
-                                && command == IncreaseDecreaseType.DECREASE) {
-                            moveSunroof(Math.max(chargeState.charge_limit_soc - 1, 0));
-                        }
-                        break;
-                    }
-                    case CHARGE_TO_MAX: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                setMaxRangeCharging(true);
-                            } else {
-                                setMaxRangeCharging(false);
+        if (command instanceof RefreshType) {
+            if (isAwake()) {
+                // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
+                // throttled so we are safe not to break the Tesla SLA
+                requestData(TESLA_DRIVE_STATE);
+                requestData(TESLA_VEHICLE_STATE);
+                requestData(TESLA_CHARGE_STATE);
+                requestData(TESLA_CLIMATE_STATE);
+                requestData(TESLA_GUI_STATE);
+            }
+        } else {
+            if (selector != null) {
+                try {
+                    switch (selector) {
+                        case CHARGE_LIMIT_SOC: {
+                            if (command instanceof PercentType) {
+                                setChargeLimit(((PercentType) command).intValue());
+                            } else if (command instanceof OnOffType && command == OnOffType.ON) {
+                                setChargeLimit(100);
+                            } else if (command instanceof OnOffType && command == OnOffType.OFF) {
+                                setChargeLimit(0);
+                            } else if (command instanceof IncreaseDecreaseType
+                                    && command == IncreaseDecreaseType.INCREASE) {
+                                setChargeLimit(Math.min(chargeState.charge_limit_soc + 1, 100));
+                            } else if (command instanceof IncreaseDecreaseType
+                                    && command == IncreaseDecreaseType.DECREASE) {
+                                setChargeLimit(Math.max(chargeState.charge_limit_soc - 1, 0));
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case CHARGE: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                charge(true);
-                            } else {
-                                charge(false);
+                        case TEMPERATURE: {
+                            if (command instanceof DecimalType) {
+                                setTemperature(((DecimalType) command).floatValue());
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case FLASH: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                flashLights();
+                        case SUN_ROOF_STATE: {
+                            if (command instanceof StringType) {
+                                setSunroof(command.toString());
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case HONK_HORN: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                honkHorn();
+                        case SUN_ROOF: {
+                            if (command instanceof PercentType) {
+                                moveSunroof(((PercentType) command).intValue());
+                            } else if (command instanceof OnOffType && command == OnOffType.ON) {
+                                moveSunroof(100);
+                            } else if (command instanceof OnOffType && command == OnOffType.OFF) {
+                                moveSunroof(0);
+                            } else if (command instanceof IncreaseDecreaseType
+                                    && command == IncreaseDecreaseType.INCREASE) {
+                                moveSunroof(Math.min(chargeState.charge_limit_soc + 1, 100));
+                            } else if (command instanceof IncreaseDecreaseType
+                                    && command == IncreaseDecreaseType.DECREASE) {
+                                moveSunroof(Math.max(chargeState.charge_limit_soc - 1, 0));
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case CHARGEPORT: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                openChargePort();
+                        case CHARGE_TO_MAX: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    setMaxRangeCharging(true);
+                                } else {
+                                    setMaxRangeCharging(false);
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case DOOR_LOCK: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                lockDoors(true);
-                            } else {
-                                lockDoors(false);
+                        case CHARGE: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    charge(true);
+                                } else {
+                                    charge(false);
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case AUTO_COND: {
-                        if (command instanceof OnOffType) {
-                            if (((OnOffType) command) == OnOffType.ON) {
-                                autoConditioning(true);
-                            } else {
-                                autoConditioning(false);
+                        case FLASH: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    flashLights();
+                                }
                             }
+                            break;
                         }
-                        break;
+                        case HONK_HORN: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    honkHorn();
+                                }
+                            }
+                            break;
+                        }
+                        case CHARGEPORT: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    openChargePort();
+                                }
+                            }
+                            break;
+                        }
+                        case DOOR_LOCK: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    lockDoors(true);
+                                } else {
+                                    lockDoors(false);
+                                }
+                            }
+                            break;
+                        }
+                        case AUTO_COND: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    autoConditioning(true);
+                                } else {
+                                    autoConditioning(false);
+                                }
+                            }
+                            break;
+                        }
+                        default:
+                            break;
                     }
-                    default:
-                        break;
+                    return;
+                } catch (IllegalArgumentException e) {
+                    logger.warn(
+                            "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
+                            channelID, command.toString());
                 }
-                return;
-            } catch (IllegalArgumentException e) {
-                logger.warn(
-                        "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
-                        channelID, command.toString());
             }
         }
     }

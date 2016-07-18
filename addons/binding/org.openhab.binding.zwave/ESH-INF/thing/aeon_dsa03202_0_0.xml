@@ -22,9 +22,9 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSA03202</property>
+      <property name="modelId">DSA03202</property>
       <property name="manufacturerId">0086</property>
-      <property name="manufacturerRef">0006:0002,0001:0003</property>
+      <property name="manufacturerRef">0001:0003,0006:0002</property>
       <property name="commandClass:WAKE_UP">getSupported=false</property>
     </properties>
 

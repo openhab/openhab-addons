@@ -11,22 +11,16 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="thermostat_mode" typeId="horstmann_ssr302_00_000_thermostat_mode">
-        <label>Thermostat mode</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
-      <channel id="thermostat_mode1" typeId="horstmann_ssr302_00_000_thermostat_mode">
-        <label>Thermostat mode 1</label>
+      <channel id="thermostat_mode" typeId="horstmann_ssr302_00_000_thermostat_mode">
+        <label>Thermostat mode</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_MODE:1</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
       <channel id="switch_binary1" typeId="switch_binary">
@@ -35,10 +29,10 @@
           <property name="binding:*:OnOffType">SWITCH_BINARY:1</property>
         </properties>
       </channel>
-      <channel id="thermostat_mode2" typeId="horstmann_ssr302_00_000_thermostat_mode">
-        <label>Thermostat mode 2</label>
+      <channel id="thermostat_mode1" typeId="horstmann_ssr302_00_000_thermostat_mode">
+        <label>Thermostat mode 1</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_MODE:2</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_MODE:1</property>
         </properties>
       </channel>
       <channel id="switch_binary2" typeId="switch_binary">
@@ -47,12 +41,18 @@
           <property name="binding:*:OnOffType">SWITCH_BINARY:2</property>
         </properties>
       </channel>
+      <channel id="thermostat_mode2" typeId="horstmann_ssr302_00_000_thermostat_mode">
+        <label>Thermostat mode 2</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_MODE:2</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">SSR-302</property>
+      <property name="modelId">SSR-302</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0003:0002</property>
     </properties>

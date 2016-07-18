@@ -13,6 +13,12 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door Status</label>
+        <properties>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
+        </properties>
+      </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm</label>
         <properties>
@@ -24,18 +30,12 @@ Recessed Door Sensor Gen5<br /><h1>Overview</h1><p>Aeon Labs Recessed Door Senso
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="sensor_door" typeId="sensor_door">
-        <label>Door Status</label>
-        <properties>
-          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW089</property>
+      <property name="modelId">ZW089</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0059,0102:0059,0202:0059</property>
       <property name="defaultAssociations">1</property>

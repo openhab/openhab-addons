@@ -17,7 +17,7 @@ Smart LED Light<br /><h1>Overview</h1><p>Domitech Smart LED Retrofit Kit ZE27EU 
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -25,7 +25,7 @@ Smart LED Light<br /><h1>Overview</h1><p>Domitech Smart LED Retrofit Kit ZE27EU 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Domitech</property>
-      <property name="model">ZE27</property>
+      <property name="modelId">ZE27</property>
       <property name="manufacturerId">020E</property>
       <property name="manufacturerRef">4C42:3134</property>
       <property name="defaultAssociations">1</property>
