@@ -11,11 +11,18 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label></label>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="blinds_control" typeId="blinds_control">
+        <label>Blinds control</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:StopMoveType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:UpDownType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
       <channel id="sensor_power" typeId="sensor_power">
@@ -24,10 +31,16 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
+      <channel id="meter_watts" typeId="meter_watts">
+        <label>Meter (watts)</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+          <property name="binding:*:DecimalType">METER;type=E_W</property>
+        </properties>
+      </channel>
+      <channel id="meter_kwh" typeId="meter_kwh">
+        <label>Meter (kWh)</label>
+        <properties>
+          <property name="binding:*:DecimalType">METER;type=E_KWH</property>
         </properties>
       </channel>
     </channels>
@@ -35,7 +48,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGRM222</property>
+      <property name="modelId">FGRM222</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0301:1001,0302:1000</property>
       <property name="defaultAssociations">3</property>
@@ -50,8 +63,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Local protection</label>
         <description>Enables/disables local entry. If activated module stops responding to S1 and S2 push buttons, SCENE ID and association commands will not be sent. Only exception is the B-button.</description>
         <default>255</default>
@@ -61,8 +73,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Radio protection</label>
         <description>Enables/disables RF protection. If activated device stops responding to command frames. Configuration and polling still possible.</description>
         <default>0</default>
@@ -72,8 +83,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Reports type</label>
         <description>Parameters value shoud be set to 1 if the module operates in Venetian Blind mode.</description>
         <default>0</default>
@@ -83,8 +93,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_10_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_10_1" type="integer" groupName="configuration">
         <label>10: Roller Shutter operating modes</label>
         <default>1</default>
         <options>
@@ -103,8 +112,7 @@
         <default>150</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Lamellas positioning mode</label>
         <description>Parameter influences the lamellas positioning in venetian blind mode (parameter 10 set to 2)</description>
         <default>1</default>
@@ -115,8 +123,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Switch type</label>
         <description>parameter settings are relevant for Roller Blind Mode and Venetian Blind Mode (parameter 10 set to 0, 1, 2).</description>
         <default>0</default>
@@ -148,8 +155,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_29_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_29_1" type="integer" groupName="configuration">
         <label>29: Forced Roller Shutter calibration</label>
         <description>Seting the parameter to 1 Roller Shutter enters the calibration mode. Parameter is only only relevant if a Roller Shutter is set to work in positioning mode (parameter 10 set to 1, 2 or 4).</description>
         <default>0</default>
@@ -159,8 +165,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Response to General Alarm</label>
         <default>2</default>
         <options>
@@ -170,8 +175,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_31_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_31_1" type="integer" groupName="configuration">
         <label>31: Response to Water Flood Alarm</label>
         <default>0</default>
         <options>
@@ -181,8 +185,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_32_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_32_1" type="integer" groupName="configuration">
         <label>32: Response to Smoke, CO, CO2 Alarm</label>
         <default>3</default>
         <options>
@@ -192,8 +195,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_33_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_33_1" type="integer" groupName="configuration">
         <label>33: Response to Temperature Alarm</label>
         <default>1</default>
         <options>
@@ -203,8 +205,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_35_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_35_1" type="integer" groupName="configuration">
         <label>35: Managing lamellas in response to alarm</label>
         <description>In Venetian Blind Mode (parameter 10 set to 2), the parameter determines how the lamellas will react upon alarm detection.</description>
         <default>1</default>
@@ -235,8 +236,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_44_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_44_1" type="integer" groupName="configuration">
         <label>44: Self-measurement</label>
         <description>Enables/disables to include the power and energy used by itself in reports to main controller.</description>
         <default>0</default>
@@ -246,8 +246,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_50_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_50_1" type="integer" groupName="configuration">
         <label>50: Scenes/ Associations activation</label>
         <description>Parameter determines whether scenes or associations are activated by the switch keys.</description>
         <default>0</default>

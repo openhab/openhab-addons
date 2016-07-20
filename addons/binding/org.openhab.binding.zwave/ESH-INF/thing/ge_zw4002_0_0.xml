@@ -17,7 +17,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -25,7 +25,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">ZW4002</property>
+      <property name="modelId">ZW4002</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">4944:3034</property>
     </properties>
@@ -39,8 +39,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Night Light</label>
         <description><![CDATA[
 Defines the behavior of the blue LED<br /><h1>Overview</h1><p>Default is Night Light mode where LED is on when switch is off.</p>
@@ -53,8 +52,7 @@ Defines the behavior of the blue LED<br /><h1>Overview</h1><p>Default is Night L
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Invert Switch</label>
         <description><![CDATA[
 Invert the ON/OFF Switch State<br /><h1>Overview</h1><p>Setting this parameter to Yes will change the top of the switch to OFF and the bottom to ON.  Note: If you invert the switches and also install the product upside down, the load will now be control.</p>

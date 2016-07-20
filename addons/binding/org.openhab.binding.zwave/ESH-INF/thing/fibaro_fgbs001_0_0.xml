@@ -70,9 +70,11 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGBS001</property>
+      <property name="modelId">FGBS001</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0501:0102,0501:1002,0501:3002</property>
+      <property name="commandClass:SENSOR_ALARM:1">supportedGetSupported=false</property>
+      <property name="commandClass:SENSOR_ALARM:2">supportedGetSupported=false</property>
       <property name="defaultAssociations">3</property>
     </properties>
 
@@ -99,8 +101,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_3_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: Type of input no. 1</label>
         <description>Type of input no. 1, what the input 1 will report if no contact is made</description>
         <default>1</default>
@@ -112,8 +113,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_4_1" type="integer" groupName="configuration">
         <label>4: Type of input no. 2</label>
         <description>Type of input no. 2, what the input 2 will report if no contact is made</description>
         <default>1</default>
@@ -125,8 +125,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Type of transmitted control frame for association group 1</label>
         <description>Type of transmitted control frame for association group 1, activated via input IN1. The parameter allows to specify the type of alarm frame or to force transmission of control commands (BASIC_SET)</description>
         <default>255</default>
@@ -141,8 +140,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_6_1" type="integer" groupName="configuration">
         <label>6: Type of transmitted control frame for association group 2</label>
         <description>Type of transmitted control frame for association group 2, activated via input IN2. The parameter allows to specify the type of alarm frame or to force transmission of control commands (BASIC_SET)</description>
         <default>255</default>
@@ -175,8 +173,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <default>255</default>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: Deactivate transmission of frame canceling alarm</label>
         <description>Deactivating transmission of the frame cancelling the alarm or the control frame deactivating the device (Basic). It allows for disabling the deactivation function or the alarm cancellation function for devices associated with the appropriate input of the</description>
         <default>0</default>
@@ -208,8 +205,7 @@ Value of the parameter specifying the forced level of dimming / opening sun blin
         <default>8</default>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Transmitting the alarm or control frame broadcast mode</label>
         <description><![CDATA[
 Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices within range), information sent in this mode is not repeated by the mesh network.<br /><b>NOTE:</b> If the broadcast mode of information transmission is activated for a given
@@ -223,8 +219,7 @@ Transmitting the alarm or control frame in 'broadcast' mode (i.e. to all devices
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Scene activation</label>
         <description>Enable/Disable scene functionality. The device offers the possibility of sending commands compatible with Command class scene activation. Information is sent to devices assigned to association group no. 3.</description>
         <default>0</default>

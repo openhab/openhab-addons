@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Swiid</property>
-      <property name="model">SW-ZCS-1</property>
+      <property name="modelId">SW-ZCS-1</property>
       <property name="manufacturerId">0166</property>
       <property name="manufacturerRef">0100:0100</property>
       <property name="defaultAssociations">2</property>
@@ -37,8 +37,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Switch All</label>
         <default>255</default>
         <options>

@@ -16,7 +16,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">SCSC-17</property>
+      <property name="modelId">SCSC-17</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0004:0001</property>
       <property name="defaultAssociations">1</property>
@@ -31,8 +31,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Temperature Scale</label>
         <description>Controls the temperature sensor scale</description>
         <default>0</default>

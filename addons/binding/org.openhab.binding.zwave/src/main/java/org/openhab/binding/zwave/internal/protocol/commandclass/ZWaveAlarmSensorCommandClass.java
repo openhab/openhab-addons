@@ -54,6 +54,7 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
     private boolean initialiseDone = false;
 
     private boolean isGetSupported = true;
+    private boolean isSupportedGetSupported = true;
 
     /**
      * Creates a new instance of the ZWaveAlarmSensorCommandClass class.
@@ -82,7 +83,7 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Sensor Alarm Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received SENSOR_ALARM command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SENSOR_ALARM_REPORT:
@@ -97,12 +98,12 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
                 if (alarm != null) {
                     alarm.setInitialised();
 
-                    logger.debug("NODE {}: Alarm Report: Source={}, Type={}({}), Value={}", this.getNode().getNodeId(),
+                    logger.debug("NODE {}: Alarm Report: Source={}, Type={}({}), Value={}", getNode().getNodeId(),
                             sourceNode, alarm.getAlarmType().getLabel(), alarmTypeCode, value);
 
-                    ZWaveAlarmSensorValueEvent zEvent = new ZWaveAlarmSensorValueEvent(this.getNode().getNodeId(),
-                            endpoint, alarm.getAlarmType(), value);
-                    this.getController().notifyEventListeners(zEvent);
+                    ZWaveAlarmSensorValueEvent zEvent = new ZWaveAlarmSensorValueEvent(getNode().getNodeId(), endpoint,
+                            alarm.getAlarmType(), value);
+                    getController().notifyEventListeners(zEvent);
                 }
                 break;
             case SENSOR_ALARM_SUPPORTED_REPORT:
@@ -198,13 +199,13 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
      */
     public SerialMessage getMessage(AlarmType alarmType) {
         if (isGetSupported == false) {
-            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            logger.debug("NODE {}: Node doesn't support get requests", getNode().getNodeId());
             return null;
         }
 
-        logger.debug("NODE {}: Creating new message for command SENSOR_ALARM_GET, type {}", this.getNode().getNodeId(),
+        logger.debug("NODE {}: Creating new message for command SENSOR_ALARM_GET, type {}", getNode().getNodeId(),
                 alarmType.getLabel());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
         byte[] newPayload = { (byte) this.getNode().getNodeId(), 3, (byte) getCommandClass().getKey(),
                 (byte) SENSOR_ALARM_GET, (byte) alarmType.getKey() };
@@ -214,8 +215,11 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
 
     @Override
     public boolean setOptions(Map<String, String> options) {
-        if ("true".equals(options.get("getSupported"))) {
-            isGetSupported = true;
+        if ("false".equals(options.get("getSupported"))) {
+            isGetSupported = false;
+        }
+        if ("false".equals(options.get("supportedGetSupported"))) {
+            isSupportedGetSupported = false;
         }
 
         return true;
@@ -227,25 +231,17 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
      * @return the serial message, or null if the supported command is not supported.
      */
     public SerialMessage getSupportedMessage() {
+        if (isSupportedGetSupported == false) {
+            logger.debug("NODE {}: Node doesn't support supported get requests", getNode().getNodeId());
+            return null;
+        }
+
         logger.debug("NODE {}: Creating new message for command SENSOR_ALARM_SUPPORTED_GET",
                 this.getNode().getNodeId());
 
-        if (this.getNode().getManufacturer() == 0x010F && this.getNode().getDeviceType() == 0x0501) {
-            logger.warn(
-                    "NODE {}: Detected Fibaro FGBS001 Universal Sensor - this device fails to respond to SENSOR_ALARM_GET and SENSOR_ALARM_SUPPORTED_GET.",
-                    this.getNode().getNodeId());
-            return null;
-        }
-        if (this.getNode().getManufacturer() == 0x010F && this.getNode().getDeviceType() == 0x0600) {
-            logger.warn(
-                    "NODE {}: Detected Fibaro FGWPE Wall Plug - this device fails to respond to SENSOR_ALARM_GET and SENSOR_ALARM_SUPPORTED_GET.",
-                    this.getNode().getNodeId());
-            return null;
-        }
-
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.High);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
+        byte[] newPayload = { (byte) getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
                 (byte) SENSOR_ALARM_SUPPORTED_GET };
         result.setMessagePayload(newPayload);
         return result;

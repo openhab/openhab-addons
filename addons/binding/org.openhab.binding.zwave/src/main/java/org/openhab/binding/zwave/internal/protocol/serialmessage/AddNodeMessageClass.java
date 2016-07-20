@@ -8,9 +8,17 @@
  */
 package org.openhab.binding.zwave.internal.protocol.serialmessage;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Basic;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Generic;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveInclusionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,36 +31,44 @@ import org.slf4j.LoggerFactory;
 public class AddNodeMessageClass extends ZWaveCommandProcessor {
     private static final Logger logger = LoggerFactory.getLogger(AddNodeMessageClass.class);
 
-    private final int ADD_NODE_ANY = 0x01;
-    private final int ADD_NODE_CONTROLLER = 0x02;
-    private final int ADD_NODE_SLAVE = 0x03;
-    private final int ADD_NODE_EXISTING = 0x04;
-    private final int ADD_NODE_STOP = 0x05;
-    private final int ADD_NODE_STOP_FAILED = 0x06;
+    private final int ADD_NODE_ANY = 1;
+    private final int ADD_NODE_CONTROLLER = 2;
+    private final int ADD_NODE_SLAVE = 3;
+    private final int ADD_NODE_EXISTING = 4;
+    private final int ADD_NODE_STOP = 5;
+    private final int ADD_NODE_STOP_FAILED = 6;
 
-    private final int ADD_NODE_STATUS_LEARN_READY = 0x01;
-    private final int ADD_NODE_STATUS_NODE_FOUND = 0x02;
-    private final int ADD_NODE_STATUS_ADDING_SLAVE = 0x03;
-    private final int ADD_NODE_STATUS_ADDING_CONTROLLER = 0x04;
-    private final int ADD_NODE_STATUS_PROTOCOL_DONE = 0x05;
-    private final int ADD_NODE_STATUS_DONE = 0x06;
-    private final int ADD_NODE_STATUS_FAILED = 0x07;
+    private final int ADD_NODE_STATUS_LEARN_READY = 1;
+    private final int ADD_NODE_STATUS_NODE_FOUND = 2;
+    private final int ADD_NODE_STATUS_ADDING_SLAVE = 3;
+    private final int ADD_NODE_STATUS_ADDING_CONTROLLER = 4;
+    private final int ADD_NODE_STATUS_PROTOCOL_DONE = 5;
+    private final int ADD_NODE_STATUS_DONE = 6;
+    private final int ADD_NODE_STATUS_FAILED = 7;
 
     private final int OPTION_HIGH_POWER = 0x80;
+    private final int OPTION_NETWORK_WIDE = 0x40;
 
-    public SerialMessage doRequestStart(boolean highPower) {
-        logger.debug("Setting controller into INCLUSION mode.");
+    public SerialMessage doRequestStart(boolean highPower, boolean networkWide) {
+        logger.debug("Setting controller into INCLUSION mode, highPower:{} networkWide:{}.", highPower, networkWide);
 
         // Queue the request
         SerialMessage newMessage = new SerialMessage(SerialMessage.SerialMessageClass.AddNodeToNetwork,
                 SerialMessage.SerialMessageType.Request, SerialMessage.SerialMessageClass.AddNodeToNetwork,
                 SerialMessage.SerialMessagePriority.High);
-        byte[] newPayload = { (byte) ADD_NODE_ANY, (byte) 255 };
+        byte command = ADD_NODE_ANY;
         if (highPower == true) {
-            newPayload[0] |= OPTION_HIGH_POWER;
+            command |= OPTION_HIGH_POWER;
+        }
+        if (networkWide == true) {
+            command |= OPTION_NETWORK_WIDE;
         }
 
-        newMessage.setMessagePayload(newPayload);
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(command);
+        outputData.write(0x01); // TODO: This should use the callbackId
+        newMessage.setMessagePayload(outputData.toByteArray());
+
         return newMessage;
     }
 
@@ -63,9 +79,12 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
         SerialMessage newMessage = new SerialMessage(SerialMessage.SerialMessageClass.AddNodeToNetwork,
                 SerialMessage.SerialMessageType.Request, SerialMessage.SerialMessageClass.AddNodeToNetwork,
                 SerialMessage.SerialMessagePriority.High);
-        byte[] newPayload = { (byte) ADD_NODE_STOP };
 
-        newMessage.setMessagePayload(newPayload);
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(ADD_NODE_STOP);
+        outputData.write(0x01); // TODO: This should use the callbackId
+        newMessage.setMessagePayload(outputData.toByteArray());
+
         return newMessage;
     }
 
@@ -83,8 +102,35 @@ public class AddNodeMessageClass extends ZWaveCommandProcessor {
                     break;
                 case ADD_NODE_STATUS_ADDING_SLAVE:
                     logger.debug("NODE {}: Adding slave.", incomingMessage.getMessagePayloadByte(2));
-                    zController.notifyEventListeners(new ZWaveInclusionEvent(ZWaveInclusionEvent.Type.IncludeSlaveFound,
-                            incomingMessage.getMessagePayloadByte(2)));
+
+                    int length = incomingMessage.getMessagePayloadByte(3);
+
+                    Basic basic = Basic.getBasic(incomingMessage.getMessagePayloadByte(4));
+                    Generic generic = Generic.getGeneric(incomingMessage.getMessagePayloadByte(5));
+                    Specific specific = Specific.getSpecific(generic, incomingMessage.getMessagePayloadByte(6));
+
+                    List<CommandClass> commandClasses = new ArrayList<CommandClass>();
+
+                    for (int i = 7; i < length + 4; i++) {
+                        int data = incomingMessage.getMessagePayloadByte(i);
+
+                        CommandClass commandClass = CommandClass.getCommandClass(data);
+                        if (commandClass == null) {
+                            continue;
+                        }
+
+                        // Check if this is the control marker
+                        if (commandClass == CommandClass.MARK) {
+                            // TODO: Implement control command classes
+                            break;
+                        }
+
+                        commandClasses.add(commandClass);
+                    }
+
+                    ZWaveInclusionEvent event = new ZWaveInclusionEvent(ZWaveInclusionEvent.Type.IncludeSlaveFound,
+                            incomingMessage.getMessagePayloadByte(2), basic, generic, specific, commandClasses);
+                    zController.notifyEventListeners(event);
                     break;
                 case ADD_NODE_STATUS_ADDING_CONTROLLER:
                     logger.debug("NODE {}: Adding controller.", incomingMessage.getMessagePayloadByte(2));

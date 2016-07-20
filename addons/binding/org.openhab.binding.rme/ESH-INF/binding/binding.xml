@@ -2,7 +2,7 @@
 <binding:binding id="rme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>RME Binding</name>
+	<name>openHAB RME Binding</name>
 	<description>This is the binding for RME Rain Manager.</description>
 	<author>Karel Goderis</author>
 

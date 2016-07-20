@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClassWithInitialization;
-import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeStageAdvancer;
+import org.openhab.binding.zwave.internal.protocol.initialization.ZWaveNodeInitStageAdvancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class ZWaveSecureInclusionStateTracker {
     private static final int WAIT_TIME_MILLIS = 10000;
 
     /**
-     * The next {@link SerialMessage} that will be given to {@link ZWaveNodeStageAdvancer}
+     * The next {@link SerialMessage} that will be given to {@link ZWaveNodeInitStageAdvancer}
      * when it calls {@link ZWaveSecurityCommandClass#initialize(boolean)}
      */
     private SerialMessage nextRequestMessage = null;
@@ -93,16 +93,18 @@ public class ZWaveSecureInclusionStateTracker {
             // Commands absent from EXPECTED_COMMAND_ORDER_LIST are always ok
             return true;
         }
+
         // Going back to the first step (zero index) is always OK // TODO: DB is it really?
         if (INIT_COMMAND_ORDER_LIST.indexOf(newStep) > 0) {
             // We have to verify where we are at
             int currentIndex = INIT_COMMAND_ORDER_LIST.indexOf(currentStep);
             int newIndex = INIT_COMMAND_ORDER_LIST.indexOf(newStep);
+
             // Accept one message back or the same message(device resending last reply) in addition to the normal one
             // message ahead
             if (newIndex != currentIndex && newIndex - currentIndex > 1) {
                 if (HALT_ON_IMPROPER_ORDER) {
-                    setErrorState(String.format("NODE %s: Commands received out of order, aborting current=%s, new=%s",
+                    setErrorState(String.format("NODE %d: Commands received out of order, aborting current=%s, new=%s",
                             node.getNodeId(), ZWaveSecurityCommandClass.commandToString(currentStep),
                             ZWaveSecurityCommandClass.commandToString(newStep)));
                     return false;
@@ -157,7 +159,7 @@ public class ZWaveSecureInclusionStateTracker {
             logger.debug("NODE {}: in InclusionStateTracker.getNextRequest() time left for reply: {}ms, returning {}",
                     node.getNodeId(), (System.currentTimeMillis() - waitForReplyTimeout), nextRequestMessage);
             if (System.currentTimeMillis() > waitForReplyTimeout) {
-                // waited too long for a reply, secure inclusion failed
+                // Waited too long for a reply, secure inclusion failed
                 setErrorState(WAIT_TIME_MILLIS + "ms passed since last request was sent, secure inclusion failed.");
                 return null;
             }

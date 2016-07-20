@@ -11,17 +11,17 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
-        </properties>
-      </channel>
       <channel id="switch_dimmer" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+        </properties>
+      </channel>
+      <channel id="scene_number" typeId="scene_number">
+        <label>Scene Number</label>
+        <properties>
+          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
         </properties>
       </channel>
       <channel id="sensor_power" typeId="sensor_power">
@@ -42,16 +42,10 @@
           <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
-      <channel id="alarm_general1" typeId="alarm_general">
-        <label>Alarm 1</label>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM:1</property>
-        </properties>
-      </channel>
-      <channel id="sensor_power1" typeId="sensor_power">
-        <label>Sensor (power) 1</label>
-        <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;type=POWER</property>
+          <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">
@@ -59,6 +53,12 @@
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:1</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1</property>
+        </properties>
+      </channel>
+      <channel id="sensor_power1" typeId="sensor_power">
+        <label>Sensor (power) 1</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh1" typeId="meter_kwh">
@@ -73,11 +73,17 @@
           <property name="binding:*:DecimalType">METER:1;type=E_W</property>
         </properties>
       </channel>
+      <channel id="alarm_general1" typeId="alarm_general">
+        <label>Alarm 1</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM:1</property>
+        </properties>
+      </channel>
       <channel id="switch_dimmer2" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:2,BASIC:2</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2,BASIC:2</property>
         </properties>
       </channel>
     </channels>
@@ -85,7 +91,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGD212</property>
+      <property name="modelId">FGD212</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0102:1000,0102:3000</property>
       <property name="defaultAssociations">1</property>
@@ -156,8 +162,7 @@
         <default>1</default>
       </parameter>
 
-      <parameter name="config_9_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_9_1" type="integer" groupName="configuration">
         <label>9: Saving state before power failure</label>
         <description>Saving state before power failure</description>
         <default>1</default>
@@ -174,8 +179,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_11_2" type="integer" groupName="configuration"
-                 min="0" max="65535">
+      <parameter name="config_11_2" type="integer" groupName="configuration">
         <label>11: ALL ON/ALL OFF function</label>
         <description>The parameter specifies the available functions.</description>
         <default>255</default>
@@ -187,8 +191,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_13_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Force auto-calibration</label>
         <description>Changing the value of this parameter to 1 will force the calibration process. During the calibration parameter is set to 1 and switched to 0 upon completion.</description>
         <default>0</default>
@@ -199,8 +202,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_14_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Auto-calibration status (read-only parameter)</label>
         <description>This parameter determines operating mode of the Dimmer (automatic/manual settings).</description>
         <default>0</default>
@@ -231,8 +233,7 @@
         <default>0</default>
       </parameter>
 
-      <parameter name="config_20_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_20_1" type="integer" groupName="configuration">
         <label>20: Inputs Button/Switch configuration</label>
         <description>Binary inputs type configuration</description>
         <default>0</default>
@@ -243,8 +244,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_21_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_21_1" type="integer" groupName="configuration">
         <label>21: Value sent to associated devices on single click</label>
         <description>The value sent to associated devices on single click.</description>
         <default>0</default>
@@ -254,8 +254,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_22_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_22_1" type="integer" groupName="configuration">
         <label>22: Change [On-Off] bi-stable keys</label>
         <description>This function allow user to change [On-Off] bi-stable keys (parameter no. 14) (default value 0)</description>
         <default>0</default>
@@ -265,8 +264,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_23_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_23_1" type="integer" groupName="configuration">
         <label>23: Double click option</label>
         <description>Double-click set lighting at 100%</description>
         <default>1</default>
@@ -276,8 +274,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_24_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_24_1" type="integer" groupName="configuration">
         <label>24: Command frames sent in 2nd and 3rd association groups (S1 associations)</label>
         <description>Parameter determines, which actions will not result in sending frames to association groups.</description>
         <default>0</default>
@@ -291,8 +288,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_25_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_25_1" type="integer" groupName="configuration">
         <label>25: Command frames sent in 4th and 5th association groups (S2associations)</label>
         <description>Parameter determines, which actions will not result in sending frames to association groups.</description>
         <default>0</default>
@@ -306,8 +302,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_26_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_26_1" type="integer" groupName="configuration">
         <label>26: The function of 3-way switch</label>
         <description>Key no. 2 controls the Dimmer additionally (in 3-way switch mode). Function disabled for parameter 20 set to 2 (roller blind switch).</description>
         <default>0</default>
@@ -317,8 +312,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_27_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_27_1" type="integer" groupName="configuration">
         <label>27: Associations in Z-Wave network security mode</label>
         <description>This parameter defines how commands are sent in specified association groups: as secure or non-secure. Parameter is active only in Z-Wave network security mode. It does not apply to 1st Lifeline group.</description>
         <default>15</default>
@@ -332,8 +326,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_28_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_28_1" type="integer" groupName="configuration">
         <label>28: Scene activation functionality</label>
         <description>SCENE ID depends on the switch type configuration</description>
         <default>0</default>
@@ -343,8 +336,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_29_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_29_1" type="integer" groupName="configuration">
         <label>29: Switch functionality of S1 and S2</label>
         <description>Switch S1 and S2 buttons</description>
         <default>0</default>
@@ -354,8 +346,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_30_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_30_1" type="integer" groupName="configuration">
         <label>30: Load control mode</label>
         <description>The parameter defines the used control mode.</description>
         <default>2</default>
@@ -366,8 +357,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_31_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_31_1" type="integer" groupName="configuration">
         <label>31: Load control mode recognized during auto-calibration</label>
         <description>Load control mode recognized during auto-calibration</description>
         <default>0</default>
@@ -377,8 +367,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_32_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_32_1" type="integer" groupName="configuration">
         <label>32: On/Off mode</label>
         <description>This mode is necessary while connecting non-dimmable light sources. Enabling parameter 32 automatically ignores brightening/- dimming time settings.</description>
         <default>2</default>
@@ -389,8 +378,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_33_1" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_33_1" type="integer" groupName="configuration">
         <label>33: Dimmability of the load (read only)</label>
         <description>Dimmability of the load (read only)</description>
         <default>0</default>
@@ -400,8 +388,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_34_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_34_1" type="integer" groupName="configuration">
         <label>34: Soft-Start functionality</label>
         <description>Time required to warm up the filament of halogen bulb.</description>
         <default>1</default>
@@ -412,8 +399,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_35_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_35_1" type="integer" groupName="configuration">
         <label>35: Auto-calibration after power on</label>
         <description>This parameter determines the trigger of auto-calibration procedure, e.g. power on, load error, etc.</description>
         <default>1</default>
@@ -426,8 +412,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_37_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_37_1" type="integer" groupName="configuration">
         <label>37: Behaviour of the Dimmer after overload or surge</label>
         <default>1</default>
         <options>
@@ -443,8 +428,7 @@
         <default>250</default>
       </parameter>
 
-      <parameter name="config_40_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_40_1" type="integer" groupName="configuration">
         <label>40: General Purpose Alarm</label>
         <description>The parameter specifies the response to an alarm.</description>
         <default>3</default>
@@ -456,8 +440,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_41_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_41_1" type="integer" groupName="configuration">
         <label>41: Water Flooding Alarm</label>
         <description>The parameter specifies the response to an alarm.</description>
         <default>2</default>
@@ -469,8 +452,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_42_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_42_1" type="integer" groupName="configuration">
         <label>42: Smoke, CO or CO2 Alarm</label>
         <description>The parameter specifies the response to an alarm.</description>
         <default>3</default>
@@ -482,8 +464,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_43_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_43_1" type="integer" groupName="configuration">
         <label>43: Temperature Alarm</label>
         <description>The parameter specifies the response to an alarm.</description>
         <default>1</default>
@@ -502,8 +483,7 @@
         <default>600</default>
       </parameter>
 
-      <parameter name="config_45_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_45_1" type="integer" groupName="configuration">
         <label>45: OVERLOAD alarm report</label>
         <description>(load power consumption too high)</description>
         <default>1</default>
@@ -513,8 +493,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_46_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_46_1" type="integer" groupName="configuration">
         <label>46: LOAD ERROR alarm report</label>
         <description>(no load, load failure, burnt out bulb)</description>
         <default>1</default>
@@ -524,8 +503,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_47_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_47_1" type="integer" groupName="configuration">
         <label>47: OVERCURRENT alarm report</label>
         <description>(short circuit, burnt out bulb causing overcurrent)</description>
         <default>1</default>
@@ -535,8 +513,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_48_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_48_1" type="integer" groupName="configuration">
         <label>48: SURGE alarm report</label>
         <description>(Dimmer output overvoltage)</description>
         <default>1</default>
@@ -546,8 +523,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_49_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_49_1" type="integer" groupName="configuration">
         <label>49: OVERHEAT (critical temperature) and VOLTAGE DROP (low voltage) alarm report</label>
         <default>1</default>
         <options>
@@ -577,8 +553,7 @@
         <default>10</default>
       </parameter>
 
-      <parameter name="config_54_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_54_1" type="integer" groupName="configuration">
         <label>54: Self-measurement</label>
         <description>The Dimmer may include active power and energy used by itself in reports sent to the main controller.</description>
         <default>0</default>
@@ -588,8 +563,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_58_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_58_1" type="integer" groupName="configuration">
         <label>58: Method of calculating the active power</label>
         <description>This parameter defines how to calculate active power. It is useful in a case of 2-wire connection with light sources other than resistive. Note: Parameter 58 is set to 0 after forced auto-calibration</description>
         <default>0</default>

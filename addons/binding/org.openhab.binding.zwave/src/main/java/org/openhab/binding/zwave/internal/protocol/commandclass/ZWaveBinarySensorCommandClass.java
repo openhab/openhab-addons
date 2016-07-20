@@ -8,23 +8,27 @@
  */
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -34,23 +38,33 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  *
  * @author Chris Jackson
  * @author Jan-Willem Spuij
+ * @author Jorg de Jong
  */
 @XStreamAlias("binarySensorCommandClass")
 public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
-        implements ZWaveGetCommands, ZWaveCommandClassDynamicState {
+        implements ZWaveGetCommands, ZWaveCommandClassDynamicState, ZWaveCommandClassInitialization {
 
     @XStreamOmitField
     private static final Logger logger = LoggerFactory.getLogger(ZWaveBinarySensorCommandClass.class);
 
     private static final int MAX_SUPPORTED_VERSION = 2;
 
-    private static final int SENSOR_BINARY_GET = 0x02;
-    private static final int SENSOR_BINARY_REPORT = 0x03;
+    private static final int SENSOR_BINARY_GET = 2;
+    private static final int SENSOR_BINARY_REPORT = 3;
+
+    // version 2
+    private static final int SENSOR_BINARY_SUPPORTEDSENSOR_GET = 1;
+    private static final int SENSOR_BINARY_SUPPORTEDSENSOR_REPORT = 4;
+
+    @XStreamOmitField
+    private boolean initialiseDone = false;
 
     @XStreamOmitField
     private boolean dynamicDone = false;
 
     private boolean isGetSupported = true;
+
+    private Set<SensorType> types = new HashSet<>();
 
     /**
      * Creates a new instance of the ZWaveBinarySensorCommandClass class.
@@ -61,6 +75,7 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
      */
     public ZWaveBinarySensorCommandClass(ZWaveNode node, ZWaveController controller, ZWaveEndpoint endpoint) {
         super(node, controller, endpoint);
+        versionMax = MAX_SUPPORTED_VERSION;
     }
 
     /**
@@ -73,14 +88,14 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
         logger.trace("Handle Message Sensor Binary Request");
-        logger.debug("NODE {}: Received Sensor Binary Request (v{})", this.getNode().getNodeId(), this.getVersion());
+        logger.debug("NODE {}: Received SENSOR_BINARY command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case SENSOR_BINARY_REPORT:
@@ -88,7 +103,7 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
                 int value = serialMessage.getMessagePayloadByte(offset + 1);
 
                 SensorType sensorType = SensorType.UNKNOWN;
-                if (this.getVersion() > 1 && serialMessage.getMessagePayload().length > offset + 2) {
+                if (getVersion() > 1 && serialMessage.getMessagePayload().length > offset + 2) {
                     logger.debug("Processing Sensor Type {}", serialMessage.getMessagePayloadByte(offset + 2));
                     // For V2, we have the sensor type after the value
                     sensorType = SensorType.getSensorType(serialMessage.getMessagePayloadByte(offset + 2));
@@ -98,19 +113,44 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
                     }
                 }
 
-                logger.debug("NODE {}: Sensor Binary report, type={}, value={}", this.getNode().getNodeId(),
+                logger.debug("NODE {}: Sensor Binary report, type={}, value={}", getNode().getNodeId(),
                         sensorType.getLabel(), value);
 
-                ZWaveBinarySensorValueEvent zEvent = new ZWaveBinarySensorValueEvent(this.getNode().getNodeId(),
-                        endpoint, sensorType, value);
-                this.getController().notifyEventListeners(zEvent);
+                ZWaveBinarySensorValueEvent zEvent = new ZWaveBinarySensorValueEvent(getNode().getNodeId(), endpoint,
+                        sensorType, value);
+                getController().notifyEventListeners(zEvent);
 
                 dynamicDone = true;
                 break;
+            case SENSOR_BINARY_SUPPORTEDSENSOR_REPORT:
+                logger.trace("Process Sensor Binary Supported Sensors Report");
+
+                int numBytes = serialMessage.getMessagePayload().length - offset - 1;
+
+                for (int i = 0; i < numBytes; ++i) {
+                    for (int bit = 0; bit < 8; ++bit) {
+                        if (((serialMessage.getMessagePayloadByte(offset + i + 1)) & (1 << bit)) == 0) {
+                            continue;
+                        }
+
+                        int index = (i << 3) + bit;
+                        if (index >= SensorType.values().length) {
+                            continue;
+                        }
+
+                        // (n)th bit is set. n is the index for the sensor type enumeration.
+                        // sensor type seems to be supported, add it to the list if it's not already there.
+                        types.add(SensorType.getSensorType(index));
+                        logger.debug("NODE {}: found binary sensor {}", getNode().getNodeId(),
+                                SensorType.getSensorType(index));
+                    }
+                }
+
+                initialiseDone = true;
+                break;
             default:
                 logger.warn(String.format("NODE %d: Unsupported Command 0x%02X for command class %s (0x%02X).",
-                        this.getNode().getNodeId(), command, this.getCommandClass().getLabel(),
-                        this.getCommandClass().getKey()));
+                        getNode().getNodeId(), command, getCommandClass().getLabel(), getCommandClass().getKey()));
         }
     }
 
@@ -122,33 +162,92 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
     @Override
     public SerialMessage getValueMessage() {
         if (isGetSupported == false) {
-            logger.debug("NODE {}: Node doesn't support get requests", this.getNode().getNodeId());
+            logger.debug("NODE {}: Node doesn't support get requests", getNode().getNodeId());
             return null;
         }
 
-        logger.debug("NODE {}: Creating new message for application command SENSOR_BINARY_GET",
-                this.getNode().getNodeId());
-        SerialMessage result = new SerialMessage(this.getNode().getNodeId(), SerialMessageClass.SendData,
+        logger.debug("NODE {}: Creating new message for application command SENSOR_BINARY_GET", getNode().getNodeId());
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
                 SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
-        byte[] newPayload = { (byte) this.getNode().getNodeId(), 2, (byte) getCommandClass().getKey(),
-                (byte) SENSOR_BINARY_GET };
 
-        // Should there be another byte here to specify the sensor type?
-        // Looking at the RaZberry doc, it talks about requesting the sensor type
-        // and using FF for the first sensor.
-        // Maybe this is a V2 feature - need to find some docs on V2!
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(getNode().getNodeId());
+        outputData.write(2);
+        outputData.write(getCommandClass().getKey());
+        outputData.write(SENSOR_BINARY_GET);
 
-        result.setMessagePayload(newPayload);
+        result.setMessagePayload(outputData.toByteArray());
+        return result;
+    }
+
+    public SerialMessage getValueMessage(SensorType type) {
+        if (getVersion() == 1) {
+            logger.debug("NODE {}: Node doesn't support SENSOR_BINARY_GET with SensorType", getNode().getNodeId());
+            return null;
+        }
+
+        logger.debug("NODE {}: Creating new message for application command SENSOR_BINARY_GET for {}",
+                getNode().getNodeId(), type);
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
+                SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
+
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(getNode().getNodeId());
+        outputData.write(3);
+        outputData.write(getCommandClass().getKey());
+        outputData.write(SENSOR_BINARY_GET);
+        outputData.write(type.getKey());
+
+        result.setMessagePayload(outputData.toByteArray());
         return result;
     }
 
     @Override
     public boolean setOptions(Map<String, String> options) {
-        if ("true".equals(options.get("getSupported"))) {
-            isGetSupported = true;
+        if ("false".equals(options.get("getSupported"))) {
+            isGetSupported = false;
         }
 
         return true;
+    }
+
+    /**
+     * Gets a SerialMessage with the SENSOR_BINARY_SUPPORTEDSENSOR_GET command
+     *
+     * @return the serial message, or null if the supported command is not supported.
+     */
+    public SerialMessage getSupportedMessage() {
+        if (getVersion() == 1) {
+            logger.debug("NODE {}: SENSOR_BINARY_SUPPORTEDSENSOR_GET not supported for V1", getNode().getNodeId());
+            return null;
+        }
+
+        logger.debug("NODE {}: Creating new message for command SENSOR_BINARY_SUPPORTEDSENSOR_GET",
+                getNode().getNodeId());
+
+        SerialMessage result = new SerialMessage(getNode().getNodeId(), SerialMessageClass.SendData,
+                SerialMessageType.Request, SerialMessageClass.ApplicationCommandHandler, SerialMessagePriority.Get);
+
+        ByteArrayOutputStream outputData = new ByteArrayOutputStream();
+        outputData.write(getNode().getNodeId());
+        outputData.write(2);
+        outputData.write(getCommandClass().getKey());
+        outputData.write(SENSOR_BINARY_SUPPORTEDSENSOR_GET);
+
+        result.setMessagePayload(outputData.toByteArray());
+
+        return result;
+    }
+
+    @Override
+    public Collection<SerialMessage> initialize(boolean refresh) {
+        ArrayList<SerialMessage> result = new ArrayList<SerialMessage>();
+        if (refresh == true || initialiseDone == false) {
+            if (getVersion() > 1) {
+                result.add(getSupportedMessage());
+            }
+        }
+        return result;
     }
 
     /**
@@ -158,17 +257,25 @@ public class ZWaveBinarySensorCommandClass extends ZWaveCommandClass
     public Collection<SerialMessage> getDynamicValues(boolean refresh) {
         ArrayList<SerialMessage> result = new ArrayList<SerialMessage>();
         if (refresh == true || dynamicDone == false) {
-            result.add(getValueMessage());
+            if (getVersion() == 1) {
+                result.add(getValueMessage());
+            } else {
+                for (SensorType type : types) {
+                    result.add(getValueMessage(type));
+                }
+            }
         }
+
         return result;
     }
 
     /**
-     * {@inheritDoc}
+     * Return the supported binary sensor types as reported by the device.
+     *
+     * @return the supported sensor types
      */
-    @Override
-    public int getMaxVersion() {
-        return MAX_SUPPORTED_VERSION;
+    public Set<SensorType> getSupportedTypes() {
+        return ImmutableSet.copyOf(types);
     }
 
     /**

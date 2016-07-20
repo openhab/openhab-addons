@@ -21,11 +21,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -84,10 +84,9 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution OH2 version
  * @author Andreas Heil (info@aheil.de) - OH1 version
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
- * @param <updateNtpConfigData>
  *
  */
-public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler {
+public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public MaxCubeBridgeHandler(Bridge br) {
         super(br);
@@ -151,7 +150,7 @@ public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler
 
     private boolean previousOnline = false;
 
-    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private ScheduledFuture<?> pollingJob;
     private Runnable pollingRunnable = new Runnable() {
@@ -207,7 +206,6 @@ public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
         updateStatus(ThingStatus.OFFLINE);
-        initializeMaxDevices();
         startAutomaticRefresh();
     }
 
@@ -281,6 +279,8 @@ public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler
         UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.udpCommandType.RESET, maxConfiguration.serialNumber);
         reset.setIpAddress(maxConfiguration.ipAddress);
         reset.send();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
+
     }
 
     public void deviceInclusion() {
@@ -414,19 +414,6 @@ public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler
     public void onConnection() {
         logger.debug("Bridge connected. Updating thing status to ONLINE.");
         updateStatus(ThingStatus.ONLINE);
-        initializeMaxDevices();
-    }
-
-    /**
-     * Initializes the devices for this bridge
-     */
-    private void initializeMaxDevices() {
-        for (Thing thing : getThing().getThings()) {
-            ThingHandler handler = thing.getHandler();
-            if (handler != null) {
-                handler.initialize();
-            }
-        }
     }
 
     public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
@@ -496,9 +483,7 @@ public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler
                             } else {
                                 socketClose();
                             }
-
                         }
-
                     }
                 }
 
@@ -644,6 +629,26 @@ public class MaxCubeBridgeHandler<updateNtpConfigData> extends BaseBridgeHandler
                     configurations.add(DeviceConfiguration.create(message));
                 } else {
                     c.setValues((C_Message) message);
+                    Device di = getDevice(((C_Message) message).getSerialNumber());
+                    if (di != null) {
+                        di.setProperties(((C_Message) message).getProperties());
+                        ;
+                    }
+                }
+                if (exclusive == true) {
+                    for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+                        try {
+                            Device di = getDevice(((C_Message) message).getSerialNumber());
+                            if (di != null) {
+                                deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
+                            }
+                        } catch (NullPointerException e) {
+                            // ignore
+                        } catch (Exception e) {
+                            logger.error("An exception occurred while calling the DeviceStatusListener", e);
+                            unregisterDeviceStatusListener(deviceStatusListener);
+                        }
+                    }
                 }
             } else if (message.getType() == MessageType.L) {
                 ((L_Message) message).updateDevices(devices, configurations);

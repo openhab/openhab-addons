@@ -35,7 +35,8 @@ public class ZWaveMultiLevelSensorConverterTest {
     private ZWaveThingChannel createChannel(String type) {
         Map<String, String> args = new HashMap<String, String>();
         args.put("type", type);
-        return new ZWaveThingChannel(uid, DataType.DecimalType, CommandClass.SENSOR_MULTILEVEL.toString(), 0, args);
+        return new ZWaveThingChannel(null, uid, DataType.DecimalType, CommandClass.SENSOR_MULTILEVEL.toString(), 0,
+                args);
     }
 
     private ZWaveCommandClassValueEvent createEvent(ZWaveMultiLevelSensorCommandClass.SensorType type, int scale,
@@ -50,7 +51,7 @@ public class ZWaveMultiLevelSensorConverterTest {
 
     @Test
     public void Event_Luminance() {
-        ZWaveMultiLevelSensorConverter converter = new ZWaveMultiLevelSensorConverter();
+        ZWaveMultiLevelSensorConverter converter = new ZWaveMultiLevelSensorConverter(null);
         ZWaveThingChannel channel = createChannel(ZWaveMultiLevelSensorCommandClass.SensorType.LUMINANCE.toString());
         BigDecimal value = new BigDecimal("103");
 

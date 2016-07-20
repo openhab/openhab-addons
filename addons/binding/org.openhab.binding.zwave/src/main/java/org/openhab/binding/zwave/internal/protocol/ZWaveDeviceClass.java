@@ -233,7 +233,7 @@ public class ZWaveDeviceClass {
         STATIC_CONTROLLER(0x02, "Static Controller"),
         AV_CONTROL_POINT(0x03, "A/V Control Point"),
         DISPLAY(0x06, "Display"),
-        GARAGE_DOOR(0x07, "Garage Door"), // Need to change to NOTIFICATION_SENSOR
+        SENSOR_NOTIFICATION(0x07, "Sensor Notification"),
         THERMOSTAT(0x08, "Thermostat"),
         WINDOW_COVERING(0x09, "Window Covering"),
         REPEATER_SLAVE(0x0f, "Repeater Slave"),
@@ -316,7 +316,7 @@ public class ZWaveDeviceClass {
                     return new CommandClass[0];
                 case REMOTE_CONTROLLER:
                 case STATIC_CONTROLLER:
-                case GARAGE_DOOR:
+                case SENSOR_NOTIFICATION:
                 case REPEATER_SLAVE:
                 case TOGGLE_SWITCH:
                 case REMOTE_SWITCH:
@@ -437,7 +437,7 @@ public class ZWaveDeviceClass {
         ADVANCED_ENERGY_CONTROL(2, Generic.METER, "Advanced Energy Control"),
         WHOLE_HOME_METER_SIMPLE(3, Generic.METER, "Whole Home Meter Simple"),
 
-        SIMPLE_GARAGE_DOOR(1, Generic.GARAGE_DOOR, "Simple Garage Door"),
+        NOTIFICATION_SENSOR(1, Generic.SENSOR_NOTIFICATION, "Notification Sensor"),
 
         DOOR_LOCK(1, Generic.ENTRY_CONTROL, "Door Lock"),
         ADVANCED_DOOR_LOCK(2, Generic.ENTRY_CONTROL, "Advanced Door Lock"),
@@ -557,7 +557,7 @@ public class ZWaveDeviceClass {
                 case SCENE_SWITCH_MULTILEVEL:
                 case SCENE_SWITCH_MULTILEVEL_DISCONTINUED:
                     return new CommandClass[] { CommandClass.SCENE_ACTIVATION, CommandClass.SCENE_ACTUATOR_CONF,
-                            CommandClass.SWITCH_ALL, CommandClass.MANUFACTURER_SPECIFIC };
+                            CommandClass.MANUFACTURER_SPECIFIC };
                 case MOTOR_MULTIPOSITION:
                     return new CommandClass[] { CommandClass.VERSION, CommandClass.MANUFACTURER_SPECIFIC };
                 case MOTOR_CONTROL_CLASS_A:

@@ -10,6 +10,7 @@ package org.openhab.binding.zwave.internal.converter;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
@@ -28,8 +29,8 @@ public class ZWaveCentralSceneConverter extends ZWaveCommandClassConverter {
      * Constructor. Creates a new instance of the {@link ZWaveConverterBase} class.
      *
      */
-    public ZWaveCentralSceneConverter() {
-        super();
+    public ZWaveCentralSceneConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     @Override

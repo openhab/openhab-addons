@@ -25,10 +25,10 @@
                 <label>Address</label>
                 <description>The address of the AVR to control.</description>
             </parameter>
-            <parameter name="REFRESH" type="integer" required="false">
+            <parameter name="REFRESH_IN_SEC" type="integer" required="false">
                 <label>Refresh interval</label>
-                <description>Refresh interval in minutes.</description>
-                <default>1</default>
+                <description>Refresh interval in seconds.</description>
+                <default>60</default>
                 <advanced>true</advanced>
             </parameter>
             <parameter name="RELVOLUMECHANGE" type="decimal" required="false">

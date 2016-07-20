@@ -26,10 +26,12 @@ The binding requires no special configuration
 
 The Squeeze Server bridge requires the ip address, web port, and cli port to access it on.
 In the thing file, this looks e.g. like
+
 ```
 Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090 ]
 ```
 Squeeze Players are identified by their MAC address.
+
 ```
 Thing squeezebox:squeezeboxplayer:myServer:myPlayer[ mac="00:f1:bb:00:00:f1" ]
 ```

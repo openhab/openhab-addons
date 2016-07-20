@@ -11,16 +11,16 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC</property>
-        </properties>
-      </channel>
       <channel id="lock_door" typeId="lock_door">
         <label></label>
         <properties>
           <property name="binding:*:OnOffType">DOOR_LOCK</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM,BASIC</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YRD210</property>
+      <property name="modelId">YRD210</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0004:0000,0004:AA00</property>
       <property name="defaultAssociations">1</property>
@@ -48,8 +48,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Audio Mode</label>
         <default>3</default>
         <options>
@@ -59,8 +58,7 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Auto relock</label>
         <default>255</default>
         <options>
@@ -83,8 +81,7 @@
         <default>5</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Language</label>
         <default>1</default>
         <options>
@@ -101,8 +98,7 @@
         <default>30</default>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_8_1" type="integer" groupName="configuration">
         <label>8: Operating Mode</label>
         <description>Normal Mode Vacation Mode - all user codes disabled Privacy Mode - all user codes disabled and RF Lock/Unlock disabled</description>
         <default>0</default>

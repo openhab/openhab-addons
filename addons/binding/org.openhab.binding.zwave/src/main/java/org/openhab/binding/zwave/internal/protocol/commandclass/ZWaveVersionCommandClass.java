@@ -15,10 +15,10 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessagePriority;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
-import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,41 +69,41 @@ public class ZWaveVersionCommandClass extends ZWaveCommandClass {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ZWaveSerialMessageException
      */
     @Override
     public void handleApplicationCommandRequest(SerialMessage serialMessage, int offset, int endpoint)
             throws ZWaveSerialMessageException {
-        logger.debug("NODE {}: Received Version Request", this.getNode().getNodeId());
+        logger.debug("NODE {}: Received VERSION command V{}", getNode().getNodeId(), getVersion());
         int command = serialMessage.getMessagePayloadByte(offset);
         switch (command) {
             case VERSION_REPORT:
-                logger.debug("NODE {}: Process Version Report", this.getNode().getNodeId());
+                logger.debug("NODE {}: Process Version Report", getNode().getNodeId());
                 libraryType = LibraryType.getLibraryType(serialMessage.getMessagePayloadByte(offset + 1));
                 protocolVersion = Integer.toString(serialMessage.getMessagePayloadByte(offset + 2)) + "."
                         + Integer.toString(serialMessage.getMessagePayloadByte(offset + 3));
                 applicationVersion = Integer.toString(serialMessage.getMessagePayloadByte(offset + 4)) + "."
                         + Integer.toString(serialMessage.getMessagePayloadByte(offset + 5));
 
-                logger.debug("NODE {}: Library Type        = {} ({})", this.getNode().getNodeId(), libraryType.key,
+                logger.debug("NODE {}: Library Type        = {} ({})", getNode().getNodeId(), libraryType.key,
                         libraryType.label);
-                logger.debug("NODE {}: Protocol Version    = {}", this.getNode().getNodeId(), protocolVersion);
-                logger.debug("NODE {}: Application Version = {}", this.getNode().getNodeId(), applicationVersion);
+                logger.debug("NODE {}: Protocol Version    = {}", getNode().getNodeId(), protocolVersion);
+                logger.debug("NODE {}: Application Version = {}", getNode().getNodeId(), applicationVersion);
                 break;
             case VERSION_COMMAND_CLASS_REPORT:
-                logger.debug("NODE {}: Process Version Command Class Report", this.getNode().getNodeId());
+                logger.debug("NODE {}: Process Version Command Class Report", getNode().getNodeId());
                 int commandClassCode = serialMessage.getMessagePayloadByte(offset + 1);
                 int commandClassVersion = serialMessage.getMessagePayloadByte(offset + 2);
 
                 CommandClass commandClass = CommandClass.getCommandClass(commandClassCode);
                 if (commandClass == null) {
-                    logger.error(String.format("NODE %d: Unsupported command class 0x%02x", this.getNode().getNodeId(),
+                    logger.error(String.format("NODE %d: Unsupported command class 0x%02x", getNode().getNodeId(),
                             commandClassCode));
                     return;
                 }
 
-                logger.debug("NODE {}: Requested Command Class = {}, Version = {}", this.getNode().getNodeId(),
+                logger.debug("NODE {}: Requested Command Class = {}, Version = {}", getNode().getNodeId(),
                         commandClass.getLabel(), commandClassVersion);
 
                 // The version is set on the command class for this node. By updating the version, extra functionality
@@ -111,38 +111,52 @@ public class ZWaveVersionCommandClass extends ZWaveCommandClass {
                 // The messages are backwards compatible, so it's not a problem that there is a slight delay when the
                 // command class version is queried on the
                 // node.
-                ZWaveCommandClass zwaveCommandClass = this.getNode().getCommandClass(commandClass);
+                ZWaveCommandClass zwaveCommandClass = getNode().getCommandClass(commandClass);
                 if (zwaveCommandClass == null) {
-                    logger.error(String.format("NODE %d: Unsupported command class %s (0x%02x)",
-                            this.getNode().getNodeId(), commandClass.getLabel(), commandClassCode));
+                    logger.error(String.format("NODE %d: Unsupported command class %s (0x%02x)", getNode().getNodeId(),
+                            commandClass.getLabel(), commandClassCode));
                     return;
                 }
 
                 // If the device reports version 0, it means it doesn't support this command class!
                 if (commandClassVersion == 0) {
-                    logger.info("NODE {}: Command Class {} has version 0!", this.getNode().getNodeId(),
+                    logger.info("NODE {}: Command Class {} has version 0!", getNode().getNodeId(),
                             commandClass.getLabel());
 
-                    // TODO: We should remove the class
-                    // For now, just set the version to 1 to avoid a loop on initialisation
-                    commandClassVersion = 1;
-                    // this.getNode().removeCommandClass(zwaveCommandClass);
+                    // Do not remove mandatory generic command classes.
+                    for (CommandClass mandatoryCommandClass : getNode().getDeviceClass().getGenericDeviceClass()
+                            .getMandatoryCommandClasses()) {
+                        if (mandatoryCommandClass == commandClass) {
+                            commandClassVersion = 1;
+                            break;
+                        }
+                    }
+
+                    // Do not remove mandatory specific command classes.
+                    if (commandClassVersion == 0) {
+                        for (CommandClass mandatoryCommandClass : getNode().getDeviceClass().getSpecificDeviceClass()
+                                .getMandatoryCommandClasses()) {
+                            if (mandatoryCommandClass == commandClass) {
+                                commandClassVersion = 1;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Remove other command classes.
+                    if (commandClassVersion == 0) {
+                        getNode().removeCommandClass(commandClass);
+                        logger.debug("NODE {}: Removed Command Class {}", getNode().getNodeId(),
+                                commandClass.getLabel());
+                        return;
+                    }
                 }
 
-                if (commandClassVersion > zwaveCommandClass.getMaxVersion()) {
-                    zwaveCommandClass.setVersion(zwaveCommandClass.getMaxVersion());
-                    logger.debug(
-                            "NODE {}: Version = {}, version set to maximum supported by the binding. Enabling extra functionality.",
-                            this.getNode().getNodeId(), zwaveCommandClass.getMaxVersion());
-                } else {
-                    zwaveCommandClass.setVersion(commandClassVersion);
-                    logger.debug("NODE {}: Version = {}, version set. Enabling extra functionality.",
-                            this.getNode().getNodeId(), commandClassVersion);
-                }
+                zwaveCommandClass.setVersion(commandClassVersion);
                 break;
             default:
                 logger.warn(String.format("Unsupported Command 0x%02X for command class %s (0x%02X).", command,
-                        this.getCommandClass().getLabel(), this.getCommandClass().getKey()));
+                        getCommandClass().getLabel(), this.getCommandClass().getKey()));
         }
     }
 

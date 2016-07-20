@@ -11,12 +11,18 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_dimmer" typeId="switch_dimmer">
+        <label>Brightness</label>
+        <properties>
+          <property name="binding:*:OnOffType">BASIC</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Cooper Wiring Devices</property>
-      <property name="model">RF9500</property>
+      <property name="modelId">RF9500</property>
       <property name="manufacturerId">001A</property>
       <property name="manufacturerRef">5342:0000</property>
       <property name="defaultAssociations">1</property>

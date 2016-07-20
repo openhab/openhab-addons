@@ -11,9 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
+      <channel id="lock_door" typeId="lock_door">
+        <label>Door Lock</label>
         <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
+          <property name="binding:*:OnOffType">DOOR_LOCK</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
@@ -22,10 +23,9 @@
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
-      <channel id="lock_door" typeId="lock_door">
-        <label>Door Lock</label>
+      <channel id="battery-level" typeId="system.battery-level">
         <properties>
-          <property name="binding:*:OnOffType">DOOR_LOCK</property>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YKFCON</property>
+      <property name="modelId">YKFCON</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0006:0000</property>
       <property name="defaultAssociations">1</property>
@@ -48,8 +48,7 @@
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration"
-                 min="1" max="3">
+      <parameter name="config_1_1" type="integer" groupName="configuration">
         <label>1: Audio Volume</label>
         <description><![CDATA[
 Sets the volume level of the beeps and voice prompts<br /><h1>Overview</h1><p>1 = Silent</p> <p>2 = Low</p> <p>3 = High</p>
@@ -62,8 +61,7 @@ Sets the volume level of the beeps and voice prompts<br /><h1>Overview</h1><p>1 
         </options>
       </parameter>
 
-      <parameter name="config_2_1" type="integer" groupName="configuration"
-                 min="0" max="255">
+      <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Auto Re-lock</label>
         <description><![CDATA[
 When enabled, the unit will automatically re-lock<br /><h1>Overview</h1><p>0 = Off</p> <p>255 = On</p>
@@ -89,8 +87,7 @@ When enabled, the unit will automatically re-lock<br /><h1>Overview</h1><p>0 = O
         <default>5</default>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration"
-                 min="1" max="3">
+      <parameter name="config_5_1" type="integer" groupName="configuration">
         <label>5: Language</label>
         <description><![CDATA[
 Language used by the voice prompts<br /><h1>Overview</h1><p>1 = English</p> <p>2 = Spanish</p> <p>3 = French</p>
@@ -110,8 +107,7 @@ Language used by the voice prompts<br /><h1>Overview</h1><p>1 = English</p> <p>2
         <default>30</default>
       </parameter>
 
-      <parameter name="config_8_1" type="integer" groupName="configuration"
-                 min="0" max="2">
+      <parameter name="config_8_1" type="integer" groupName="configuration">
         <label>8: Operating Mode</label>
         <description><![CDATA[
 Sets if the unit operates normal, or disables keypad and Z-Wave lock/unlock<br /><h1>Overview</h1><p>0 = Normal</p> <p>1 = Vacation Mode (User Codes Disabled)</p> <p>2 = Privacy Mode (User Codes and ZWave Codes Disabled</p>

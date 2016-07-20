@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
@@ -43,8 +44,8 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
      * Constructor. Creates a new instance of the {@link ZWaveThermostatSetpointConverter} class.
      *
      */
-    public ZWaveThermostatSetpointConverter() {
-        super();
+    public ZWaveThermostatSetpointConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -65,9 +66,8 @@ public class ZWaveThermostatSetpointConverter extends ZWaveCommandClassConverter
 
         SerialMessage serialMessage;
         if (setpointType != null) {
-            serialMessage = node.encapsulate(
-                    commandClass.getMessage(SetpointType.getSetpointType(Integer.parseInt(setpointType))), commandClass,
-                    channel.getEndpoint());
+            serialMessage = node.encapsulate(commandClass.getMessage(SetpointType.getSetpointType(setpointType)),
+                    commandClass, channel.getEndpoint());
         } else {
             serialMessage = node.encapsulate(commandClass.getValueMessage(), commandClass, channel.getEndpoint());
         }

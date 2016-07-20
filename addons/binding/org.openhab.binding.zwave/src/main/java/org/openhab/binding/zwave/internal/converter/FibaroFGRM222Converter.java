@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel.DataType;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
@@ -36,13 +37,8 @@ public class FibaroFGRM222Converter extends ZWaveCommandClassConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(FibaroFGRM222Converter.class);
 
-    public FibaroFGRM222Converter() {
-        super();
-        // this.addStateConverter(new IntegerPercentTypeConverter());
-        // this.addStateConverter(new IntegerOnOffTypeConverter());
-
-        // this.addCommandConverter(new MultiLevelPercentCommandConverter());
-        // this.addCommandConverter(new MultiLevelUpDownCommandConverter());
+    public FibaroFGRM222Converter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     @Override

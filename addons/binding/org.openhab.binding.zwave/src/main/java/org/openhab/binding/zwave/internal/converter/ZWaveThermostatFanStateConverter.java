@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
@@ -39,8 +40,8 @@ public class ZWaveThermostatFanStateConverter extends ZWaveCommandClassConverter
      *
      * @param controller the {@link ZWaveController} to use for sending messages.
      */
-    public ZWaveThermostatFanStateConverter() {
-        super();
+    public ZWaveThermostatFanStateConverter(ZWaveControllerHandler controller) {
+        super(controller);
     }
 
     /**
@@ -49,7 +50,7 @@ public class ZWaveThermostatFanStateConverter extends ZWaveCommandClassConverter
     @Override
     public List<SerialMessage> executeRefresh(ZWaveThingChannel channel, ZWaveNode node) {
         ZWaveThermostatFanStateCommandClass commandClass = (ZWaveThermostatFanStateCommandClass) node
-                .resolveCommandClass(ZWaveCommandClass.CommandClass.THERMOSTAT_FAN_MODE, channel.getEndpoint());
+                .resolveCommandClass(ZWaveCommandClass.CommandClass.THERMOSTAT_FAN_STATE, channel.getEndpoint());
         if (commandClass == null) {
             return null;
         }

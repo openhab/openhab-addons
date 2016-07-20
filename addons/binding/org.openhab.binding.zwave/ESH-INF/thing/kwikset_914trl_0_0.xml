@@ -13,11 +13,6 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="lock_door" typeId="lock_door">
         <label>Door Lock</label>
         <properties>
@@ -30,14 +25,20 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Kwikset</property>
-      <property name="model">914TRL</property>
+      <property name="modelId">914TRL</property>
       <property name="manufacturerId">0090</property>
       <property name="manufacturerRef">0001:0001</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -49,8 +50,7 @@ Touchpad Electronic Deadbolt<br /><h2>Inclusion Information</h2><p> Press butto
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_31_1_00100000" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_31_1_00100000" type="integer" groupName="configuration">
         <label>31: Auto Buzzer</label>
         <description><![CDATA[
 Beeping sound enabled.<br /><h1>Overview</h1><p>Beeping sound enabled. When disabled, keypad buttons light red or amber when pressed.</p> <p>ON position is factory default.</p> <p>Note: It is recommended that the beeping sound is enabled during programming.</p>
@@ -62,8 +62,7 @@ Beeping sound enabled.<br /><h1>Overview</h1><p>Beeping sound enabled. When disa
         </options>
       </parameter>
 
-      <parameter name="config_31_1_01000000" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_31_1_01000000" type="integer" groupName="configuration">
         <label>31: Auto Lock</label>
         <description><![CDATA[
 Automatically re-locks door 30 seconds after unlocking.<br /><h1>Overview</h1><p>Lock automatically re-locks door 30 seconds after unlocking. OFF position is factory default. If this switch is turned on, it will be disabled if all codes are deleted from the lock.</p>
@@ -75,8 +74,7 @@ Automatically re-locks door 30 seconds after unlocking.<br /><h1>Overview</h1><p
         </options>
       </parameter>
 
-      <parameter name="config_31_1_10000000" type="integer" groupName="configuration"
-                 min="0" max="1">
+      <parameter name="config_31_1_10000000" type="integer" groupName="configuration">
         <label>31: Lock LED Status</label>
         <description><![CDATA[
 Door lock status LED blinks every 6 seconds.<br /><h1>Overview</h1><p>Door lock status LED blinks every 6 seconds. ON position is factory default.</p>
@@ -106,6 +104,17 @@ Reset to factory default settings.<br /><h1>Overview</h1><p>Reset factory defaul
         </options>
         <advanced>true</advanced>
         <limitToOptions>false</limitToOptions>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association" multiple="true">
+        <label>1: Group 1</label>
+        <multipleLimit>5</multipleLimit>
       </parameter>
 
     </config-description>

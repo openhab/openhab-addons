@@ -46,9 +46,10 @@ public class ZWaveCommandClassTest {
      * It expects at least one response event.
      *
      * @param packetData byte array containing the full Z-Wave frame
+     * @param version commandclass version
      * @return List of ZWaveEvent(s)
      */
-    protected List<ZWaveEvent> processCommandClassMessage(byte[] packetData) {
+    protected List<ZWaveEvent> processCommandClassMessage(byte[] packetData, int version) {
         SerialMessage msg = new SerialMessage(packetData);
 
         // Check the packet is not corrupted and is a command class request
@@ -67,6 +68,7 @@ public class ZWaveCommandClassTest {
         try {
             ZWaveCommandClass cls = ZWaveCommandClass.getInstance(msg.getMessagePayloadByte(3), node, controller);
             assertNotNull(cls);
+            cls.setVersion(version);
             cls.handleApplicationCommandRequest(msg, 4, 0);
         } catch (ZWaveSerialMessageException e) {
             fail("Out of bounds exception processing data");
@@ -78,6 +80,21 @@ public class ZWaveCommandClassTest {
 
         // Return all the notifications....
         return argument.getAllValues();
+    }
+
+    /**
+     * Helper class to create everything we need to test a command class message.
+     *
+     * We pass in the data, and the expected command class. This method creates the class, checks it's the right one,
+     * processes the message and gets the response events.
+     *
+     * It expects at least one response event.
+     *
+     * @param packetData byte array containing the full Z-Wave frame
+     * @return List of ZWaveEvent(s)
+     */
+    protected List<ZWaveEvent> processCommandClassMessage(byte[] packetData) {
+        return processCommandClassMessage(packetData, 0);
     }
 
     ZWaveCommandClass getCommandClass(CommandClass cls) {

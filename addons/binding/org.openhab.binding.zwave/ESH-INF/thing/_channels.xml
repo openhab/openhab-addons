@@ -140,6 +140,21 @@
         </state>
     </channel-type>
 
+    <!-- Power Alarm Channel -->
+    <channel-type id="alarm_power">
+        <item-type>Switch</item-type>
+        <label>Power alarm</label>
+        <description>Indicates if a power alarm is triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="OFF">Ok</option>
+                <option value="ON">Alarm</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Smoke Alarm Channel -->
     <channel-type id="alarm_smoke">
         <item-type>Switch</item-type>
@@ -153,6 +168,90 @@
                 <option value="ON">Alarm</option>
             </options>
         </state>
+    </channel-type>
+
+    <!-- Tamper Alarm Channel -->
+    <channel-type id="alarm_tamper">
+        <item-type>Switch</item-type>
+        <label>Burglar alarm</label>
+        <description>Indicates if the tamper alarm is triggered
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="OFF">Ok</option>
+                <option value="ON">Alarm</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Barrier Position -->
+    <channel-type id="barrier_position">
+        <item-type>Number</item-type>
+        <label>Barrier Position</label>
+        <description>Indicates the position of the barrier
+        </description>
+        <category>Door</category>
+    </channel-type>
+
+    <!-- Barrier State -->
+    <channel-type id="barrier_state">
+        <item-type>Number</item-type>
+        <label>Barrier State</label>
+        <description>Indicates the state of the barrier
+        </description>
+        <category>Door</category>
+        <state readOnly="true">
+            <options>
+                <option value="0">Closed</option>
+                <option value="252">Closing</option>
+                <option value="253">Stopped</option>
+                <option value="254">Opening</option>
+                <option value="255">Open</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Blinds Control -->
+    <channel-type id="blinds_control">
+        <item-type>Rollershutter</item-type>
+        <label>Blinds Position</label>
+        <description>Provides start / stop control of blinds
+        </description>
+        <category>Blinds</category>
+        <config-description>
+            <parameter name="config_invert_control" type="boolean">
+                <label>Invert control</label>
+                <description>Invert the blinds control</description>
+                <default>false</default>
+                <options>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </options>
+                <limitToOptions>true</limitToOptions>
+            </parameter>
+            <parameter name="config_invert_percent" type="boolean">
+                <label>Invert percentage value</label>
+                <description>Invert the blinds percentage value</description>
+                <default>false</default>
+                <options>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </options>
+                <limitToOptions>true</limitToOptions>
+            </parameter>
+            <parameter name="config_duration" type="integer" min="1" max="254">
+                <label>Step duration</label>
+                <description><![CDATA[Sets the dim rate speed<br>Values from 1 to 127 are defined in seconds,
+                while values from 128 to 254 are defined in minutes.]]></description>
+                <default>255</default>
+                <options>
+                    <option value="255">Device Default</option>
+                    <option value="0">Change Instantly</option>
+                </options>
+                <limitToOptions>false</limitToOptions>
+            </parameter>
+        </config-description>
     </channel-type>
 
     <!-- Color Setting Channel -->
@@ -251,6 +350,16 @@
         </state>
     </channel-type>
     
+    <!-- Energy - Power Factor -->
+    <channel-type id="meter_pulse">
+        <item-type>Number</item-type>
+        <label>Pulse Count</label>
+        <description>Indicates the pulse count</description>
+        <category>Energy</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+    
     <!-- Meter Reset -->
     <channel-type id="meter_reset">
         <item-type>Switch</item-type>
@@ -300,7 +409,7 @@
     </channel-type>
 
     <!-- Water - Pulses -->
-    <channel-type id="meter_water_pulses">
+    <channel-type id="meter_water_pulse">
         <item-type>Number</item-type>
         <label>Water consumption in pulses</label>
         <description>Indicates the instantaneous water consumption</description>
@@ -319,12 +428,52 @@
         </state>
     </channel-type>
 
+    <!-- Local Protection Channel -->
+    <channel-type id="protection_local" advanced="true">
+        <item-type>Number</item-type>
+        <label>Local Protection Mode</label>
+        <description>Sets the local protection mode
+        </description>
+        <state>
+            <options>
+                <option value="0">Unprotected</option>
+                <option value="1">Protection by sequence</option>
+                <option value="2">No operation possible</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- RF Protection Channel -->
+    <channel-type id="protection_rf" advanced="true">
+        <item-type>Number</item-type>
+        <label>Rf Protection Mode</label>
+        <description>Sets the rf protection mode
+        </description>
+        <state>
+            <options>
+                <option value="0">Unprotected</option>
+                <option value="1">No RF control</option>
+                <option value="2">No RF response at all</option>
+            </options>
+        </state>
+    </channel-type>
+
     <!-- Scene - Number -->
     <channel-type id="scene_number">
         <item-type>Number</item-type>
         <label>Scene Number</label>
         <description>Triggers when a scene button is pressed</description>
         <category></category>
+    </channel-type>
+
+    <!-- Barometric Pressure Channel -->
+    <channel-type id="sensor_barpressure">
+        <item-type>Number</item-type>
+        <label>Barometric Pressure</label>
+        <description>Indicates the barometric pressure</description>
+        <category>Temperature</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
     </channel-type>
 
     <!-- Binary Sensor -->
@@ -339,6 +488,26 @@
                 <option value="ON">Triggered</option>
                 <option value="OFF">Untriggered</option>
             </options>
+        </state>
+    </channel-type>
+
+    <!-- Dewpoint Channel -->
+    <channel-type id="sensor_dewpoint">
+        <item-type>Number</item-type>
+        <label>Dewpoint</label>
+        <description>Indicates the dewpoint</description>
+        <category>Temperature</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Direction Channel -->
+    <channel-type id="sensor_direction">
+        <item-type>Number</item-type>
+        <label>Direction</label>
+        <description>Indicates the direction</description>
+        <category>Temperature</category>
+        <state pattern="%.1f" readOnly="true">
         </state>
     </channel-type>
 
@@ -411,6 +580,26 @@
         </state>
     </channel-type>
 
+    <!-- Rain Rate Channel -->
+    <channel-type id="sensor_rainrate">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Indicates the current relative humidity</description>
+        <category>Humidity</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Seismic Channel -->
+    <channel-type id="sensor_seismicintensity">
+        <item-type>Number</item-type>
+        <label>Seismic Intensity</label>
+        <description>Indicates the current seismic intensity level</description>
+        <category>Humidity</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
     <!-- Temperature Channel -->
     <channel-type id="sensor_temperature">
         <item-type>Number</item-type>
@@ -435,8 +624,18 @@
     <!-- Ultraviolet Channel -->
     <channel-type id="sensor_ultraviolet">
         <item-type>Number</item-type>
-        <label>Temperature</label>
+        <label>Ultraviolet level</label>
         <description>Indicates the current ultraviolet level</description>
+        <category>Temperature</category>
+        <state pattern="%.1f" readOnly="true">
+        </state>
+    </channel-type>
+
+    <!-- Velocity Channel -->
+    <channel-type id="sensor_velocity">
+        <item-type>Number</item-type>
+        <label>Velocity</label>
+        <description>Indicates the current velocity</description>
         <category>Temperature</category>
         <state pattern="%.1f" readOnly="true">
         </state>
@@ -566,5 +765,27 @@
             </options>
         </state>
     </channel-type>
-    
+
+    <!-- Time Offset Channel -->
+    <channel-type id="time_offset">
+        <item-type>Number</item-type>
+        <label>Time Offset</label>
+        <description>Provides the current time difference for the devices time
+        </description>
+        <category>Temperature</category>
+        <config-description>
+            <parameter name="config_offset" type="integer" min="10" max="600">
+                <label>Automatic Update Offset</label>
+                <description><![CDATA[The number of seconds difference in the time before it is reset<br/>
+                Setting this will automatically update the devices clock when the time difference between
+                the device, and the computer exceeds this number of seconds.]]></description>
+                <default>60</default>
+                <options>
+                    <option value="0">Disable Auto Update</option>
+                </options>
+                <limitToOptions>false</limitToOptions>
+            </parameter>
+        </config-description>
+    </channel-type>
+
 </thing:thing-descriptions>
