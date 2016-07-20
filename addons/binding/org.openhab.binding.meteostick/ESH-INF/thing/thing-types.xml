@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="meteostick"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="meteostick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="meteostick_bridge">
-		<label>MeteoStick USB Receiver</label>
-		<description>MeteoStick USB Receiver</description>
+		<label>Meteostick USB Receiver</label>
+		<description>Meteostick USB Receiver</description>
 		<channels>
 			<channel id="pressure" typeId="pressure" />
-			<channel id="indoor_temperature" typeId="indoor_temperature" />
+			<channel id="indoor-temperature" typeId="indoor-temperature" />
 		</channels>
 		<config-description>
 			<parameter name="port" type="text" required="true">
-				<label>Port</label>
-				<description>USB port that the MeteoStick is plugged in to</description>
+				<label>Serial Port</label>
+				<description>Serial port that the Meteostick is plugged in to</description>
 			</parameter>
 			<parameter name="mode" type="text" required="true">
 				<label>Frequency Band</label>
-				<description>Specifies the frequency band MeteoStick shall listen to</description>
+				<description>Specifies the frequency band Meteostick shall listen to</description>
 				<options>
 					<option value="0">North America (915MHz)</option>
 					<option value="1">Europe (868MHz)</option>
@@ -37,13 +36,13 @@
 		<label>Davis Vantage Vue ISS</label>
 		<description>Davis Integrated Sensor Suite</description>
 		<channels>
-			<channel id="outdoor_temperature" typeId="outdoor_temperature" />
+			<channel id="outdoor-temperature" typeId="outdoor-temperature" />
 			<channel id="humidity" typeId="humidity" />
 			<channel id="wind-direction" typeId="wind-direction" />
 			<channel id="wind-speed" typeId="wind-speed" />
-            <channel id="rain-raw" typeId="rain-raw" />
-            <channel id="rain-currenthour" typeId="rain-currenthour" />
-            <channel id="rain-lasthour" typeId="rain-lasthour" />
+			<channel id="rain-raw" typeId="rain-raw" />
+			<channel id="rain-currenthour" typeId="rain-currenthour" />
+			<channel id="rain-lasthour" typeId="rain-lasthour" />
 			<channel id="solar-power" typeId="solar-power" />
 			<channel id="signal-strength" typeId="system.signal-strength" />
 			<channel id="low-battery" typeId="system.low-battery" />
@@ -67,7 +66,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="indoor_temperature">
+	<channel-type id="indoor-temperature">
 		<item-type>Number</item-type>
 		<label>Indoor Temperature</label>
 		<description>Current temperature in degrees celsius</description>
@@ -76,7 +75,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="outdoor_temperature">
+	<channel-type id="outdoor-temperature">
 		<item-type>Number</item-type>
 		<label>Outdoor Temperature</label>
 		<description>Current temperature in degrees celsius</description>
@@ -121,32 +120,32 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="rain-raw">
-        <item-type>Number</item-type>
-        <label>Raw rainfall tipping buckett count</label>
-        <description>A counter between 0 and 255 in 0.01mm steps</description>
-        <category>Rain</category>
-        <state readOnly="true" pattern="%.1f">
-        </state>
-    </channel-type>
+	<channel-type id="rain-raw">
+		<item-type>Number</item-type>
+		<label>Raw rainfall count</label>
+		<description>A counter between 0 and 255 in 0.01mm steps</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
 
-    <channel-type id="rain-lasthour">
-        <item-type>Number</item-type>
-        <label>Rainfall in the previous hour</label>
-        <description>Rainfall in the previous hour</description>
-        <category>Rain</category>
-        <state readOnly="true" pattern="%.1f mm">
-        </state>
-    </channel-type>
+	<channel-type id="rain-lasthour">
+		<item-type>Number</item-type>
+		<label>Rainfall in previous hour</label>
+		<description>Rainfall in the previous hour</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm">
+		</state>
+	</channel-type>
 
-    <channel-type id="rain-currenthour">
-        <item-type>Number</item-type>
-        <label>Rainfall in the past 60 minutes</label>
-        <description>Rainfall in the last 60 minutes</description>
-        <category>Rain</category>
-        <state readOnly="true" pattern="%.1f mm">
-        </state>
-    </channel-type>
+	<channel-type id="rain-currenthour">
+		<item-type>Number</item-type>
+		<label>Rainfall in last 60 minutes</label>
+		<description>Rainfall in the last 60 minutes</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm">
+		</state>
+	</channel-type>
 
 	<channel-type id="solar-power">
 		<item-type>Number</item-type>

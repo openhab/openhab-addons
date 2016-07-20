@@ -13,7 +13,7 @@ package org.openhab.binding.meteostick.handler;
  * @author Chris Jackson - Initial Implementation
  *
  */
-public interface meteostickEventListener {
+public interface MeteostickEventListener {
     /**
      * Called each time a new line of data is received
      *

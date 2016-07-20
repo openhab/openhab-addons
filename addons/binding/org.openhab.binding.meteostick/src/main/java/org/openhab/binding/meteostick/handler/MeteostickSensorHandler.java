@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.meteostick.handler;
 
-import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
+import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,8 +16,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,26 +36,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link meteostickSensorHandler} is responsible for handling commands, which are
+ * The {@link MeteostickSensorHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Chris Jackson - Initial contribution
  */
-public class meteostickSensorHandler extends BaseThingHandler implements meteostickEventListener {
+public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
 
-    private Logger logger = LoggerFactory.getLogger(meteostickSensorHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
-    private meteostickBridgeHandler bridgeHandler;
+    private MeteostickBridgeHandler bridgeHandler;
     private SlidingTimeWindow rainHourlyWindow = new SlidingTimeWindow(60000);
     private ScheduledFuture<?> rainHourlyJob = null;
+    private ScheduledFuture<?> offlineTimerJob = null;
 
-    private Timer offlineTimer = new Timer();
-    private TimerTask offlineTimerTask = null;
     private Date lastData;
 
-    public meteostickSensorHandler(Thing thing) {
+    public MeteostickSensorHandler(Thing thing) {
         super(thing);
     }
 
@@ -74,7 +71,6 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
             public void run() {
                 BigDecimal rainfall = new BigDecimal((rainHourlyWindow.getTotal() * 0.254));
                 rainfall.setScale(1, RoundingMode.DOWN);
-                // rainfall.round(new MathContext(1, RoundingMode.DOWN));
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR), new DecimalType(rainfall));
             }
         };
@@ -90,6 +86,10 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
     public void dispose() {
         if (rainHourlyJob != null) {
             rainHourlyJob.cancel(true);
+        }
+
+        if (offlineTimerJob != null) {
+            offlineTimerJob.cancel(true);
         }
 
         if (bridgeHandler != null) {
@@ -116,12 +116,11 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
             return;
         }
 
-        bridgeHandler = (meteostickBridgeHandler) getBridge().getHandler();
+        bridgeHandler = (MeteostickBridgeHandler) getBridge().getHandler();
 
         if (channel != 0) {
             if (bridgeHandler != null) {
                 bridgeHandler.subscribeEvents(channel, this);
-                // getThing().setStatus(getBridge().getStatus());
             }
         }
 
@@ -255,30 +254,25 @@ public class meteostickSensorHandler extends BaseThingHandler implements meteost
         }
     }
 
-    private class OfflineTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            String detail;
-            if (lastData == null) {
-                detail = "No data received";
-            } else {
-                detail = "No data received since " + lastData.toString();
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
-        }
-    }
-
     private synchronized void startTimeoutCheck() {
-        // Stop any existing timer
-        if (offlineTimerTask != null) {
-            offlineTimerTask.cancel();
-            offlineTimerTask = null;
+        Runnable pollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String detail;
+                if (lastData == null) {
+                    detail = "No data received";
+                } else {
+                    detail = "No data received since " + lastData.toString();
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+            }
+        };
+
+        if (offlineTimerJob != null) {
+            offlineTimerJob.cancel(true);
         }
 
-        // Create the timer task
-        offlineTimerTask = new OfflineTimerTask();
-
-        // Start the timer
-        offlineTimer.schedule(offlineTimerTask, 90000);
+        // Scheduling a job on each hour to update the last hour rainfall
+        offlineTimerJob = scheduler.schedule(pollingRunnable, 90, TimeUnit.SECONDS);
     }
 }

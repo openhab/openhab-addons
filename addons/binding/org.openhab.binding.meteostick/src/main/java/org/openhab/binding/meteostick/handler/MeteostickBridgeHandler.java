@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.meteostick.handler;
 
-import static org.openhab.binding.meteostick.meteostickBindingConstants.*;
+import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,11 +15,11 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,39 +43,32 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
 /**
- * The {@link meteostickBridgeHandler} is responsible for handling commands, which are
+ * The {@link MeteostickBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Chris Jackson - Initial contribution
  */
-public class meteostickBridgeHandler extends BaseThingHandler {
+public class MeteostickBridgeHandler extends BaseThingHandler {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private Logger logger = LoggerFactory.getLogger(meteostickBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
 
     private static int RECEIVE_TIMEOUT = 3000;
 
     private SerialPort serialPort;
     private ReceiveThread receiveThread;
 
+    private ScheduledFuture<?> offlineTimerJob = null;
+
     private String meteostickMode = "m1";
-    private String meteostickChannels = "t0";
     private final String meteostickFormat = "o1";
 
     private Date lastData;
-    private Timer offlineTimer = new Timer();
-    private TimerTask offlineTimerTask = null;
 
-    private ConcurrentMap<Integer, meteostickEventListener> eventListeners = new ConcurrentHashMap<Integer, meteostickEventListener>();
+    private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<Integer, MeteostickEventListener>();
 
-    public meteostickBridgeHandler(Thing thing) {
+    public MeteostickBridgeHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void setCallback(ThingHandlerCallback thingHandlerCallback) {
-        logger.debug("Callback is set to: {}.", thingHandlerCallback, new RuntimeException("log stacktrace"));
-        super.setCallback(thingHandlerCallback);
     }
 
     @Override
@@ -88,35 +80,38 @@ public class meteostickBridgeHandler extends BaseThingHandler {
 
         Configuration config = getThing().getConfiguration();
 
-        String port = (String) config.get("port");
-        connectPort(port);
+        final String port = (String) config.get("port");
+
+        Runnable pollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (connectPort(port) == true) {
+                    offlineTimerJob.cancel(true);
+                }
+            }
+        };
+
+        // Scheduling a job on each hour to update the last hour rainfall
+        offlineTimerJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         disconnect();
+        if (offlineTimerJob != null) {
+            offlineTimerJob.cancel(true);
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    private void createChannelCommand() {
-        int channels = 0;
-        for (int channel = 1; channel < 8; channel++) {
-            if (eventListeners.get(channel) != null) {
-                channels += Math.pow(2, channel - 1);
-            }
-        }
-
-        meteostickChannels = "t" + channels;
-    }
-
     private void resetMeteoStick() {
         sendToMeteostick("r");
     }
 
-    protected void subscribeEvents(int channel, meteostickEventListener handler) {
+    protected void subscribeEvents(int channel, MeteostickEventListener handler) {
         logger.debug("MeteoStick bridge: subscribeEvents to channel {} with {}", channel, handler);
 
         if (eventListeners.containsKey(channel)) {
@@ -125,16 +120,14 @@ public class meteostickBridgeHandler extends BaseThingHandler {
         }
         eventListeners.put(channel, handler);
 
-        createChannelCommand();
         resetMeteoStick();
     }
 
-    protected void unsubscribeEvents(int channel, meteostickEventListener handler) {
+    protected void unsubscribeEvents(int channel, MeteostickEventListener handler) {
         logger.debug("MeteoStick bridge: unsubscribeEvents to channel {} with {}", channel, handler);
 
         eventListeners.remove(channel, handler);
 
-        createChannelCommand();
         resetMeteoStick();
     }
 
@@ -144,9 +137,10 @@ public class meteostickBridgeHandler extends BaseThingHandler {
      * @param serialPortName the port name to open
      * @throws SerialInterfaceException when a connection error occurs.
      */
-    private void connectPort(final String serialPortName) {
+    private boolean connectPort(final String serialPortName) {
         logger.info("MeteoStick Connecting to serial port {}", serialPortName);
 
+        boolean success = false;
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
             CommPort commPort = portIdentifier.open("org.openhab.binding.meteostick", 2000);
@@ -155,6 +149,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                     SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
             serialPort.enableReceiveTimeout(RECEIVE_TIMEOUT);
+
             receiveThread = new ReceiveThread();
             receiveThread.start();
 
@@ -164,6 +159,8 @@ public class meteostickBridgeHandler extends BaseThingHandler {
             serialPort.notifyOnDataAvailable(true);
 
             logger.info("Serial port is initialized");
+
+            success = true;
         } catch (NoSuchPortException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Serial Error: Port " + serialPortName + " does not exist");
@@ -172,16 +169,17 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                     "Serial Error: Port " + serialPortName + " in use");
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Unsupported comm operation on Port " + serialPortName);
+                    "Serial Error: Unsupported comm operation on port " + serialPortName);
         } catch (TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Too many listeners on Port " + serialPortName);
+                    "Serial Error: Too many listeners on port " + serialPortName);
         }
+
+        return success;
     }
 
     /**
-     * Disconnects from the serial interface and stops
-     * send and receive threads.
+     * Disconnects from the serial interface and stops send and receive threads.
      */
     private void disconnect() {
         if (receiveThread != null) {
@@ -257,19 +255,22 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                                         new DecimalType(temperature.setScale(1)));
 
                                 BigDecimal pressure = new BigDecimal(p[2]);
-                                // pressure.round(new MathContext(1, RoundingMode.HALF_UP));
-                                // pressure.setScale(1, RoundingMode.HALF_UP);
-
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
                                         new DecimalType(pressure.setScale(1, RoundingMode.HALF_UP)));
                                 break;
                             case "#":
                                 break;
                             case "?":
+                                // Create the channel command
+                                int channels = 0;
+                                for (int channel : eventListeners.keySet()) {
+                                    channels += Math.pow(2, channel - 1);
+                                }
+
                                 // Device has been reset - reconfigure
                                 sendToMeteostick(meteostickFormat);
                                 sendToMeteostick(meteostickMode);
-                                sendToMeteostick(meteostickChannels);
+                                sendToMeteostick("t" + channels);
                                 break;
                             default:
                                 if (p.length < 3) {
@@ -278,7 +279,7 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                                 }
 
                                 try {
-                                    meteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
+                                    MeteostickEventListener listener = eventListeners.get(Integer.parseInt(p[1]));
                                     if (listener != null) {
                                         listener.onDataReceived(p);
                                     } else {
@@ -307,35 +308,30 @@ public class meteostickBridgeHandler extends BaseThingHandler {
                 }
             }
 
-            logger.debug("Stopping MeteoStick Recieve Thread");
+            logger.debug("Stopping MeteoStick Receive Thread");
             serialPort.removeEventListener();
         }
     }
 
-    private class OfflineTimerTask extends TimerTask {
-        @Override
-        public void run() {
-            String detail;
-            if (lastData == null) {
-                detail = "No data received";
-            } else {
-                detail = "No data received since " + lastData.toString();
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
-        }
-    }
-
     private synchronized void startTimeoutCheck() {
-        // Stop any existing timer
-        if (offlineTimerTask != null) {
-            offlineTimerTask.cancel();
-            offlineTimerTask = null;
+        Runnable pollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                String detail;
+                if (lastData == null) {
+                    detail = "No data received";
+                } else {
+                    detail = "No data received since " + lastData.toString();
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+            }
+        };
+
+        if (offlineTimerJob != null) {
+            offlineTimerJob.cancel(true);
         }
 
-        // Create the timer task
-        offlineTimerTask = new OfflineTimerTask();
-
-        // Start the timer
-        offlineTimer.schedule(offlineTimerTask, 75000);
+        // Scheduling a job on each hour to update the last hour rainfall
+        offlineTimerJob = scheduler.schedule(pollingRunnable, 90, TimeUnit.SECONDS);
     }
 }

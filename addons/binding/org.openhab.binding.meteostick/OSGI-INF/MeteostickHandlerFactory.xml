@@ -8,9 +8,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.meteostick.internal.meteostickHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.meteostick.internal.MeteostickHandlerFactory">
 
-   <implementation class="org.openhab.binding.meteostick.internal.meteostickHandlerFactory"/>
+   <implementation class="org.openhab.binding.meteostick.internal.MeteostickHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>

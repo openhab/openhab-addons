@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Chris Jackson - Initial contribution
  */
-public class meteostickBindingConstants {
+public class MeteostickBindingConstants {
 
     public static final String BINDING_ID = "meteostick";
 
