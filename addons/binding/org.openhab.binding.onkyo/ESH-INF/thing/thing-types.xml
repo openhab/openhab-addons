@@ -19,6 +19,7 @@
             <channel id="title" typeId="title" />
             <channel id="album" typeId="album" />
             <channel id="artist" typeId="artist" />
+            <channel id="listenmode" typeId="listenmode"/>
         </channels>
         
         <config-description>
@@ -51,6 +52,7 @@
             <channel id="title" typeId="title" />
             <channel id="album" typeId="album" />
             <channel id="artist" typeId="artist" />
+            <channel id="listenmode" typeId="listenmode"/>
         </channels>
         
         <config-description>
@@ -105,7 +107,6 @@
                 <option value="50">SIRIUS</option>
             </options>
         </state>
-        
     </channel-type>    
     <channel-type id="mute">
         <item-type>Switch</item-type>
@@ -125,6 +126,27 @@
         <description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
         <category>Player</category>
     </channel-type>
+    <channel-type id="listenmode" advanced="true">
+        <item-type>Number</item-type>
+        <label>Listen Mode</label>
+        <description>Listen mode</description>
+        <state>
+            <options>
+                <option value="00">Stereo</option>
+                <option value="12">All CHannel Stereo</option>
+                <option value="22">Audyssey DSX</option>
+                <option value="64">5.1ch Surround</option>
+                <option value="160">PLII Movie DSX</option>
+                <option value="161">PLII Music DSX</option>
+                <option value="162">PLII Game DSX</option>
+                <option value="163">Neo Cinema DSX</option>
+                <option value="164">Neo Music DSX</option>
+                <option value="165">Neural Surround DSX</option>
+                <option value="166">Neural Digital DSX</option>
+            </options>
+        </state>
+    </channel-type>    
+
     
     <!-- Onkyo variables -->
     <channel-type id="currentPlayingTime">

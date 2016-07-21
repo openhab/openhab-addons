@@ -46,6 +46,7 @@ public class OnkyoBindingConstants {
     public final static String CHANNEL_ARTIST = "artist";
     public final static String CHANNEL_TITLE = "title";
     public final static String CHANNEL_ALBUM = "album";
+    public final static String CHANNEL_LISTENMODE = "listenmode";
 
     // Used for Discovery service
     public final static String MANUFACTURER = "ONKYO";

@@ -161,29 +161,33 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                 }
                 break;
             case CHANNEL_CONTROL:
-                if (!isPlayingNetUsb()) {
-                    playNetUsb();
-                }
                 if (command instanceof PlayPauseType) {
                     if (command.equals(PlayPauseType.PLAY)) {
                         sendCommand(EiscpCommandRef.NETUSB_OP_PLAY);
                     } else if (command.equals(PlayPauseType.PAUSE)) {
                         sendCommand(EiscpCommandRef.NETUSB_OP_PAUSE);
                     }
-                }
-                if (command instanceof NextPreviousType) {
+                } else if (command instanceof NextPreviousType) {
                     if (command.equals(NextPreviousType.NEXT)) {
                         sendCommand(EiscpCommandRef.NETUSB_OP_TRACKUP);
                     } else if (command.equals(NextPreviousType.PREVIOUS)) {
                         sendCommand(EiscpCommandRef.NETUSB_OP_TRACKDWN);
                     }
-                }
-                if (command instanceof RewindFastforwardType) {
+                } else if (command instanceof RewindFastforwardType) {
                     if (command.equals(RewindFastforwardType.REWIND)) {
                         sendCommand(EiscpCommandRef.NETUSB_OP_REW);
                     } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
                         sendCommand(EiscpCommandRef.NETUSB_OP_FF);
                     }
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY);
+                }
+                break;
+            case CHANNEL_LISTENMODE:
+                if (command instanceof DecimalType) {
+                    sendCommand(EiscpCommandRef.LISTEN_MODE_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.LISTEN_MODE_QUERY);
                 }
                 break;
             case CHANNEL_ARTIST:
@@ -264,6 +268,10 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                 case NETUSB_PLAY_STATUS_QUERY:
                     updateNetUsbPlayStatus(data.charAt(3));
                     break;
+                case LISTEN_MODE_SET:
+                    int listenMode = Integer.parseInt(data.substring(3, 5), 16);
+                    updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
+                    break;
                 default:
                     logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
                             connection.getConnectionName(), data);
@@ -274,14 +282,6 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                     connection.getConnectionName(), data);
 
         }
-    }
-
-    private boolean isPlayingNetUsb() {
-        return currentInput == NET_USB_ID;
-    }
-
-    private void playNetUsb() {
-        selectInput(NET_USB_ID);
     }
 
     private void selectInput(int inputId) {
@@ -365,6 +365,8 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
         sendCommand(EiscpCommandRef.VOLUME_QUERY);
         sendCommand(EiscpCommandRef.SOURCE_QUERY);
         sendCommand(EiscpCommandRef.MUTE_QUERY);
+
+        sendCommand(EiscpCommandRef.LISTEN_MODE_QUERY);
 
         if (connection != null && connection.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
