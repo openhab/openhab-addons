@@ -19,6 +19,6 @@ Import-Package: com.google.common.base,
  org.jupnp.model.types,
  org.osgi.service.component,
  org.slf4j
-Service-Component: OSGI-INF/*
+Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.onkyo,
  org.openhab.binding.onkyo.handler

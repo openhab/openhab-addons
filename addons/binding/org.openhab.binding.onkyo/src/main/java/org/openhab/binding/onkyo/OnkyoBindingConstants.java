@@ -41,8 +41,6 @@ public class OnkyoBindingConstants {
     public final static String CHANNEL_INPUT = "input";
     public final static String CHANNEL_MUTE = "mute";
     public final static String CHANNEL_VOLUME = "volume";
-    public final static String CHANNEL_NEXT = "next";
-    public final static String CHANNEL_PREV = "prev";
     public final static String CHANNEL_CONTROL = "control";
     public final static String CHANNEL_CURRENTPLAYINGTIME = "currentPlayingTime";
     public final static String CHANNEL_ARTIST = "artist";

@@ -24,8 +24,10 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
@@ -52,17 +54,7 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
 
     public OnkyoHandler(Thing thing) {
         super(thing);
-        String host = (String) this.getConfig().get(HOST_PARAMETER);
-        Integer port = 60128;
-        Object portObj = this.getConfig().get(TCP_PORT_PARAMETER);
-        if (portObj instanceof Number) {
-            port = ((Number) portObj).intValue();
-        } else if (portObj instanceof String) {
-            port = Integer.parseInt(portObj.toString());
-        }
 
-        connection = new OnkyoConnection(host, port);
-        connection.addEventListener(this);
     }
 
     /**
@@ -70,27 +62,46 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
      */
     @Override
     public void initialize() {
-        logger.debug("Initializing handler for Onkyo Receiver @{}", connection.getConnectionName());
-        super.initialize();
-
-        // Start the status checker
-        Runnable statusChecker = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    logger.debug("Checking status of  Onkyo Receiver @{}", connection.getConnectionName());
-                    checkStatus();
-                } catch (LinkageError e) {
-                    logger.warn("Failed to check the status for  Onkyo Receiver @{}. Cause: {}",
-                            connection.getConnectionName(), e.getMessage());
-                } catch (Exception ex) {
-                    logger.warn("Exception in update Status Thread Onkyo Receiver @{}. Cause: {}",
-                            connection.getConnectionName(), ex.getMessage());
-
+        logger.debug("Initializing handler for Onkyo Receiver");
+        if (this.getConfig().get(HOST_PARAMETER) != null) {
+            String host = (String) this.getConfig().get(HOST_PARAMETER);
+            Integer port = 60128;
+            Object portObj = this.getConfig().get(TCP_PORT_PARAMETER);
+            if (portObj != null) {
+                if (portObj instanceof Number) {
+                    port = ((Number) portObj).intValue();
+                } else if (portObj instanceof String) {
+                    port = Integer.parseInt(portObj.toString());
                 }
             }
-        };
-        statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, 10, TimeUnit.SECONDS);
+
+            connection = new OnkyoConnection(host, port);
+            connection.addEventListener(this);
+
+            logger.debug("Connected to Onkyo Receiver @{}", connection.getConnectionName());
+
+            // Start the status checker
+            Runnable statusChecker = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        logger.debug("Checking status of  Onkyo Receiver @{}", connection.getConnectionName());
+                        checkStatus();
+                    } catch (LinkageError e) {
+                        logger.warn("Failed to check the status for  Onkyo Receiver @{}. Cause: {}",
+                                connection.getConnectionName(), e.getMessage());
+                    } catch (Exception ex) {
+                        logger.warn("Exception in update Status Thread Onkyo Receiver @{}. Cause: {}",
+                                connection.getConnectionName(), ex.getMessage());
+
+                    }
+                }
+            };
+            statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, 10, TimeUnit.SECONDS);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cannot connect to receiver. IP address not set.");
+        }
     }
 
     @Override
@@ -107,19 +118,24 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handleCommand for channel {}: {}", channelUID.getId(), command.toString());
         switch (channelUID.getIdWithoutGroup()) {
             case CHANNEL_POWER:
                 if (command.equals(OnOffType.ON)) {
                     sendCommand(EiscpCommandRef.POWER_ON);
-                } else {
+                } else if (command.equals(OnOffType.OFF)) {
                     sendCommand(EiscpCommandRef.POWER_OFF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.POWER_QUERY);
                 }
                 break;
             case CHANNEL_MUTE:
                 if (command.equals(OnOffType.ON)) {
                     sendCommand(EiscpCommandRef.MUTE);
-                } else {
+                } else if (command.equals(OnOffType.OFF)) {
                     sendCommand(EiscpCommandRef.UNMUTE);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.MUTE_QUERY);
                 }
                 break;
             case CHANNEL_VOLUME:
@@ -133,27 +149,15 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                     sendCommand(EiscpCommandRef.MUTE);
                 } else if (command.equals(OnOffType.ON)) {
                     sendCommand(EiscpCommandRef.UNMUTE);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.VOLUME_QUERY);
                 }
                 break;
             case CHANNEL_INPUT:
                 if (command instanceof DecimalType) {
                     selectInput(((DecimalType) command).intValue());
-                }
-                break;
-            case CHANNEL_NEXT:
-                if (command.equals(OnOffType.ON)) {
-                    if (!isPlayingNetUsb()) {
-                        playNetUsb();
-                    }
-                    sendCommand(EiscpCommandRef.NETUSB_OP_TRACKUP);
-                }
-                break;
-            case CHANNEL_PREV:
-                if (command.equals(OnOffType.ON)) {
-                    if (!isPlayingNetUsb()) {
-                        playNetUsb();
-                    }
-                    sendCommand(EiscpCommandRef.NETUSB_OP_TRACKDWN);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.SOURCE_QUERY);
                 }
                 break;
             case CHANNEL_CONTROL:
@@ -182,8 +186,28 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                     }
                 }
                 break;
+            case CHANNEL_ARTIST:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_SONG_ARTIST_QUERY);
+                }
+                break;
+            case CHANNEL_ALBUM:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_SONG_ALBUM_QUERY);
+                }
+                break;
+            case CHANNEL_TITLE:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_SONG_TITLE_QUERY);
+                }
+                break;
+            case CHANNEL_CURRENTPLAYINGTIME:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_SONG_ELAPSEDTIME_QUERY);
+                }
+                break;
             default:
-                logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
+                logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                 break;
         }
     }
@@ -296,30 +320,38 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
     }
 
     private void sendCommand(EiscpCommandRef commandRef) {
-        EiscpCommand deviceCommand = EiscpCommand.getCommandByCommandRef(commandRef.getCommand());
-        connection.send(deviceCommand.getCommand());
+        if (connection != null) {
+            EiscpCommand deviceCommand = EiscpCommand.getCommandByCommandRef(commandRef.getCommand());
+            connection.send(deviceCommand.getCommand());
+        } else {
+            logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");
+        }
     }
 
     private void sendCommand(EiscpCommandRef commandRef, Command command) {
-        EiscpCommand deviceCommand = EiscpCommand.getCommandByCommandRef(commandRef.getCommand());
+        if (connection != null) {
+            EiscpCommand deviceCommand = EiscpCommand.getCommandByCommandRef(commandRef.getCommand());
 
-        String cmdTemplate = deviceCommand.getCommand();
-        String deviceCmd = null;
+            String cmdTemplate = deviceCommand.getCommand();
+            String deviceCmd = null;
 
-        if (command instanceof OnOffType) {
-            deviceCmd = String.format(cmdTemplate, command == OnOffType.ON ? 1 : 0);
+            if (command instanceof OnOffType) {
+                deviceCmd = String.format(cmdTemplate, command == OnOffType.ON ? 1 : 0);
 
-        } else if (command instanceof StringType) {
-            deviceCmd = String.format(cmdTemplate, command);
+            } else if (command instanceof StringType) {
+                deviceCmd = String.format(cmdTemplate, command);
 
-        } else if (command instanceof DecimalType) {
-            deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
+            } else if (command instanceof DecimalType) {
+                deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
 
-        } else if (command instanceof PercentType) {
-            deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
+            } else if (command instanceof PercentType) {
+                deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
+            }
+
+            connection.send(deviceCmd);
+        } else {
+            logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");
         }
-
-        connection.send(deviceCmd);
     }
 
     /**
