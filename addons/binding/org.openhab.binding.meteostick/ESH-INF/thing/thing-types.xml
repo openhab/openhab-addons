@@ -120,9 +120,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="rain-raw">
+	<channel-type id="rain-raw" advanced="true">
 		<item-type>Number</item-type>
-		<label>Raw rainfall count</label>
+		<label>Rainfall (Raw)</label>
 		<description>A counter between 0 and 255 in 0.01mm steps</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f">
@@ -131,7 +131,7 @@
 
 	<channel-type id="rain-lasthour">
 		<item-type>Number</item-type>
-		<label>Rainfall in previous hour</label>
+		<label>Rainfall (previous hour)</label>
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f mm">
@@ -140,7 +140,7 @@
 
 	<channel-type id="rain-currenthour">
 		<item-type>Number</item-type>
-		<label>Rainfall in last 60 minutes</label>
+		<label>Rainfall (60 minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f mm">
