@@ -199,12 +199,14 @@ public class MySensorsBindingConstants {
     public final static String CHANNEL_FLOW = "flow";
     public final static String CHANNEL_VOLUME = "volume";
 
+    public final static String CHANNEL_LAST_UPDATE = "last-update";
+
     // Wait time Arduino reset
     public final static int RESET_TIME = 5000;
 
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = -7970323220036599380L;
 
@@ -251,7 +253,7 @@ public class MySensorsBindingConstants {
 
     public final static Map<Number, String> CHANNEL_MAP_INTERNAL = new HashMap<Number, String>() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 6273187523631143905L;
 

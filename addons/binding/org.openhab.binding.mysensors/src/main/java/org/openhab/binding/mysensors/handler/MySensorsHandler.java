@@ -12,6 +12,7 @@ import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -229,6 +230,9 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                     }
                 }
             } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_SET) {
+
+                updateLastUpdate(msg.getNodeId());
+
                 if (childId == msg.getChildId()) { // which child should be updated?
                     if (CHANNEL_MAP.containsKey(msg.getSubType())) {
                         String channel = CHANNEL_MAP.get(msg.getSubType());
@@ -304,6 +308,12 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         } else {
             bridgeHandler.getBridgeConnection().addUpdateListener(this);
         }
+    }
+
+    private void updateLastUpdate(int nodeId) {
+        DateTimeType dt = new DateTimeType();
+        updateState(CHANNEL_LAST_UPDATE, dt);
+        logger.debug("Setting last update for node {} to {}", nodeId, dt.toString());
     }
 
     @Override
