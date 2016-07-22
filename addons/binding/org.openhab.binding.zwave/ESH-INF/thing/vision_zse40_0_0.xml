@@ -71,6 +71,12 @@
         </options>
       </parameter>
 
+      <parameter name="config_2_1" type="integer" groupName="configuration"
+                 min="0" max="50">
+        <label>2: Temperature offset</label>
+        <default>1</default>
+      </parameter>
+
       <parameter name="config_3_1" type="integer" groupName="configuration"
                  min="1" max="50">
         <label>3: Humidity</label>
