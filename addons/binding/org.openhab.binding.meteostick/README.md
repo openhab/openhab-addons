@@ -6,10 +6,10 @@ This is the binding for the [Meteostick](http://www.smartbedded.com/wiki/index.p
 
 This binding support 2 different things types
 
-| Thing | Type    | Description  |
-|----------------|---------|-----------------------------------|
-| meteostick_bridge | Bridge | This is the Meteostick USB stick  |
-| meteostick_davis_iss | Thing | This is the Davis Vue ISS |
+| Thing                | Type   | Description                       |
+|----------------------|--------|-----------------------------------|
+| meteostick_bridge    | Bridge | This is the Meteostick USB stick  |
+| meteostick_davis_iss | Thing  | This is the Davis Vue ISS         |
 
 
 ## Binding Configuration
@@ -18,6 +18,22 @@ The Meteostick things need to be manually added - there is no discovery in the M
 
 First add and configure the Meteostick bridge - the port and frequency band for your region need to be set.
 Next add the sensor and configure the channel number.
+
+## Thing Configuration
+
+### meteostick_bridge Configuration Options
+
+| Option | Description                                                                |
+|--------|----------------------------------------------------------------------------|
+| port   | Sets the serial port to be used for the stick                              |
+| mode   | Sets the operating mode 0 = USA, 1 = Europe, 2 = Australia. 3 = FineOffset |
+
+
+### meteostick_davis_iss Configuration Options
+
+| Option  | Description                               |
+|---------|-------------------------------------------|
+| channel | Sets the RF channel used for this sensor  |
 
 ## Channels
 
@@ -43,8 +59,17 @@ Next add the sensor and configure the channel number.
 | signal-strength | Number       | Received signal strength |
 | low-battery | Number       | Low battery warning |
 
-### Rainfall
+#### Rainfall
 
 There are three channels associated with rainfall. The raw counter from the tipping bucket is provided, the rainfall 
 in the last 60 minutes is updated on each received rainfall and provides the past 60 minutes of rainfall. The rainfall
 in the previous hour is the rainfall for each hour of the day and is updated on the hour.
+
+## Full Example
+
+Things can be defined in the .thing file as follows
+
+```
+meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60" mode="1" ]
+meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1 ]
+```

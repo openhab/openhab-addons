@@ -82,6 +82,11 @@ public class MeteostickBridgeHandler extends BaseThingHandler {
 
         final String port = (String) config.get("port");
 
+        final BigDecimal mode = (BigDecimal) config.get("mode");
+        if (mode != null) {
+            meteostickMode = "m" + mode.toString();
+        }
+
         Runnable pollingRunnable = new Runnable() {
             @Override
             public void run() {

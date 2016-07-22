@@ -15,7 +15,7 @@
 				<label>Serial Port</label>
 				<description>Serial port that the Meteostick is plugged in to</description>
 			</parameter>
-			<parameter name="mode" type="text" required="true">
+			<parameter name="mode" type="integer" required="true">
 				<label>Frequency Band</label>
 				<description>Specifies the frequency band Meteostick shall listen to</description>
 				<options>
