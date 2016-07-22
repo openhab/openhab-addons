@@ -148,10 +148,12 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 fritzBox = this.getWebInterface();
             }
             if (fritzBox != null && this.getThing().getConfiguration().get(THING_AIN) != null) {
-                FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(fritzBox,
-                        this.getThing().getConfiguration().get(THING_AIN).toString(),
-                        command.equals(OnOffType.ON) ? true : false);
-                fritzBox.asyncGet(callback);
+                if (command instanceof OnOffType) {
+                    FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(fritzBox,
+                            this.getThing().getConfiguration().get(THING_AIN).toString(),
+                            command.equals(OnOffType.ON) ? true : false);
+                    fritzBox.asyncGet(callback);
+                }
             }
         } else {
             logger.error("unknown channel uid " + channelUID);
