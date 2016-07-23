@@ -133,12 +133,14 @@
         <state>
             <options>
                 <option value="00">Stereo</option>
-                <option value="12">All CHannel Stereo</option>
+                <option value="12">All Channel Stereo</option>
                 <option value="22">Audyssey DSX</option>
                 <option value="64">5.1ch Surround</option>
-                <option value="160">PLII Movie DSX</option>
-                <option value="161">PLII Music DSX</option>
-                <option value="162">PLII Game DSX</option>
+                <option value="128">PLII/PLIIx Movie</option>
+                <option value="129">PLII/PLIIx Music</option>
+                <option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
+                <option value="161">PLIIx/PLII Music + Audyssey DSX</option>
+                <option value="162">PLIIx/PLII Game + Audyssey DSX</option>
                 <option value="163">Neo Cinema DSX</option>
                 <option value="164">Neo Music DSX</option>
                 <option value="165">Neural Surround DSX</option>

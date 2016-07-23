@@ -51,6 +51,7 @@ The Onkyo AVR supports the following channels:
 | album                   | String       | Album name of the current song (available if playing from Network or USB)|
 | artist                  | String       | Artist name of the current song (available if playing from Network or USB)|
 | currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
+| listenmode              | Number       | Current listening mode e.g. Stero, 5.1ch Surround,..|
 
 ##Input Source Mapping
 
