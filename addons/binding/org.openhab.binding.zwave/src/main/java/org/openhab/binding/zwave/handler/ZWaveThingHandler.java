@@ -589,9 +589,9 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 // Get the association command class
                 ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
                         .getCommandClass(CommandClass.ASSOCIATION);
-                        // ZWaveAssociationCommandClass associationCommandClassMulti = (ZWaveAssociationCommandClass)
-                        // node
-                        // .getCommandClass(CommandClass.ASSOCIATION);
+                // ZWaveAssociationCommandClass associationCommandClassMulti = (ZWaveAssociationCommandClass)
+                // node
+                // .getCommandClass(CommandClass.ASSOCIATION);
 
                 // Get the configuration information.
                 // This should be an array of nodes, and/or nodes and endpoints
@@ -1236,18 +1236,25 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
     private void updateNodeProperties() {
         if (controllerHandler == null) {
+            logger.debug("NODE {}: Updating node properties. Controller not found.", nodeId);
             return;
         }
 
         ZWaveNode node = controllerHandler.getNode(nodeId);
         if (node == null) {
+            logger.debug("NODE {}: Updating node properties. Node not found.", nodeId);
             return;
         }
+
+        logger.debug("NODE {}: Updating node properties.", nodeId);
 
         // Update property information about this device
         Map<String, String> properties = editProperties();
 
+        logger.debug("NODE {}: Updating node properties. MAN={}", nodeId, node.getManufacturer());
         if (node.getManufacturer() != Integer.MAX_VALUE) {
+            logger.debug("NODE {}: Updating node properties. MAN={}. SET. Was {}", nodeId, node.getManufacturer(),
+                    properties.get(ZWaveBindingConstants.PROPERTY_MANUFACTURER));
             properties.put(ZWaveBindingConstants.PROPERTY_MANUFACTURER, Integer.toString(node.getManufacturer()));
         }
         if (node.getDeviceType() != Integer.MAX_VALUE) {
