@@ -49,7 +49,9 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     private boolean requestAck = false;
     private boolean revertState = true;
 
-    private Map<Integer, String> oldMsgContent = new HashMap<>();
+    private Map<Integer, String> oldMsgContent = new HashMap<Integer, String>();
+
+    private Map<Integer, DateTimeType> lastUpdateCache = new HashMap<Integer, DateTimeType>();
 
     public MySensorsHandler(Thing thing) {
         super(thing);
@@ -311,9 +313,14 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     }
 
     private void updateLastUpdate(int nodeId) {
-        DateTimeType dt = new DateTimeType();
-        updateState(CHANNEL_LAST_UPDATE, dt);
-        logger.debug("Setting last update for node {} to {}", nodeId, dt.toString());
+        DateTimeType lastUp = lastUpdateCache.get(nodeId);
+        // Don't always fire last update channel, do it only after a minute by
+        if (lastUp == null || (System.currentTimeMillis() > (lastUp.getCalendar().getTimeInMillis() + 60000))) {
+            DateTimeType dt = new DateTimeType();
+            lastUpdateCache.put(nodeId, dt);
+            updateState(CHANNEL_LAST_UPDATE, dt);
+            logger.debug("Setting last update for node {} to {}", nodeId, dt.toString());
+        }
     }
 
     @Override
