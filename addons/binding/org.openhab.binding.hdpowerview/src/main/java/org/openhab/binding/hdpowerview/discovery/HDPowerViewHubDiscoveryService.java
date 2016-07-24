@@ -9,6 +9,9 @@
 package org.openhab.binding.hdpowerview.discovery;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -26,33 +29,53 @@ import jcifs.netbios.NbtAddress;
  */
 public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
+    private final Runnable scanner;
+    private ScheduledFuture<?> backgroundFuture;
+
     public HDPowerViewHubDiscoveryService() {
-        super(HDPowerViewBindingConstants.SUPPORTED_THING_TYPES_UIDS, 600, true);
+        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_HUB), 600, true);
+        scanner = createScanner();
     }
 
     @Override
     protected void startScan() {
-        try {
-            NbtAddress address = NbtAddress.getByName(HDPowerViewBindingConstants.NETBIOS_NAME);
-            if (address != null) {
-                String ip = address.getInetAddress().getHostAddress();
-                ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_HUB, ip.replace('.', '_'));
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(HDPowerViewHubConfiguration.IP_ADDRESS, ip)
-                        .withLabel("PowerView Hub (" + ip + ")").build();
-                thingDiscovered(result);
-                stopScan();
-            } else {
-                stopScan();
-            }
-        } catch (UnknownHostException e) {
-            stopScan();
-        }
+        scheduler.execute(scanner);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        startScan();
+        if (backgroundFuture != null && !backgroundFuture.isDone()) {
+            backgroundFuture.cancel(true);
+            backgroundFuture = null;
+        }
+        backgroundFuture = scheduler.scheduleAtFixedRate(scanner, 0, 60, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        if (backgroundFuture != null && !backgroundFuture.isDone()) {
+            backgroundFuture.cancel(true);
+            backgroundFuture = null;
+        }
+        super.stopBackgroundDiscovery();
+    }
+
+    private Runnable createScanner() {
+        return () -> {
+            try {
+                NbtAddress address = NbtAddress.getByName(HDPowerViewBindingConstants.NETBIOS_NAME);
+                if (address != null) {
+                    String ip = address.getInetAddress().getHostAddress();
+                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_HUB, ip.replace('.', '_'));
+                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                            .withProperty(HDPowerViewHubConfiguration.IP_ADDRESS, ip)
+                            .withLabel("PowerView Hub (" + ip + ")").build();
+                    thingDiscovered(result);
+                }
+            } catch (UnknownHostException e) {
+                // Nothing to do here - the host couldn't be found, likely because it doesn't exist
+            }
+        };
     }
 
 }

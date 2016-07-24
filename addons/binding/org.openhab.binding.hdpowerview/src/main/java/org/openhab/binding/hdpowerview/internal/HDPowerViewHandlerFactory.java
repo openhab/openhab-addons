@@ -20,7 +20,6 @@ import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.discovery.HDPowerViewSceneDiscoveryService;
 import org.openhab.binding.hdpowerview.discovery.HDPowerViewShadeDiscoveryService;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
-import org.openhab.binding.hdpowerview.handler.HDPowerViewSceneHandler;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewShadeHandler;
 
 /**
@@ -48,8 +47,6 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {
             return new HDPowerViewShadeHandler(thing);
-        } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SCENE)) {
-            return new HDPowerViewSceneHandler(thing);
         }
 
         return null;

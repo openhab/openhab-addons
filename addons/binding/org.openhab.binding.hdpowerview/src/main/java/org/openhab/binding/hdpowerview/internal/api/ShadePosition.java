@@ -8,24 +8,14 @@
  */
 package org.openhab.binding.hdpowerview.internal.api;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-
 /**
  * The position of a shade, as returned by the HD Power View HUB.
  *
  * @author Andy Lintner
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonSerialize
 public class ShadePosition {
 
-    @JsonSerialize(include = Inclusion.ALWAYS)
-    public ShadePositionKind posKind1;
-
-    @JsonSerialize(include = Inclusion.ALWAYS)
+    int posKind1;
     public int position1;
 
     public static ShadePosition forPosition(int position) {
@@ -38,10 +28,10 @@ public class ShadePosition {
 
     ShadePosition(Integer position, Integer vane) {
         if (position != null) {
-            posKind1 = ShadePositionKind.POSITION;
+            posKind1 = ShadePositionKind.POSITION.getKey();
             position1 = position;
         } else if (vane != null) {
-            posKind1 = ShadePositionKind.VANE;
+            posKind1 = ShadePositionKind.VANE.getKey();
             position1 = vane;
         }
     }
@@ -50,18 +40,16 @@ public class ShadePosition {
 
     }
 
-    @JsonIgnore
     public int getPosition() {
-        if (ShadePositionKind.POSITION.equals(posKind1)) {
+        if (ShadePositionKind.POSITION.getKey() == posKind1) {
             return position1;
         } else {
             return 0;
         }
     }
 
-    @JsonIgnore
     public int getVane() {
-        if (ShadePositionKind.VANE.equals(posKind1)) {
+        if (ShadePositionKind.VANE.getKey() == posKind1) {
             return position1;
         } else {
             return 0;

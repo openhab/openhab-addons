@@ -36,7 +36,7 @@ abstract class AbstractHubbedThingHandler extends BaseThingHandler {
         }
         ThingHandler handler = bridge.getHandler();
         if (!(handler instanceof HDPowerViewHubHandler)) {
-            logger.error("Thing " + getThing().getThingTypeUID().getId() + " belongs to the wrong hub type");
+            logger.debug("Thing " + getThing().getThingTypeUID().getId() + " belongs to the wrong hub type");
             return null;
         }
         return (HDPowerViewHubHandler) handler;

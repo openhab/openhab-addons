@@ -10,12 +10,13 @@ package org.openhab.binding.hdpowerview.discovery;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.config.HDPowerViewSceneConfiguration;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
@@ -33,39 +34,59 @@ public class HDPowerViewSceneDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewSceneDiscoveryService.class);
     private final HDPowerViewHubHandler hub;
+    private final Runnable scanner;
+    private ScheduledFuture<?> backgroundFuture;
 
     public HDPowerViewSceneDiscoveryService(HDPowerViewHubHandler hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SCENE), 600, true);
+        super(Collections.emptySet(), 600, true);
         this.hub = hub;
+
+        scanner = createScanner();
     }
 
     @Override
     protected void startScan() {
-        HDPowerViewWebTargets targets = hub.getWebTargets();
-        Scenes scenes;
-        try {
-            scenes = targets.getScenes();
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            stopScan();
-            return;
-        }
-        if (scenes != null) {
-            for (Scene scene : scenes.sceneData) {
-                ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SCENE,
-                        Integer.toString(scene.id));
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(HDPowerViewSceneConfiguration.ID, scene.id).withLabel(scene.getName())
-                        .withBridge(hub.getThing().getUID()).build();
-                thingDiscovered(result);
-            }
-        }
-        stopScan();
+        scheduler.execute(scanner);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        startScan();
+        if (backgroundFuture != null && !backgroundFuture.isDone()) {
+            backgroundFuture.cancel(true);
+            backgroundFuture = null;
+        }
+        backgroundFuture = scheduler.scheduleAtFixedRate(scanner, 0, 60, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        if (backgroundFuture != null && !backgroundFuture.isDone()) {
+            backgroundFuture.cancel(true);
+            backgroundFuture = null;
+        }
+        super.stopBackgroundDiscovery();
+    }
+
+    private Runnable createScanner() {
+        return () -> {
+            HDPowerViewWebTargets targets = hub.getWebTargets();
+            Scenes scenes;
+            try {
+                scenes = targets.getScenes();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                return;
+            }
+            if (scenes != null) {
+                for (Scene scene : scenes.sceneData) {
+                    ThingUID thingUID = new ThingUID("SKIP", Integer.toString(scene.id));
+                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                            .withProperty(HDPowerViewSceneConfiguration.ID, scene.id).withLabel(scene.getName())
+                            .withBridge(hub.getThing().getUID()).build();
+                    thingDiscovered(result);
+                }
+            }
+        };
     }
 
 }

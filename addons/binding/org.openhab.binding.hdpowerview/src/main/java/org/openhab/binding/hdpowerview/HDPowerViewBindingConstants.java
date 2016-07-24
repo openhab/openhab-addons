@@ -26,13 +26,13 @@ public class HDPowerViewBindingConstants {
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_HUB = new ThingTypeUID(BINDING_ID, "hub");
     public final static ThingTypeUID THING_TYPE_SHADE = new ThingTypeUID(BINDING_ID, "shade");
-    public final static ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
 
     // List of all Channel ids
     public final static String CHANNEL_SHADE_POSITION = "position";
     public final static String CHANNEL_SHADE_VANE = "vane";
-    public final static String CHANNEL_SHADE_BATTERY_LOW = "batteryLow";
-    public final static String CHANNEL_SCENE_ACTIVATE = "activate";
+    public final static String CHANNEL_SHADE_LOW_BATTERY = "lowBattery";
+
+    public final static String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
 
     public final static String NETBIOS_NAME = "PDBU-Hub3.0";
 
@@ -41,7 +41,6 @@ public class HDPowerViewBindingConstants {
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_HUB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHADE);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SCENE);
     }
 
 }

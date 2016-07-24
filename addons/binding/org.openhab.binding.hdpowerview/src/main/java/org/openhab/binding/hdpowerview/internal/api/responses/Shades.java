@@ -8,30 +8,23 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import java.util.Base64;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-
-import jcifs.util.Base64;
 
 /**
  * A list of Shades, as returned by the HD Power View Hub
  *
  * @author Andy Lintner
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Shades {
 
     public List<Shade> shadeData;
     public List<String> shadeIds;
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Shade {
         public int id;
-        @JsonSerialize(include = Inclusion.ALWAYS)
         String name;
         public int roomId;
         public int groupId;
@@ -43,7 +36,7 @@ public class Shades {
         public ShadePosition positions;
 
         public String getName() {
-            return new String(Base64.decode(name));
+            return new String(Base64.getDecoder().decode(name));
         }
     }
 }

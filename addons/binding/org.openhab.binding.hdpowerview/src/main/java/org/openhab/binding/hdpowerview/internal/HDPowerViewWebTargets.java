@@ -17,16 +17,15 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 /**
  * JAX-RS targets for communicating with the HD Power View Hub
@@ -41,8 +40,7 @@ public class HDPowerViewWebTargets {
     private WebTarget sceneActivate;
     private WebTarget scenes;
     private Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
-
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final Gson gson;
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");
@@ -50,30 +48,30 @@ public class HDPowerViewWebTargets {
         shadeMove = base.path("shades/{id}");
         sceneActivate = base.path("scenes");
         scenes = base.path("scenes/");
+        gson = new Gson();
     }
 
-    public Shades getShades() throws JsonParseException, JsonMappingException, IOException {
+    public Shades getShades() throws IOException {
         Response response = invoke(shades.request().buildGet(), shades);
         if (response != null) {
             String result = response.readEntity(String.class);
-            return mapper.readValue(result, Shades.class);
+            return gson.fromJson(result, Shades.class);
         } else {
             return null;
         }
     }
 
-    public Response moveShade(int shadeId, ShadePosition position)
-            throws JsonGenerationException, JsonMappingException, IOException {
+    public Response moveShade(int shadeId, ShadePosition position) throws IOException {
         WebTarget target = shadeMove.resolveTemplate("id", shadeId);
-        String body = mapper.writeValueAsString(new ShadeMove(shadeId, position));
+        String body = gson.toJson(new ShadeMove(shadeId, position));
         return invoke(target.request().buildPut(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE)), shadeMove);
     }
 
-    public Scenes getScenes() throws JsonParseException, JsonMappingException, IOException {
+    public Scenes getScenes() throws JsonParseException, IOException {
         Response response = invoke(scenes.request().buildGet(), scenes);
         if (response != null) {
             String result = response.readEntity(String.class);
-            return mapper.readValue(result, Scenes.class);
+            return gson.fromJson(result, Scenes.class);
         } else {
             return null;
         }

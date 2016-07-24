@@ -1,4 +1,4 @@
-# Hunter Douglas Power View Binding
+# Hunter Douglas PowerView Binding
 This is an openHAB binding for the [Hunter Douglas PowerView Motorized Shades](http://www.hunterdouglas.com/operating-systems/powerview-motorization/support) via the PowerView Hub.
 
 PowerView shades have motorization control for their vertical position, as well as vane controls on the shade's slats. Make sure your Shades are visible in the dedicated PowerView app before attempting discovery. This binding also supports Scenes that are defined via the PowerView app. This helps to work around a limitation of the Hub - commands are executed serially with a several second delay between executions. By using a Scene to control multiple shades at once, the shades will all begin moving at the same time.
@@ -13,17 +13,12 @@ PowerView shades have motorization control for their vertical position, as well 
  <tr>
   <td>PowerView Hub</td>
   <td>Bridge</td>
-  <td>The PowerView Hub provides the interface between your network and the shade's radio network</td>
+  <td>The PowerView Hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes.</td>
  </tr>
  <tr>
   <td>PowerView Shade</td>
   <td>Thing</td>
   <td>A single motorized shade</td>
- </tr>
- <tr>
-  <td>PowerView Scene</td>
-  <td>Thing</td>
-  <td>A scene defined via the PowerView app</td>
  </tr>
 </table>
 
@@ -54,14 +49,6 @@ PowerView things should be configured via discovery - it would be difficult to c
    </table>
   </td>
  </tr>
- <tr>
- <td>PowerView Scene</td>
- <td>
-  <table>
-   <tr><td><b>id</b> - the ID of the PowerView Scene on the Hub.</td></tr>
-  </table>
- </td>
- </tr>
 </table>
 
 ## Channels
@@ -91,6 +78,7 @@ PowerView things should be configured via discovery - it would be difficult to c
 
 
 ### PowerView Scene
+Scenes channels are added to the Hub as they are discovered.
 <table>
  <tr>
   <td><b>Channel</b></td>
