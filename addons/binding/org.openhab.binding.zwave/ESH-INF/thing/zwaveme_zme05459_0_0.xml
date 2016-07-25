@@ -58,18 +58,24 @@
         </options>
       </parameter>
 
-      <parameter name="config_2_2" type="integer" groupName="configuration">
+      <parameter name="config_2_2" type="integer" groupName="configuration"
+                 min="0" max="65535">
         <label>2: Automatically open or close after</label>
-        <description>If not zero, automatically open or close blind after a user defined time in seconds</description>
+        <description><![CDATA[
+Automatically open or close blind after time<br /><h1>Overview</h1><p>If not zero, automatically open or close blind after a user defined time</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disabled</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_3_1" type="integer" groupName="configuration">
         <label>3: What to do on RF close command</label>
-        <description>Defines how to interpret RF Off command. Can be used in conjunction with Auto Close function: Ignore - to open the door by motion detectors and close it back after some amount of time: in case of multiple motion detectors each would try to open that would</description>
+        <description><![CDATA[
+Defines how to interpret RF Off command.<br /><h1>Overview</h1><p>Defines how to interpret RF Off command. Can be used in conjunction with Auto Close function: Ignore - to open the door by motion detectors and close it back after some amount of time: in case of multiple motion detectors each would try to open that would break logics; Open - to open on both On and Off paddle press on the remote and close after some amount of time. Button close click will still work (if button operations are not disabled). Note that Dim Down command will still begin close motion.</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Close</option>
@@ -79,31 +85,43 @@
         </options>
       </parameter>
 
-      <parameter name="config_4_1" type="integer" groupName="configuration">
+      <parameter name="config_4_1" type="integer" groupName="configuration"
+                 min="0" max="255">
         <label>4: Full close time</label>
-        <description>Time in seconds to go from opened to closed state. Used to estimate the current level. Note that in Permanent motion mode the reported value would a be Closed or Opened, while all Basic and Multilevel Set values (1-99, 255) would Open except 0 value that</description>
+        <description><![CDATA[
+Time in seconds to go from opened to closed state.<br /><h1>Overview</h1><p>Time to go from opened to closed state. Used to estimate the current level. Note that in Permanent motion mode the reported value would a be Closed or Opened, while all Basic and Multilevel Set values (1-99, 255) would Open except 0 value that would Close.</p>
+        ]]></description>
         <default>60</default>
         <options>
           <option value="0">Keep in permanent motion</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
-      <parameter name="config_5_1" type="integer" groupName="configuration">
+      <parameter name="config_5_1" type="integer" groupName="configuration"
+                 min="0" max="255">
         <label>5: Full open time</label>
-        <description>Time in seconds to go from closed to open state. This value may differ from Full close time for some blinds due to gravity. Used to estimate the current level. Note that in Permanent motion mode the reported value would a be Closed or Opened, while all Ba</description>
+        <description><![CDATA[
+Time in seconds to go from closed to open state. <br /><h1>Overview</h1><p>Time to go from closed to open state. This value may differ from Full close time for some blinds due to gravity. Used to estimate the current level. Note that in Permanent motion mode the reported value would a be Closed or Opened, while all Basic and Multilevel Set values (1-99, 255) would Open except 0 value that would Close.</p>
+        ]]></description>
         <default>60</default>
         <options>
           <option value="0">Keep in permanent motion</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
-      <parameter name="config_6_1" type="integer" groupName="configuration">
+      <parameter name="config_6_1" type="integer" groupName="configuration"
+                 min="0" max="232">
         <label>6: Node ID of the blocking device</label>
-        <description>Id of the device which commands would be interpreted not as Open/Close, but as block/unblock. Usefull with door opening detector: if the door is open, block the blind not to break shades while they move.</description>
+        <description><![CDATA[
+Id of the device which can block the blinds<br /><h1>Overview</h1><p>Id of the device which commands would be interpreted not as Open/Close, but as block/unblock. Usefull with door opening detector: if the door is open, block the blind not to break shades while they move.</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disabled</option>
         </options>
+        <limitToOptions>false</limitToOptions>
       </parameter>
 
       <parameter name="config_7_1" type="integer" groupName="configuration">
@@ -118,7 +136,9 @@
 
       <parameter name="config_8_1" type="integer" groupName="configuration">
         <label>8: Stop or Revert if opposite button is pressed</label>
-        <description>Defines behaviour on open press while closing and vice versa. To allow Stop behavior when switched by remote, use Stop by Basic</description>
+        <description><![CDATA[
+Defines behaviour on open press while closing and vice versa.<br /><h1>Overview</h1><p>Defines behaviour on open press while closing and vice versa. To allow Stop behavior when switched by remote, use Stop by Basic</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Stop (by buttons and Binary)</option>
@@ -156,7 +176,9 @@
 
       <parameter name="config_12_1" type="integer" groupName="configuration">
         <label>12: Switch by buttons</label>
-        <description>If disabled, the local operations by buttons will not switch the load, but only send commands to On/Off association group. In this mode buttons are not linked with the switch anymore. They can be used separately: buttons to control remote device, switch w</description>
+        <description><![CDATA[
+Local operations by buttons will/will not/ switch the load<br /><h1>Overview</h1><p>If disabled, the local operations by buttons will not switch the load, but only send commands to On/Off association group. In this mode buttons are not linked with the switch anymore. They can be used separately: buttons to control remote device, switch will operate by RF commands only.</p>
+        ]]></description>
         <default>1</default>
         <options>
           <option value="0">No</option>
@@ -167,7 +189,9 @@
 
       <parameter name="config_13_1" type="integer" groupName="configuration">
         <label>13: Action on button single press or hold</label>
-        <description>Defines which command should be sent on button single press or hold. Basic and Scene Activation commands are sent to Association group. Use Scene Controller Conf to set up Scene ID for Scene Activation. Switch All commands are sent broadcast.</description>
+        <description><![CDATA[
+Defines which command should be sent on button single press or hold.<br /><h1>Overview</h1><p>Defines which command should be sent on button single press or hold. Basic and Scene Activation commands are sent to Association group. Use Scene Controller Conf to set up Scene ID for Scene Activation. Switch All commands are sent broadcast.</p>
+        ]]></description>
         <default>4</default>
         <options>
           <option value="0">Disabled</option>
@@ -181,7 +205,9 @@
 
       <parameter name="config_14_1" type="integer" groupName="configuration">
         <label>14: Action on button double press or hold</label>
-        <description>Defines which command should be sent on button double press or press-hold. Basic and Scene Activation commands are sent to Association group. Use Scene Controller Conf to set up Scene ID for Scene Activation. Switch All commands are sent broadcast. If not</description>
+        <description><![CDATA[
+Defines which command should be sent on button double press or press-hold.<br /><h1>Overview</h1><p>Defines which command should be sent on button double press or press-hold. Basic and Scene Activation commands are sent to Association group. Use Scene Controller Conf to set up Scene ID for Scene Activation. Switch All commands are sent broadcast. If not disabled, the device will wait for a click timeout to see if the second click would be pressed. This will introduce a small delay for single click commands</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Disabled</option>
@@ -206,7 +232,9 @@
 
       <parameter name="config_16_1" type="integer" groupName="configuration">
         <label>16: What to do on button Down press</label>
-        <description>Defines how to interpret button Down press. Depends on 'Switch by buttons' parameter. If not Disabled this parameter will affect the action selected by the latter parameter. Can be used in conjunction with Auto Off function.</description>
+        <description><![CDATA[
+Defines how to interpret button Down press. Depends on 'Switch by buttons' parameter. <br /><h1>Overview</h1><p>Defines how to interpret button Down press. Depends on "Switch by buttons" parameter. If not Disabled this parameter will affect the action selected by the latter parameter. Can be used in conjunction with Auto Off function.</p>
+        ]]></description>
         <default>0</default>
         <options>
           <option value="0">Close</option>
