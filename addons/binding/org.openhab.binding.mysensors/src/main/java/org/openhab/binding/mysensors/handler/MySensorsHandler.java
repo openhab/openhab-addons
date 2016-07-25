@@ -12,6 +12,7 @@ import static org.openhab.binding.mysensors.MySensorsBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -48,7 +49,9 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     private boolean requestAck = false;
     private boolean revertState = true;
 
-    private Map<Integer, String> oldMsgContent = new HashMap<>();
+    private DateTimeType lastUpdate = null;
+
+    private Map<Integer, String> oldMsgContent = new HashMap<Integer, String>();
 
     public MySensorsHandler(Thing thing) {
         super(thing);
@@ -219,6 +222,9 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
 
         // or is this an update message?
         if (nodeId == msg.getNodeId()) { // is this message for me?
+
+            updateLastUpdate();
+
             if (msg.getMsgType() == MYSENSORS_MSG_TYPE_INTERNAL) { // INTERNAL MESSAGE?
                 if (CHANNEL_MAP_INTERNAL.containsKey(msg.getSubType())) {
                     String channel = CHANNEL_MAP_INTERNAL.get(msg.getSubType());
@@ -229,6 +235,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
                     }
                 }
             } else if (msg.getMsgType() == MYSENSORS_MSG_TYPE_SET) {
+
                 if (childId == msg.getChildId()) { // which child should be updated?
                     if (CHANNEL_MAP.containsKey(msg.getSubType())) {
                         String channel = CHANNEL_MAP.get(msg.getSubType());
@@ -303,6 +310,16 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
             logger.error("Bridge connection not estblished yet - can't subscribe for updates");
         } else {
             bridgeHandler.getBridgeConnection().addUpdateListener(this);
+        }
+    }
+
+    private void updateLastUpdate() {
+        // Don't always fire last update channel, do it only after a minute by
+        if (lastUpdate == null || (System.currentTimeMillis() > (lastUpdate.getCalendar().getTimeInMillis() + 60000))) {
+            DateTimeType dt = new DateTimeType();
+            lastUpdate = dt;
+            updateState(CHANNEL_LAST_UPDATE, dt);
+            logger.debug("Setting last update for node {} to {}", nodeId, dt.toString());
         }
     }
 

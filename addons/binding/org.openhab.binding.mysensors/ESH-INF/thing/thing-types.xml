@@ -100,6 +100,7 @@
 		<channels>
 			<channel id="hum" typeId="hum-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 			<channel id="custom" typeId="var1-channel" />
 		</channels>
 
@@ -132,6 +133,7 @@
 		<channels>
 			<channel id="temp" typeId="temp-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 			<channel id="custom" typeId="var1-channel" />
 		</channels>
 
@@ -164,6 +166,7 @@
 			<channel id="current" typeId="current-channel" />
 			<channel id="impedance" typeId="impedance-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -192,6 +195,7 @@
 		<channels>
 			<channel id="status" typeId="status-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -231,6 +235,7 @@
 			<channel id="watt" typeId="watt-channel" />
 			<channel id="kwh" typeId="kwh-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -260,6 +265,7 @@
 			<channel id="baro" typeId="baro-channel" />
 			<channel id="pressure" typeId="pressure-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -289,6 +295,7 @@
 			<channel id="tripped" typeId="tripped-channel" />
 			<channel id="armed" typeId="armed-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -318,6 +325,7 @@
 			<channel id="tripped" typeId="tripped-channel" />
 			<channel id="armed" typeId="armed-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -346,6 +354,7 @@
 		<channels>
 			<channel id="tripped" typeId="tripped-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -375,6 +384,7 @@
 			<channel id="dimmer" typeId="dimmer-channel" />
 			<channel id="watt" typeId="watt-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -403,6 +413,7 @@
 		<channels>
 			<channel id="cover" typeId="cover-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -432,6 +443,7 @@
 			<channel id="wind" typeId="wind-channel" />
 			<channel id="gust" typeId="gust-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -461,6 +473,7 @@
 			<channel id="rain" typeId="rain-channel" />
 			<channel id="rainrate" typeId="rainrate-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -489,6 +502,7 @@
 		<channels>
 			<channel id="uv" typeId="uv-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -518,6 +532,7 @@
 			<channel id="weight" typeId="weight-channel" />
 			<channel id="impedance" typeId="impedance-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -546,6 +561,7 @@
 		<channels>
 			<channel id="distance" typeId="distance-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -574,6 +590,7 @@
 		<channels>
 			<channel id="light-level" typeId="light-level-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -622,6 +639,7 @@
 			<channel id="var4" typeId="var4-channel" />
 			<channel id="var5" typeId="var5-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -652,6 +670,7 @@
 			<channel id="volume" typeId="volume-channel" />
 			<channel id="var1" typeId="var1-channel" />
 			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -683,7 +702,7 @@
 			<channel id="var3" typeId="var3-channel" />
 			<channel id="var4" typeId="var4-channel" />
 			<channel id="var5" typeId="var5-channel" />
-
+            <channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
 
 		<config-description>
@@ -861,6 +880,12 @@
 		<category>Energy</category>
 		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="lastupdate-channel">
+        <item-type>DateTime</item-type>
+        <label>Last Update</label>
+        <description>MySensors Last Update</description>
+        <state readOnly="true"></state>
+    </channel-type>
 	<channel-type id="hvac-setPoint-heat-channel">
 		<item-type>Number</item-type>
 		<label>Set point heat</label>

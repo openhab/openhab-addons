@@ -72,6 +72,7 @@ public abstract class MySensorsWriter implements MySensorsUpdateListener, Runnab
                                     } else if (msg.getRevert()) {
                                         logger.debug("Reverting status!");
                                         msg.setMsg(msg.getOldMsg());
+                                        msg.setAck(0);
                                         MySensorsStatusUpdateEvent event = new MySensorsStatusUpdateEvent(msg);
                                         for (MySensorsUpdateListener mySensorsEventListener : mysCon.updateListeners) {
                                             mySensorsEventListener.statusUpdateReceived(event);
