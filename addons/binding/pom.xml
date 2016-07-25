@@ -34,6 +34,7 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.pioneeravr</module>
