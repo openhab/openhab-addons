@@ -5,22 +5,16 @@
   xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
                       http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
 
-  <thing-type id="vision_zg8101_00_000" listed="false">
-    <label>ZG8101 Garage Door Tilt Sensor</label>
-    <description>Garage Door Tilt Sensor</description>
+  <thing-type id="brk_zsmoke_00_000" listed="false">
+    <label>ZSMOKE Smoke Alarm</label>
+    <description>Smoke Alarm</description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
-        </properties>
-      </channel>
-      <channel id="alarm_burglar" typeId="alarm_burglar">
-        <label>Alarm (burglar)</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM;type=BURGLAR</property>
+          <property name="binding:*:OnOffType">ALARM,BASIC</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -32,15 +26,31 @@
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
-      <property name="vendor">Vision Security</property>
-      <property name="modelId">ZG8101</property>
-      <property name="manufacturerId">0109</property>
-      <property name="manufacturerRef">200A:0A02</property>
+      <property name="vendor">BRK Brands</property>
+      <property name="modelId">ZSMOKE</property>
+      <property name="manufacturerId">0138</property>
+      <property name="manufacturerRef">0001:0001</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
     <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_1" type="integer" groupName="configuration">
+        <label>1: Send double alarms</label>
+        <description>Causes the device to send double alarm messages</description>
+        <default>0</default>
+        <options>
+          <option value="0">Single Alarm</option>
+          <option value="1">Double Alarm</option>
+        </options>
+      </parameter>
 
       <!-- ASSOCIATION DEFINITIONS -->
       <parameter-group name="association">
@@ -49,7 +59,7 @@
       </parameter-group>
 
       <parameter name="group_1" type="text" groupName="association" multiple="true">
-        <label>1: Control Command</label>
+        <label>1: Group 1</label>
         <multipleLimit>5</multipleLimit>
       </parameter>
 

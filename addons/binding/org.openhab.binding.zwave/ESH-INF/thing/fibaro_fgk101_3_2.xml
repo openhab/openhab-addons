@@ -49,6 +49,7 @@
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0701:1001</property>
       <property name="versionMin">3.2</property>
+      <property name="defaultAssociations">1</property>
     </properties>
 
     <!-- CONFIGURATION DESCRIPTIONS -->
@@ -255,6 +256,36 @@ Settings for broadcasting ON/OFF commands, sensor alarm and tamper alarm. Value 
 This parameter defines how commands are sent in specified association groups: as secure or non-secure. Parameter is active only in Z-Wave network security mode. It does not apply to 1st group “Lifeline”.<br /><h1>Overview</h1><p>Available settings:</p> <p>0 - none of the groups sent as secure<br />1 - 2nd group ”Control” sent as secure<br />2 - 3rd group ”Alarm” sent as secure<br />4 - 4th group “Sensor ZW3” sent as secure<br />8 - 5th group “Tamper ZW3” sent as secure</p> <p>15 - (all)</p>
         ]]></description>
         <default>15</default>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association">
+        <label>1: Lifeline</label>
+      </parameter>
+
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
+        <label>2: Control</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_3" type="text" groupName="association" multiple="true">
+        <label>3: Alarm</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_4" type="text" groupName="association" multiple="true">
+        <label>4: Sensor ZW3</label>
+        <multipleLimit>5</multipleLimit>
+      </parameter>
+
+      <parameter name="group_5" type="text" groupName="association" multiple="true">
+        <label>5: Tamper ZW3</label>
+        <multipleLimit>5</multipleLimit>
       </parameter>
 
     </config-description>
