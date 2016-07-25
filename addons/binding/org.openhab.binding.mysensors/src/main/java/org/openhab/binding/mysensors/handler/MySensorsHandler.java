@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.mysensors.config.MySensorsSensorConfiguration;
 import org.openhab.binding.mysensors.internal.MySensorsMessage;
 import org.slf4j.Logger;
@@ -92,7 +93,14 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand called");
+        
+    	/* We don't handle refresh commands yet
+    	 * 
+    	 */
+    	if(command == RefreshType.REFRESH)
+        	return;
+        
+    	
         String msgPayload = "";
         int subType = 0;
         int int_requestack = 0;
@@ -218,7 +226,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
      */
     @Override
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
-        MySensorsMessage msg = event.getData();
+    	MySensorsMessage msg = event.getData();
 
         // or is this an update message?
         if (nodeId == msg.getNodeId()) { // is this message for me?
