@@ -13,8 +13,6 @@
 	<properties>
 		<bundle.symbolicName>org.openhab.binding.systeminfo.test</bundle.symbolicName>
 		<bundle.namespace>org.openhab.binding.systeminfo.test</bundle.namespace>
-		<groovy.eclipse.compiler.version>2.8.0-01</groovy.eclipse.compiler.version>
-		<groovy.eclipse.batch.version>2.1.5-03</groovy.eclipse.batch.version>
 	</properties>
 
 	<artifactId>org.openhab.binding.systeminfo.test</artifactId>
@@ -22,27 +20,7 @@
 	<packaging>eclipse-test-plugin</packaging>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-compiler-plugin</artifactId>
-				<version>0.24.0</version>
-				<configuration>
-					<compilerId>groovy-eclipse-compiler</compilerId>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-eclipse-compiler</artifactId>
-						<version>${groovy.eclipse.compiler.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-eclipse-batch</artifactId>
-						<version>${groovy.eclipse.batch.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+		<plugins>			
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
