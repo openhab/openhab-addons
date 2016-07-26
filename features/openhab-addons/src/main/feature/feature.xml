@@ -62,6 +62,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdanywhere/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-hdpowerview" description="HD PowerView Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdpowerview/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>

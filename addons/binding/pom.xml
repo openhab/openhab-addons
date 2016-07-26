@@ -23,6 +23,7 @@
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
+    <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
