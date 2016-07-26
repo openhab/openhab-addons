@@ -9,9 +9,9 @@
         <description>Hunter Douglas PowerView Hub</description>
         
         <config-description>
-            <parameter name="ipAddress" type="text" required="true" pattern="^\d{1,3}\.\d{1,3}\.\d{1,3}$">
-                <label>IP</label>
-                <description>The IP of the PowerView Hub.</description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>The Host address of the PowerView Hub.</description>
                 <context>network_address</context>
             </parameter>
             <parameter name="refresh" type="integer" required="false">

@@ -55,7 +55,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             backgroundFuture.cancel(true);
             backgroundFuture = null;
         }
-        backgroundFuture = scheduler.scheduleAtFixedRate(scanner, 0, 60, TimeUnit.SECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(scanner, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override

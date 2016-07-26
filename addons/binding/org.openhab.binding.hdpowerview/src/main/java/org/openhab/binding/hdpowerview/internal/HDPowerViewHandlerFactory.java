@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.discovery.HDPowerViewSceneDiscoveryService;
 import org.openhab.binding.hdpowerview.discovery.HDPowerViewShadeDiscoveryService;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewShadeHandler;
@@ -43,7 +42,6 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_HUB)) {
             HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing);
             registerService(new HDPowerViewShadeDiscoveryService(handler));
-            registerService(new HDPowerViewSceneDiscoveryService(handler));
             return handler;
         } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {
             return new HDPowerViewShadeHandler(thing);

@@ -48,7 +48,7 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
             backgroundFuture.cancel(true);
             backgroundFuture = null;
         }
-        backgroundFuture = scheduler.scheduleAtFixedRate(scanner, 0, 60, TimeUnit.SECONDS);
+        backgroundFuture = scheduler.scheduleWithFixedDelay(scanner, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -65,11 +65,12 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
             try {
                 NbtAddress address = NbtAddress.getByName(HDPowerViewBindingConstants.NETBIOS_NAME);
                 if (address != null) {
-                    String ip = address.getInetAddress().getHostAddress();
-                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_HUB, ip.replace('.', '_'));
+                    String host = address.getInetAddress().getHostAddress();
+                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_HUB,
+                            host.replace('.', '_'));
                     DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewHubConfiguration.IP_ADDRESS, ip)
-                            .withLabel("PowerView Hub (" + ip + ")").build();
+                            .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                            .withLabel("PowerView Hub (" + host + ")").build();
                     thingDiscovered(result);
                 }
             } catch (UnknownHostException e) {

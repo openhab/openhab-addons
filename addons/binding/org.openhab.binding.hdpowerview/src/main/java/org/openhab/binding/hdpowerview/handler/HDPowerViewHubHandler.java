@@ -78,17 +78,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         Channel channel = getThing().getChannel(channelUID.getId());
         if (channel != null && sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
             if (command.equals(OnOffType.ON)) {
-                try {
-                    webTargets.activateScene(Integer.parseInt(channelUID.getId()));
-                } finally {
-                    // 5 seconds later, toggle it back off - scenes are stateless
-                    scheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateState(channelUID, OnOffType.OFF);
-                        }
-                    }, 5, TimeUnit.SECONDS);
-                }
+                webTargets.activateScene(Integer.parseInt(channelUID.getId()));
             }
         }
     }
@@ -97,10 +87,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing HDPowerView HUB");
         HDPowerViewHubConfiguration config = getConfigAs(HDPowerViewHubConfiguration.class);
-        if (config.ipAddress == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP Address must be set");
+        if (config.host == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         }
-        webTargets = new HDPowerViewWebTargets(client, config.ipAddress);
+        webTargets = new HDPowerViewWebTargets(client, config.host);
         refreshInterval = config.refresh;
 
         schedulePoll();

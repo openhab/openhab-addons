@@ -36,7 +36,7 @@ PowerView things should be configured via discovery - it would be difficult to c
   <td>PowerView Hub</td>
   <td>
    <table>
-    <tr><td><b>ipAddress</b> - the IP address of the Hub on your network.</td></tr>
+    <tr><td><b>host</b> - the hostname or IP address of the Hub on your network.</td></tr>
     <tr><td><b>refresh</b> - the number of milliseconds between fetches of the PowerView Hub's shade state. Defaults to 60,000 (one minute).</td></tr>
    </table>
   </td>
@@ -88,6 +88,6 @@ Scenes channels are added to the Hub as they are discovered.
  <tr>
   <td>activate</td>
   <td>Switch</td>
-  <td>Turning this to ON will activate the scene. Scenes are stateless in the PowerView hub - they have no on/off state - so this switch will turn off shortly after being activated.</td>
+  <td>Turning this to ON will activate the scene. Scenes are stateless in the PowerView hub - they have no on/off state. Include { autoupdate="false" } on your item configuration to avoid needing to toggle off and on.</td>
  </tr>
 </table>
