@@ -273,17 +273,17 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         // Get the properties for the comparison
         String parmManufacturer = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_MANUFACTURER);
         if (parmManufacturer == null) {
-            logger.debug("NODE {}: MANUFACTURER not set {}", nodeId);
+            logger.debug("NODE {}: MANUFACTURER not set", nodeId);
             return;
         }
         String parmDeviceType = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICETYPE);
         if (parmDeviceType == null) {
-            logger.debug("NODE {}: TYPE not set {}", nodeId);
+            logger.debug("NODE {}: TYPE not set", nodeId);
             return;
         }
         String parmDeviceId = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICEID);
         if (parmDeviceId == null) {
-            logger.debug("NODE {}: ID not set {}", nodeId);
+            logger.debug("NODE {}: ID not set", nodeId);
             return;
         }
         String parmVersion = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_VERSION);
@@ -1250,18 +1250,25 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
     private void updateNodeProperties() {
         if (controllerHandler == null) {
+            logger.debug("NODE {}: Updating node properties. Controller not found.", nodeId);
             return;
         }
 
         ZWaveNode node = controllerHandler.getNode(nodeId);
         if (node == null) {
+            logger.debug("NODE {}: Updating node properties. Node not found.", nodeId);
             return;
         }
+
+        logger.debug("NODE {}: Updating node properties.", nodeId);
 
         // Update property information about this device
         Map<String, String> properties = editProperties();
 
+        logger.debug("NODE {}: Updating node properties. MAN={}", nodeId, node.getManufacturer());
         if (node.getManufacturer() != Integer.MAX_VALUE) {
+            logger.debug("NODE {}: Updating node properties. MAN={}. SET. Was {}", nodeId, node.getManufacturer(),
+                    properties.get(ZWaveBindingConstants.PROPERTY_MANUFACTURER));
             properties.put(ZWaveBindingConstants.PROPERTY_MANUFACTURER, Integer.toString(node.getManufacturer()));
         }
         if (node.getDeviceType() != Integer.MAX_VALUE) {

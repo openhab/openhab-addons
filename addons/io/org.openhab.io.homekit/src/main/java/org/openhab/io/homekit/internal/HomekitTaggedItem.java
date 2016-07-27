@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +33,20 @@ public class HomekitTaggedItem {
     private Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
     private final int id;
 
-    public HomekitTaggedItem(Item item) {
+    public HomekitTaggedItem(Item item, ItemRegistry itemRegistry) {
         this.item = item;
         for (String tag : item.getTags()) {
             if (item instanceof DimmerItem) {
                 tag = "Dimmable" + tag;
             }
-            homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
+            if (!isMemberOfRootGroup(item, itemRegistry)) {
+                homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
+            }
             if (homekitDeviceType == null) {
                 homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tag);
+            }
+            if (homekitDeviceType != null || homekitCharacteristicType != null) {
+                break;
             }
         }
         if (homekitDeviceType != null) {
@@ -64,6 +70,10 @@ public class HomekitTaggedItem {
 
     public boolean isRootDevice() {
         return homekitDeviceType != null;
+    }
+
+    public boolean isCharacteristic() {
+        return homekitCharacteristicType != null;
     }
 
     public Item getItem() {
@@ -95,5 +105,19 @@ public class HomekitTaggedItem {
             CREATED_ACCESSORY_IDS.put(id, item.getName());
         }
         return id;
+    }
+
+    private boolean isMemberOfRootGroup(Item item, ItemRegistry itemRegistry) {
+        for (String groupName : item.getGroupNames()) {
+            Item groupItem = itemRegistry.get(groupName);
+            if (groupItem != null) {
+                for (String groupTag : groupItem.getTags()) {
+                    if (HomekitDeviceType.valueOfTag(groupTag) != null) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

@@ -691,7 +691,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         }
                         String args[] = value.split("=");
 
-                        if ("REMOVE".equals(args[0])) {
+                        if ("ccRemove".equals(args[0])) {
                             // If we want to remove the class, then remove it!
 
                             // TODO: This will only remove the root nodes and ignores endpoint
@@ -717,7 +717,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                         // Command class isn't found! Do we want to add it?
                         // TODO: Does this need to account for multiple endpoints!?!
-                        if ("ADD".equals(args[0])) {
+                        if ("ccAdd".equals(args[0])) {
                             ZWaveCommandClass commandClass = ZWaveCommandClass
                                     .getInstance(CommandClass.getCommandClass(args[0]).getKey(), node, controller);
                             if (commandClass != null) {
