@@ -57,15 +57,6 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
-
-        boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
-        iConfig = imperial ? "I" : "M";
-
-        logger.info("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
-
-        skipStartupCheck = getConfigAs(MySensorsBridgeConfiguration.class).skipStartupCheck;
-
-        logger.debug("Set skip check on startup to: {}", skipStartupCheck);
     }
 
     /*
@@ -78,6 +69,15 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         logger.debug("Initialization of the MySensors Bridge");
 
         MySensorsBridgeConfiguration configuration = getConfigAs(MySensorsBridgeConfiguration.class);
+
+        boolean imperial = configuration.imperial;
+        iConfig = imperial ? "I" : "M";
+
+        logger.info("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
+
+        skipStartupCheck = configuration.skipStartupCheck;
+
+        logger.debug("Set skip check on startup to: {}", skipStartupCheck);
 
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
             mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
