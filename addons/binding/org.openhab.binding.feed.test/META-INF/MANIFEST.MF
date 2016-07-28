@@ -6,7 +6,8 @@ Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.feed
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: groovy.json,
+Import-Package: com.google.common.base,
+ groovy.json,
  groovy.lang,
  groovy.util,
  javax.servlet,
@@ -21,16 +22,14 @@ Import-Package: groovy.json,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.link,
+ org.eclipse.jetty.http,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
  org.junit;version="4.0.0",
- org.junit.matchers;version="4.0.0",
- org.junit.runner;version="4.0.0",
+ org.junit.experimental.categories,
+ org.junit.matchers,
+ org.junit.runner,
  org.osgi.framework,
  org.osgi.service.http,
- org.apache.commons.httpclient,
- org.osgi.service.event,
- com.google.common.base,
- org.junit.experimental.categories
- 
+ org.osgi.service.event

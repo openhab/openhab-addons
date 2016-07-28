@@ -32,7 +32,9 @@ The binding supports following channels
 
 | Channel Type ID | Item Type    | Description  | 
 |------------------|------------------------|--------------|----------------- |------------- |
-| latest-entry | String       | Contains title, description and published date for the last feed entry. |
+| latest-title | String       | Contains the title of the last feed entry. |
+| latest-description | String       | Contains the description of last feed entry. |
+| latest-date | DateTime       | Contains the published date of the last feed entry. |
 | author | String       | The name of the feed author, if author is present |
 | title | String       | The title of the feed |
 | description | String       | Description of the feed |
@@ -43,16 +45,18 @@ The binding supports following channels
 
 Things:
 ```
-feed:feed:news  [ URL="http://24news.com/news/rss.xml?edition=int"]
-feed:feed:technews1 [ URL="http://techgeek.de/feed", refresh=60] 
+feed:feed:bbc  [ URL="http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk"]
+feed:feed:techCrunch [ URL="http://feeds.feedburner.com/TechCrunch/", refresh=60] 
 ```
 Items:
 ```
-String latest_content         {channel="feed:feed:news:latest-entry"}
-Number number_of_entries      {channel="feed:feed:news:number-of-entries"}
-String description            {channel="feed:feed:news:description"}
-String author                 {channel="feed:feed:news:author"}
-DateTime published_date       {channel="feed:feed:news:last-update"}
-String title                  {channel="feed:feed:news:title"}
+String latest_title           {channel="feed:feed:bbc:latest-title"}
+String latest_description     {channel="feed:feed:bbc:latest-description"}
+DateTime latest_date          {channel="feed:feed:bbc:latest-date"}
+Number number_of_entries      {channel="feed:feed:bbc:number-of-entries"}
+String description            {channel="feed:feed:bbc:description"}
+String author                 {channel="feed:feed:bbc:author"}
+DateTime published_date       {channel="feed:feed:bbc:last-update"}
+String title 			      {channel="feed:feed:bbc:title"}
 
 ```

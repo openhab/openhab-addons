@@ -5,11 +5,15 @@ Bundle-SymbolicName: org.openhab.binding.feed;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,
- lib/jdom-2.0.2.jar,
- lib/rome-1.5.1.jar,
- lib/rome-utils-1.5.1.jar
-Import-Package: org.eclipse.smarthome.config.core,
+Bundle-ClassPath: .
+Import-Package: com.rometools.rome.feed,
+ com.rometools.rome.feed.atom,
+ com.rometools.rome.feed.module,
+ com.rometools.rome.feed.rss,
+ com.rometools.rome.feed.synd,
+ com.rometools.rome.io,
+ com.rometools.utils,
+ org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -20,7 +24,5 @@ Import-Package: org.eclipse.smarthome.config.core,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.feed,
- org.openhab.binding.feed.handler,
- com.rometools.rome.io,
- com.rometools.rome.feed.synd
-
+ org.openhab.binding.feed.handler
+Bundle-ActivationPolicy: lazy

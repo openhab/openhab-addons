@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -59,6 +58,7 @@ public class FeedHandler extends BaseThingHandler {
     private BigDecimal refreshTime;
     private ScheduledFuture<?> refreshTask;
     private SyndFeed currentFeedState;
+    private long lastRefreshTime;
 
     public FeedHandler(Thing thing) {
         super(thing);
@@ -68,6 +68,7 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         checkConfiguration();
+        startAutomaticRefresh();
         super.initialize();
     }
 
@@ -126,21 +127,31 @@ public class FeedHandler extends BaseThingHandler {
             if (isLinked(channelID)) {
                 State state = null;
                 switch (channelID) {
-                    case CHANNEL_LATEST_ENTRY:
-                        String content = getLatestEntry(currentFeedState);
-                        state = new StringType(content);
+                    case CHANNEL_LATEST_TITLE:
+                        String title = getLatestEntry(currentFeedState).getTitle();
+                        state = new StringType(getValueSafely(title));
+                        break;
+                    case CHANNEL_LATEST_DESCRIPTION:
+                        String description = getLatestEntry(currentFeedState).getDescription().getValue();
+                        state = new StringType(getValueSafely(description));
+                        break;
+                    case CHANNEL_LATEST_PUBLISHED_DATE:
+                        Date date = getLatestEntry(currentFeedState).getPublishedDate();
+                        Calendar calender = new GregorianCalendar();
+                        calender.setTime(date);
+                        state = new DateTimeType(calender);
                         break;
                     case CHANNEL_AUTHOR:
                         String author = currentFeedState.getAuthor();
-                        state = new StringType(author);
+                        state = new StringType(getValueSafely(author));
                         break;
                     case CHANNEL_DESCRIPTION:
-                        String description = currentFeedState.getDescription();
-                        state = new StringType(description);
+                        String channelDescription = currentFeedState.getDescription();
+                        state = new StringType(getValueSafely(channelDescription));
                         break;
                     case CHANNEL_TITLE:
-                        String title = currentFeedState.getTitle();
-                        state = new StringType(title);
+                        String channelTitle = currentFeedState.getTitle();
+                        state = new StringType(getValueSafely(channelTitle));
                         break;
                     case CHANNEL_LAST_UPDATE:
                         Date pubDate = currentFeedState.getPublishedDate();
@@ -234,11 +245,11 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     /**
-     * Gets the title, description and the published date of the most recent entry.
+     * Returns the most recent entry or null, if no entries are found.
      */
-    private String getLatestEntry(SyndFeed feed) {
+    private SyndEntry getLatestEntry(SyndFeed feed) {
         List<SyndEntry> allEntries = feed.getEntries();
-        SyndEntry lastEntry;
+        SyndEntry lastEntry = null;
         if (allEntries.size() >= 1) {
             /*
              * The entries are stored in the SyndFeed object in the following order -
@@ -246,26 +257,21 @@ public class FeedHandler extends BaseThingHandler {
              * published time of the entry.
              */
             lastEntry = allEntries.get(0);
-
-            String title = lastEntry.getTitle();
-            String description = lastEntry.getDescription().getValue();
-            Date publishedDate = lastEntry.getPublishedDate();
-            String publishedDateString = DateFormat.getInstance().format(publishedDate);
-
-            String entryAsString = String.format("Title: %s%nDate: %s%nDescription: %s%n#", title, publishedDateString,
-                    description);
-            return entryAsString;
         } else {
             logger.debug("No entries found");
-            return new String();
         }
+        return lastEntry;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
         if (command instanceof RefreshType) {
-            SyndFeed feed = fetchFeedData(urlString);
-            updateFeedIfChanged(feed);
+            // safeguard for multiple REFRESH commands for different channels in a row
+            if (isMinimumRefreshTimeExceeded()) {
+                SyndFeed feed = fetchFeedData(urlString);
+                updateFeedIfChanged(feed);
+            }
             publishChannelIfLinked(channelUID);
         } else {
             logger.debug("Command {} is not supported for channel: {}. Supported command: REFRESH", command,
@@ -274,17 +280,24 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        if (refreshTask == null) {
-            startAutomaticRefresh();
-        }
-    }
-
-    @Override
     public void dispose() {
         if (refreshTask != null) {
             refreshTask.cancel(true);
         }
+        lastRefreshTime = 0;
+    }
 
+    private boolean isMinimumRefreshTimeExceeded() {
+        long currentTime = System.currentTimeMillis();
+        long timeSinceLastRefresh = currentTime - lastRefreshTime;
+        if (timeSinceLastRefresh < MINIMUM_REFRESH_TIME) {
+            return false;
+        }
+        lastRefreshTime = currentTime;
+        return true;
+    }
+
+    public String getValueSafely(String value) {
+        return value == null ? new String() : value;
     }
 }

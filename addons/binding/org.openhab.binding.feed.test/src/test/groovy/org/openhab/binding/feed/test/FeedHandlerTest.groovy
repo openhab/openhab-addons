@@ -7,7 +7,6 @@
  */
 package org.openhab.binding.feed.test
 
-import static org.apache.commons.httpclient.HttpStatus.*
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 import static org.junit.matchers.JUnitMatchers.*
@@ -18,8 +17,8 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import org.apache.commons.httpclient.HttpStatus
 import org.custommonkey.xmlunit.*
+import org.eclipse.jetty.http.HttpStatus
 import org.eclipse.smarthome.config.core.Configuration
 import org.eclipse.smarthome.core.items.ItemRegistry
 import org.eclipse.smarthome.core.items.StateChangeListener
@@ -48,6 +47,7 @@ import org.junit.experimental.categories.Category
 import org.openhab.binding.feed.FeedBindingConstants
 import org.openhab.binding.feed.handler.FeedHandler
 import org.osgi.service.http.HttpService
+
 /**
  * Tests for {@link FeedHandler}
  *
@@ -110,7 +110,7 @@ public class FeedHandlerTest extends OSGiTest {
             super()
             setFeedContent(feedContentFile)
             //By default the servlet returns HTTP Status code 200 OK
-            this.httpStatus = HttpStatus.SC_OK
+            this.httpStatus = HttpStatus.OK_200
         }
 
         @Override
@@ -183,7 +183,7 @@ public class FeedHandlerTest extends OSGiTest {
 
         //create Feed Thing
         ThingUID feedUID = new ThingUID(FeedBindingConstants.FEED_THING_TYPE_UID,THING_NAME)
-        channelUID = new ChannelUID(feedUID,FeedBindingConstants.CHANNEL_LATEST_ENTRY)
+        channelUID = new ChannelUID(feedUID,FeedBindingConstants.CHANNEL_LATEST_DESCRIPTION)
         Channel channel = new Channel(channelUID,"String")
         feedThing = ThingBuilder.create(FeedBindingConstants.FEED_THING_TYPE_UID, feedUID).withConfiguration(configuration).withChannel(channel).build()
 
@@ -244,6 +244,9 @@ public class FeedHandlerTest extends OSGiTest {
         }
 
         if(commandReceived){
+            //Before this time has expired, the refresh command will no trigger a request to the server
+            sleep(FeedBindingConstants.MINIMUM_REFRESH_TIME)
+
             feedThing.handler.handleCommand(channelUID,RefreshType.REFRESH)
         } else {
             //The auto refresh task will handle the update after the default wait time
@@ -273,52 +276,52 @@ public class FeedHandlerTest extends OSGiTest {
 
     @Test
     public void 'assert that item\'s state is updated on refresh command if content changed' () {
-        boolean commandRecevied = true;
+        boolean commandReceived= true;
         boolean contentChanged = true;
-        testIfItemStateIsUpdated(commandRecevied,contentChanged);
+        testIfItemStateIsUpdated(commandReceived,contentChanged);
     }
 
     @Test
     public void 'assert that item\'s state is not updated on refresh command if content is not changed' () {
-        boolean commandRecevied = true;
+        boolean commandReceived= true;
         boolean contentChanged = false;
-        testIfItemStateIsUpdated(commandRecevied,contentChanged);
+        testIfItemStateIsUpdated(commandReceived,contentChanged);
     }
 
     @Category(SlowTests.class)
     @Test
     public void 'assert that item\'s state is not updated on auto refresh if content is not changed' () {
-        boolean commandRecevied = false;
+        boolean commandReceived= false;
         boolean contentChanged = false;
-        testIfItemStateIsUpdated(commandRecevied,contentChanged);
+        testIfItemStateIsUpdated(commandReceived,contentChanged);
     }
 
     @Category(SlowTests.class)
     @Test
     public void 'assert that item\'s state is updated on auto refresh if content changed' () {
-        boolean commandRecevied = false;
+        boolean commandReceived= false;
         boolean contentChanged = true;
-        testIfItemStateIsUpdated(commandRecevied,contentChanged);
+        testIfItemStateIsUpdated(commandReceived,contentChanged);
     }
 
     @Test
     public void 'assert that thing\'s status is updated when HTTP 500 error code is received' () {
-        testIfThingStatusIsUpdated(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+        testIfThingStatusIsUpdated(HttpStatus.INTERNAL_SERVER_ERROR_500)
     }
 
     @Test
     public void 'assert that thing\'s status is updated when HTTP 401 error code is received' () {
-        testIfThingStatusIsUpdated(HttpStatus.SC_UNAUTHORIZED)
+        testIfThingStatusIsUpdated(HttpStatus.UNAUTHORIZED_401)
     }
 
     @Test
     public void 'assert that thing\'s status is updated when HTTP 403 error code is received' () {
-        testIfThingStatusIsUpdated(HttpStatus.SC_FORBIDDEN)
+        testIfThingStatusIsUpdated(HttpStatus.FORBIDDEN_403)
     }
 
     @Test
     public void 'assert that thing\'s status is updated when HTTP 404 error code is received' () {
-        testIfThingStatusIsUpdated(HttpStatus.SC_NOT_FOUND)
+        testIfThingStatusIsUpdated(HttpStatus.NOT_FOUND_404)
     }
 
 
@@ -328,6 +331,9 @@ public class FeedHandlerTest extends OSGiTest {
 
         servlet.httpStatus = serverStatus
 
+        //Before this time has expired, the refresh command will no trigger a request to the server
+        sleep(FeedBindingConstants.MINIMUM_REFRESH_TIME)
+
         //invalid channel UID is used for the test, because otherwise
         feedThing.handler.handleCommand(channelUID,RefreshType.REFRESH)
 
@@ -335,7 +341,10 @@ public class FeedHandlerTest extends OSGiTest {
             assertThat feedThing.getStatus(),is(equalTo(ThingStatus.OFFLINE))
         },DEFAULT_MAX_WAIT_TIME)
 
-        servlet.httpStatus = HttpStatus.SC_OK
+        servlet.httpStatus = HttpStatus.OK_200
+
+        //Before this time has expired, the refresh command will no trigger a request to the server
+        sleep(FeedBindingConstants.MINIMUM_REFRESH_TIME)
 
         feedThing.handler.handleCommand(channelUID,RefreshType.REFRESH)
 

@@ -26,27 +26,37 @@ public class FeedBindingConstants {
 
     // List of all Channel IDs
     /**
-     * Contains title, description and published date for the last feed entry.
+     * Contains the published date of the last feed entry.
      */
-    public final static String CHANNEL_LATEST_ENTRY = "latest-entry";
+    public final static String CHANNEL_LATEST_PUBLISHED_DATE = "latest-date";
 
     /**
-     * Description of the feed
+     * Contains the title of the last feed entry.
+     */
+    public final static String CHANNEL_LATEST_TITLE = "latest-title";
+
+    /**
+     * Contains the description of last feed entry.
+     */
+    public final static String CHANNEL_LATEST_DESCRIPTION = "latest-description";
+
+    /**
+     * Description of the feed.
      */
     public final static String CHANNEL_DESCRIPTION = "description";
 
     /**
-     * The last update date of the feed
+     * The last update date of the feed.
      */
     public final static String CHANNEL_LAST_UPDATE = "last-update";
 
     /**
-     * The name of the feed author, if author is present
+     * The name of the feed author, if author is present.
      */
     public final static String CHANNEL_AUTHOR = "author";
 
     /**
-     * The title of the feed
+     * The title of the feed.
      */
     public final static String CHANNEL_TITLE = "title";
 
@@ -70,4 +80,10 @@ public class FeedBindingConstants {
      * The default auto refresh time in minutes.
      */
     public final static BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
+
+    /**
+     * The minimum refresh time in milliseconds. Any REFRESH command send to a Thing, before this time has expired, will
+     * not trigger an attempt to dowload new data form the server.
+     **/
+    public final static int MINIMUM_REFRESH_TIME = 3000;
 }
