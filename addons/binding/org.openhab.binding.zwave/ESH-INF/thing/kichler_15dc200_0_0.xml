@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="kichler_15dc200_00_000" listed="false">
+    <label>15DC200 200W Design Pro LED Controller</label>
+    <description>200W Design Pro LED Controller</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="time_offset" typeId="time_offset">
+        <label>Clock Time Offset</label>
+        <properties>
+          <property name="binding:*:DecimalType">TIME_PARAMETERS</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary1" typeId="switch_binary">
+        <label>Switch 1</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:1,BASIC:1</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary2" typeId="switch_binary">
+        <label>Switch 2</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:2,BASIC:2</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary3" typeId="switch_binary">
+        <label>Switch 3</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:3,BASIC:3</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary4" typeId="switch_binary">
+        <label>Switch 4</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:4,BASIC:4</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary5" typeId="switch_binary">
+        <label>Switch 5</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:5,BASIC:5</property>
+        </properties>
+      </channel>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Kichler Lighting</property>
+      <property name="modelId">15DC200</property>
+      <property name="manufacturerId">0114</property>
+      <property name="manufacturerRef">B005:3B60</property>
+    </properties>
+
+  </thing-type>
+</thing:thing-descriptions>

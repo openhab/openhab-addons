@@ -54,6 +54,7 @@
       <property name="modelId">FGFS101</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0B00:1001,0B00:2001,0B00:3001</property>
+      <property name="versionMax">3.0</property>
       <property name="defaultAssociations">3</property>
     </properties>
 
