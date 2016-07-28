@@ -34,7 +34,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGS222</property>
+      <property name="modelId">FGS222</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0202:1002</property>
       <property name="defaultAssociations">3</property>

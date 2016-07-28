@@ -11,22 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="thermostat_state" typeId="thermostat_state">
-        <label>Thermostat Operating State</label>
+      <channel id="sensor_temperature" typeId="sensor_temperature">
+        <label>Sensor (temperature)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_fanstate" typeId="honeywell_th8320zw_00_000_thermostat_fanstate">
-        <label>Thermostat fan state</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_FAN_STATE</property>
-        </properties>
-      </channel>
-      <channel id="thermostat_fanmode" typeId="honeywell_th8320zw_00_000_thermostat_fanmode">
-        <label>Thermostat fan mode</label>
-        <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
       <channel id="thermostat_mode" typeId="honeywell_th8320zw_00_000_thermostat_mode">
@@ -35,10 +23,10 @@
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
         </properties>
       </channel>
-      <channel id="sensor_temperature" typeId="sensor_temperature">
-        <label>Sensor (temperature)</label>
+      <channel id="thermostat_state" typeId="thermostat_state">
+        <label>Thermostat Operating State</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_OPERATING_STATE</property>
         </properties>
       </channel>
       <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
@@ -53,12 +41,24 @@
           <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=COOLING</property>
         </properties>
       </channel>
+      <channel id="thermostat_fanmode" typeId="honeywell_th8320zw_00_000_thermostat_fanmode">
+        <label>Thermostat fan mode</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_FAN_MODE</property>
+        </properties>
+      </channel>
+      <channel id="thermostat_fanstate" typeId="honeywell_th8320zw_00_000_thermostat_fanstate">
+        <label>Thermostat fan state</label>
+        <properties>
+          <property name="binding:*:DecimalType">THERMOSTAT_FAN_STATE</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Honeywell</property>
-      <property name="model">TH8320ZW</property>
+      <property name="modelId">TH8320ZW</property>
       <property name="manufacturerId">0039</property>
       <property name="manufacturerRef">0011:0001</property>
       <property name="defaultAssociations">1</property>
@@ -81,14 +81,20 @@
     </config-description>
 
   </thing-type>
-    <channel-type id="honeywell_th8320zw_00_000_thermostat_fanstate">
+    <channel-type id="honeywell_th8320zw_00_000_thermostat_mode">
       <item-type>Number</item-type>
-      <label>Thermostat Fan State</label>
-      <description>Sets the thermostat fan state</description>
+      <label>Thermostat Mode</label>
+      <description>Sets the thermostat mode</description>
       <category>Temperature</category>
       <state pattern="%s">
         <options>
-          <option value="0">Idle</option>
+          <option value="3">Auto</option>
+          <option value="0">Off</option>
+          <option value="11">Economy Heat</option>
+          <option value="2">Cool</option>
+          <option value="12">Economy Cool</option>
+          <option value="1">Heat</option>
+          <option value="5">Resume</option>
         </options>
       </state>
     </channel-type>
@@ -107,20 +113,14 @@
       </state>
     </channel-type>
 
-    <channel-type id="honeywell_th8320zw_00_000_thermostat_mode">
+    <channel-type id="honeywell_th8320zw_00_000_thermostat_fanstate">
       <item-type>Number</item-type>
-      <label>Thermostat Mode</label>
-      <description>Sets the thermostat mode</description>
+      <label>Thermostat Fan State</label>
+      <description>Sets the thermostat fan state</description>
       <category>Temperature</category>
       <state pattern="%s">
         <options>
-          <option value="3">Auto</option>
-          <option value="0">Off</option>
-          <option value="11">Economy Heat</option>
-          <option value="2">Cool</option>
-          <option value="12">Economy Cool</option>
-          <option value="1">Heat</option>
-          <option value="5">Resume</option>
+          <option value="0">Idle</option>
         </options>
       </state>
     </channel-type>

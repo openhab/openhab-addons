@@ -17,11 +17,12 @@
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
-      <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label>Dimmer</label>
+      <channel id="blinds_control" typeId="blinds_control">
+        <label>Blinds control</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:StopMoveType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:UpDownType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
     </channels>
@@ -29,7 +30,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGR221</property>
+      <property name="modelId">FGR221</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0300:100A,0300:0106,0300:0104,0300:0107</property>
       <property name="defaultAssociations">3</property>

@@ -13,10 +13,10 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
@@ -31,10 +31,16 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
           <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+          <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
+      <channel id="switch_binary1" typeId="switch_binary">
+        <label>Switch 1</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:1</property>
         </properties>
       </channel>
       <channel id="meter_watts1" typeId="meter_watts">
@@ -49,10 +55,10 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
           <property name="binding:*:DecimalType">METER:1;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary1" typeId="switch_binary">
-        <label>Switch 1</label>
+      <channel id="switch_binary2" typeId="switch_binary">
+        <label>Switch 2</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:1</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:2</property>
         </properties>
       </channel>
       <channel id="meter_watts2" typeId="meter_watts">
@@ -67,10 +73,10 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
           <property name="binding:*:DecimalType">METER:2;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary2" typeId="switch_binary">
-        <label>Switch 2</label>
+      <channel id="switch_binary3" typeId="switch_binary">
+        <label>Switch 3</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:2</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:3</property>
         </properties>
       </channel>
       <channel id="meter_watts3" typeId="meter_watts">
@@ -85,10 +91,10 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
           <property name="binding:*:DecimalType">METER:3;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary3" typeId="switch_binary">
-        <label>Switch 3</label>
+      <channel id="switch_binary4" typeId="switch_binary">
+        <label>Switch 4</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:3</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:4</property>
         </properties>
       </channel>
       <channel id="meter_watts4" typeId="meter_watts">
@@ -103,10 +109,10 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
           <property name="binding:*:DecimalType">METER:4;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary4" typeId="switch_binary">
-        <label>Switch 4</label>
+      <channel id="switch_binary5" typeId="switch_binary">
+        <label>Switch 5</label>
         <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:4</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY:5</property>
         </properties>
       </channel>
       <channel id="meter_watts5" typeId="meter_watts">
@@ -121,18 +127,12 @@ Multi-socket PowerNode (5-plug)<br /><h1>Overview</h1><p>This Configuration is f
           <property name="binding:*:DecimalType">METER:5;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="switch_binary5" typeId="switch_binary">
-        <label>Switch 5</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY:5</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GreenWave</property>
-      <property name="model">GWPN5</property>
+      <property name="modelId">GWPN5</property>
       <property name="manufacturerId">0099</property>
       <property name="manufacturerRef">0003:0003</property>
       <property name="defaultAssociations">3,4</property>

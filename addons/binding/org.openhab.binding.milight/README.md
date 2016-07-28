@@ -15,16 +15,16 @@ Add the leds you actually configured and hide the rest of the detected things.
 ## Features
 For white bulbs these channels are supported:
 
-    brightness          controls the brightness of your bulbs
+    ledbrightness       controls the brightness of your bulbs
     colorTemperature    changes from cold white to warm white and vice versa
     nightMode           dimms your bulbs to a very low level to use them as a night light
 
 For rgbw bulbs these channels are supported:
 
-    rgb                 changes the color and brightness of your rgb bulbs
-    discoMode           changes the discoMode for rgb bulbs
-    discoSpeed          changes the speed of your chosen discoMode
-    whiteMode           changes bulbs to white mode (not possible for the deprecated milight rgb bulb)
+    ledbrightness       controls the brightness of your bulbs
+    ledcolor            changes the color and brightness of your rgb bulbs
+    discomode           changes the discoMode for rgb bulbs
+    discospeed          changes the speed of your chosen discoMode
 
 [(See the API)](http://www.limitlessled.com/dev/). 
 
@@ -45,10 +45,10 @@ The rgb bulbs do not support changing their saturation, so the colorpicker will 
 	# You have to link the items to the channels of your prefered group e.g. in paperui after you've saved
 	# your items file.
 	
-	# The command types discoMode and discoSpeed should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
+	# The command types discomode and discoSpeed should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
 
-    Dimmer DiscoMode		{milight="bridge1;5;discoMode"}
-    Dimmer DiscoSpeed		{milight="bridge1;5;discoSpeed"}
+    Dimmer DiscoMode		{milight="bridge1;5;discomode"}
+    Dimmer DiscoSpeed		{milight="bridge1;5;discospeed"}
 
 	.sitemap
 

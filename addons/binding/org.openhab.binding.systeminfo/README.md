@@ -12,6 +12,7 @@ System information Binding provides operating system and hardware information in
  - Sensors information - CPU voltage and temperature, fan speeds 
  - Display information
  - Network IP,name and adapter name, mac, data sent and received, packages sent and received
+ - Process information - size of RAM memory used, CPU load, process name, path, number of threads 
  
  The binding uses [oshi](https://github.com/dblock/oshi) API to access this information regardless of the underlying platform and does not need any native parts.
  
@@ -73,11 +74,14 @@ The binding support several channel group. Each channel group, contains one or m
          **channel** `cpuTemp, cpuVoltage, fanSpeed`
    * **group** `network` (deviceIndex)
          **channel** `ip, mac, networkDisplayName, networkName, packagesSent, packagesReceived, dataSent, dataReceived`
-
+   * **group** `process` (pid)
+         **channel** `load, used, name, threads, path`
 The groups marked with "deviceIndex" may have device index attached to the Channel Group.
  - channel ::= chnanel_group & (deviceIndex) & # channel_id
  - deviceIndex ::= number > 0
  - (e.g. *storage1#available*)
+ 
+ The group `process` is using a configuration parameter "pid" instead of "deviceIndex". This makes possible to changed the tracked process at runtime. 
  
  The binding uses this index to get information about a specific device from a list of devices.
  (e.g on a single computer could be installed several local disks with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 ant etc). If device with this index is not existing, the binding will display an error message on the console.
@@ -119,11 +123,17 @@ The binding introduces the following channels:
 
 ## Channel configuration
 
+All channels can change its configuration parameters at runtime. The binding will trigger the necessary changes (reduce or increase the refresh time, change channel priority or the process that is being tracked).
+
 Each of the channels has a default configuration parameter - priority. It has the following options:
  - **High**
  - **Medium**
  - **Low**
  
+Channels from group ''process'' have additional configuration parameter - PID (Process identifier). This parameter is used as 'deviceIndex' and defines which process is tracked from the channel. This makes the channels from this groups very flexible - they can change its PID dynamically.
+ 
+Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
+
 ## Full example
 
 Things:
@@ -194,4 +204,11 @@ String Display_Description           { channel="systeminfo:computer:work:display
 Number Sensor_CPUTemp                { channel="systeminfo:computer:work:sensors#cpuTemp" }
 Number Sensor_CPUVoltage             { channel="systeminfo:computer:work:sensors#cpuVoltage" }
 Number Sensor_FanSpeed               { channel="systeminfo:computer:work:sensors#fanSpeed" }
+
+/* Process information*/
+Number Process_load                  { channel="systeminfo:computer:SvilenV-L540:process#load" }
+Number Process_used                  { channel="systeminfo:computer:SvilenV-L540:process#used" }
+String Process_name                  { channel="systeminfo:computer:SvilenV-L540:process#name" }
+Number Process_threads               { channel="systeminfo:computer:SvilenV-L540:process#threads" }
+String Process_path                  { channel="systeminfo:computer:SvilenV-L540:process#path" }
 ```

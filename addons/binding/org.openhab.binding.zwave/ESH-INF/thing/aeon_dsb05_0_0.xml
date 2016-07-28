@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSB05</property>
+      <property name="modelId">DSB05</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0005</property>
       <property name="commandClass:SENSOR_MULTILEVEL">getSupported=false</property>

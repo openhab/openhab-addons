@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Reitz Group</property>
-      <property name="model">Reitz 05431</property>
+      <property name="modelId">Reitz 05431</property>
       <property name="manufacturerId">0064</property>
       <property name="manufacturerRef">2001:0000</property>
     </properties>

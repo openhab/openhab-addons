@@ -11,10 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm (general)</label>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM;type=GENERAL</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
@@ -41,10 +41,10 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm (general)</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
+          <property name="binding:*:OnOffType">ALARM;type=GENERAL</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -57,7 +57,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">ZW100</property>
+      <property name="modelId">ZW100</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0064,0102:0064,0202:0064</property>
       <property name="versionMax">1.6</property>

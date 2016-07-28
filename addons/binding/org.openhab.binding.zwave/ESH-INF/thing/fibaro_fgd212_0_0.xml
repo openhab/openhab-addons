@@ -11,17 +11,17 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
-        </properties>
-      </channel>
       <channel id="switch_dimmer" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+        </properties>
+      </channel>
+      <channel id="scene_number" typeId="scene_number">
+        <label>Scene Number</label>
+        <properties>
+          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
         </properties>
       </channel>
       <channel id="sensor_power" typeId="sensor_power">
@@ -42,22 +42,10 @@
           <property name="binding:*:DecimalType">METER;type=E_W</property>
         </properties>
       </channel>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Number</label>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
         <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
-        </properties>
-      </channel>
-      <channel id="alarm_general1" typeId="alarm_general">
-        <label>Alarm 1</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM:1</property>
-        </properties>
-      </channel>
-      <channel id="sensor_power1" typeId="sensor_power">
-        <label>Sensor (power) 1</label>
-        <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;type=POWER</property>
+          <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">
@@ -65,6 +53,12 @@
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:1</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1</property>
+        </properties>
+      </channel>
+      <channel id="sensor_power1" typeId="sensor_power">
+        <label>Sensor (power) 1</label>
+        <properties>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL:1;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_kwh1" typeId="meter_kwh">
@@ -79,11 +73,17 @@
           <property name="binding:*:DecimalType">METER:1;type=E_W</property>
         </properties>
       </channel>
+      <channel id="alarm_general1" typeId="alarm_general">
+        <label>Alarm 1</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM:1</property>
+        </properties>
+      </channel>
       <channel id="switch_dimmer2" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:2,BASIC:2</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2,BASIC:2</property>
         </properties>
       </channel>
     </channels>
@@ -91,7 +91,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGD212</property>
+      <property name="modelId">FGD212</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0102:1000,0102:3000</property>
       <property name="defaultAssociations">1</property>

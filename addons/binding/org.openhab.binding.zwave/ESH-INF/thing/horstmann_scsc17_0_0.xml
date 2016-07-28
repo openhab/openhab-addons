@@ -16,7 +16,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">SCSC-17</property>
+      <property name="modelId">SCSC-17</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0004:0001</property>
       <property name="defaultAssociations">1</property>

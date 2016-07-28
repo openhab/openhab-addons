@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
+        </properties>
+      </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm (general)</label>
         <properties>
@@ -22,18 +28,12 @@
           <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
-        <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSB29</property>
+      <property name="modelId">DSB29</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:0004,0002:001D</property>
       <property name="defaultAssociations">1</property>

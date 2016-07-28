@@ -12,16 +12,16 @@
     <!-- CHANNEL DEFINITIONS -->
     <channels>
       <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
-      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
-        <label>Setpoint (heating)</label>
+      <channel id="sensor_power" typeId="sensor_power">
+        <label>Sensor (power)</label>
         <properties>
-          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
+          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
         </properties>
       </channel>
       <channel id="meter_watts" typeId="meter_watts">
@@ -36,45 +36,45 @@
           <property name="binding:*:DecimalType">METER;type=E_KWh</property>
         </properties>
       </channel>
-      <channel id="sensor_power" typeId="sensor_power">
-        <label>Sensor (power)</label>
+      <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
+        <label>Setpoint (heating)</label>
         <properties>
-          <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=POWER</property>
+          <property name="binding:*:DecimalType">THERMOSTAT_SETPOINT;type=HEATING</property>
         </properties>
       </channel>
       <channel id="switch_dimmer1" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 1</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:1,BASIC:1</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:1,BASIC:1</property>
         </properties>
       </channel>
       <channel id="switch_dimmer2" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 2</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:2,BASIC:2</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:2,BASIC:2</property>
         </properties>
       </channel>
       <channel id="switch_dimmer3" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 3</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:3,BASIC:3</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:3</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:3,BASIC:3</property>
         </properties>
       </channel>
       <channel id="switch_dimmer4" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 4</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:4,BASIC:4</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:4</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:4,BASIC:4</property>
         </properties>
       </channel>
       <channel id="switch_dimmer5" typeId="switch_dimmer">
-        <label></label>
+        <label>Dimmer 5</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL:5,BASIC:5</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:5</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL:5,BASIC:5</property>
         </properties>
       </channel>
     </channels>
@@ -82,7 +82,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGRGBW</property>
+      <property name="modelId">FGRGBW</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0900:1000,0900:2000,0900:4000,0900:3000</property>
       <property name="commandClass:SWITCH_MULTILEVEL:1">getSupported=false</property>

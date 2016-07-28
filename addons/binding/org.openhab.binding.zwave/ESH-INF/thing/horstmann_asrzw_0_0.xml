@@ -28,7 +28,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">ASR-ZW</property>
+      <property name="modelId">ASR-ZW</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0003:0001</property>
     </properties>

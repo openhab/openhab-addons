@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">BRK Brands</property>
-      <property name="model">ZCOMBO</property>
+      <property name="modelId">ZCOMBO</property>
       <property name="manufacturerId">0138</property>
       <property name="manufacturerRef">0001:0002</property>
       <property name="defaultAssociations">1</property>
@@ -58,9 +58,8 @@
         <label>Association Groups</label>
       </parameter-group>
 
-      <parameter name="group_1" type="text" groupName="association" multiple="true">
+      <parameter name="group_1" type="text" groupName="association">
         <label>1: Group 1</label>
-        <multipleLimit>5</multipleLimit>
       </parameter>
 
     </config-description>

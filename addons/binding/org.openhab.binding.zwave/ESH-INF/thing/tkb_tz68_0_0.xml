@@ -24,7 +24,7 @@ Wall Plug<br /><h1>Overview</h1><p>The TKB TZ68 is a switch plug that can be pla
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wenzhou TKB Control System</property>
-      <property name="model">TZ68</property>
+      <property name="modelId">TZ68</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0003:0002,0101:0103</property>
     </properties>

@@ -11,6 +11,12 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
       <channel id="meter_powerfactor" typeId="meter_powerfactor">
         <label>Electric meter (power factor)</label>
         <properties>
@@ -41,18 +47,12 @@
           <property name="binding:*:DecimalType">METER;type=E_V</property>
         </properties>
       </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
-        </properties>
-      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wenzhou TKB Control System</property>
-      <property name="model">TZ88</property>
+      <property name="modelId">TZ88</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0001:0001,0001:0011</property>
       <property name="defaultAssociations">1</property>

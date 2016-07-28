@@ -15,7 +15,7 @@
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Wenzhou TKB Control System</property>
-      <property name="model">TZ65D</property>
+      <property name="modelId">TZ65D</property>
       <property name="manufacturerId">0118</property>
       <property name="manufacturerRef">0808:0808</property>
       <property name="defaultAssociations">4</property>

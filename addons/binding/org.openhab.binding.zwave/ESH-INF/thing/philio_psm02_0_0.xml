@@ -51,7 +51,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Philio Technology Corporation</property>
-      <property name="model">PSM02</property>
+      <property name="modelId">PSM02</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0002:0002</property>
     </properties>

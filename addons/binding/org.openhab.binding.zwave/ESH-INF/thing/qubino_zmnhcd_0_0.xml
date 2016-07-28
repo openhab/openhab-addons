@@ -11,17 +11,18 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="switch_dimmer" typeId="switch_dimmer">
-        <label>Dimmer</label>
-        <properties>
-          <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="blinds_control" typeId="blinds_control">
+        <label>Blinds control</label>
+        <properties>
+          <property name="binding:*:PercentType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:StopMoveType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:UpDownType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
       <channel id="meter_kwh" typeId="meter_kwh">
@@ -41,7 +42,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Qubino</property>
-      <property name="model">ZMNHCD</property>
+      <property name="modelId">ZMNHCD</property>
       <property name="manufacturerId">0159</property>
       <property name="manufacturerRef">0003:0002,0003:0052</property>
       <property name="defaultAssociations">1</property>

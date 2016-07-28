@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onkyo"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- OnkyoAVR Thing Type -->
+    <thing-type id="onkyoAVR">
+        <label>Onkyo AV Receiver</label>
+        <description>Network enabled Onkyo AV Receivers</description>
+
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="input" typeId="input"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
+            <channel id="control" typeId="control" />
+            <channel id="currentPlayingTime" typeId="currentPlayingTime" />
+            <channel id="title" typeId="title" />
+            <channel id="album" typeId="album" />
+            <channel id="artist" typeId="artist" />
+            <channel id="listenmode" typeId="listenmode"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>Network Address</label>
+                <description>The IP or host name of the Onkyo Receiver</description>
+                <context>network-address</context>
+            </parameter>
+            <parameter name="port" type="integer" required="true"
+                min="1" max="65335">
+                <label>Port</label>
+                <description>Port of the Onkyo to control</description>
+                <default>60128</default>
+            </parameter>            
+        </config-description>
+    </thing-type>
+
+    <!-- Onkyo unknown Thing Type -->
+    <thing-type id="onkyoUnsupported"  listed="false">
+        <label>Unsupported Onkyo AV Receiver</label>
+        <description>Network enabled Onkyo AV Receivers for models that are not officially supported. You may experience some odd behaviors.</description>
+
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="input" typeId="input"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
+            <channel id="control" typeId="control" />
+            <channel id="currentPlayingTime" typeId="currentPlayingTime" />
+            <channel id="title" typeId="title" />
+            <channel id="album" typeId="album" />
+            <channel id="artist" typeId="artist" />
+            <channel id="listenmode" typeId="listenmode"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>Network Address</label>
+                <description>The IP or host name of the Onkyo Receiver</description>
+                <context>network-address</context>
+            </parameter>
+            <parameter name="port" type="integer" required="true"
+                min="1" max="65335">
+                <label>Port</label>
+                <description>Port of the Onkyo to control</description>
+                <default>60128</default>
+            </parameter>            
+        </config-description>
+    </thing-type>
+
+
+    <!-- Commands -->
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Power on/off your device</description>
+    </channel-type>
+    <channel-type id="input">
+        <item-type>Number</item-type>
+        <label>Input Source</label>
+        <description>Select the input source of the AVR</description>
+        <state>
+            <options>
+                <option value="00">DVR/VCR</option>
+                <option value="01">SATELLITE/CABLE</option>
+                <option value="02">GAME</option>
+                <option value="03">AUX</option>
+                <option value="04">GAME</option>
+                <option value="05">PC</option>
+                <option value="16">BLURAY/DVD</option>
+                <option value="32">TAPE1</option>
+                <option value="33">TAPE2</option>
+                <option value="34">PHONO</option>
+                <option value="35">CD</option>
+                <option value="36">FM</option>
+                <option value="37">AM</option>
+                <option value="38">TUNER</option>
+                <option value="39">MUSICSERVER</option>
+                <option value="40">INTERETRADIO</option>
+                <option value="41">USB</option>
+                <option value="42">USB_BACK</option>
+                <option value="43">NETWORK</option>
+                <option value="45">AIRPLAY</option>
+                <option value="48">MULTICH</option>
+                <option value="50">SIRIUS</option>
+            </options>
+        </state>
+    </channel-type>    
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Mute/unmute your device</description>
+    </channel-type>
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Volume of your device</description>
+        <state min="0" max="100" step="1" pattern="%d %%">
+        </state>
+    </channel-type>
+    <channel-type id="control">
+        <item-type>Player</item-type>
+        <label>Control</label>
+        <description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
+        <category>Player</category>
+    </channel-type>
+    <channel-type id="listenmode" advanced="true">
+        <item-type>Number</item-type>
+        <label>Listen Mode</label>
+        <description>Listen mode</description>
+        <state>
+            <options>
+                <option value="00">Stereo</option>
+                <option value="12">All Channel Stereo</option>
+                <option value="22">Audyssey DSX</option>
+                <option value="64">5.1ch Surround</option>
+                <option value="128">PLII/PLIIx Movie</option>
+                <option value="129">PLII/PLIIx Music</option>
+                <option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
+                <option value="161">PLIIx/PLII Music + Audyssey DSX</option>
+                <option value="162">PLIIx/PLII Game + Audyssey DSX</option>
+                <option value="163">Neo Cinema DSX</option>
+                <option value="164">Neo Music DSX</option>
+                <option value="165">Neural Surround DSX</option>
+                <option value="166">Neural Digital DSX</option>
+            </options>
+        </state>
+    </channel-type>    
+
+    
+    <!-- Onkyo variables -->
+    <channel-type id="currentPlayingTime">
+        <item-type>String</item-type>
+        <label>Playing Time</label>
+        <description>Current Playing Time</description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+    <channel-type id="title">
+        <item-type>String</item-type>
+        <label>Title</label>
+        <description>Title of the current song</description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+    <channel-type id="album">
+        <item-type>String</item-type>
+        <label>Album</label>
+        <description>Album name of the current song</description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+    <channel-type id="artist">
+        <item-type>String</item-type>
+        <label>Artist</label>
+        <description>Artist name of the current song</description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+</thing:thing-descriptions>

@@ -10,14 +10,10 @@ package org.openhab.binding.dscalarm.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.config.EnvisalinkBridgeConfiguration;
@@ -34,10 +30,6 @@ import org.slf4j.LoggerFactory;
 public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final static Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
-    private long refreshInterval = 600;
-    private long intialDelay = 30;
-    private ScheduledFuture<?> envisalinkBridgeDiscoveryJob;
-    private ScheduledFuture<?> it100BridgeDiscoveryJob;
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
     private IT100BridgeDiscovery it100BridgeDiscovery = new IT100BridgeDiscovery(this);
 
@@ -49,42 +41,10 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     }
 
     @Override
-    public Set<ThingTypeUID> getSupportedThingTypes() {
-        return DSCAlarmBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
-    }
-
-    @Override
     protected void startScan() {
         logger.trace("Start DSC Alarm Bridge discovery.");
         scheduler.execute(envisalinkBridgeDiscoveryRunnable);
         scheduler.execute(it100BridgeDiscoveryRunnable);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        logger.debug("Start DSC Alarm Bridge background discovery");
-        if (envisalinkBridgeDiscoveryJob == null || envisalinkBridgeDiscoveryJob.isCancelled()) {
-            envisalinkBridgeDiscoveryJob = scheduler.scheduleAtFixedRate(envisalinkBridgeDiscoveryRunnable, intialDelay, refreshInterval, TimeUnit.SECONDS);
-        }
-
-        if (it100BridgeDiscoveryJob == null || it100BridgeDiscoveryJob.isCancelled()) {
-            it100BridgeDiscoveryJob = scheduler.scheduleAtFixedRate(it100BridgeDiscoveryRunnable, intialDelay, refreshInterval, TimeUnit.SECONDS);
-        }
-
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stop DSC Alarm Bridge background discovery");
-        if (envisalinkBridgeDiscoveryJob != null && !envisalinkBridgeDiscoveryJob.isCancelled()) {
-            envisalinkBridgeDiscoveryJob.cancel(true);
-            envisalinkBridgeDiscoveryJob = null;
-        }
-
-        if (it100BridgeDiscoveryJob != null && !it100BridgeDiscoveryJob.isCancelled()) {
-            it100BridgeDiscoveryJob.cancel(true);
-            it100BridgeDiscoveryJob = null;
-        }
     }
 
     private Runnable envisalinkBridgeDiscoveryRunnable = new Runnable() {
@@ -159,7 +119,8 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             if (thingUID != null) {
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel("DSC IT-100 Bridge - " + port).build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withLabel("DSC IT-100 Bridge - " + port).build();
                 thingDiscovered(result);
 
                 logger.trace("addBridge(): '{}' was added to Smarthome inbox.", result.getThingUID());

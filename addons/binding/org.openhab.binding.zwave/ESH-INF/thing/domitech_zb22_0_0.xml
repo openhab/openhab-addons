@@ -15,7 +15,7 @@
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Domitech</property>
-      <property name="model">ZB22</property>
+      <property name="modelId">ZB22</property>
       <property name="manufacturerId">020E</property>
       <property name="manufacturerRef">4C42:3135</property>
       <property name="defaultAssociations">1</property>

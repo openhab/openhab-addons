@@ -17,7 +17,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -25,7 +25,7 @@ In-Wall Smart Fan Control<br /><h1>Overview</h1><p><strong>Basic Operation</stro
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">ZW4002</property>
+      <property name="modelId">ZW4002</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">4944:3034</property>
     </properties>

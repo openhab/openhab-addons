@@ -15,7 +15,7 @@
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -23,7 +23,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGD211</property>
+      <property name="modelId">FGD211</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0100:0104,0100:0106,0100:0107,0100:0109,0100:100A,0100:300A</property>
       <property name="versionMax">1.8</property>
