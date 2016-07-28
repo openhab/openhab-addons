@@ -17,7 +17,7 @@ In-Wall Dimmer<br /><h1>Overview</h1><p>Also goes by GE / Jasco catalog number 1
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -25,7 +25,7 @@ In-Wall Dimmer<br /><h1>Overview</h1><p>Also goes by GE / Jasco catalog number 1
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">ZW3003, GE 12724</property>
+      <property name="modelId">ZW3003, GE 12724</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">4944:3031</property>
     </properties>

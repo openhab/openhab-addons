@@ -11,16 +11,16 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
+        </properties>
+      </channel>
       <channel id="alarm_general" typeId="alarm_general">
         <label>Alarm</label>
         <properties>
           <property name="binding:*:OnOffType">ALARM</property>
-        </properties>
-      </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
-        <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Chromagic Technologies</property>
-      <property name="model">HSM02</property>
+      <property name="modelId">HSM02</property>
       <property name="manufacturerId">0116</property>
       <property name="manufacturerRef">0002:0001</property>
       <property name="defaultAssociations">1</property>

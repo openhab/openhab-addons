@@ -11,10 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
@@ -23,15 +23,15 @@
           <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
     </channels>
@@ -39,7 +39,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">POPP</property>
-      <property name="model">004001</property>
+      <property name="modelId">004001</property>
       <property name="manufacturerId">0154</property>
       <property name="manufacturerRef">0100:0201</property>
       <property name="defaultAssociations">1</property>

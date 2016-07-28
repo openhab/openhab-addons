@@ -13,6 +13,12 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="switch_binary" typeId="switch_binary">
+        <label>Switch</label>
+        <properties>
+          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
@@ -23,12 +29,6 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
         <label>Thermostat mode</label>
         <properties>
           <property name="binding:*:DecimalType">THERMOSTAT_MODE</property>
-        </properties>
-      </channel>
-      <channel id="switch_binary" typeId="switch_binary">
-        <label>Switch</label>
-        <properties>
-          <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
       <channel id="thermostat_setpoint_heating" typeId="thermostat_setpoint">
@@ -47,7 +47,7 @@ Battery Powered Wall Thermostat<br /><h1>Overview</h1><p><strong>Note</strong>: 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Horstmann Controls</property>
-      <property name="model">HRT4-ZW</property>
+      <property name="modelId">HRT4-ZW</property>
       <property name="manufacturerId">0059</property>
       <property name="manufacturerRef">0001:0003</property>
       <property name="defaultAssociations">1,2,3,4,5</property>

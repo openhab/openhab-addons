@@ -11,9 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
+      <channel id="lock_door" typeId="lock_door">
+        <label>Door Lock</label>
         <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
+          <property name="binding:*:OnOffType">DOOR_LOCK</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
@@ -22,10 +23,9 @@
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
-      <channel id="lock_door" typeId="lock_door">
-        <label>Door Lock</label>
+      <channel id="battery-level" typeId="system.battery-level">
         <properties>
-          <property name="binding:*:OnOffType">DOOR_LOCK</property>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YKFCON</property>
+      <property name="modelId">YKFCON</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0006:0000</property>
       <property name="defaultAssociations">1</property>

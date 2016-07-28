@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.Item;
@@ -67,7 +68,6 @@ public class HueEmulationServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(HueEmulationServlet.class);
     private static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
     private static final String PATH = "/api";
-    private static final String HOMEKIT_PREFIX = "homekit:";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
     private static final String APPLICATION_XML = "application/xml";
@@ -79,6 +79,8 @@ public class HueEmulationServlet extends HttpServlet {
             ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "usernames");
     private static final File UDN_FILE = new File(
             ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "udn");
+
+    private static final String[] SUPPORTED_TAGS = new String[] { "Switchable", "Lighting", "TargetTemperature" };
 
     /**
      * This parses "/api/{username}/{lights}/{id}/{state}"
@@ -424,9 +426,9 @@ public class HueEmulationServlet extends HttpServlet {
     }
 
     /**
-     * Converts an VoiceItem to a HueDevice
+     * Converts an Item to a HueDevice
      *
-     * @param voiceItem
+     * @param item
      * @return
      *         HueDevice
      */
@@ -452,7 +454,7 @@ public class HueEmulationServlet extends HttpServlet {
         Collection<Item> items = new LinkedList<Item>();
         for (Item item : itemRegistry.getItems()) {
             for (String tag : item.getTags()) {
-                if (tag.startsWith(HOMEKIT_PREFIX)) {
+                if (ArrayUtils.contains(SUPPORTED_TAGS, tag)) {
                     items.add(item);
                     break;
                 }

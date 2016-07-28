@@ -13,11 +13,6 @@ Door Window Sensor<br /><h1>Overview</h1><p>This sensor monitors door/ window an
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="alarm_burglar" typeId="alarm_burglar">
         <label>Tamper Alarm</label>
         <properties>
@@ -30,12 +25,17 @@ Door Window Sensor<br /><h1>Overview</h1><p>This sensor monitors door/ window an
           <property name="binding:*:OpenClosedType">ALARM;type=ACCESS_CONTROL</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZD2102</property>
+      <property name="modelId">ZD2102</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2001:0102,2001:0105,2001:0106</property>
       <property name="defaultAssociations">1</property>

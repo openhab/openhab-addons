@@ -7,10 +7,23 @@
 
   <thing-type id="fibaro_fgk101_00_000" listed="false">
     <label>FGK101 Door Opening Sensor</label>
-    <description>Door Opening Sensor</description>
+    <description><![CDATA[
+Door Opening Sensor<br /><h2>Inclusion Information</h2><p><strong>Prepare the sensor:</strong></p> <ol><li>Open the sensor with a small screwdriver (be careful)</li> <li>Remove the paper between the battery an the contact to activate the sensor.</li> <li>Close the sensor (be sure that it is closed correctly. The sensor must not act like a button if you push the casing. This sometimes happens. It is important to close the device correctly.)</li> </ol><p><strong>Include the sensor in the network:</strong></p> <ol><li>Start HABmin.</li> <li>Navigate to Configuration &gt; Bindings &gt; select the ZWAVE Binding &gt; select the devices tab on the right</li> <li>You should see at least your ZWAVE-Controller in the list of devices.</li> <li>Hit "include" to start the 30 sec include mode</li> <li>Hit the button on the back of the sensor 3 times in a short row.</li> <li>The device starts to blink in blue. If it stops repeat step 5 until the 30 sec inclusion is over. Keep the sensor not to close and not too far from the controller (between 30 cm and 100 cm)</li> <li>Hit "reload properties" in HABmin.</li> <li>The new device should appear in the list (grey with no name)</li> <li>If not, hit reload in your browser and navigate back to the device list.</li> <li>The new device should appear in the list (grey with no name)</li> <li>If not, restart your openHAB server, hit reload in your browser and navigate back to the device list.</li> <li>The new device should appear in the list (grey with no name)</li> <li>If not, repeat from step 4 until the device appears (This should happen rarely. I once needed two tries. Iadded 10 devices all together.)</li> <li>Hit the button on the back of the sensor 3 times in a short row.</li> <li>The device starts to blink in blue. Keep the sensor not to close and not too far from the controller (between 30 cm and 100 cm)</li> <li>Hit "reload properties" in HABmin.</li> <li>Repeat steps 14 - 16 several times. The device in the list will first show up a name, then turn to yellow and then to green.</li> <li>Congratulations, you fully added the sensor and it should work correctly now.</li> </ol><br /><h2>Wakeup Information</h2><p>The default wake-up interval will drain the battery in a few weeks to months. It's advised to set a minimum wake-up interval of 3 hours to 24 hours after the device is configured correctly and a node.xml file has been created for the device.</p>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door Sensor</label>
+        <properties>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY,BASIC</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
       <channel id="alarm_flood" typeId="alarm_flood">
         <label>Alarm (water)</label>
         <properties>
@@ -47,17 +60,6 @@
           <property name="binding:*:OnOffType">SENSOR_ALARM;type=HEAT</property>
         </properties>
       </channel>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="sensor_door" typeId="sensor_door">
-        <label>Door Sensor</label>
-        <properties>
-          <property name="binding:*:OpenClosedType">SENSOR_BINARY,BASIC</property>
-        </properties>
-      </channel>
       <channel id="sensor_temperature2" typeId="sensor_temperature">
         <label>Temperature Sensor</label>
         <properties>
@@ -69,9 +71,10 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGK101</property>
+      <property name="modelId">FGK101</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0700:1000,0700:2000,0700:3000</property>
+      <property name="versionMax">2.5</property>
       <property name="defaultAssociations">3</property>
     </properties>
 

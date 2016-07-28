@@ -11,18 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_co2" typeId="alarm_co2">
-        <label>Alarm (CO2)</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM;type=CARBON_MONOXIDE</property>
-        </properties>
-      </channel>
-      <channel id="alarm_smoke" typeId="alarm_smoke">
-        <label>Alarm (smoke)</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
-        </properties>
-      </channel>
       <channel id="sensor_relhumidity" typeId="sensor_relhumidity">
         <label>Sensor (relative humidity)</label>
         <properties>
@@ -33,6 +21,18 @@
         <label>Sensor (temperature)</label>
         <properties>
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL,BASIC;type=TEMPERATURE</property>
+        </properties>
+      </channel>
+      <channel id="alarm_co2" typeId="alarm_co2">
+        <label>Alarm (CO2)</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM;type=CARBON_MONOXIDE</property>
+        </properties>
+      </channel>
+      <channel id="alarm_smoke" typeId="alarm_smoke">
+        <label>Alarm (smoke)</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM;type=SMOKE</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -57,7 +57,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">ST814</property>
+      <property name="modelId">ST814</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0006:0001</property>
       <property name="defaultAssociations">1</property>

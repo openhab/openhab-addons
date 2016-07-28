@@ -17,7 +17,7 @@ In-Wall Smart Dimmer<br /><h2>Inclusion Information</h2><p>1. Follow the instruc
         <label>Dimmer</label>
         <properties>
           <property name="binding:*:PercentType">SWITCH_MULTILEVEL,BASIC</property>
-          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
+          <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL,BASIC</property>
         </properties>
       </channel>
     </channels>
@@ -25,7 +25,7 @@ In-Wall Smart Dimmer<br /><h2>Inclusion Information</h2><p>1. Follow the instruc
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">12729</property>
+      <property name="modelId">12729</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">4944:3033</property>
     </properties>

@@ -54,6 +54,7 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
     private boolean initialiseDone = false;
 
     private boolean isGetSupported = true;
+    private boolean isSupportedGetSupported = true;
 
     /**
      * Creates a new instance of the ZWaveAlarmSensorCommandClass class.
@@ -214,8 +215,11 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
 
     @Override
     public boolean setOptions(Map<String, String> options) {
-        if ("true".equals(options.get("getSupported"))) {
-            isGetSupported = true;
+        if ("false".equals(options.get("getSupported"))) {
+            isGetSupported = false;
+        }
+        if ("false".equals(options.get("supportedGetSupported"))) {
+            isSupportedGetSupported = false;
         }
 
         return true;
@@ -227,6 +231,11 @@ public class ZWaveAlarmSensorCommandClass extends ZWaveCommandClass
      * @return the serial message, or null if the supported command is not supported.
      */
     public SerialMessage getSupportedMessage() {
+        if (isSupportedGetSupported == false) {
+            logger.debug("NODE {}: Node doesn't support supported get requests", getNode().getNodeId());
+            return null;
+        }
+
         logger.debug("NODE {}: Creating new message for command SENSOR_ALARM_SUPPORTED_GET",
                 this.getNode().getNodeId());
 

@@ -28,6 +28,23 @@ import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 public class ZWaveNodeNamingCommandClassTest extends ZWaveCommandClassTest {
 
     @Test
+    public void reportNodeName_Len0_NoCharset() {
+        // Some (crappy!) devices send a response with no characterset when the name isn't set
+        byte[] packetData = { 0x01, 0x08, 0x00, 0x04, 0x00, 0x0E, 0x02, 0x77, 0x03, (byte) 0x8B };
+
+        List<ZWaveEvent> events = processCommandClassMessage(packetData);
+        assertEquals(events.size(), 1);
+
+        ZWaveCommandClassValueEvent event = (ZWaveCommandClassValueEvent) events.get(0);
+
+        assertEquals(event.getCommandClass(), CommandClass.NODE_NAMING);
+        // assertEquals(event.getNodeId(), 44);
+        assertEquals(event.getEndpoint(), 0);
+        assertEquals(event.getType(), ZWaveNodeNamingCommandClass.Type.NODENAME_NAME);
+        assertEquals(event.getValue(), new String(""));
+    }
+
+    @Test
     public void reportNodeName_Len0_UTF16() {
         byte[] packetData = { 0x01, 0x09, 0x00, 0x04, 0x00, 0x12, 0x03, 0x77, 0x03, 0x02, (byte) 0x95 };
 

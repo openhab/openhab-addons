@@ -17,17 +17,6 @@
           <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm (general)</label>
-        <properties>
-          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=GENERAL</property>
-        </properties>
-      </channel>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
         <label>Sensor (temperature)</label>
         <properties>
@@ -40,16 +29,26 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm (general)</label>
+        <properties>
+          <property name="binding:*:OnOffType">SENSOR_ALARM,BASIC;type=GENERAL</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Fibaro System</property>
-      <property name="model">FGMS001</property>
+      <property name="modelId">FGMS001</property>
       <property name="manufacturerId">010F</property>
       <property name="manufacturerRef">0800:1001,0800:2001,0800:3001,0801:1001,0801:2001</property>
       <property name="versionMax">2.8</property>
-      <property name="commandClass:SENSOR_MULTILEVEL">getSupported=false</property>
       <property name="defaultAssociations">3</property>
     </properties>
 

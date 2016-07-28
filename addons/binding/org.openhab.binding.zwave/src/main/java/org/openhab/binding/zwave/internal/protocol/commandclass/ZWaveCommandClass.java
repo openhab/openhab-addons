@@ -160,8 +160,6 @@ public abstract class ZWaveCommandClass {
             logger.debug("NODE {}: Version = {}, version set. Enabling extra functionality.", getNode().getNodeId(),
                     version);
         }
-
-        this.version = version;
     }
 
     /**

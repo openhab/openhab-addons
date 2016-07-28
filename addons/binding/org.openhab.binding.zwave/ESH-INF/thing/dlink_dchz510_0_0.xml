@@ -8,7 +8,7 @@
   <thing-type id="dlink_dchz510_00_000" listed="false">
     <label>DCH-Z510 Siren</label>
     <description><![CDATA[
-Siren<br /><h2>Inclusion Information</h2><ol><li>Have Z-Wave Controller enter inclusion mode.</li> <li>Pressing tamper key three times within 1.5 seconds to enter the inclusion mode.</li> <li>After add successful, the LED will light ON 1 second </li> </ol><br /><h2>Exclusion Information</h2><ol><li>Have Z-Wave Controller enter exclusion mode.</li> <li>Pressing tamper key three times within 1.5 seconds to enter the exclusion mode.</li> </ol><p>Node ID has been excluded. </p>
+Siren<br /><h2>Inclusion Information</h2><ol><li>Have Z-Wave Controller enter inclusion mode.</li> <li>Pressing tamper key three times within 1.5 seconds to enter the inclusion mode.</li> <li>After add successful, the LED will light ON 1 second </li> </ol><br /><h2>Exclusion Information</h2><ol><li>Have Z-Wave Controller enter exclusion mode.</li> <li>Pressing tamper key three times within 1.5 seconds to enter the exclusion mode.</li> <li>Node ID has been excluded. </li> </ol>
     ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
@@ -24,7 +24,7 @@ Siren<br /><h2>Inclusion Information</h2><ol><li>Have Z-Wave Controller enter in
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">D-Link</property>
-      <property name="model">DCH-Z510</property>
+      <property name="modelId">DCH-Z510</property>
       <property name="manufacturerId">0108</property>
       <property name="manufacturerRef">0004:000A</property>
       <property name="defaultAssociations">1</property>
@@ -39,9 +39,8 @@ Siren<br /><h2>Inclusion Information</h2><ol><li>Have Z-Wave Controller enter in
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_7_1" type="integer" groupName="configuration">
-        <label>7: customer_function</label>
-        <description>Customer Function</description>
+      <parameter name="config_7_1_00000010" type="integer" groupName="configuration">
+        <label>7: Customer Function</label>
         <default>0</default>
         <options>
           <option value="0">Using Notification Report</option>

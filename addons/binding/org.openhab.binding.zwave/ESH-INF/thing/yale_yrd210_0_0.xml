@@ -11,16 +11,16 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC</property>
-        </properties>
-      </channel>
       <channel id="lock_door" typeId="lock_door">
         <label></label>
         <properties>
           <property name="binding:*:OnOffType">DOOR_LOCK</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM,BASIC</property>
         </properties>
       </channel>
       <channel id="battery-level" typeId="system.battery-level">
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Yale Locks</property>
-      <property name="model">YRD210</property>
+      <property name="modelId">YRD210</property>
       <property name="manufacturerId">0129</property>
       <property name="manufacturerRef">0004:0000,0004:AA00</property>
       <property name="defaultAssociations">1</property>

@@ -13,11 +13,6 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
@@ -30,12 +25,17 @@ Water Sensor<br /><h2>Wakeup Information</h2><p>Press WakeUp button or hold z-wa
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Aeon Labs</property>
-      <property name="model">DSB45</property>
+      <property name="modelId">DSB45</property>
       <property name="manufacturerId">0086</property>
       <property name="manufacturerRef">0002:002D</property>
       <property name="defaultAssociations">1</property>

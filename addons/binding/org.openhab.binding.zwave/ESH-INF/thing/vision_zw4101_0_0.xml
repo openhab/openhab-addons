@@ -31,7 +31,7 @@ Drapery controller (up/stop/down)<br /><h1>Overview</h1><p>Drapery controller, s
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZW4101</property>
+      <property name="modelId">ZW4101</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">200D:0D03</property>
     </properties>

@@ -28,6 +28,7 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.ZWaveAssociation;
 import org.openhab.binding.zwave.internal.protocol.ZWaveController;
+import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Generic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEndpoint;
 import org.openhab.binding.zwave.internal.protocol.ZWaveEventListener;
@@ -451,6 +452,29 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     break;
 
                 case SECURITY_REPORT:
+                    // Check if we want to perform a secure inclusion...
+                    boolean doSecureInclusion = false;
+                    switch (controller.getSecureInclusionMode()) {
+                        default:
+                        case 0:
+                            // Only ENTRY_CONTROL
+                            if (node.getDeviceClass().getGenericDeviceClass() == Generic.ENTRY_CONTROL) {
+                                doSecureInclusion = true;
+                            }
+                            break;
+                        case 1:
+                            // All devices
+                            doSecureInclusion = true;
+                            break;
+                        case 2:
+                            // No secure inclusion
+                            break;
+                    }
+
+                    if (doSecureInclusion == false) {
+                        break;
+                    }
+
                     // For devices that use security. When invoked during secure inclusion, this
                     // method will go through all steps to give the device our zwave:networkKey from
                     // the config. This requires multiple steps as defined in
@@ -550,7 +574,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                             .getCommandClass(CommandClass.VERSION);
 
                     if (versionCommandClass == null) {
-                        logger.debug("NODE {}: Node advancer: APP_VERSION - VERSION node supported", node.getNodeId());
+                        logger.debug("NODE {}: Node advancer: APP_VERSION - VERSION not supported", node.getNodeId());
                         break;
                     }
 
@@ -569,11 +593,48 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                     ZWaveVersionCommandClass version = (ZWaveVersionCommandClass) node
                             .getCommandClass(CommandClass.VERSION);
 
+                    thingType = ZWaveConfigProvider.getThingType(node);
+                    if (thingType == null) {
+                        logger.debug("NODE {}: Node advancer: VERSION - thing is null!", node.getNodeId());
+                    }
+
                     // Loop through all command classes, requesting their version
                     // using the Version command class
                     for (ZWaveCommandClass zwaveVersionClass : node.getCommandClasses()) {
                         logger.debug("NODE {}: Node advancer: VERSION - checking {}, version is {}", node.getNodeId(),
                                 zwaveVersionClass.getCommandClass().getLabel(), zwaveVersionClass.getVersion());
+
+                        // See if we want to force the version of this command class
+                        if (thingType != null) {
+                            Map<String, String> properties = thingType.getProperties();
+                            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                                String key = entry.getKey();
+                                String value = entry.getValue();
+
+                                String cmds[] = key.split(":");
+                                if ("commandClass".equals(cmds[0]) == false) {
+                                    continue;
+                                }
+                                String args[] = value.split("=");
+
+                                if ("setVersion".equals(args[0])) {
+                                    if (zwaveVersionClass.getCommandClass().getLabel().equals(cmds[1])) {
+                                        logger.debug("NODE {}: Node advancer: VERSION - Set {} to Version {}",
+                                                node.getNodeId(), CommandClass.getCommandClass(cmds[1]).getLabel(),
+                                                args[1]);
+
+                                        // TODO: This ignores endpoint
+                                        try {
+                                            zwaveVersionClass.setVersion(Integer.parseInt(args[1]));
+                                        } catch (NumberFormatException e) {
+                                            logger.error("NODE {}: Node advancer: VERSION - number format exception {}",
+                                                    args[1]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         if (version != null && zwaveVersionClass.getVersion() == 0) {
                             logger.debug("NODE {}: Node advancer: VERSION - queued   {}", node.getNodeId(),
                                     zwaveVersionClass.getCommandClass().getLabel());
@@ -630,7 +691,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         }
                         String args[] = value.split("=");
 
-                        if ("REMOVE".equals(args[0])) {
+                        if ("ccRemove".equals(args[0])) {
                             // If we want to remove the class, then remove it!
 
                             // TODO: This will only remove the root nodes and ignores endpoint
@@ -656,7 +717,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                         // Command class isn't found! Do we want to add it?
                         // TODO: Does this need to account for multiple endpoints!?!
-                        if ("ADD".equals(args[0])) {
+                        if ("ccAdd".equals(args[0])) {
                             ZWaveCommandClass commandClass = ZWaveCommandClass
                                     .getInstance(CommandClass.getCommandClass(args[0]).getKey(), node, controller);
                             if (commandClass != null) {
@@ -865,7 +926,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                     // If the node doesn't support configuration class, then we better let people know!
                     if (configurationCommandClass == null) {
-                        logger.error("NODE {}: Node advancer: GET_CONFIGURATION - CONFIGURATION class not supported",
+                        logger.debug("NODE {}: Node advancer: GET_CONFIGURATION - CONFIGURATION class not supported",
                                 node.getNodeId());
                         break;
                     }
