@@ -19,6 +19,7 @@ import org.mockito.Matchers;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageType;
+import org.openhab.binding.zwave.internal.protocol.ZWaveAssociationGroup;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
 import org.openhab.binding.zwave.internal.protocol.ZWaveSerialMessageException;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
@@ -29,6 +30,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZwaveAssociation
  * Test cases for {@link ZWaveAssociationGroupInfoCommandClass}.
  *
  * @author Jorg de Jong - Initial version
+ * @author Chris Jackson
  */
 public class ZWaveAssociationGroupInfoCommandClassTest {
 
@@ -46,8 +48,12 @@ public class ZWaveAssociationGroupInfoCommandClassTest {
         byte[] groupCommands = { 0x01, 0x16, 0x00, 0x04, 0x00, 0x0A, 0x10, 0x59, 0x06, 0x01, 0x0C, 0x26, 0x03, 0x5A,
                 0x01, 0x2B, 0x01, 0x31, 0x05, 0x32, 0x02, 0x71, 0x05, (byte) 0x81 };
 
+        ZWaveAssociationGroup group = new ZWaveAssociationGroup(1);
+
         // setup mocks
         ZWaveNode node = mock(ZWaveNode.class);
+        when(node.getAssociationGroup(1)).thenReturn(group);
+
         ZWaveCommandClass reset = ZWaveCommandClass.getInstance(CommandClass.DEVICE_RESET_LOCALLY.getKey(), node, null);
         when(node.getCommandClass(Matchers.eq(CommandClass.DEVICE_RESET_LOCALLY))).thenReturn(reset);
 
@@ -59,13 +65,11 @@ public class ZWaveAssociationGroupInfoCommandClassTest {
         processCommandClassMessages(cls, Arrays.asList(new SerialMessage(groupName), new SerialMessage(groupProfile),
                 new SerialMessage(groupCommands)));
 
-        // see if we got the expected results
-        assertNotNull(cls.getGroupInfo());
-        assertEquals("Lifeline", cls.getGroupInfo().get(1).getName());
-        assertEquals(Integer.valueOf(1), cls.getGroupInfo().get(1).getProfile());
-        assertEquals(false, cls.getGroupInfo().get(1).getCommands().isEmpty());
-        assertEquals(false,
-                cls.getGroupInfo().get(1).getCommands().contains(CommandClass.DEVICE_RESET_LOCALLY.getKey()));
+        // See if we got the expected results
+        assertEquals("Lifeline", group.getName());
+        assertEquals(Integer.valueOf(1), group.getProfile());
+        assertEquals(false, group.getCommandClasses().isEmpty());
+        assertEquals(false, group.getCommandClasses().contains(CommandClass.DEVICE_RESET_LOCALLY.getKey()));
         assertEquals(true, cls.getAutoSubscribeGroups().contains(1));
     }
 
