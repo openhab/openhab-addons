@@ -57,14 +57,6 @@ Digital or Analog Voltage input and/or Dry Contact Relay <br /><h1>Overview</h1>
         <label>Configuration Parameters</label>
       </parameter-group>
 
-      <parameter name="config_1_1" type="integer" groupName="configuration">
-        <label>1: Not_Used_1</label>
-        <default>0</default>
-        <options>
-          <option value="0">Null</option>
-        </options>
-      </parameter>
-
       <parameter name="config_2_1" type="integer" groupName="configuration">
         <label>2: Clear_Pulse_Meter_Counts</label>
         <default>0</default>

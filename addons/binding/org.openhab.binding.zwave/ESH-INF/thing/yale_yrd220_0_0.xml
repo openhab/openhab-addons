@@ -37,7 +37,7 @@ Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To i
       <property name="vendor">Yale Locks</property>
       <property name="modelId">YRD220</property>
       <property name="manufacturerId">0129</property>
-      <property name="manufacturerRef">0002:AA00</property>
+      <property name="manufacturerRef">0002:0000,0002:AA00,0002:FFFF</property>
       <property name="defaultAssociations">1</property>
     </properties>
 

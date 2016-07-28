@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zwave"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+                      http://eclipse.org/smarthome/schemas/thing-description/v1.0.0">
+
+  <thing-type id="everspring_st815_00_000" listed="false">
+    <label>ST815 Illumination Sensor</label>
+    <description>Illumination Sensor</description>
+
+    <!-- CHANNEL DEFINITIONS -->
+    <channels>
+    </channels>
+
+    <!-- DEVICE PROPERTY DEFINITIONS -->
+    <properties>
+      <property name="vendor">Everspring</property>
+      <property name="modelId">ST815</property>
+      <property name="manufacturerId">0060</property>
+      <property name="manufacturerRef">0007:0001</property>
+      <property name="defaultAssociations">1</property>
+    </properties>
+
+    <!-- CONFIGURATION DESCRIPTIONS -->
+    <config-description>
+
+      <!-- PARAMETER DEFINITIONS -->
+      <parameter-group name="configuration">
+        <context>setup</context>
+        <label>Configuration Parameters</label>
+      </parameter-group>
+
+      <parameter name="config_1_1" type="integer" groupName="configuration"
+                 min="0" max="99">
+        <label>1: Basic Set Level</label>
+        <description><![CDATA[
+Basic Set Level<br /><h1>Overview</h1><p>Set basic set value to be on or off.</p> <p>Set to 0 to disable</p>
+        ]]></description>
+        <default>99</default>
+      </parameter>
+
+      <parameter name="config_2_2" type="integer" groupName="configuration"
+                 min="0" max="1000">
+        <label>2: Lux Trigger On Value</label>
+        <description><![CDATA[
+Lux Trigger On Value<br /><h1>Overview</h1><p>Lux level when ON command is sent out.</p> <p>Set to 0 to disable.</p> <p>Valid values - 30-1000 or 0</p> <p>Default 30</p>
+        ]]></description>
+        <default>300</default>
+      </parameter>
+
+      <parameter name="config_3_2" type="integer" groupName="configuration"
+                 min="0" max="1000">
+        <label>3: Lux Trigger Off Value</label>
+        <description><![CDATA[
+<br /><h1>Overview</h1><p>Lux level when Off command is sent out.</p> <p>Values 30-1000 or 0</p> <p>Default 500</p> <p>Set to 0 to disable.</p>
+        ]]></description>
+        <default>500</default>
+      </parameter>
+
+      <parameter name="config_4_2" type="integer" groupName="configuration"
+                 min="0" max="480">
+        <label>4: Lux Trigger Off Timer Value.</label>
+        <description><![CDATA[
+Lux Trigger Off Timer Value.<br /><h1>Overview</h1><p>Timer value in minutes.</p> <p>Values : 1-480 or 0</p> <p>Default 240</p> <p>Set to 0 to disable.</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_5_2" type="integer" groupName="configuration"
+                 min="0" max="1439">
+        <label>5: Auto Report Time Interval</label>
+        <description><![CDATA[
+Auto Report Time Interval<br /><h1>Overview</h1><p>Time interval in minutes to auto report to association group 1</p> <p>Valid values 1-1439 minutes or 0</p> <p>Set to 0 to Disable</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <parameter name="config_6_2" type="integer" groupName="configuration"
+                 min="0" max="1000">
+        <label>6: Auto Report Lux Interval</label>
+        <description><![CDATA[
+Auto Report Lux Interval<br /><h1>Overview</h1><p>Lux interval step size to auto report to association group 1</p> <p>Valid Values 30-1000 (Lux)</p> <p>Set to 0 to Disable</p>
+        ]]></description>
+        <default>0</default>
+      </parameter>
+
+      <!-- ASSOCIATION DEFINITIONS -->
+      <parameter-group name="association">
+        <context>link</context>
+        <label>Association Groups</label>
+      </parameter-group>
+
+      <parameter name="group_1" type="text" groupName="association">
+        <label>1: Reports</label>
+      </parameter>
+
+      <parameter name="group_2" type="text" groupName="association" multiple="true">
+        <label>2: Control</label>
+        <multipleLimit>3</multipleLimit>
+      </parameter>
+
+    </config-description>
+
+  </thing-type>
+</thing:thing-descriptions>
