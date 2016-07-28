@@ -8,14 +8,17 @@
  */
 package org.openhab.binding.zwave.test.internal.protocol.commandclass;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiAssociationCommandClass;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveAssociationEvent;
+import org.openhab.binding.zwave.internal.protocol.event.ZWaveEvent;
 
 /**
  * Test cases for {@link ZWaveMultiAssociationCommandClass}.
@@ -34,7 +37,6 @@ public class ZWaveMultiAssociationCommandClassTest extends ZWaveCommandClassTest
         cls.setVersion(1);
         msg = cls.getAssociationMessage(1);
         msg.setCallbackId(4);
-        byte[] x = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
     }
 
@@ -48,7 +50,6 @@ public class ZWaveMultiAssociationCommandClassTest extends ZWaveCommandClassTest
         cls.setVersion(1);
         msg = cls.getGroupingsMessage();
         msg.setCallbackId(4);
-        byte[] x = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponseV1));
     }
 
@@ -64,12 +65,10 @@ public class ZWaveMultiAssociationCommandClassTest extends ZWaveCommandClassTest
         cls.setVersion(1);
         msg = cls.removeAssociationMessage(1, 2, 0);
         msg.setCallbackId(4);
-        byte[] x = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponse1));
 
         msg = cls.removeAssociationMessage(1, 2, 3);
         msg.setCallbackId(4);
-        byte[] y = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponse2));
     }
 
@@ -85,12 +84,30 @@ public class ZWaveMultiAssociationCommandClassTest extends ZWaveCommandClassTest
         cls.setVersion(1);
         msg = cls.setAssociationMessage(1, 2, 0);
         msg.setCallbackId(4);
-        byte[] x = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponse1));
 
         msg = cls.setAssociationMessage(1, 2, 3);
         msg.setCallbackId(4);
-        byte[] y = msg.getMessageBuffer();
         assertTrue(Arrays.equals(msg.getMessageBuffer(), expectedResponse2));
+    }
+
+    @Test
+    public void AssociationReport() {
+        byte[] packetData = { 0x01, 0x0E, 0x00, 0x04, 0x00, 0x03, 0x08, (byte) 0x8E, 0x03, 0x02, 0x10, 0x00, 0x00, 0x01,
+                0x01, 0x61 };
+
+        List<ZWaveEvent> events = processCommandClassMessage(packetData);
+
+        assertEquals(events.size(), 1);
+
+        ZWaveAssociationEvent event = (ZWaveAssociationEvent) events.get(0);
+
+        assertEquals(event.getCommandClass(), CommandClass.ASSOCIATION);
+        // assertEquals(event.getNodeId(), 3);
+        assertEquals(event.getEndpoint(), 0);
+        assertEquals(event.getGroupId(), 2);
+        assertEquals(event.getGroupMembers().size(), 1);
+        assertEquals(event.getGroupMembers().get(0).getNode(), 1);
+        assertEquals(event.getGroupMembers().get(0).getEndpoint(), 1);
     }
 }

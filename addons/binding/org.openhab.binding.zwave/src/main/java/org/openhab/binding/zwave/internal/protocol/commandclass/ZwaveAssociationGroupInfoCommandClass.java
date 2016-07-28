@@ -222,7 +222,6 @@ public class ZwaveAssociationGroupInfoCommandClass extends ZWaveCommandClass
         logger.debug("NODE {}: Supported Command classes and commands for group:{} ->", getNode().getNodeId(), groupid);
         Set<CommandClass> commands = new HashSet<>();
         for (int i = 0; i < size; i += 2) {
-
             // Check if this node actually supports this Command Class
             ZWaveCommandClass cc = getNode()
                     .getCommandClass(CommandClass.getCommandClass(serialMessage.getMessagePayloadByte(offset + 3 + i)));

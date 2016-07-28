@@ -9,6 +9,8 @@
 package org.openhab.binding.zwave.internal.protocol.commandclass;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageClass;
@@ -34,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * @author Chris Jackson
  */
 @XStreamAlias("multiAssociationCommandClass")
-public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
+public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass implements ZWaveCommandClassInitialization {
 
     private static final Logger logger = LoggerFactory.getLogger(ZWaveMultiAssociationCommandClass.class);
 
@@ -55,6 +57,9 @@ public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
 
     @XStreamOmitField
     private ZWaveAssociationGroup pendingAssociation = null;
+
+    @XStreamOmitField
+    private boolean initialiseDone = false;
 
     // This will be set when we query a node for the number of groups it supports
     private int maxGroups = 0;
@@ -236,12 +241,22 @@ public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
         maxGroups = serialMessage.getMessagePayloadByte(offset + 1);
         logger.debug("NODE {}: processGroupingsReport number of groups {}", getNode(), maxGroups);
 
-        // Start the process to query these nodes
-        updateAssociationsNode = 1;
-        SerialMessage sm = getAssociationMessage(updateAssociationsNode);
-        if (sm != null) {
-            getController().sendData(sm);
+        // Add an association for each group if it doesn't exist
+        for (int groupId = 1; groupId <= maxGroups; groupId++) {
+            if (getNode().getAssociationGroup(groupId) == null) {
+                ZWaveAssociationGroup group = new ZWaveAssociationGroup(groupId);
+                getNode().setAssociationGroup(group);
+            }
         }
+
+        // Start the process to query these nodes
+        // updateAssociationsNode = 1;
+        // SerialMessage sm = getAssociationMessage(updateAssociationsNode);
+        // if (sm != null) {
+        // getController().sendData(sm);
+        // }
+
+        initialiseDone = true;
     }
 
     /**
@@ -379,5 +394,16 @@ public class ZWaveMultiAssociationCommandClass extends ZWaveCommandClass {
         if (serialMessage != null) {
             getController().sendData(serialMessage);
         }
+    }
+
+    @Override
+    public Collection<SerialMessage> initialize(boolean refresh) {
+        ArrayList<SerialMessage> result = new ArrayList<SerialMessage>();
+        // If we're already initialized, then don't do it again unless we're refreshing
+        if (refresh == true || initialiseDone == false) {
+            result.add(getGroupingsMessage());
+        }
+
+        return result;
     }
 }
