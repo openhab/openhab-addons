@@ -24,7 +24,6 @@ import org.openhab.binding.zwave.internal.protocol.SerialMessage.SerialMessageCl
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Basic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Generic;
 import org.openhab.binding.zwave.internal.protocol.ZWaveDeviceClass.Specific;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveAssociationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass.CommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiInstanceCommandClass;
@@ -89,6 +88,9 @@ public class ZWaveNode {
 
     private Map<CommandClass, ZWaveCommandClass> supportedCommandClasses = new HashMap<CommandClass, ZWaveCommandClass>();
     private final Set<CommandClass> securedCommandClasses = new HashSet<CommandClass>();
+
+    // Stores the list of association groups
+    private Map<Integer, ZWaveAssociationGroup> associationGroups = new HashMap<Integer, ZWaveAssociationGroup>();
 
     private List<Integer> nodeNeighbors = new ArrayList<Integer>();
     private Date lastSent = null;
@@ -679,18 +681,14 @@ public class ZWaveNode {
         }
 
         // Get the number of association groups reported by this node
-        ZWaveAssociationCommandClass associationCmdClass = (ZWaveAssociationCommandClass) getCommandClass(
-                CommandClass.ASSOCIATION);
-        if (associationCmdClass == null) {
-            logger.debug("NODE {}: Node has no association class. No routes can be set.", nodeId);
-            return Collections.emptySet();
-        }
-
-        int groups = associationCmdClass.getGroupCount();
+        int groups = associationGroups.size();
         if (groups != 0) {
             // Loop through each association group and add the node ID to the list
             for (int group = 1; group <= groups; group++) {
-                for (ZWaveAssociation associationNode : associationCmdClass.getGroupMembers(group).getAssociations()) {
+                if (associationGroups.get(group) == null) {
+                    continue;
+                }
+                for (ZWaveAssociation associationNode : associationGroups.get(group).getAssociations()) {
                     routedNodes.add(associationNode.getNode());
                 }
             }
@@ -960,5 +958,33 @@ public class ZWaveNode {
             }
         }
         return result;
+    }
+
+    /**
+     * Get an association group
+     *
+     * @param group
+     * @return
+     */
+    public ZWaveAssociationGroup getAssociationGroup(int group) {
+        return associationGroups.get(group);
+    }
+
+    /**
+     * Set an association group
+     *
+     * @param group
+     */
+    public void setAssociationGroup(ZWaveAssociationGroup group) {
+        associationGroups.put(group.getIndex(), group);
+    }
+
+    /**
+     * Return a list of all association groups
+     *
+     * @return
+     */
+    public Map<Integer, ZWaveAssociationGroup> getAssociationGroups() {
+        return associationGroups;
     }
 }
