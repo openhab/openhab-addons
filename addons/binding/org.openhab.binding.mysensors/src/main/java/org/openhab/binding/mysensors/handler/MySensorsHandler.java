@@ -93,14 +93,15 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        
-    	/* We don't handle refresh commands yet
-    	 * 
-    	 */
-    	if(command == RefreshType.REFRESH)
-        	return;
-        
-    	
+
+        /*
+         * We don't handle refresh commands yet
+         *
+         */
+        if (command == RefreshType.REFRESH) {
+            return;
+        }
+
         String msgPayload = "";
         int subType = 0;
         int int_requestack = 0;
@@ -226,7 +227,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
      */
     @Override
     public void statusUpdateReceived(MySensorsStatusUpdateEvent event) {
-    	MySensorsMessage msg = event.getData();
+        MySensorsMessage msg = event.getData();
 
         // or is this an update message?
         if (nodeId == msg.getNodeId()) { // is this message for me?
@@ -317,6 +318,7 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
         if (bridgeHandler.getBridgeConnection() == null) {
             logger.error("Bridge connection not estblished yet - can't subscribe for updates");
         } else {
+            logger.debug("Bridge connection estblished - subscribing update for node: {} child: {}", nodeId, childId);
             bridgeHandler.getBridgeConnection().addUpdateListener(this);
         }
     }
