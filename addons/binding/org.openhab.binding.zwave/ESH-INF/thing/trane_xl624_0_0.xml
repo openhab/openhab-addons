@@ -72,7 +72,7 @@
       <property name="vendor">Trane</property>
       <property name="modelId">XL624</property>
       <property name="manufacturerId">008B</property>
-      <property name="manufacturerRef">5452:5439</property>
+      <property name="manufacturerRef">5452:5439,5452:5443</property>
     </properties>
 
   </thing-type>
