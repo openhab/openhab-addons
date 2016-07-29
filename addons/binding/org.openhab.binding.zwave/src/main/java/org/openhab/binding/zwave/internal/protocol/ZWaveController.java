@@ -57,6 +57,7 @@ import org.openhab.binding.zwave.internal.protocol.serialmessage.MemoryGetIdMess
 import org.openhab.binding.zwave.internal.protocol.serialmessage.RemoveFailedNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.RemoveNodeMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.ReplaceFailedNodeMessageClass;
+import org.openhab.binding.zwave.internal.protocol.serialmessage.RequestNetworkUpdateMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.RequestNodeInfoMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.RequestNodeNeighborUpdateMessageClass;
 import org.openhab.binding.zwave.internal.protocol.serialmessage.SendDataMessageClass;
@@ -864,6 +865,15 @@ public class ZWaveController {
     }
 
     /**
+     * Requests a network update
+     *
+     */
+    public void requestRequestNetworkUpdate() {
+        enqueue(new RequestNetworkUpdateMessageClass().doRequest());
+        logger.debug("ZWave controller request network update");
+    }
+
+    /**
      * Terminates the exclusion mode
      *
      */
@@ -1205,7 +1215,7 @@ public class ZWaveController {
 
     /**
      * Returns the secure inclusion mode
-     * 
+     *
      * @return
      *         0 ENTRY_CONTROL
      *         1 All Devices
