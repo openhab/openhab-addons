@@ -176,6 +176,8 @@ public abstract class ZWaveCommandProcessor {
             messageMap.put(SerialMessage.SerialMessageClass.IsFailedNodeID, IsFailedNodeMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.RemoveNodeFromNetwork, RemoveNodeMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.ReplaceFailedNode, ReplaceFailedNodeMessageClass.class);
+            messageMap.put(SerialMessage.SerialMessageClass.RequestNetworkUpdate,
+                    RequestNetworkUpdateMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.RequestNodeInfo, RequestNodeInfoMessageClass.class);
             messageMap.put(SerialMessage.SerialMessageClass.RequestNodeNeighborUpdate,
                     RequestNodeNeighborUpdateMessageClass.class);
