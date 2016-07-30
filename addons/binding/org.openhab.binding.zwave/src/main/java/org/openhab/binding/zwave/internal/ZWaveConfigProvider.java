@@ -233,7 +233,7 @@ public class ZWaveConfigProvider implements ConfigDescriptionProvider, ConfigOpt
         // If we support DOOR_LOCK - add options
         if (node.getCommandClass(ZWaveCommandClass.CommandClass.DOOR_LOCK) != null) {
             parameters.add(ConfigDescriptionParameterBuilder
-                    .create(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, Type.TEXT).withLabel("Lock Timeout")
+                    .create(ZWaveBindingConstants.CONFIGURATION_DOORLOCKTIMEOUT, Type.INTEGER).withLabel("Lock Timeout")
                     .withDescription("Set the timeout on the lock.").withDefault("30").withGroupName("thingcfg")
                     .build());
         }
