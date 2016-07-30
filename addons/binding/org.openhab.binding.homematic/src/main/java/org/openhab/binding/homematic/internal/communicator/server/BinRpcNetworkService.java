@@ -9,11 +9,12 @@
 package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.openhab.binding.homematic.internal.common.HomematicConfig;
 
 /**
  * Waits for a message from the Homematic gateway and starts the RpcCallbackHandler to handle the message.
@@ -21,22 +22,22 @@ import org.eclipse.smarthome.core.common.ThreadPoolManager;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcNetworkService implements Runnable {
-    // FIXME: dependency to openHab
-    private final ExecutorService pool = ThreadPoolManager.getPool("homematicRpc");
+    private static final String RPC_POOL_NAME = "homematicRpc";
     private ServerSocket serverSocket;
     private boolean accept = true;
     private RpcEventListener listener;
-    private String encoding;
+    private HomematicConfig config;
 
     /**
      * Creates the socket for listening to events from the Homematic gateway.
      */
-    public BinRpcNetworkService(RpcEventListener listener, int port, String encoding) throws IOException {
+    public BinRpcNetworkService(RpcEventListener listener, HomematicConfig config) throws IOException {
         this.listener = listener;
-        this.encoding = encoding;
+        this.config = config;
 
-        serverSocket = new ServerSocket(port);
+        serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);
+        serverSocket.bind(new InetSocketAddress(config.getCallbackPort()));
     }
 
     /**
@@ -47,8 +48,8 @@ public class BinRpcNetworkService implements Runnable {
         while (accept) {
             try {
                 Socket cs = serverSocket.accept();
-                BinRpcCallbackHandler rpcHandler = new BinRpcCallbackHandler(cs, listener, encoding);
-                pool.execute(rpcHandler);
+                BinRpcCallbackHandler rpcHandler = new BinRpcCallbackHandler(cs, listener, config.getEncoding());
+                ThreadPoolManager.getPool(RPC_POOL_NAME).execute(rpcHandler);
             } catch (IOException ex) {
                 // ignore
             }
@@ -65,7 +66,6 @@ public class BinRpcNetworkService implements Runnable {
         } catch (IOException ioe) {
             // ignore
         }
-        pool.shutdownNow();
     }
 
 }

@@ -11,10 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door/Window Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY;type=DOORWINDOW</property>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY;type=DOORWINDOW</property>
         </properties>
       </channel>
       <channel id="alarm_motion" typeId="alarm_motion">

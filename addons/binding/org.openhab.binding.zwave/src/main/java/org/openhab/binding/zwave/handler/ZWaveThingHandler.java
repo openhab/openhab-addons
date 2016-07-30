@@ -56,6 +56,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClas
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass.ZWaveConfigurationParameterEvent;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveDoorLockCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiAssociationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNodeNamingCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePlusCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWavePowerLevelCommandClass;
@@ -272,17 +273,17 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         // Get the properties for the comparison
         String parmManufacturer = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_MANUFACTURER);
         if (parmManufacturer == null) {
-            logger.debug("NODE {}: MANUFACTURER not set {}", nodeId);
+            logger.debug("NODE {}: MANUFACTURER not set", nodeId);
             return;
         }
         String parmDeviceType = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICETYPE);
         if (parmDeviceType == null) {
-            logger.debug("NODE {}: TYPE not set {}", nodeId);
+            logger.debug("NODE {}: TYPE not set", nodeId);
             return;
         }
         String parmDeviceId = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_DEVICEID);
         if (parmDeviceId == null) {
-            logger.debug("NODE {}: ID not set {}", nodeId);
+            logger.debug("NODE {}: ID not set", nodeId);
             return;
         }
         String parmVersion = this.getThing().getProperties().get(ZWaveBindingConstants.PROPERTY_VERSION);
@@ -586,12 +587,11 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
                 Integer groupIndex = Integer.valueOf(cfg[1]);
 
-                // Get the association command class
+                // Get the association command class - we'll use the multi_instance version if it exists.
                 ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
                         .getCommandClass(CommandClass.ASSOCIATION);
-                        // ZWaveAssociationCommandClass associationCommandClassMulti = (ZWaveAssociationCommandClass)
-                        // node
-                        // .getCommandClass(CommandClass.ASSOCIATION);
+                ZWaveMultiAssociationCommandClass associationCommandClassMulti = (ZWaveMultiAssociationCommandClass) node
+                        .getCommandClass(CommandClass.MULTI_INSTANCE_ASSOCIATION);
 
                 // Get the configuration information.
                 // This should be an array of nodes, and/or nodes and endpoints
@@ -603,7 +603,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     paramValues.add((String) parameter);
                 }
 
-                ZWaveAssociationGroup currentMembers = associationCommandClass.getGroupMembers(groupIndex);
+                ZWaveAssociationGroup currentMembers = node.getAssociationGroup(groupIndex);
                 ZWaveAssociationGroup newMembers = new ZWaveAssociationGroup(groupIndex);
 
                 // Loop over all the parameters
@@ -627,8 +627,13 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     // Is the current association still in the newMembers list?
                     if (newMembers.isAssociated(member.getNode(), member.getEndpoint()) == false) {
                         // No - so it needs to be removed
-                        controllerHandler.sendData(
-                                associationCommandClass.removeAssociationMessage(groupIndex, member.getNode()));
+                        if (associationCommandClassMulti != null) {
+                            controllerHandler.sendData(associationCommandClassMulti.removeAssociationMessage(groupIndex,
+                                    member.getNode(), member.getEndpoint()));
+                        } else {
+                            controllerHandler.sendData(
+                                    associationCommandClass.removeAssociationMessage(groupIndex, member.getNode()));
+                        }
                     }
                 }
 
@@ -637,13 +642,22 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     // Is the new association still in the currentMembers list?
                     if (currentMembers.isAssociated(member.getNode(), member.getEndpoint()) == false) {
                         // No - so it needs to be added
-                        controllerHandler
-                                .sendData(associationCommandClass.setAssociationMessage(groupIndex, member.getNode()));
+                        if (associationCommandClassMulti != null) {
+                            controllerHandler.sendData(associationCommandClassMulti.setAssociationMessage(groupIndex,
+                                    member.getNode(), member.getEndpoint()));
+                        } else {
+                            controllerHandler.sendData(
+                                    associationCommandClass.setAssociationMessage(groupIndex, member.getNode()));
+                        }
                     }
                 }
 
                 // Request an update to the association group
-                controllerHandler.sendData(associationCommandClass.getAssociationMessage(groupIndex));
+                if (associationCommandClassMulti != null) {
+                    controllerHandler.sendData(associationCommandClassMulti.getAssociationMessage(groupIndex));
+                } else {
+                    controllerHandler.sendData(associationCommandClass.getAssociationMessage(groupIndex));
+                }
                 pendingCfg.put(configurationParameter.getKey(), valueObject);
             } else if ("wakeup".equals(cfg[0])) {
                 ZWaveWakeUpCommandClass wakeupCommandClass = (ZWaveWakeUpCommandClass) node
@@ -1236,18 +1250,25 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
 
     private void updateNodeProperties() {
         if (controllerHandler == null) {
+            logger.debug("NODE {}: Updating node properties. Controller not found.", nodeId);
             return;
         }
 
         ZWaveNode node = controllerHandler.getNode(nodeId);
         if (node == null) {
+            logger.debug("NODE {}: Updating node properties. Node not found.", nodeId);
             return;
         }
+
+        logger.debug("NODE {}: Updating node properties.", nodeId);
 
         // Update property information about this device
         Map<String, String> properties = editProperties();
 
+        logger.debug("NODE {}: Updating node properties. MAN={}", nodeId, node.getManufacturer());
         if (node.getManufacturer() != Integer.MAX_VALUE) {
+            logger.debug("NODE {}: Updating node properties. MAN={}. SET. Was {}", nodeId, node.getManufacturer(),
+                    properties.get(ZWaveBindingConstants.PROPERTY_MANUFACTURER));
             properties.put(ZWaveBindingConstants.PROPERTY_MANUFACTURER, Integer.toString(node.getManufacturer()));
         }
         if (node.getDeviceType() != Integer.MAX_VALUE) {
@@ -1308,22 +1329,17 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
         }
 
         // Process ASSOCIATION
-        ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
-                .getCommandClass(CommandClass.ASSOCIATION);
-        if (associationCommandClass != null) {
-            for (int groupId : associationCommandClass.getAssociations().keySet()) {
-                List<String> group = new ArrayList<String>();
+        for (ZWaveAssociationGroup group : node.getAssociationGroups().values()) {
+            List<String> members = new ArrayList<String>();
 
-                // Build the configuration value
-                for (ZWaveAssociation groupMember : associationCommandClass.getGroupMembers(groupId)
-                        .getAssociations()) {
-                    logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, groupId,
-                            groupMember.getNode(), groupMember.getEndpoint());
-                    group.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
-                }
-
-                config.put("group_" + groupId, group);
+            // Build the configuration value
+            for (ZWaveAssociation groupMember : group.getAssociations()) {
+                logger.debug("NODE {}: Update ASSOCIATION group_{}: Adding node_{}_{}", nodeId, group,
+                        groupMember.getNode(), groupMember.getEndpoint());
+                members.add("node_" + groupMember.getNode() + "_" + groupMember.getEndpoint());
             }
+
+            config.put("group_" + group, members);
         }
 
         // Process WAKE_UP

@@ -135,6 +135,16 @@
                 </options>
             </parameter>
 
+            <parameter name="controller_sync" type="integer" groupName="actions">
+                <label>Synchronize network</label>
+                <description>Download the network with the SUC</description>
+                <advanced>true</advanced>
+                <default>0</default>
+                <options>
+                    <option value="-232323">send</option>
+                </options>
+            </parameter>
+
             <parameter name="inclusion_mode" type="integer" groupName="network">
                 <label>Inclusion Mode</label>
                 <description>

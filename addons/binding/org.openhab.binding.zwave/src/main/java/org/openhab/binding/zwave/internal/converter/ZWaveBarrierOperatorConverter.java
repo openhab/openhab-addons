@@ -20,8 +20,8 @@ import org.openhab.binding.zwave.handler.ZWaveControllerHandler;
 import org.openhab.binding.zwave.handler.ZWaveThingChannel;
 import org.openhab.binding.zwave.internal.protocol.SerialMessage;
 import org.openhab.binding.zwave.internal.protocol.ZWaveNode;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBarrierOperatorCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBarrierOperatorCommandClass.BarrierOperatorStateType;
-import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveBasicCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClass;
 import org.openhab.binding.zwave.internal.protocol.event.ZWaveCommandClassValueEvent;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class ZWaveBarrierOperatorConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public List<SerialMessage> executeRefresh(ZWaveThingChannel channel, ZWaveNode node) {
-        ZWaveBasicCommandClass commandClass = (ZWaveBasicCommandClass) node
+        ZWaveBarrierOperatorCommandClass commandClass = (ZWaveBarrierOperatorCommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.BARRIER_OPERATOR, channel.getEndpoint());
         if (commandClass == null) {
             return null;
@@ -95,7 +95,7 @@ public class ZWaveBarrierOperatorConverter extends ZWaveCommandClassConverter {
      */
     @Override
     public List<SerialMessage> receiveCommand(ZWaveThingChannel channel, ZWaveNode node, Command command) {
-        ZWaveBasicCommandClass commandClass = (ZWaveBasicCommandClass) node
+        ZWaveBarrierOperatorCommandClass commandClass = (ZWaveBarrierOperatorCommandClass) node
                 .resolveCommandClass(ZWaveCommandClass.CommandClass.BARRIER_OPERATOR, channel.getEndpoint());
 
         Integer value = null;

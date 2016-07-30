@@ -41,6 +41,7 @@ import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClas
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveCommandClassInitialization;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveConfigurationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveManufacturerSpecificCommandClass;
+import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiAssociationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveMultiInstanceCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveNoOperationCommandClass;
 import org.openhab.binding.zwave.internal.protocol.commandclass.ZWaveSecurityCommandClassWithInitialization;
@@ -691,7 +692,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         }
                         String args[] = value.split("=");
 
-                        if ("REMOVE".equals(args[0])) {
+                        if ("ccRemove".equals(args[0])) {
                             // If we want to remove the class, then remove it!
 
                             // TODO: This will only remove the root nodes and ignores endpoint
@@ -717,7 +718,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                         // Command class isn't found! Do we want to add it?
                         // TODO: Does this need to account for multiple endpoints!?!
-                        if ("ADD".equals(args[0])) {
+                        if ("ccAdd".equals(args[0])) {
                             ZWaveCommandClass commandClass = ZWaveCommandClass
                                     .getInstance(CommandClass.getCommandClass(args[0]).getKey(), node, controller);
                             if (commandClass != null) {
@@ -772,9 +773,11 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
 
                 case ASSOCIATIONS:
                     // Do we support associations
+                    ZWaveMultiAssociationCommandClass multiAssociationCommandClass = (ZWaveMultiAssociationCommandClass) node
+                            .getCommandClass(CommandClass.MULTI_INSTANCE_ASSOCIATION);
                     ZWaveAssociationCommandClass associationCommandClass = (ZWaveAssociationCommandClass) node
                             .getCommandClass(CommandClass.ASSOCIATION);
-                    if (associationCommandClass == null) {
+                    if (multiAssociationCommandClass == null && associationCommandClass == null) {
                         break;
                     }
 
@@ -801,7 +804,11 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                             int group = Integer.parseInt(cfg[1]);
                             logger.debug("NODE {}: Node advancer: ASSOCIATIONS request group {}", node.getNodeId(),
                                     group);
-                            addToQueue(associationCommandClass.getAssociationMessage(group));
+                            if (multiAssociationCommandClass == null) {
+                                addToQueue(associationCommandClass.getAssociationMessage(group));
+                            } else {
+                                addToQueue(multiAssociationCommandClass.getAssociationMessage(group));
+                            }
                         }
                     }
                     break;
@@ -849,6 +856,8 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         break;
                     }
 
+                    // TODO: This should support MULTI_ASSOCIATION - when required
+
                     ZWaveAssociationCommandClass associationCls = (ZWaveAssociationCommandClass) node
                             .getCommandClass(CommandClass.ASSOCIATION);
                     if (associationCls == null) {
@@ -877,7 +886,7 @@ public class ZWaveNodeInitStageAdvancer implements ZWaveEventListener {
                         ZWaveAssociation association = new ZWaveAssociation(controller.getOwnNodeId());
 
                         // Check if we're already a member
-                        if (associationCls.getGroupMembers(groupId).getAssociations().contains(association)) {
+                        if (node.getAssociationGroup(groupId).getAssociations().contains(association)) {
                             logger.debug("NODE {}: Node advancer: SET_ASSOCIATION - ASSOCIATION set for group {}",
                                     node.getNodeId(), groupId);
                         } else {

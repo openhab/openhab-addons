@@ -37,7 +37,7 @@ Yale Real Living Touchscreen Deadbolt<br /><h2>Inclusion Information</h2><p>To i
       <property name="vendor">Yale Locks</property>
       <property name="modelId">YRD220</property>
       <property name="manufacturerId">0129</property>
-      <property name="manufacturerRef">0002:AA00</property>
+      <property name="manufacturerRef">0002:0000,0002:AA00,0002:FFFF</property>
       <property name="defaultAssociations">1</property>
     </properties>
 
@@ -61,6 +61,15 @@ Sets the volume level of the beeps and voice prompts<br /><h1>Overview</h1><p>1 
           <option value="2">Low</option>
           <option value="3">High</option>
         </options>
+      </parameter>
+
+      <parameter name="config_2_1" type="integer" groupName="configuration"
+                 min="0" max="255">
+        <label>2: Auto Re-lock</label>
+        <description><![CDATA[
+When enabled, the unit will automatically re-lock<br /><h1>Overview</h1><p>0 = Off</p> <p>255 = On</p>
+        ]]></description>
+        <default>0</default>
       </parameter>
 
       <parameter name="config_2_1" type="integer" groupName="configuration">
