@@ -31,7 +31,7 @@ public abstract class MySensorsBridgeConnection {
 
     protected boolean connected = false;
 
-    private Object holdingThread = null;
+    private MySensorsBridgeConnection waitingObj = null;
     private boolean iVersionResponse = false;
 
     private boolean skipStartupCheck = false;
@@ -68,17 +68,16 @@ public abstract class MySensorsBridgeConnection {
         reader.startReader();
         writer.startWriter();
 
-        holdingThread = this;
-
         if (!skipStartupCheck) {
-            synchronized (holdingThread) {
-                try {
-                    if (!iVersionResponse) {
-                        this.wait(5 * 1000); // wait 2s the reply for the I_VERSION message
+            try {
+                if (!iVersionResponse) {
+                    synchronized (this) {
+                        waitingObj = this;
+                        waitingObj.wait(3000);
                     }
-                } catch (Exception e) {
-                    logger.error("Exception on waiting for I_VERSION message", e);
                 }
+            } catch (Exception e) {
+                logger.error("Exception on waiting for I_VERSION message", e);
             }
         } else {
             logger.warn("Skipping I_VERSION connection test, not recommended...");
@@ -153,8 +152,9 @@ public abstract class MySensorsBridgeConnection {
 
     public void iVersionMessageReceived(String msg) {
         iVersionResponse = true;
-        synchronized (holdingThread) {
-            holdingThread.notify();
+        synchronized (waitingObj) {
+            waitingObj.notifyAll();
+            waitingObj = null;
         }
         logger.debug("Good,Gateway is up and running! (Ver:{})", msg);
     }
