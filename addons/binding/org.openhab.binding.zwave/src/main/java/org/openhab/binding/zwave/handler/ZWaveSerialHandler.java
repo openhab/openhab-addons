@@ -78,18 +78,18 @@ public class ZWaveSerialHandler extends ZWaveControllerHandler {
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portId);
             CommPort commPort = portIdentifier.open("org.openhab.binding.zwave", 2000);
-            this.serialPort = (SerialPort) commPort;
-            this.serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+            serialPort = (SerialPort) commPort;
+            serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            this.serialPort.enableReceiveThreshold(1);
-            this.serialPort.enableReceiveTimeout(ZWAVE_RECEIVE_TIMEOUT);
+            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveTimeout(ZWAVE_RECEIVE_TIMEOUT);
             logger.debug("Starting receive thread");
-            this.receiveThread = new ZWaveReceiveThread();
-            this.receiveThread.start();
+            receiveThread = new ZWaveReceiveThread();
+            receiveThread.start();
 
             // RXTX serial port library causes high CPU load
             // Start event listener, which will just sleep and slow down event loop
-            serialPort.addEventListener(this.receiveThread);
+            serialPort.addEventListener(receiveThread);
             serialPort.notifyOnDataAvailable(true);
 
             logger.info("Serial port is initialized");
@@ -123,9 +123,9 @@ public class ZWaveSerialHandler extends ZWaveControllerHandler {
             }
             receiveThread = null;
         }
-        if (this.serialPort != null) {
-            this.serialPort.close();
-            this.serialPort = null;
+        if (serialPort != null) {
+            serialPort.close();
+            serialPort = null;
         }
         logger.info("Stopped ZWave serial handler");
 
@@ -302,6 +302,12 @@ public class ZWaveSerialHandler extends ZWaveControllerHandler {
     @Override
     public void sendPacket(SerialMessage serialMessage) {
         byte[] buffer = serialMessage.getMessageBuffer();
+        if (serialPort == null) {
+            logger.debug("NODE {}: Port closed sending REQUEST Message = {}", serialMessage.getMessageNode(),
+                    SerialMessage.bb2hex(buffer));
+            return;
+        }
+
         logger.debug("NODE {}: Sending REQUEST Message = {}", serialMessage.getMessageNode(),
                 SerialMessage.bb2hex(buffer));
 
