@@ -668,13 +668,11 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 }
 
                 Integer value;
-                if (configurationParameter.getValue() instanceof BigDecimal) {
+                try {
                     value = ((BigDecimal) configurationParameter.getValue()).intValue();
-                } else if (configurationParameter.getValue() instanceof String) {
-                    value = Integer.parseInt((String) configurationParameter.getValue());
-                } else {
+                } catch (NumberFormatException e) {
                     logger.error("NODE {}: Error converting wakeup value from {}", nodeId,
-                            configurationParameter.getValue().getClass());
+                            configurationParameter.getValue());
                     continue;
                 }
 
@@ -755,7 +753,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                     boolean timeoutEnabled;
 
                     try {
-                        int value = Integer.parseInt((String) valueObject);
+                        int value = ((BigDecimal) valueObject).intValue();
                         if (value == 0) {
                             timeoutEnabled = false;
                         } else {
@@ -792,7 +790,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 if ("pollperiod".equals(cfg[1])) {
                     pollingPeriod = POLLING_PERIOD_DEFAULT;
                     try {
-                        pollingPeriod = Integer.parseInt(configurationParameter.getValue().toString());
+                        pollingPeriod = ((BigDecimal) configurationParameter.getValue()).intValue();
                     } catch (final NumberFormatException ex) {
                         logger.warn("NODE {}: pollingPeriod ({}) cannot be set - using default", nodeId,
                                 configurationParameter.getValue().toString());
