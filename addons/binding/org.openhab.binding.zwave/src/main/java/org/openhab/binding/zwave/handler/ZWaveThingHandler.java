@@ -792,7 +792,7 @@ public class ZWaveThingHandler extends ConfigStatusThingHandler implements ZWave
                 if ("pollperiod".equals(cfg[1])) {
                     pollingPeriod = POLLING_PERIOD_DEFAULT;
                     try {
-                        pollingPeriod = Integer.parseInt(configurationParameter.getValue().toString());
+                        pollingPeriod = ((BigDecimal) configurationParameter.getValue()).intValue();
                     } catch (final NumberFormatException ex) {
                         logger.warn("NODE {}: pollingPeriod ({}) cannot be set - using default", nodeId,
                                 configurationParameter.getValue().toString());
