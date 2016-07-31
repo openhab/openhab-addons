@@ -70,10 +70,12 @@ public abstract class MySensorsBridgeConnection {
 
         if (!skipStartupCheck) {
             try {
-                if (!iVersionResponse) {
-                    synchronized (this) {
+                int i = 0;
+                synchronized (this) {
+                    while (!iVersionResponse && i < 5) {
                         waitingObj = this;
-                        waitingObj.wait(3000);
+                        waitingObj.wait(1000);
+                        i++;
                     }
                 }
             } catch (Exception e) {
