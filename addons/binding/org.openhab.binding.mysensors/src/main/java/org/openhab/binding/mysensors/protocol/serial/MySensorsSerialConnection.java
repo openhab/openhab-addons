@@ -31,7 +31,8 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
     private String serialPort = "";
     private int baudRate = 115200;
-    public int sendDelay = 0;
+    private int sendDelay = 0;
+    private boolean skipStartupCheck = false;
 
     private NRSerialPort serialConnection = null;
 
@@ -44,6 +45,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         this.serialPort = serialPort;
         this.baudRate = baudRate;
         this.sendDelay = sendDelay;
+        this.skipStartupCheck = skipStartupCheck;
 
     }
 

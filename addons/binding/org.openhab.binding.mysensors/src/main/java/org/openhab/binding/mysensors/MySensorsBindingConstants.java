@@ -202,7 +202,7 @@ public class MySensorsBindingConstants {
     public final static String CHANNEL_LAST_UPDATE = "lastupdate";
 
     // Wait time Arduino reset
-    public final static int RESET_TIME = 5000;
+    public final static int RESET_TIME = 3000;
 
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
         /**
