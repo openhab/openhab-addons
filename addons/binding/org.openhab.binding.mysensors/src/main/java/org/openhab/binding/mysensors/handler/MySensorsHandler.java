@@ -316,7 +316,8 @@ public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdat
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         MySensorsBridgeHandler bridgeHandler = (MySensorsBridgeHandler) thingHandler;
         if (bridgeHandler.getBridgeConnection() == null) {
-            logger.error("Bridge connection not estblished yet - can't subscribe for updates");
+            logger.warn("Bridge connection not estblished yet - can't subscribe for node: {} child: {}", nodeId,
+                    childId);
         } else {
             logger.debug("Bridge connection estblished - subscribing update for node: {} child: {}", nodeId, childId);
             bridgeHandler.getBridgeConnection().addUpdateListener(this);
