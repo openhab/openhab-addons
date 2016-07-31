@@ -212,7 +212,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
      * @param msg, the incoming I_CONFIG message from sensor
      */
     private void answerIConfigMessage(MySensorsMessage msg) {
-        logger.info("I_CONFIG request received from {}, answering...", msg.nodeId);
+        logger.debug("I_CONFIG request received from {}, answering...", msg.nodeId);
 
         MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0, false,
                 MYSENSORS_SUBTYPE_I_CONFIG, iConfig);
