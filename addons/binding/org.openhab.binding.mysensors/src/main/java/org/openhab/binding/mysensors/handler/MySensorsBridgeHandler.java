@@ -73,7 +73,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
         boolean imperial = configuration.imperial;
         iConfig = imperial ? "I" : "M";
 
-        logger.info("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
+        logger.debug("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
 
         skipStartupCheck = configuration.skipStartupCheck;
 
