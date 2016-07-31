@@ -14,6 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.mysensors.MySensorsBindingConstants;
 import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.openhab.binding.mysensors.protocol.MySensorsReader;
 import org.openhab.binding.mysensors.protocol.MySensorsWriter;
@@ -23,8 +24,6 @@ import org.slf4j.LoggerFactory;
 public abstract class MySensorsBridgeConnection {
 
     private Logger logger = LoggerFactory.getLogger(MySensorsBridgeConnection.class);
-
-    private static final MySensorsMessage I_VERSION_MESSAGE = new MySensorsMessage(0, 0, 3, 0, false, 2, "");
 
     public List<MySensorsUpdateListener> updateListeners;
     public boolean pauseWriter = false;
@@ -75,7 +74,7 @@ public abstract class MySensorsBridgeConnection {
                 int i = 0;
                 synchronized (this) {
                     while (!iVersionResponse && i < 5) {
-                        addMySensorsOutboundMessage(I_VERSION_MESSAGE);
+                        addMySensorsOutboundMessage(MySensorsBindingConstants.I_VERSION_MESSAGE);
                         waitingObj = this;
                         waitingObj.wait(1000);
                         i++;

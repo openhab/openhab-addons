@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.mysensors.internal.MySensorsMessage;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -203,6 +204,9 @@ public class MySensorsBindingConstants {
 
     // Wait time Arduino reset
     public final static int RESET_TIME = 3000;
+
+    // I version message for startup check
+    public static final MySensorsMessage I_VERSION_MESSAGE = new MySensorsMessage(0, 0, 3, 0, false, 2, "");
 
     public final static Map<Number, String> CHANNEL_MAP = new HashMap<Number, String>() {
         /**
