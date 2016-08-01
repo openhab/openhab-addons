@@ -90,7 +90,6 @@ public abstract class MySensorsBridgeConnection {
 
         if (!iVersionResponse) {
             logger.error("Cannot start reading/writing thread, probably sync message (I_VERSION) not received");
-            disconnect();
         }
 
         return iVersionResponse;

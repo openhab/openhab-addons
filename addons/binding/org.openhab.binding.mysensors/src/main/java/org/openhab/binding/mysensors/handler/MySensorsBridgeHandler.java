@@ -91,14 +91,15 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         if (mysCon.connect()) {
             updateStatus(ThingStatus.ONLINE);
+
+            // Start discovery service
+            MySensorsDiscoveryService discoveryService = new MySensorsDiscoveryService(this);
+            discoveryService.activate();
         } else {
             mysCon.removeUpdateListener(this);
             updateStatus(ThingStatus.OFFLINE);
         }
 
-        // Start discovery service
-        MySensorsDiscoveryService discoveryService = new MySensorsDiscoveryService(this);
-        discoveryService.activate();
     }
 
     /*
