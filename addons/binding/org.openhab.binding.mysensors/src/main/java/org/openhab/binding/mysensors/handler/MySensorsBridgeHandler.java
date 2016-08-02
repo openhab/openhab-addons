@@ -57,15 +57,6 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
     public MySensorsBridgeHandler(Bridge bridge) {
         super(bridge);
-
-        boolean imperial = getConfigAs(MySensorsBridgeConfiguration.class).imperial;
-        iConfig = imperial ? "I" : "M";
-
-        logger.info("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
-
-        skipStartupCheck = getConfigAs(MySensorsBridgeConfiguration.class).skipStartupCheck;
-
-        logger.debug("Set skip check on startup to: {}", skipStartupCheck);
     }
 
     /*
@@ -79,6 +70,15 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         MySensorsBridgeConfiguration configuration = getConfigAs(MySensorsBridgeConfiguration.class);
 
+        boolean imperial = configuration.imperial;
+        iConfig = imperial ? "I" : "M";
+
+        logger.debug("Using {} measure unit", (imperial ? "Imperial" : "Metric"));
+
+        skipStartupCheck = configuration.skipStartupCheck;
+
+        logger.debug("Set skip check on startup to: {}", skipStartupCheck);
+
         if (getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE_SER)) {
             mysCon = new MySensorsSerialConnection(configuration.serialPort, configuration.baudRate,
                     configuration.sendDelay, skipStartupCheck);
@@ -91,14 +91,15 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
 
         if (mysCon.connect()) {
             updateStatus(ThingStatus.ONLINE);
+
+            // Start discovery service
+            MySensorsDiscoveryService discoveryService = new MySensorsDiscoveryService(this);
+            discoveryService.activate();
         } else {
             mysCon.removeUpdateListener(this);
             updateStatus(ThingStatus.OFFLINE);
         }
 
-        // Start discovery service
-        MySensorsDiscoveryService discoveryService = new MySensorsDiscoveryService(this);
-        discoveryService.activate();
     }
 
     /*
@@ -212,7 +213,7 @@ public class MySensorsBridgeHandler extends BaseBridgeHandler implements MySenso
      * @param msg, the incoming I_CONFIG message from sensor
      */
     private void answerIConfigMessage(MySensorsMessage msg) {
-        logger.info("I_CONFIG request received from {}, answering...", msg.nodeId);
+        logger.debug("I_CONFIG request received from {}, answering...", msg.nodeId);
 
         MySensorsMessage newMsg = new MySensorsMessage(msg.nodeId, msg.childId, MYSENSORS_MSG_TYPE_INTERNAL, 0, false,
                 MYSENSORS_SUBTYPE_I_CONFIG, iConfig);

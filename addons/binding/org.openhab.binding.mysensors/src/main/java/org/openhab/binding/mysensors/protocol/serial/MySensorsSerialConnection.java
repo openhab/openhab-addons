@@ -31,7 +31,8 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
     private String serialPort = "";
     private int baudRate = 115200;
-    public int sendDelay = 0;
+    private int sendDelay = 0;
+    private boolean skipStartupCheck = false;
 
     private NRSerialPort serialConnection = null;
 
@@ -44,6 +45,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         this.serialPort = serialPort;
         this.baudRate = baudRate;
         this.sendDelay = sendDelay;
+        this.skipStartupCheck = skipStartupCheck;
 
     }
 
@@ -54,7 +56,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
         updateSerialProperties(serialPort);
         serialConnection = new NRSerialPort(serialPort, baudRate);
         if (serialConnection.connect()) {
-            logger.debug("Successfully connected to serial port.");
+            logger.info("Successfully connected to serial port.");
 
             try {
                 logger.debug("Waiting {} seconds to allow correct reset trigger on serial connection opening",
@@ -77,7 +79,7 @@ public class MySensorsSerialConnection extends MySensorsBridgeConnection {
 
     @Override
     public void disconnect() {
-        logger.debug("Shutting down serial connection!");
+        logger.info("Shutting down serial connection!");
 
         if (mysConWriter != null) {
             mysConWriter.stopWriting();

@@ -63,7 +63,9 @@ public class MySensorsIpConnection extends MySensorsBridgeConnection {
             mysConWriter.stopWriting();
         }
 
-        mysConReader.stopReader();
+        if (mysConReader != null) {
+            mysConReader.stopReader();
+        }
 
         // Shut down socket
         try {

@@ -14,6 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.mysensors.MySensorsBindingConstants;
 import org.openhab.binding.mysensors.handler.MySensorsUpdateListener;
 import org.openhab.binding.mysensors.protocol.MySensorsReader;
 import org.openhab.binding.mysensors.protocol.MySensorsWriter;
@@ -31,7 +32,7 @@ public abstract class MySensorsBridgeConnection {
 
     protected boolean connected = false;
 
-    private Object holdingThread = null;
+    private MySensorsBridgeConnection waitingObj = null;
     private boolean iVersionResponse = false;
 
     private boolean skipStartupCheck = false;
@@ -68,17 +69,19 @@ public abstract class MySensorsBridgeConnection {
         reader.startReader();
         writer.startWriter();
 
-        holdingThread = this;
-
         if (!skipStartupCheck) {
-            synchronized (holdingThread) {
-                try {
-                    if (!iVersionResponse) {
-                        this.wait(5 * 1000); // wait 2s the reply for the I_VERSION message
+            try {
+                int i = 0;
+                synchronized (this) {
+                    while (!iVersionResponse && i < 5) {
+                        addMySensorsOutboundMessage(MySensorsBindingConstants.I_VERSION_MESSAGE);
+                        waitingObj = this;
+                        waitingObj.wait(1000);
+                        i++;
                     }
-                } catch (Exception e) {
-                    logger.error("Exception on waiting for I_VERSION message", e);
                 }
+            } catch (Exception e) {
+                logger.error("Exception on waiting for I_VERSION message", e);
             }
         } else {
             logger.warn("Skipping I_VERSION connection test, not recommended...");
@@ -87,7 +90,6 @@ public abstract class MySensorsBridgeConnection {
 
         if (!iVersionResponse) {
             logger.error("Cannot start reading/writing thread, probably sync message (I_VERSION) not received");
-            disconnect();
         }
 
         return iVersionResponse;
@@ -153,8 +155,9 @@ public abstract class MySensorsBridgeConnection {
 
     public void iVersionMessageReceived(String msg) {
         iVersionResponse = true;
-        synchronized (holdingThread) {
-            holdingThread.notify();
+        synchronized (waitingObj) {
+            waitingObj.notifyAll();
+            waitingObj = null;
         }
         logger.debug("Good,Gateway is up and running! (Ver:{})", msg);
     }

@@ -68,7 +68,7 @@ public class MySensorsReader implements MySensorsUpdateListener, Runnable {
                     }
                 }
             } catch (Exception e) {
-                logger.error("exception on reading from serial port, message: {}", e.getMessage());
+                logger.error("({}) on reading from serial port, message: {}", e, getClass(), e.getMessage());
             }
 
         }
