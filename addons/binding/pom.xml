@@ -23,6 +23,7 @@
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
+    <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
@@ -49,10 +50,8 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.mysensors</module>
     <module>org.openhab.binding.yamahareceiver</module>
-    <module>org.openhab.binding.zwave</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
-    <module>org.openhab.binding.zwave.test</module>
   </modules>
 
 </project>
