@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +30,7 @@ import org.osgi.framework.ServiceRegistration;
  * The {@link MySensorsHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Tim Oberföll - Initial contribution
+ * @author Tim Oberföll
  */
 public class MySensorsHandlerFactory extends BaseThingHandlerFactory {
 

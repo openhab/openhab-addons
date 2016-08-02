@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * The {@link MySensorsHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Tim Oberföll - Initial contribution
+ * @author Tim Oberföll
  */
 public class MySensorsHandler extends BaseThingHandler implements MySensorsUpdateListener {
 
