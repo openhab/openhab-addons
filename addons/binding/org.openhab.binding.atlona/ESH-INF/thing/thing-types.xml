@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atlona"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- AT-UHD-PRO3-44M -->
+    <thing-type id="pro3-44m">
+        <label>Atlona Pro3 4x4 Binding</label>
+        <description>Atlona Pro3 4x4 Binding</description>
+
+        <channels>
+            <channel id="power" typeId="button"><label>Power</label><description>Power to Matrix</description></channel>
+            <channel id="version" typeId="readonlystring"><label>Firmware</label><description>Firmware Version</description></channel>
+            <channel id="type" typeId="readonlystring"><label>Type</label><description>Model Type</description></channel>
+            <channel id="panellock" typeId="button"><label>Panel Lock</label><description>Lock front panel</description></channel>
+            <channel id="resetports" typeId="button"><label>Reset Ports</label><description>Resets All ports back to default</description></channel>
+            
+            <channel id="portpower1" typeId="portpower"/>
+            <channel id="portpower2" typeId="portpower"/>
+            <channel id="portpower3" typeId="portpower"/>
+            <channel id="portpower4" typeId="portpower"/>
+            <channel id="portpower5" typeId="portpower"/>
+            <channel id="portall" typeId="portall"/>
+            <channel id="portoutput1" typeId="portoutput"/>
+            <channel id="portoutput2" typeId="portoutput"/>
+            <channel id="portoutput3" typeId="portoutput"/>
+            <channel id="portoutput4" typeId="portoutput"/>
+            <channel id="portoutput5" typeId="portoutput"/>
+            <channel id="portmirror5" typeId="portmirror"/>
+            <channel id="volume1" typeId="volume"/>
+            <channel id="volume2" typeId="volume"/>
+            <channel id="volume3" typeId="volume"/>
+            <channel id="volumemute1" typeId="volumemute"/>
+            <channel id="volumemute2" typeId="volumemute"/>
+            <channel id="volumemute3" typeId="volumemute"/>
+            <channel id="irenable" typeId="button"><label>Enable IR</label><description>Enables or Disables IR</description></channel>
+            <channel id="saveio" typeId="savepreset"/>
+            <channel id="recallio" typeId="recallpreset"/>
+            <channel id="cleario" typeId="clearpreset"/>
+            <channel id="resetmatrix" typeId="button"><label>Reset Matrix</label><description>Resets the matrix back to defaults</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <label>IP or Host Name</label>
+                <description>IP or Host name of Atlona Pro3 44M Switch</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="userName" type="text">
+                <label>UserName to login with</label>
+                <description>User Name to login with if Telnet Login is on</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>Password to login with</label>
+                <description>Password to login with if Telnet Login is on</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="polling" type="integer">
+                <label>Polling Interval</label>
+                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
+                <default>600</default>
+            </parameter>            
+            <parameter name="ping" type="integer">
+                <label>Pint Interval</label>
+                <description>Ping Interval (in seconds) to keep the connection alive</description>
+                <default>30</default>
+            </parameter>            
+            <parameter name="retryPolling" type="integer">
+                <label>Polling Interval to try to reconnect</label>
+                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
+                <default>10</default>
+            </parameter>            
+        </config-description>
+    </thing-type>
+
+    <!-- AT-UHD-PRO3-66M -->
+    <thing-type id="pro3-66m">
+        <label>Atlona Pro3 6x6 Binding</label>
+        <description>Atlona Pro3 6x6 Binding</description>
+
+        <channels>
+            <channel id="power" typeId="button"><label>Power</label><description>Power to Matrix</description></channel>
+            <channel id="version" typeId="readonlystring"><label>Firmware</label><description>Firmware Version</description></channel>
+            <channel id="type" typeId="readonlystring"><label>Type</label><description>Model Type</description></channel>
+            <channel id="panellock" typeId="button"><label>Panel Lock</label><description>Lock front panel</description></channel>
+            <channel id="resetports" typeId="button"><label>Reset Ports</label><description>Resets All ports back to default</description></channel>
+            
+            <channel id="portpower1" typeId="portpower"/>
+            <channel id="portpower2" typeId="portpower"/>
+            <channel id="portpower3" typeId="portpower"/>
+            <channel id="portpower4" typeId="portpower"/>
+            <channel id="portpower5" typeId="portpower"/>
+            <channel id="portpower6" typeId="portpower"/>
+            <channel id="portpower7" typeId="portpower"/>
+            <channel id="portpower8" typeId="portpower"/>
+            <channel id="portall" typeId="portall"/>
+            <channel id="portoutput1" typeId="portoutput"/>
+            <channel id="portoutput2" typeId="portoutput"/>
+            <channel id="portoutput3" typeId="portoutput"/>
+            <channel id="portoutput4" typeId="portoutput"/>
+            <channel id="portoutput5" typeId="portoutput"/>
+            <channel id="portoutput6" typeId="portoutput"/>
+            <channel id="portoutput7" typeId="portoutput"/>
+            <channel id="portoutput8" typeId="portoutput"/>
+            <channel id="portmirror6" typeId="portmirror"/>
+            <channel id="portmirror8" typeId="portmirror"/>
+            <channel id="volume1" typeId="volume"/>
+            <channel id="volume2" typeId="volume"/>
+            <channel id="volume3" typeId="volume"/>
+            <channel id="volume4" typeId="volume"/>
+            <channel id="volumemute1" typeId="volumemute"/>
+            <channel id="volumemute2" typeId="volumemute"/>
+            <channel id="volumemute3" typeId="volumemute"/>
+            <channel id="volumemute4" typeId="volumemute"/>
+            <channel id="irenable" typeId="button"><label>Enable IR</label><description>Enables or Disables IR</description></channel>
+            <channel id="saveio" typeId="savepreset"/>
+            <channel id="recallio" typeId="recallpreset"/>
+            <channel id="cleario" typeId="clearpreset"/>
+            <channel id="resetmatrix" typeId="button"><label>Reset Matrix</label><description>Resets the matrix back to defaults</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <label>IP or Host Name</label>
+                <description>IP or Host name of Atlona Pro3 66M Switch</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="userName" type="text">
+                <label>UserName to login with</label>
+                <description>User Name to login with if Telnet Login is on</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>Password to login with</label>
+                <description>Password to login with if Telnet Login is on</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="polling" type="integer">
+                <label>Polling Interval</label>
+                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
+                <default>600</default>
+            </parameter>            
+            <parameter name="ping" type="integer">
+                <label>Pint Interval</label>
+                <description>Ping Interval (in seconds) to keep the connection alive</description>
+                <default>30</default>
+            </parameter>            
+            <parameter name="retryPolling" type="integer">
+                <label>Polling Interval to try to reconnect</label>
+                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
+                <default>10</default>
+            </parameter>            
+        </config-description>
+    </thing-type>
+
+    <!-- AT-UHD-PRO3-88M -->
+    <thing-type id="pro3-88m">
+        <label>Atlona Pro3 8x8 Binding</label>
+        <description>Atlona Pro3 8x8 Binding</description>
+
+        <channels>
+            <channel id="power" typeId="button"><label>Power</label><description>Power to Matrix</description></channel>
+            <channel id="version" typeId="readonlystring"><label>Firmware</label><description>Firmware Version</description></channel>
+            <channel id="type" typeId="readonlystring"><label>Type</label><description>Model Type</description></channel>
+            <channel id="panellock" typeId="button"><label>Panel Lock</label><description>Lock front panel</description></channel>
+            <channel id="resetports" typeId="button"><label>Reset Ports</label><description>Resets All ports back to default</description></channel>
+            
+            <channel id="portpower1" typeId="portpower"/>
+            <channel id="portpower2" typeId="portpower"/>
+            <channel id="portpower3" typeId="portpower"/>
+            <channel id="portpower4" typeId="portpower"/>
+            <channel id="portpower5" typeId="portpower"/>
+            <channel id="portpower6" typeId="portpower"/>
+            <channel id="portpower7" typeId="portpower"/>
+            <channel id="portpower8" typeId="portpower"/>
+            <channel id="portpower9" typeId="portpower"/>
+            <channel id="portpower10" typeId="portpower"/>
+            <channel id="portall" typeId="portall"/>
+            <channel id="portoutput1" typeId="portoutput"/>
+            <channel id="portoutput2" typeId="portoutput"/>
+            <channel id="portoutput3" typeId="portoutput"/>
+            <channel id="portoutput4" typeId="portoutput"/>
+            <channel id="portoutput5" typeId="portoutput"/>
+            <channel id="portoutput6" typeId="portoutput"/>
+            <channel id="portoutput7" typeId="portoutput"/>
+            <channel id="portoutput8" typeId="portoutput"/>
+            <channel id="portoutput9" typeId="portoutput"/>
+            <channel id="portoutput10" typeId="portoutput"/>
+            <channel id="portmirror8" typeId="portmirror"/>
+            <channel id="portmirror10" typeId="portmirror"/>
+            <channel id="volume1" typeId="volume"/>
+            <channel id="volume2" typeId="volume"/>
+            <channel id="volume3" typeId="volume"/>
+            <channel id="volume4" typeId="volume"/>
+            <channel id="volume5" typeId="volume"/>
+            <channel id="volume6" typeId="volume"/>
+            <channel id="volumemute1" typeId="volumemute"/>
+            <channel id="volumemute2" typeId="volumemute"/>
+            <channel id="volumemute3" typeId="volumemute"/>
+            <channel id="volumemute4" typeId="volumemute"/>
+            <channel id="volumemute5" typeId="volumemute"/>
+            <channel id="volumemute6" typeId="volumemute"/>
+            <channel id="irenable" typeId="button"><label>Enable IR</label><description>Enables or Disables IR</description></channel>
+            <channel id="saveio" typeId="savepreset"/>
+            <channel id="recallio" typeId="recallpreset"/>
+            <channel id="cleario" typeId="clearpreset"/>
+            <channel id="resetmatrix" typeId="button"><label>Reset Matrix</label><description>Resets the matrix back to defaults</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>IP or Host Name</label>
+                <context>network_address</context>
+                <description>IP or Host name of Atlona Switch</description>
+                <default></default>
+            </parameter>
+            <parameter name="userName" type="text">
+                <context>network_login</context>
+                <label>UserName</label>
+                <description>User Name to use (if Telnet Login is ON)</description>
+                <default></default>
+            </parameter>
+            <parameter name="password" type="text">
+                <context>network_login</context>
+                <label>Password to login with</label>
+                <description>Password to use (if Telnet Login is ON)</description>
+                <default></default>
+            </parameter>
+            <parameter name="polling" type="integer">
+                <context>polling</context>
+                <label>Polling Interval</label>
+                <description>Interval (in seconds) to poll the actual state</description>
+                <default>600</default>
+            </parameter>            
+            <parameter name="ping" type="integer">
+                <label>Pint Interval</label>
+                <description>Ping Interval (in seconds) to keep the connection alive</description>
+                <default>30</default>
+            </parameter>            
+            <parameter name="retryPolling" type="integer">
+                <context>polling</context>
+                <label>Polling Interval to try to reconnect</label>
+                <description>Interval (in seconds) to try to (re)connect</description>
+                <default>10</default>
+            </parameter>            
+        </config-description>
+    </thing-type>
+
+    <!-- AT-UHD-PRO3-1616M -->
+    <thing-type id="pro3-1616m">
+        <label>Atlona Pro3 16x16 Binding</label>
+        <description>Atlona Pro3 16x16 Binding</description>
+
+        <channels>
+            <channel id="power" typeId="button"><label>Power</label><description>Power to Matrix</description></channel>
+            <channel id="version" typeId="readonlystring"><label>Firmware</label><description>Firmware Version</description></channel>
+            <channel id="type" typeId="readonlystring"><label>Type</label><description>Model Type</description></channel>
+            <channel id="panellock" typeId="button"><label>Panel Lock</label><description>Lock front panel</description></channel>
+            <channel id="resetports" typeId="button"><label>Reset Ports</label><description>Resets All ports back to default</description></channel>
+            
+            <channel id="portpower1" typeId="portpower"/>
+            <channel id="portpower2" typeId="portpower"/>
+            <channel id="portpower3" typeId="portpower"/>
+            <channel id="portpower4" typeId="portpower"/>
+            <channel id="portpower5" typeId="portpower"/>
+            <channel id="portpower6" typeId="portpower"/>
+            <channel id="portpower7" typeId="portpower"/>
+            <channel id="portpower8" typeId="portpower"/>
+            <channel id="portpower9" typeId="portpower"/>
+            <channel id="portpower10" typeId="portpower"/>
+            <channel id="portpower11" typeId="portpower"/>
+            <channel id="portpower12" typeId="portpower"/>
+            <channel id="portpower13" typeId="portpower"/>
+            <channel id="portpower14" typeId="portpower"/>
+            <channel id="portpower15" typeId="portpower"/>
+            <channel id="portpower16" typeId="portpower"/>
+            <channel id="portpower17" typeId="portpower"/>
+            <channel id="portpower18" typeId="portpower"/>
+            <channel id="portpower19" typeId="portpower"/>
+            <channel id="portpower20" typeId="portpower"/>
+            <channel id="portall" typeId="portall"/>
+            <channel id="portoutput1" typeId="portoutput"/>
+            <channel id="portoutput2" typeId="portoutput"/>
+            <channel id="portoutput3" typeId="portoutput"/>
+            <channel id="portoutput4" typeId="portoutput"/>
+            <channel id="portoutput5" typeId="portoutput"/>
+            <channel id="portoutput6" typeId="portoutput"/>
+            <channel id="portoutput7" typeId="portoutput"/>
+            <channel id="portoutput8" typeId="portoutput"/>
+            <channel id="portoutput9" typeId="portoutput"/>
+            <channel id="portoutput10" typeId="portoutput"/>
+            <channel id="portoutput11" typeId="portoutput"/>
+            <channel id="portoutput12" typeId="portoutput"/>
+            <channel id="portoutput13" typeId="portoutput"/>
+            <channel id="portoutput14" typeId="portoutput"/>
+            <channel id="portoutput15" typeId="portoutput"/>
+            <channel id="portoutput16" typeId="portoutput"/>
+            <channel id="portoutput17" typeId="portoutput"/>
+            <channel id="portoutput18" typeId="portoutput"/>
+            <channel id="portoutput19" typeId="portoutput"/>
+            <channel id="portoutput20" typeId="portoutput"/>
+            <channel id="portmirror17" typeId="portmirror"/>
+            <channel id="portmirror18" typeId="portmirror"/>
+            <channel id="portmirror19" typeId="portmirror"/>
+            <channel id="portmirror20" typeId="portmirror"/>
+            <channel id="volume1" typeId="volume"/>
+            <channel id="volume2" typeId="volume"/>
+            <channel id="volume3" typeId="volume"/>
+            <channel id="volume4" typeId="volume"/>
+            <channel id="volume5" typeId="volume"/>
+            <channel id="volume6" typeId="volume"/>
+            <channel id="volume7" typeId="volume"/>
+            <channel id="volume8" typeId="volume"/>
+            <channel id="volume9" typeId="volume"/>
+            <channel id="volume10" typeId="volume"/>
+            <channel id="volume11" typeId="volume"/>
+            <channel id="volume12" typeId="volume"/>
+            <channel id="volumemute1" typeId="volumemute"/>
+            <channel id="volumemute2" typeId="volumemute"/>
+            <channel id="volumemute3" typeId="volumemute"/>
+            <channel id="volumemute4" typeId="volumemute"/>
+            <channel id="volumemute5" typeId="volumemute"/>
+            <channel id="volumemute6" typeId="volumemute"/>
+            <channel id="volumemute7" typeId="volumemute"/>
+            <channel id="volumemute8" typeId="volumemute"/>
+            <channel id="volumemute9" typeId="volumemute"/>
+            <channel id="volumemute10" typeId="volumemute"/>
+            <channel id="volumemute11" typeId="volumemute"/>
+            <channel id="volumemute12" typeId="volumemute"/>
+            <channel id="irenable" typeId="button"><label>Enable IR</label><description>Enables or Disables IR</description></channel>
+            <channel id="saveio" typeId="savepreset"/>
+            <channel id="recallio" typeId="recallpreset"/>
+            <channel id="cleario" typeId="clearpreset"/>
+            <channel id="resetmatrix" typeId="button"><label>Reset Matrix</label><description>Resets the matrix back to defaults</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <label>IP or Host Name</label>
+                <description>IP or Host name of Atlona Pro3 1616M Switch</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="userName" type="text">
+                <label>UserName to login with</label>
+                <description>User Name to login with if Telnet Login is on</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>Password to login with</label>
+                <description>Password to login with if Telnet Login is on</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="polling" type="integer">
+                <label>Polling Interval</label>
+                <description>Interval (in seconds) to poll the actual state of the Matrix</description>
+                <default>600</default>
+            </parameter>            
+            <parameter name="ping" type="integer">
+                <label>Pint Interval</label>
+                <description>Ping Interval (in seconds) to keep the connection alive</description>
+                <default>30</default>
+            </parameter>            
+            <parameter name="retryPolling" type="integer">
+                <label>Polling Interval to try to reconnect</label>
+                <description>Interval (in seconds) to try to (re)connect to the matrix</description>
+                <default>10</default>
+            </parameter>            
+        </config-description>
+    </thing-type>
+
+    <!-- Port Channel Type -->
+    <channel-type id="button">
+        <item-type>Switch</item-type>
+        <label>Button</label>
+        <description>Button</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="readonlystring">
+        <item-type>String</item-type>
+        <label>Readonly</label>
+        <description>Readonly</description>
+        <category>Information</category>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="matrixtype">
+        <item-type>String</item-type>
+        <label>Model Type</label>
+        <description>Model Type</description>
+        <category>Information</category>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="portpower">
+        <item-type>Switch</item-type>
+        <label>Output Port Power</label>
+        <description>Turns on/off the output port</description>
+        <category>Ports</category>
+    </channel-type>
+    <channel-type id="portall">
+        <item-type>Number</item-type>
+        <label>Set All Outputs</label>
+        <description>Sets the input port as the source of all output ports</description>
+        <category>Ports</category>
+    </channel-type>
+    <channel-type id="portoutput">
+        <item-type>Number</item-type>
+        <label>Output Port</label>
+        <description>Sets the output port to the input port</description>
+        <category>Ports</category>
+    </channel-type>
+    <channel-type id="portmirror">
+        <item-type>Number</item-type>
+        <label>Mirror Port</label>
+        <description>Sets the port to be mirrored on the output port</description>
+        <category>Ports</category>
+    </channel-type>
+    <channel-type id="volume">
+        <item-type>Number</item-type>
+        <label>Output Volume</label>
+        <description>Sets the volume (in db) of the output port (default: -40db with range from -79db to 15db)</description>
+        <category>Volume</category>
+        <state min="-79" max="15"/>
+    </channel-type>
+    <channel-type id="volumemute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Sets the output to muted or not</description>
+        <category>Volume</category>
+    </channel-type>
+    <channel-type id="savepreset">
+        <item-type>Number</item-type>
+        <label>Save Preset</label>
+        <description>Saves current I/O as a preset</description>
+        <category>Presets</category>
+    </channel-type>
+    <channel-type id="recallpreset">
+        <item-type>Number</item-type>
+        <label>Recall Preset</label>
+        <description>Restores I/O preset</description>
+        <category>Presets</category>
+    </channel-type>
+    <channel-type id="clearpreset">
+        <item-type>Number</item-type>
+        <label>Clear Preset</label>
+        <description>Erases I/O preset</description>
+        <category>Presets</category>
+    </channel-type>
+</thing:thing-descriptions>
