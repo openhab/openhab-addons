@@ -88,12 +88,12 @@ public class ChartResource implements RESTResource {
 
     public void addPersistenceService(PersistenceService service) {
         if (service instanceof QueryablePersistenceService) {
-            persistenceServices.put(service.getName(), (QueryablePersistenceService) service);
+            persistenceServices.put(service.getId(), (QueryablePersistenceService) service);
         }
     }
 
     public void removePersistenceService(PersistenceService service) {
-        persistenceServices.remove(service.getName());
+        persistenceServices.remove(service.getId());
     }
 
     static public Map<String, QueryablePersistenceService> getPersistenceServices() {
@@ -158,7 +158,7 @@ public class ChartResource implements RESTResource {
                 }
             }
             Object data = null;
-            if (persistenceService.getName().equals("rrd4j")) {
+            if (persistenceService.getId().equals("rrd4j")) {
                 data = getRrdSeries(persistenceService, item, consilidationFunction, startTime, endTime, resolution);
             } else {
                 data = getPersistenceSeries(persistenceService, item, startTime, endTime, resolution);
@@ -198,7 +198,7 @@ public class ChartResource implements RESTResource {
                 data.put(historicItem.getTimestamp().getTime(), vals);
             }
         }
-        logger.debug("'{}' querying item '{}' from '{}' to '{}' => '{}' results", persistenceService.getName(),
+        logger.debug("'{}' querying item '{}' from '{}' to '{}' => '{}' results", persistenceService.getId(),
                 filter.getItemName(), filter.getBeginDate(), filter.getEndDate(), dataCounter);
         return convertToRrd(data);
     }
