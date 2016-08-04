@@ -13,6 +13,7 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 /**
  * The {@link ZigBeeBinding} class defines common constants, which are
@@ -30,6 +31,8 @@ public class ZigBeeBindingConstants {
 
     // List of Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_GENERIC_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_GENERIC_DEVICE);
 
     // List of Channel ids
     public final static String CHANNEL_CFG_BINDING = "binding";

@@ -11,6 +11,7 @@ package org.openhab.binding.zigbee.discovery;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bubblecloud.zigbee.api.Device;
 import org.bubblecloud.zigbee.network.ZigBeeNode;
@@ -46,6 +47,11 @@ public class ZigBeeDiscoveryService extends AbstractDiscoveryService {
 
     public void activate() {
         logger.debug("Activating ZigBee discovery service for {}", coordinatorHandler.getThing().getUID());
+    }
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return ZigBeeBindingConstants.SUPPORTED_THING_TYPES;
     }
 
     @Override

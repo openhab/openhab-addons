@@ -101,10 +101,10 @@ public abstract class ZigBeeClusterHandler {
             clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_ON_OFF, ZigBeeOnOffClusterHandler.class);
             clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_LEVEL_CONTROL, ZigBeeLevelClusterHandler.class);
             clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_COLOR_CONTROL, ZigBeeColorClusterHandler.class);
-            clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_RELATIVE_HUMIDITY_MEASUREMENT,
-                    ZigBeeRelativeHumidityMeasurementClusterHandler.class);
-            clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_TEMPERATURE_MEASUREMENT,
-                    ZigBeeTemperatureMeasurementClusterHandler.class);
+            // clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_RELATIVE_HUMIDITY_MEASUREMENT,
+            // ZigBeeRelativeHumidityMeasurementClusterHandler.class);
+            // clusterMap.put(ZigBeeApiConstants.CLUSTER_ID_TEMPERATURE_MEASUREMENT,
+            // ZigBeeTemperatureMeasurementClusterHandler.class);
         }
 
         Constructor<? extends ZigBeeClusterHandler> constructor;
