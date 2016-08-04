@@ -54,7 +54,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     private ScheduledFuture<?> schedulerFuture;
     private int linkedPositionalChannels = 0;
     protected AstroThingConfig thingConfig;
-    private Object schedulerLock = new Object();
 
     public AstroThingHandler(Thing thing) {
         super(thing);
@@ -166,47 +165,45 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
-                    synchronized (schedulerLock) {
-                        if (quartzScheduler == null) {
-                            quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
-                        }
+                    if (quartzScheduler == null) {
+                        quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
+                    }
 
-                        stopJobs();
+                    stopJobs();
 
-                        if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            String thingUid = getThing().getUID().toString();
-                            JobDataMap jobDataMap = new JobDataMap();
-                            jobDataMap.put("thingUid", thingUid);
+                    if (getThing().getStatus() == ThingStatus.ONLINE) {
+                        String thingUid = getThing().getUID().toString();
+                        JobDataMap jobDataMap = new JobDataMap();
+                        jobDataMap.put("thingUid", thingUid);
 
-                            // dailyJob
-                            String jobIdentity = DailyJob.class.getSimpleName();
-                            Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
-                                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
-                            JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
+                        // dailyJob
+                        String jobIdentity = DailyJob.class.getSimpleName();
+                        Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
+                                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
+                        JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
+                                .usingJobData(jobDataMap).build();
+                        quartzScheduler.scheduleJob(jobDetail, trigger);
+                        logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
+
+                        // startupJob
+                        trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
+                        jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
+                                .usingJobData(jobDataMap).build();
+                        quartzScheduler.scheduleJob(jobDetail, trigger);
+
+                        if (linkedPositionalChannels > 0) {
+                            // positional intervalJob
+                            jobIdentity = PositionalJob.class.getSimpleName();
+                            Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
+                            trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
+                                    .withSchedule(simpleSchedule().repeatForever()
+                                            .withIntervalInSeconds(thingConfig.getInterval()))
+                                    .build();
+                            jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
-                            logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
-
-                            // startupJob
-                            trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
-                            jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
-                                    .usingJobData(jobDataMap).build();
-                            quartzScheduler.scheduleJob(jobDetail, trigger);
-
-                            if (linkedPositionalChannels > 0) {
-                                // positional intervalJob
-                                jobIdentity = PositionalJob.class.getSimpleName();
-                                Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
-                                trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
-                                        .withSchedule(simpleSchedule().repeatForever()
-                                                .withIntervalInSeconds(thingConfig.getInterval()))
-                                        .build();
-                                jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
-                                        .usingJobData(jobDataMap).build();
-                                quartzScheduler.scheduleJob(jobDetail, trigger);
-                                logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
-                                        thingConfig.getInterval(), thingUid);
-                            }
+                            logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
+                                    thingConfig.getInterval(), thingUid);
                         }
                     }
                 } catch (SchedulerException ex) {
