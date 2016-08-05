@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
  * Collection of methods to help retrieve HTTP data from a SqueezeServer
  *
  * @author Dan Cunningham
- *
+ * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
  */
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
@@ -66,8 +66,8 @@ public class HttpUtils {
             logger.error("Method failed: {}", statusLine);
             throw new Exception("Method failed: " + statusLine);
         }
-        byte[] responseBody = response.getContent();
-        return new String(responseBody);
+
+        return response.getContentAsString();
     }
 
     /**

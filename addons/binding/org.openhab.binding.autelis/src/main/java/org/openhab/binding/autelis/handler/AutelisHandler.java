@@ -9,6 +9,7 @@
 package org.openhab.binding.autelis.handler;
 
 import java.io.StringReader;
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +24,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -40,7 +41,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.autelis.config.AutelisConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +60,7 @@ import org.xml.sax.InputSource;
  *      are sent to one of the channels.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Svilen Valkanov - Replaced Apache HttpClient with Jetty
  */
 public class AutelisHandler extends BaseThingHandler {
 
@@ -106,10 +107,9 @@ public class AutelisHandler extends BaseThingHandler {
     int refresh;
 
     /**
-     * The http client used for polling requests. This client is thread-safe and will
-     * be shared across different instances of the {@link AutelisHandler}
+     * The http client used for polling requests
      */
-    private static HttpClient client = new HttpClient();
+    private HttpClient client = new HttpClient();
 
     /**
      * Regex expression to match XML responses from the Autelis, this is used to
@@ -142,6 +142,7 @@ public class AutelisHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Handler disposed.");
         stopPolling();
+        stopHttpClient(client);
     }
 
     @Override
@@ -259,14 +260,22 @@ public class AutelisHandler extends BaseThingHandler {
                 port = _port.intValue();
             }
 
-            startHttpClient(client);
-
             baseURL = "http://" + host + ":" + port;
 
+            URI uri = new URI(baseURL);
             AuthenticationStore authStore = client.getAuthenticationStore();
-            Authentication.Result authResult = HttpUtil.createBasicAuthenticationResult(host, port, username, password,
-                    false);
-            authStore.addAuthenticationResult(authResult);
+            final String anyRealm = "*";
+            BasicAuthentication basicAuthentication = new BasicAuthentication(uri, anyRealm, username, password) {
+                // In version 9.2.12 Jetty HttpClient does not support adding an authentication for any realm. This is a
+                // workaround until this issue is solved
+                @Override
+                public boolean matches(String type, URI uri, String realm) {
+                    realm = anyRealm;
+                    return super.matches(type, uri, realm);
+                }
+
+            };
+            authStore.addAuthentication(basicAuthentication);
 
             properlyConfigured = true;
 
@@ -393,8 +402,6 @@ public class AutelisHandler extends BaseThingHandler {
             return response.getContentAsString();
         } catch (Exception e) {
             logger.debug("Could not make http connection", e);
-        } finally {
-            stopHttpClient(client);
         }
         return null;
     }
@@ -447,6 +454,8 @@ public class AutelisHandler extends BaseThingHandler {
     }
 
     private void stopHttpClient(HttpClient client) {
+        client.getAuthenticationStore().clearAuthentications();
+        client.getAuthenticationStore().clearAuthenticationResults();
         if (client.isStarted()) {
             try {
                 client.stop();
