@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="yamahareceiver"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="yamahaAV">
+        <label>Yamaha Receiver</label>
+        <description>Yamaha Receiver of product line CX-A5000, RX-A30xx, RX-A20xx, RX-A10xx, RX-Vxxx, RX-Z7, DSP-Z7, RX-S600, HTR-xxxx</description>
+
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="netradiotune" typeId="netradiotune"/>
+            <channel id="input" typeId="input"/>
+            <channel id="surroundProgram" typeId="surroundProgram"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="volumeDB" typeId="volumeDB"/>
+            <channel id="mute" typeId="mute"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="HOST" type="text" required="true">
+                <context>network-address</context>
+                <label>Address</label>
+                <description>The address of the AVR to control.</description>
+            </parameter>
+            <parameter name="REFRESH_IN_SEC" type="integer" required="false">
+                <label>Refresh interval</label>
+                <description>Refresh interval in seconds.</description>
+                <default>60</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="RELVOLUMECHANGE" type="decimal" required="false">
+                <label>Relative volume change</label>
+                <description>Relative volume change in percent.</description>
+                <default>2.0</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Power ON/OFF the AVR</description>
+    </channel-type>
+    
+    <channel-type id="input">
+        <item-type>String</item-type>
+        <label>Input source</label>
+        <description>Select the input source of the AVR</description>
+    </channel-type>
+    
+    <channel-type id="netradiotune">
+        <item-type>Number</item-type>
+        <label>NetRadio Channel</label>
+        <description>Select the net radio channel of the AVR</description>
+    </channel-type>
+    
+    <channel-type id="surroundProgram">
+        <item-type>String</item-type>
+        <label>Surround program</label>
+        <description>Select the surround program of the AVR</description>
+        <state>
+            <options>
+                <option value="Music Video">Music Video</option>
+                <option value="The Roxy Theater">The Roxy Theater</option>
+                <option value="Cellar Club">Cellar Club</option>
+                <option value="Hall in Vienna">Hall in Vienna</option>
+                <option value="Hall in Munich">Hall in Munich</option>
+                <option value="Roleplaying Game">Roleplaying Game</option>
+                <option value="Action Game">Action Game</option>
+                <option value="Sports">Sports</option>
+                <option value="Mono Movie">Mono Movie</option>
+                <option value="Drama">Drama</option>
+                <option value="Adventure">Adventure</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Spectacle">Spectacle</option>
+                <option value="Standard">Standard</option>
+                
+                <option value="Pro Logic">Pro Logic</option>
+                <option value="Neo:6 Music">Neo:6 Music</option>
+                <option value="Neo:6 Cinema">Neo:6 Cinema</option>
+                <option value="PLII[x] Game">PLII[x] Game</option>
+                <option value="PLII[x] Music">PLII[x] Music</option>
+                <option value="PLII[x] Movie">PLII[x] Movie</option>
+                <option value="7ch Enhancer">7ch Enhancer</option>
+
+                <option value="2ch Stereo">2ch Stereo</option>
+                <option value="7ch Stereo">7ch Stereo</option>
+                <option value="STRAIGHT">STRAIGHT</option>
+                <option value="Straight Enhancer">Straight Enhancer</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Set the volume level</description>
+        <category>SoundVolume</category>
+    </channel-type>
+    
+    <channel-type id="volumeDB" advanced="true">
+        <item-type>Number</item-type>
+        <label>Volume in dB</label>
+        <description>Set the volume level (dB)</description>
+        <category>SoundVolume</category>
+        <state min="-80" max="12" step="0.5" pattern="%.1f dB" />
+    </channel-type>
+    
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Enable/Disable Mute on the AVR</description>
+    </channel-type>
+    
+</thing:thing-descriptions>

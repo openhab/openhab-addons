@@ -26,8 +26,9 @@ The binding does not require any special configuration
 The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it. Samsung TV publish several UPnP devices and hostname is used to recognize those UPnP devices. Port address is used for remote control emulation protocol. Additionally, a refresh interval can be configured in milliseconds to specify how often TV resources are polled.
 
 E.g.
+
 ```
-Thing samsungtv:tv:livingroom [ hostname="192.168.1.10", port=55000, refreshInterval=1000]
+Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInterval=1000]
 ```
 
 ## Channels

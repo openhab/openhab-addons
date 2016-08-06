@@ -17,6 +17,7 @@ The binding uses a the owner's email address and password in order to access the
 
 The Tesla Thing requires the username and password as a configuration value in order for the binding to log into the Tesla service, as well as the VIN (Vehicle Identfication Number) to identify the vehicle tracked by the Thing.
 In the thing file, this looks e.g. like
+
 ```
 Thing tesla:models:1 [ username="your.email@company.com", password="somepassword", vin="5YJSA7H25FFP53746"]
 ```
@@ -36,12 +37,14 @@ All devices support the following channels (non exhaustive):
 
 ## Full Example
 
-demo.things:
+demo.Things:
+
 ```
 Thing tesla:models:1 [ username="your.email@company.com", password="somepassword", vin="5YJSA7H25FFP53746"]
 ```
 
 demo.items:
+
 ```
 Switch TeslaCharge {channel="tesla:models:1:charge"}
 Location TeslaLocation {channel="tesla:models:1:location"}
@@ -72,6 +75,7 @@ DateTime TeslaGPSStamp {channel="tesla:models:1:gpstimestamp"}
 ```
 
 demo.sitemap:
+
 ```
 sitemap demo label="Main Menu"
 {

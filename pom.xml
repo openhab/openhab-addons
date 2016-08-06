@@ -48,18 +48,19 @@
     <description>This is the open Home Automation Bus (openHAB)</description>
 
     <properties>
-        <esh.version>0.8.0-SNAPSHOT</esh.version>
-        <shk.version>1.2</shk.version>
+        <esh.version>0.9.0-SNAPSHOT</esh.version>
+        <kat.version>1.4.1</kat.version>
         <ohc.version>2.0.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.0.0.x</ohcp2.version>
-        <ohdr.version>1.0.3</ohdr.version>
-        <karaf.version>4.0.3</karaf.version>
-        <karaf.maven.plugin.version>4.0.3</karaf.maven.plugin.version>
-        <karaf.features.version>4.0.3</karaf.features.version>
+        <ohdr.version>1.0.6</ohdr.version>
+        <karaf.version>4.0.4</karaf.version>
         <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.version>3.1</maven.compiler.version>
+        <groovy.eclipse.compiler.version>2.8.0-01</groovy.eclipse.compiler.version>
+        <groovy.eclipse.batch.version>2.1.5-03</groovy.eclipse.batch.version>
     </properties>
 
     <packaging>pom</packaging>
@@ -117,6 +118,9 @@
                     <strictVersions>false</strictVersions>
                 </configuration>
             </plugin>
+            <plugin>
+                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -124,7 +128,7 @@
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
-                    <version>${karaf.maven.plugin.version}</version>
+                    <version>${karaf.version}</version>
                     <extensions>true</extensions>
                 </plugin>
                 <plugin>
@@ -176,6 +180,32 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.version}</version>
+                    <configuration>
+                        <compilerId>groovy-eclipse-compiler</compilerId>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                               <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-eclipse-compiler</artifactId>
+                            <version>${groovy.eclipse.compiler.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-eclipse-batch</artifactId>
+                            <version>${groovy.eclipse.batch.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>${tycho-groupid}</groupId>
@@ -351,10 +381,10 @@
             </snapshots>
         </repository>
 
-        <!-- SHK releases -->
+        <!-- maggu2810's maven repository -->
         <repository>
-            <id>shk-bintray</id>
-            <name>Bintray Repository for shk</name>
+            <id>maggu2810-bintray</id>
+            <name>Bintray Repository of maggu2810</name>
             <url>https://dl.bintray.com/maggu2810/maven</url>
             <releases>
                 <enabled>true</enabled>

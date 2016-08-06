@@ -16,9 +16,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>org.openhab.ui.classicui</module>
-    <module>org.openhab.ui.basicui</module>
-    <module>org.openhab.ui.paperui</module>
     <module>org.openhab.ui.cometvisu</module>
     <module>org.openhab.ui.cometvisu.php</module>
   </modules>
