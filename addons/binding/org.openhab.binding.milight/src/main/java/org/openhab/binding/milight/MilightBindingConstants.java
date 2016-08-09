@@ -36,6 +36,7 @@ public class MilightBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_COLOR = "ledcolor";
+    public final static String CHANNEL_NIGHTMODE = "lednightmode";
     public final static String CHANNEL_BRIGHTNESS = "ledbrightness";
     public final static String CHANNEL_TEMP = "ledtemperature";
     public final static String CHANNEL_SPEED = "discospeed";
