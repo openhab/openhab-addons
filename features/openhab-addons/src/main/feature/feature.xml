@@ -234,12 +234,19 @@
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/cometvisu</configfile>
     </feature>
-
+    
     <feature name="openhab-ui-cometvisu-php" description="PHP support for CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-cometvisu</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>
-
+    
+    
+    <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-dashboard</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
+    </feature>
+    
 </features>
