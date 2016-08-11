@@ -38,7 +38,7 @@ public class RFXComTcpConnector implements RFXComConnectorInterface {
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
-        logger.error("sendPacket not implemented");
+        logger.error("sendMessage not implemented");
     }
 
     @Override
