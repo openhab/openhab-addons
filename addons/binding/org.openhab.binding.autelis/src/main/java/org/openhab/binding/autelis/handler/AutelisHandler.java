@@ -9,7 +9,6 @@
 package org.openhab.binding.autelis.handler;
 
 import java.io.StringReader;
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,11 +23,12 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BasicAuthentication;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.B64Code;
+import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -262,21 +262,6 @@ public class AutelisHandler extends BaseThingHandler {
 
             baseURL = "http://" + host + ":" + port;
 
-            URI uri = new URI(baseURL);
-            AuthenticationStore authStore = client.getAuthenticationStore();
-            final String anyRealm = "*";
-            BasicAuthentication basicAuthentication = new BasicAuthentication(uri, anyRealm, username, password) {
-                // In version 9.2.12 Jetty HttpClient does not support adding an authentication for any realm. This is a
-                // workaround until this issue is solved
-                @Override
-                public boolean matches(String type, URI uri, String realm) {
-                    realm = anyRealm;
-                    return super.matches(type, uri, realm);
-                }
-
-            };
-            authStore.addAuthentication(basicAuthentication);
-
             properlyConfigured = true;
 
             logger.debug("Autelius binding configured with base url {} and refresh period of {}", baseURL, refresh);
@@ -391,7 +376,17 @@ public class AutelisHandler extends BaseThingHandler {
     private String getUrl(String url, int timeout) {
         url += (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         startHttpClient(client);
+
         Request request = client.newRequest(url).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
+
+        AutelisConfiguration configuration = getConfig().as(AutelisConfiguration.class);
+        String user = configuration.user;
+        String password = configuration.password;
+
+        String basicAuthentication = "Basic " + B64Code.encode(user + ":" + password, StringUtil.__ISO_8859_1);
+
+        request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
+
         try {
             ContentResponse response = request.send();
             int statusCode = response.getStatus();
