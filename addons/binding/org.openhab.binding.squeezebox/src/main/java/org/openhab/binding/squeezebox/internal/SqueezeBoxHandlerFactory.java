@@ -15,12 +15,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.binding.squeezebox.discovery.SqueezeBoxPlayerDiscoveryParticipant;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
-import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,14 +22,22 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.squeezebox.discovery.SqueezeBoxPlayerDiscoveryParticipant;
+import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
+import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
+import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
+import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
 /**
  * The {@link SqueezeBoxHandlerFactory} is responsible for creating things and
  * thing handlers.
- * 
+ *
  * @author Dan Cunningham - Initial contribution
+ * @author Mark Hilbush - Cancel request player job when handler removed
  */
 public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
@@ -55,15 +57,16 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
-            return new SqueezeBoxPlayerHandler(thing);
+        if (thingTypeUID.equals(SQUEEZEBOXSERVER_THING_TYPE)) {
+            logger.trace("creating handler for bridge thing {}", thing);
+            SqueezeBoxServerHandler bridge = new SqueezeBoxServerHandler((Bridge) thing);
+            registerSqueezeBoxPlayerDiscoveryService(bridge);
+            return bridge;
         }
 
-        if (thingTypeUID.equals(SQUEEZEBOXSERVER_THING_TYPE)) {
-            logger.trace("Returning handler for bridge thing {}", thing);
-            SqueezeBoxServerHandler handler = new SqueezeBoxServerHandler((Bridge) thing);
-            registerSqueezeBoxPlayerDiscoveryService(handler);
-            return handler;
+        if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
+            logger.trace("creating handler for player thing {}", thing);
+            return new SqueezeBoxPlayerHandler(thing);
         }
 
         return null;
@@ -72,29 +75,55 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Adds SqueezeBoxServerHandlers to the discovery service to find SqueezeBox
      * Players
-     * 
+     *
      * @param squeezeBoxServerHandler
      */
-    private synchronized void registerSqueezeBoxPlayerDiscoveryService(SqueezeBoxServerHandler squeezeBoxServerHandler) {
+    private synchronized void registerSqueezeBoxPlayerDiscoveryService(
+            SqueezeBoxServerHandler squeezeBoxServerHandler) {
+        logger.trace("registering player discovery service");
+
         SqueezeBoxPlayerDiscoveryParticipant discoveryService = new SqueezeBoxPlayerDiscoveryParticipant(
                 squeezeBoxServerHandler);
+
+        // Register the PlayerListener with the SqueezeBoxServerHandler
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(discoveryService);
-        this.discoveryServiceRegs.put(squeezeBoxServerHandler.getThing().getUID(), bundleContext.registerService(
-                DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+
+        // Register the service, then add the service to the ServiceRegistration map
+        discoveryServiceRegs.put(squeezeBoxServerHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
+
         if (thingHandler instanceof SqueezeBoxServerHandler) {
+            logger.trace("removing handler for bridge thing {}", thingHandler.getThing());
+
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
+                logger.trace("unregistering player discovery service");
+
+                // Get the discovery service object and use it to cancel the RequestPlayerJob
+                SqueezeBoxPlayerDiscoveryParticipant discoveryService = (SqueezeBoxPlayerDiscoveryParticipant) bundleContext
+                        .getService(serviceReg.getReference());
+                discoveryService.cancelRequestPlayerJob();
+
+                // Unregister the PlayerListener from the SqueezeBoxServerHandler
+                ((SqueezeBoxServerHandler) thingHandler).unregisterSqueezeBoxPlayerListener(
+                        (SqueezeBoxPlayerEventListener) bundleContext.getService(serviceReg.getReference()));
+
+                // Unregister the PlayerListener service
                 serviceReg.unregister();
+
+                // Remove the service from the ServiceRegistration map
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
+
         if (thingHandler instanceof SqueezeBoxPlayerHandler) {
             SqueezeBoxServerHandler bridge = ((SqueezeBoxPlayerHandler) thingHandler).getSqueezeBoxServerHandler();
             if (bridge != null) {
+                logger.trace("removing handler for player thing {}", thingHandler.getThing());
                 bridge.removePlayerCache(((SqueezeBoxPlayerHandler) thingHandler).getMac());
             }
         }
