@@ -64,6 +64,15 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_S_CUSTOM = 23;
     public static final int MYSENSORS_SUBTYPE_S_HVAC = 29;
     public static final int MYSENSORS_SUBTYPE_S_MULTIMETER = 30;
+    public static final int MYSENSORS_SUBTYPE_S_SPRINKLER = 31;
+    public static final int MYSENSORS_SUBTYPE_S_WATER_LEAK = 32;
+    public static final int MYSENSORS_SUBTYPE_S_SOUND = 33;
+    public static final int MYSENSORS_SUBTYPE_S_VIBRATION = 34;
+    public static final int MYSENSORS_SUBTYPE_S_MOISTURE = 35;
+    public static final int MYSENSORS_SUBTYPE_S_INFO = 36;
+    public static final int MYSENSORS_SUBTYPE_S_GAS = 37;
+    public static final int MYSENSORS_SUBTYPE_S_GPS = 38;
+    public static final int MYSENSORS_SUBTYPE_S_WATER_QUALITY = 39;
 
     // Subtypes for set, req
     public static final int MYSENSORS_SUBTYPE_V_TEMP = 0;
@@ -113,6 +122,16 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_COOL = 44;
     public static final int MYSENSORS_SUBTYPE_V_HVAC_SETPOINT_HEAT = 45;
     public static final int MYSENSORS_SUBTYPE_V_HVAC_FLOW_MODE = 46;
+    public static final int MYSENSORS_SUBTYPE_V_TEXT = 47;
+    public static final int MYSENSORS_SUBTYPE_V_CUSTOM = 48;
+    public static final int MYSENSORS_SUBTYPE_V_POSITION = 49;
+    public static final int MYSENSORS_SUBTYPE_V_IR_RECORD = 50;
+    public static final int MYSENSORS_SUBTYPE_V_PH = 51;
+    public static final int MYSENSORS_SUBTYPE_V_ORP = 52;
+    public static final int MYSENSORS_SUBTYPE_V_EC = 53;
+    public static final int MYSENSORS_SUBTYPE_V_VAR = 54;
+    public static final int MYSENSORS_SUBTYPE_V_VA = 55;               
+    public static final int MYSENSORS_SUBTYPE_V_POWER_FACTOR = 56;  
 
     public static final int MYSENSORS_SUBTYPE_I_BATTERY_LEVEL = 0;
     public static final int MYSENSORS_SUBTYPE_I_TIME = 1;
@@ -133,16 +152,16 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_I_GET_NONCE = 16;
     public static final int MYSENSORS_SUBTYPE_I_GET_NONCE_RESONSE = 17;
     public static final int MYSENSORS_SUBTYPE_I_HEARTBEAT_REQUEST = 18;
-	public static final int MYSENSORS_SUBTYPE_I_PRESENTATION = 19;
-	public static final int MYSENSORS_SUBTYPE_I_DISCOVER = 20;
-	public static final int MYSENSORS_SUBTYPE_I_DISCOVER_RESPONSE = 21;
-	public static final int MYSENSORS_SUBTYPE_I_HEARTBEAT_RESPONSE = 22;
-	public static final int MYSENSORS_SUBTYPE_I_LOCKED = 23;
-	public static final int MYSENSORS_SUBTYPE_I_PING = 24;
-	public static final int MYSENSORS_SUBTYPE_I_PONG = 25;
-	public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_REQUEST = 26;
-	public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_RESPONSE = 27;
-	public static final int MYSENSORS_SUBTYPE_I_DEBUG = 28;    
+    public static final int MYSENSORS_SUBTYPE_I_PRESENTATION = 19;
+    public static final int MYSENSORS_SUBTYPE_I_DISCOVER = 20;
+    public static final int MYSENSORS_SUBTYPE_I_DISCOVER_RESPONSE = 21;
+    public static final int MYSENSORS_SUBTYPE_I_HEARTBEAT_RESPONSE = 22;
+    public static final int MYSENSORS_SUBTYPE_I_LOCKED = 23;
+    public static final int MYSENSORS_SUBTYPE_I_PING = 24;
+    public static final int MYSENSORS_SUBTYPE_I_PONG = 25;
+    public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_REQUEST = 26;
+    public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_RESPONSE = 27;
+    public static final int MYSENSORS_SUBTYPE_I_DEBUG = 28;    
 
     public static final int MYSENSORS_NUMBER_OF_RETRIES = 5;
     public static final int[] MYSENSORS_RETRY_TIMES = { 0, 100, 500, 1000, 2000 };
