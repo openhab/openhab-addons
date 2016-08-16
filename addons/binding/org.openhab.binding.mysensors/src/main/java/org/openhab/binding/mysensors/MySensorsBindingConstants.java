@@ -132,6 +132,17 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_I_REQUEST_SIGNING = 15;
     public static final int MYSENSORS_SUBTYPE_I_GET_NONCE = 16;
     public static final int MYSENSORS_SUBTYPE_I_GET_NONCE_RESONSE = 17;
+    public static final int MYSENSORS_SUBTYPE_I_HEARTBEAT_REQUEST = 18;
+	public static final int MYSENSORS_SUBTYPE_I_PRESENTATION = 19;
+	public static final int MYSENSORS_SUBTYPE_I_DISCOVER = 20;
+	public static final int MYSENSORS_SUBTYPE_I_DISCOVER_RESPONSE = 21;
+	public static final int MYSENSORS_SUBTYPE_I_HEARTBEAT_RESPONSE = 22;
+	public static final int MYSENSORS_SUBTYPE_I_LOCKED = 23;
+	public static final int MYSENSORS_SUBTYPE_I_PING = 24;
+	public static final int MYSENSORS_SUBTYPE_I_PONG = 25;
+	public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_REQUEST = 26;
+	public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_RESPONSE = 27;
+	public static final int MYSENSORS_SUBTYPE_I_DEBUG = 28;    
 
     public static final int MYSENSORS_NUMBER_OF_RETRIES = 5;
     public static final int[] MYSENSORS_RETRY_TIMES = { 0, 100, 500, 1000, 2000 };
