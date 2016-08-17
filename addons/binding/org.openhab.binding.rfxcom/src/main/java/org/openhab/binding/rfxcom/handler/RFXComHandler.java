@@ -152,10 +152,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
             if (config.deviceId.equals(id)) {
                 RFXComBaseMessage msg = (RFXComBaseMessage) message;
                 String receivedId = packetTypeThingMap.get(msg.packetType).getId();
+                logger.debug("Received message from bridge: {} message: {}", bridge, message);
 
                 if (receivedId.equals(getThing().getThingTypeUID().getId())) {
                     updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Received message from bridge: {} message: {}", bridge, message);
 
                     List<RFXComValueSelector> supportedValueSelectors = msg.getSupportedInputValueSelectors();
 
