@@ -55,7 +55,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
                     this.notifyAll();
                 }
             } else {
-                System.out.println("No decimal type");
             }
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information
@@ -86,7 +85,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
 
             if (commandToSend > 0 && commandToSend <= 3 && commandToSend != eshStatus) {
-                System.out.println("Sending command");
+                logger.debug("Sending command...");
                 updateState(TEXTUAL_STATE, new StringType("Refreshing..."));
                 controller.sendCommand(getCommandFromEshStatus(commandToSend));
                 commandToSend = 0;
