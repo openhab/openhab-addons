@@ -728,6 +728,171 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	
+	<thing-type id="lock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Lock Sensor</label>
+		<description>Lock sensor</description>
+
+		<channels>
+			<channel id="lock" typeId="lock-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="level">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Level Sensor</label>
+		<description>Level sensor</description>
+
+		<channels>
+			<channel id="level" typeId="level-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="rgbLight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>RGB Light Sensor</label>
+		<description>RGB light sensor</description>
+
+		<channels>
+			<channel id="rgbLight" typeId="rgbLight-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="var5" typeId="var5-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="rgbwLight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>RGBW Light Sensor</label>
+		<description>RGBW light sensor</description>
+
+		<channels>
+			<channel id="rgbwLight" typeId="rgbwLight-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="var5" typeId="var5-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="phMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>PH Meter Sensor</label>
+		<description>PH meter sensor</description>
+
+		<channels>
+			<channel id="phMeter" typeId="phMeter-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 
 	<!-- CHANNELS -->
@@ -765,7 +930,7 @@
 		<label>Status</label>
 		<description>Status</description>
 		<category>Light</category>
-		<state readOnly="false" />
+		<state readOnly="false"</state>
 	</channel-type>
 	<channel-type id="watt-channel">
 		<item-type>Number</item-type>
@@ -955,5 +1120,43 @@
 		<item-type>Number</item-type>
 		<label>Volume</label>
 		<description>MySensors Water Volume Channel</description>
+	</channel-type>
+	<channel-type id="lock-channel">
+		<item-type>Status</item-type>
+		<label>Lock</label>
+		<description>MySensors Lock Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="level-channel">
+		<item-type>Number</item-type>
+		<label>Level</label>
+		<description>MySensors Level Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="level-channel">
+		<item-type>Number</item-type>
+		<label>Level</label>
+		<description>MySensors Level Channel</description>
+		<state pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="rgbLight-channel">
+		<item-type>Number</item-type>
+		<label>RGB Light</label>
+		<description>MySensors RGB light Channel</description>
+		<category>LightVolume</category>
+		<state pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="rgbwLight-channel">
+		<item-type>Number</item-type>
+		<label>RGBW Light</label>
+		<description>MySensors RGBW light Channel</description>
+		<category>LightVolume</category>
+		<state pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+	<channel-type id="phMeter-channel">
+		<item-type>Number</item-type>
+		<label>PH Meter</label>
+		<description>MySensors PH Meter Channel</description>
+		<state readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>
