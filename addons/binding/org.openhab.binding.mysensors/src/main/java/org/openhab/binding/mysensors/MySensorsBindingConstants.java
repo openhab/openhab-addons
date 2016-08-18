@@ -190,10 +190,10 @@ public class MySensorsBindingConstants {
     public final static ThingTypeUID THING_TYPE_HVAC = new ThingTypeUID(BINDING_ID, "hvacThermostat");
 	
     public final static ThingTypeUID THING_TYPE_LOCK = new ThingTypeUID(BINDING_ID, "lock");
-    public final static ThingTypeUID THING_TYPE_LEVEL = new ThingTypeUID(BINDING_ID, "level");
+    public final static ThingTypeUID THING_TYPE_SOUND = new ThingTypeUID(BINDING_ID, "sound");
     public final static ThingTypeUID THING_TYPE_RGB_LIGHT = new ThingTypeUID(BINDING_ID, "rgbLight");
     public final static ThingTypeUID THING_TYPE_RGBW_LIGHT = new ThingTypeUID(BINDING_ID, "rgbwLight");
-    public final static ThingTypeUID THING_TYPE_PH_METER = new ThingTypeUID(BINDING_ID, "phMeter");
+    public final static ThingTypeUID THING_TYPE_WATER_QUALITY  = new ThingTypeUID(BINDING_ID, "waterQuality");
 
     public final static ThingTypeUID THING_TYPE_BRIDGE_SER = new ThingTypeUID(BINDING_ID, "bridge-ser");
     public final static ThingTypeUID THING_TYPE_BRIDGE_ETH = new ThingTypeUID(BINDING_ID, "bridge-eth");
@@ -341,7 +341,7 @@ public class MySensorsBindingConstants {
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
             THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_LEVEL, THING_TYPE_RGB_LIGHT,
-			THING_TYPE_RGBW_LIGHT, THING_TYPE_PH_METER);
+			THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY );
     /** Supported bridges */
     public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_BRIDGE_SER,
             THING_TYPE_BRIDGE_ETH);
@@ -352,5 +352,5 @@ public class MySensorsBindingConstants {
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
             THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_LEVEL, THING_TYPE_RGB_LIGHT,
-			THING_TYPE_RGBW_LIGHT, THING_TYPE_PH_METER THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
+			THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY  THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
 }
