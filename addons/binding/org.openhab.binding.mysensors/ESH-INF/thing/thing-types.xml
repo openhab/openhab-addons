@@ -874,6 +874,8 @@
 		<channels>
 			<channel id="temp" typeId="temp-channel" />
 			<channel id="ph" typeId="ph-channel" />
+			<channel id="orp" typeId="orp-channel" />
+			<channel id="ec" typeId="ec-channel" />
 			<channel id="battery" typeId="battery-channel" />
 			<channel id="lastupdate" typeId="lastupdate-channel"/>
 		</channels>
@@ -1137,6 +1139,18 @@
 		<item-type>Number</item-type>
 		<label>PH Meter</label>
 		<description>MySensors PH Meter Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="orp-channel">
+		<item-type>Number</item-type>
+		<label>PH Meter</label>
+		<description>MySensors Water ORP Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="ec-channel">
+		<item-type>Number</item-type>
+		<label>PH Meter</label>
+		<description>MySensors Water Electric Condictivity Channel</description>
 		<state readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>
