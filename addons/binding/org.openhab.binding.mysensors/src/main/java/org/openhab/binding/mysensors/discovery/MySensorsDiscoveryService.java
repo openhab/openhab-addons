@@ -166,7 +166,7 @@ public class MySensorsDiscoveryService extends AbstractDiscoveryService {
                             "Lock_" + msg.getNodeId() + "_" + msg.getChildId());
                     break;
                 case MYSENSORS_SUBTYPE_S_SOUND:
-                    uid = new ThingUID(THING_TYPE_LEVEL, bridgeHandler.getThing().getUID(),
+                    uid = new ThingUID(THING_TYPE_SOUND, bridgeHandler.getThing().getUID(),
                             "Sound_level_" + msg.getNodeId() + "_" + msg.getChildId());
                     break;
                 case MYSENSORS_SUBTYPE_S_RGB_LIGHT :
