@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(STATE)) {
+        if (command instanceof RefreshType) {
+            // Currently manual refrshing is not possible in the moment
+            return;
+        } else if (channelUID.getId().equals(STATE) && command instanceof DecimalType) {
             if (command instanceof DecimalType) {
                 synchronized (this) {
                     commandToSend = ((DecimalType) command).intValue();
@@ -59,6 +63,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 }
             } else {
             }
+
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -87,8 +92,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             int mowed = state.getMowed();
             int error = state.getError();
             int statecode = state.getState();
-            boolean ready = isReadyToMow(state.getState());
-            updateStatus(ThingStatus.ONLINE);
+            boolean ready = isReadyToMow(state.getState(), state.getError());
 
             if (verifyCommand(commandToSend, eshStatus, state.getState(), error)) {
                 logger.debug("Sending command...");
@@ -105,7 +109,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                             mowed = state.getMowed();
                             error = state.getError();
                             statecode = state.getState();
-                            ready = isReadyToMow(state.getState());
+                            ready = isReadyToMow(state.getState(), state.getError());
                             break;
                         }
                         Thread.sleep(1000);
@@ -117,6 +121,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 }
             }
             controller.disconnect();
+            updateStatus(ThingStatus.ONLINE);
             updateState(STATECODE, new DecimalType(statecode));
             updateState(READY, new DecimalType(ready ? 1 : 0));
             updateState(ERRORCODE, new DecimalType(error));
@@ -131,8 +136,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
     }
 
-    private boolean isReadyToMow(int statusCode) {
-        return statusCode == 258 || statusCode == 260 || statusCode == 261 || statusCode == 517 || statusCode == 519;
+    private boolean isReadyToMow(int statusCode, int error) {
+        return (statusCode == 258 || statusCode == 260 || statusCode == 261 || statusCode == 517 || statusCode == 519)
+                && error == 0;
     }
 
     private boolean verifyCommand(int command, int eshStatus, int statusCode, int errorCode) {
@@ -143,7 +149,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
         }
         // Command out of range
         if (command < 1 || command > 3) {
-            logger.error("Command out of range");
+            logger.debug("Command out of range");
             return false;
         }
         // Command is equal to current state
@@ -157,7 +163,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             return false;
         }
         // Command means "MOW" but mower is not ready
-        if (command == 1 && !isReadyToMow(statusCode)) {
+        if (command == 1 && !isReadyToMow(statusCode, errorCode)) {
             logger.debug("The mower is not ready to mow in the moment");
             return false;
         }
@@ -217,14 +223,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
             @Override
             public void run() {
-
                 try {
-                    Thread.sleep(3000);
-                    poll();
                     while (running) {
                         synchronized (BoschIndegoHandler.this) {
-                            BoschIndegoHandler.this.wait(((BigDecimal) getConfig().get("refresh")).intValue() * 1000);
                             poll();
+                            BoschIndegoHandler.this.wait(((BigDecimal) getConfig().get("refresh")).intValue() * 1000);
+
                         }
                     }
                 } catch (InterruptedException e) {
@@ -234,6 +238,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             }
         });
         pollingThread.start();
+
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
         // Add a description to give user information to understand why thing does not work
