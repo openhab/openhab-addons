@@ -27,5 +27,6 @@ public class BoschIndegoBindingConstants {
     public final static String TEXTUAL_STATE = "textualstate";
     public final static String MOWED = "mowed";
     public final static String ERRORCODE = "errorcode";
+    public final static String READY = "ready";
 
 }
