@@ -12,6 +12,7 @@
             <channel id="state" typeId="state"/>
             <channel id="textualstate" typeId="textualstate"/>
             <channel id="errorcode" typeId="errorcode"/>
+            <channel id="statecode" typeId="statecode"/>
             <channel id="mowed" typeId="mowed"/>
             <channel id="ready" typeId="ready"/>
         </channels>
@@ -42,6 +43,11 @@
         <item-type>Number</item-type>
         <label>Numeric state of the error</label>
         <description>0 = no error</description>
+    </channel-type>
+    <channel-type id="statecode">
+        <item-type>Number</item-type>
+        <label>API-code of the Indego state</label>
+        <description></description>
     </channel-type>
     <channel-type id="textualstate">
         <item-type>String</item-type>
