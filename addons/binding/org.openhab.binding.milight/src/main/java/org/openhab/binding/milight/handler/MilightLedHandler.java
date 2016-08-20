@@ -67,6 +67,10 @@ public class MilightLedHandler extends BaseThingHandler {
                 }
                 break;
             }
+            case MilightBindingConstants.CHANNEL_NIGHTMODE: {
+                state.setNightMode();
+                break;
+            }
             case MilightBindingConstants.CHANNEL_BRIGHTNESS: {
                 DecimalType d = (DecimalType) command;
                 state.setBrightness(d.intValue());

@@ -47,6 +47,8 @@
         <description>Milight RGB Led</description>
 
         <channels>
+            <channel id="lednightmode" typeId="lednightmode"/>
+            <channel id="ledbrightness" typeId="ledbrightness"/>
             <channel id="ledcolor" typeId="ledcolor"/>
             <channel id="discospeed" typeId="discospeed"/>
             <channel id="discomode" typeId="discomode"/>
@@ -61,6 +63,7 @@
         <description>Milight White Led</description>
 
         <channels>
+            <channel id="lednightmode" typeId="lednightmode"/>
             <channel id="ledbrightness" typeId="ledbrightness"/>
             <channel id="ledtemperature" typeId="ledtemperature"/>
             <channel id="discospeed" typeId="discospeed"/>
@@ -68,6 +71,11 @@
         </channels>
     </thing-type>
 
+    <channel-type id="lednightmode">
+        <item-type>Switch</item-type>
+        <label>Nightmode</label>
+        <description>Switch on/off night mode</description>
+    </channel-type>
 
     <channel-type id="ledcolor">
         <item-type>Color</item-type>
