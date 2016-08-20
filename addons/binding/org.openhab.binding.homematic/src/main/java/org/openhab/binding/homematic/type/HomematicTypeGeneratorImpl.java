@@ -290,10 +290,10 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
                         builder.withStepSize(MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L));
+                        builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
                     builder.withPattern(MetadataUtils.getPattern(dp));
-                    builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     builder.withGroupName(groupName);
                     parms.add(builder.build());
                 }
