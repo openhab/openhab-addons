@@ -222,6 +222,18 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
+    <!-- voice -->
+
+    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-voice-marytts" description="Mary Text-to-Speech" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.marytts/${project.version}</bundle>
+    </feature>
+
     <!-- ui -->
 
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
