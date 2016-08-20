@@ -11,6 +11,9 @@
         <channels>
             <channel id="state" typeId="state"/>
             <channel id="textualstate" typeId="textualstate"/>
+            <channel id="errorcode" typeId="errorcode"/>
+            <channel id="mowed" typeId="mowed"/>
+            <channel id="ready" typeId="ready"/>
         </channels>
         <config-description>
         <parameter name="username" type="text" required="true">
@@ -35,6 +38,11 @@
         <label>Numeric state of the Indego</label>
         <description>1 = mow, 2 = charging/docked, 3 = paused.</description>
     </channel-type>
+    <channel-type id="errorcode">
+        <item-type>Number</item-type>
+        <label>Numeric state of the error</label>
+        <description>0 = no error</description>
+    </channel-type>
     <channel-type id="textualstate">
         <item-type>String</item-type>
         <label>Textual state of the Indego</label>
@@ -44,6 +52,11 @@
     <channel-type id="mowed">
         <item-type>Number</item-type>
         <label>Percent of cut grass</label>
+        <description></description>
+    </channel-type>
+    <channel-type id="ready">
+        <item-type>Number</item-type>
+        <label>Indicates if mower is ready 1 = ready, 0 = not ready</label>
         <description></description>
     </channel-type>
 
