@@ -86,6 +86,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             int eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
             int mowed = state.getMowed();
             int error = state.getError();
+            int statecode = state.getState();
             boolean ready = isReadyToMow(state.getState());
             updateStatus(ThingStatus.ONLINE);
 
@@ -103,6 +104,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                             eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
                             mowed = state.getMowed();
                             error = state.getError();
+                            statecode = state.getState();
                             ready = isReadyToMow(state.getState());
                             break;
                         }
@@ -115,6 +117,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 }
             }
             controller.disconnect();
+            updateState(STATECODE, new DecimalType(statecode));
             updateState(READY, new DecimalType(ready ? 1 : 0));
             updateState(ERRORCODE, new DecimalType(error));
             updateState(MOWED, new PercentType(mowed));
