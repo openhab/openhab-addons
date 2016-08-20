@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>BoschIndego Binding</name>
-    <description>This is the binding for Bosch Indego lawn mowers.</description>
+    <description>This is the binding for Bosch Indego Connect lawn mowers.</description>
     <author>Jonas Fleck</author>
 
 </binding:binding>
