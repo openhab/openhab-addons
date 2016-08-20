@@ -86,6 +86,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             int eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
             int mowed = state.getMowed();
             int error = state.getError();
+            boolean ready = isReadyToMow(state.getState());
             updateStatus(ThingStatus.ONLINE);
 
             if (verifyCommand(commandToSend, eshStatus, state.getState(), error)) {
@@ -102,6 +103,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                             eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
                             mowed = state.getMowed();
                             error = state.getError();
+                            ready = isReadyToMow(state.getState());
                             break;
                         }
                         Thread.sleep(1000);
@@ -113,6 +115,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 }
             }
             controller.disconnect();
+            updateState(READY, new DecimalType(ready ? 1 : 0));
             updateState(ERRORCODE, new DecimalType(error));
             updateState(MOWED, new PercentType(mowed));
             updateState(STATE, new DecimalType(eshStatus));
@@ -218,7 +221,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
                     while (running) {
                         synchronized (BoschIndegoHandler.this) {
                             BoschIndegoHandler.this.wait(((BigDecimal) getConfig().get("refresh")).intValue() * 1000);
-                            System.out.println("Polling1");
                             poll();
                         }
                     }
