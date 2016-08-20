@@ -271,9 +271,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
             factory.addChannelType(channelType);
 
-            BridgeBuilder thingBuilder = (BridgeBuilder) BridgeBuilder
-                    .create(getThing().getThingTypeUID(), getThing().getUID())
-                    .withConfiguration(getThing().getConfiguration()).withProperties(getThing().getProperties());
+            BridgeBuilder thingBuilder = editThing();
 
             Channel channel = ChannelBuilder
                     .create(new ChannelUID(getThing().getUID(), HarmonyHubBindingConstants.CHANNEL_CURRENT_ACTIVITY),
