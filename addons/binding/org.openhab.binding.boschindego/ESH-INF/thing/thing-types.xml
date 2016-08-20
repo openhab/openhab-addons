@@ -24,7 +24,7 @@
             <label>Password</label>
             <description>Password for the Bosch Indego account.</description>
         </parameter>
-        <parameter name="refresh" type="integer" min="1">
+        <parameter name="refresh" type="integer" min="60">
             <label>Refresh interval</label>
             <description>Specifies the refresh interval in seconds.</description>
             <default>180</default>
