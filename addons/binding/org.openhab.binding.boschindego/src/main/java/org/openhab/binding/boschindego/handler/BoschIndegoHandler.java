@@ -42,6 +42,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private int commandToSend;
 
+    private Thread pollingThread;
+    private boolean running;
+
     public BoschIndegoHandler(Thing thing) {
         super(thing);
     }
@@ -70,7 +73,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
     }
 
-    private synchronized void poll() {
+    private synchronized void poll() throws InterruptedException {
         // Create controller instance
         try {
             IndegoController controller = new IndegoController(getConfig().get("username").toString(),
@@ -82,9 +85,10 @@ public class BoschIndegoHandler extends BaseThingHandler {
             DeviceStatus statusWithMessage = DeviceStatus.decodeStatusCode(state.getState());
             int eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
             int mowed = state.getMowed();
+            int error = state.getError();
             updateStatus(ThingStatus.ONLINE);
 
-            if (commandToSend > 0 && commandToSend <= 3 && commandToSend != eshStatus) {
+            if (verifyCommand(commandToSend, eshStatus, state.getState(), error)) {
                 logger.debug("Sending command...");
                 updateState(TEXTUAL_STATE, new StringType("Refreshing..."));
                 controller.sendCommand(getCommandFromEshStatus(commandToSend));
@@ -97,15 +101,19 @@ public class BoschIndegoHandler extends BaseThingHandler {
                             statusWithMessage = DeviceStatus.decodeStatusCode(state.getState());
                             eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
                             mowed = state.getMowed();
+                            error = state.getError();
                             break;
                         }
                         Thread.sleep(1000);
                     }
 
                 } catch (InterruptedException e) {
+                    controller.disconnect();
+                    throw e;
                 }
             }
             controller.disconnect();
+            updateState(ERRORCODE, new DecimalType(error));
             updateState(MOWED, new PercentType(mowed));
             updateState(STATE, new DecimalType(eshStatus));
             updateState(TEXTUAL_STATE, new StringType(statusWithMessage.getMessage()));
@@ -115,6 +123,39 @@ public class BoschIndegoHandler extends BaseThingHandler {
         } catch (IndegoException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
+    }
+
+    private boolean isReadyToMow(int statusCode) {
+        return statusCode == 258 || statusCode == 260 || statusCode == 261 || statusCode == 517 || statusCode == 519;
+    }
+
+    private boolean verifyCommand(int command, int eshStatus, int statusCode, int errorCode) {
+        // Mower reported an error
+        if (errorCode != 0) {
+            logger.error("The mower reported an error.");
+            return false;
+        }
+        // Command out of range
+        if (command < 1 || command > 3) {
+            logger.error("Command out of range");
+            return false;
+        }
+        // Command is equal to current state
+        if (command == eshStatus) {
+            logger.debug("Command is equal to state");
+            return false;
+        }
+        // Cant pause while the mower is docked
+        if (command == 3 && eshStatus == 2) {
+            logger.debug("Can´t pause the mower while it´s docked or docking");
+            return false;
+        }
+        // Command means "MOW" but mower is not ready
+        if (command == 1 && !isReadyToMow(statusCode)) {
+            logger.debug("The mower is not ready to mow in the moment");
+            return false;
+        }
+        return true;
     }
 
     private DeviceCommand getCommandFromEshStatus(int eshStatus) {
@@ -154,10 +195,19 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     @Override
+    public void handleRemoval() {
+        super.handleRemoval();
+        logger.debug("removing thing..");
+        running = false;
+        pollingThread.interrupt();
+    }
+
+    @Override
     public void initialize() {
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
-        new Thread(new Runnable() {
+        running = true;
+        pollingThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -165,7 +215,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 try {
                     Thread.sleep(3000);
                     poll();
-                    while (true) {
+                    while (running) {
                         synchronized (BoschIndegoHandler.this) {
                             BoschIndegoHandler.this.wait(((BigDecimal) getConfig().get("refresh")).intValue() * 1000);
                             System.out.println("Polling1");
@@ -173,12 +223,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
                         }
                     }
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.debug("Binding closed");
                 }
 
             }
-        }).start();
+        });
+        pollingThread.start();
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
         // Add a description to give user information to understand why thing does not work
