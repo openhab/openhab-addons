@@ -51,6 +51,7 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
+    <module>org.openhab.binding.boschindego</module>
   </modules>
 
 </project>
