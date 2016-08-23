@@ -39,6 +39,10 @@ public class FreeboxBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(FREEBOX_THING_TYPE_PHONE,
             FREEBOX_THING_TYPE_NET_DEVICE, FREEBOX_THING_TYPE_NET_INTERFACE);
 
+    // List of properties
+    public final static String API_BASE_URL = "apiBaseUrl";
+    public final static String API_VERSION = "apiVersion";
+
     // List of all Group Channel ids
     public final static String STATE = "state";
     public final static String ANY = "any";

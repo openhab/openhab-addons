@@ -45,6 +45,9 @@ public class HomekitTaggedItem {
             if (homekitDeviceType == null) {
                 homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tag);
             }
+            if (homekitDeviceType != null || homekitCharacteristicType != null) {
+                break;
+            }
         }
         if (homekitDeviceType != null) {
             this.id = calculateId(item);

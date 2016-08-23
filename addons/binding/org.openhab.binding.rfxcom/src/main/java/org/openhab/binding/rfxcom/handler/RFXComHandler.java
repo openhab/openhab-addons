@@ -15,11 +15,11 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -97,51 +97,37 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
      */
     @Override
     public void initialize() {
-        config = getConfigAs(RFXComDeviceConfiguration.class);
-        logger.debug("Initialized RFXCOM device handler for {}, deviceId={}, subType={}", getThing().getUID(),
-                config.deviceId, config.subType);
-
-        if (config.deviceId == null || config.subType == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Initialized RFXCOM device missing deviceId or subType");
-        }
-
-        initializeBridge(getBridge().getHandler(), getBridge());
+        logger.debug("Initializing thing {}", getThing().getUID());
+        initializeBridge((getBridge() == null) ? null : getBridge().getHandler(),
+                (getBridge() == null) ? null : getBridge().getStatus());
     }
 
     @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        initializeBridge(thingHandler, bridge);
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
+        initializeBridge((getBridge() == null) ? null : getBridge().getHandler(), bridgeStatusInfo.getStatus());
     }
 
-    private void initializeBridge(ThingHandler thingHandler, Bridge bridge) {
-        if (thingHandler != null && bridge != null) {
+    private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
+        logger.debug("initializeBridge {} for thing {}", bridgeStatus, getThing().getUID());
 
-            logger.debug("Bridge initialized");
+        config = getConfigAs(RFXComDeviceConfiguration.class);
+        if (config.deviceId == null || config.subType == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "RFXCOM device missing deviceId or subType");
+        } else if (thingHandler != null && bridgeStatus != null) {
 
             bridgeHandler = (RFXComBridgeHandler) thingHandler;
             bridgeHandler.registerDeviceStatusListener(this);
 
-            if (config.deviceId == null || config.subType == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "RFXCOM device missing deviceId or subType");
+            if (bridgeStatus == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
             } else {
-                if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
         }
-    }
-
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Bridge disposed");
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterDeviceStatusListener(this);
-        }
-        bridgeHandler = null;
     }
 
     /*
@@ -152,6 +138,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     @Override
     public void dispose() {
         logger.debug("Thing {} disposed.", getThing().getUID());
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDeviceStatusListener(this);
+        }
+        bridgeHandler = null;
         super.dispose();
     }
 
@@ -162,10 +152,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
             if (config.deviceId.equals(id)) {
                 RFXComBaseMessage msg = (RFXComBaseMessage) message;
                 String receivedId = packetTypeThingMap.get(msg.packetType).getId();
+                logger.debug("Received message from bridge: {} message: {}", bridge, message);
 
-                if (receivedId.equals(getThing().getUID().getThingTypeId())) {
+                if (receivedId.equals(getThing().getThingTypeUID().getId())) {
                     updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Received message from bridge: {} message: {}", bridge, message);
 
                     List<RFXComValueSelector> supportedValueSelectors = msg.getSupportedInputValueSelectors();
 

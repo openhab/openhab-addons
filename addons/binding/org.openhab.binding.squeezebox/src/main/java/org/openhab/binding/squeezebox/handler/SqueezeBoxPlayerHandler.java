@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -32,10 +31,12 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.squeezebox.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.utils.HttpUtils;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * are sent to/from channels.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Mark Hilbush - Improved handling of player status, prevent REFRESH from causing exception
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
@@ -106,20 +108,45 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public void initialize() {
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
-    };
+
+        SqueezeBoxServerHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            logger.debug("updating player status to match server status of {}", bridgeHandler.getThing().getStatus());
+            updateStatus(bridgeHandler.getThing().getStatus());
+        }
+    }
+
+    private SqueezeBoxServerHandler getBridgeHandler() {
+        SqueezeBoxServerHandler bridgeHandler = null;
+        Thing bridge = getBridge();
+        if (bridge != null) {
+            bridgeHandler = (SqueezeBoxServerHandler) bridge.getHandler();
+        }
+        return bridgeHandler;
+    }
 
     @Override
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         if (thingHandler instanceof SqueezeBoxServerHandler) {
             this.squeezeBoxServerHandler = (SqueezeBoxServerHandler) thingHandler;
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("bridgeHandlerInitialized for player mac {}", mac);
+            logger.debug("bridgeHandlerInitialized: updating status of player {} to ONLINE", mac);
         }
     }
 
     @Override
     public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
+        // Mark the player OFFLINE
+        updateStatus(ThingStatus.OFFLINE);
         this.squeezeBoxServerHandler = null;
+        logger.debug("bridgeHandlerDisposed: updating status of player {} to OFFLINE", mac);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        // Change player status to match the server status
+        updateStatus(bridgeStatusInfo.getStatus());
+        logger.debug("bridgeStatusChanged: updating status of player {} to {}", mac, bridgeStatusInfo.getStatus());
     }
 
     @Override
@@ -134,17 +161,23 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (squeezeBoxServerHandler != null) {
             squeezeBoxServerHandler.removePlayerCache(mac);
         }
-        logger.debug("Thing {} disposed.", getThing().getUID());
+        logger.debug("player thing {} disposed.", getThing().getUID());
         super.dispose();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (squeezeBoxServerHandler == null) {
-            logger.warn("Player has no server configured, ignoring command");
+            logger.info("player thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
         }
         String mac = getConfigAs(SqueezeBoxPlayerConfig.class).mac;
+
+        // Some of the code below is not designed to handle REFRESH
+        if (command == RefreshType.REFRESH) {
+            return;
+        }
+
         switch (channelUID.getIdWithoutGroup()) {
             case CHANNEL_POWER:
                 if (command.equals(OnOffType.ON)) {
@@ -229,6 +262,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 } else {
                     squeezeBoxServerHandler.syncPlayer(mac, command.toString());
                 }
+                break;
             case CHANNEL_UNSYNC:
                 if (command.equals(OnOffType.ON)) {
                     squeezeBoxServerHandler.unSyncPlayer(mac);
@@ -253,14 +287,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void playerAdded(SqueezeBoxPlayer player) {
-        if (isMe(player.getMacAddress())) {
-            Configuration configuration = editConfiguration();
-            configuration.put("modelId", player.getModel());
-            configuration.put("name", player.getName());
-            configuration.put("uid", player.getUuid());
-            configuration.put("ip", player.getIpAddr());
-            // updateConfiguration(configuration);
-        }
+        // Player properties are saved in SqueezeBoxPlayerDiscoveryParticipant
     }
 
     @Override

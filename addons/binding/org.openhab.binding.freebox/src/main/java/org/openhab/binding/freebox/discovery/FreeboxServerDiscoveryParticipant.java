@@ -16,6 +16,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
@@ -71,12 +72,15 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
         if (thingUID != null && ip != null) {
             logger.info("Created a DiscoveryResult for Freebox Server {} on IP {}", thingUID, ip);
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put(FreeboxServerConfiguration.IP_ADDRESS, ip);
+            properties.put(FreeboxServerConfiguration.FQDN, ip + ":" + service.getPort());
+            if (service.getPropertyString("device_type") != null) {
+                properties.put(Thing.PROPERTY_HARDWARE_VERSION, service.getPropertyString("device_type"));
+            }
             if (service.getPropertyString("api_base_url") != null) {
-                properties.put(FreeboxServerConfiguration.API_BASE_URL, service.getPropertyString("api_base_url"));
+                properties.put(FreeboxBindingConstants.API_BASE_URL, service.getPropertyString("api_base_url"));
             }
             if (service.getPropertyString("api_version") != null) {
-                properties.put(FreeboxServerConfiguration.API_VERSION, service.getPropertyString("api_version"));
+                properties.put(FreeboxBindingConstants.API_VERSION, service.getPropertyString("api_version"));
             }
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(service.getName())
                     .build();

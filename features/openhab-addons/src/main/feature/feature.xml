@@ -62,6 +62,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdanywhere/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-hdpowerview" description="HD PowerView Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdpowerview/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-ipp" description="IPP Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
@@ -83,10 +88,16 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lutron/${project.version}</bundle>
     </feature>
-
+    
     <feature name="openhab-binding-max" description="MAX! Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.max/${project.version}</bundle>
+    </feature>
+    
+    <feature name="openhab-binding-meteostick" description="Meteostick Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.meteostick/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-milight" description="Milight Binding" version="${project.version}">
@@ -98,6 +109,12 @@
         <feature>openhab-runtime-base</feature>
         <feature>esh-model-script</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-onkyo" description="Onkyo Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.onkyo/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-opensprinkler" description="OpenSprinkler Binding" version="${project.version}">
@@ -205,6 +222,18 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
+    <!-- voice -->
+
+    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-voice-marytts" description="Mary Text-to-Speech" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.marytts/${project.version}</bundle>
+    </feature>
+
     <!-- ui -->
 
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
@@ -217,12 +246,19 @@
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/cometvisu</configfile>
     </feature>
-
+    
     <feature name="openhab-ui-cometvisu-php" description="PHP support for CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-ui-cometvisu</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>
-
+    
+    
+    <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-dashboard</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
+    </feature>
+    
 </features>
