@@ -932,7 +932,7 @@
 		<label>Status</label>
 		<description>Status</description>
 		<category>Light</category>
-		<state readOnly="false"</state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="watt-channel">
 		<item-type>Number</item-type>

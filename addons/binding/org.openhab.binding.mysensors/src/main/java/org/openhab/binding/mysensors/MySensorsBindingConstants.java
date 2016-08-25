@@ -60,8 +60,11 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_S_HEATER = 14;
     public static final int MYSENSORS_SUBTYPE_S_DISTANCE = 15;
     public static final int MYSENSORS_SUBTYPE_S_LIGHT_LEVEL = 16;
+    public static final int MYSENSORS_SUBTYPE_S_LOCK = 19;
     public static final int MYSENSORS_SUBTYPE_S_WATER = 21;
     public static final int MYSENSORS_SUBTYPE_S_CUSTOM = 23;
+    public static final int MYSENSORS_SUBTYPE_S_RGB_LIGHT = 26;
+    public static final int MYSENSORS_SUBTYPE_S_RGBW_LIGHT = 27;
     public static final int MYSENSORS_SUBTYPE_S_HVAC = 29;
     public static final int MYSENSORS_SUBTYPE_S_MULTIMETER = 30;
     public static final int MYSENSORS_SUBTYPE_S_SPRINKLER = 31;
@@ -130,8 +133,8 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_V_ORP = 52;
     public static final int MYSENSORS_SUBTYPE_V_EC = 53;
     public static final int MYSENSORS_SUBTYPE_V_VAR = 54;
-    public static final int MYSENSORS_SUBTYPE_V_VA = 55;               
-    public static final int MYSENSORS_SUBTYPE_V_POWER_FACTOR = 56;  
+    public static final int MYSENSORS_SUBTYPE_V_VA = 55;
+    public static final int MYSENSORS_SUBTYPE_V_POWER_FACTOR = 56;
 
     public static final int MYSENSORS_SUBTYPE_I_BATTERY_LEVEL = 0;
     public static final int MYSENSORS_SUBTYPE_I_TIME = 1;
@@ -161,7 +164,7 @@ public class MySensorsBindingConstants {
     public static final int MYSENSORS_SUBTYPE_I_PONG = 25;
     public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_REQUEST = 26;
     public static final int MYSENSORS_SUBTYPE_I_REGISTRATION_RESPONSE = 27;
-    public static final int MYSENSORS_SUBTYPE_I_DEBUG = 28;    
+    public static final int MYSENSORS_SUBTYPE_I_DEBUG = 28;
 
     public static final int MYSENSORS_NUMBER_OF_RETRIES = 5;
     public static final int[] MYSENSORS_RETRY_TIMES = { 0, 100, 500, 1000, 2000 };
@@ -188,12 +191,12 @@ public class MySensorsBindingConstants {
     public final static ThingTypeUID THING_TYPE_CUSTOM = new ThingTypeUID(BINDING_ID, "customSensor");
 
     public final static ThingTypeUID THING_TYPE_HVAC = new ThingTypeUID(BINDING_ID, "hvacThermostat");
-	
+
     public final static ThingTypeUID THING_TYPE_LOCK = new ThingTypeUID(BINDING_ID, "lock");
     public final static ThingTypeUID THING_TYPE_SOUND = new ThingTypeUID(BINDING_ID, "sound");
     public final static ThingTypeUID THING_TYPE_RGB_LIGHT = new ThingTypeUID(BINDING_ID, "rgbLight");
     public final static ThingTypeUID THING_TYPE_RGBW_LIGHT = new ThingTypeUID(BINDING_ID, "rgbwLight");
-    public final static ThingTypeUID THING_TYPE_WATER_QUALITY  = new ThingTypeUID(BINDING_ID, "waterQuality");
+    public final static ThingTypeUID THING_TYPE_WATER_QUALITY = new ThingTypeUID(BINDING_ID, "waterQuality");
 
     public final static ThingTypeUID THING_TYPE_BRIDGE_SER = new ThingTypeUID(BINDING_ID, "bridge-ser");
     public final static ThingTypeUID THING_TYPE_BRIDGE_ETH = new ThingTypeUID(BINDING_ID, "bridge-eth");
@@ -340,8 +343,8 @@ public class MySensorsBindingConstants {
             THING_TYPE_TEMPERATURE, THING_TYPE_LIGHT, THING_TYPE_MULTIMETER, THING_TYPE_POWER, THING_TYPE_BARO,
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
-            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_SOUND, THING_TYPE_RGB_LIGHT,
-			THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY );
+            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_SOUND,
+            THING_TYPE_RGB_LIGHT, THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY);
     /** Supported bridges */
     public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_BRIDGE_SER,
             THING_TYPE_BRIDGE_ETH);
@@ -351,6 +354,7 @@ public class MySensorsBindingConstants {
             THING_TYPE_TEMPERATURE, THING_TYPE_LIGHT, THING_TYPE_MULTIMETER, THING_TYPE_POWER, THING_TYPE_BARO,
             THING_TYPE_DOOR, THING_TYPE_MOTION, THING_TYPE_SMOKE, THING_TYPE_DIMMER, THING_TYPE_COVER, THING_TYPE_WIND,
             THING_TYPE_RAIN, THING_TYPE_UV, THING_TYPE_WEIGHT, THING_TYPE_DISTANCE, THING_TYPE_LIGHT_LEVEL,
-            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_SOUND, THING_TYPE_RGB_LIGHT,
-			THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY  THING_TYPE_BRIDGE_SER, THING_TYPE_BRIDGE_ETH);
+            THING_TYPE_HVAC, THING_TYPE_WATER, THING_TYPE_CUSTOM, THING_TYPE_LOCK, THING_TYPE_SOUND,
+            THING_TYPE_RGB_LIGHT, THING_TYPE_RGBW_LIGHT, THING_TYPE_WATER_QUALITY, THING_TYPE_BRIDGE_SER,
+            THING_TYPE_BRIDGE_ETH);
 }
