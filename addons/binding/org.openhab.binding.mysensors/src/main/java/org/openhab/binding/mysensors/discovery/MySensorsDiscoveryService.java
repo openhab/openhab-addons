@@ -161,6 +161,26 @@ public class MySensorsDiscoveryService extends AbstractDiscoveryService {
                     uid = new ThingUID(THING_TYPE_CUSTOM, bridgeHandler.getThing().getUID(),
                             "CustomSensor_" + msg.getNodeId() + "_" + msg.getChildId());
                     break;
+                case MYSENSORS_SUBTYPE_S_LOCK:
+                    uid = new ThingUID(THING_TYPE_LOCK, bridgeHandler.getThing().getUID(),
+                            "Lock_" + msg.getNodeId() + "_" + msg.getChildId());
+                    break;
+                case MYSENSORS_SUBTYPE_S_SOUND:
+                    uid = new ThingUID(THING_TYPE_SOUND, bridgeHandler.getThing().getUID(),
+                            "Sound_level_" + msg.getNodeId() + "_" + msg.getChildId());
+                    break;
+                case MYSENSORS_SUBTYPE_S_RGB_LIGHT :
+                    uid = new ThingUID(THING_TYPE_RGB_LIGHT , bridgeHandler.getThing().getUID(),
+                            "RGB_light" + msg.getNodeId() + "_" + msg.getChildId());
+                    break;
+                case MYSENSORS_SUBTYPE_S_RGBW_LIGHT :
+                    uid = new ThingUID(THING_TYPE_RGBW_LIGHT , bridgeHandler.getThing().getUID(),
+                            "RGBW_light" + msg.getNodeId() + "_" + msg.getChildId());
+                    break;
+                case MYSENSORS_SUBTYPE_S_WATER_QUALITY :
+                    uid = new ThingUID(THING_TYPE_WATER_QUALITY , bridgeHandler.getThing().getUID(),
+                            "Water_quality" + msg.getNodeId() + "_" + msg.getChildId());
+                    break;
             }
             if (uid != null) {
                 Map<String, Object> properties = new HashMap<>(2);
