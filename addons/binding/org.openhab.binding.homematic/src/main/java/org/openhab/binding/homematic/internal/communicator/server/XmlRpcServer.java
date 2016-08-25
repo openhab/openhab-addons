@@ -59,7 +59,7 @@ public class XmlRpcServer implements RpcServer {
         logger.debug("Initializing XML-RPC server at port {}", config.getCallbackPort());
 
         xmlRpcHTTPD = new XmlRpcHTTPD(config.getCallbackPort());
-        xmlRpcHTTPD.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        xmlRpcHTTPD.start(config.getTimeout() * 1000, true);
     }
 
     /**
