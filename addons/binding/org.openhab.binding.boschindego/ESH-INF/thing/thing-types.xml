@@ -37,7 +37,13 @@
     <channel-type id="state">
         <item-type>Number</item-type>
         <label>Numeric state of the Indego</label>
-        <description>1 = mow, 2 = charging/docked, 3 = paused.</description>
+         <state readOnly="false">
+            <options>
+                <option value="1">mow</option>
+                <option value="2">charging/docked</option>
+                <option value="3">paused</option>
+            </options>
+         </state>
     </channel-type>
     <channel-type id="errorcode">
         <item-type>Number</item-type>
@@ -62,8 +68,13 @@
     </channel-type>
     <channel-type id="ready">
         <item-type>Number</item-type>
-        <label>Indicates if mower is ready 1 = ready, 0 = not ready</label>
-        <description></description>
+        <label>Indicates if mower is ready to mow</label>
+        <state readOnly="true">
+            <options>
+                <option value="0">not ready</option>
+                <option value="1">ready</option>
+            </options>
+         </state> 
     </channel-type>
 
 </thing:thing-descriptions>
