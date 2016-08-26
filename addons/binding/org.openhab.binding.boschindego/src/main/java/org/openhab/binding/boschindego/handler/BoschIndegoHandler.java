@@ -101,7 +101,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 controller.sendCommand(getCommandFromEshStatus(commandToSend));
                 commandToSend = 0;
                 try {
-                    for (int i = 0; i < 30; i++) {
+                    for (int i = 0; i < 30 && !Thread.interrupted(); i++) {
                         DeviceStateInformation stateTmp = controller.getState();
                         if (state.getState() != stateTmp.getState()) {
                             state = stateTmp;
