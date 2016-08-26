@@ -8,6 +8,7 @@
 package org.openhab.binding.boschindego.handler;
 
 import static org.openhab.binding.boschindego.BoschIndegoBindingConstants.*;
+import static org.openhab.binding.boschindego.internal.IndegoStateConstants.*;
 
 import java.math.BigDecimal;
 
@@ -137,8 +138,9 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     private boolean isReadyToMow(int statusCode, int error) {
-        return (statusCode == 258 || statusCode == 260 || statusCode == 261 || statusCode == 517 || statusCode == 519)
-                && error == 0;
+        // I don´t know why bosch uses different state codes for the same state.
+        return (statusCode == STATE_DOCKED_1 || statusCode == STATE_DOCKED_2 || statusCode == STATE_DOCKED_3
+                || statusCode == STATE_PAUSED || statusCode == STATE_IDLE_IN_LAWN) && error == 0;
     }
 
     private boolean verifyCommand(int command, int eshStatus, int statusCode, int errorCode) {
@@ -207,8 +209,8 @@ public class BoschIndegoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        super.handleRemoval();
+    public void dispose() {
+        super.dispose();
         logger.debug("removing thing..");
         running = false;
         pollingThread.interrupt();
