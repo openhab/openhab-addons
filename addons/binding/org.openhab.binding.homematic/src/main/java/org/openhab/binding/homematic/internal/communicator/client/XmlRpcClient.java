@@ -94,6 +94,8 @@ public class XmlRpcClient extends RpcClient {
 
             Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes())).getResponseData();
             return new RpcResponseParser(request).parse(data);
+        } catch (UnknownRpcFailureException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new IOException(ex.getMessage(), ex);
         }
