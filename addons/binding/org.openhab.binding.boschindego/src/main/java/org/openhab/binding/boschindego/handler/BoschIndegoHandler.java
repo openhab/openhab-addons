@@ -117,8 +117,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                     }
 
                 } catch (InterruptedException e) {
-                    controller.disconnect();
-                    throw e;
+                    // Nothing to do here
                 }
             }
             controller.disconnect();
