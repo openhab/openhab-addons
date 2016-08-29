@@ -26,6 +26,8 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
@@ -41,29 +43,35 @@ import marytts.modules.synthesis.Voice;
  */
 public class MaryTTSService implements TTSService {
 
-    private static final MaryInterface marytts = getMaryInterface();
+    private final Logger logger = LoggerFactory.getLogger(MaryTTSService.class);
+
+    private MaryInterface marytts;
 
     /**
      * Set of supported voices
      */
-    private final HashSet<org.eclipse.smarthome.core.voice.Voice> voices = initVoices();
+    private HashSet<org.eclipse.smarthome.core.voice.Voice> voices;
 
     /**
      * Set of supported audio formats
      */
-    private final HashSet<AudioFormat> audioFormats = initAudioFormats();
+    private HashSet<AudioFormat> audioFormats;
 
-    /**
-     * {@inheritDoc}
-     */
+    protected void activate() {
+        try {
+            marytts = getMaryInterface();
+            voices = initVoices();
+            audioFormats = initAudioFormats();
+        } catch (Throwable t) {
+            logger.error("Failed to initialize MaryTTS: {}", t.getMessage(), t);
+        }
+    }
+
     @Override
     public Set<org.eclipse.smarthome.core.voice.Voice> getAvailableVoices() {
         return this.voices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return this.audioFormats;
