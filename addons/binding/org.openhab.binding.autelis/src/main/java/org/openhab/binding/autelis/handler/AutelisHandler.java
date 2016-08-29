@@ -21,14 +21,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.B64Code;
+import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -60,6 +60,7 @@ import org.xml.sax.InputSource;
  *      are sent to one of the channels.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Svilen Valkanov - Replaced Apache HttpClient with Jetty
  */
 public class AutelisHandler extends BaseThingHandler {
 
@@ -108,7 +109,7 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * The http client used for polling requests
      */
-    HttpClient client;
+    private HttpClient client = new HttpClient();
 
     /**
      * Regex expression to match XML responses from the Autelis, this is used to
@@ -141,6 +142,7 @@ public class AutelisHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Handler disposed.");
         stopPolling();
+        stopHttpClient(client);
     }
 
     @Override
@@ -258,12 +260,6 @@ public class AutelisHandler extends BaseThingHandler {
                 port = _port.intValue();
             }
 
-            client = new HttpClient();
-
-            Credentials creds = new UsernamePasswordCredentials(username, password);
-            client.getState().setCredentials(new AuthScope(host, port), creds);
-            client.getParams().setAuthenticationPreemptive(true);
-
             baseURL = "http://" + host + ":" + port;
 
             properlyConfigured = true;
@@ -379,19 +375,28 @@ public class AutelisHandler extends BaseThingHandler {
      */
     private String getUrl(String url, int timeout) {
         url += (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
-        GetMethod method = new GetMethod(url);
-        method.getParams().setSoTimeout(timeout);
+        startHttpClient(client);
+
+        Request request = client.newRequest(url).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
+
+        AutelisConfiguration configuration = getConfig().as(AutelisConfiguration.class);
+        String user = configuration.user;
+        String password = configuration.password;
+
+        String basicAuthentication = "Basic " + B64Code.encode(user + ":" + password, StringUtil.__ISO_8859_1);
+
+        request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
+
         try {
-            int statusCode = client.executeMethod(method);
-            if (statusCode != HttpStatus.SC_OK) {
-                logger.debug("Method failed: {}", method.getStatusLine());
+            ContentResponse response = request.send();
+            int statusCode = response.getStatus();
+            if (statusCode != HttpStatus.OK_200) {
+                logger.debug("Method failed: {}", response.getStatus() + " " + response.getReason());
                 return null;
             }
-            return IOUtils.toString(method.getResponseBodyAsStream());
+            return response.getContentAsString();
         } catch (Exception e) {
             logger.debug("Could not make http connection", e);
-        } finally {
-            method.releaseConnection();
         }
         return null;
     }
@@ -431,5 +436,27 @@ public class AutelisHandler extends BaseThingHandler {
      */
     private void scheduleClearTime(int secs) {
         clearTime = System.currentTimeMillis() + (secs * 1000);
+    }
+
+    private void startHttpClient(HttpClient client) {
+        if (!client.isStarted()) {
+            try {
+                client.start();
+            } catch (Exception e) {
+                logger.error("Could not stop HttpClient", e);
+            }
+        }
+    }
+
+    private void stopHttpClient(HttpClient client) {
+        client.getAuthenticationStore().clearAuthentications();
+        client.getAuthenticationStore().clearAuthenticationResults();
+        if (client.isStarted()) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.error("Could not stop HttpClient", e);
+            }
+        }
     }
 }
