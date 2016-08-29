@@ -25,7 +25,7 @@ The binding requires no special configuration
 ## Thing Configuration
 This is optional, it is recommended to let the binding discover and add hubs and devices.
  
-To manually configure a Harmony Hub thing you may specify its name ("name") as well as an optional search timeout value in seconds ("discoveryTimeout") . 
+To manually configure a Harmony Hub thing you may specify its name ("name") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds. 
  
 In the thing file, this looks e.g. like
 
