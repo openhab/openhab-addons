@@ -27,6 +27,11 @@
                 <description>How long in seconds to search the network for this hub.
                 </description>
             </parameter>
+            <parameter name="heartBeatInterval" type="integer" required="false">
+                <label>Heart Beat Interval</label>
+                <description>Heart beat keep alive time in seconds.
+                </description>
+            </parameter>
         </config-description>
     </bridge-type>
     
