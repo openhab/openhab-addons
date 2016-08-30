@@ -368,8 +368,8 @@
 	<channel-type id="drivertemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Driver Temperature</label>
-		<description>Indicates the auto conditioning temperature set at the driver's side</description>
-		<state pattern="%.1f °C" readOnly="true"></state>
+		<description>Indicates the auto conditioning temperature set at the driver's side in Celsius or Fahrenheit</description>
+		<state pattern="%.1f°" readOnly="true"></state>
 	</channel-type>
 <!-- 	<channel-type id="elevation" advanced="true">
 		<item-type>Number</item-type>
@@ -498,8 +498,8 @@
 	<channel-type id="insidetemp">
 		<item-type>Number</item-type>
 		<label>Inside Temperature</label>
-		<description>Indicates the inside temperature of the vehicle</description>
-		<state pattern="%.1f °C" readOnly="true"></state>
+		<description>Indicates the inside temperature of the vehicle in Celsius or Fahrenheit</description>
+		<state pattern="%.1f°" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="location" advanced="false">
 		<item-type>Location</item-type>
@@ -564,8 +564,8 @@
 	<channel-type id="outsidetemp" advanced="true">
 		<item-type>Number</item-type>
 		<label>Outside Temperature</label>
-		<description>Indicates the outside temperature of the vehicle</description>
-		<state pattern="%.1f °C" readOnly="true"></state>
+		<description>Indicates the outside temperature of the vehicle in Celsius or Fahrenheit</description>
+		<state pattern="%.1f°" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="parsedcalendar" advanced="true">
 		<item-type>Switch</item-type>
@@ -768,8 +768,8 @@
 	<channel-type id="temperature" advanced="true">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
-		<description>Set the temperature of the autoconditioning system. The temperature for the driver and passenger will be synced</description>
-		<state pattern="%.1f °C"></state>
+		<description>Set the temperature of the autoconditioning system in Celsius or Fahrenheit. The temperature for the driver and passenger will be synced</description>
+		<state pattern="%.1f°"></state>
 	</channel-type>
 	<channel-type id="timetofullcharge" advanced="true">
 		<item-type>Number</item-type>
