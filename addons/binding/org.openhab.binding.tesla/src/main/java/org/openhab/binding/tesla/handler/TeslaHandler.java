@@ -250,7 +250,14 @@ public class TeslaHandler extends BaseThingHandler {
                         }
                         case TEMPERATURE: {
                             if (command instanceof DecimalType) {
-                                setTemperature(((DecimalType) command).floatValue());
+                                if (getThing().getProperties().containsKey("temperatureunits")
+                                        && getThing().getProperties().get("temperatureunits").equals("F")) {
+                                    float fTemp = ((DecimalType) command).floatValue();
+                                    float cTemp = ((fTemp - 32.0f) * 5.0f / 9.0f);
+                                    setTemperature(cTemp);
+                                } else {
+                                    setTemperature(((DecimalType) command).floatValue());
+                                }
                             }
                             break;
                         }

@@ -213,7 +213,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         } catch (NoSuchPortException e) {
             logger.error("Connection to RFXCOM transceiver failed: invalid port");
         } catch (Exception e) {
-            logger.error("Connection to RFXCOM transceiver failed: {}", e.getMessage());
+            logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (UnsatisfiedLinkError e) {
             logger.error("Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
