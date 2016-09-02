@@ -239,6 +239,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
             }
         });
+        updateStatus(ThingStatus.OFFLINE);
         pollingThread.start();
 
         // Note: When initialization can NOT be done set the status with more details for further
