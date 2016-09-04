@@ -32,8 +32,8 @@
                 <description>Heart beat keep alive time in seconds.
                 </description>
             </parameter>
-            <parameter name="ip" type="text" required="false">
-                <label>IP of Harmony hub (optional)</label>
+            <parameter name="network_address" type="text" required="false">
+                <label>Network Address of Harmony hub (optional)</label>
                 <description>If your hub is not discovered by broadcast the ip/hostname can be set manually
                 </description>
             </parameter>

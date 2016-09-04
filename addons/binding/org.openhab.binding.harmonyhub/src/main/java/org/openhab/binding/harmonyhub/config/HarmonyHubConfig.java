@@ -18,5 +18,5 @@ public class HarmonyHubConfig {
     public String name;
     public int discoveryTimeout;
     public int heartBeatInterval;
-    public String ip;
+    public String network_address;
 }
