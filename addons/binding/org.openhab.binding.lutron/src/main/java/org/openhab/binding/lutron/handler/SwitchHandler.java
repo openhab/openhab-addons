@@ -47,6 +47,7 @@ public class SwitchHandler extends LutronHandler {
         this.integrationId = id.intValue();
 
         updateStatus(ThingStatus.ONLINE);
+        queryOutput(ACTION_ZONELEVEL);
     }
 
     @Override
