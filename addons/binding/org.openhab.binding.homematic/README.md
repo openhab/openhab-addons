@@ -251,3 +251,6 @@ A device may return this failure while fetching the datapoint values. I've teste
 Fetching values is only done at startup or if you trigger a REFRESH. I hope this will be fixed in one of the next CCU firmwares.  
 With [Homegear](https://www.homegear.eu) everything works as expected.
 
+**Ung?ltiges Byte 1 von 1-Byte-UTF-8-Sequenz**
+
+Your LOCALE is wrong, make sure it is set to UTF-8
