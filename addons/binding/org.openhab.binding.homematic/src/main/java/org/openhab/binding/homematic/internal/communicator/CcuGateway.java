@@ -135,7 +135,7 @@ public class CcuGateway extends AbstractHomematicGateway {
             super.loadChannelValues(channel);
         } catch (UnknownRpcFailureException ex) {
             logger.debug(
-                    "BinRpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device '{}'",
+                    "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device '{}'",
                     channel.getDevice().getAddress());
 
             Collection<String> dpNames = new ArrayList<String>();
