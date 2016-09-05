@@ -2,7 +2,7 @@
 
 This binding integrates with [Lutron](http://www.lutron.com) light control systems.
 
-**Note:** while the integration protocol should be largely similar with other Lutron systems such as Homeworks QS, this binding has only been tested with RadioRa 2.
+**Note:** while the integration protocol should be largely similar with other Lutron systems such as Homeworks QS, this binding has only been tested with RadioRA 2.
 
 ## Supported Things
 
@@ -15,7 +15,10 @@ This binding currently supports the following thing types:
 
 ## Discovery
 
-This binding does not support discovery.
+Discovery is supported for RadioRA 2. Discovered RadioRA 2 main repeaters will use the default lutron/integration
+credentials. This can be changed in the main repeater thing configuration.
+
+**Note:** discovery of devices paired with a bridge should work on systems other than Radio RA 2; however, the bridge itself will need to be manually added as bridge discovery is only supported for Radio RA 2.
 
 ## Binding Configuration
 
