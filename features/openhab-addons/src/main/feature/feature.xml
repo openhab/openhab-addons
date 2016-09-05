@@ -37,6 +37,7 @@
     
     <feature name="openhab-binding-feed" description="Feed Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-feed</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.feed/${project.version}</bundle>
     </feature>
     
@@ -207,6 +208,13 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
     </feature>
 
+	<!-- io -->
+
+    <feature name="openhab-transport-feed" description="Feed Transport" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.transport.feed/${project.version}</bundle>
+    </feature>
+
     <!-- misc -->
 
     <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
@@ -219,6 +227,12 @@
     <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.hueemulation/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
@@ -257,8 +271,7 @@
         <feature>openhab-ui-cometvisu</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
-    </feature>
-    
+    </feature>    
     
     <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
         <feature>openhab-runtime-base</feature>
