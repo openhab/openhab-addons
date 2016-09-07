@@ -61,6 +61,11 @@ sudo kextunload -b com.apple.driver.AppleUSBFTDI
 
 If you have any problems with JD2XX or you don't want to disable FTDI driver on OS X, you can also configure RFXCOM transceivers/receivers manually.
 
+You can also use an RFXCOM device over TCP/IP. To start a TCP server for an RFXCOM device, you can use socat:
+```
+socat tcp-listen:10001,fork,reuseaddr file:/dev/ttyUSB0,raw
+``` 
+
 After the bridge is configured and the transceiver receives a message from any sensor or actuator, the device is put in the Inbox. Because RFXCOM communication is a one way protocol, receiver actuators can't be discovered automatically.
 
 Both bridges and sensor/actuators are easy to configure from the Paper UI. However, you can configure things manually in the thing file, for example:
