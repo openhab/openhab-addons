@@ -34,6 +34,7 @@ public class RFXComBindingConstants {
 
     // List of all Bridge Type UIDs
     public static final String BRIDGE_TYPE_MANUAL_BRIDGE = "bridge";
+    public static final String BRIDGE_TYPE_TCP_BRIDGE = "tcpbridge";
     public static final String BRIDGE_TYPE_RFXTRX433 = "RFXtrx433";
     public static final String BRIDGE_TYPE_RFXTRX315 = "RFXtrx315";
     public static final String BRIDGE_TYPE_RFXREC433 = "RFXrec433";
@@ -45,6 +46,7 @@ public class RFXComBindingConstants {
     public static final String TRANSCEIVER_433_92MHz_R = "433.92MHz receiver only";
 
     public final static ThingTypeUID BRIDGE_MANUAL = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_MANUAL_BRIDGE);
+    public final static ThingTypeUID BRIDGE_TCP = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_TCP_BRIDGE);
     public final static ThingTypeUID BRIDGE_RFXTRX443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX433);
     public final static ThingTypeUID BRIDGE_RFXTRX315 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX315);
     public final static ThingTypeUID BRIDGE_RFXREC443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXREC433);
@@ -52,7 +54,7 @@ public class RFXComBindingConstants {
     /**
      * Presents all supported Bridge types by RFXCOM binding.
      */
-    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_MANUAL,
+    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_MANUAL, BRIDGE_TCP,
             BRIDGE_RFXTRX443, BRIDGE_RFXTRX315, BRIDGE_RFXREC443);
 
     /**
