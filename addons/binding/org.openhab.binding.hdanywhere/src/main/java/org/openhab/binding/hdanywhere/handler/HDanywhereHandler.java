@@ -10,6 +10,7 @@ package org.openhab.binding.hdanywhere.handler;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -125,7 +126,11 @@ public class HDanywhereHandler extends BaseThingHandler {
                 int checksum = 3 + outputPort + sourcePort;
                 url = url + String.valueOf(checksum);
 
-                HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
+                try {
+                    HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
+                } catch (IOException e) {
+                    logger.error("Communication with device failed: {}", e);
+                }
             }
         }
     }
