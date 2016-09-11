@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.toon.config.ToonBridgeConfiguration;
-import org.openhab.binding.toon.internal.ToopApiClient;
+import org.openhab.binding.toon.internal.ToonApiClient;
 import org.openhab.binding.toon.internal.api.ToonState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class ToonBridgeHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(ToonBridgeHandler.class);
     private ToonBridgeConfiguration configuration;
-    private ToopApiClient apiClient;
+    private ToonApiClient apiClient;
 
     protected ScheduledFuture<?> refreshJob;
 
@@ -45,13 +45,12 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Toon API bridge handler.");
-        updateStatus(ThingStatus.INITIALIZING);
 
         configuration = getConfigAs(ToonBridgeConfiguration.class);
         logger.debug("refresh interval {}", configuration.refreshInterval);
 
         disposeApiClient();
-        apiClient = new ToopApiClient(configuration);
+        apiClient = new ToonApiClient(configuration);
 
         updateStatus();
         startAutomaticRefresh();
@@ -60,10 +59,11 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         refreshJob.cancel(true);
+        disposeApiClient();
     }
 
     private void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleAtFixedRate(new Runnable() {
+        refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 updateChannels();
@@ -85,6 +85,7 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            // prevent spamming the log file
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -106,12 +107,6 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
             apiClient.logout();
         }
         apiClient = null;
-    }
-
-    @Override
-    public void handleRemoval() {
-        super.handleRemoval();
-        disposeApiClient();
     }
 
     private void updateStatus() {
@@ -141,7 +136,7 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public ToopApiClient getApiClient() {
+    public ToonApiClient getApiClient() {
         return apiClient;
     }
 }

@@ -6,8 +6,11 @@
 
     <!-- Toon API Bridge -->
     <bridge-type id="toonapi">
-        <label>Toon bridge</label>
-        <description>This bridge represents the gateway to Toon API.</description>
+        <label>Toon Webaccount</label>
+        <description>
+            The Toon Webaccount is used to connect to your Toon via the Eneco Service Center and
+            uses your 'My Eneco' Username and password.  
+        </description>
 
         <config-description>
             <parameter-group name="auth">

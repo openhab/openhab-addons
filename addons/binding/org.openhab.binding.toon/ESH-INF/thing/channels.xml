@@ -25,31 +25,31 @@
     <channel-type id="setpointMode">
         <item-type>Number</item-type>
         <label>Setpoint Mode</label>
-        <description>Chosen setpoint mode (comfort, active, sleep, away)</description>
+        <description>Chosen setpoint mode (Comfort, Active, Sleep, Away)</description>
         <category>heating</category>
         <state readOnly="false">
             <options>
-                <option value="-1">override`</option>
-                <option value="0">comfort</option>
-                <option value="1">active</option>
-                <option value="2">sleep</option>
-                <option value="3">away</option>
-                <option value="4">holiday</option>
+                <option value="-1">Override</option>
+                <option value="0">Comfort</option>
+                <option value="1">Active</option>
+                <option value="2">Sleep</option>
+                <option value="3">Away</option>
+                <option value="4">Holiday</option>
             </options>
         </state>
     </channel-type>
     
-    <channel-type id="gasMeterReading">
+    <channel-type id="gasMeterReading" advanced="true">
         <item-type>Number</item-type>
-        <label>Current gas meter reading</label>
+        <label>Gas</label>
         <description>Current Gas Meter reading in L</description>
         <category>gas</category>
         <state readOnly="true" pattern="%d"/>
     </channel-type>
 
-    <channel-type id="currentMeterReading">
+    <channel-type id="currentMeterReading"  advanced="true">
         <item-type>Number</item-type>
-        <label>Current energy meter reading</label>
+        <label>Energy</label>
         <description>Current energy meter reading in Wh</description>
         <category>energy</category>
         <state readOnly="true" pattern="%d"/>
@@ -64,7 +64,7 @@
     </channel-type>
     
     
-    <channel-type id="modulationLevel">
+    <channel-type id="modulationLevel" advanced="true">
         <item-type>Number</item-type>
         <label>Modulation Level</label>
         <description>Current burner modulation level</description>
@@ -72,7 +72,7 @@
         <state readOnly="true" pattern="%d %%"/>
     </channel-type>
 
-    <channel-type id="heating">
+    <channel-type id="heating" advanced="true">
         <item-type>Switch</item-type>
         <label>Heating</label>
         <description>Indicates if the boiler is burning</description>
@@ -85,7 +85,7 @@
         </state>
     </channel-type>                                                                                                                                 
     
-    <channel-type id="tapwater">
+    <channel-type id="tapwater" advanced="true">
         <item-type>Switch</item-type>
         <label>Tapwater</label>
         <description>Indicates if the boiler is burning</description>
@@ -98,7 +98,7 @@
         </state>
     </channel-type>
                                                                                                                    
-    <channel-type id="preheat">
+    <channel-type id="preheat" advanced="true">
         <item-type>Switch</item-type>
         <label>Preheat</label>
         <description>Indicates if the boiler is burning</description>
@@ -112,7 +112,7 @@
     </channel-type>                                                                                                                                 
 
     <!-- Switch Channel -->
-    <channel-type id="switch_binary">
+    <channel-type id="switch_binary" advanced="true">
         <item-type>Switch</item-type>
         <label>Switch</label>
         <description>Switch the plug on and off</description>

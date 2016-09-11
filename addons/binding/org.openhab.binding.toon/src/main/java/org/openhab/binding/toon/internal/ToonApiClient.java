@@ -36,13 +36,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link ToopApiClient} class is capable of retrieving the current states and change the setpoint and thermostat
+ * The {@link ToonApiClient} class is capable of retrieving the current states and change the setpoint and thermostat
  * program. It is based on the legacy api.
  *
  * @author Jorg de Jong - Initial contribution
  */
-public class ToopApiClient {
-    private Logger logger = LoggerFactory.getLogger(ToopApiClient.class);
+public class ToonApiClient {
+    private Logger logger = LoggerFactory.getLogger(ToonApiClient.class);
 
     private static String TOON_HOST = "https://toonopafstand.eneco.nl";
     private static String TOON_LOGIN_PATH = "/toonMobileBackendWeb/client/login";
@@ -64,7 +64,7 @@ public class ToopApiClient {
     private final Gson gson;
     private final ToonBridgeConfiguration configuration;
 
-    public ToopApiClient(ToonBridgeConfiguration configuration) {
+    public ToonApiClient(ToonBridgeConfiguration configuration) {
         this.configuration = configuration;
         this.jsonParser = new JsonParser();
         this.gson = createGsonBuilder().create();
@@ -87,7 +87,7 @@ public class ToopApiClient {
         Response response = toonTarget.path(TOON_LOGIN_PATH).request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        JsonObject json = validateResponce(response);
+        JsonObject json = validateResponse(response);
         // logger.debug("json {}", json);
 
         clientId = json.get("clientId").getAsString();
@@ -104,7 +104,7 @@ public class ToopApiClient {
         response = toonTarget.path(TOON_START_PATH).request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        validateResponce(response);
+        validateResponse(response);
 
         logger.debug("login ok");
     }
@@ -126,7 +126,7 @@ public class ToopApiClient {
         Response response = toonTarget.path(TOON_LOGIN_PATH).request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        JsonObject json = validateResponce(response);
+        JsonObject json = validateResponse(response);
         logger.debug("json {}", json);
         JsonArray agreements = json.get("agreements").getAsJsonArray();
         if (agreements != null) {
@@ -135,7 +135,7 @@ public class ToopApiClient {
         return Collections.emptyList();
     }
 
-    private JsonObject validateResponce(Response response) throws ToonConnectionException {
+    private JsonObject validateResponse(Response response) throws ToonConnectionException {
         if (response.getStatus() != 200) {
             logger.debug("response status {}", response.getStatus());
             clientId = clientIdChecksum = null;
@@ -148,7 +148,7 @@ public class ToopApiClient {
         }
         JsonObject json = jsonParser.parse(response.readEntity(String.class)).getAsJsonObject();
         if (!json.get("success").getAsBoolean()) {
-            logger.debug("validateResponce {}", json);
+            logger.debug("validateResponse {}", json);
             clientId = clientIdChecksum = null;
             throw new ToonConnectionException(json.get("reason").getAsString());
         }
@@ -169,7 +169,7 @@ public class ToopApiClient {
         Response response = client.target(TOON_HOST).path(TOON_UPDATE_PATH).queryParam("clientId", clientId)
                 .queryParam("clientIdChecksum", clientIdChecksum).request(MediaType.APPLICATION_JSON_TYPE).get();
 
-        JsonObject json = validateResponce(response);
+        JsonObject json = validateResponse(response);
         logger.debug("toon state: {}", json);
         return gson.fromJson(json, ToonState.class);
     }
@@ -206,7 +206,7 @@ public class ToopApiClient {
                 .queryParam("clientIdChecksum", clientIdChecksum).queryParam("value", String.format("%d", value))
                 .queryParam("random", UUID.randomUUID().toString()).request(MediaType.APPLICATION_JSON_TYPE).get();
 
-        validateResponce(response);
+        validateResponse(response);
     }
 
     public void setSetpointMode(int value) throws ToonConnectionException {
@@ -221,7 +221,7 @@ public class ToopApiClient {
                 .queryParam("temperatureState", value).queryParam("random", UUID.randomUUID().toString())
                 .request(MediaType.APPLICATION_JSON_TYPE).get();
 
-        validateResponce(response);
+        validateResponse(response);
     }
 
     public void setPlugState(int value, String uuid) throws ToonConnectionException {
@@ -235,7 +235,7 @@ public class ToopApiClient {
                 .queryParam("clientIdChecksum", clientIdChecksum).queryParam("devUuid", uuid).queryParam("state", value)
                 .queryParam("random", UUID.randomUUID().toString()).request(MediaType.APPLICATION_JSON_TYPE).get();
 
-        validateResponce(response);
+        validateResponse(response);
     }
 
     public ToonState collect() throws ToonConnectionException {

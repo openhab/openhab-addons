@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- start  -->
-    <thing-type id="main">
+    <thing-type id="main" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="toonapi" />
         </supported-bridge-type-refs>
@@ -19,10 +19,10 @@
             <channel id="SetpointMode" typeId="setpointMode" />   
             <channel id="GasMeterReading" typeId="gasMeterReading" />     
             <channel id="PowerMeterReading" typeId="currentMeterReading" >
-                <label>Current energy meter reading, high rate</label>
+                <label>Energy, high rate</label>
             </channel>     
             <channel id="PowerMeterReadingLow" typeId="currentMeterReading" >
-                <label>Current energy meter reading, low rate</label>
+                <label>Energy, low rate</label>
             </channel>
             <channel id="PowerConsumption" typeId="powerConsumption" />
             
@@ -34,7 +34,7 @@
         </channels>
     </thing-type>
 
-    <thing-type id="plug">
+    <thing-type id="plug" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="toonapi" />
         </supported-bridge-type-refs>

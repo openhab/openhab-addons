@@ -20,7 +20,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.toon.handler.ToonBridgeHandler;
-import org.openhab.binding.toon.internal.ToopApiClient;
+import org.openhab.binding.toon.internal.ToonApiClient;
 import org.openhab.binding.toon.internal.api.Agreement;
 import org.openhab.binding.toon.internal.api.DeviceConfig;
 import org.openhab.binding.toon.internal.api.DeviceConfigInfo;
@@ -49,7 +49,7 @@ public class ToonDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Toon start scan");
         if (toonBridgeHandler != null && toonBridgeHandler.getApiClient() != null) {
             try {
-                ToopApiClient api = toonBridgeHandler.getApiClient();
+                ToonApiClient api = toonBridgeHandler.getApiClient();
                 api.logout();
                 discoverAgreement(api.getAgreements());
                 ToonState state = api.collect();

@@ -11,9 +11,9 @@ It can control the setpoint and current program. Connected smart plugs can also 
 
 ## Supported Things
 
-### Toon bridge
+### Toon Webaccount
 
-Before the binding can be used, a Toon bridge must be added. This needs to be done manually. Select `Toon bridge`, and enter your username and password.
+Before the binding can be used, a Toon Webaccount must be added. This needs to be done manually. Select `Toon Webaccount`, and enter your username and password.
 Afterwards start discovery so your display and connected plugs are discovered. 
 
 ### Toon display unit
