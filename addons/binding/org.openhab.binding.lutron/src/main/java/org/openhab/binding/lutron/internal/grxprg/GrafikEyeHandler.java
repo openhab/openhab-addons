@@ -247,6 +247,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
     @Override
     public void thingUpdated(Thing thing) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING);
+        this.thing = thing;
         internalInitialize();
     }
 
