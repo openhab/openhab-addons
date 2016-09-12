@@ -234,11 +234,6 @@
                 <description>Interval (in seconds) to try to (re)connect to the matrix</description>
                 <default>30</default>
             </parameter>            
-            <parameter name="shadeZones" type="text">
-                <label>Shade Zones</label>
-                <description>Comma separated list of zones that are shades</description>
-                <default></default>
-            </parameter>            
         </config-description>
     </bridge-type>
 
@@ -255,39 +250,135 @@
             <channel id="scenelock" typeId="scenelock"/>
             <channel id="sceneseq" typeId="sceneseq"/>
             <channel id="zonelock" typeId="zonelock"/>
-            <channel id="zonelower1" typeId="zonerampdown"/>
-            <channel id="zonelower2" typeId="zonerampdown"/>
+            <channel id="zonelower1" typeId="zonerampdown">
+                <label>Ramps Zone 1 Down</label>
+                <description>Starts the ramping of Zone 1 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zonelower2" typeId="zonerampdown">
+                <label>Ramps Zone 2 Down</label>
+                <description>Starts the ramping of Zone 2 down (in zonefade seconds)</description>
+            </channel>
             <channel id="zonelower3" typeId="zonerampdown"/>
-            <channel id="zonelower4" typeId="zonerampdown"/>
-            <channel id="zonelower5" typeId="zonerampdown"/>
-            <channel id="zonelower6" typeId="zonerampdown"/>
-            <channel id="zonelower7" typeId="zonerampdown"/>
-            <channel id="zonelower8" typeId="zonerampdown"/>
-            <channel id="zoneraise1" typeId="zonerampup"/>
-            <channel id="zoneraise2" typeId="zonerampup"/>
-            <channel id="zoneraise3" typeId="zonerampup"/>
-            <channel id="zoneraise4" typeId="zonerampup"/>
-            <channel id="zoneraise5" typeId="zonerampup"/>
-            <channel id="zoneraise6" typeId="zonerampup"/>
-            <channel id="zoneraise7" typeId="zonerampup"/>
-            <channel id="zoneraise8" typeId="zonerampup"/>
+                <label>Ramps Zone 3 Down</label>
+                <description>Starts the ramping of Zone 3 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zonelower4" typeId="zonerampdown">
+                <label>Ramps Zone 4 Down</label>
+                <description>Starts the ramping of Zone 4 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zonelower5" typeId="zonerampdown">
+                <label>Ramps Zone 5 Down</label>
+                <description>Starts the ramping of Zone 5 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zonelower6" typeId="zonerampdown">
+                <label>Ramps Zone 6 Down</label>
+                <description>Starts the ramping of Zone 6 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zonelower7" typeId="zonerampdown">
+                <label>Ramps Zone 7 Down</label>
+                <description>Starts the ramping of Zone 7 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zonelower8" typeId="zonerampdown">
+                <label>Ramps Zone 8 Down</label>
+                <description>Starts the ramping of Zone 8 down (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise1" typeId="zonerampup">
+                <label>Ramps Zone 1 Up</label>
+                <description>Starts the ramping of Zone 1 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise2" typeId="zonerampup">
+                <label>Ramps Zone 2 Up</label>
+                <description>Starts the ramping of Zone 2 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise3" typeId="zonerampup">
+                <label>Ramps Zone 3 Up</label>
+                <description>Starts the ramping of Zone 3 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise4" typeId="zonerampup">
+                <label>Ramps Zone 4 Up</label>
+                <description>Starts the ramping of Zone 4 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise5" typeId="zonerampup">
+                <label>Ramps Zone 5 Up</label>
+                <description>Starts the ramping of Zone 5 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise6" typeId="zonerampup">
+                <label>Ramps Zone 6 Up</label>
+                <description>Starts the ramping of Zone 6 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise7" typeId="zonerampup">
+                <label>Ramps Zone 7 Up</label>
+                <description>Starts the ramping of Zone 7 up (in zonefade seconds)</description>
+            </channel>
+            <channel id="zoneraise8" typeId="zonerampup">
+                <label>Ramps Zone 8 Up</label>
+                <description>Starts the ramping of Zone 8 up (in zonefade seconds)</description>
+            </channel>
             <channel id="zonefade" typeId="zonefade"/>
-            <channel id="zoneintensity1" typeId="zoneintensity"/>
-            <channel id="zoneintensity2" typeId="zoneintensity"/>
-            <channel id="zoneintensity3" typeId="zoneintensity"/>
-            <channel id="zoneintensity4" typeId="zoneintensity"/>
-            <channel id="zoneintensity5" typeId="zoneintensity"/>
-            <channel id="zoneintensity6" typeId="zoneintensity"/>
-            <channel id="zoneintensity7" typeId="zoneintensity"/>
-            <channel id="zoneintensity8" typeId="zoneintensity"/>
-            <channel id="zoneshade1" typeId="zoneshade"/>
-            <channel id="zoneshade2" typeId="zoneshade"/>
-            <channel id="zoneshade3" typeId="zoneshade"/>
-            <channel id="zoneshade4" typeId="zoneshade"/>
-            <channel id="zoneshade5" typeId="zoneshade"/>
-            <channel id="zoneshade6" typeId="zoneshade"/>
-            <channel id="zoneshade7" typeId="zoneshade"/>
-            <channel id="zoneshade8" typeId="zoneshade"/>
+            <channel id="zoneintensity1" typeId="zoneintensity">
+                <label>Zone 1 Intensity</label>
+                <description>The intensity level of zone 1</description>
+            </channel>
+            <channel id="zoneintensity2" typeId="zoneintensity">
+                <label>Zone 2 Intensity</label>
+                <description>The intensity level of zone 2</description>
+            </channel>
+            <channel id="zoneintensity3" typeId="zoneintensity">
+                <label>Zone 3 Intensity</label>
+                <description>The intensity level of zone 3</description>
+            </channel>
+            <channel id="zoneintensity4" typeId="zoneintensity">
+                <label>Zone 4 Intensity</label>
+                <description>The intensity level of zone 4</description>
+            </channel>
+            <channel id="zoneintensity5" typeId="zoneintensity">
+                <label>Zone 5 Intensity</label>
+                <description>The intensity level of zone 5</description>
+            </channel>
+            <channel id="zoneintensity6" typeId="zoneintensity">
+                <label>Zone 6 Intensity</label>
+                <description>The intensity level of zone 6</description>
+            </channel>
+            <channel id="zoneintensity7" typeId="zoneintensity">
+                <label>Zone 7 Intensity</label>
+                <description>The intensity level of zone 7</description>
+            </channel>
+            <channel id="zoneintensity8" typeId="zoneintensity">
+                <label>Zone 8 Intensity</label>
+                <description>The intensity level of zone 8</description>
+            </channel>
+            <channel id="zoneshade1" typeId="zoneshade">
+                <label>Zone 1 Shade</label>
+                <description>The shade status of zone 1</description>
+            </channel>
+            <channel id="zoneshade2" typeId="zoneshade">
+                <label>Zone 2 Shade</label>
+                <description>The shade status of zone 2</description>
+            </channel>
+            <channel id="zoneshade3" typeId="zoneshade">
+                <label>Zone 3 Shade</label>
+                <description>The shade status of zone 3</description>
+            </channel>
+            <channel id="zoneshade4" typeId="zoneshade">
+                <label>Zone 4 Shade</label>
+                <description>The shade status of zone 4</description>
+            </channel>
+            <channel id="zoneshade5" typeId="zoneshade">
+                <label>Zone 5 Shade</label>
+                <description>The shade status of zone 5</description>
+            </channel>
+            <channel id="zoneshade6" typeId="zoneshade">
+                <label>Zone 6 Shade</label>
+                <description>The shade status of zone 6</description>
+            </channel>
+            <channel id="zoneshade7" typeId="zoneshade">
+                <label>Zone 7 Shade</label>
+                <description>The shade status of zone 7</description>
+            </channel>
+            <channel id="zoneshade8" typeId="zoneshade">
+                <label>Zone 8 Shade</label>
+                <description>The shade status of zone 8</description>
+            </channel>
         </channels>
 
         <config-description>
@@ -310,6 +401,11 @@
                 <label>Polling Interval</label>
                 <description>Interval (in seconds) to poll the actual state of the Matrix</description>
                 <default>60</default>
+            </parameter>            
+            <parameter name="shadeZones" type="text">
+                <label>Shade Zones</label>
+                <description>Comma separated list of zones that are shades</description>
+                <default></default>
             </parameter>            
         </config-description>
     </thing-type>

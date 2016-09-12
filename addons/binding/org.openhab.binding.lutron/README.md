@@ -20,6 +20,10 @@ credentials. This can be changed in the main repeater thing configuration.
 
 **Note:** discovery of devices paired with a bridge should work on systems other than Radio RA 2; however, the bridge itself will need to be manually added as bridge discovery is only supported for Radio RA 2.
 
+## Binding Configuration
+
+This binding does not require any special configuration.
+
 ## Thing Configuration
 
 The bridge requires the IP address of the bridge as well as the telnet username and password to log in to the bridge.
@@ -121,7 +125,6 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 
 | Channel Type ID   | Readonly | Item Type    | Description                                                    |
 |-------------------|----------|--------------|--------------------------------------------------------------- |
-| buttonpress       | Yes      | String       | Last keypad button pressed (see Appendix A) in protocol guide  |
 | zonelowerstop     | No       | Switch       | Stops zone lowering on all control units                       |
 | zoneraisestop     | No       | Switch       | Stops zone raising on all control units                        |
 | timeclock         | No       | DateTime     | Current time on the PRG                                        |
@@ -135,6 +138,7 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 | ssnextstep        | Yes      | Number       | Next sequence number in the Super Sequence                     |
 | ssnextminute      | Yes      | Number       | How many minutes until the next step in the Super Sequence     |
 | ssnextsecond      | Yes      | Number       | How many seconds until the next step in the Super Sequence     |
+| buttonpress       | Yes      | String       | Last keypad button pressed (see Appendix A) in protocol guide  |
 
 
 ### Grafik Eye channels
@@ -152,13 +156,14 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 | zoneshadeX        | No       | Rollershutter | Specifies the shade zone                                       |
 
 ### Notes
-* The "buttonpress" will report a keypad button pressed ONLY if the DIP switch 6 is set on the interface.
+* The "buttonpress" channel reports which keypad button was pressed.  DIP switch 6 must be set on the interface for this to be reported.  The "buttonpress" channel is only useful in rules to take action when a specific button (on a specific keypad) has been pressed.
 * Sunset/sunrise will only be available if configured via the Liasion software
 * scenelock, sceneseq, zonelock cannot be determined from the API and will default to OFF on startup
 * Replace the "X" on zonelowerX, zoneraiseX, etc with the zone in question.  "zonelower1" will affect zone 1.  Specifying a zone larger than you have will have no effect (such as using zonelower8 on a Grafik Eye 3506 which only has 6 zones).
 * The zonefade value will only be used when zonelower/zonereaise/zoneintensity is issued. 
 * zoneshade does not support PercentType nor StopMoveType.Move and those commands will be ignored
 * zoneintensity can be used on a shade zone if the intensity is from 0 to 5 and should be used if wanting to set a QED preset: 0=Stop, 1=Open, 2=Close, 3=Preset 1, 4=Preset 2, 5=Preset 3 
+* If you started a zonelower or zoneraise, the only way to the action is by executing an all zone stop on the bridge (i.e. zonelowerstop or zoneraisestop).  The PRG API does not provide a way to stop the lowering/raising of any specific zone.
  
 
 ## Full Example
