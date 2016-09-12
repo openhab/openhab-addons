@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zway" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="sensorTemperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C" />
+    </channel-type>
+    
+    <channel-type id="sensorLuminosity">
+        <item-type>Number</item-type>
+        <label>Luminiscence</label>
+        <category>Light</category>
+        <state readOnly="true" pattern="%.1f Lux" />
+    </channel-type>
+    
+    <channel-type id="sensorHumidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <category>Humidity</category>
+        <state readOnly="true" pattern="%.1f %%" />
+    </channel-type>
+    
+    <channel-type id="sensorUltraviolet">
+        <item-type>Number</item-type>
+        <label>Ultraviolet</label>
+        <category>Light</category>
+        <state readOnly="true" pattern="%.1f UV index" />
+    </channel-type>
+    
+    <channel-type id="sensorCO2">
+        <item-type>Number</item-type>
+        <label>CO2</label>
+        <category>CarbonDioxide</category>
+        <state readOnly="true" pattern="%.1f ppm" />
+    </channel-type>
+    
+    <channel-type id="sensorEnergy">
+        <item-type>Number</item-type>
+        <label>Energy</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.1f W" />
+    </channel-type>
+    
+    <channel-type id="sensorMeterKWh">
+        <item-type>Number</item-type>
+        <label>Energy</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.1f kWh" />
+    </channel-type>
+    
+    <channel-type id="sensorMeterW">
+        <item-type>Number</item-type>
+        <label>Energy</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.1f W" />
+    </channel-type>
+    
+    <channel-type id="sensorMotion">
+        <item-type>Switch</item-type>
+        <label>Motion</label>
+        <category>Motion</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="switchPowerOutlet">
+        <item-type>Switch</item-type>
+        <label>PowerOutlet</label>
+        <category>PowerOutlet</category>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <!-- Channel types without further information -->
+    
+    <channel-type id="battery">
+        <item-type>Number</item-type>
+        <label>Battery</label>
+        <category>Battery</category>
+        <state readOnly="true" pattern="%.1f %%" />
+    </channel-type>
+    
+    <!-- TODO: Doorlock -->
+    
+    <channel-type id="sensorBinary">
+        <item-type>Switch</item-type>
+        <label>Sensor binary</label>
+        <description>This channel represents a universal channel if no further device information is available.</description>
+        <category>Switch</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="sensorMultilevel">
+        <item-type>Number</item-type>
+        <label>Sensor multilevel</label>
+        <description>This channel represents a universal channel if no further device information is available.</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="switchBinary">
+        <item-type>Switch</item-type>
+        <label>Switch binary</label>
+        <description>This channel represents a universal channel if no further device information is available.</description>
+        <category>Switch</category>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <channel-type id="switchMultilevel">
+        <item-type>Number</item-type>
+        <label>Switch multilevel</label>
+        <description>This channel represents a universal channel if no further device information is available.</description>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <!-- TODO: SwitchMultilevelBlinds -->
+    
+    <!-- TODO: SwtichToggle -->
+    
+    <!-- TODO: Thermostat -->
+    
+    <channel-type id="switchControl">
+        <item-type>Switch</item-type>
+        <label>Switch control</label>
+        <description>This channel represents a universal channel if no further device information is available.</description>
+        <category>Switch</category>
+        <state readOnly="false" />
+    </channel-type>
+    
+</thing:thing-descriptions>
