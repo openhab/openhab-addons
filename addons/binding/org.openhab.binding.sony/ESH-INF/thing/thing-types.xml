@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sony"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="bravia">
+        <label>Bravia TV</label>
+        <description>Sony Bravia TV</description>
+
+        <channels>
+            <channel id="ir" typeId="ir"/>
+            <channel id="power" typeId="button"><label>Power</label><description>Power on/off</description></channel>
+            <channel id="volume" typeId="volume"/>
+            <channel id="audiomute"  typeId="button"><label>Audio Mute</label><description>Mute/Unmute the audio</description></channel>
+            <channel id="channel" typeId="channel"/>
+            <channel id="tripletchannel" typeId="tripletchannel"/>
+            <channel id="inputsource" typeId="inputsource"/>
+            <channel id="input" typeId="input"/>
+            <channel id="picturemute"  typeId="button"><label>Picture Mute</label><description>Mute/Unmute the picture</description></channel>
+            <channel id="togglepicturemute" typeId="button"><label>Toggle Picture Mute</label><description>Toggles the picture mute</description></channel>
+            <channel id="pip" typeId="button"><label>PIP</label><description>Enables/Disables Picture-in-Picture</description></channel>
+            <channel id="togglepip"  typeId="button"><label>Toggle PIP</label><description>Toggles Picture-in-Picture</description></channel>
+            <channel id="togglepipposition"  typeId="button"><label>Toggle PIP Position</label><description>Toggles Picture-in-Picture Position</description></channel>
+            <channel id="broadcastaddress" typeId="readonlystring"><label>Broadcast Address</label><description>The broadcast address</description></channel>
+            <channel id="macaddress" typeId="readonlystring"><label>MAC Address</label><description>The MAC address</description></channel>
+        </channels>
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP or Host Name</label>
+                <description>The IP or host name of the Russound RIO access point</description>
+            </parameter>
+            <parameter name="netInterface" type="text">
+                <context>network-address</context>
+                <label>Interface</label>
+                <description>The interface being used (eth0 for wired, wlan1 for wireless)</description>
+                <default>eth0</default>
+            </parameter>
+            <parameter name="ping" type="integer" required="false">
+                <label>Ping Interval</label>
+                <description>The ping interval in seconds to keep the connection alive</description>
+                <default>30</default>
+            </parameter>
+            <parameter name="refresh" type="integer" required="false">
+                <label>Refresh Interval</label>
+                <description>The ping interval in seconds to keep the connection alive</description>
+                <default>30</default>
+            </parameter>
+            <parameter name="retryPolling" type="integer" required="false">
+                <label>Retry Polling</label>
+                <description>The polling, in seconds, to retry a connection attempt</description>
+                <default>10</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="button">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Switch</description>
+    </channel-type>
+    <channel-type id="readonlystring">
+        <item-type>String</item-type>
+        <label>Switch</label>
+        <description>Switch</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="inputsource">
+        <item-type>String</item-type>
+        <label>Input Source</label>
+        <description>The Input Source</description>
+    </channel-type>
+    <channel-type id="input">
+        <item-type>String</item-type>
+        <label>Input</label>
+        <description>The Input</description>
+    </channel-type>
+    <channel-type id="channel">
+        <item-type>String</item-type>
+        <label>Channel</label>
+        <description>The channel ("5.1", "50.2", etc)</description>
+    </channel-type>
+    <channel-type id="tripletchannel">
+        <item-type>String</item-type>
+        <label>Triplet Channel</label>
+        <description>The triplet channel ("32736.32736.1024")</description>
+    </channel-type>
+    <channel-type id="ir">
+        <item-type>Number</item-type>
+        <label>IR Code</label>
+        <description>The IR Code to send</description>
+    </channel-type>
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>The volume</description>
+    </channel-type>
+
+</thing:thing-descriptions>
