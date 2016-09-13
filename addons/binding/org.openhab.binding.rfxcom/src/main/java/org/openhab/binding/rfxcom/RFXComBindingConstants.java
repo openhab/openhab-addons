@@ -84,8 +84,8 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_CHILL_FACTOR = "chillFactor";
     public final static String CHANNEL_INSTANT_POWER = "instantPower";
     public final static String CHANNEL_TOTAL_USAGE = "totalUsage";
-    public final static String CHANNEL_INSTANT_AMPS = "instantAmps";
-    public final static String CHANNEL_TOTAL_AMP_HOURS = "totalAmpHours";
+    public final static String CHANNEL_INSTANT_AMPS = "instantAmp";
+    public final static String CHANNEL_TOTAL_AMP_HOUR = "totalAmpHour";
     public final static String CHANNEL_STATUS = "status";
     public final static String CHANNEL_MOTION = "motion";
     public final static String CHANNEL_CONTACT = "contact";
@@ -123,7 +123,7 @@ public class RFXComBindingConstants {
     public final static ThingTypeUID THING_TYPE_UV = new ThingTypeUID(BINDING_ID, "uv");
     public final static ThingTypeUID THING_TYPE_DATE_TIME = new ThingTypeUID(BINDING_ID, "datetime");
     public final static ThingTypeUID THING_TYPE_CURRENT = new ThingTypeUID(BINDING_ID, "current");
-    public final static ThingTypeUID THING_TYPE_ENERGY_USAGE = new ThingTypeUID(BINDING_ID, "energyusage");
+    public final static ThingTypeUID THING_TYPE_ENERGY_USAGE = new ThingTypeUID(BINDING_ID, "energy");
     public final static ThingTypeUID THING_TYPE_CURRENT_ENERGY = new ThingTypeUID(BINDING_ID, "currentenergy");
     public final static ThingTypeUID THING_TYPE_POWER = new ThingTypeUID(BINDING_ID, "power");
     public final static ThingTypeUID THING_TYPE_WEIGHTING_SCALE = new ThingTypeUID(BINDING_ID, "weightingscale");

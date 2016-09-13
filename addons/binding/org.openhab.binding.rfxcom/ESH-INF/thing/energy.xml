@@ -15,11 +15,10 @@
 		<description>A Energy device.</description>
 
 		<channels>
-			<channel id="command" typeId="command" />
-			<channel id="instanPower" typeId="instantpower" />
+			<channel id="instantPower" typeId="instantpower" />
 			<channel id="totalUsage" typeId="totalusage" />
 			<channel id="instantAmp" typeId="instantamp" />
-			<channel id="totalAmpHours" typeId="totalamphours" />
+			<channel id="totalAmpHour" typeId="totalamphour" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
