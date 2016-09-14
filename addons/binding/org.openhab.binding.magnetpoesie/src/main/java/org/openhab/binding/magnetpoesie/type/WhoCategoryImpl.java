@@ -1,5 +1,5 @@
 package org.openhab.binding.magnetpoesie.type;
 
-public interface WhatCategory {
+public class WhoCategoryImpl implements Category {
 
 }
