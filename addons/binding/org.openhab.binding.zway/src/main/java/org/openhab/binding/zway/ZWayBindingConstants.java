@@ -34,20 +34,34 @@ public class ZWayBindingConstants {
 
     // List of all Channel IDs
     public final static String BATTERY_CHANNEL = "battery";
+    public final static String DOORLOCK_CHANNEL = "doorlock";
     public final static String SENSOR_BINARY_CHANNEL = "sensorBinary";
     public final static String SENSOR_MULTILEVEL_CHANNEL = "sensorMultilevel";
     public final static String SWITCH_BINARY_CHANNEL = "switchBinary";
     public final static String SWITCH_CONTROL_CHANNEL = "switchControl";
     public final static String SWITCH_MULTILEVEL_CHANNEL = "switchMultilevel";
+    // switch multilevel (color)
+    public final static String SWITCH_COLOR_CHANNEL = "switchColor";
+    public final static String SWITCH_COLOR_TEMPERATURE_CHANNEL = "switchColorTemperature";
+    // sensor multilevel
     public final static String SENSOR_TEMPERATURE_CHANNEL = "sensorTemperature";
     public final static String SENSOR_LUMINOSITY_CHANNEL = "sensorLuminosity";
     public final static String SENSOR_HUMIDITY_CHANNEL = "sensorHumidity";
+    public final static String SENSOR_BAROMETER_CHANNEL = "sensorBarometer";
     public final static String SENSOR_ULTRAVIOLET_CHANNEL = "sensorUltraviolet";
     public final static String SENSOR_CO2_CHANNEL = "sensorCO2";
     public final static String SENSOR_ENERGY_CHANNEL = "sensorEnergy";
+    // sensor multilevel (meter)
     public final static String SENSOR_METER_KWH_CHANNEL = "sensorMeterKWh";
     public final static String SENSOR_METER_W_CHANNEL = "sensorMeterW";
+    // sensor binary
+    public final static String SENSOR_SMOKE_CHANNEL = "sensorSmoke";
+    public final static String SENSOR_CO_CHANNEL = "sensorCo";
+    public final static String SENSOR_FLOOD_CHANNEL = "sensorFlood";
+    public final static String SENSOR_TAMPER_CHANNEL = "sensorTamper";
+    public final static String SENSOR_DOOR_WINDOW_CHANNEL = "sensorDoorWindow";
     public final static String SENSOR_MOTION_CHANNEL = "sensorMotion";
+    // switch binary
     public final static String SWITCH_POWER_OUTLET_CHANNEL = "switchPowerOutlet";
 
     /* Bridge config properties */

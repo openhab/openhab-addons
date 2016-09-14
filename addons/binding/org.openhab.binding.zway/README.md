@@ -1,10 +1,24 @@
 # Z-Way Binding
 
-Z-Way is a home automation software to configure and control Z-Wave networks. The ZAutomation interface provides all Z-Wave devices and handles incoming commands. The Z-Way Binding uses this HTTP interface to load all devices and make them available during the discovery process. Besides continuous polling there is the opportunity to register openHAB items in Z-Way as observer (therefore the Z-Way App _OpenHAB Connector_ is currently required).
+See also [Getting Started](doc/GETTING_STARTED.md) document.
+
+## Introduction
+
+**Z-Way** is a software to configure and control a Z-Wave network. The software comes with a full stack from Z-Wave transceiver with certified firmware to a REST API on high level. Z-Way comes in three parts [cf. [Z-Wave.Me]([Z-Wave.Me](https://www.z-wave.me/index.php?id=1))]:
+
+- a firmware that runs on the Z-Wave transceiver chip
+- the communication stack that runs on different host Operating Systems
+- an automation engine and optionally a web server to implement a User Interface
+
+All parts together represents a smart home controller for Z-Wave.
+
+The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/index.php?id=1) with the help of a large community.
+
+### Approach
+
+The idea behind is the integration of Z-Wave through a bridge (Z-Way controller). The existing, certified Z-Way stack can be used to build, configure and control the Z-Wave network. By using the REST API all devices are loaded from Z-Way and represented as openHAB elements. The sensor data and actuator states are constantly updated and commands are passed to the Z-Way system.
 
 The Binding uses the Z-Way library for Java ([Github](https://github.com/pathec/ZWay-library-for-Java)).
-
-For more information about Z-Way see [Z-Wave.Me](https://www.z-wave.me/index.php?id=22)
 
 ## Supported Things
 
@@ -73,29 +87,47 @@ Bridge zway:zwayServer:192_168_2_42 [ openHabAlias="development", openHabIpAddre
 
 The following channels are currently supported.
 
-| Channel Type ID | Item Type |
-| --------------- | --------- |
-| sensorTemperature | Number |
-| sensorLuminosity  | Number |
-| sensorHumidity    | Number |
-| sensorUltraviolet | Number |
-| sensorCO2         | Number |
-| sensorEnergy      | Number |
-| sensorMeterKWh    | Number |
-| sensorMeterW      | Number |
-| sensorMotion      | Switch |
-| switchPowerOutlet | Switch ||
+| Channel Type ID | Item Type | Category | Asssigned for Z-Way device type and probe type |
+| --------------- | --------- | -------- | ---------------------------------------------- |
+| sensorTemperature         | Number    | Temperature   | SensorMultilevel - temperature |
+| sensorLuminosity          | Number    | Light         | SensorMultilevel - luminosity |
+| sensorHumidity            | Number    | Humidity      | SensorMultilevel - humidity |
+| sensorBarometer           | Number    | Pressure      | SensorMultilevel - barometer |
+| sensorUltraviolet         | Number    | Light         | SensorMultilevel - ultraviolet |
+| sensorCO2                 | Number    | CarbonDioxide | SensorMultilevel - *Special case:* no probe type for carbon dioxide sensors available - probe title *CO2 Level* acts as selection criterion |
+| sensorEnergy              | Number    | Energy        | SensorMultilevel - energy |
+| sensorMeterKWh            | Number    | Energy        | SensorMultilevel - meterElectric_kilowatt_per_hour |
+| sensorMeterW              | Number    | Energy        | SensorMultilevel - meterElectric_watt |
+| sensorSmoke               | Switch    | Smoke         | SensorBinary - smoke |
+| sensorCo                  | Switch    | Gas           | SensorBinary - co |
+| sensorFlood               | Switch    | Water         | SensorBinary - flood |
+| sensorTamper              | Switch    | Alarm         | SensorBinary - tamper |
+| sensorDoorWindow          | Contact   | Contact       | SensorBinary - door-window |
+| sensorMotion              | Switch    | Motion        | SensorBinary - general_purpose, motion |
+| switchPowerOutlet         | Switch    | PowerOutlet   | SwitchBinary - *Special case:* no probe type for power outlet available - icon *switch* acts as selection criterion
+| switchColorTemperature    | Dimmer    | ColorLight    | SwitchMultilevel - switchColor_soft_white, switchColor_cold_white |
+
+Currently unsupported Z-Way probe types:
+
+- SwitchMultilevel: motor (selection criterion for rollershutter - will be implemented soon)
+- SensorBinary: cooling, all alarm types (resulting from Z-Wave command class AlarmSensor(deprecated) and Alarm)
+- SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
+- SwitchBinary: thermostat_mode
 
 The following channels represent universial channels if no further device information are available, only depending on the Z-Way device types (for available device types see [Z-Way Documentation](http://docs.zwayhomeautomation.apiary.io/#reference/devices/device)).
 
-| Channel Type ID | Item Type |
-| --------------- | --------- |
-| battery | Number  |
-| sensorBinary      | Switch |
-| sensorMultilevel  | Number |
-| switchBinary      | Switch |
-| switchMultilevel  | Number |
-| switchControl     | Switch ||
+| Channel Type ID | Item Type | Category | Assigned for Z-Way device type |
+| --------------- | --------- | -------- | ------------------------------ |
+| battery           | Number | Battery      | Battery |
+| doorlock          | Switch | Door         | Doorlock |
+| sensorBinary      | Switch | Switch       | SensorBinary |
+| sensorMultilevel  | Number | -            | SensorMultilevel |
+| switchBinary      | Switch | Switch       | SwitchBinary |
+| switchMultilevel  | Number | -            | SwitchMultilevel |
+| switchColor       | Color  | ColorLight   | SwitchRGBW |
+| switchControl     | Switch | Switch       | SwitchControl ||
+
+Currently unsupported Z-Way device types: SwitchToggle, Thermostat, ToggleButton
 
 ## Full Example
 
@@ -109,12 +141,12 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 
 ### Features
 
-- Discover Z-Way server (Bridge) and Z-Way devices
-- Control the Z-Way devices
-- Receive updates in openHAB by a Observer mechanism
+- Discovery of the Z-Way server and devices
+- Control of the Z-Wave devices in openHAB
+- Receive updates of sensor data and actuator states in openHAB
 
 ### Restrictions
 
-- Z-Way App "OpenHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
-- No configuration of the Z-Wave network is currently possible (like device inclusion or (phyiscal) device configuration.
 - Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
+- Configuration of the Z-Wave network by the binding is currently not possible (device inclusion or physical device configuration)
+- Z-Way App "OpenHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.

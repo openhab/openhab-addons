@@ -24,6 +24,13 @@
         <state readOnly="true" pattern="%.1f %%" />
     </channel-type>
     
+    <channel-type id="sensorBarometer">
+        <item-type>Number</item-type>
+        <label>Barometer</label>
+        <category>Pressure</category>
+        <state readOnly="true" pattern="%.1f" />
+    </channel-type>
+    
     <channel-type id="sensorUltraviolet">
         <item-type>Number</item-type>
         <label>Ultraviolet</label>
@@ -59,6 +66,41 @@
         <state readOnly="true" pattern="%.1f W" />
     </channel-type>
     
+    <channel-type id="sensorSmoke">
+        <item-type>Switch</item-type>
+        <label>Smoke</label>
+        <category>Smoke</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="sensorCo">
+        <item-type>Switch</item-type>
+        <label>Gas</label>
+        <category>Gas</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="sensorFlood">
+        <item-type>Switch</item-type>
+        <label>Flood</label>
+        <category>Water</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="sensorTamper">
+        <item-type>Switch</item-type>
+        <label>Tamper</label>
+        <category>Alarm</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="sensorDoorWindow">
+        <item-type>Contact</item-type>
+        <label>DoorWindow</label>
+        <category>Contact</category>
+        <state readOnly="true" />
+    </channel-type>
+    
     <channel-type id="sensorMotion">
         <item-type>Switch</item-type>
         <label>Motion</label>
@@ -73,6 +115,13 @@
         <state readOnly="false" />
     </channel-type>
     
+    <channel-type id="switchColorTemperature">
+        <item-type>Dimmer</item-type>
+        <label>Color Temperature</label>
+        <category>ColorLight</category>
+        <state readOnly="false" />
+    </channel-type>
+    
     <!-- Channel types without further information -->
     
     <channel-type id="battery">
@@ -82,7 +131,12 @@
         <state readOnly="true" pattern="%.1f %%" />
     </channel-type>
     
-    <!-- TODO: Doorlock -->
+    <channel-type id="doorlock">
+        <item-type>Switch</item-type>
+        <label>Doorlock</label>
+        <category>Door</category>
+        <state readOnly="false" />
+    </channel-type>
     
     <channel-type id="sensorBinary">
         <item-type>Switch</item-type>
@@ -114,9 +168,14 @@
         <state readOnly="false" />
     </channel-type>
     
-    <!-- TODO: SwitchMultilevelBlinds -->
-    
-    <!-- TODO: SwtichToggle -->
+    <channel-type id="switchColor">
+        <item-type>Color</item-type>
+        <label>Switch Color</label>
+        <description>This channel represents the rgbw switch device type from Z-Way</description>
+        <category>ColorLight</category>
+    </channel-type>
+            
+    <!-- TODO: SwitchToggle ? -->    
     
     <!-- TODO: Thermostat -->
     
@@ -127,5 +186,7 @@
         <category>Switch</category>
         <state readOnly="false" />
     </channel-type>
+    
+    <!-- TODO: ToggleButton -->
     
 </thing:thing-descriptions>

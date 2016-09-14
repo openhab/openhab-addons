@@ -24,7 +24,7 @@
 
     ```shell
     cd /opt/openhab2/addons
-    wget --no-check-certificate  https://sensor.fh-zwickau.de/files/org.openhab.binding.zway-2.0.0-SNAPSHOT.jar
+    wget https://github.com/openhab/openhab2-addons/files/471863/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     ```
 
 3. Start openHAB by running `start.bat` or `start.sh`

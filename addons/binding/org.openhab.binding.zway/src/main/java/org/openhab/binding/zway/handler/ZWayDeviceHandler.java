@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -37,7 +38,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.fh_zwickau.informatik.sensor.IZWayCallback;
+import de.fh_zwickau.informatik.sensor.model.devices.Color;
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceCommand;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
@@ -48,9 +49,10 @@ import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultilevel;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchBinary;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchControl;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchMultilevel;
-import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchMultilevelBlinds;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchRGBW;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchToggle;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Thermostat;
+import de.fh_zwickau.informatik.sensor.model.devices.types.ToggleButton;
 
 /**
  * The {@link ZWayDeviceHandler} is responsible for handling commands, which are
@@ -257,7 +259,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             if (device instanceof Battery) {
                 updateState(channel.getUID(), getMultilevelState(level));
             } else if (device instanceof Doorlock) {
-                // TODO
+                updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
             } else if (device instanceof SensorBinary) {
                 updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
             } else if (device instanceof SensorMultilevel) {
@@ -266,14 +268,16 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
             } else if (device instanceof SwitchMultilevel) {
                 updateState(channel.getUID(), getMultilevelState(level));
-            } else if (device instanceof SwitchMultilevelBlinds) {
-                // TODO
+            } else if (device instanceof SwitchRGBW) {
+                updateState(channel.getUID(), getColorState(device.getMetrics().getColor()));
             } else if (device instanceof SwitchToggle) {
-                // TODO
+                // ?
             } else if (device instanceof Thermostat) {
                 // TODO
             } else if (device instanceof SwitchControl) {
                 updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
+            } else if (device instanceof ToggleButton) {
+                // TODO
             }
         } else {
             logger.warn("Devices not loaded");
@@ -344,12 +348,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         params.put("vDevName", deviceId);
         DeviceCommand command = new DeviceCommand("OpenHabConnector", "registerOpenHabItem", params);
 
-        zwayBridgeHandler.getZWayApi().getDeviceCommand(command, new IZWayCallback<String>() {
-            @Override
-            public void onSuccess(String message) {
-                logger.debug("Device registration finished successfully: {}", message);
-            }
-        });
+        String message = zwayBridgeHandler.getZWayApi().getDeviceCommand(command);
+        if (message != null) {
+            logger.debug("Device registration finished successfully: {}", message);
+        } else {
+            logger.warn("Device registration failed");
+        }
     }
 
     private void zwayUnsubscribeOpenHabItem(String openHABItemName) {
@@ -365,12 +369,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         params.put("openHabItemName", openHABItemName);
         DeviceCommand command = new DeviceCommand("OpenHabConnector", "removeOpenHabItem", params);
 
-        zwayBridgeHandler.getZWayApi().getDeviceCommand(command, new IZWayCallback<String>() {
-            @Override
-            public void onSuccess(String message) {
-                logger.debug("Device registration removed successfully: {}", message);
-            }
-        });
+        String message = zwayBridgeHandler.getZWayApi().getDeviceCommand(command);
+        if (message != null) {
+            logger.debug("Device unsubscribing finished successfully: {}", message);
+        } else {
+            logger.warn("Device unsubscribing failed");
+        }
     }
 
     @Override
@@ -401,23 +405,93 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 return;
             }
 
-            // TODO complete all possible commands
-            if (command instanceof RefreshType) {
-                logger.debug("Handle command: RefreshType");
+            try {
+                if (command instanceof RefreshType) {
+                    logger.debug("Handle command: RefreshType");
 
-                refreshChannel(channel);
-            } else if (command instanceof OnOffType) {
-                logger.debug("Handle command: OnOffType");
+                    refreshChannel(channel);
+                } else {
+                    if (device instanceof Battery) {
+                        // possible commands: update()
+                    } else if (device instanceof Doorlock) {
+                        // possible commands: open(), close()
+                        if (command instanceof OnOffType) {
+                            logger.debug("Handle command: OnOffType");
+                            if (command.equals(OnOffType.ON)) {
+                                device.open();
+                            } else if (command.equals(OnOffType.OFF)) {
+                                device.close();
+                            }
+                        }
+                    } else if (device instanceof SensorBinary) {
+                        // possible commands: update()
+                    } else if (device instanceof SensorMultilevel) {
+                        // possible commands: update()
+                    } else if (device instanceof SwitchBinary) {
+                        // possible commands: update(), on(), off()
+                        if (command instanceof OnOffType) {
+                            logger.debug("Handle command: OnOffType");
 
-                if (command.equals(OnOffType.ON)) {
-                    device.on();
-                } else if (command.equals(OnOffType.OFF)) {
-                    device.off();
+                            if (command.equals(OnOffType.ON)) {
+                                device.on();
+                            } else if (command.equals(OnOffType.OFF)) {
+                                device.off();
+                            }
+                        }
+                    } else if (device instanceof SwitchMultilevel) {
+                        // possible commands: update(), on(), up(), off(), down(), min(), max(), upMax(), increase(),
+                        // decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(), startDown()
+                        if (command instanceof DecimalType) {
+                            logger.debug("Handle command: DecimalType");
+
+                            device.exact(command.toString());
+                        }
+                    } else if (device instanceof SwitchRGBW) {
+                        // possible commands: on(), off(), exact(red, green, blue)
+                        if (command instanceof HSBType) {
+                            logger.debug("Handle command: HSBType");
+
+                            HSBType hsb = (HSBType) command;
+
+                            // first set on/off
+                            if (hsb.getBrightness().intValue() > 0) {
+                                if (device.getMetrics().getLevel().toLowerCase().equals("off")) {
+                                    device.on();
+                                }
+
+                                // then set color
+                                int red = (int) Math.round(255 * (hsb.getRed().doubleValue() / 100));
+                                int green = (int) Math.round(255 * (hsb.getGreen().doubleValue() / 100));
+                                int blue = (int) Math.round(255 * (hsb.getBlue().doubleValue() / 100));
+
+                                device.exact(red, green, blue);
+                            } else {
+                                device.off();
+                            }
+                        }
+                    } else if (device instanceof SwitchToggle) {
+                        // possible commands: ?
+                    } else if (device instanceof Thermostat) {
+                        // possible commands: setMode(mode), setTemp(temp)
+                        // TODO
+                    } else if (device instanceof SwitchControl) {
+                        // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(), downstop()
+                        if (command instanceof OnOffType) {
+                            logger.debug("Handle command: OnOffType");
+
+                            if (command.equals(OnOffType.ON)) {
+                                device.on();
+                            } else if (command.equals(OnOffType.OFF)) {
+                                device.off();
+                            }
+                        }
+                    } else if (device instanceof ToggleButton) {
+                        // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(), downstop()
+                        // TODO
+                    }
                 }
-            } else if (command instanceof DecimalType) {
-                logger.debug("Handle command: DecimalType");
-
-                device.exact(command.toString());
+            } catch (UnsupportedOperationException e) {
+                logger.warn("Unknown command: {}", e.getMessage());
             }
         } else {
             logger.warn("Devices not loaded");
@@ -454,21 +528,37 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         return UnDefType.UNDEF;
     }
 
+    /**
+     * Transforms an value in an openHAB type.
+     *
+     * @param Z-Way color value
+     * @return transformed openHAB state
+     */
+    private State getColorState(Color colorSwitchState) {
+        if (colorSwitchState != null && colorSwitchState.getRed() != null && colorSwitchState.getGreen() != null
+                && colorSwitchState.getBlue() != null) {
+
+            HSBType hsbType = HSBType.fromRGB(colorSwitchState.getRed(), colorSwitchState.getGreen(),
+                    colorSwitchState.getBlue());
+
+            return hsbType;
+        }
+
+        return UnDefType.UNDEF;
+    }
+
     protected synchronized void addDeviceAsChannel(Device device) {
         logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
 
-        // TODO extend mapping ...
         // device.probeType
         // |
-        // device.metrics.probeTitle
+        // device.metrics.probeType
         // |
         // device.metrics.icon
         // |
         // command class
         // |
         // default, depends on device type
-
-        // TODO blacklist, for example general purpose
 
         if (device != null) {
             HashMap<String, String> properties = new HashMap<String, String>();
@@ -482,7 +572,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 id = BATTERY_CHANNEL;
                 acceptedItemType = "Number";
             } else if (device instanceof Doorlock) {
-                // TODO
+                id = DOORLOCK_CHANNEL;
+                acceptedItemType = "Switch";
             } else if (device instanceof SensorBinary) {
                 id = SENSOR_BINARY_CHANNEL;
                 acceptedItemType = "Switch";
@@ -495,15 +586,18 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof SwitchMultilevel) {
                 id = SWITCH_MULTILEVEL_CHANNEL;
                 acceptedItemType = "Number";
-            } else if (device instanceof SwitchMultilevelBlinds) {
-                // TODO
             } else if (device instanceof SwitchToggle) {
-                // TODO
+                // ?
+            } else if (device instanceof SwitchRGBW) {
+                id = SWITCH_COLOR_CHANNEL;
+                acceptedItemType = "Color";
             } else if (device instanceof Thermostat) {
                 // TODO
             } else if (device instanceof SwitchControl) {
                 id = SWITCH_CONTROL_CHANNEL;
                 acceptedItemType = "Switch";
+            } else if (device instanceof ToggleButton) {
+                // TODO
             }
 
             // 2. Check if device information includes further information about sensor type
@@ -522,6 +616,10 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             id = SENSOR_HUMIDITY_CHANNEL;
                             acceptedItemType = "Number";
                             break;
+                        case PROBE_TYPE_BAROMETER:
+                            id = SENSOR_BAROMETER_CHANNEL;
+                            acceptedItemType = "Number";
+                            break;
                         case PROBE_TYPE_ULTRAVIOLET:
                             id = SENSOR_ULTRAVIOLET_CHANNEL;
                             acceptedItemType = "Number";
@@ -530,11 +628,11 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             id = SENSOR_ENERGY_CHANNEL;
                             acceptedItemType = "Number";
                             break;
-                        case "meterElectric_kilowatt_per_hour":
+                        case PROBE_TYPE_METER_ELECTRIC_KILOWATT_PER_HOUR:
                             id = SENSOR_METER_KWH_CHANNEL;
                             acceptedItemType = "Number";
                             break;
-                        case "meterElectric_watt":
+                        case PROBE_TYPE_METER_ELECTRIC_WATT:
                             id = SENSOR_METER_W_CHANNEL;
                             acceptedItemType = "Number";
                             break;
@@ -543,11 +641,51 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     }
                 } else if (device instanceof SensorBinary) {
                     switch (device.getProbeType()) {
-                        case PROBE_TYPE_GENERAL_PURPOSE: // TODO blacklist
+                        case PROBE_TYPE_GENERAL_PURPOSE:
                             if (device.getMetrics().getIcon().equals(ICON_MOTION)) {
                                 id = SENSOR_MOTION_CHANNEL;
                                 acceptedItemType = "Switch";
                             }
+                            break;
+                        case PROBE_TYPE_SMOKE:
+                            id = SENSOR_SMOKE_CHANNEL;
+                            acceptedItemType = "Switch";
+                            break;
+                        case PROBE_TYPE_CO:
+                            id = SENSOR_CO_CHANNEL;
+                            acceptedItemType = "Switch";
+                            break;
+                        case PROBE_TYPE_FLOOD:
+                            id = SENSOR_FLOOD_CHANNEL;
+                            acceptedItemType = "Switch";
+                            break;
+                        case PROBE_TYPE_COOLING:
+                            // TODO
+                            break;
+                        case PROBE_TYPE_TAMPER:
+                            id = SENSOR_TAMPER_CHANNEL;
+                            acceptedItemType = "Switch";
+                            break;
+                        case PROBE_TYPE_DOOR_WINDOW:
+                            id = SENSOR_DOOR_WINDOW_CHANNEL;
+                            acceptedItemType = "Contact";
+                            break;
+                        case PROBE_TYPE_MOTION:
+                            id = SENSOR_MOTION_CHANNEL;
+                            acceptedItemType = "Switch";
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (device instanceof SwitchMultilevel) {
+                    switch (device.getProbeType()) {
+                        case PROBE_TYPE_SWITCH_COLOR_COLD_WHITE:
+                            id = SWITCH_COLOR_TEMPERATURE_CHANNEL;
+                            acceptedItemType = "Dimmer";
+                            break;
+                        case PROBE_TYPE_SWITCH_COLOR_SOFT_WHITE:
+                            id = SWITCH_COLOR_TEMPERATURE_CHANNEL;
+                            acceptedItemType = "Dimmer";
                             break;
                         default:
                             break;
