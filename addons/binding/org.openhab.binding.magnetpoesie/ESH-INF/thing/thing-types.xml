@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="magnetpoesie"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="magnetpoesie">
+        <label>Magnetpoesie</label>
+        <description>Deine Tafel fuer die Magnetpoesie</description>
+        
+        <channels>
+            <channel id="tafel" typeId="tafel" />
+            <channel id="who" typeId="who" />
+            <channel id="what" typeId="what" />
+            <channel id="when" typeId="when" />
+            <channel id="where" typeId="where" />
+            <channel id="general" typeId="general" />
+            <channel id="finalSave" typeId="finalSave" />
+        </channels>
+        
+    </thing-type>
+    
+    <channel-type id="tafel">
+        <item-type>Switch</item-type>
+        <label>Tafel</label>
+        <description>Starte Magnetpoesie</description>
+    </channel-type>
+    
+    <channel-type id="who">
+        <item-type>String</item-type>
+        <label>Who</label>
+        <description>Contains who is involved</description>
+    </channel-type>
+    
+    <channel-type id="what">
+        <item-type>String</item-type>
+        <label>What</label>
+        <description>Contains what happen</description>
+    </channel-type>
+    
+    <channel-type id="when">
+        <item-type>String</item-type>
+        <label>When</label>
+        <description>Contains when happen</description>
+    </channel-type>
+    
+    <channel-type id="where">
+        <item-type>String</item-type>
+        <label>When</label>
+        <description>Contains where happen</description>
+    </channel-type>
+    
+    <channel-type id="general">
+        <item-type>String</item-type>
+        <label>General</label>
+        <description>Contains generals</description>
+    </channel-type>
+    
+    <channel-type id="finalSave">
+        <item-type>Switch</item-type>
+        <label>Save</label>
+        <description>Speichere die Wortkombination</description>
+    </channel-type>
+
+</thing:thing-descriptions>
