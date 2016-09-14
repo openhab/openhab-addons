@@ -8,20 +8,21 @@
  */
 package org.openhab.binding.edimax.internal.commands;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Command to retrieve current in Ampere.
+ * Base class for Commands of type SYSTEM_INFO.
  * 
  * @author Heinz
+ *
+ * @param <T>
  */
-public class GetCurrent extends AbstractCMDNowPowerCommand<BigDecimal> {
-
+public abstract class AbstractCMDSYSTEMINOFCommand<T> extends AbstractCMDCommand<T> {
+	
 	@Override
 	protected List<String> getPath() {
 		List<String> list = super.getPath();
-		list.add("Device.System.Power.NowCurrent");
+		list.add("SYSTEM_INFO");
 		return list;
 	}
 

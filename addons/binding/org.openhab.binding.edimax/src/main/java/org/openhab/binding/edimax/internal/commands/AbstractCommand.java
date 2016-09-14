@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2015, openHAB.org and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,24 +8,17 @@
  */
 package org.openhab.binding.edimax.internal.commands;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,12 +28,13 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.openhab.binding.edimax.internal.ConnectionInformation;
+import org.openhab.binding.edimax.internal.HTTPSend;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Base class for commands.
+ * Base class for commands..
  *
  * @author Heinz
  *
@@ -57,7 +51,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * SET constructor.
-     *
+     * 
      * @param newValue
      */
     public AbstractCommand(T newValue) {
@@ -90,7 +84,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Overwrite and add your path entry.
-     *
+     * 
      * @return
      */
     protected List<String> getPath() {
@@ -101,7 +95,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Returns XPath expression to load response for a get request.
-     *
+     * 
      * @return
      */
     protected String getXPathString() {
@@ -121,7 +115,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Extract return types from response.
-     *
+     * 
      * @param result
      * @return
      */
@@ -158,7 +152,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * This command to XML.
-     *
+     * 
      * @param value
      * @return
      */
@@ -183,7 +177,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Return the extracted return type.
-     *
+     * 
      * @param aResponse
      * @return
      */
@@ -206,7 +200,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Returns true if it is a SET command and false for GET.
-     *
+     * 
      * @return
      */
     protected boolean isSet() {
@@ -215,67 +209,22 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Do the command.
-     *
+     * 
      * @param ci
      * @return
      * @throws IOException
      */
     public T executeCommand(ConnectionInformation ci) throws IOException {
         String lastPart = "smartplug.cgi";
-        String response = executePost(ci.getUrl(), ci.getPort(), lastPart, getCommandString(), ci.getUsername(),
-                ci.getPassword());
+        String response = HTTPSend.executePost(ci.getUrl(), ci.getPort(), lastPart, getCommandString(),
+                ci.getUsername(), ci.getPassword());
 
         return getResultValue(response);
     }
 
-    private String executePost(String targetURL, int targetPort, String targetURlPost, String urlParameters,
-            String username, String password) throws IOException {
-        String complete = targetURL + ":" + targetPort + "/" + targetURlPost;
-
-        HttpURLConnection connection = null;
-        try {
-            // Create connection
-            URL url = new URL(complete);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-
-            connection.setRequestProperty("Connection", "Keep-Alive");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
-
-            String userpass = username + ":" + password;
-            String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(userpass.getBytes());
-            connection.setRequestProperty("Authorization", basicAuth);
-
-            connection.setUseCaches(false);
-            connection.setDoOutput(true);
-
-            // Send request
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.write(urlParameters.getBytes());
-            wr.close();
-
-            // Get Response
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-            rd.close();
-            return response.toString();
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
     /**
      * Create initial XML tag.
-     *
+     * 
      * @param aName
      * @return
      */
@@ -299,7 +248,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Create end tag.
-     *
+     * 
      * @param aName
      * @return
      */
@@ -309,7 +258,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Create leaf node.
-     *
+     * 
      * @param aName
      * @return
      */
@@ -337,7 +286,7 @@ public abstract class AbstractCommand<T extends Object> {
 
     /**
      * Extract the innermost information of the response as string.
-     *
+     * 
      * @param document
      * @param xpathExpression
      * @return

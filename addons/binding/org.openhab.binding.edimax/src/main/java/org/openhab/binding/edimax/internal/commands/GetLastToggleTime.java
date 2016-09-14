@@ -8,20 +8,21 @@
  */
 package org.openhab.binding.edimax.internal.commands;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Command to retrieve current in Ampere.
+ * Command to retrieve last toggle time.
  * 
  * @author Heinz
+ *
  */
-public class GetCurrent extends AbstractCMDNowPowerCommand<BigDecimal> {
+public class GetLastToggleTime extends AbstractCMDNowPowerCommand<Date> {
 
 	@Override
 	protected List<String> getPath() {
 		List<String> list = super.getPath();
-		list.add("Device.System.Power.NowCurrent");
+		list.add("Device.System.Power.LastToggleTime");
 		return list;
 	}
 

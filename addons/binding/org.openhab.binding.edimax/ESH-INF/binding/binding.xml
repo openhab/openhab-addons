@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Edimax Binding</name>
-    <description>This is the binding for Edimax.</description>
-    <author>Falk Harnisch</author>
+    <description>This is the binding for Edimax SmartPlug.</description>
+    <author>Falk Harnisch, derHeinz</author>
 
 </binding:binding>

@@ -8,20 +8,20 @@
  */
 package org.openhab.binding.edimax.internal.commands;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Command to retrieve current in Ampere.
+ * Command to retrive the MAC address.
  * 
  * @author Heinz
+ *
  */
-public class GetCurrent extends AbstractCMDNowPowerCommand<BigDecimal> {
+public class GetMAC extends AbstractCMDSYSTEMINOFCommand<String> {
 
 	@Override
 	protected List<String> getPath() {
 		List<String> list = super.getPath();
-		list.add("Device.System.Power.NowCurrent");
+		list.add("Run.LAN.Client.MAC.Address");
 		return list;
 	}
 
