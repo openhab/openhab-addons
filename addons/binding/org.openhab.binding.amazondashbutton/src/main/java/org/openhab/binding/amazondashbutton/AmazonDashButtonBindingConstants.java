@@ -25,4 +25,9 @@ public class AmazonDashButtonBindingConstants {
     // List of all Channel ids
     public final static String PRESS = "press";
 
+    // Custom Properties
+    public final static String PROPERTY_MAC_ADDRESS = "macAddress";
+    public final static String PROPERTY_NETWORK_INTERFACE_NAME = "pcapNetworkInterfaceName";
+    public final static String PROPERTY_PACKET_INTERVAL = "packetInterval";
+
 }

@@ -9,11 +9,20 @@ package org.openhab.binding.amazondashbutton.handler;
 
 import static org.openhab.binding.amazondashbutton.AmazonDashButtonBindingConstants.PRESS;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.amazondashbutton.internal.ArpRequestListener;
+import org.openhab.binding.amazondashbutton.internal.ArpRequestListener.ArpRequestHandler;
+import org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfig;
+import org.pcap4j.core.PcapNativeException;
+import org.pcap4j.core.PcapNetworkInterface;
+import org.pcap4j.core.Pcaps;
+import org.pcap4j.packet.ArpPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,33 +36,60 @@ public class AmazonDashButtonHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(AmazonDashButtonHandler.class);
 
+    private ArpRequestListener arpRequestListener;
+
+    private long lastCommandHandled = 0;
+
     public AmazonDashButtonHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(PRESS)) {
-            // TODO: handle command
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+        AmazonDashButtonConfig dashButtonConfig = getConfigAs(AmazonDashButtonConfig.class);
+        String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
+        String macAddress = dashButtonConfig.macAddress;
+        final Integer packetInterval = dashButtonConfig.packetInterval;
+        PcapNetworkInterface pcapNetworkInterface;
+        try {
+            pcapNetworkInterface = Pcaps.getDevByName(pcapNetworkInterfaceName);
+        } catch (PcapNativeException e) {
+            logger.error("The networkinterface cannot be initialized", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "The networkinterface cannot be initialized");
+            return;
+        }
+        if (pcapNetworkInterface == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
+            return;
+        }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        ArpRequestListener arpRequestListener = new ArpRequestListener(pcapNetworkInterface);
+        arpRequestListener.startListener(new ArpRequestHandler() {
+
+            @Override
+            public void handleArpRequest(ArpPacket arpPacket) {
+                long now = System.currentTimeMillis();
+                if (lastCommandHandled + packetInterval < now) {
+                    postCommand(PRESS, OnOffType.ON);
+                    lastCommandHandled = now;
+                }
+            }
+        }, macAddress);
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (arpRequestListener != null) {
+            arpRequestListener.stopListener();
+        }
     }
 }
