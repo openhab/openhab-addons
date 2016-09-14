@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.magnetpoesie.MagnetpoesieBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +36,16 @@ public class MagnetpoesieHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         if (channelUID.getId().equals(TAFEL)) {
-            // TODO: handle command
+            if (channelUID.getId().equals(MagnetpoesieBindingConstants.SAVE)) {
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+                // TODO: handle command
+
+                // Note: if communication with thing fails for some reason,
+                // indicate that by setting the status with detail information
+                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                // "Could not control device at IP address x.x.x.x");
+
+            }
         }
     }
 
