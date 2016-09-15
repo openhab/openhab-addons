@@ -22,7 +22,7 @@ import org.openhab.binding.amazondashbutton.handler.AmazonDashButtonHandler;
  * The {@link AmazonDashButtonHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Oliver Libutzki <oliver@libutzki.de> - Initial contribution
+ * @author Oliver Libutzki - Initial contribution
  */
 public class AmazonDashButtonHandlerFactory extends BaseThingHandlerFactory {
 

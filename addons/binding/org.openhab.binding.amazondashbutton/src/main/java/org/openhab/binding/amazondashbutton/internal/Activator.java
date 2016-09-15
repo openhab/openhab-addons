@@ -7,17 +7,24 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+/**
+ * The {@link Activator} is responsible building a {@link ServiceBinder} which binds the
+ * {@link AmazonDashButtonConfigDescriptionProvider}.
+ * 
+ * @author Oliver Libutzki - Initial contribution
+ *
+ */
 public class Activator implements BundleActivator {
 
     private ServiceRegistration<?> configDescriptionProviderReg;
 
-    private ServiceBinder configDescriptionI18nProviderServiceBinder;
+    private ServiceBinder configDescriptionProviderServiceBinder;
 
     @Override
     public void start(BundleContext context) throws Exception {
         AmazonDashButtonConfigDescriptionProvider configDescriptionProvider = new AmazonDashButtonConfigDescriptionProvider();
-        this.configDescriptionI18nProviderServiceBinder = new ServiceBinder(context, configDescriptionProvider);
-        this.configDescriptionI18nProviderServiceBinder.open();
+        this.configDescriptionProviderServiceBinder = new ServiceBinder(context, configDescriptionProvider);
+        this.configDescriptionProviderServiceBinder.open();
 
         this.configDescriptionProviderReg = context.registerService(ConfigDescriptionProvider.class.getName(),
                 configDescriptionProvider, null);
@@ -28,7 +35,7 @@ public class Activator implements BundleActivator {
         this.configDescriptionProviderReg.unregister();
         this.configDescriptionProviderReg = null;
 
-        this.configDescriptionI18nProviderServiceBinder.close();
+        this.configDescriptionProviderServiceBinder.close();
     }
 
 }

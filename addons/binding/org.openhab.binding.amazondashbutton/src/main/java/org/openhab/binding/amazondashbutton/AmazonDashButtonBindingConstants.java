@@ -10,10 +10,10 @@ package org.openhab.binding.amazondashbutton;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link AmazonDashButtonBinding} class defines common constants, which are
+ * The {@link AmazonDashButtonBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Oliver Libutzki <oliver@libutzki.de> - Initial contribution
+ * @author Oliver Libutzki - Initial contribution
  */
 public class AmazonDashButtonBindingConstants {
 

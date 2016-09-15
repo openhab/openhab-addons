@@ -15,11 +15,12 @@ import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.ArpOperation;
 
 /**
+ * The {@link ArpRequestTracker} is responsible for tracking/capturing ARP requests.
  *
- * @author Oliver Libutzki <oliver@libutzki.de> - Initial contribution
+ * @author Oliver Libutzki - Initial contribution
  *
  */
-public class ArpRequestListener {
+public class ArpRequestTracker {
 
     public interface ArpRequestHandler {
         public void handleArpRequest(ArpPacket arpPacket);
@@ -32,15 +33,31 @@ public class ArpRequestListener {
 
     private PcapHandle pcapHandle;
 
-    public ArpRequestListener(PcapNetworkInterface pcapNetworkInterface) {
+    public ArpRequestTracker(PcapNetworkInterface pcapNetworkInterface) {
         this.pcapNetworkInterface = pcapNetworkInterface;
     }
 
-    public void startListener(final ArpRequestHandler arpRequestHandler) {
-        startListener(arpRequestHandler, null);
+    /**
+     * Calls {@link #startCapturing(ArpRequestHandler, String)} with a null MAC address.
+     *
+     * @param arpRequestHandler The handler to be called every time an ARP Packet is detected
+     */
+    public void startCapturing(final ArpRequestHandler arpRequestHandler) {
+        startCapturing(arpRequestHandler, null);
     }
 
-    public void startListener(final ArpRequestHandler arpRequestHandler, final String macAddress) {
+    /**
+     * Starts the capturing in a dedicated thread, so this method returns immediately. Every time an ARP request is
+     * recognized, the {@link ArpRequestHandler#handleArpRequest(ArpPacket)} of the given ArpRequestHandler is called.
+     *
+     * It's possible to capture ARP requests sent by a specific MAC address by providing the given parameter. If the
+     * macAddress is null, all MAC addresses are considered.
+     *
+     * @param arpRequestHandler The handler to be called every time an ARP Packet is detected
+     * @param macAddress The source MAC address of the ARP Request, might be null in order to deactivate this filter
+     *            criteria
+     */
+    public void startCapturing(final ArpRequestHandler arpRequestHandler, final String macAddress) {
         if (pcapHandle != null) {
             if (pcapHandle.isOpen()) {
                 throw new IllegalStateException("There is an open pcap handle.");
@@ -87,7 +104,11 @@ public class ArpRequestListener {
         });
     }
 
-    public void stopListener() {
+    /**
+     * Stops the capturing. This can be called without calling {@link #startCapturing(ArpRequestHandler)} or
+     * {@link #startCapturing(ArpRequestHandler, String)} before.
+     */
+    public void stopCapturing() {
         if (pcapHandle != null) {
             if (pcapHandle.isOpen()) {
                 try {

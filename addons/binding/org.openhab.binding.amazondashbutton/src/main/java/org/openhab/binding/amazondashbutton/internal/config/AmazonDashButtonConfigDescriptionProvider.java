@@ -35,6 +35,15 @@ import org.osgi.framework.FrameworkUtil;
 import org.pcap4j.core.PcapAddress;
 import org.pcap4j.core.PcapNetworkInterface;
 
+/**
+ * The {@link AmazonDashButtonConfigDescriptionProvider} provides {@link ConfigDescription}s which can not be modeled by
+ * using the thing-description XML schema.
+ *
+ * In particular it determines the available pcap network interfaces in order to provide an option list.
+ *
+ * @author Oliver Libutzki - Initial contribution
+ *
+ */
 public class AmazonDashButtonConfigDescriptionProvider implements ConfigDescriptionProvider {
 
     private ConfigI18nLocalizationService configI18nLocalizerService;
@@ -49,7 +58,7 @@ public class AmazonDashButtonConfigDescriptionProvider implements ConfigDescript
         if ("thing-type".equals(uri.getScheme())) {
             ThingTypeUID thingtypeUID = new ThingTypeUID(uri.getSchemeSpecificPart());
             if (thingtypeUID.equals(DASH_BUTTON_THING_TYPE)) {
-                return tryLocalization(getNetworkInterfaceConfigDescription(uri), locale);
+                return tryLocalization(createNetworkInterfaceConfigDescription(uri), locale);
             }
         }
         return null;
@@ -86,7 +95,7 @@ public class AmazonDashButtonConfigDescriptionProvider implements ConfigDescript
         return sb.toString();
     }
 
-    private ConfigDescription getNetworkInterfaceConfigDescription(URI uri) {
+    private ConfigDescription createNetworkInterfaceConfigDescription(URI uri) {
         List<PcapNetworkInterface> pcapNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
         List<ParameterOption> options = new ArrayList<>();
         for (PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {

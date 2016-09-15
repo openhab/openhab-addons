@@ -11,21 +11,35 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.amazondashbutton.internal.ArpRequestListener;
-import org.openhab.binding.amazondashbutton.internal.ArpRequestListener.ArpRequestHandler;
+import org.openhab.binding.amazondashbutton.internal.ArpRequestTracker;
+import org.openhab.binding.amazondashbutton.internal.ArpRequestTracker.ArpRequestHandler;
 import org.openhab.binding.amazondashbutton.internal.PcapUtil;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.packet.ArpPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link AmazonDashButtonDiscoveryService} is responsible for discovering Amazon Dash Buttons. It does so by
+ * capturing ARP requests from all available network devices.
+ *
+ * While scanning the user has to press the button in order to send an ARP request packet. The
+ * {@link AmazonDashButtonDiscoveryService} captures this packet and checks the device'sMAC address which sent the
+ * request against a static list of vendor prefixes ({@link #isAmazonVendor(String)}).
+ *
+ * If an Amazon MAC address is detected a {@link DiscoveryResult} is built and passed to
+ * {@link #thingDiscovered(DiscoveryResult)}.
+ *
+ * @author Oliver Libutzki - Initial contribution
+ *
+ */
 public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(AmazonDashButtonDiscoveryService.class);
 
-    private List<ArpRequestListener> arpRequestListeners = new CopyOnWriteArrayList<ArpRequestListener>();
+    private List<ArpRequestTracker> arpRequestListeners = new CopyOnWriteArrayList<ArpRequestTracker>();
 
     public AmazonDashButtonDiscoveryService() {
         super(Collections.singleton(DASH_BUTTON_THING_TYPE), DISCOVER_TIMEOUT_SECONDS, false);
@@ -37,9 +51,9 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
         List<PcapNetworkInterface> pcapNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
 
         for (final PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {
-            ArpRequestListener arpRequestListener = new ArpRequestListener(pcapNetworkInterface);
+            ArpRequestTracker arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
             arpRequestListeners.add(arpRequestListener);
-            arpRequestListener.startListener(new ArpRequestHandler() {
+            arpRequestListener.startCapturing(new ArpRequestHandler() {
 
                 @Override
                 public void handleArpRequest(ArpPacket arpPacket) {
@@ -61,8 +75,8 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected synchronized void stopScan() {
-        for (ArpRequestListener arpRequestListener : arpRequestListeners) {
-            arpRequestListener.stopListener();
+        for (ArpRequestTracker arpRequestListener : arpRequestListeners) {
+            arpRequestListener.stopCapturing();
         }
         arpRequestListeners.clear();
         super.stopScan();
