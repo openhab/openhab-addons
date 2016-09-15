@@ -14,8 +14,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionParameter;
@@ -29,6 +32,7 @@ import org.eclipse.smarthome.core.common.osgi.ServiceBinder.Unbind;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.amazondashbutton.internal.PcapUtil;
 import org.osgi.framework.FrameworkUtil;
+import org.pcap4j.core.PcapAddress;
 import org.pcap4j.core.PcapNetworkInterface;
 
 public class AmazonDashButtonConfigDescriptionProvider implements ConfigDescriptionProvider {
@@ -51,12 +55,44 @@ public class AmazonDashButtonConfigDescriptionProvider implements ConfigDescript
         return null;
     }
 
+    private String getLabel(PcapNetworkInterface pcapNetworkInterface) {
+        StringBuilder sb = new StringBuilder(pcapNetworkInterface.getName());
+        List<PcapAddress> addresses = pcapNetworkInterface.getAddresses();
+        final String description = pcapNetworkInterface.getDescription();
+        Set<String> paramStrings = new LinkedHashSet<>();
+        if (description != null && !description.isEmpty()) {
+            paramStrings.add(description);
+        }
+        for (PcapAddress address : addresses) {
+            paramStrings.add(address.getAddress().toString().substring(1));
+
+        }
+
+        boolean hasParams = !paramStrings.isEmpty();
+        if (hasParams) {
+            sb.append(" (");
+        }
+
+        for (Iterator<String> paramIterator = paramStrings.iterator(); paramIterator.hasNext();) {
+            String addressString = paramIterator.next();
+            sb.append(addressString);
+            if (paramIterator.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        if (hasParams) {
+            sb.append(")");
+        }
+        return sb.toString();
+    }
+
     private ConfigDescription getNetworkInterfaceConfigDescription(URI uri) {
         List<PcapNetworkInterface> pcapNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
         List<ParameterOption> options = new ArrayList<>();
         for (PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {
             String name = pcapNetworkInterface.getName();
-            options.add(new ParameterOption(name, name));
+
+            options.add(new ParameterOption(name, getLabel(pcapNetworkInterface)));
         }
         ConfigDescriptionParameter configDescriptionParameter = ConfigDescriptionParameterBuilder
                 .create("pcapNetworkInterfaceName", Type.TEXT).withLabel("@text/dashButtonNetworkInterfaceLabel")
