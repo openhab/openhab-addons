@@ -7,9 +7,11 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.openhab.binding.amazondashbutton.internal.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- lib/pcap4j-core-1.6.5.jar,
- lib/jna-4.2.1.jar
+ lib/jna-4.2.1.jar,
+ lib/pcap4j-core-1.6.6.jar,
+ lib/pcap4j-packetfactory-static-1.6.6.jar
 Import-Package: 
+ com.google.common.base;version="10.0.1",
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.i18n,
  org.eclipse.smarthome.config.discovery,
