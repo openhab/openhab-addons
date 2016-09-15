@@ -10,6 +10,7 @@ package org.openhab.binding.freebox.handler;
 
 import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -204,7 +205,12 @@ public class FreeboxHandler extends BaseBridgeHandler {
             String apiVersion = null;
             String hardwareVersion = null;
             FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
-            String result = HttpUtil.executeUrl("GET", "http://" + configuration.fqdn + "/api_version", 5000);
+            String result = null;
+            try {
+                result = HttpUtil.executeUrl("GET", "http://" + configuration.fqdn + "/api_version", 5000);
+            } catch (IOException e) {
+                logger.debug("Cann't connect to Freebox server {}", e);
+            }
             if (result != null) {
                 apiBaseUrl = StringUtils.trim(StringUtils
                         .replace(StringUtils.substringBetween(result, "\"api_base_url\":\"", "\""), "\\/", "/"));
