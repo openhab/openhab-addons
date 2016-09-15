@@ -3,6 +3,30 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+    <thing-type id="sp1101w">
+        <label>Edimax Binding for SP-1101W</label>
+        <description>Thing for Edimax SP-1101W</description>
+
+        <channels>
+            <channel id="switch-channel" typeId="switch-channel" />
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP address</label>
+                <description>The local IP address or hostname of the Smart Plug</description>
+                <default>smartplug</default>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <context>password</context>
+                <label>Password</label>
+                <description>The password of the Smart Plug</description>
+                <default>1234</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
 	<thing-type id="sp2101w">
 		<label>Edimax Binding for SP-2101W</label>
 		<description>Thing for Edimax SP-2101W</description>

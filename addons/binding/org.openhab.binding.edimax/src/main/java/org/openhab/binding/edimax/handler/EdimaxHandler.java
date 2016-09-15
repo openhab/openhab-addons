@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.edimax.handler;
 
-import static org.openhab.binding.edimax.EdimaxBindingConstants.*;
+import static org.openhab.binding.edimax.EdimaxBindingConstants.SWITCH_CHANNEL;
 
 import java.io.IOException;
 
@@ -41,29 +41,27 @@ public class EdimaxHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(SWITCH_CHANNEL)) {
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        } else if (channelUID.getId().equals(ENERGY_CHANNEL)) {
-            // TODO: handle command
-
-        } else if (channelUID.getId().equals(POWER_CHANNEL)) {
-            // TODO: handle command
-
+            final EdimaxConfiguration config = this.getConfigAs(EdimaxConfiguration.class);
+            try {
+                if (command.equals(OnOffType.ON)) {
+                    createSender(config).switchState(config.getIpAddress(), Boolean.TRUE);
+                } else if (command.equals(OnOffType.OFF)) {
+                    createSender(config).switchState(config.getIpAddress(), Boolean.FALSE);
+                }
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            }
         }
     }
 
     @Override
     public void initialize() {
-        Thing thing = this.getThing();
-        EdimaxConfiguration config = this.getConfigAs(EdimaxConfiguration.class);
-        config.getIpAddress();
         try {
-            Channel channel = thing.getChannel(SWITCH_CHANNEL);
-            Boolean state = createSender(config).getState(config.getIpAddress());
+            final Thing thing = this.getThing();
+            final EdimaxConfiguration config = this.getConfigAs(EdimaxConfiguration.class);
+            final Boolean state = createSender(config).getState(config.getIpAddress());
+            final Channel channel = thing.getChannel(SWITCH_CHANNEL);
+
             if (state.equals(Boolean.TRUE)) {
                 this.updateState(channel.getUID(), OnOffType.ON);
             } else if (state.equals(Boolean.FALSE)) {
