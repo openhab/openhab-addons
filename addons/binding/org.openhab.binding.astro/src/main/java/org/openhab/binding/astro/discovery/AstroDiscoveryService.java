@@ -10,6 +10,8 @@ package org.openhab.binding.astro.discovery;
 
 import static org.openhab.binding.astro.AstroBindingConstants.*;
 
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -43,7 +45,12 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting Astro discovery scan");
-        String result = HttpUtil.executeUrl("GET", "http://ip-api.com/json/?fields=lat,lon", 5000);
+        String result = null;
+        try {
+            result = HttpUtil.executeUrl("GET", "http://ip-api.com/json/?fields=lat,lon", 5000);
+        } catch (IOException e) {
+            logger.warn("Can't get latitude and longitude for the current location: {}", e);
+        }
         String lat = StringUtils.trim(StringUtils.substringBetween(result, "\"lat\":", ","));
         String lon = StringUtils.trim(StringUtils.substringBetween(result, "\"lon\":", "}"));
 
