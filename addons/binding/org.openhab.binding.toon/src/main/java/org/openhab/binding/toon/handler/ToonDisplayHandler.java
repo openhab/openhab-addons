@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.toon.internal.api.GasUsage;
 import org.openhab.binding.toon.internal.api.PowerUsage;
 import org.openhab.binding.toon.internal.api.ThermostatInfo;
@@ -130,6 +131,11 @@ public class ToonDisplayHandler extends AbstractToonHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand {} for {}", command, channelUID.getAsString());
         try {
+            if (command == RefreshType.REFRESH) {
+                getToonBridgeHandler().requestRefresh();
+                return;
+            }
+
             switch (channelUID.getId()) {
                 case CHANNEL_SETPOINT:
                     if (command instanceof DecimalType) {
@@ -145,7 +151,7 @@ public class ToonDisplayHandler extends AbstractToonHandler {
                     }
                     break;
                 default:
-                    logger.warn("unkonwn channel / command");
+                    logger.warn("unknown channel:{} / command:{}", channelUID.getAsString(), command);
             }
         } catch (ToonConnectionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

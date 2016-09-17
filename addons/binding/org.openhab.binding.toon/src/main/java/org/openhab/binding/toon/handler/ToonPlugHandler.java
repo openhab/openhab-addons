@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.toon.internal.api.DeviceConfig;
 import org.openhab.binding.toon.internal.api.ToonConnectionException;
 import org.openhab.binding.toon.internal.api.ToonState;
@@ -87,6 +88,11 @@ public class ToonPlugHandler extends AbstractToonHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand {} for {}", command, channelUID.getAsString());
         try {
+            if (command == RefreshType.REFRESH) {
+                getToonBridgeHandler().requestRefresh();
+                return;
+            }
+
             if (CHANNEL_SWITCH_BINARY.equals(channelUID.getId())) {
                 int value = 0;
                 if (command instanceof OnOffType) {
@@ -100,7 +106,7 @@ public class ToonPlugHandler extends AbstractToonHandler {
                 getToonBridgeHandler().getApiClient().setPlugState(value,
                         getThing().getProperties().get(PROPERTY_DEV_UUID));
             } else {
-                logger.warn("unkown channel / command");
+                logger.warn("unknown channel:{} / command:{}", channelUID.getAsString(), command);
             }
         } catch (ToonConnectionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
