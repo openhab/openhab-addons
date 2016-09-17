@@ -63,12 +63,23 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startAutomaticRefresh() {
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
+
         refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 updateChannels();
             }
-        }, 1, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+        }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+    }
+
+    public void requestRefresh() {
+        if (configuration == null) {
+            return;
+        }
+        startAutomaticRefresh();
     }
 
     private void updateChannels() {
@@ -130,7 +141,7 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            updateChannels();
+            requestRefresh();
         } else {
             logger.warn("This Bridge can only handle the REFRESH command");
         }
