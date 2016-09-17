@@ -65,6 +65,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        logger.debug("Initializing thing {}", getThing().getUID());
         String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(AstroThingConfig.class);
         thingConfig.setThingUid(thingUid);
@@ -96,6 +97,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
+        logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
 
     /**
@@ -103,8 +105,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
+        logger.debug("Disposing thing {}", getThing().getUID());
+        if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
+            schedulerFuture.cancel(true);
+            schedulerFuture = null;
+        }
         stopJobs();
         quartzScheduler = null;
+        logger.debug("Thing {} disposed", getThing().getUID());
     }
 
     /**
@@ -157,21 +165,22 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * already scheduled jobs first.
      */
     private void restartJobs() {
+        logger.debug("restartJobs");
 
-        if (schedulerFuture != null) {
+        if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
             schedulerFuture.cancel(true);
         }
 
         schedulerFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
+                stopJobs();
+
                 try {
                     synchronized (schedulerLock) {
                         if (quartzScheduler == null) {
                             quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
                         }
-
-                        stopJobs();
 
                         if (getThing().getStatus() == ThingStatus.ONLINE) {
                             String thingUid = getThing().getUID().toString();
@@ -217,15 +226,18 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     }
 
     private void stopJobs() {
-        if (quartzScheduler != null) {
-            try {
-                String thingUid = getThing().getUID().toString();
-                for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
-                    logger.info("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
-                    quartzScheduler.deleteJob(jobKey);
+        logger.debug("stopJobs");
+        synchronized (schedulerLock) {
+            if (quartzScheduler != null) {
+                try {
+                    String thingUid = getThing().getUID().toString();
+                    for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
+                        logger.info("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
+                        quartzScheduler.deleteJob(jobKey);
+                    }
+                } catch (SchedulerException ex) {
+                    logger.error(ex.getMessage(), ex);
                 }
-            } catch (SchedulerException ex) {
-                logger.error(ex.getMessage(), ex);
             }
         }
     }
@@ -244,10 +256,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Counts positional channels and restarts astro jobs.
      */
     private void linkedChannelChange(ChannelUID channelUID, int step) {
+        logger.debug("linkedChannelChange {} step {}", channelUID, step);
         if (ArrayUtils.contains(getPositionalChannelIds(), channelUID.getId())) {
+            int oldValue = linkedPositionalChannels;
             linkedPositionalChannels += step;
+            if ((oldValue == 0 && linkedPositionalChannels > 0) || (oldValue > 0 && linkedPositionalChannels == 0)) {
+                restartJobs();
+            }
         }
-        restartJobs();
     }
 
     /**
