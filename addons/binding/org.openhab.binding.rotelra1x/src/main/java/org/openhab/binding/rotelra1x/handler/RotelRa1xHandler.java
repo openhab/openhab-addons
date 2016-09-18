@@ -77,15 +77,14 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                     serialPort = new RXTXPort(portName);
                     serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                             SerialPort.PARITY_NONE);
-
-                    // Don't need continuous updates of the display, we still get updates when
-                    // the volume, etc., changes
                 } catch (PortInUseException | UnsupportedCommOperationException e) {
                     serialPort = null;
                     throw new IOException(e);
                 }
             }
             connected = true;
+            // Don't need continuous updates of the display, we still get updates when
+            // the volume, etc., changes
             serialPort.getOutputStream().write("display_update_manual!".getBytes("ascii"));
             Thread receiver = new Thread(this);
             receiver.start();
@@ -239,8 +238,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                             off += r;
                         }
                     }
-                    // We don't do anything with display content, feel free to patch if
-                    // anyone thinks this is useful
+                    // We don't do anything with display content, could add a channel if this is useful
                 } else {
                     readUntil('!'); // discard
                 }
@@ -284,7 +282,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             } else if (channelUID.getId().equals("volume")) {
                 handleVolume(command);
             } else if (channelUID.getId().equals("dimmer")) {
-                // Invert the scale
+                // Invert the scale so 100% is brightest
                 if (command instanceof PercentType) {
                     double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);
                     send("dimmer_" + Integer.toString((int) value) + "!");
