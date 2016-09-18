@@ -59,7 +59,7 @@ public class XmlRpcServer implements RpcServer {
         logger.debug("Initializing XML-RPC server at port {}", config.getCallbackPort());
 
         xmlRpcHTTPD = new XmlRpcHTTPD(config.getCallbackPort());
-        xmlRpcHTTPD.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        xmlRpcHTTPD.start(0, true);
     }
 
     /**
@@ -120,8 +120,8 @@ public class XmlRpcServer implements RpcServer {
         private String handleMethodCall(String methodName, Object[] responseData) throws IOException {
             if (RPC_METHODNAME_EVENT.equals(methodName)) {
                 return handleEvent(responseData);
-            } else
-                if (RPC_METHODNAME_LIST_DEVICES.equals(methodName) || RPC_METHODNAME_UPDATE_DEVICE.equals(methodName)) {
+            } else if (RPC_METHODNAME_LIST_DEVICES.equals(methodName)
+                    || RPC_METHODNAME_UPDATE_DEVICE.equals(methodName)) {
                 return XML_EMPTY_ARRAY;
             } else if (RPC_METHODNAME_DELETE_DEVICES.equals(methodName)) {
                 return handleDeleteDevice(responseData);

@@ -169,6 +169,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     @Override
+    public void onServiceSubscribed(String service, boolean succeeded) {
+    }
+
+    @Override
     public void onValueReceived(String variable, String value, String service) {
 
         String oldValue = stateMap.get(variable);

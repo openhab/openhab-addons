@@ -29,6 +29,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
 import org.openhab.binding.rfxcom.internal.connector.RFXComEventListener;
 import org.openhab.binding.rfxcom.internal.connector.RFXComJD2XXConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComSerialConnector;
+import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
@@ -154,11 +155,16 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 if (connector == null) {
                     connector = new RFXComJD2XXConnector();
                 }
+            } else if (configuration.host != null) {
+                deviceName = configuration.host;
+                if (connector == null) {
+                    connector = new RFXComTcpConnector();
+                }
             }
 
             if (connector != null) {
                 connector.disconnect();
-                connector.connect(deviceName);
+                connector.connect(configuration);
 
                 logger.debug("Reset controller");
                 connector.sendMessage(RFXComMessageFactory.CMD_RESET);
@@ -213,7 +219,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         } catch (NoSuchPortException e) {
             logger.error("Connection to RFXCOM transceiver failed: invalid port");
         } catch (Exception e) {
-            logger.error("Connection to RFXCOM transceiver failed: {}", e.getMessage());
+            logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (UnsatisfiedLinkError e) {
             logger.error("Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
@@ -250,6 +256,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     break;
 
                 case RFXComBindingConstants.BRIDGE_TYPE_MANUAL_BRIDGE:
+                case RFXComBindingConstants.BRIDGE_TYPE_TCP_BRIDGE:
                     if (conf.transceiverType != null) {
                         switch (conf.transceiverType) {
                             case RFXComBindingConstants.TRANSCEIVER_433_92MHz:

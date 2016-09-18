@@ -33,12 +33,12 @@ import com.google.common.collect.ImmutableSet;
  */
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
+    public static final Set<ThingTypeUID> DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH,
+            THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return THING_TYPE_IPBRIDGE.equals(thingTypeUID) || DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
