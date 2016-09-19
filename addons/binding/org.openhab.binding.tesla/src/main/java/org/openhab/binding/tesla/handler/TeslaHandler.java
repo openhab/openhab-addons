@@ -529,7 +529,7 @@ public class TeslaHandler extends BaseThingHandler {
                                 }
                             }
                         } catch (Exception e) {
-                            logger.debug("Unable to handle the variable/value pair '{}':'{}'", entry.getKey(),
+                            logger.trace("Unable to handle the variable/value pair '{}':'{}'", entry.getKey(),
                                     entry.getValue());
                         }
                     }
