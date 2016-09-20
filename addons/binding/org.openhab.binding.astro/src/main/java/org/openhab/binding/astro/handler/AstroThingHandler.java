@@ -122,7 +122,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             logger.debug("Refreshing {}", channelUID);
-            publishChannelIfLinked(getThing().getChannel(channelUID.getId()));
+            publishChannelIfLinked(channelUID);
         } else {
             logger.warn("The Astro-Binding is a read-only binding and can not handle commands");
         }
@@ -143,19 +143,19 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     protected void publishPlanet() {
         logger.debug("Publishing planet {} for thing {}", getPlanet().getClass().getSimpleName(), getThing().getUID());
         for (Channel channel : getThing().getChannels()) {
-            publishChannelIfLinked(channel);
+            publishChannelIfLinked(channel.getUID());
         }
     }
 
     /**
      * Publishes the channel with data if it's linked.
      */
-    private void publishChannelIfLinked(Channel channel) {
-        if (isLinked(channel.getUID().getId()) && getPlanet() != null) {
+    private void publishChannelIfLinked(ChannelUID channelUID) {
+        if (isLinked(channelUID.getId()) && getPlanet() != null) {
             try {
-                updateState(channel.getUID(), PropertyUtils.getState(channel.getUID(), getPlanet()));
+                updateState(channelUID, PropertyUtils.getState(channelUID, getPlanet()));
             } catch (Exception ex) {
-                logger.error("Can't update state for channel " + channel.getUID() + ": " + ex.getMessage(), ex);
+                logger.error("Can't update state for channel " + channelUID + ": " + ex.getMessage(), ex);
             }
         }
     }
@@ -245,6 +245,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         linkedChannelChange(channelUID, 1);
+        publishChannelIfLinked(channelUID);
     }
 
     @Override
