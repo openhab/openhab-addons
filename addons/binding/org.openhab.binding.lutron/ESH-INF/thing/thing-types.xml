@@ -14,11 +14,11 @@
                 <label>IP or Host Name</label>
                 <description>The IP or host name of the Lutron integration access point</description>
             </parameter>
-            <parameter name="user" type="text" required="true">
+            <parameter name="user" type="text">
                 <label>User Name</label>
                 <description>The user name to log in to the integration access point</description>
             </parameter>
-            <parameter name="password" type="text" required="true">
+            <parameter name="password" type="text">
                 <context>password</context>
                 <label>Password</label>
                 <description>The user password to log in to the integration access point</description>

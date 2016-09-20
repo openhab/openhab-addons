@@ -112,7 +112,9 @@ public class TelnetSession implements Closeable {
 
     @Override
     public void close() throws IOException {
-        this.telnetClient.disconnect();
+        if (this.telnetClient.isConnected()) {
+            this.telnetClient.disconnect();
+        }
     }
 
     public boolean isConnected() {
