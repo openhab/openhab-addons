@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -75,35 +76,38 @@ public class LgTvSerialHandler extends BaseThingHandler {
             return; // Don't support refreshing
         }
         try {
-            if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_POWER)) {
+            if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_POWER) && (command instanceof OnOffType)) {
                 if (command == OnOffType.ON) {
                     output.write("ka 0 1\r");
-                    updateState(channelUID, OnOffType.ON);
                 } else if (command == OnOffType.OFF) {
                     output.write("ka 0 0\r");
                 }
+                updateState(channelUID, (OnOffType) command);
             } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_INPUT)) {
                 output.write(String.format("xb 0 %x\r", Integer.parseInt(command.toString())));
-                updateState(channelUID, OnOffType.ON);
+                updateState(channelUID, new StringType(command.toString()));
             } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_VOLUME)
                     && command instanceof PercentType) {
                 // TODO: Implement increase/decrease
                 PercentType vol = (PercentType) command;
                 output.write(String.format("kf 0 %x\r", vol.intValue()));
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_MUTE)) {
+                updateState(channelUID, (PercentType) command);
+            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_MUTE)
+                    && (command instanceof OnOffType)) {
                 if (command == OnOffType.ON) {
                     output.write("ke 0 0\r");
-                    updateState(channelUID, OnOffType.ON);
                 } else if (command == OnOffType.OFF) {
                     output.write("ke 0 1\r");
                 }
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_BACKLIGHT)) {
-                // TODO: Implement increase/decrease
+                updateState(channelUID, (OnOffType) command);
+            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_BACKLIGHT)
+                    && (command instanceof PercentType)) {
                 PercentType level = (PercentType) command;
                 output.write(String.format("mg 0 %x\r", level.intValue()));
+                updateState(channelUID, (PercentType) command);
             } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_COLOR_TEMPERATURE)) {
                 output.write(String.format("ku 0 %x\r", Integer.parseInt(command.toString())));
-                updateState(channelUID, OnOffType.ON);
+                updateState(channelUID, new StringType(command.toString()));
             }
             output.flush();
         } catch (IOException e) {
