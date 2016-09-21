@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="russound"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="rio">
+        <label>Russound RIO Device</label>
+        <description>Ethernet access point to Russound RIO control system (usually the main controller)</description>
+        
+        <channels>
+            <channel id="version" typeId="readonlystring"><label>Firmware Version</label><description>Firmware Version</description></channel>
+            <channel id="lang" typeId="lang"/>
+            <channel id="allon" typeId="button"><label>All Zones</label><description>Toggles All Zones</description></channel>
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP or Host Name</label>
+                <description>The IP or host name of the Russound RIO access point</description>
+            </parameter>
+            <parameter name="ping" type="integer" required="false">
+                <label>Ping Interval</label>
+                <description>The ping interval in seconds to keep the connection alive</description>
+                <default>30</default>
+            </parameter>
+            <parameter name="retryPolling" type="integer" required="false">
+                <label>Retry Polling</label>
+                <description>The polling, in seconds, to retry a connection attempt</description>
+                <default>10</default>
+            </parameter>
+        </config-description>
+        
+    </bridge-type>
+
+    <bridge-type id="controller">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="rio"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Controller</label>
+        <description>Controller of Zones, Sources, etc</description>
+
+        <channels>
+            <channel id="type" typeId="readonlystring"><label>Model Type</label><description>Model Type</description></channel>
+            <channel id="ipaddress" typeId="readonlystring"><label>IP Address</label><description>IP Address</description></channel>
+            <channel id="macaddress" typeId="readonlystring"><label>MAC Address</label><description>MAC Address</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="controller" type="integer" min="1" max="6" required="true">
+                <label>Controller ID</label>
+                <description>The controller identifier</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <bridge-type id="zone">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller"/>
+        </supported-bridge-type-refs>
+        
+        <label>Russound Zone</label>
+        <description>Zone within a Controller</description>
+        
+        <channels>
+            <channel id="name" typeId="readonlystring"><label>Name</label><description>Zone Name</description></channel>
+            <channel id="source" typeId="source"/>
+            <channel id="bass" typeId="basstreble"><label>Bass</label><description>Bass setting</description></channel>
+            <channel id="treble" typeId="basstreble"><label>Treble</label><description>Treble setting</description></channel>
+            <channel id="balance" typeId="balance"/>
+            <channel id="loudness" typeId="button"><label>Loudness</label><description>Loudness</description></channel>
+            <channel id="turnonvolume" typeId="turnonvolume"/>
+            <channel id="donotdisturb" typeId="string"><label>Do Not Disturb</label><description>Do Not Disturb</description></channel>
+            <channel id="partymode" typeId="string"><label>Party Mode</label><description>Party Mode</description></channel>
+            <channel id="status" typeId="button"><label>Status</label><description>Zone Status</description></channel>
+            <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="button"><label>Mute</label><description>Mute</description></channel>
+            <channel id="page" typeId="button"><label>Page</label><description>Page Status</description></channel>
+            <channel id="sharedsource" typeId="button"><label>Shared Source</label><description>Shared Source Status</description></channel>
+            <channel id="sleeptimeremaining" typeId="sleeptime"/>
+            <channel id="lasterror" typeId="readonlystring"><label>Last Error</label><description>Last Zone Error</description></channel>
+            <channel id="enabled" typeId="button"><label>Enabled</label><description>Whether the zone is enabled or not</description></channel>
+            <channel id="repeat" typeId="button"><label>Repeat</label><description>Toggle the repeat mode</description></channel>
+            <channel id="shuffle" typeId="button"><label>Shuffle</label><description>Toggle the shuffle mode</description></channel>
+            <channel id="rating" typeId="button"><label>Rating</label><description>How to rate current song</description></channel>
+            <channel id="keypress" typeId="string"><label>KeyPress event</label><description>Send a KeyPress event</description></channel>
+            <channel id="keyrelease" typeId="string"><label>KeyRelease event</label><description>Send a KeyRelease event</description></channel>
+            <channel id="keyhold" typeId="string"><label>KeyHold event</label><description>Send a KeyHold event</description></channel>
+            <channel id="keycode" typeId="string"><label>KeyCode event</label><description>Send a KeyCode event</description></channel>
+            <channel id="event" typeId="string"><label>Generic event</label><description>Send a generic event</description></channel>
+        </channels>
+
+        <config-description>
+            <parameter name="zone" type="integer" min="1" max="8" required="true">
+                <label>Zone ID</label>
+                <description>The zone identifier</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <bridge-type id="source">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="rio"/>
+        </supported-bridge-type-refs>
+        
+        <label>Russound Source</label>
+        <description>Source (tuner, streamer, etc) within the Russound System</description>
+        
+        <channels>
+            <channel id="name" typeId="readonlystring"><label>Name</label><description>Source Name</description></channel>
+            <channel id="type" typeId="readonlystring"><label>Type</label><description>Source Type</description></channel>
+            <channel id="ipaddress" typeId="readonlystring"><label>IP Address</label><description>IP Address</description></channel>
+            <channel id="composername" typeId="readonlystring"><label>Composer Name</label><description>Composer Name</description></channel>
+            <channel id="channel" typeId="readonlystring"><label>Channel</label><description>Channel</description></channel>
+            <channel id="channelname" typeId="readonlystring"><label>Channel Name</label><description>Channel Name</description></channel>
+            <channel id="genre" typeId="readonlystring"><label>Genre</label><description>Genre</description></channel>
+            <channel id="artistname" typeId="readonlystring"><label>Artist Name</label><description>Artist Name</description></channel>
+            <channel id="albumname" typeId="readonlystring"><label>Album Name</label><description>Album Name</description></channel>
+            <channel id="coverarturl" typeId="readonlystring"><label>Cover Art URL</label><description>Cover Art URL</description></channel>
+            <channel id="coverart" typeId="coverart"/>
+            <channel id="playlistname" typeId="readonlystring"><label>Playlist Name</label><description>Playlist Name</description></channel>
+            <channel id="songname" typeId="readonlystring"><label>Song Name</label><description>Song Name</description></channel>
+            <channel id="mode" typeId="readonlystring"><label>Mode</label><description>Provider Mode or Streaming Service</description></channel>
+            <channel id="shufflemode" typeId="readonlystring"><label>Shuffle</label><description>Shuffle Mode</description></channel>
+            <channel id="repeatmode" typeId="readonlystring"><label>Repeat</label><description>Repeat Mode</description></channel>
+            <channel id="rating" typeId="readonlystring"><label>Rating</label><description>Rating</description></channel>
+            <channel id="programservicename" typeId="readonlystring"><label>Program Service Name</label><description>Program Service Name (PSN)</description></channel>
+            <channel id="radiotext" typeId="readonlystring"><label>Radio Text</label><description>Radio Text</description></channel>
+            <channel id="radiotext2" typeId="readonlystring"><label>Radio Text2</label><description>Radio Text line 2</description></channel>
+            <channel id="radiotext3" typeId="readonlystring"><label>Radio Text3</label><description>Radio Text line 3</description></channel>
+            <channel id="radiotext4" typeId="readonlystring"><label>Radio Text4</label><description>Radio Text line 4</description></channel>
+            <channel id="volume" typeId="readonlystring"><label>Volume Level</label><description>The volume level from the source</description></channel>
+        </channels>
+
+        <config-description>
+            <parameter name="source" type="integer" min="1" max="12" required="true">
+                <label>Source ID</label>
+                <description>The source identifier</description>
+            </parameter>
+        </config-description>
+        
+    </bridge-type>
+
+    <bridge-type id="bank">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="source"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Bank</label>
+        <description>Bank of Presets for a specific Source (usually a tuner source)</description>
+
+        <channels>
+            <channel id="name" typeId="string"><label>Bank Name</label><description>The bank name</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="bank" type="integer" min="1" max="6" required="true">
+                <label>Bank ID</label>
+                <description>The bank identifier</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <thing-type id="sysfavorite">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="rio"/>
+        </supported-bridge-type-refs>
+
+        <label>System Favorite</label>
+        <description>System Favorite</description>
+
+        <channels>
+            <channel id="name" typeId="readonlystring"><label>Favorite Name</label><description>The system favorite name</description></channel>
+            <channel id="valid" typeId="button"><label>Favorite Valid</label><description>If the favorite is valid or not</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="favorite" type="integer" min="1" max="32" required="true">
+                <label>Favorite ID</label>
+                <description>The favorite identifier</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="zonefavorite">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="zone"/>
+        </supported-bridge-type-refs>
+
+        <label>Zone Favorite</label>
+        <description>Favorite for a Zone</description>
+
+        <channels>
+            <channel id="name" typeId="string"><label>Favorite Name</label><description>The zone favorite name</description></channel>
+            <channel id="valid" typeId="button"><label>Favorite Valid</label><description>If the favorite is valid or not</description></channel>
+            <channel id="save" typeId="button"><label>Save Favorite</label><description>Saves the favorite (ON=as system favorite, OFF=as zone favorite)</description></channel>
+            <channel id="restore" typeId="button"><label>Restore Favorite</label><description>Restores the favorite (ON=system favorite, OFF=zone favorite)</description></channel>
+            <channel id="delete" typeId="button"><label>Delete Favorite</label><description>Deletes the favorite (ON=system favorite, OFF=zone favorite)</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="favorite" type="integer" min="1" max="2" required="true">
+                <label>Favorite ID</label>
+                <description>The favorite identifier</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="bankpreset">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bank"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Bank Preset</label>
+        <description>Preset (usually frequency) within a Bank for a Source (usually a tuner)</description>
+
+        <channels>
+            <channel id="name" typeId="readonlystring"><label>Favorite Name</label><description>The system favorite name</description></channel>
+            <channel id="valid" typeId="button"><label>Favorite Valid</label><description>If the favorite is valid or not</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="preset" type="integer" min="1" max="6" required="true">
+                <label>Preset ID</label>
+                <description>The preset identifier</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+
+    <thing-type id="zonepreset">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="zone"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Zone Presets</label>
+        <description>Zone Preset Commands to save/restore/delete presets for the zone</description>
+
+        <channels>
+            <channel id="save" typeId="button"><label>Save Favorite</label><description>Saves zone as the preset</description></channel>
+            <channel id="restore" typeId="button"><label>Restore Favorite</label><description>Restores the reset to the zone</description></channel>
+            <channel id="delete" typeId="button"><label>Delete Favorite</label><description>Deletes preset for the zone</description></channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="preset" type="integer" min="1" max="36" required="true">
+                <label>Preset ID</label>
+                <description>The preset identifier (1-36 corresponds to banks 1-6, presets 1-6)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="string">
+        <item-type>String</item-type>
+        <label>String</label>
+        <description>String</description>
+    </channel-type>
+    <channel-type id="readonlystring">
+        <item-type>String</item-type>
+        <label>ReaonlyString</label>
+        <description>ReadonlyString</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="button">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Switch</description>
+    </channel-type>
+    <channel-type id="lang">
+        <item-type>String</item-type>
+        <label>Language</label>
+        <description>System Language</description>
+        <state>
+            <options>
+                <option value="ENGLISH">English</option>
+                <option value="CHINESE">Chinese</option>
+                <option value="RUSSIAN">Russian</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="source">
+        <item-type>Number</item-type>
+        <label>Source</label>
+        <description>Physical Source Number</description>
+        <state min="1" max="12"/>
+    </channel-type>
+    <channel-type id="basstreble">
+        <item-type>Number</item-type>
+        <label>BassTreble</label>
+        <description>BassTreble</description>
+        <state min="-10" max="10"/>
+    </channel-type>
+    <channel-type id="balance">
+        <item-type>Number</item-type>
+        <label>Balance</label>
+        <description>Balance (-10 full left, 10 full right)</description>
+        <state min="-10" max="10"/>
+    </channel-type>
+    <channel-type id="turnonvolume">
+        <item-type>Number</item-type>
+        <label>Turn On Volume</label>
+        <description>The volume the zone will default to when turned on</description>
+        <state min="0" max="50"/>
+    </channel-type>
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Volume level of zone</description>
+        <state min="0" max="50"/>
+    </channel-type>
+    <channel-type id="sleeptime">
+        <item-type>Number</item-type>
+        <label>Sleep Time Remaining</label>
+        <description>Sleep Time (in seconds) remaining</description>
+        <state min="0" max="60" step="5" readOnly="true"/>
+    </channel-type>
+    <channel-type id="coverart">
+        <item-type>Image</item-type>
+        <label>Cover Art Image</label>
+        <description>Cover Art Image</description>
+    </channel-type>
+</thing:thing-descriptions>
