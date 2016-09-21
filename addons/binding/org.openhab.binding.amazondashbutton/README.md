@@ -26,6 +26,11 @@ brew install libpcap
 choco install winpcap
 ```
 
+
+Pcap4J needs administrator/root privileges.
+Or, if on Linux, you can run Pcap4J with a non-root user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
+to your java command by the following command: `setcap cap_net_raw,cap_net_admin=eip /path/to/java`
+
 Source: https://www.pcap4j.org/
 
 ### Setup Dash Button
