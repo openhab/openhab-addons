@@ -26,6 +26,8 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -73,36 +75,55 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            // Z-Way bridge have to be ONLINE because configuration is needed
-            ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
-            if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                logger.debug("Z-Way bridge handler not found or not ONLINE.");
-                return;
-            }
+            // https://community.openhab.org/t/oh2-major-bug-with-scheduled-jobs/12350/11
+            // If any execution of the task encounters an exception, subsequent executions are
+            // suppressed. Otherwise, the task will only terminate via cancellation or
+            // termination of the executor.
+            try {
+                // Z-Way bridge have to be ONLINE because configuration is needed
+                ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
+                if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    logger.debug("Z-Way bridge handler not found or not ONLINE.");
+                    return;
+                }
 
-            // Initialize device polling
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                logger.debug("Starting polling job at intervall {}",
-                        zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval());
-                pollingJob = scheduler.scheduleAtFixedRate(devicePolling, 10,
-                        zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
-            } else {
-                // Called when thing or bridge updated ...
-                logger.debug("Polling is allready active");
-            }
+                // Initialize device polling
+                if (pollingJob == null || pollingJob.isCancelled()) {
+                    logger.debug("Starting polling job at intervall {}",
+                            zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval());
+                    pollingJob = scheduler.scheduleAtFixedRate(devicePolling, 10,
+                            zwayBridgeHandler.getZWayBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
+                } else {
+                    // Called when thing or bridge updated ...
+                    logger.debug("Polling is allready active");
+                }
 
-            // Register all linked items on server start
-            if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
-                for (Channel channel : getThing().getChannels()) {
-                    if (isLinked(channel.getUID().getId())) {
-                        String deviceId = channel.getProperties().get("deviceId");
+                // Register all linked items on server start
+                if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
+                    for (Channel channel : getThing().getChannels()) {
+                        if (isLinked(channel.getUID().getId())) {
+                            String deviceId = channel.getProperties().get("deviceId");
 
-                        Set<String> items = linkRegistry.getLinkedItems(channel.getUID());
-                        for (String item : items) {
-                            logger.debug("Linked item found - starting register command for openHAB item: {}", item);
-                            zwayRegisterOpenHabItem(item, deviceId);
+                            Set<String> items = linkRegistry.getLinkedItems(channel.getUID());
+                            for (String item : items) {
+                                logger.debug("Linked item found - starting register command for openHAB item: {}",
+                                        item);
+                                zwayRegisterOpenHabItem(item, deviceId);
+                            }
                         }
                     }
+                }
+            } catch (Throwable t) {
+                if (t instanceof Exception) {
+                    logger.error(((Exception) t).getMessage());
+                } else if (t instanceof Error) {
+                    logger.error(((Error) t).getMessage());
+                } else {
+                    logger.error("Unexpected error");
+                }
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            "Error occurred when starting polling and registering item as observer.");
                 }
             }
         }
@@ -201,9 +222,22 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     @Override
     public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
         logger.debug("Z-Way bridge handler disposed.");
+    }
 
-        // Not used: Method not called if bridge (thing) update performed
-        // Only if bridge removed method will called
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        // Only called if status ONLINE or OFFLINE
+        logger.debug("Z-Way bridge status changed: {}", bridgeStatusInfo);
+
+        if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge status is offline.");
+        } else if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+            // Initialize thing, if all OK the status of device thing will be ONLINE
+
+            // Start an extra thread to check the connection, because it takes sometimes more
+            // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
+            scheduler.execute(new Initializer());
+        }
     }
 
     private class DevicePolling implements Runnable {
@@ -550,15 +584,15 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     protected synchronized void addDeviceAsChannel(Device device) {
         logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
 
-        // device.probeType
+        // Device.probeType
         // |
-        // device.metrics.probeType
+        // Device.metrics.probeType
         // |
-        // device.metrics.icon
+        // Device.metrics.icon
         // |
-        // command class
+        // Command class
         // |
-        // default, depends on device type
+        // Default, depends on device type
 
         if (device != null) {
             HashMap<String, String> properties = new HashMap<String, String>();
@@ -714,7 +748,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     }
                 }
             } else {
-                // eventually take account of the command classes
+                // Eventually take account of the command classes
             }
 
             // If at least one rule could mapped to a channel
@@ -725,6 +759,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                         "Channel for virtual device added with channel id: {}, accepted item type: {} and title: {}",
                         id, acceptedItemType, device.getMetrics().getTitle());
             } else {
+                // Thing status will not be updated because thing could have more than one channel
                 logger.warn("No channel for virtual device added: {}", device);
             }
         }

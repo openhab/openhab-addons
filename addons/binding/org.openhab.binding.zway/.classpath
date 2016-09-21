@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="lib" path="C:/EclipseOpenHAB/git/openhab2-addons/addons/binding/org.openhab.binding.zway/lib/zway-lib-0.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/EclipseOpenHAB/git/openhab2-addons/addons/binding/org.openhab.binding.zway/lib/zway-lib-0.1.2-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

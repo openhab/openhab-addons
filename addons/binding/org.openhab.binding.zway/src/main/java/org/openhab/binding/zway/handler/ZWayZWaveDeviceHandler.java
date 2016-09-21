@@ -83,6 +83,8 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                         } else {
                             logger.warn("Initializing Z-Way device handler failed (physical device not found): {}",
                                     getThing().getLabel());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                                    "Z-Way physical device with node id " + mConfig.getNodeId() + " not found.");
                         }
 
                         // starts polling job and register all linked items
@@ -101,9 +103,13 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                         }
                     }
                 } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            "Devices not loaded");
                     logger.warn("Devices not loaded");
                 }
             } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "Z-Way bridge handler not found or not ONLINE.");
                 logger.warn("Z-Way bridge handler not found or not ONLINE.");
             }
         }

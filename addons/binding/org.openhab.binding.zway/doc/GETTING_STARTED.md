@@ -1,6 +1,6 @@
 # Getting Started
 
-# Prepare Z-Way server
+# Prepare Z-Way Server
 
 1. [Download](https://razberry.z-wave.me/z-way-server/) Z-Way v2.2.3 or newer (further information about installing Z-Way you can find [here](http://razberry.z-wave.me/index.php?id=24))
 2. Install openHAB Connector
@@ -24,7 +24,9 @@
 
     ```shell
     cd /opt/openhab2/addons
-    wget https://github.com/openhab/openhab2-addons/files/471863/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
+    sudo wget https://github.com/openhab/openhab2-addons/files/484442/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
+    sudo unzip org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
+    sudo rm org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     ```
 
 3. Start openHAB by running `start.bat` or `start.sh`
@@ -69,7 +71,7 @@ Change configuration: In order for the Observer mechanism works, the IP address,
 
 ## Create and configure Z-Way Devices
 
-Open the *Inbox* and start manually the *Discovery* for the Z-Way Binding
+Open the *Inbox* and start manually the *Discovery* for the Z-Way Binding. The *Discovery* must be started manually at this point, because the *Discovery* is running only every 4 minutes. The start time of the interval is the creation of Z-Way Server, even if the configuration is not yet complete. After the Z-Way Server is fully configured, the interval must be awaited or started manually.
 
 ![openHAB Discovery](images/getting-started/07-Device-discovery.png)
 

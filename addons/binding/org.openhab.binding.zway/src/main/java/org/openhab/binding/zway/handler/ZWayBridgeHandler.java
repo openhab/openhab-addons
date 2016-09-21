@@ -56,13 +56,13 @@ import de.fh_zwickau.informatik.sensor.model.profiles.ProfileList;
  * - load and check configuration
  * - instantiate a Z-Way API that used in the whole binding
  * - authenticate to the Z-Way server
- * - check existence of openHAB connector in Z-Way server and configure openHAB server
- * - after update, perform refresh listener command to openHAB connector
+ * - check existence of openHAB Connector in Z-Way server and configure openHAB server
+ * - after update, perform refresh listener command to openHAB Connector
  * - initialize all containing device things
  *
  * During the removal process the following tasks are performed:
- * - clean up openHAB connector configuration
- * - important: the configured devices not changed in openHAB connector!
+ * - clean up openHAB Connector configuration
+ * - important: the configured devices not changed in openHAB Connector!
  *
  * @author Patrick Hecker - Initial contribution
  */
@@ -79,7 +79,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
      * Initializer authenticate the Z-Way API instance with bridge configuration.
      *
      * If Z-Way API successfully authenticated:
-     * - check existence of openHAB connector in Z-Way server and configure openHAB server
+     * - check existence of openHAB Connector in Z-Way server and configure openHAB server
      * - initialize all containing device things
      */
     private class Initializer implements Runnable {
@@ -95,7 +95,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             try {
                 // Authenticate - thing status update with a error message
                 if (mZWayApi.getLogin() != null) {
-                    updateStatus(ThingStatus.ONLINE);
+                    // Thing status set to online in login callback
                     logger.info("Z-Way bridge successfully authenticated");
 
                     // Register openHAB server to Z-Way if observer mechanism is enabled
@@ -134,12 +134,24 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     };
 
     /**
-     * Disposer clean up openHAB connector configuration
+     * Disposer clean up openHAB Connector configuration
      */
-    private class Disposer implements Runnable {
+    private class Remover implements Runnable {
 
         @Override
         public void run() {
+            // Removing all containing device things
+            logger.debug("Removing all configured devices ...");
+            for (Thing thing : getThing().getThings()) {
+                ThingHandler handler = thing.getHandler();
+                if (handler != null) {
+                    logger.debug("Removing device: {}", thing.getLabel());
+                    handler.handleRemoval();
+                } else {
+                    logger.warn("Removing device failed (DeviceHandler is null): {}", thing.getLabel());
+                }
+            }
+
             // Remove openHAB server to Z-Way if observer mechanism is enabled
             if (mConfig.getObserverMechanismEnabled()) {
                 updateOpenHabConnector(true);
@@ -156,7 +168,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // possible commands: check Z-Way server, check OpenHAB connector, reconnect, ...
+        // possible commands: check Z-Way server, check openHAB Connector, reconnect, ...
     }
 
     @Override
@@ -183,19 +195,23 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     mConfig.setOpenHabAlias(shortUnixTimestamp.toString());
                 } else {
                     logger.error("Can't generate openHAB alias (editable configuration not available)");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            "Can't generate openHAB alias (editable configuration not available)");
                 }
             } else {
                 logger.debug("OpenHAB alias manually set");
             }
 
-            logger.debug("Configuration complete: {}", mConfig);
+            if (mConfig.getOpenHabAlias() != null) {
+                logger.debug("Configuration complete: {}", mConfig);
 
-            mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
-                    mConfig.getZWayUsername(), mConfig.getZWayPassword(), this);
+                mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
+                        mConfig.getZWayUsername(), mConfig.getZWayPassword(), this);
 
-            // Start an extra thread, because it takes sometimes more
-            // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
-            scheduler.execute(new Initializer());
+                // Start an extra thread, because it takes sometimes more
+                // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
+                scheduler.execute(new Initializer());
+            }
         }
     }
 
@@ -234,14 +250,14 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     }
 
     /**
-     * Setup the openHAB server in openHAB connector depending on configuration
+     * Setup the openHAB server in openHAB Connector depending on configuration
      *
      * @param deleteOpenHabServer if true the configured openHAB server will be removed
      */
     private synchronized void updateOpenHabConnector(Boolean deleteOpenHabServer) {
         InstanceList instanceList = mZWayApi.getInstances();
         if (instanceList != null) {
-            logger.debug("Check existence of openHAB connector in Z-Way server");
+            logger.debug("Check existence of openHAB Connector in Z-Way server");
 
             OpenHABConnector instance = (OpenHABConnector) instanceList.getInstanceByModuleId("OpenHABConnector");
 
@@ -255,11 +271,11 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
                         Instance updatedInstance = mZWayApi.putInstance(instance);
                         if (updatedInstance != null) {
-                            logger.debug("OpenHAB server successfully removed from openHAB connector");
+                            logger.debug("OpenHAB server successfully removed from openHAB Connector");
 
                             refreshOpenConnector();
                         } else {
-                            logger.warn("OpenHAB connector configuration update failed");
+                            logger.warn("OpenHAB Connector configuration update failed");
                         }
                     } // else - update not necessary, no changes
                 } else {
@@ -268,24 +284,24 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
                         Instance updatedInstance = mZWayApi.putInstance(instance);
                         if (updatedInstance != null) {
-                            logger.info("OpenHAB server successfully configured in openHAB connector");
+                            logger.info("OpenHAB server successfully configured in openHAB Connector");
 
                             refreshOpenConnector();
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                    "OpenHAB connector configuration update failed");
+                                    "OpenHAB Connector configuration update failed");
 
-                            logger.warn("OpenHAB connector configuration update failed");
+                            logger.warn("OpenHAB Connector configuration update failed");
                         }
                     } // else - update not necessary, no changes
                 }
             } else {
                 if (!deleteOpenHabServer) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "OpenHAB connector doesn't exist in Z-Way server");
+                            "OpenHAB Connector doesn't exist in Z-Way server");
                 } // else - error has no impact on the binding
 
-                logger.warn("OpenHAB connector doesn't exist in Z-Way server");
+                logger.warn("OpenHAB Connector doesn't exist in Z-Way server");
             }
         } else {
             if (!deleteOpenHabServer) {
@@ -316,7 +332,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
         // Start an extra thread, because it takes sometimes more
         // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
-        scheduler.execute(new Disposer());
+        scheduler.execute(new Remover());
 
         // super.handleRemoval() called in every case in scheduled task ...
     }
@@ -466,6 +482,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     @Override
     public void getLoginResponse(String sessionId) {
         logger.debug("New session id: {}", sessionId);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

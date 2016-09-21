@@ -64,12 +64,20 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                     try {
                         Device device = deviceList.getDeviceById(mConfig.getDeviceId());
 
-                        logger.debug("Add channel for virtual device: {}", device.getMetrics().getTitle());
+                        if (device != null) {
+                            logger.debug("Add channel for virtual device: {}", device.getMetrics().getTitle());
 
-                        addDeviceAsChannel(device);
+                            addDeviceAsChannel(device);
 
-                        // starts polling job and register all linked items
-                        completeInitialization();
+                            // starts polling job and register all linked items
+                            completeInitialization();
+                        } else {
+                            logger.warn("Initializing Z-Way device handler failed (virtual device not found): {}",
+                                    getThing().getLabel());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                                    "Z-Way virtual device with id " + mConfig.getDeviceId() + " not found.");
+                        }
+
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
                             logger.error(((Exception) t).getMessage());
@@ -84,9 +92,13 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                         }
                     }
                 } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            "Devices not loaded");
                     logger.warn("Devices not loaded");
                 }
             } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "Z-Way bridge handler not found or not ONLINE.");
                 logger.warn("Z-Way bridge handler not found or not ONLINE.");
             }
         }
