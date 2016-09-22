@@ -99,7 +99,7 @@ public class XmlRpcServer implements RpcServer {
                 }
 
                 XmlRpcResponse response = new XmlRpcResponse(
-                        new ByteArrayInputStream(request.get("postData").getBytes("ISO-8859-1")));
+                        new ByteArrayInputStream(request.get("postData").getBytes()), config.getEncoding());
                 if (TRACE_ENABLED) {
                     logger.trace("Server parsed XmlRpcMessage:\n{}", response);
                 }

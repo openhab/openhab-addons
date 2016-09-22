@@ -23,6 +23,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -38,10 +39,13 @@ public class XmlRpcResponse implements RpcResponse {
     /**
      * Decodes a XML-RPC message from the given InputStream.
      */
-    public XmlRpcResponse(InputStream is) throws SAXException, ParserConfigurationException, IOException {
+    public XmlRpcResponse(InputStream is, String encoding)
+            throws SAXException, ParserConfigurationException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
-        saxParser.parse(is, new XmlRpcHandler());
+        InputSource inputSource = new InputSource(is);
+        inputSource.setEncoding(encoding);
+        saxParser.parse(inputSource, new XmlRpcHandler());
     }
 
     /**
