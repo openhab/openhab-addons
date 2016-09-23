@@ -100,6 +100,6 @@ This binding currently supports following channels:
 | signallevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |
 | totalusage | Number | Used energy in Watt hours. |
-| totalamphours | Number | Used "energy" in ampere-hours. |
+| totalamphour | Number | Used "energy" in ampere-hours. |
 | winddirection | Number | Wind direction in degrees. |
 | windspeed | Number | Average wind speed in meters per second. |
