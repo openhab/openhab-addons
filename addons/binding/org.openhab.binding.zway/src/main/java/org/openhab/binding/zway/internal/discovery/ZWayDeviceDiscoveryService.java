@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 import de.fh_zwickau.informatik.sensor.model.devices.zwaveapi.ZWaveDevice;
+import de.fh_zwickau.informatik.sensor.model.locations.LocationList;
 
 /**
  * The {@link ZWayDeviceDiscoveryService} is responsible for device discovery.
@@ -61,6 +62,8 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
             return;
         }
 
+        LocationList locationList = mBridgeHandler.getZWayApi().getLocations();
+
         DeviceList deviceList = mBridgeHandler.getZWayApi().getDevices();
         if (deviceList != null) {
             Map<Integer, List<Device>> physicalDevices = deviceList.getDevicesGroupByNodeId();
@@ -70,6 +73,8 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 final ThingUID bridgeUID = mBridgeHandler.getThing().getUID();
 
+                String location = "";
+
                 String deviceTypes = "";
                 Integer index = 0;
                 for (Device device : devices) {
@@ -78,6 +83,14 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     }
                     deviceTypes += device.getDeviceType();
                     index++;
+
+                    // Add location, assuming that each (virtual) device is assigned to the same room
+                    if (locationList != null) {
+                        // Add only the location if this differs from globalRoom (with id 0)
+                        if (device.getLocation() != -1 && device.getLocation() != 0) {
+                            location = locationList.getLocationById(device.getLocation()).getTitle();
+                        }
+                    }
                 }
                 logger.debug("Z-Way device found with {} virtual devices - device types: {}", devices.size(),
                         deviceTypes);
@@ -85,14 +98,34 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                 ZWaveDevice zwaveDevice = mBridgeHandler.getZWayApi().getZWaveDevice(nodeId);
                 if (zwaveDevice != null) {
                     String givenName = "Device " + nodeId;
-                    if (!zwaveDevice.getGivenName().getValue().equals("")) {
-                        givenName = zwaveDevice.getGivenName().getValue();
+                    if (!zwaveDevice.getData().getGivenName().getValue().equals("")) {
+                        givenName = zwaveDevice.getData().getGivenName().getValue();
+                    } else if (!zwaveDevice.getData().getDeviceTypeString().getValue().equals("")) {
+                        givenName += " - " + zwaveDevice.getData().getDeviceTypeString().getValue();
+                    }
+                    // Add some additional information
+                    String vendorString = "";
+                    if (!zwaveDevice.getData().getVendorString().getValue().equals("")) {
+                        vendorString = zwaveDevice.getData().getVendorString().getValue();
+                        givenName += " (" + vendorString + ")";
+                    }
+                    String manufacturerId = "";
+                    if (!zwaveDevice.getData().getManufacturerId().getValue().equals("")) {
+                        manufacturerId = zwaveDevice.getData().getManufacturerId().getValue();
+                    }
+                    String deviceType = "";
+                    if (!zwaveDevice.getData().getDeviceTypeString().getValue().equals("")) {
+                        deviceType = zwaveDevice.getData().getDeviceTypeString().getValue();
                     }
 
-                    ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_DEVICE, nodeId.toString());
+                    ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_DEVICE,
+                            mBridgeHandler.getThing().getUID(), nodeId.toString());
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(givenName)
                             .withBridge(bridgeUID).withProperty(ZWayBindingConstants.DEVICE_CONFIG_NODE_ID, nodeId)
-                            .build();
+                            .withProperty(ZWayBindingConstants.DEVICE_LOCATION, location)
+                            .withProperty(ZWayBindingConstants.DEVICE_VENDOR_STRING, vendorString)
+                            .withProperty(ZWayBindingConstants.DEVICE_MANUFACTURER_ID, manufacturerId)
+                            .withProperty(ZWayBindingConstants.DEVICE_DEVICE_TYPE, deviceType).build();
                     thingDiscovered(discoveryResult);
                 } else {
                     logger.warn("Z-Wave device not loaded");
@@ -101,17 +134,31 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
             for (Device device : deviceList.getDevices()) {
                 if (device.getVisibility() && !device.getPermanentlyHidden()) {
+                    if (ZWayBindingConstants.DISCOVERY_IGNORED_DEVICES.contains(device.getDeviceId())) {
+                        logger.debug("Skip device: {}", device.getMetrics().getTitle());
+                        continue;
+                    }
+
                     ThingUID bridgeUID = mBridgeHandler.getThing().getUID();
+
+                    String location = "";
+                    // Add location, assuming that each (virtual) device is assigned to the same room
+                    if (locationList != null) {
+                        // Add only the location if this differs from globalRoom (with id 0)
+                        if (device.getLocation() != -1 && device.getLocation() != 0) {
+                            location = locationList.getLocationById(device.getLocation()).getTitle();
+                        }
+                    }
 
                     logger.debug("Z-Way virtual device found with device type: {} - {} - {}", device.getDeviceType(),
                             device.getMetrics().getProbeTitle(), device.getNodeId());
 
                     ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_VIRTUAL_DEVICE,
-                            device.getDeviceId());
+                            mBridgeHandler.getThing().getUID(), device.getDeviceId());
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                             .withLabel(device.getMetrics().getTitle()).withBridge(bridgeUID)
                             .withProperty(ZWayBindingConstants.DEVICE_CONFIG_VIRTUAL_DEVICE_ID, device.getDeviceId())
-                            .build();
+                            .withProperty(ZWayBindingConstants.DEVICE_LOCATION, location).build();
                     thingDiscovered(discoveryResult);
                 }
             }

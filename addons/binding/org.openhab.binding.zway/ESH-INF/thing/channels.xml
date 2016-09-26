@@ -170,8 +170,8 @@
     
     <channel-type id="switchColor">
         <item-type>Color</item-type>
-        <label>Switch Color</label>
-        <description>This channel represents the rgbw switch device type from Z-Way</description>
+        <label>Switch color</label>
+        <description>This channel represents the rgbw switch device type from Z-Way.</description>
         <category>ColorLight</category>
     </channel-type>
             

@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.zway.ZWayBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,6 +187,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        setLocation();
+
         // Start an extra thread to check the connection, because it takes sometimes more
         // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
         scheduler.execute(new Initializer());
@@ -261,6 +264,19 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             }
         }
     };
+
+    private synchronized void setLocation() {
+        Map<String, String> properties = getThing().getProperties();
+        // Load location from properties
+        String location = properties.get(ZWayBindingConstants.DEVICE_LOCATION);
+        if (location != null && !location.equals("") && getThing().getLocation() == null) {
+            logger.debug("Set location to {}", location);
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withLocation(location);
+            thingBuilder.withLabel(thing.getLabel());
+            updateThing(thingBuilder.build());
+        }
+    }
 
     private void refreshChannel(final Channel channel) {
         // Check Z-Way bridge handler

@@ -32,6 +32,9 @@ public class ZWayBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DEVICE,
             THING_TYPE_VIRTUAL_DEVICE);
 
+    // List of ignored devices for Discovery
+    public final static Set<String> DISCOVERY_IGNORED_DEVICES = ImmutableSet.of("BatteryPolling_7");
+
     // List of all Channel IDs
     public final static String BATTERY_CHANNEL = "battery";
     public final static String DOORLOCK_CHANNEL = "doorlock";
@@ -79,6 +82,11 @@ public class ZWayBindingConstants {
 
     public final static String DEVICE_CONFIG_NODE_ID = "nodeId";
     public final static String DEVICE_CONFIG_VIRTUAL_DEVICE_ID = "deviceId";
+
+    public static final String DEVICE_LOCATION = "location";
+    public static final String DEVICE_VENDOR_STRING = "vendor";
+    public static final String DEVICE_MANUFACTURER_ID = "manufacturerId";
+    public static final String DEVICE_DEVICE_TYPE = "deviceType";
 
     /* Bridge properties */
     public final static String BRIDGE_PROP_VENDOR = "vendor";

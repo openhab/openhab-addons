@@ -129,6 +129,10 @@ The following channels represent universial channels if no further device inform
 
 Currently unsupported Z-Way device types: SwitchToggle, Thermostat, ToggleButton
 
+## Locations
+
+The locations of the Z-Way devices are loaded during the Discovery. Based on the location ID of Z-Way device, the name of the Z-Way room is then allocated to the location property of the Thing.
+
 ## Full Example
 
 Because textual configuration isn't useful, follow the instructions in the [Getting Started](doc/GETTING_STARTED.md) document.
