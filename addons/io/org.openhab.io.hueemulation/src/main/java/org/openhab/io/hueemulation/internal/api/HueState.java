@@ -36,6 +36,14 @@ public class HueState {
         this.bri = bri;
     }
 
+    public HueState(int h, short s, short b) {
+        super();
+        this.on = b > 0;
+        this.hue = h;
+        this.sat = s;
+        this.bri = b;
+    }
+
     @Override
     public String toString() {
         String xyString = "{";
