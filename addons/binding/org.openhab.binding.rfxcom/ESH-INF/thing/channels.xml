@@ -93,6 +93,27 @@
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="channel1Amps" advanced="true">
+		<item-type>Number</item-type>
+		<label>Channel 1 Amps</label>
+		<description>Channel 1 current in Amperes</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="channel2Amps" advanced="true">
+		<item-type>Number</item-type>
+		<label>Channel 2 Amps</label>
+		<description>Channel 2 current in Amperes</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="channel3Amps" advanced="true">
+		<item-type>Number</item-type>
+		<label>Channel 3 Amp</label>
+		<description>Channel 3 current in Amperes</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="totalamphour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Ampere-hours</label>
