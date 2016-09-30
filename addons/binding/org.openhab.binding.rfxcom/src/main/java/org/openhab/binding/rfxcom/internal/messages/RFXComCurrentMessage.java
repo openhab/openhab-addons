@@ -24,7 +24,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  *
  * @author Unknown - Initial contribution
  * @author Pauli Anttila - for the Similar RFXComEnergyMessage code
- * @author Jordan Cook
+ * @author Jordan Cook - Added support for CURRENT devices, such as OWL CM113
  */
 public class RFXComCurrentMessage extends RFXComBaseMessage {
 
