@@ -34,6 +34,11 @@ public class HomekitSettings {
     private String thermostatCoolMode = "CoolOn";
     private String thermostatAutoMode = "Auto";
     private String thermostatOffMode = "Off";
+    private String garageDoorOpenState = "Open";
+    private String garageDoorClosedState = "Closed";
+    private String garageDoorClosingState = "Closing";
+    private String garageDoorOpeningState = "Opening";
+    private String garageDoorStoppedState = "Stopped";
     private InetAddress networkInterface;
 
     public void fill(Dictionary<String, ?> properties) throws UnknownHostException {
@@ -68,6 +73,11 @@ public class HomekitSettings {
         this.thermostatCoolMode = (String) properties.get("thermostatCoolMode");
         this.thermostatAutoMode = (String) properties.get("thermostatAutoMode");
         this.thermostatOffMode = (String) properties.get("thermostatOffMode");
+        this.garageDoorClosedState = (String) properties.get("garageDoorClosedState");
+        this.garageDoorClosingState = (String) properties.get("garageDoorClosingState");
+        this.garageDoorOpeningState = (String) properties.get("garageDoorOpeningState");
+        this.garageDoorOpenState = (String) properties.get("garageDoorOpenState");
+        this.garageDoorStoppedState = (String) properties.get("garageDoorStoppedState");
 
         String networkInterface = (String) properties.get("networkInterface");
         if (networkInterface == null) {
@@ -140,6 +150,26 @@ public class HomekitSettings {
         return thermostatOffMode;
     }
 
+    public String getGarageDoorOpenState() {
+        return garageDoorOpenState;
+    }
+
+    public String getGarageDoorClosedState() {
+        return garageDoorClosedState;
+    }
+    
+    public String getGarageDoorOpeningState() {
+        return garageDoorOpeningState;
+    }
+
+    public String getGarageDoorClosingState() {
+        return garageDoorClosingState;
+    }
+    
+
+    public String getGarageDoorStoppedState() {
+        return garageDoorClosedState;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -155,6 +185,11 @@ public class HomekitSettings {
         result = prime * result + ((thermostatCoolMode == null) ? 0 : thermostatCoolMode.hashCode());
         result = prime * result + ((thermostatHeatMode == null) ? 0 : thermostatHeatMode.hashCode());
         result = prime * result + ((thermostatOffMode == null) ? 0 : thermostatOffMode.hashCode());
+        result = prime * result + ((garageDoorOpenState == null) ? 0 : garageDoorOpenState.hashCode());
+        result = prime * result + ((garageDoorClosedState == null) ? 0 : garageDoorClosedState.hashCode());
+        result = prime * result + ((garageDoorOpeningState == null) ? 0 : garageDoorOpeningState.hashCode());
+        result = prime * result + ((garageDoorClosingState == null) ? 0 : garageDoorClosingState.hashCode());
+        result = prime * result + ((garageDoorStoppedState == null) ? 0 : garageDoorStoppedState.hashCode());
         result = prime * result + (useFahrenheitTemperature ? 1231 : 1237);
         return result;
     }
@@ -213,6 +248,41 @@ public class HomekitSettings {
                 return false;
             }
         } else if (!thermostatOffMode.equals(other.thermostatOffMode)) {
+            return false;
+        }
+        if (garageDoorOpenState == null) {
+            if (other.garageDoorOpenState != null) {
+                return false;
+            }
+        } else if (!garageDoorOpenState.equals(other.garageDoorOpenState)) {
+            return false;
+        }
+        if (garageDoorClosedState == null) {
+            if (other.garageDoorClosedState != null) {
+                return false;
+            }
+        } else if (!garageDoorOpenState.equals(other.garageDoorClosedState)) {
+            return false;
+        }
+        if (garageDoorOpeningState == null) {
+            if (other.garageDoorOpeningState != null) {
+                return false;
+            }
+        } else if (!garageDoorOpenState.equals(other.garageDoorOpeningState)) {
+            return false;
+        }
+        if (garageDoorClosingState == null) {
+            if (other.garageDoorClosingState != null) {
+                return false;
+            }
+        } else if (!garageDoorClosingState.equals(other.garageDoorClosingState)) {
+            return false;
+        }
+        if (garageDoorStoppedState == null) {
+            if (other.garageDoorStoppedState != null) {
+                return false;
+            }
+        } else if (!garageDoorStoppedState.equals(other.garageDoorStoppedState)) {
             return false;
         }
         if (useFahrenheitTemperature != other.useFahrenheitTemperature) {
