@@ -35,12 +35,37 @@
 			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate AUTO mode.</description>
 			<default>Auto</default>
 		</parameter>
-		<parameter name="thermostatOffMode" type="text" required="true">
-			<label>Thermostat Off Mode</label>
-			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate OFF mode.</description>
-			<default>Off</default>
-		</parameter>
-		<parameter name="networkInterface" type="text" required="false">
+        <parameter name="thermostatOffMode" type="text" required="true">
+            <label>Thermostat Off Mode</label>
+            <description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate OFF mode.</description>
+            <default>Off</default>
+        </parameter>
+        <parameter name="garageDoorOpenState" type="text" required="true">
+            <label>Garage Door Open State</label>
+            <description>Defines the string to look for in garage door currentDoorState characteristics to indicate OPEN state.</description>
+            <default>OPEN</default>
+        </parameter>
+        <parameter name="garageDoorOpeningState" type="text" required="true">
+            <label>Garage Door Opening State</label>
+            <description>Defines the string to look for in garage door currentDoorState characteristics to indicate OPENING state.</description>
+            <default>OPENING</default>
+        </parameter>
+        <parameter name="garageDoorClosedState" type="text" required="true">
+            <label>Garage Door Closed State</label>
+            <description>Defines the string to look for in garage door currentDoorState characteristics to indicate CLOSED state.</description>
+            <default>CLOSED</default>
+        </parameter>
+        <parameter name="garageDoorClosingState" type="text" required="true">
+            <label>Garage Door Closing State</label>
+            <description>Defines the string to look for in garage door currentDoorState characteristics to indicate CLOSING state.</description>
+            <default>CLOSING</default>
+        </parameter>
+        <parameter name="garageDoorStoppedState" type="text" required="true">
+            <label>Garage Door Stopped State</label>
+            <description>Defines the string to look for in garage door currentDoorState characteristics to indicate STOPPED state.</description>
+            <default>STOPPED</default>
+        </parameter>
+        <parameter name="networkInterface" type="text" required="false">
 			<label>Network Interface</label>
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
 		</parameter>
