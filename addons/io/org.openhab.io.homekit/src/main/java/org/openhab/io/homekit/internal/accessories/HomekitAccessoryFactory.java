@@ -34,6 +34,9 @@ public class HomekitAccessoryFactory {
             case THERMOSTAT:
                 return new HomekitThermostatImpl(taggedItem, itemRegistry, updater, settings);
 
+            case GARAGEDOOR:
+                return new HomekitGarageDoor(taggedItem, itemRegistry, updater, settings);
+
             case SWITCH:
                 return new HomekitSwitchImpl(taggedItem, itemRegistry, updater);
 
