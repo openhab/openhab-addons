@@ -105,7 +105,7 @@ A full list of supported accessory types can be found in the table below.
   <td>&nbsp;</td>
   <td>ObstructionDetected</td>
   <td>Switch</td>
-  <td>The indicates if a obstruction is detected. OFF = no obstruction, ON = destruction detected</td>
+  <td>The indicates if a obstruction is detected. OFF = no obstruction, ON = obstruction detected</td>
  </tr>
  </table>
 
