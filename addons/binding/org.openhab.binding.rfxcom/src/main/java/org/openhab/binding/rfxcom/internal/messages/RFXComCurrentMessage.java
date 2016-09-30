@@ -149,41 +149,24 @@ public class RFXComCurrentMessage extends RFXComBaseMessage {
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
         State state = UnDefType.UNDEF;
 
         if (valueSelector.getItemClass() == NumberItem.class) {
-
             if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
                 state = new DecimalType(signalLevel);
-
             } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
                 state = new DecimalType(batteryLevel);
-
             } else if (valueSelector == RFXComValueSelector.CHANNEL_1_AMPS) {
-
                 state = new DecimalType(channel1Amps);
-
             } else if (valueSelector == RFXComValueSelector.CHANNEL_2_AMPS) {
-
                 state = new DecimalType(channel2Amps);
-
             } else if (valueSelector == RFXComValueSelector.CHANNEL_3_AMPS) {
-
                 state = new DecimalType(channel3Amps);
-
             } else {
-
                 throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-
             }
-
         } else {
-
             throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
         }
 
         return state;
