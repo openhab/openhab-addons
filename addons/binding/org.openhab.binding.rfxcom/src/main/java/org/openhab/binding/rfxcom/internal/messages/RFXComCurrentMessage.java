@@ -66,7 +66,7 @@ public class RFXComCurrentMessage extends RFXComBaseMessage {
     public byte batteryLevel = 0;
 
     public RFXComCurrentMessage() {
-        packetType = PacketType.ENERGY;
+        packetType = PacketType.CURRENT;
     }
 
     public RFXComCurrentMessage(byte[] data) {
