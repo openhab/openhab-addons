@@ -15,11 +15,12 @@
 		<description>A Current sensing device.</description>
 
 		<channels>
-			<channel id="channel1Amps" typeId="channel1Amps" />
-			<channel id="channel2Amps" typeId="channel2Amps" />
-			<channel id="channel3Amps" typeId="channel3Amps" />
+			<channel id="channel1Amps" typeId="current" />
+			<channel id="channel2Amps" typeId="current" />
+			<channel id="channel3Amps" typeId="current" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
+			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 
 		<config-description>
