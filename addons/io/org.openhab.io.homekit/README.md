@@ -83,7 +83,31 @@ A full list of supported accessory types can be found in the table below.
   <td>Number</td>
   <td>A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode</td>
  </tr>
-</table>
+<tr>
+  <td>GarageDoor</td>
+  <td>&nbsp;</td>
+  <td>Group</td>
+  <td>A GarageDoor requires all child tags defined below</td>
+ </tr>
+  <tr>
+  <td>&nbsp;</td>
+  <td>CurrentDoorState</td>
+  <td>String</td>
+  <td>Indicates the current door state of the device: CLOSED, OPEN, OPENING, CLOSING, STOPPED. The string's value must match those defined in the garageDoor*State properties.</td>
+ </tr>
+ <tr>
+  <td>&nbsp;</td>
+  <td>TargetDoorState</td>
+  <td>Switch</td>
+  <td>The target door state. ON = OPEN, OFF = CLOSE</td>
+ </tr>
+ <tr>
+  <td>&nbsp;</td>
+  <td>ObstructionDetected</td>
+  <td>Switch</td>
+  <td>The indicates if a obstruction is detected. OFF = no obstruction, ON = destruction detected</td>
+ </tr>
+ </table>
 
 See the sample below for example items:
 
