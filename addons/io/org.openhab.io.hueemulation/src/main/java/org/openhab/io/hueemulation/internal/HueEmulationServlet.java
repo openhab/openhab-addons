@@ -68,6 +68,7 @@ import com.google.gson.Gson;
 public class HueEmulationServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(HueEmulationServlet.class);
     private static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
+    private static final String CONFIG_DISCOVERY_IP = "discoveryIp";
     private static final String PATH = "/api";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
@@ -99,8 +100,6 @@ public class HueEmulationServlet extends HttpServlet {
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            disco = new HueEmulationUpnpServer(PATH + "/discovery.xml", getUDN());
-            disco.start();
             if (USER_FILE.exists()) {
                 FileInputStream fis = null;
                 try {
@@ -117,6 +116,21 @@ public class HueEmulationServlet extends HttpServlet {
     }
 
     protected void modified(Map<String, ?> config) {
+
+        if (disco != null) {
+            disco.shutdown();
+            disco = null;
+        }
+
+        Object obj = config.get(CONFIG_DISCOVERY_IP);
+        String ip = obj != null ? (String) obj : null;
+        try {
+            disco = new HueEmulationUpnpServer(PATH + "/discovery.xml", getUDN(), ip);
+            disco.start();
+        } catch (IOException e) {
+            logger.error("Could not start UPNP server for discovery", e);
+        }
+
         Object pairingString = config.get(CONFIG_PAIRING_ENABLED);
         if (pairingString == null) {
             pairingEnabled = false;

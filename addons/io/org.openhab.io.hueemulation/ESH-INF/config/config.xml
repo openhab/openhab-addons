@@ -13,5 +13,9 @@
                 <option value="false">Pairing Disabled</option>
             </options>
         </parameter>
+        <parameter name="discoveryIp" type="text" required="false">
+            <label>Optional discovery address</label>
+            <description>If your host has multiple IP addresses you may specify the IP you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems.</description>
+        </parameter>
     </config-description>
 </config-description:config-descriptions>
