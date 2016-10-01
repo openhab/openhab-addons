@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/freeboxos-client-0.3.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/freeboxos-client-0.3.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core-asl-1.9.13.jar"/>
