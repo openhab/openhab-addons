@@ -138,7 +138,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 // generate group
                 ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
                 ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID, Locale.getDefault());
-                if (groupType == null) {
+                if (groupType == null || device.isGatewayExtras()) {
                     String groupLabel = String.format("%s",
                             WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
                     groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
