@@ -1,0 +1,4 @@
+[submodule "addons/binding/org.openhab.binding.zwave"]
+	path = addons/binding/org.openhab.binding.zwave
+	url = https://github.com/openhab/org.openhab.binding.zwave
+	branch = master
