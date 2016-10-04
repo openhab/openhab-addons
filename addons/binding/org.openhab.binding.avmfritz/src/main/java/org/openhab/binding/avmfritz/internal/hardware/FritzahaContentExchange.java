@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
 import org.eclipse.jetty.client.api.Response.FailureListener;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
@@ -21,52 +21,53 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of Jetty ContextExchange to handle callbacks
- * 
+ *
  * @author Robert Bausdorf
- * 
+ *
  */
-public class FritzahaContentExchange extends BufferingResponseListener implements SuccessListener, FailureListener, ContentListener, CompleteListener {
-	/**
-	 * logger
-	 */
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	
-	/**
-	 * Callback to execute on complete response
-	 */
-	private FritzAhaCallback callback;
-	
-	/**
-	 * Constructor
-	 * @param callback Callback which execute method has to be called.
-	 */
-	public FritzahaContentExchange(FritzAhaCallback callback) {
-		this.callback = callback;
-	}
+public class FritzahaContentExchange extends BufferingResponseListener
+        implements SuccessListener, FailureListener, ContentListener, CompleteListener {
+    /**
+     * logger
+     */
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	/**
-	 * Log request success
-	 */
-	@Override
-	public void onSuccess(Response response) {
-		logger.debug(response.toString());
-	}
+    /**
+     * Callback to execute on complete response
+     */
+    private FritzAhaCallback callback;
 
-	/**
-	 * Log request failure
-	 */
-	@Override
-	public void onFailure(Response response, Throwable failure) {
-		logger.debug(failure.getLocalizedMessage(), failure);
-		logger.error("http status: " + response.getStatus() + ", response: " + response.toString());
-	}
+    /**
+     * Constructor
+     * 
+     * @param callback Callback which execute method has to be called.
+     */
+    public FritzahaContentExchange(FritzAhaCallback callback) {
+        this.callback = callback;
+    }
 
-	/**
-	 * Call the callbacks execute method on request completion.
-	 */
-	@Override
-	public void onComplete(Result result) {
-		logger.debug("response complete: " + this.getContentAsString());
-		this.callback.execute(result.getResponse().getStatus(), this.getContentAsString());
-	}
+    /**
+     * Log request success
+     */
+    @Override
+    public void onSuccess(Response response) {
+        logger.debug("HTTP response {}", response.getStatus());
+    }
+
+    /**
+     * Log request failure
+     */
+    @Override
+    public void onFailure(Response response, Throwable failure) {
+        logger.debug(failure.getLocalizedMessage());
+    }
+
+    /**
+     * Call the callbacks execute method on request completion.
+     */
+    @Override
+    public void onComplete(Result result) {
+        logger.debug("response complete: " + this.getContentAsString());
+        this.callback.execute(result.getResponse().getStatus(), this.getContentAsString());
+    }
 }
