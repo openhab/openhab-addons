@@ -8,7 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/json-simple-1.1.jar,
  lib/httpmime-4.3.1.jar,
- lib/freeboxos-client-0.3.8.jar,
+ lib/freeboxos-client-0.3.9.jar,
  lib/jackson-core-asl-1.9.13.jar,
  lib/jackson-mapper-asl-1.9.13.jar,
  lib/httpclient-4.3.1.jar,
