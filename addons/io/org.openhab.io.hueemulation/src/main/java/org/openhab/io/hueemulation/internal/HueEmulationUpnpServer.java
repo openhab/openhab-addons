@@ -39,6 +39,7 @@ public class HueEmulationUpnpServer extends Thread {
     private String discoPath;
     private String usn;
     private InetAddress address;
+    private String discoveryIp;
 
     private String discoString = "HTTP/1.1 200 OK\r\n" + "CACHE-CONTROL: max-age=100\r\n" + "EXT:\r\n"
             + "LOCATION: %s\r\n" + "SERVER: FreeRTOS/7.4.2 UPnP/1.0 IpBridge/1.10.0\r\n"
@@ -51,11 +52,14 @@ public class HueEmulationUpnpServer extends Thread {
      *            The URI path where the discovery xml document can be retrieved
      * @param usn
      *            The unique USN id for this server
+     * @param discoveryIP
+     *            Optional IP to use advertise for UPNP, if null the first available non localhost IP will be used
      */
-    public HueEmulationUpnpServer(String discoPath, String usn) {
+    public HueEmulationUpnpServer(String discoPath, String usn, String discoveryIP) {
         this.running = true;
         this.discoPath = discoPath;
         this.usn = usn;
+        this.discoveryIp = discoveryIP;
     }
 
     /**
@@ -74,17 +78,20 @@ public class HueEmulationUpnpServer extends Thread {
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         while (running) {
             try {
-                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-                while (interfaces.hasMoreElements()) {
-                    NetworkInterface ni = interfaces.nextElement();
-                    Enumeration<InetAddress> addresses = ni.getInetAddresses();
-                    while (addresses.hasMoreElements()) {
-                        InetAddress addr = addresses.nextElement();
-                        if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
-                            address = addr;
-                            break;
+                if (discoveryIp != null && discoveryIp.trim().length() > 0) {
+                    address = InetAddress.getByName(discoveryIp);
+                } else {
+                    Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                    while (interfaces.hasMoreElements()) {
+                        NetworkInterface ni = interfaces.nextElement();
+                        Enumeration<InetAddress> addresses = ni.getInetAddresses();
+                        while (addresses.hasMoreElements()) {
+                            InetAddress addr = addresses.nextElement();
+                            if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                                address = addr;
+                                break;
+                            }
                         }
-
                     }
                 }
                 InetSocketAddress socketAddr = new InetSocketAddress(MULTI_ADDR, UPNP_PORT_RECV);
