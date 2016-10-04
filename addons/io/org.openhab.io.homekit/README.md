@@ -39,7 +39,7 @@ A full list of supported accessory types can be found in the table below.
   <td>Lighting</td>
   <td>&nbsp;</td>
   <td>Switch, Dimmer, Color</td>
-  <td>A lightbulb, either switchable or dimmable</td>
+  <td>A lightbulb, switchable, dimmable or rgb</td>
  </tr>
  <tr>
   <td>Switchable</td>
@@ -58,6 +58,12 @@ A full list of supported accessory types can be found in the table below.
   <td>&nbsp;</td>
   <td>Number</td>
   <td>An accessory that provides a single read-only value indicating the relative humidity.</td>
+ </tr>
+ <tr>
+  <td>Lock</td>
+  <td>&nbsp;</td>
+  <td>Switch</td>
+  <td>An lockable accessory. Use this to tell Siri to lock or unlock something. Bind to a Switch item. ON state means the lock is closed, OFF means it's open. We cannot use OPEN/CLOSED because ContactItems don't support receiving commands.</td>
  </tr>
  <tr>
   <td>Thermostat</td>
