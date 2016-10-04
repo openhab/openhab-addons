@@ -138,7 +138,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 // generate group
                 ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
                 ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID, Locale.getDefault());
-                if (groupType == null) {
+                if (groupType == null || device.isGatewayExtras()) {
                     String groupLabel = String.format("%s",
                             WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
                     groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
@@ -290,10 +290,10 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
                         builder.withStepSize(MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L));
+                        builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
                     builder.withPattern(MetadataUtils.getPattern(dp));
-                    builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     builder.withGroupName(groupName);
                     parms.add(builder.build());
                 }

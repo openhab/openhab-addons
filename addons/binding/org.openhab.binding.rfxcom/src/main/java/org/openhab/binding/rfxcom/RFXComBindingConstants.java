@@ -34,6 +34,7 @@ public class RFXComBindingConstants {
 
     // List of all Bridge Type UIDs
     public static final String BRIDGE_TYPE_MANUAL_BRIDGE = "bridge";
+    public static final String BRIDGE_TYPE_TCP_BRIDGE = "tcpbridge";
     public static final String BRIDGE_TYPE_RFXTRX433 = "RFXtrx433";
     public static final String BRIDGE_TYPE_RFXTRX315 = "RFXtrx315";
     public static final String BRIDGE_TYPE_RFXREC433 = "RFXrec433";
@@ -45,6 +46,7 @@ public class RFXComBindingConstants {
     public static final String TRANSCEIVER_433_92MHz_R = "433.92MHz receiver only";
 
     public final static ThingTypeUID BRIDGE_MANUAL = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_MANUAL_BRIDGE);
+    public final static ThingTypeUID BRIDGE_TCP = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_TCP_BRIDGE);
     public final static ThingTypeUID BRIDGE_RFXTRX443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX433);
     public final static ThingTypeUID BRIDGE_RFXTRX315 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX315);
     public final static ThingTypeUID BRIDGE_RFXREC443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXREC433);
@@ -52,7 +54,7 @@ public class RFXComBindingConstants {
     /**
      * Presents all supported Bridge types by RFXCOM binding.
      */
-    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_MANUAL,
+    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_MANUAL, BRIDGE_TCP,
             BRIDGE_RFXTRX443, BRIDGE_RFXTRX315, BRIDGE_RFXREC443);
 
     /**
@@ -82,8 +84,8 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_CHILL_FACTOR = "chillFactor";
     public final static String CHANNEL_INSTANT_POWER = "instantPower";
     public final static String CHANNEL_TOTAL_USAGE = "totalUsage";
-    public final static String CHANNEL_INSTANT_AMPS = "instantAmps";
-    public final static String CHANNEL_TOTAL_AMP_HOURS = "totalAmpHours";
+    public final static String CHANNEL_INSTANT_AMPS = "instantAmp";
+    public final static String CHANNEL_TOTAL_AMP_HOUR = "totalAmpHour";
     public final static String CHANNEL_STATUS = "status";
     public final static String CHANNEL_MOTION = "motion";
     public final static String CHANNEL_CONTACT = "contact";
@@ -121,7 +123,7 @@ public class RFXComBindingConstants {
     public final static ThingTypeUID THING_TYPE_UV = new ThingTypeUID(BINDING_ID, "uv");
     public final static ThingTypeUID THING_TYPE_DATE_TIME = new ThingTypeUID(BINDING_ID, "datetime");
     public final static ThingTypeUID THING_TYPE_CURRENT = new ThingTypeUID(BINDING_ID, "current");
-    public final static ThingTypeUID THING_TYPE_ENERGY_USAGE = new ThingTypeUID(BINDING_ID, "energyusage");
+    public final static ThingTypeUID THING_TYPE_ENERGY = new ThingTypeUID(BINDING_ID, "energy");
     public final static ThingTypeUID THING_TYPE_CURRENT_ENERGY = new ThingTypeUID(BINDING_ID, "currentenergy");
     public final static ThingTypeUID THING_TYPE_POWER = new ThingTypeUID(BINDING_ID, "power");
     public final static ThingTypeUID THING_TYPE_WEIGHTING_SCALE = new ThingTypeUID(BINDING_ID, "weightingscale");
@@ -142,9 +144,9 @@ public class RFXComBindingConstants {
             THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3, THING_TYPE_BBQ_TEMPERATURE, THING_TYPE_TEMPERATURE_RAIN,
             THING_TYPE_TEMPERATURE, THING_TYPE_HUMIDITY, THING_TYPE_TEMPERATURE_HUMIDITY, THING_TYPE_BAROMETRIC,
             THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC, THING_TYPE_RAIN, THING_TYPE_WIND, THING_TYPE_UV,
-            THING_TYPE_DATE_TIME, THING_TYPE_CURRENT, THING_TYPE_ENERGY_USAGE, THING_TYPE_CURRENT_ENERGY,
-            THING_TYPE_POWER, THING_TYPE_WEIGHTING_SCALE, THING_TYPE_GAS_USAGE, THING_TYPE_WATER_USAGE,
-            THING_TYPE_RFX_SENSOR, THING_TYPE_RFX_METER, THING_TYPE_FS20, THING_TYPE_RFY);
+            THING_TYPE_DATE_TIME, THING_TYPE_CURRENT, THING_TYPE_ENERGY, THING_TYPE_CURRENT_ENERGY, THING_TYPE_POWER,
+            THING_TYPE_WEIGHTING_SCALE, THING_TYPE_GAS_USAGE, THING_TYPE_WATER_USAGE, THING_TYPE_RFX_SENSOR,
+            THING_TYPE_RFX_METER, THING_TYPE_FS20, THING_TYPE_RFY);
 
     /**
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
@@ -160,7 +162,7 @@ public class RFXComBindingConstants {
             .put(PacketType.CURRENT_ENERGY, RFXComBindingConstants.THING_TYPE_CURRENT_ENERGY)
             .put(PacketType.CURTAIN1, RFXComBindingConstants.THING_TYPE_CURTAIN1)
             .put(PacketType.DATE_TIME, RFXComBindingConstants.THING_TYPE_DATE_TIME)
-            .put(PacketType.ENERGY, RFXComBindingConstants.THING_TYPE_ENERGY_USAGE)
+            .put(PacketType.ENERGY, RFXComBindingConstants.THING_TYPE_ENERGY)
             .put(PacketType.FAN, RFXComBindingConstants.THING_TYPE_FAN)
             .put(PacketType.FS20, RFXComBindingConstants.THING_TYPE_FS20)
             .put(PacketType.GAS, RFXComBindingConstants.THING_TYPE_GAS_USAGE)

@@ -66,6 +66,7 @@ public class DimmerHandler extends LutronHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
+        queryOutput(ACTION_ZONELEVEL);
     }
 
     @Override

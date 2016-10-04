@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.matmaul.freeboxos.FreeboxException;
 import org.matmaul.freeboxos.lan.LanHostConfig;
@@ -99,6 +100,9 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                     if (thingUID != null) {
                         logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
                         Map<String, Object> properties = new HashMap<>(1);
+                        if ((hostConfig.getVendorName() != null) && !hostConfig.getVendorName().isEmpty()) {
+                            properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
+                        }
                         properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                 .withProperties(properties).withBridge(bridge).withLabel(name).build();
@@ -120,6 +124,9 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                                 if (thingUID != null) {
                                     logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
                                     Map<String, Object> properties = new HashMap<>(1);
+                                    if ((hostConfig.getVendorName() != null) && !hostConfig.getVendorName().isEmpty()) {
+                                        properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
+                                    }
                                     properties.put(FreeboxNetInterfaceConfiguration.IP_ADDRESS, addr);
                                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                             .withProperties(properties).withBridge(bridge).withLabel(name).build();

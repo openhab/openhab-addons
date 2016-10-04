@@ -73,6 +73,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
     private static final int RETRY_TIME = 60;
 
+    private static final int HEARTBEAT_INTERVAL = 30;
+
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<HubStatusListener>();
 
     private HarmonyClient client;
@@ -84,6 +86,10 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     private HarmonyHubHandlerFactory factory;
 
     private ScheduledFuture<?> retryJob;
+
+    private ScheduledFuture<?> heartBeatJob;
+
+    private int heartBeatInterval;
 
     public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
@@ -113,12 +119,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.INITIALIZING);
 
-        if (retryJob != null && !retryJob.isDone()) {
-            retryJob.cancel(false);
-        }
+        disconnectFromHub();
 
         final HarmonyHubConfig config = getConfig().as(HarmonyHubConfig.class);
+
         int discoTime = config.discoveryTimeout > 0 ? config.discoveryTimeout : DISCO_TIME;
+        heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
 
         final HarmonyHubDiscovery disco = new HarmonyHubDiscovery(discoTime);
         disco.addListener(new HarmonyHubDiscoveryListener() {
@@ -147,7 +153,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                     getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_ID, result.getId());
                     connectToHub();
                 }
-
             }
         });
         disco.startDiscovery();
@@ -156,14 +161,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         listeners.clear();
-
-        if (retryJob != null && !retryJob.isDone()) {
-            retryJob.cancel(true);
-        }
-
-        if (getClient() != null) {
-            getClient().disconnect();
-        }
+        disconnectFromHub();
     }
 
     @Override
@@ -188,9 +186,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
      */
     private void connectToHub() {
 
-        String host = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_HOST);
-        String accountId = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_ACCOUNTID);
-        String sessionId = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_SESSIONID);
+        final String host = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_HOST);
+        final String accountId = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_ACCOUNTID);
+        final String sessionId = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_SESSIONID);
 
         if (host == null || accountId == null || sessionId == null) {
             logger.error("Can not connect to hub with host {}, accountId {} and sessionId {}", host, accountId,
@@ -219,19 +217,50 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         try {
             logger.debug("Connecting: host {} sessionId {} accountId {}", host, sessionId, accountId);
             client.connect(host, new LoginToken(accountId, sessionId));
+            heartBeatJob = scheduler.scheduleAtFixedRate(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        client.sendPing();
+                    } catch (Exception e) {
+                        logger.error("heartbeat failed for HarmonyHub at " + host, e);
+                        setOfflineAndReconnect();
+                    }
+                }
+            }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
             buildChannel();
         } catch (Exception e) {
             logger.error("Could not connect to HarmonyHub at " + host, e);
-            client = null;
-            retryJob = scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    initialize();
-                }
-            }, RETRY_TIME, TimeUnit.SECONDS);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            setOfflineAndReconnect();
         }
+    }
+
+    private void disconnectFromHub() {
+
+        if (retryJob != null && !retryJob.isDone()) {
+            retryJob.cancel(true);
+        }
+
+        if (heartBeatJob != null && !heartBeatJob.isDone()) {
+            heartBeatJob.cancel(true);
+        }
+
+        if (getClient() != null) {
+            getClient().disconnect();
+        }
+    }
+
+    private void setOfflineAndReconnect() {
+        disconnectFromHub();
+        retryJob = scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                initialize();
+            }
+        }, RETRY_TIME, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
     }
 
     private void updateState(Activity activity) {
@@ -271,8 +300,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
             factory.addChannelType(channelType);
 
-            BridgeBuilder thingBuilder = BridgeBuilder.create(getThing().getUID())
-                    .withConfiguration(getThing().getConfiguration()).withProperties(getThing().getProperties());
+            BridgeBuilder thingBuilder = editThing();
 
             Channel channel = ChannelBuilder
                     .create(new ChannelUID(getThing().getUID(), HarmonyHubBindingConstants.CHANNEL_CURRENT_ACTIVITY),

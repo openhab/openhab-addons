@@ -16,11 +16,11 @@ package org.openhab.binding.freebox.config;
  */
 public class FreeboxServerConfiguration {
 
-    public static final String IP_ADDRESS = "ipAddress";
+    public static final String FQDN = "fqdn";
     public static final String APP_TOKEN = "appToken";
     public static final String REFRESH_INTERVAL = "refreshInterval";
 
-    public String ipAddress;
+    public String fqdn;
     public String appToken;
     public Integer refreshInterval;
 

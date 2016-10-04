@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meteostick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="meteostick_bridge">
+		<label>Meteostick USB Receiver</label>
+		<description>Meteostick USB Receiver</description>
+		<channels>
+			<channel id="pressure" typeId="pressure" />
+			<channel id="indoor-temperature" typeId="indoor-temperature" />
+		</channels>
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial Port</label>
+				<description>Serial port that the Meteostick is plugged in to</description>
+			</parameter>
+			<parameter name="mode" type="integer" required="true">
+				<label>Frequency Band</label>
+				<description>Specifies the frequency band Meteostick shall listen to</description>
+				<options>
+					<option value="0">North America (915MHz)</option>
+					<option value="1">Europe (868MHz)</option>
+					<option value="2">Australia (915MHz)</option>
+				</options>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="meteostick_davis_iss">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="meteostick_bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Davis Vantage Vue ISS</label>
+		<description>Davis Integrated Sensor Suite</description>
+		<channels>
+			<channel id="outdoor-temperature" typeId="outdoor-temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-speed" typeId="wind-speed" />
+			<channel id="rain-raw" typeId="rain-raw" />
+			<channel id="rain-currenthour" typeId="rain-currenthour" />
+			<channel id="rain-lasthour" typeId="rain-lasthour" />
+			<channel id="solar-power" typeId="solar-power" />
+			<channel id="signal-strength" typeId="system.signal-strength" />
+			<channel id="low-battery" typeId="system.low-battery" />
+		</channels>
+
+		<config-description>
+			<parameter name="channel" type="integer" required="true">
+				<label>Channel</label>
+				<description>Specifies the channel the sensor is using</description>
+				<options>
+					<option value="1">Channel 1</option>
+					<option value="2">Channel 2</option>
+					<option value="3">Channel 3</option>
+					<option value="4">Channel 4</option>
+					<option value="5">Channel 5</option>
+					<option value="6">Channel 6</option>
+					<option value="7">Channel 7</option>
+					<option value="8">Channel 8</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="indoor-temperature">
+		<item-type>Number</item-type>
+		<label>Indoor Temperature</label>
+		<description>Current temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
+
+	<channel-type id="outdoor-temperature">
+		<item-type>Number</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Current temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Outdoor Humidity</label>
+		<description>Current humidity in %</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%">
+		</state>
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>Current pressure in millibar</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f hPa">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-direction">
+		<item-type>Number</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f °">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f m/s">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Rainfall (Raw)</label>
+		<description>A counter between 0 and 255 in 0.01mm steps</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-lasthour">
+		<item-type>Number</item-type>
+		<label>Rainfall (previous hour)</label>
+		<description>Rainfall in the previous hour</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-currenthour">
+		<item-type>Number</item-type>
+		<label>Rainfall (60 minutes)</label>
+		<description>Rainfall in the last 60 minutes</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm">
+		</state>
+	</channel-type>
+
+	<channel-type id="solar-power">
+		<item-type>Number</item-type>
+		<label>Solar Power</label>
+		<description>Solar panel power percentage</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%.1f %%">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

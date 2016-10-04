@@ -54,6 +54,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     private ScheduledFuture<?> schedulerFuture;
     private int linkedPositionalChannels = 0;
     protected AstroThingConfig thingConfig;
+    private Object schedulerLock = new Object();
 
     public AstroThingHandler(Thing thing) {
         super(thing);
@@ -64,6 +65,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        logger.debug("Initializing thing {}", getThing().getUID());
         String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(AstroThingConfig.class);
         thingConfig.setThingUid(thingUid);
@@ -95,6 +97,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
+        logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
 
     /**
@@ -102,8 +105,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
+        logger.debug("Disposing thing {}", getThing().getUID());
+        if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
+            schedulerFuture.cancel(true);
+            schedulerFuture = null;
+        }
         stopJobs();
         quartzScheduler = null;
+        logger.debug("Thing {} disposed", getThing().getUID());
     }
 
     /**
@@ -113,7 +122,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             logger.debug("Refreshing {}", channelUID);
-            publishChannelIfLinked(getThing().getChannel(channelUID.getId()));
+            publishChannelIfLinked(channelUID);
         } else {
             logger.warn("The Astro-Binding is a read-only binding and can not handle commands");
         }
@@ -134,19 +143,19 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     protected void publishPlanet() {
         logger.debug("Publishing planet {} for thing {}", getPlanet().getClass().getSimpleName(), getThing().getUID());
         for (Channel channel : getThing().getChannels()) {
-            publishChannelIfLinked(channel);
+            publishChannelIfLinked(channel.getUID());
         }
     }
 
     /**
      * Publishes the channel with data if it's linked.
      */
-    private void publishChannelIfLinked(Channel channel) {
-        if (isLinked(channel.getUID().getId()) && getPlanet() != null) {
+    private void publishChannelIfLinked(ChannelUID channelUID) {
+        if (isLinked(channelUID.getId()) && getPlanet() != null) {
             try {
-                updateState(channel.getUID(), PropertyUtils.getState(channel.getUID(), getPlanet()));
+                updateState(channelUID, PropertyUtils.getState(channelUID, getPlanet()));
             } catch (Exception ex) {
-                logger.error("Can't update state for channel " + channel.getUID() + ": " + ex.getMessage(), ex);
+                logger.error("Can't update state for channel " + channelUID + ": " + ex.getMessage(), ex);
             }
         }
     }
@@ -156,54 +165,57 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * already scheduled jobs first.
      */
     private void restartJobs() {
+        logger.debug("restartJobs");
 
-        if (schedulerFuture != null) {
+        if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
             schedulerFuture.cancel(true);
         }
 
         schedulerFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
+                stopJobs();
+
                 try {
-                    if (quartzScheduler == null) {
-                        quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
-                    }
+                    synchronized (schedulerLock) {
+                        if (quartzScheduler == null) {
+                            quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
+                        }
 
-                    stopJobs();
+                        if (getThing().getStatus() == ThingStatus.ONLINE) {
+                            String thingUid = getThing().getUID().toString();
+                            JobDataMap jobDataMap = new JobDataMap();
+                            jobDataMap.put("thingUid", thingUid);
 
-                    if (getThing().getStatus() == ThingStatus.ONLINE) {
-                        String thingUid = getThing().getUID().toString();
-                        JobDataMap jobDataMap = new JobDataMap();
-                        jobDataMap.put("thingUid", thingUid);
-
-                        // dailyJob
-                        String jobIdentity = DailyJob.class.getSimpleName();
-                        Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
-                                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
-                        JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
-                                .usingJobData(jobDataMap).build();
-                        quartzScheduler.scheduleJob(jobDetail, trigger);
-                        logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
-
-                        // startupJob
-                        trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
-                        jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
-                                .usingJobData(jobDataMap).build();
-                        quartzScheduler.scheduleJob(jobDetail, trigger);
-
-                        if (linkedPositionalChannels > 0) {
-                            // positional intervalJob
-                            jobIdentity = PositionalJob.class.getSimpleName();
-                            Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
-                            trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
-                                    .withSchedule(simpleSchedule().repeatForever()
-                                            .withIntervalInSeconds(thingConfig.getInterval()))
-                                    .build();
-                            jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
+                            // dailyJob
+                            String jobIdentity = DailyJob.class.getSimpleName();
+                            Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
+                                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
+                            JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
-                            logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
-                                    thingConfig.getInterval(), thingUid);
+                            logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
+
+                            // startupJob
+                            trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
+                            jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
+                                    .usingJobData(jobDataMap).build();
+                            quartzScheduler.scheduleJob(jobDetail, trigger);
+
+                            if (linkedPositionalChannels > 0) {
+                                // positional intervalJob
+                                jobIdentity = PositionalJob.class.getSimpleName();
+                                Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
+                                trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
+                                        .withSchedule(simpleSchedule().repeatForever()
+                                                .withIntervalInSeconds(thingConfig.getInterval()))
+                                        .build();
+                                jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
+                                        .usingJobData(jobDataMap).build();
+                                quartzScheduler.scheduleJob(jobDetail, trigger);
+                                logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
+                                        thingConfig.getInterval(), thingUid);
+                            }
                         }
                     }
                 } catch (SchedulerException ex) {
@@ -214,15 +226,18 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     }
 
     private void stopJobs() {
-        if (quartzScheduler != null) {
-            try {
-                String thingUid = getThing().getUID().toString();
-                for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
-                    logger.info("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
-                    quartzScheduler.deleteJob(jobKey);
+        logger.debug("stopJobs");
+        synchronized (schedulerLock) {
+            if (quartzScheduler != null) {
+                try {
+                    String thingUid = getThing().getUID().toString();
+                    for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
+                        logger.info("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
+                        quartzScheduler.deleteJob(jobKey);
+                    }
+                } catch (SchedulerException ex) {
+                    logger.error(ex.getMessage(), ex);
                 }
-            } catch (SchedulerException ex) {
-                logger.error(ex.getMessage(), ex);
             }
         }
     }
@@ -230,6 +245,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         linkedChannelChange(channelUID, 1);
+        publishChannelIfLinked(channelUID);
     }
 
     @Override
@@ -241,10 +257,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Counts positional channels and restarts astro jobs.
      */
     private void linkedChannelChange(ChannelUID channelUID, int step) {
+        logger.debug("linkedChannelChange {} step {}", channelUID, step);
         if (ArrayUtils.contains(getPositionalChannelIds(), channelUID.getId())) {
+            int oldValue = linkedPositionalChannels;
             linkedPositionalChannels += step;
+            if ((oldValue == 0 && linkedPositionalChannels > 0) || (oldValue > 0 && linkedPositionalChannels == 0)) {
+                restartJobs();
+            }
         }
-        restartJobs();
     }
 
     /**

@@ -51,4 +51,13 @@ public class LutronBindingConstants {
     public final static String CHANNEL_LED5 = "led5";
     public final static String CHANNEL_LED6 = "led6";
     public final static String CHANNEL_LED7 = "led7";
+
+    // Bridge config properties
+    public static final String HOST = "ipAddress";
+    public static final String USER = "user";
+    public static final String PASSWORD = "password";
+    public static final String SERIAL_NUMBER = "serialNumber";
+
+    // Thing config properties
+    public static final String INTEGRATION_ID = "integrationId";
 }
