@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Oven</label>
-		<description>This is a Miele@Home compatible oven</description>
+		<description>This is a Miele@home compatible oven</description>
 
 		<channels>
 			<channel id="state" typeId="state" />

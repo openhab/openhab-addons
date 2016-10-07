@@ -6,7 +6,7 @@
 	<!-- Miele Bridge -->
 	<bridge-type id="xgw3000">
 		<label>Miele XGW3000</label>
-		<description>The miele bridge represents the Miele@Home XGW3000 gateway.</description>
+		<description>The miele bridge represents the Miele@home XGW3000 gateway.</description>
 
 		<properties>
 			<property name="vendor">Miele</property>
@@ -16,26 +16,26 @@
 			<parameter name="ipAddress" type="text">
 				<context>network_address</context>
 				<label>Network Address</label>
-				<description>Network address of the Miele@Home gateway.</description>
+				<description>Network address of the Miele@home gateway.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="interface" type="text">
 				<context>network_address</context>
 				<label>Network Address of the Multicast interface</label>
-				<description>Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@Home gateway</description>
+				<description>Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="userName" type="text">
 				<label>Username</label>
 				<description>
-                    Name of a registered Miele@Home user.
+                    Name of a registered Miele@home user.
                 </description>
 				<required>false</required>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
 				<label>Password</label>
-				<description>Password for the registered Miele@Home</description>
+				<description>Password for the registered Miele@home</description>
 				<required>false</required>
 			</parameter>
 		</config-description>
