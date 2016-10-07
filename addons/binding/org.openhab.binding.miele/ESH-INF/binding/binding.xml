@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Miele Binding</name>
-    <description>This is the binding for Miele@Home appliances</description>
+    <description>This is the binding for Miele@home appliances</description>
     <author>Karel Goderis</author>
 
 </binding:binding>

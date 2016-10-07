@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import com.google.gson.JsonElement;
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
 public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannelSelector> {
 
@@ -50,19 +52,16 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "start");
-                        } else {
+                        } else if (command.equals(OnOffType.OFF)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "stop");
                         }
                         break;
                     }
-                    // case STOP: {
-                    // if (command.equals(OnOffType.ON)) {
-                    // result = bridgeHandler.invokeOperation(uid, modelID, "stop");
-                    // }
-                    // }
                     default: {
-                        logger.debug("{} is a read-only channel that does not accept commands",
-                                selector.getChannelID());
+                        if (!(command instanceof RefreshType)) {
+                            logger.debug("{} is a read-only channel that does not accept commands",
+                                    selector.getChannelID());
+                        }
                     }
                 }
             }

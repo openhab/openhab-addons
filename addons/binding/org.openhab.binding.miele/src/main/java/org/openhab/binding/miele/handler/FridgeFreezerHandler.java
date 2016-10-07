@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
 public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerChannelSelector> {
 
@@ -50,7 +51,7 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
                     case SUPERCOOL: {
                         if (command.equals(OnOffType.ON)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
-                        } else {
+                        } else if (command.equals(OnOffType.OFF)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
                         }
                         break;
@@ -58,16 +59,11 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
                     case SUPERFREEZE: {
                         if (command.equals(OnOffType.ON)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "startSuperFreezing");
-                        } else {
+                        } else if (command.equals(OnOffType.OFF)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperFreezing");
                         }
                         break;
                     }
-                    // case STOP: {
-                    // if(command.equals(OnOffType.ON)) {
-                    // result = bridgeHandler.invokeOperation(uid, modelID, "stop");
-                    // }
-                    // }
                     default: {
                         logger.debug("{} is a read-only channel that does not accept commands",
                                 selector.getChannelID());

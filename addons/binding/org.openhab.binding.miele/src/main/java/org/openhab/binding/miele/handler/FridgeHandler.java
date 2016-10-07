@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                     case SUPERCOOL: {
                         if (command.equals(OnOffType.ON)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
-                        } else {
+                        } else if (command.equals(OnOffType.OFF)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
                         }
                         break;
@@ -62,8 +63,10 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                         break;
                     }
                     default: {
-                        logger.debug("{} is a read-only channel that does not accept commands",
-                                selector.getChannelID());
+                        if (!(command instanceof RefreshType)) {
+                            logger.debug("{} is a read-only channel that does not accept commands",
+                                    selector.getChannelID());
+                        }
                     }
                 }
             }

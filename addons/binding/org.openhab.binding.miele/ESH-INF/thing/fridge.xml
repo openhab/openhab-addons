@@ -3,14 +3,14 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Dishwasher -->
+	<!-- Fridge -->
 	<thing-type id="fridge">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="xgw3000" />
 		</supported-bridge-type-refs>
 
 		<label>Fridge</label>
-		<description>This is a Miele@Home compatible fridge</description>
+		<description>This is a Miele@home compatible fridge</description>
 
 		<channels>
 			<channel id="state" typeId="state" />
@@ -30,46 +30,5 @@
 		</config-description>
 
 	</thing-type>
-
-	<channel-type id="state" advanced="false">
-		<item-type>String</item-type>
-		<label>Status</label>
-		<description>Current status of the appliance</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="supercool" advanced="false">
-		<item-type>String</item-type>
-		<label>Super Cool</label>
-		<description>Start Super Cooling</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="current" advanced="false">
-		<item-type>Number</item-type>
-		<label>Current Temperature</label>
-		<description>Current temperature in the fridge</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="target" advanced="true">
-		<item-type>Number</item-type>
-		<label>Target Temperature</label>
-		<description>Target temperature to be reached by the fridge</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="door" advanced="false">
-		<item-type>Contact</item-type>
-		<label>Door</label>
-		<description>Current state of the door of the appliance</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="start" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Start</label>
-		<description>Start the appliance</description>
-	</channel-type>
 
 </thing:thing-descriptions>

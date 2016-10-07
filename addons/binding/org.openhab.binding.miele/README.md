@@ -4,9 +4,9 @@ layout: documentation
 
 {% include base.html %}
 
-# Miele@Home Binding
+# Miele@home Binding
 
-This binding integrates Miele@Home appliances. Miele@Home is a Zigbee based network to interconnect and control Miele appliances that are equipped with special modules. See www.miele.de for the list of supported appliances
+This binding integrates Miele@home appliances. Miele@home is a Zigbee based network to interconnect and control Miele appliances that are equipped with special modules. See [www.miele.de](http://www.miele.de) for the list of available appliances.
 
 
 ## Supported Things
@@ -49,7 +49,7 @@ Thing washingmachine washingmachine [uid="001d63fffe020505#210"]
 
 ## Channels
 
-Until the Miele protocol is fully documented the definition of the channels in use can be found at https://github.com/openhab/openhab2-addons/tree/master/addons/binding
+The definition of the channels in use can best be checked in the [source repository](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.miele/ESH-INF/thing).
 
 
 ## Full Example
