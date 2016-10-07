@@ -129,6 +129,12 @@ The first parameter after Thing is the device type, the second the serial number
 ```
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
+```
+  Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
+
+```
+As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
+
 ### Items
 In the items file, you can map the datapoints, the syntax is:
 
