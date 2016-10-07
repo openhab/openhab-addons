@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
 public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
@@ -50,7 +51,7 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                     case LIGHT: {
                         if (command.equals(OnOffType.ON)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "startLighting");
-                        } else {
+                        } else if (command.equals(OnOffType.OFF)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "stopLighting");
                         }
                         break;
