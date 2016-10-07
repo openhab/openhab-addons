@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Hood</label>
-		<description>This is a Miele@Home compatible hood</description>
+		<description>This is a Miele@home compatible hood</description>
 
 		<channels>
 			<channel id="state" typeId="state" />

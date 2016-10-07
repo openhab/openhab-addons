@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Tumbledryer</label>
-		<description>This is a Miele@Home compatible tumbledryer</description>
+		<description>This is a Miele@home compatible tumbledryer</description>
 
 		<channels>
 			<channel id="state" typeId="state" />

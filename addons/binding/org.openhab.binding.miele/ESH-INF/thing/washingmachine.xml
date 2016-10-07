@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Washing Machine</label>
-		<description>This is a Miele@Home compatible washing machine</description>
+		<description>This is a Miele@home compatible washing machine</description>
 
 		<channels>
 			<channel id="state" typeId="state" />

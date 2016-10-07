@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Hob</label>
-		<description>This is a Miele@Home compatible hob</description>
+		<description>This is a Miele@home compatible hob</description>
 
 		<channels>
 			<channel id="state" typeId="state" />

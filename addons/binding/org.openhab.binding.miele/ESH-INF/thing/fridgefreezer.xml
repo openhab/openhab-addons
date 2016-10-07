@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Fridge Freezer</label>
-		<description>This is a Miele@Home compatible fridgefreezer</description>
+		<description>This is a Miele@home compatible fridgefreezer</description>
 
 		<channels>
 			<channel id="state" typeId="state" />
