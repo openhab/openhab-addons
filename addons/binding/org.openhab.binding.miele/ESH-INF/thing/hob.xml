@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Dishwasher -->
+	<thing-type id="hob">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="xgw3000" />
+		</supported-bridge-type-refs>
+
+		<label>Hob</label>
+		<description>This is a Miele@Home compatible hob</description>
+
+		<channels>
+			<channel id="state" typeId="state" />
+			<channel id="plate1power" typeId="power" />
+			<channel id="plate1heat" typeId="heat" />
+			<channel id="plate1time" typeId="time" />
+			<channel id="plate2power" typeId="power" />
+			<channel id="plate2heat" typeId="heat" />
+			<channel id="plate2time" typeId="time" />
+			<channel id="plate3power" typeId="power" />
+			<channel id="plate3heat" typeId="heat" />
+			<channel id="plate3time" typeId="time" />
+			<channel id="plate4power" typeId="power" />
+			<channel id="plate4heat" typeId="heat" />
+			<channel id="plate4time" typeId="time" />
+			<channel id="plate5power" typeId="power" />
+			<channel id="plate5heat" typeId="heat" />
+			<channel id="plate5time" typeId="time" />
+			<channel id="plate6power" typeId="power" />
+			<channel id="plate6heat" typeId="heat" />
+			<channel id="plate6time" typeId="time" />
+		</channels>
+
+		<config-description>
+			<parameter name="uid" type="text">
+				<label>ID</label>
+				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="state" advanced="false">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Current status of the appliance</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="plates" advanced="false">
+		<item-type>Number</item-type>
+		<label>Plates</label>
+		<description>Number of heating zones/plates on the hob</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="power" advanced="false">
+		<item-type>Number</item-type>
+		<label>Power Step</label>
+		<description>Power level of the heating zone/plate</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="heat" advanced="true">
+		<item-type>Number</item-type>
+		<label>Remaining Heat</label>
+		<description>Remaining heat level of the heating zone/plate</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="time" advanced="true">
+		<item-type>String</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining time of the heating zone/plate</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>
