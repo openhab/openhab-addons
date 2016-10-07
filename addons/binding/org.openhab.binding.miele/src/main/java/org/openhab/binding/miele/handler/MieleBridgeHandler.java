@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +60,7 @@ import com.google.gson.JsonParser;
  * sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - Fixed lifecycle issues
  */
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
@@ -160,6 +162,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
                 } catch (MalformedURLException e) {
                     logger.error("An exception occured while defining an URL :'{}'", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+                    return;
                 }
 
                 // for future usage - no headers to be set for now
@@ -579,7 +583,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             throw new NullPointerException("It's not allowed to pass a null ApplianceStatusListener.");
         }
         boolean result = applianceStatusListeners.add(applianceStatusListener);
-        if (result) {
+        if (result && thingIsInitialized()) {
             onUpdate();
 
             for (HomeDevice hd : getHomeDevices()) {
@@ -592,7 +596,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     public boolean unregisterApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
         boolean result = applianceStatusListeners.remove(applianceStatusListener);
-        if (result) {
+        if (result && thingIsInitialized()) {
             onUpdate();
         }
         return result;

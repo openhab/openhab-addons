@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +32,7 @@ import com.google.gson.JsonElement;
  * The {@link ApplianceChannelSelector} for dishwashers
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - Changed START_TIME to DateTimeType
  */
 public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
@@ -41,7 +43,20 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     STATE("state", "state", StringType.class, false),
     PROGRAMID("programId", "program", StringType.class, false),
     PROGRAMPHASE("phase", "phase", StringType.class, false),
-    START_TIME("startTime", "start", StringType.class, false),
+    START_TIME("startTime", "start", DateTimeType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            Date date = new Date();
+            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            try {
+                date.setTime(Long.valueOf(s) * 60000);
+            } catch (Exception e) {
+                date.setTime(0);
+            }
+            return getState(DATE_FORMATTER.format(date));
+        }
+    },
     DURATION("duration", "duration", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
