@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.harmonyhub.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -135,4 +136,15 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
     public void removeChannelType(ChannelType type) {
         channelTypes.remove(type);
     }
+
+    public void removeChannelTypesForThing(ThingUID uid) {
+        List<ChannelType> removes = new ArrayList<ChannelType>();
+        for (ChannelType c : channelTypes) {
+            if (c.getUID().getAsString().startsWith(uid.getAsString())) {
+                removes.add(c);
+            }
+        }
+        channelTypes.removeAll(removes);
+    }
+
 }
