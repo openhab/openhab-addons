@@ -41,7 +41,6 @@ import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
@@ -294,27 +293,43 @@ public class HueEmulationServlet extends HttpServlet {
             // will throw exception if not found
             Item item = itemRegistry.getItem(id);
             HueState state = gson.fromJson(req.getReader(), HueState.class);
-
-            logger.debug("State " + state);
-
-            String value;
-            if (item.getAcceptedCommandTypes().contains(HSBType.class)) {
-                value = String.format("%d,%d,%d", state.hue, state.sat, state.bri);
-            } else if (state.bri > -1 && (item.getAcceptedCommandTypes().contains(DecimalType.class)
-                    || item.getAcceptedCommandTypes().contains(PercentType.class))) {
-                value = String.valueOf(Math.round(state.bri / 255.0 * 100));
+            HSBType hsb = state.toHSBType();
+            logger.debug("HuState " + state);
+            logger.debug("HSBType " + hsb);
+            Command command = null;
+            if (hsb.getBrightness().intValue() > 0) {
+                // if state is on then send HSB, Brightness or ON
+                if (item.getAcceptedCommandTypes().contains(HSBType.class)) {
+                    command = hsb;
+                } else {
+                    // try and set the brightness level first
+                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), hsb.getBrightness().toString());
+                    if (command == null) {
+                        // if the item does not accept a number or String type, try ON
+                        command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
+                    }
+                }
             } else {
-                value = state.on ? "ON" : "OFF";
+                // if state is off, then send 0 or 0FF
+                command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "0");
+                if (command == null) {
+                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "OFF");
+                }
             }
 
-            Command command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), value);
-            eventPublisher.post(ItemEventFactory.createCommandEvent(id, command));
-
-            PrintWriter out = resp.getWriter();
-            out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
-            out.close();
+            if (command != null) {
+                logger.debug("sending {} to {}", command, id);
+                eventPublisher.post(ItemEventFactory.createCommandEvent(id, command));
+                PrintWriter out = resp.getWriter();
+                out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
+                out.close();
+            } else {
+                logger.error("Item {} does not accept Decimal, ON/OFF or String types", id);
+                apiServerError(req, resp, HueErrorResponse.INTERNAL_ERROR,
+                        "The Hue device does not respond to that command");
+            }
         } catch (ItemNotFoundException e) {
-            logger.debug("Item not found: " + id);
+            logger.debug("Item not found: {}", id);
             apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "The Hue device could not be found");
         }
     }
@@ -508,16 +523,15 @@ public class HueEmulationServlet extends HttpServlet {
         HueState hueState;
         if (itemState instanceof HSBType) {
             HSBType color = (HSBType) itemState;
-            hueState = new HueState(color.getHue().intValue(), color.getSaturation().shortValue(),
-                    color.getBrightness().shortValue());
+            hueState = new HueState(color);
         } else if (itemState instanceof DecimalType) {
             short bri = (short) ((((DecimalType) itemState).intValue() * 255) / 100);
-            hueState = new HueState(bri > 0, bri);
+            hueState = new HueState(bri);
         } else if (itemState instanceof OnOffType) {
             short bri = (short) (((OnOffType) itemState) == OnOffType.ON ? 255 : 0);
-            hueState = new HueState(bri > 0, bri);
+            hueState = new HueState(bri);
         } else {
-            hueState = new HueState(false, (short) 0);
+            hueState = new HueState((short) 0);
         }
 
         HueDevice d = new HueDevice(hueState, item.getLabel(), item.getName());
