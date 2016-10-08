@@ -12,9 +12,12 @@
             ]]>
         </description>
 		
-		<properties>
-            <property name="vendor">Z-Wave.Me</property>
-        </properties>
+        <channels>
+            <channel id="actions" typeId="actions" />
+            <channel id="secureInclusion" typeId="secureInclusion" />
+            <channel id="inclusion" typeId="inclusion" />
+            <channel id="exclusion" typeId="exclusion" />
+        </channels>
 
         <config-description-ref uri="binding:zway:zwayServer" />
 

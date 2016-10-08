@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.zway.ZWayBindingConstants;
@@ -25,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
-import de.fh_zwickau.informatik.sensor.model.devices.zwaveapi.ZWaveDevice;
 import de.fh_zwickau.informatik.sensor.model.locations.LocationList;
+import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 
 /**
  * The {@link ZWayDeviceDiscoveryService} is responsible for device discovery.
@@ -103,29 +104,40 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     } else if (!zwaveDevice.getData().getDeviceTypeString().getValue().equals("")) {
                         givenName += " - " + zwaveDevice.getData().getDeviceTypeString().getValue();
                     }
-                    // Add some additional information
-                    String vendorString = "";
+                    // Add additional information as properties
+                    String vendorString = zwaveDevice.getData().getVendorString().getValue();
                     if (!zwaveDevice.getData().getVendorString().getValue().equals("")) {
-                        vendorString = zwaveDevice.getData().getVendorString().getValue();
                         givenName += " (" + vendorString + ")";
                     }
-                    String manufacturerId = "";
-                    if (!zwaveDevice.getData().getManufacturerId().getValue().equals("")) {
-                        manufacturerId = zwaveDevice.getData().getManufacturerId().getValue();
-                    }
-                    String deviceType = "";
-                    if (!zwaveDevice.getData().getDeviceTypeString().getValue().equals("")) {
-                        deviceType = zwaveDevice.getData().getDeviceTypeString().getValue();
-                    }
+                    String manufacturerId = zwaveDevice.getData().getManufacturerId().getValue();
+                    String deviceType = zwaveDevice.getData().getDeviceTypeString().getValue();
+                    String zddxmlfile = zwaveDevice.getData().getZDDXMLFile().getValue();
+                    String sdk = zwaveDevice.getData().getSDK().getValue();
 
                     ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_DEVICE,
                             mBridgeHandler.getThing().getUID(), nodeId.toString());
+
+                    /*
+                     * Properties
+                     * - Configuration: DEVICE_CONFIG_NODE_ID
+                     * - ESH default properties:
+                     * --- PROPERTY_VENDOR
+                     * --- other default properties not available
+                     * - Custom properties:
+                     * --- DEVICE_LOCATION
+                     * --- DEVICE_MANUFACTURER_ID
+                     * --- DEVICE_DEVICE_TYPE
+                     * --- DEVICE_ZDDXMLFILE
+                     * --- DEVICE_SDK
+                     */
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(givenName)
                             .withBridge(bridgeUID).withProperty(ZWayBindingConstants.DEVICE_CONFIG_NODE_ID, nodeId)
-                            .withProperty(ZWayBindingConstants.DEVICE_LOCATION, location)
-                            .withProperty(ZWayBindingConstants.DEVICE_VENDOR_STRING, vendorString)
-                            .withProperty(ZWayBindingConstants.DEVICE_MANUFACTURER_ID, manufacturerId)
-                            .withProperty(ZWayBindingConstants.DEVICE_DEVICE_TYPE, deviceType).build();
+                            .withProperty(Thing.PROPERTY_VENDOR, vendorString)
+                            .withProperty(ZWayBindingConstants.DEVICE_PROP_LOCATION, location)
+                            .withProperty(ZWayBindingConstants.DEVICE_PROP_MANUFACTURER_ID, manufacturerId)
+                            .withProperty(ZWayBindingConstants.DEVICE_PROP_DEVICE_TYPE, deviceType)
+                            .withProperty(ZWayBindingConstants.DEVICE_PROP_ZDDXMLFILE, zddxmlfile)
+                            .withProperty(ZWayBindingConstants.DEVICE_PROP_SDK, sdk).build();
                     thingDiscovered(discoveryResult);
                 } else {
                     logger.warn("Z-Wave device not loaded");
@@ -134,7 +146,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
             for (Device device : deviceList.getDevices()) {
                 if (device.getVisibility() && !device.getPermanentlyHidden()) {
-                    if (ZWayBindingConstants.DISCOVERY_IGNORED_DEVICES.contains(device.getDeviceId())) {
+                    if (ZWayBindingConstants.DISCOVERY_IGNORED_DEVICES.contains(device.getDeviceId().split("_")[0])) {
                         logger.debug("Skip device: {}", device.getMetrics().getTitle());
                         continue;
                     }
@@ -158,7 +170,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                             .withLabel(device.getMetrics().getTitle()).withBridge(bridgeUID)
                             .withProperty(ZWayBindingConstants.DEVICE_CONFIG_VIRTUAL_DEVICE_ID, device.getDeviceId())
-                            .withProperty(ZWayBindingConstants.DEVICE_LOCATION, location).build();
+                            .withProperty(ZWayBindingConstants.DEVICE_PROP_LOCATION, location).build();
                     thingDiscovered(discoveryResult);
                 }
             }

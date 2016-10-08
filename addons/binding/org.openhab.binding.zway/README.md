@@ -35,6 +35,8 @@ A discovery service for Z-Way servers in local network starts immediately after 
 
 Another discovery service provides available devices (a configured bridge is necessary). Both discovery services are performed at a specified interval, but can also be started manually.
 
+Note: In the Z-Way server device can be disabled or made invisible. Only for active and visible Z-Way devices channels will created.
+
 ## Binding Configuration
 
 No configuration is necessary.
@@ -85,6 +87,8 @@ Bridge zway:zwayServer:192_168_2_42 [ openHabAlias="development", openHabIpAddre
 
 ## Channels
 
+### Channels with detailed information for the devices
+
 The following channels are currently supported.
 
 | Channel Type ID | Item Type | Category | Asssigned for Z-Way device type and probe type |
@@ -114,6 +118,8 @@ Currently unsupported Z-Way probe types:
 - SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
 - SwitchBinary: thermostat_mode
 
+### Universial channels for the devices
+
 The following channels represent universial channels if no further device information are available, only depending on the Z-Way device types (for available device types see [Z-Way Documentation](http://docs.zwayhomeautomation.apiary.io/#reference/devices/device)).
 
 | Channel Type ID | Item Type | Category | Assigned for Z-Way device type |
@@ -127,11 +133,20 @@ The following channels represent universial channels if no further device inform
 | switchColor       | Color  | ColorLight   | SwitchRGBW |
 | switchControl     | Switch | Switch       | SwitchControl ||
 
-Currently unsupported Z-Way device types: SwitchToggle, Thermostat, ToggleButton
+Currently unsupported Z-Way device types: SwitchToggle, Thermostat, ToggleButton.
+
+### Channels for the Z-Way Server (Bridge)
+
+| Channel Type ID | Item Type | Category | Description |
+| --------------- | --------- | -------- | ----------- |
+| actions         | String | -      | It is currently possible to update all devices. |
+| secureInclusion | Switch | Switch | Change inclusion type for further inclusions. |
+| inclusion       | Switch | Switch | Start inclusion mode (after a timeout the inclusion will be automatically finished). |
+| exclusion       | Switch | Switch | Start exclusion mode (after a timeout the exclusion will be automatically finished). ||
 
 ## Locations
 
-The locations of the Z-Way devices are loaded during the Discovery. Based on the location ID of Z-Way device, the name of the Z-Way room is then allocated to the location property of the Thing.
+The locations of the Z-Way devices are loaded during the discovery. Based on the location ID of Z-Way device, the name of the Z-Way room is then allocated to the location property of the thing.
 
 ## Full Example
 

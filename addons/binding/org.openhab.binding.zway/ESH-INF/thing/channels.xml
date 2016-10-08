@@ -189,4 +189,41 @@
     
     <!-- TODO: ToggleButton -->
     
+    <!-- Special channel types -->
+    
+    <channel-type id="actions">
+        <item-type>String</item-type>
+        <label>Actions</label>
+        <description>Available actions of the Z-Wave Controller</description>
+        <state>
+            <options>
+                <option value="REFRESH">Refresh all things</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="secureInclusion">
+        <item-type>Switch</item-type>
+        <label>Secure inclusion</label>
+        <description>Change inclusion type for further inclusions.</description>
+        <category>Switch</category>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <channel-type id="inclusion">
+        <item-type>Switch</item-type>
+        <label>Inclusion</label>
+        <description>Start inclusion mode (after a timeout the inclusion will be automatically finished).</description>
+        <category>Switch</category>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <channel-type id="exclusion">
+        <item-type>Switch</item-type>
+        <label>Exclusion</label>
+        <description>Start exclusion mode (after a timeout the exclusion will be automatically finished).</description>
+        <category>Switch</category>
+        <state readOnly="false" />
+    </channel-type>
+    
 </thing:thing-descriptions>

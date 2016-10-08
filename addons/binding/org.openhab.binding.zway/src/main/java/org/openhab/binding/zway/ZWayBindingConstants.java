@@ -33,7 +33,7 @@ public class ZWayBindingConstants {
             THING_TYPE_VIRTUAL_DEVICE);
 
     // List of ignored devices for Discovery
-    public final static Set<String> DISCOVERY_IGNORED_DEVICES = ImmutableSet.of("BatteryPolling_7");
+    public final static Set<String> DISCOVERY_IGNORED_DEVICES = ImmutableSet.of("BatteryPolling");
 
     // List of all Channel IDs
     public final static String BATTERY_CHANNEL = "battery";
@@ -66,6 +66,13 @@ public class ZWayBindingConstants {
     public final static String SENSOR_MOTION_CHANNEL = "sensorMotion";
     // switch binary
     public final static String SWITCH_POWER_OUTLET_CHANNEL = "switchPowerOutlet";
+    // special channels
+    public final static String ACTIONS_CHANNEL = "actions";
+    public final static String SECURE_INCLUSION_CHANNEL = "secureInclusion";
+    public final static String INCLUSION_CHANNEL = "inclusion";
+    public final static String EXCLUSION_CHANNEL = "exclusion";
+
+    public final static String ACTIONS_CHANNEL_OPTION_REFRESH = "REFRESH";
 
     /* Bridge config properties */
     public final static String BRIDGE_CONFIG_OPENHAB_ALIAS = "openHabAlias";
@@ -83,11 +90,17 @@ public class ZWayBindingConstants {
     public final static String DEVICE_CONFIG_NODE_ID = "nodeId";
     public final static String DEVICE_CONFIG_VIRTUAL_DEVICE_ID = "deviceId";
 
-    public static final String DEVICE_LOCATION = "location";
-    public static final String DEVICE_VENDOR_STRING = "vendor";
-    public static final String DEVICE_MANUFACTURER_ID = "manufacturerId";
-    public static final String DEVICE_DEVICE_TYPE = "deviceType";
+    public static final String DEVICE_PROP_LOCATION = "location";
+    public static final String DEVICE_PROP_MANUFACTURER_ID = "manufacturerId";
+    public static final String DEVICE_PROP_DEVICE_TYPE = "deviceType";
+    public static final String DEVICE_PROP_ZDDXMLFILE = "zddxmlfile";
+    public static final String DEVICE_PROP_SDK = "SDK";
 
     /* Bridge properties */
-    public final static String BRIDGE_PROP_VENDOR = "vendor";
+    public final static String BRIDGE_PROP_SOFTWARE_REVISION_VERSION = "softwareRevisionVersion";
+    public final static String BRIDGE_PROP_SOFTWARE_REVISION_DATE = "softwareRevisionDate";
+    public final static String BRIDGE_PROP_SDK = "SDK";
+    public final static String BRIDGE_PROP_MANUFACTURER_ID = "manufacturerId";
+    public final static String BRIDGE_PROP_SECURE_INCLUSION = "secureInclusion";
+    public final static String BRIDGE_PROP_FREQUENCY = "frequency";
 }

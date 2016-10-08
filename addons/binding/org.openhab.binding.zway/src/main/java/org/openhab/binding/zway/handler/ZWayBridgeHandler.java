@@ -11,9 +11,12 @@ package org.openhab.binding.zway.handler;
 import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,7 +38,6 @@ import de.fh_zwickau.informatik.sensor.model.devicehistory.DeviceHistoryList;
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceCommand;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
-import de.fh_zwickau.informatik.sensor.model.devices.zwaveapi.ZWaveDevice;
 import de.fh_zwickau.informatik.sensor.model.instances.Instance;
 import de.fh_zwickau.informatik.sensor.model.instances.InstanceList;
 import de.fh_zwickau.informatik.sensor.model.instances.openhabconnector.OpenHABConnector;
@@ -48,6 +50,8 @@ import de.fh_zwickau.informatik.sensor.model.notifications.Notification;
 import de.fh_zwickau.informatik.sensor.model.notifications.NotificationList;
 import de.fh_zwickau.informatik.sensor.model.profiles.Profile;
 import de.fh_zwickau.informatik.sensor.model.profiles.ProfileList;
+import de.fh_zwickau.informatik.sensor.model.zwaveapi.controller.ZWaveController;
+import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 
 /**
  * The {@link ZWayBridgeHandler} manages the connection between Z-Way API and binding.
@@ -71,6 +75,12 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private BridgePolling bridgePolling;
+    private ScheduledFuture<?> pollingJob;
+
+    private ResetInclusionExclusion resetInclusionExclusion;
+    private ScheduledFuture<?> resetInclusionExclusionJob;
 
     private ZWayBridgeConfiguration mConfig = null;
     private IZWayApi mZWayApi = null;
@@ -101,6 +111,16 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     // Register openHAB server to Z-Way if observer mechanism is enabled
                     if (mConfig.getObserverMechanismEnabled()) {
                         updateOpenHabConnector(false);
+                    }
+
+                    // Initialize bridge polling
+                    if (pollingJob == null || pollingJob.isCancelled()) {
+                        logger.debug("Starting polling job at intervall {}", mConfig.getPollingInterval());
+                        pollingJob = scheduler.scheduleAtFixedRate(bridgePolling, 10, mConfig.getPollingInterval(),
+                                TimeUnit.SECONDS);
+                    } else {
+                        // Called when thing or bridge updated ...
+                        logger.debug("Polling is allready active");
                     }
 
                     // Initializing all containing device things
@@ -164,11 +184,66 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
     public ZWayBridgeHandler(Bridge bridge) {
         super(bridge);
+
+        bridgePolling = new BridgePolling();
+        resetInclusionExclusion = new ResetInclusionExclusion();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // possible commands: check Z-Way server, check openHAB Connector, reconnect, ...
+        logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
+
+        if (channelUID.getId().equals(ACTIONS_CHANNEL)) {
+            if (command.toString().equals(ACTIONS_CHANNEL_OPTION_REFRESH)) {
+                logger.debug("Handle bridge refresh command for all configured devices ...");
+                for (Thing thing : getThing().getThings()) {
+                    ZWayDeviceHandler handler = (ZWayDeviceHandler) thing.getHandler();
+                    if (handler != null) {
+                        logger.debug("Refreshing device: {}", thing.getLabel());
+                        handler.refreshAllChannels();
+                    } else {
+                        logger.warn("Refreshing device failed (DeviceHandler is null): {}", thing.getLabel());
+                    }
+                }
+            }
+        } else if (channelUID.getId().equals(SECURE_INCLUSION_CHANNEL)) {
+            if (command.equals(OnOffType.ON)) {
+                logger.debug("Enable bridge secure inclusion ...");
+                mZWayApi.updateControllerData("secureInclusion", "true");
+            } else if (command.equals(OnOffType.OFF)) {
+                logger.debug("Disable bridge secure inclusion ...");
+                mZWayApi.updateControllerData("secureInclusion", "false");
+            }
+        } else if (channelUID.getId().equals(INCLUSION_CHANNEL)) {
+            if (command.equals(OnOffType.ON)) {
+                logger.debug("Handle bridge start inclusion command ...");
+                mZWayApi.getZWaveInclusion(1);
+
+                // Start reset job
+                if (resetInclusionExclusionJob == null || resetInclusionExclusionJob.isCancelled()) {
+                    logger.debug("Starting reset inclusion and exclusion job in 30 seconds");
+                    resetInclusionExclusionJob = scheduler.schedule(resetInclusionExclusion, 30, TimeUnit.SECONDS);
+                }
+            } else if (command.equals(OnOffType.OFF)) {
+                logger.debug("Handle bridge stop inclusion command ...");
+                mZWayApi.getZWaveInclusion(0);
+            }
+        } else if (channelUID.getId().equals(EXCLUSION_CHANNEL)) {
+            if (command.equals(OnOffType.ON)) {
+                logger.debug("Handle bridge start exclusion command ...");
+                mZWayApi.getZWaveExclusion(1);
+
+                // Start reset job
+                if (resetInclusionExclusionJob == null || resetInclusionExclusionJob.isCancelled()) {
+                    logger.debug("Starting reset inclusion and exclusion job in 30 seconds");
+                    resetInclusionExclusionJob = scheduler.schedule(resetInclusionExclusion, 30, TimeUnit.SECONDS);
+                }
+            } else if (command.equals(OnOffType.OFF)) {
+                logger.debug("Handle bridge stop exclusion command ...");
+                mZWayApi.getZWaveExclusion(0);
+            }
+        }
     }
 
     @Override
@@ -219,6 +294,16 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     public void dispose() {
         logger.debug("Disposing Z-Way bridge ...");
 
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
+
+        if (resetInclusionExclusionJob != null && !resetInclusionExclusionJob.isCancelled()) {
+            resetInclusionExclusionJob.cancel(true);
+            resetInclusionExclusionJob = null;
+        }
+
         super.dispose();
     }
 
@@ -248,6 +333,70 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
         super.handleConfigurationUpdate(configurationParameters);
     }
+
+    private class BridgePolling implements Runnable {
+        @Override
+        public void run() {
+            logger.debug("Starting polling for bridge: {}", getThing().getLabel());
+            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                updateControllerData();
+            } else {
+                logger.debug("Polling not possible, bridge isn't ONLINE");
+            }
+        }
+    };
+
+    private void updateControllerData() {
+        // Add additional information as properties or update channels
+
+        ZWaveController zwaveController = mZWayApi.getZWaveController();
+        if (zwaveController != null) {
+            Map<String, String> properties = editProperties();
+            // ESH default properties
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, zwaveController.getData().getAPIVersion().getValue());
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, zwaveController.getData().getZWaveChip().getValue());
+            // Thing.PROPERTY_MODEL_ID not available, only manufacturerProductId
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, zwaveController.getData().getUuid().getValue());
+            properties.put(Thing.PROPERTY_VENDOR, zwaveController.getData().getVendor().getValue());
+
+            // Custom properties
+            properties.put(BRIDGE_PROP_SOFTWARE_REVISION_VERSION,
+                    zwaveController.getData().getSoftwareRevisionVersion().getValue());
+            properties.put(BRIDGE_PROP_SOFTWARE_REVISION_DATE,
+                    zwaveController.getData().getSoftwareRevisionDate().getValue());
+            properties.put(BRIDGE_PROP_SDK, zwaveController.getData().getSDK().getValue());
+            properties.put(BRIDGE_PROP_MANUFACTURER_ID, zwaveController.getData().getManufacturerId().getValue());
+            properties.put(BRIDGE_PROP_SECURE_INCLUSION, zwaveController.getData().getSecureInclusion().getValue());
+            properties.put(BRIDGE_PROP_FREQUENCY, zwaveController.getData().getFrequency().getValue());
+            updateProperties(properties);
+
+            // Update channels
+            if (zwaveController.getData().getSecureInclusion().getValue().equals("true")) {
+                updateState(SECURE_INCLUSION_CHANNEL, OnOffType.ON);
+            } else {
+                updateState(SECURE_INCLUSION_CHANNEL, OnOffType.OFF);
+            }
+        }
+    }
+
+    /**
+     * Inclusion/Exclusion must be reset manually, also channel states.
+     */
+    private class ResetInclusionExclusion implements Runnable {
+        @Override
+        public void run() {
+            logger.debug("Reset inclusion and exclusion for bridge: {}", getThing().getLabel());
+            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                mZWayApi.getZWaveInclusion(0);
+                mZWayApi.getZWaveExclusion(0);
+
+                updateState(INCLUSION_CHANNEL, OnOffType.OFF);
+                updateState(EXCLUSION_CHANNEL, OnOffType.OFF);
+            } else {
+                logger.debug("Reset inclusion and exclusion not possible, bridge isn't ONLINE");
+            }
+        }
+    };
 
     /**
      * Setup the openHAB server in openHAB Connector depending on configuration
@@ -623,5 +772,9 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
     @Override
     public void getZWaveDeviceResponse(ZWaveDevice zwaveDevice) {
+    }
+
+    @Override
+    public void getZWaveControllerResponse(ZWaveController zwaveController) {
     }
 }

@@ -76,8 +76,14 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                                 List<Device> devices = entry.getValue();
 
                                 for (Device device : devices) {
-                                    logger.debug("Add channel for virtual device: {}", device.getMetrics().getTitle());
-                                    addDeviceAsChannel(device);
+                                    if (device.getVisibility() && !device.getPermanentlyHidden()) {
+                                        logger.debug("Add channel for virtual device: {}",
+                                                device.getMetrics().getTitle());
+                                        addDeviceAsChannel(device);
+                                    } else {
+                                        logger.debug("Device {} has been skipped, because it was hidden in Z-Way.",
+                                                device.getMetrics().getTitle());
+                                    }
                                 }
                             }
                         } else {

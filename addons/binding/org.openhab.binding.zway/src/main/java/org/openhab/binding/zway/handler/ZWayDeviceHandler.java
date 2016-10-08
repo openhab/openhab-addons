@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -268,7 +269,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     private synchronized void setLocation() {
         Map<String, String> properties = getThing().getProperties();
         // Load location from properties
-        String location = properties.get(ZWayBindingConstants.DEVICE_LOCATION);
+        String location = properties.get(ZWayBindingConstants.DEVICE_PROP_LOCATION);
         if (location != null && !location.equals("") && getThing().getLocation() == null) {
             logger.debug("Set location to {}", location);
             ThingBuilder thingBuilder = editThing();
@@ -276,6 +277,10 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             thingBuilder.withLabel(thing.getLabel());
             updateThing(thingBuilder.build());
         }
+    }
+
+    protected void refreshAllChannels() {
+        scheduler.execute(new DevicePolling());
     }
 
     private void refreshChannel(final Channel channel) {
@@ -296,6 +301,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Load and check device from Z-Way server
         DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
         if (deviceList != null) {
+            // 1.) Load only the current value from Z-Way server
             Device device = deviceList.getDeviceById(deviceId);
             if (device == null) {
                 logger.debug("ZAutomation device not found.");
@@ -311,7 +317,11 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof Doorlock) {
                 updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
             } else if (device instanceof SensorBinary) {
-                updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
+                if (channel.getAcceptedItemType().equals("Contact")) {
+                    updateState(channel.getUID(), getDoorlockState(level.toLowerCase()));
+                } else {
+                    updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
+                }
             } else if (device instanceof SensorMultilevel) {
                 updateState(channel.getUID(), getMultilevelState(level));
             } else if (device instanceof SwitchBinary) {
@@ -329,6 +339,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof ToggleButton) {
                 // TODO
             }
+
+            // 2.) Trigger update function, soon as the value has been updated, openHAB will be notified
+            device.update();
         } else {
             logger.warn("Devices not loaded");
         }
@@ -358,7 +371,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             }
         }
 
-        super.channelLinked(channelUID);
+        super.channelLinked(channelUID); // performs a refresh command
     }
 
     @Override
@@ -551,12 +564,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     /**
      * Transforms an value in an openHAB type.
      *
-     * @param multisensor value
+     * @param multilevel sensor value
      * @return transformed openHAB state
      */
-    private State getMultilevelState(String multisensorValue) {
-        if (multisensorValue != null) {
-            return new DecimalType(multisensorValue);
+    private State getMultilevelState(String multilevelSensorValue) {
+        if (multilevelSensorValue != null) {
+            return new DecimalType(multilevelSensorValue);
         }
         return UnDefType.UNDEF;
     }
@@ -573,6 +586,25 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 return OnOffType.ON;
             } else if (binarySwitchState.equals("off")) {
                 return OnOffType.OFF;
+            }
+        }
+        return UnDefType.UNDEF;
+    }
+
+    /**
+     * Transforms an value in an openHAB type.
+     * - ON to OPEN
+     * - OFF to CLOSED
+     *
+     * @param binary sensor state
+     * @return
+     */
+    private State getDoorlockState(String binarySensorState) {
+        if (binarySensorState != null) {
+            if (binarySensorState.equals("on")) {
+                return OpenClosedType.OPEN;
+            } else if (binarySensorState.equals("off")) {
+                return OpenClosedType.CLOSED;
             }
         }
         return UnDefType.UNDEF;
