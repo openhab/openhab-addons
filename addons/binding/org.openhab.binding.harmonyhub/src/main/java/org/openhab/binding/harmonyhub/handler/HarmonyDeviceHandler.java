@@ -191,7 +191,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
                 for (ControlGroup controlGroup : controlGroups) {
                     List<Function> functions = controlGroup.getFunction();
                     for (Function function : functions) {
-                        states.add(new StateOption(String.valueOf(function.getLabel()), function.getLabel()));
+                        states.add(new StateOption(function.getName(), function.getLabel()));
                     }
                 }
                 break;
