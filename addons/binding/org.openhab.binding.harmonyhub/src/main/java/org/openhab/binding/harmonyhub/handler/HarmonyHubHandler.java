@@ -293,7 +293,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             // add our activities as channel state options
             List<StateOption> states = new LinkedList<StateOption>();
             for (Activity activity : activities) {
-                states.add(new StateOption(String.valueOf(activity.getLabel()), activity.getLabel()));
+                states.add(new StateOption(activity.getLabel(), activity.getLabel()));
             }
 
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(
