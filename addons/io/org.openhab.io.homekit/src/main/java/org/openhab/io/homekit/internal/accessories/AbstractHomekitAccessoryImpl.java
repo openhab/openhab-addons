@@ -95,7 +95,8 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
         return updater;
     }
 
-    protected GenericItem getItem() {
-        return (GenericItem) getItemRegistry().get(getItemName());
+    @SuppressWarnings("unchecked")
+    protected T getItem() {
+        return (T) getItemRegistry().get(getItemName());
     }
 }
