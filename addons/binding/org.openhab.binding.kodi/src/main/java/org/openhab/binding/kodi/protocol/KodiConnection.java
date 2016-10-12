@@ -176,6 +176,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Application.SetVolume", params);
     }
 
+    public int getVolume() {
+        return volume;
+    }
+
     public synchronized void setMute(boolean mute) {
         JsonObject params = new JsonObject();
         params.addProperty("mute", mute);

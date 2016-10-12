@@ -128,7 +128,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
             case CHANNEL_PLAYURI:
                 if (command instanceof StringType) {
-                    connection.playURI(command.toString());
+                    playURI(command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // updateState(CHANNEL_PLAYURI, new StringType(""));
                 }
@@ -176,6 +176,23 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
         }
 
+    }
+
+    public void playURI(Command command) {
+        connection.playURI(command.toString());
+    }
+
+    public void playNotificationSoundURI(Command command) {
+        // TODO: implement this as notification sound and do not overwrite the currently played song.
+        connection.playURI(command.toString());
+    }
+
+    public PercentType getNotificationSoundVolume() {
+        return new PercentType(connection.getVolume());
+    }
+
+    public void setNotificationSoundVolume(PercentType volume) {
+        connection.setVolume(volume.intValue());
     }
 
     @Override
@@ -280,4 +297,5 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     public void updateArtist(String artist) {
         updateState(CHANNEL_ARTIST, new StringType(artist));
     }
+
 }

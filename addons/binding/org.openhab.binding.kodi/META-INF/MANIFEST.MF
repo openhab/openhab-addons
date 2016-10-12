@@ -17,6 +17,7 @@ Import-Package:
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -25,6 +26,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.jupnp.model.meta,
  org.jupnp.model.types,
+ org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
