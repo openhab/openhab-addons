@@ -46,7 +46,7 @@ There is one supported thing:
 
 ## Discovery
 Background discovery is not supported.
-You have to scan for new Amazon Dash Buttons. While Scanning you have to press the button in order to put it in your inbox it.
+You have to scan for new Amazon Dash Buttons. While Scanning you have to press the button in order to put it in your inbox.
 
 ## Thing Configuration
 ### Amazon Dash Button:
