@@ -142,9 +142,8 @@ public class ToonApiClient {
             throw new ToonConnectionException("invalid api response status: " + response.getStatus());
         }
         if (!response.hasEntity()) {
-            logger.debug("missing entity");
-            clientId = clientIdChecksum = null;
-            throw new ToonConnectionException("empty response from api");
+            logger.debug("empty response from api");
+            return new JsonObject();
         }
         JsonObject json = jsonParser.parse(response.readEntity(String.class)).getAsJsonObject();
         if (!json.get("success").getAsBoolean()) {
