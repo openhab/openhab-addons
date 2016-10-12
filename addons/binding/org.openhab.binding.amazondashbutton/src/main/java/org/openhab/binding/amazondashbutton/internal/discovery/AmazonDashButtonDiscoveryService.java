@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
-    @SuppressWarnings("unused")
+
     private static final Logger logger = LoggerFactory.getLogger(AmazonDashButtonDiscoveryService.class);
 
     private List<ArpRequestTracker> arpRequestListeners = new CopyOnWriteArrayList<ArpRequestTracker>();
@@ -52,23 +52,37 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
 
         for (final PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {
             ArpRequestTracker arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
-            arpRequestListeners.add(arpRequestListener);
-            arpRequestListener.startCapturing(new ArpRequestHandler() {
+            if (!pcapNetworkInterface.getAddresses().isEmpty()) {
 
-                @Override
-                public void handleArpRequest(ArpPacket arpPacket) {
-                    String macAdress = arpPacket.getHeader().getSrcHardwareAddr().toString();
-                    if (isAmazonVendor(macAdress)) {
-                        ThingUID dashButtonThing = new ThingUID(DASH_BUTTON_THING_TYPE, macAdress.replace(":", "-"));
-                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(dashButtonThing)
-                                .withLabel("Dash Button").withRepresentationProperty(macAdress)
-                                .withProperty(PROPERTY_MAC_ADDRESS, macAdress)
-                                .withProperty(PROPERTY_NETWORK_INTERFACE_NAME, pcapNetworkInterface.getName())
-                                .withProperty(PROPERTY_PACKET_INTERVAL, 5000).build();
-                        thingDiscovered(discoveryResult);
+                arpRequestListeners.add(arpRequestListener);
+                logger.info("Starting capturing for {}.", pcapNetworkInterface.getName());
+                arpRequestListener.startCapturing(new ArpRequestHandler() {
+
+                    @Override
+                    public void handleArpRequest(ArpPacket arpPacket) {
+                        String macAdress = arpPacket.getHeader().getSrcHardwareAddr().toString();
+
+                        if (isAmazonVendor(macAdress)) {
+                            logger.info("Captured a packet from {} which seems to be sent from a Amazon device.",
+                                    macAdress);
+                            ThingUID dashButtonThing = new ThingUID(DASH_BUTTON_THING_TYPE,
+                                    macAdress.replace(":", "-"));
+                            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(dashButtonThing)
+                                    .withLabel("Dash Button").withRepresentationProperty(macAdress)
+                                    .withProperty(PROPERTY_MAC_ADDRESS, macAdress)
+                                    .withProperty(PROPERTY_NETWORK_INTERFACE_NAME, pcapNetworkInterface.getName())
+                                    .withProperty(PROPERTY_PACKET_INTERVAL, 5000).build();
+                            thingDiscovered(discoveryResult);
+                        } else {
+                            logger.debug(
+                                    "Captured a packet from {} which is ignored as it's ot on the list of supported vendor prefixes.",
+                                    macAdress);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                logger.info("Ignoring {} as it is not bound to an address.", pcapNetworkInterface.getName());
+            }
         }
 
     }
