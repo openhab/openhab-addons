@@ -23,7 +23,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.amazondashbutton,
  org.openhab.binding.amazondashbutton.handler,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.amazondashbutton,
