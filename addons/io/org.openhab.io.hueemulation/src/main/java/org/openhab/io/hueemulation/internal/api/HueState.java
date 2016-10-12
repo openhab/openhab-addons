@@ -8,6 +8,10 @@
  */
 package org.openhab.io.hueemulation.internal.api;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+
 /**
  * Hue API state object
  *
@@ -30,10 +34,40 @@ public class HueState {
         super();
     }
 
-    public HueState(boolean on, short bri) {
+    public HueState(short bri) {
         super();
-        this.on = on;
-        this.bri = bri;
+        this.on = bri > 0;
+        this.bri = bri > 0 ? bri : -1;
+    }
+
+    public HueState(int h, short s, short b) {
+        super();
+        this.on = b > 0;
+        this.hue = h;
+        this.sat = s;
+        this.bri = b;
+    }
+
+    public HueState(HSBType hsb) {
+        this.on = hsb.getBrightness().intValue() > 0;
+        this.hue = hsb.getHue().intValue();
+        this.sat = hsb.getSaturation().shortValue();
+        this.bri = hsb.intValue() > 0 ? (short) ((hsb.intValue() * 255) / 100) : -1;
+    }
+
+    /**
+     * Converts this HueState to a HSBType
+     *
+     * @return
+     *         HSBType
+     */
+    public HSBType toHSBType() {
+        int brightness = 0;
+        if (this.on || this.bri > 0) {
+            // if on but brightness is less then 1, set HSB brightness to 100, otherwise convert Hue brightness
+            brightness = this.bri < 1 ? 100 : (int) (this.bri / 255.0 * 100);
+        }
+        return new HSBType(new DecimalType(this.hue), new PercentType(this.sat), new PercentType(brightness));
     }
 
     @Override

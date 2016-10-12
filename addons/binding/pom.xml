@@ -35,6 +35,7 @@
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.meteostick</module>
+    <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
@@ -48,12 +49,13 @@
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
+    <module>org.openhab.binding.systeminfo</module>
+    <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
-    <module>org.openhab.binding.systeminfo</module>
-    <module>org.openhab.binding.systeminfo.test</module>
   </modules>
 
 </project>

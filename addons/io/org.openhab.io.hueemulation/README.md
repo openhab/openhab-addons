@@ -17,6 +17,12 @@ Pairing can be turned on and off:
 org.openhab.hueemulation:pairingEnabled=false
 ```
 
+(Optional) For systems with multiple IP addresses the IP to use for UPNP may be specified, otherwise the first non loopback address will be used.
+
+```
+org.openhab.hueemulation:discoveryIp=192.168.1.100
+```
+
 ## Device Tagging
 To expose an item on the service, apply a supported tag (which are "Lighting", "Switchable", "TargetTemperature") to it.  The item label will be used as the Hue device name.
 

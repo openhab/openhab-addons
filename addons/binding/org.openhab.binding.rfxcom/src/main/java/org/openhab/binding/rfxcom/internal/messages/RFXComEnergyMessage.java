@@ -53,17 +53,16 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.COMMAND,
-            RFXComValueSelector.INSTANT_POWER, RFXComValueSelector.TOTAL_USAGE, RFXComValueSelector.INSTANT_AMPS,
-            RFXComValueSelector.TOTAL_AMP_HOURS);
+            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.INSTANT_POWER,
+            RFXComValueSelector.TOTAL_USAGE, RFXComValueSelector.INSTANT_AMPS, RFXComValueSelector.TOTAL_AMP_HOUR);
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
     public SubType subType = SubType.ELEC1;
     public int sensorId = 0;
     public byte count = 0;
-    public double instantAmps = 0;
-    public double totalAmpHours = 0;
+    public double instantAmp = 0;
+    public double totalAmpHour = 0;
     public double instantPower = 0;
     public double totalUsage = 0;
     public byte signalLevel = 0;
@@ -85,10 +84,12 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
         str += ", Sub type = " + subType;
         str += ", Device Id = " + getDeviceId();
         str += ", Count = " + count;
-        str += ", Instant Amps = " + instantAmps;
-        str += ", Total Amp Hours = " + totalAmpHours;
+        str += ", Instant Amps = " + instantAmp;
+        str += ", Total Amp Hours = " + totalAmpHour;
         str += ", Signal level = " + signalLevel;
         str += ", Battery level = " + batteryLevel;
+        str += ", Instant Power = " + instantPower;
+        str += ", Total Usage = " + totalUsage;
 
         return str;
     }
@@ -108,14 +109,15 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
         count = data[6];
 
         // all usage is reported in Watts based on 230V
-        instantPower = ((data[7] & 0xFF) << 24 | (data[8] & 0xFF) << 16 | (data[9] & 0xFF) << 8 | (data[10] & 0xFF))
-                / TOTAL_USAGE_CONVERSION_FACTOR;
+        instantPower = ((data[7] & 0xFF) << 24 | (data[8] & 0xFF) << 16 | (data[9] & 0xFF) << 8 | (data[10] & 0xFF));
+
         totalUsage = ((data[11] & 0xFF) << 40 | (data[12] & 0xFF) << 32 | (data[13] & 0xFF) << 24
-                | (data[14] & 0xFF) << 16 | (data[15] & 0xFF) << 8 | (data[16] & 0xFF));
+                | (data[14] & 0xFF) << 16 | (data[15] & 0xFF) << 8 | (data[16] & 0xFF)) / TOTAL_USAGE_CONVERSION_FACTOR;
+        ;
 
         // convert to amps so external code can determine the watts based on local voltage
-        instantAmps = instantPower / WATTS_TO_AMPS_CONVERSION_FACTOR;
-        totalAmpHours = totalUsage / WATTS_TO_AMPS_CONVERSION_FACTOR;
+        instantAmp = instantPower / WATTS_TO_AMPS_CONVERSION_FACTOR;
+        totalAmpHour = totalUsage / WATTS_TO_AMPS_CONVERSION_FACTOR;
 
         signalLevel = (byte) ((data[17] & 0xF0) >> 4);
         batteryLevel = (byte) (data[17] & 0x0F);
@@ -184,11 +186,11 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
 
             } else if (valueSelector == RFXComValueSelector.INSTANT_AMPS) {
 
-                state = new DecimalType(instantAmps);
+                state = new DecimalType(instantAmp);
 
-            } else if (valueSelector == RFXComValueSelector.TOTAL_AMP_HOURS) {
+            } else if (valueSelector == RFXComValueSelector.TOTAL_AMP_HOUR) {
 
-                state = new DecimalType(totalAmpHours);
+                state = new DecimalType(totalAmpHour);
 
             } else {
 

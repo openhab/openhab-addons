@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,8 @@
 package org.openhab.binding.astro.discovery;
 
 import static org.openhab.binding.astro.AstroBindingConstants.*;
+
+import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -43,7 +45,12 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting Astro discovery scan");
-        String result = HttpUtil.executeUrl("GET", "http://ip-api.com/json/?fields=lat,lon", 5000);
+        String result = null;
+        try {
+            result = HttpUtil.executeUrl("GET", "http://ip-api.com/json/?fields=lat,lon", 5000);
+        } catch (IOException e) {
+            logger.warn("Can't get latitude and longitude for the current location: {}", e);
+        }
         String lat = StringUtils.trim(StringUtils.substringBetween(result, "\"lat\":", ","));
         String lon = StringUtils.trim(StringUtils.substringBetween(result, "\"lon\":", "}"));
 

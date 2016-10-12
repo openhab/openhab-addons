@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -99,7 +99,7 @@ public class XmlRpcServer implements RpcServer {
                 }
 
                 XmlRpcResponse response = new XmlRpcResponse(
-                        new ByteArrayInputStream(request.get("postData").getBytes("ISO-8859-1")));
+                        new ByteArrayInputStream(request.get("postData").getBytes()), config.getEncoding());
                 if (TRACE_ENABLED) {
                     logger.trace("Server parsed XmlRpcMessage:\n{}", response);
                 }

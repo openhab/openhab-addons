@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@ package org.openhab.binding.harmonyhub.handler;
 
 import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.HARMONY_DEVICE_THING_TYPE;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +49,7 @@ import net.whistlingfish.harmony.config.HarmonyConfig;
 /**
  * The {@link HarmonyDeviceHandler} is responsible for handling commands for Harmony Devices, which are
  * sent to one of the channels. It also is responsible for dynamically creating the button press channel
- * based on the devices available button press functions.
+ * based on the device's available button press functions.
  *
  * @author Dan Cunningham - Initial contribution
  *
@@ -112,6 +112,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             updateDeviceStatus(getBridge().getStatus());
         }
     };
+
+    @Override
+    public void dispose() {
+        factory.removeChannelTypesForThing(getThing().getUID());
+    }
 
     @Override
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
@@ -186,7 +191,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
                 for (ControlGroup controlGroup : controlGroups) {
                     List<Function> functions = controlGroup.getFunction();
                     for (Function function : functions) {
-                        states.add(new StateOption(String.valueOf(function.getLabel()), function.getLabel()));
+                        states.add(new StateOption(function.getName(), function.getLabel()));
                     }
                 }
                 break;
@@ -195,13 +200,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             ThingBuilder thingBuilder = editThing();
 
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(
-                    HarmonyHubBindingConstants.BINDING_ID + ":" + HarmonyHubBindingConstants.CHANNEL_BUTTON_PRESS);
+                    getThing().getUID().getAsString() + ":" + HarmonyHubBindingConstants.CHANNEL_BUTTON_PRESS);
 
             ChannelType channelType = new ChannelType(channelTypeUID, false, "String", "Send Button Press",
-                    "Send a Button Press to a Device", null, null,
-                    new StateDescription(null, null, null, null, false, states),
-                    new URI(HarmonyHubBindingConstants.BINDING_ID, HarmonyHubBindingConstants.CHANNEL_BUTTON_PRESS,
-                            null));
+                    "Send a button press to device " + getThing().getLabel(), null, null,
+                    new StateDescription(null, null, null, null, false, states), null);
 
             factory.addChannelType(channelType);
 
@@ -210,7 +213,17 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
                             "String")
                     .withType(channelTypeUID).build();
 
-            thingBuilder.withChannels(channel);
+            // replace existing buttonPress with updated one
+            List<Channel> currentChannels = getThing().getChannels();
+            List<Channel> newChannels = new ArrayList<Channel>();
+            for (Channel c : currentChannels) {
+                if (!c.getUID().equals(channel.getUID())) {
+                    newChannels.add(c);
+                }
+            }
+            newChannels.add(channel);
+            thingBuilder.withChannels(newChannels);
+
             updateThing(thingBuilder.build());
         } catch (Exception e) {
             logger.debug("Could not add button channels to device " + logName, e);
