@@ -16,10 +16,10 @@ import org.eclipse.smarthome.core.types.State;
  * This enumeration represents the different mode types of a MAX! heating thermostat.
  *
  * @author Andreas Heil (info@aheil.de)
- *         * @author Marcel Verpaalen - OH2 update
+ * @author Marcel Verpaalen - OH2 update
  * @since 1.4.0
  */
-public enum ThermostatModeType implements PrimitiveType,State,Command {
+public enum ThermostatModeType implements PrimitiveType, State, Command {
     AUTOMATIC,
     MANUAL,
     VACATION,
@@ -28,5 +28,10 @@ public enum ThermostatModeType implements PrimitiveType,State,Command {
     @Override
     public String format(String pattern) {
         return String.format(pattern, this.toString());
+    }
+
+    @Override
+    public String toFullString() {
+        return toString();
     }
 }
