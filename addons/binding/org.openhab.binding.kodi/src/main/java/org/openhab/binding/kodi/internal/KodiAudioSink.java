@@ -41,7 +41,7 @@ public class KodiAudioSink implements AudioSink {
     private AudioHTTPServer audioHTTPServer;
     private KodiHandler handler;
 
-    public SonosAudioSink(KodiHandler handler, AudioHTTPServer audioHTTPServer) {
+    public KodiAudioSink(KodiHandler handler, AudioHTTPServer audioHTTPServer) {
         this.handler = handler;
         this.audioHTTPServer = audioHTTPServer;
     }

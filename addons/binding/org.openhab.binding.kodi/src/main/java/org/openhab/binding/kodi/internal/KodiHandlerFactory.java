@@ -10,9 +10,12 @@ package org.openhab.binding.kodi.internal;
 
 import static org.openhab.binding.kodi.KodiBindingConstants.*;
 
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.smarthome.core.audio.AudioHTTPServer;
+import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -45,14 +48,14 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
             KodiHandler handler = new KodiHandler(thing);
 
-            // register the speaker as an audio sink
+            // register the kodi as an audio sink
             KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
-            return handler
+            return handler;
         }
 
         return null;
@@ -66,4 +69,13 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
             reg.unregister();
         }
     }
+
+    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = audioHTTPServer;
+    }
+
+    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = null;
+    }
+
 }

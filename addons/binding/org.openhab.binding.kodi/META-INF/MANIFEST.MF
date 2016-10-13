@@ -9,8 +9,6 @@ Bundle-ClassPath: .,
  lib/async-http-client-1.9.39.jar,
  lib/netty-3.10.5.Final.jar
 Import-Package: 
- org.openhab.binding.kodi,
- org.openhab.binding.kodi.handler,
  com.google.common.base,
  com.google.common.collect,
  com.google.gson,
@@ -26,6 +24,8 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.jupnp.model.meta,
  org.jupnp.model.types,
+ org.openhab.binding.kodi,
+ org.openhab.binding.kodi.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
