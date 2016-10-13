@@ -15,6 +15,7 @@ package org.openhab.voice.marytts.internal;
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -133,7 +134,7 @@ public class MaryTTSService implements TTSService {
             try {
                 AudioInputStream audioInputStream = marytts.generateAudio(text);
                 audioStream = new MaryTTSAudioStream(audioInputStream, maryTTSVoiceAudioFormat);
-            } catch (SynthesisException e) {
+            } catch (SynthesisException | IOException e) {
                 throw new TTSException("Error generating an AudioStream", e);
             }
 
