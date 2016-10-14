@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@ package org.openhab.binding.harmonyhub.handler;
 
 import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -100,7 +100,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof StringType) {
             try {
-                client.startActivityByName(command.toString());
+                try {
+                    int actId = Integer.parseInt(command.toString());
+                    client.startActivity(actId);
+                } catch (NumberFormatException ignored) {
+                    client.startActivityByName(command.toString());
+                }
             } catch (Exception e) {
                 logger.error("Could not start activity", e);
             }
@@ -162,6 +167,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     public void dispose() {
         listeners.clear();
         disconnectFromHub();
+        factory.removeChannelTypesForThing(getThing().getUID());
     }
 
     @Override
@@ -184,8 +190,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
      * Connects to a Harmony Hub using credentials obtained through network discovery
      * x
      */
-    private void connectToHub() {
-
+    private synchronized void connectToHub() {
+        disconnectFromHub();
         final String host = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_HOST);
         final String accountId = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_ACCOUNTID);
         final String sessionId = getThing().getProperties().get(HarmonyHubBindingConstants.HUB_PROPERTY_SESSIONID);
@@ -287,16 +293,15 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             // add our activities as channel state options
             List<StateOption> states = new LinkedList<StateOption>();
             for (Activity activity : activities) {
-                states.add(new StateOption(String.valueOf(activity.getLabel()), activity.getLabel()));
+                states.add(new StateOption(activity.getLabel(), activity.getLabel()));
             }
 
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(
-                    HarmonyHubBindingConstants.BINDING_ID + ":" + HarmonyHubBindingConstants.CHANNEL_CURRENT_ACTIVITY);
+                    getThing().getUID() + ":" + HarmonyHubBindingConstants.CHANNEL_CURRENT_ACTIVITY);
 
-            ChannelType channelType = new ChannelType(channelTypeUID, true, "String", "Current Activity",
-                    "Current Activity", null, null, new StateDescription(null, null, null, "%s", false, states),
-                    new URI(HarmonyHubBindingConstants.BINDING_ID, HarmonyHubBindingConstants.CHANNEL_CURRENT_ACTIVITY,
-                            null));
+            ChannelType channelType = new ChannelType(channelTypeUID, false, "String", "Current Activity",
+                    "Current activity for " + getThing().getLabel(), null, null,
+                    new StateDescription(null, null, null, "%s", false, states), null);
 
             factory.addChannelType(channelType);
 
@@ -307,7 +312,17 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                             "String")
                     .withType(channelTypeUID).build();
 
-            thingBuilder.withChannel(channel);
+            // replace existing currentActivity with updated one
+            List<Channel> currentChannels = getThing().getChannels();
+            List<Channel> newChannels = new ArrayList<Channel>();
+            for (Channel c : currentChannels) {
+                if (!c.getUID().equals(channel.getUID())) {
+                    newChannels.add(c);
+                }
+            }
+            newChannels.add(channel);
+            thingBuilder.withChannels(newChannels);
+
             updateThing(thingBuilder.build());
         } catch (Exception e) {
             logger.debug("Could not add current activity channel to hub", e);

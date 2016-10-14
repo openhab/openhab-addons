@@ -39,12 +39,22 @@ public class HomekitTaggedItem {
             if (item instanceof DimmerItem) {
                 tag = "Dimmable" + tag;
             }
-            if (!isMemberOfRootGroup(item, itemRegistry)) {
-                homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
-            }
-            if (homekitDeviceType == null) {
+            /*
+             * Is the item part of a tagged group AND does it have a matching CharacteristicType ?
+             * This matches items with tags that require a parent group like the "TargetTemperature" in
+             * thermostats
+             */
+            if (isMemberOfRootGroup(item, itemRegistry)) {
                 homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tag);
             }
+
+            /*
+             * If its not a characteristic type for a group item, see if we have a matching device type.
+             */
+            if (homekitCharacteristicType == null) {
+                homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
+            }
+
             if (homekitDeviceType != null || homekitCharacteristicType != null) {
                 break;
             }

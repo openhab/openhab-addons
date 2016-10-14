@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider
+import org.eclipse.smarthome.core.thing.type.ChannelKind
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID
 import org.eclipse.smarthome.core.types.State
 import org.eclipse.smarthome.core.types.UnDefType
@@ -139,7 +140,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         Configuration channelConfig  = new Configuration()
         channelConfig.put("priority", priority)
         channelConfig.put("pid",new BigDecimal(pid))
-        Channel channel = new Channel(channelUID,channelTypeUID,acceptedItemType,channelConfig,new HashSet(),new HashMap(),null,null)
+        Channel channel = new Channel(channelUID,channelTypeUID,acceptedItemType,ChannelKind.STATE,channelConfig,new HashSet(),new HashMap(),null,null)
 
         systemInfoThing = ThingBuilder.create(thingTypeUID,thingUID).withConfiguration(thingConfiguration).withChannel(channel).build();
 

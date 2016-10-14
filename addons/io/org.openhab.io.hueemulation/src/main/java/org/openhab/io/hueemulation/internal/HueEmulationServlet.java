@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,6 +39,7 @@ import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -49,6 +48,7 @@ import org.openhab.io.hueemulation.internal.api.HueCreateUser;
 import org.openhab.io.hueemulation.internal.api.HueDataStore;
 import org.openhab.io.hueemulation.internal.api.HueDevice;
 import org.openhab.io.hueemulation.internal.api.HueErrorResponse;
+import org.openhab.io.hueemulation.internal.api.HueGroup;
 import org.openhab.io.hueemulation.internal.api.HueState;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
@@ -67,6 +67,7 @@ import com.google.gson.Gson;
 public class HueEmulationServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(HueEmulationServlet.class);
     private static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
+    private static final String CONFIG_DISCOVERY_IP = "discoveryIp";
     private static final String PATH = "/api";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
@@ -81,12 +82,6 @@ public class HueEmulationServlet extends HttpServlet {
             ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "udn");
 
     private static final String[] SUPPORTED_TAGS = new String[] { "Switchable", "Lighting", "TargetTemperature" };
-
-    /**
-     * This parses "/api/{username}/{lights}/{id}/{state}"
-     */
-    private static final Pattern PATH_PATTERN = Pattern
-            .compile(PATH + "/([^/]+)(?:(?:/(lights)/?([^/]+)?/?(state)?)?)?");
 
     private Gson gson = new Gson();
     private HttpService httpService;
@@ -104,8 +99,6 @@ public class HueEmulationServlet extends HttpServlet {
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            disco = new HueEmulationUpnpServer(PATH + "/discovery.xml", getUDN());
-            disco.start();
             if (USER_FILE.exists()) {
                 FileInputStream fis = null;
                 try {
@@ -122,6 +115,21 @@ public class HueEmulationServlet extends HttpServlet {
     }
 
     protected void modified(Map<String, ?> config) {
+
+        if (disco != null) {
+            disco.shutdown();
+            disco = null;
+        }
+
+        Object obj = config.get(CONFIG_DISCOVERY_IP);
+        String ip = obj != null ? (String) obj : null;
+        try {
+            disco = new HueEmulationUpnpServer(PATH + "/discovery.xml", getUDN(), ip);
+            disco.start();
+        } catch (IOException e) {
+            logger.error("Could not start UPNP server for discovery", e);
+        }
+
         Object pairingString = config.get(CONFIG_PAIRING_ENABLED);
         if (pairingString == null) {
             pairingEnabled = false;
@@ -196,12 +204,10 @@ public class HueEmulationServlet extends HttpServlet {
         }
 
         // All other API requests
-        Matcher m = PATH_PATTERN.matcher(path);
-        if (m.matches()) {
-            String userName = m.group(1);
-            boolean lightsReq = m.group(2) != null;
-            String id = m.group(3);
-            boolean stateReq = m.group(4) != null;
+        String[] pathParts = path.replace("/api/", "").split("/");
+
+        if (pathParts.length > 0) {
+            String userName = pathParts[0];
 
             /**
              * Some devices (Amazon Echo) seem to rely on the bridge to add an unknown user if pairing is on
@@ -214,31 +220,60 @@ public class HueEmulationServlet extends HttpServlet {
                 return;
             }
 
-            if (stateReq) {
-                /**
-                 * /api/{username}/{lights}/{id}/{state}
-                 */
-                apiState(id, req, resp);
-            } else if (id != null) {
-                /**
-                 * /api/{username}/{lights}/{id}
-                 */
-                apiLight(id, req, resp);
-            } else if (lightsReq) {
-                /**
-                 * /api/{username}/{lights}
-                 */
-                apiLights(req, resp);
-            } else if (userName != null) {
+            if (pathParts.length == 1) {
                 /**
                  * /api/{username}
                  */
                 apiDataStore(req, resp);
             } else {
-                apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "Hue resource not available");
+                String function = pathParts[1];
+                if ("lights".equals(function)) {
+                    switch (pathParts.length) {
+                        case 2:
+                            /**
+                             * /api/{username}/lights
+                             */
+                            apiLights(req, resp);
+                            break;
+                        case 3:
+                            /**
+                             * /api/{username}/lights/{id}
+                             */
+                            apiLight(pathParts[2], req, resp);
+                            break;
+                        case 4:
+                            /**
+                             * /api/{username}/lights/{id}/state
+                             */
+                            apiState(pathParts[2], req, resp);
+                            break;
+                        default:
+                            break;
+                    }
+                } else if ("groups".equals(function)) {
+                    switch (pathParts.length) {
+                        case 2:
+                            /**
+                             * /api/{username}/group
+                             */
+                            emptyResponse(req, resp);
+                            break;
+                        case 3:
+                            /**
+                             * /api/{username}/group/{id}
+                             */
+                            if ("0".equals(pathParts[2])) {
+                                apiGroupZero(req, resp);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "Hue resource not available");
+                }
             }
         }
-
     }
 
     /**
@@ -258,20 +293,43 @@ public class HueEmulationServlet extends HttpServlet {
             // will throw exception if not found
             Item item = itemRegistry.getItem(id);
             HueState state = gson.fromJson(req.getReader(), HueState.class);
-            logger.debug("State " + state);
-            String value;
-            if (state.bri > -1) {
-                value = String.valueOf(Math.round(state.bri / 255.0 * 100));
+            HSBType hsb = state.toHSBType();
+            logger.debug("HuState " + state);
+            logger.debug("HSBType " + hsb);
+            Command command = null;
+            if (hsb.getBrightness().intValue() > 0) {
+                // if state is on then send HSB, Brightness or ON
+                if (item.getAcceptedCommandTypes().contains(HSBType.class)) {
+                    command = hsb;
+                } else {
+                    // try and set the brightness level first
+                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), hsb.getBrightness().toString());
+                    if (command == null) {
+                        // if the item does not accept a number or String type, try ON
+                        command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
+                    }
+                }
             } else {
-                value = state.on ? "ON" : "OFF";
+                // if state is off, then send 0 or 0FF
+                command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "0");
+                if (command == null) {
+                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "OFF");
+                }
             }
-            Command command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), value);
-            eventPublisher.post(ItemEventFactory.createCommandEvent(id, command));
-            PrintWriter out = resp.getWriter();
-            out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
-            out.close();
+
+            if (command != null) {
+                logger.debug("sending {} to {}", command, id);
+                eventPublisher.post(ItemEventFactory.createCommandEvent(id, command));
+                PrintWriter out = resp.getWriter();
+                out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
+                out.close();
+            } else {
+                logger.error("Item {} does not accept Decimal, ON/OFF or String types", id);
+                apiServerError(req, resp, HueErrorResponse.INTERNAL_ERROR,
+                        "The Hue device does not respond to that command");
+            }
         } catch (ItemNotFoundException e) {
-            logger.debug("Item not found: " + id);
+            logger.debug("Item not found: {}", id);
             apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "The Hue device could not be found");
         }
     }
@@ -306,6 +364,21 @@ public class HueEmulationServlet extends HttpServlet {
     public void apiLights(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();
         out.write(gson.toJson(getHueDeviceNames()));
+        out.close();
+    }
+
+    /**
+     * Hue API call to get a listing of Group 0
+     *
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
+    public void apiGroupZero(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        PrintWriter out = resp.getWriter();
+        String[] lights = getHueDeviceNames().keySet().toArray(new String[0]);
+        HueState action = new HueState();
+        out.write(gson.toJson(new HueGroup("0", lights, action)));
         out.close();
     }
 
@@ -363,6 +436,19 @@ public class HueEmulationServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         HueErrorResponse e = new HueErrorResponse(error, req.getRequestURI(), description);
         out.write(gson.toJson(e));
+    }
+
+    /**
+     * Returns a empty ("{}") JSON response
+     *
+     * @param req
+     * @param resp
+     * @throws IOException
+     */
+    public void emptyResponse(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        PrintWriter out = resp.getWriter();
+        out.write("{}");
+        out.close();
     }
 
     /**
@@ -434,13 +520,20 @@ public class HueEmulationServlet extends HttpServlet {
      */
     private HueDevice itemToDevice(Item item) {
         State itemState = item.getState();
-        short bri = 0;
-        if (itemState instanceof DecimalType) {
-            bri = (short) ((((DecimalType) itemState).intValue() * 255) / 100);
+        HueState hueState;
+        if (itemState instanceof HSBType) {
+            HSBType color = (HSBType) itemState;
+            hueState = new HueState(color);
+        } else if (itemState instanceof DecimalType) {
+            short bri = (short) ((((DecimalType) itemState).intValue() * 255) / 100);
+            hueState = new HueState(bri);
         } else if (itemState instanceof OnOffType) {
-            bri = (short) (((OnOffType) itemState) == OnOffType.ON ? 255 : 0);
+            short bri = (short) (((OnOffType) itemState) == OnOffType.ON ? 255 : 0);
+            hueState = new HueState(bri);
+        } else {
+            hueState = new HueState((short) 0);
         }
-        HueState hueState = new HueState(bri > 0, bri);
+
         HueDevice d = new HueDevice(hueState, item.getLabel(), item.getName());
         return d;
     }
