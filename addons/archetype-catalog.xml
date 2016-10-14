@@ -5,7 +5,7 @@
     <archetype>
       <groupId>org.eclipse.smarthome.archetype</groupId>
       <artifactId>org.eclipse.smarthome.archetype.binding</artifactId>
-      <version>0.8.0-SNAPSHOT</version>
+      <version>0.9.0-SNAPSHOT</version>
       <repository>https://repo.eclipse.org/content/repositories/smarthome-snapshots</repository>
       <description>Archetype for creating new bindings for openHAB 2.</description>
     </archetype>

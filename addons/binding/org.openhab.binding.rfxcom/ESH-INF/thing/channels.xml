@@ -90,14 +90,14 @@
 		<item-type>Number</item-type>
 		<label>Instant Amp</label>
 		<description>Instant current in Amperes</description>
-		<state pattern="%d A" readOnly="true"></state>
+		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="totalamphours" advanced="true">
+	<channel-type id="totalamphour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Ampere-hours</label>
 		<description>Used "energy" in ampere-hours</description>
-		<state pattern="%d Ah" readOnly="true"></state>
+		<state pattern="%.2f Ah" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="temperature">

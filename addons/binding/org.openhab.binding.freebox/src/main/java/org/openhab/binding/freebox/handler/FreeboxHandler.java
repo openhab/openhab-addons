@@ -11,6 +11,8 @@ package org.openhab.binding.freebox.handler;
 import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -289,14 +291,21 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             } catch (Throwable t) {
                 if (t instanceof FreeboxException) {
-                    logger.error("FreeboxException: {}", ((FreeboxException) t).getMessage());
+                    logger.error("Server state job - FreeboxException: {}", ((FreeboxException) t).getMessage());
                 } else if (t instanceof Exception) {
-                    logger.error("Exception: {}", ((Exception) t).getMessage());
+                    logger.error("Server state job - Exception: {}", ((Exception) t).getMessage());
                 } else if (t instanceof Error) {
-                    logger.error("Error: {}", ((Error) t).getMessage());
+                    logger.error("Server state job - Error: {}", ((Error) t).getMessage());
                 } else {
-                    logger.error("Unexpected error");
+                    logger.error("Server state job - Unexpected error");
                 }
+                StringWriter sw = new StringWriter();
+                if ((t instanceof RuntimeException) && (t.getCause() != null)) {
+                    t.getCause().printStackTrace(new PrintWriter(sw));
+                } else {
+                    t.printStackTrace(new PrintWriter(sw));
+                }
+                logger.error(sw.toString());
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }

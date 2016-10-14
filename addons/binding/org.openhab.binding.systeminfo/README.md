@@ -21,6 +21,7 @@ System information Binding provides operating system and hardware information in
 The binding supports only one thing type - **computer**. This thing represents a system with one storage volume, one display device and one network adapter.
 
 The thing has the following properties:
+
  - `cpu_logicalCores` - Number of CPU logical cores
  - `cpu_physicalCores` - Number of CPU physical cores
  - `os_manufacturer` - The manufacturer of the operating system
@@ -34,23 +35,28 @@ If multiple storage or display devices support is needed, new thing type has to 
 The discovery service implementation tries to resolve the computer name. If the resolving process fails, the computer name is set to "Unknown". In both cases it creates a Discovery Result with thing type  **computer**.
 
 When [this issue] (https://github.com/eclipse/smarthome/issues/1118)  is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them). At the moment this is not supported.
+
 ## Binding configuration
 
 No binding configuration required.
 
 ## Thing configuration
+
 The configuration of the Thing gives the user the possibility to update channels at different intervals.
 
 The thing has two configuration parameters:
+
    * **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
    * **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
 That means that by default configuration:
+
    * channels with priority set to 'High' are updated every second
    * channels with priority set to 'Medium' - every minute 
    * channels with priority set to 'Low' only at initializing or at Refresh command.
 
 For more info see [channel configuration](#channel-configuration)
+
 ## Channels
 
 The binding support several channel group. Each channel group, contains one or more channels. In the list below, you can find, how are channel group and channels id`s related.
@@ -76,7 +82,9 @@ The binding support several channel group. Each channel group, contains one or m
          **channel** `ip, mac, networkDisplayName, networkName, packagesSent, packagesReceived, dataSent, dataReceived`
    * **group** `process` (pid)
          **channel** `load, used, name, threads, path`
+         
 The groups marked with "deviceIndex" may have device index attached to the Channel Group.
+
  - channel ::= chnanel_group & (deviceIndex) & # channel_id
  - deviceIndex ::= number > 0
  - (e.g. *storage1#available*)
@@ -89,7 +97,7 @@ The groups marked with "deviceIndex" may have device index attached to the Chann
 In the table is shown more detailed information about each Channel type.
 The binding introduces the following channels:
 
-| Chnanel ID | Channel Description | Supported item type | Default priority | Advanced |
+| Channel ID | Channel Description | Supported item type | Default priority | Advanced |
 | ------------- | ------------- |------------|----------|----------|
 | load  | Recent load in percents  | Number | High | False |
 | load1 | Load in percents for the last 1 minutes | Number | Medium | True |
@@ -126,6 +134,7 @@ The binding introduces the following channels:
 All channels can change its configuration parameters at runtime. The binding will trigger the necessary changes (reduce or increase the refresh time, change channel priority or the process that is being tracked).
 
 Each of the channels has a default configuration parameter - priority. It has the following options:
+
  - **High**
  - **Medium**
  - **Low**

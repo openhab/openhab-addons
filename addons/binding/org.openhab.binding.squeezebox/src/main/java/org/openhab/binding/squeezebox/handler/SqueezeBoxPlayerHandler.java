@@ -310,6 +310,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void volumeChangeEvent(String mac, int volume) {
+        volume = Math.min(100, volume);
+        volume = Math.max(0, volume);
         updateChannel(mac, CHANNEL_VOLUME, new PercentType(volume));
     }
 
@@ -409,7 +411,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (prevState == null || !prevState.equals(state)) {
                 logger.trace("Updating channel {} for thing {} with mac {} to state {}", channelID, getThing().getUID(),
                         mac, state);
-                updateState(channelID, state);
+                try {
+                    updateState(channelID, state);
+                } catch (Exception e) {
+                    logger.error("Could not update channel", e);
+                }
             }
         }
     }

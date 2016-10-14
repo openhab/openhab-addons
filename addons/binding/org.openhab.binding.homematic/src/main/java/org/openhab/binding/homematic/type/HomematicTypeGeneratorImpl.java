@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -138,7 +138,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 // generate group
                 ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
                 ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID, Locale.getDefault());
-                if (groupType == null) {
+                if (groupType == null || device.isGatewayExtras()) {
                     String groupLabel = String.format("%s",
                             WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
                     groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
