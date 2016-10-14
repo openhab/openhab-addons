@@ -11,6 +11,7 @@ package org.openhab.binding.milight.handler;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -64,6 +65,9 @@ public class MilightLedHandler extends BaseThingHandler {
                     } else {
                         state.setOn();
                     }
+                } else if (command instanceof PercentType) {
+                    PercentType p = (PercentType) command;
+                    state.setBrightness(p.intValue());
                 }
                 break;
             }
@@ -72,8 +76,18 @@ public class MilightLedHandler extends BaseThingHandler {
                 break;
             }
             case MilightBindingConstants.CHANNEL_BRIGHTNESS: {
-                DecimalType d = (DecimalType) command;
-                state.setBrightness(d.intValue());
+                if (command instanceof OnOffType) {
+                    OnOffType s = (OnOffType) command;
+                    if (s == OnOffType.OFF) {
+                        state.setOff();
+                    } else {
+                        state.setOn();
+                    }
+                } else if (command instanceof PercentType) {
+                    PercentType p = (PercentType) command;
+                    state.setBrightness(p.intValue());
+                }
+
                 break;
             }
             case MilightBindingConstants.CHANNEL_TEMP: {
