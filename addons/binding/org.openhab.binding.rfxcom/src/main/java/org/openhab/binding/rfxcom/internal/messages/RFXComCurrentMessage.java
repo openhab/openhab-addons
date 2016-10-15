@@ -29,10 +29,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComCurrentMessage extends RFXComBaseMessage {
 
     public enum SubType {
-        ELEC1(0),
-        ELEC2(1),
-        ELEC3(2),
-
+        UNSUPPORTED(0),
+        ELEC1(1),
         UNKNOWN(255);
 
         private final int subType;
@@ -56,7 +54,7 @@ public class RFXComCurrentMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.ELEC2;
+    public SubType subType = SubType.ELEC1;
     public int sensorId = 0;
     public byte count = 0;
     public double channel1Amps = 0;
@@ -104,8 +102,6 @@ public class RFXComCurrentMessage extends RFXComBaseMessage {
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         count = data[6];
 
-
-        // all usage is reported in Watts based on 230V
         channel1Amps = ((data[7] & 0xFF) << 8 | (data[8] & 0xFF)) /10.0;
         channel2Amps = ((data[9] & 0xFF) << 8 | (data[10] & 0xFF)) /10.0;
         channel3Amps = ((data[11] & 0xFF) << 8 | (data[12] & 0xFF)) /10.0;
