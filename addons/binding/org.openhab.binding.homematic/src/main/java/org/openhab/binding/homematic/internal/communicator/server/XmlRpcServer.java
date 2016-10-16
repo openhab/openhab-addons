@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -69,7 +69,6 @@ public class XmlRpcServer implements RpcServer {
 
         try {
             xmlRpcHTTPD.start();
-            System.err.println("start");
             if (TRACE_ENABLED) {
                 xmlRpcHTTPD.dumpStdErr();
             }
@@ -83,7 +82,6 @@ public class XmlRpcServer implements RpcServer {
      */
     @Override
     public void shutdown() {
-        System.err.println("shutdown");
         if (xmlRpcHTTPD != null) {
             logger.debug("Stopping XML-RPC server");
             try {
