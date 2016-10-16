@@ -92,8 +92,8 @@ public class XmlRpcClient extends RpcClient {
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
 
-            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes()), config.getEncoding())
-                    .getResponseData();
+            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes(config.getEncoding())),
+                    config.getEncoding()).getResponseData();
             return new RpcResponseParser(request).parse(data);
         } catch (UnknownRpcFailureException ex) {
             throw ex;
