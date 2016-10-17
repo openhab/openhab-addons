@@ -122,7 +122,6 @@ public class XmlRpcServer implements RpcServer {
                 logger.error(ex.getMessage(), ex);
                 respWriter.println(XML_EMPTY_STRING);
             }
-            response.setStatus(HttpServletResponse.SC_OK);
             baseRequest.setHandled(true);
         }
 
