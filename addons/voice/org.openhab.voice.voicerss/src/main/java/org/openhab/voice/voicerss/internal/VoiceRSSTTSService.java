@@ -7,13 +7,6 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.voice.voicerss.internal;
-/**
- * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
@@ -98,10 +92,10 @@ public class VoiceRSSTTSService implements TTSService {
 
 	@Override
 	public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-		logger.info("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
+		logger.debug("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
 		// Validate known api key
 		if (this.apiKey == null) {
-			throw new TTSException("Missing API key, configure first to use this service");
+			throw new TTSException("Missing API key, configure it first before using");
 		}
 		// Validate arguments
 		// trim text
@@ -131,8 +125,10 @@ public class VoiceRSSTTSService implements TTSService {
 			if (cacheAudioFile == null) {
 				throw new TTSException("Could not read from VoiceRSS service");
 			}
-			AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
+			AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile);
 			return audioStream;
+		} catch (AudioException ex) {
+			throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
 		} catch (IOException ex) {
 			throw new TTSException("Could not read from VoiceRSS service: " + ex.getMessage(), ex);
 		}
@@ -195,11 +191,8 @@ public class VoiceRSSTTSService implements TTSService {
 
 	String getCacheFolderName() {
 		String folderName = ConfigConstants.getUserDataFolder();
-		if (!folderName.endsWith(File.separator)) {
-			folderName += File.separator;
-		}
-		folderName += CACHE_FOLDER_NAME;
-		return folderName;
+		// we assume that this folder does NOT have a trailing separator
+		return folderName + File.separator + CACHE_FOLDER_NAME;
 	}
 
 	@Override

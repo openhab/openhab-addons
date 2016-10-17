@@ -1,4 +1,4 @@
-# VoiceRSS TTS Extension for Eclipse SmartHome
+# VoiceRSS Text-to-Speech
 
 ## Overview
 
@@ -14,20 +14,20 @@ Replace API_KEY with your personal API key for simple testing of different API c
 ```
 # EN
 https://api.voicerss.org/?key=API_KEY&hl=en-us&src=Hello%20World
-https://api.voicerss.org/?key=33b96cd755ee4f44924309ee8808c62f&hl=en-us&c=WAV&src=Hello%20World
-https://api.voicerss.org/?key=33b96cd755ee4f44924309ee8808c62f&hl=en-us&f=44khz_16bit_mono&src=Hello%20World
-https://api.voicerss.org/?key=33b96cd755ee4f44924309ee8808c62f&hl=en-gb&f=44khz_16bit_stereo&src=Hello%20World
+https://api.voicerss.org/?key=API_KEY&hl=en-us&c=WAV&src=Hello%20World
+https://api.voicerss.org/?key=API_KEY&hl=en-us&f=44khz_16bit_mono&src=Hello%20World
+https://api.voicerss.org/?key=API_KEY&hl=en-gb&f=44khz_16bit_stereo&src=Hello%20World
 
 # DE
-https://api.voicerss.org/?key=33b96cd755ee4f44924309ee8808c62f&hl=de-de&f=44khz_16bit_mono&src=Hallo%20Welt
+https://api.voicerss.org/?key=API_KEY&hl=de-de&f=44khz_16bit_mono&src=Hallo%20Welt
 ```
 
 ## Configuration
 
-You have to add your API_KEY to your configuration, e.g. by added a file "voicerss.cfg" to services folder, with this entry:
+You have to add your API_KEY to your configuration, e.g. by adding a file "voicerss.cfg" to the services folder, with this entry:
 
 ```
-org.openhab.voicerss.api_key=1234567890
+apiKey=1234567890
 ```
 
 It actually supports only one voice: "voicerss:default", which is configured to use 44kHz, mono, 16 bit sampling quality.

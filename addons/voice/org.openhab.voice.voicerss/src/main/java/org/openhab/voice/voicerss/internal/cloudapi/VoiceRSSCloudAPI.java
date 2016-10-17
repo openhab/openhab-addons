@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.audio.AudioFormat;
+
 /**
  * Interface which represents the functionality needed from the VoiceRSS TTS
  * service.
@@ -29,7 +31,9 @@ public interface VoiceRSSCloudAPI {
 	Set<Locale> getAvailableLocales();
 
 	/**
-	 * Get all supported audio formats by the TTS service.
+	 * Get all supported audio formats by the TTS service. This includes MP3,
+	 * WAV and more audio formats as used in APIs. About supported audio
+	 * formats, see {@link AudioFormat}
 	 * 
 	 * @return A set of all audio formats supported
 	 */

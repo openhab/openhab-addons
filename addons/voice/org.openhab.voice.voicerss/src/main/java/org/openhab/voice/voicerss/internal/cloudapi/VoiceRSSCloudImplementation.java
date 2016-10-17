@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,26 +43,37 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
 
 	private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImplementation.class);
 
+	private static Set<String> supportedAudioFormats = getSupportedAudioFormats();
+	private static Set<Locale> supportedLocales = getSupportedLocales();
+
 	/**
 	 * Will support only "MP3" for the moment.
 	 */
+	private static Set<String> getSupportedAudioFormats() {
+		Set<String> formats = new HashSet<String>();
+		formats.add(AudioFormat.CODEC_MP3);
+		return formats;
+	}
+
 	@Override
 	public Set<String> getAvailableAudioFormats() {
-		Set<String> formats = new HashSet<String>();
-		formats.add("MP3");
-		return formats;
+		return supportedAudioFormats;
 	}
 
 	/**
 	 * Will support only 3 locales for the moment.
 	 */
-	@Override
-	public Set<Locale> getAvailableLocales() {
+	private static Set<Locale> getSupportedLocales() {
 		Set<Locale> locales = new HashSet<Locale>();
 		locales.add(Locale.forLanguageTag("en-us"));
 		locales.add(Locale.forLanguageTag("en-gb"));
 		locales.add(Locale.forLanguageTag("de-de"));
 		return locales;
+	}
+
+	@Override
+	public Set<Locale> getAvailableLocales() {
+		return supportedLocales;
 	}
 
 	/**
@@ -94,17 +106,15 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
 	public InputStream getTextToSpeech(String apiKey, String text, String locale, String audioFormat)
 			throws IOException {
 		String url = createURL(apiKey, text, locale, audioFormat);
-		logger.info("Call {}", url);
+		logger.debug("Call {}", url);
 		URLConnection connection = new URL(url).openConnection();
-		// mark our call to be visible where we make the requests
-		connection.setRequestProperty("user-agent", "EclipseSmartHome/1.0");
 
 		// we will check return codes. The service will ALWAYS return a HTTP
 		// 200, but for error messages, it will return a text/plain format and
 		// the error message in body
 		int status = ((HttpURLConnection) connection).getResponseCode();
 		if (HttpURLConnection.HTTP_OK != status) {
-			logger.error("Call {} returned HTTP {}", status);
+			logger.error("Call {} returned HTTP {}", url, status);
 			throw new IOException("Could not read from service: HTTP code" + status);
 		}
 		if (logger.isTraceEnabled()) {
@@ -118,6 +128,12 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
 		if (contentType.contains("text/plain")) {
 			byte[] bytes = new byte[256];
 			is.read(bytes, 0, 256);
+			// close before throwing an exception
+			try {
+				is.close();
+			} catch (IOException ex) {
+				// ignore
+			}
 			throw new IOException(
 					"Could not read audio content, service return an error: " + new String(bytes, "UTF-8"));
 		} else {
