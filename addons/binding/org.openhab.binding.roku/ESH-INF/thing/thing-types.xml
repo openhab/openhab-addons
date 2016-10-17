@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="roku"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="roku">
+        <label>Roku</label>
+        <description>This is a stand alone roku device that allows various functional control and displays statuses/states</description>
+        <channels>
+            <channel id="status" typeId="status" />
+            <channel id="active" typeId="active" />
+            <channel id="icon" typeId="icon" />
+            <channel id="udn" typeId="udn" />
+            <channel id="serial-number" typeId="serial-number" />
+            <channel id="device-id" typeId="device-id" />
+            <channel id="advertising-id" typeId="advertising-id" />
+            <channel id="vendor" typeId="vendor" />
+            <channel id="model-name" typeId="model-name" />
+            <channel id="model-number" typeId="model-number" />
+            <channel id="model-region" typeId="model-region" />
+            <channel id="wifi-mac" typeId="wifi-mac" />
+            <channel id="ethernet-mac" typeId="ethernet-mac" />
+            <channel id="network-type" typeId="network-type" />
+            <channel id="user-device-name" typeId="user-device-name" />
+            <channel id="software-version" typeId="software-version" />
+            <channel id="software-build" typeId="software-build" />
+            <channel id="secure-device" typeId="secure-device" />
+            <channel id="language" typeId="language" />
+            <channel id="country" typeId="country" />
+            <channel id="locale" typeId="locale" />
+            <channel id="time-zone" typeId="time-zone" />
+            <channel id="time-zone-offset" typeId="time-zone-offset" />
+            <channel id="supports-suspended" typeId="supports-suspended" />
+            <channel id="developer-enabled" typeId="developer-enabled" />
+            <channel id="search-enabled" typeId="search-enabled" />
+            <channel id="voice-search-enabled" typeId="voice-search-enabled" />
+            <channel id="notifications-enabled" typeId="notifications-enabled" />
+            <channel id="headphones-connected" typeId="headphones-connected" />
+            <!-- Future Functionality
+            <channel id="appbrowser" typeId="appbrowser" />
+            -->
+            <channel id="home" typeId="home" />
+            <channel id="play" typeId="play" />
+            <channel id="back" typeId="back" />
+            <channel id="rev" typeId="rev" />
+            <channel id="fwd" typeId="fwd" />
+            <channel id="select" typeId="select" />
+            <channel id="left" typeId="left" />
+            <channel id="right" typeId="right" />
+            <channel id="down" typeId="down" />
+            <channel id="up" typeId="up" />
+            <channel id="instant-replay" typeId="instant-replay" />
+            <channel id="info" typeId="info" />
+            <channel id="backspace" typeId="backspace" />
+            <channel id="search" typeId="search" />
+            <channel id="enter" typeId="enter" />
+        </channels>
+        
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>Network Address</label>
+                <description>The IP or host name of the Roku Device</description>
+                <context>network-address</context>
+            </parameter>
+            <parameter name="port" type="integer" required="true"
+                min="1" max="65335">
+                <label>Port</label>
+                <description>Port of the Roku Device to control</description>
+                <default>8060</default>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" required="true"
+                min="1" max="65335">
+                <label>Refresh Interval</label>
+                <description>Refresh Interval of Roku Device to control</description>
+                <default>30</default>
+            </parameter> 
+        </config-description>
+    </thing-type>
+
+    <!-- Roku variables -->
+    <channel-type id="status">
+        <item-type>String</item-type>
+        <label>Roku Status</label>
+        <description>Displays the status of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="active">
+        <item-type>String</item-type>
+        <label>Active App Name</label>
+        <description>Displays the active application your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="icon">
+        <item-type>Image</item-type>
+        <label>Active App Icon</label>
+        <description>Displays the icon of the running app on the Roku device</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="udn">
+        <item-type>String</item-type>
+        <label>UDN</label>
+        <description>Displays the UDN of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="serial-number">
+        <item-type>String</item-type>
+        <label>Serial Number</label>
+        <description>Displays the serial number of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="device-id">
+        <item-type>String</item-type>
+        <label>Device ID</label>
+        <description>Displays the device id of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="advertising-id">
+        <item-type>String</item-type>
+        <label>Advertising ID</label>
+        <description>Displays the advertising id of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="vendor">
+        <item-type>String</item-type>
+        <label>Vendor</label>
+        <description>Displays the vendor of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="model-name">
+        <item-type>String</item-type>
+        <label>Model Name</label>
+        <description>Displays the model name of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="model-number">
+        <item-type>String</item-type>
+        <label>Model Number</label>
+        <description>Displays the model number of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="model-region">
+        <item-type>String</item-type>
+        <label>Model Region</label>
+        <description>Displays the model region of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="wifi-mac">
+        <item-type>String</item-type>
+        <label>Wifi MAC</label>
+        <description>Displays the wifi mac address of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="ethernet-mac">
+        <item-type>String</item-type>
+        <label>Ethernet MAC</label>
+        <description>Displays the ethernet mac address of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="network-type">
+        <item-type>String</item-type>
+        <label>Active Network Device</label>
+        <description>Displays the active network device type of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="user-device-name">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>Displays the user defined name of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="software-version">
+        <item-type>String</item-type>
+        <label>Software Version</label>
+        <description>Displays the software version of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="software-build">
+        <item-type>String</item-type>
+        <label>Software Build</label>
+        <description>Displays the software build of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="secure-device">
+        <item-type>String</item-type>
+        <label>Secure Device</label>
+        <description>Displays the secure device status of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="language">
+        <item-type>String</item-type>
+        <label>Language</label>
+        <description>Displays the language of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="country">
+        <item-type>String</item-type>
+        <label>Country</label>
+        <description>Displays the country of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="locale">
+        <item-type>String</item-type>
+        <label>Locale</label>
+        <description>Displays the locale of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="time-zone">
+        <item-type>String</item-type>
+        <label>Time Zone</label>
+        <description>Displays the time zone of your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="time-zone-offset">
+        <item-type>String</item-type>
+        <label>Time Zone Offset</label>
+        <description>Displays the time zone offset your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="supports-suspended">
+        <item-type>String</item-type>
+        <label>Supports Suspended</label>
+        <description>Displays the support for suspended on your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="developer-enabled">
+        <item-type>String</item-type>
+        <label>Developer Enabled</label>
+        <description>Displays the developer enabled on your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="search-enabled">
+        <item-type>String</item-type>
+        <label>Search Enabled</label>
+        <description>Displays the search enabled on your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="voice-search-enabled">
+        <item-type>String</item-type>
+        <label>Roku Voice Search Enabled</label>
+        <description>Roku device voice search enabled</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="notifications-enabled">
+        <item-type>String</item-type>
+        <label>Notifications Enabled</label>
+        <description>Displays the notifications enabled on your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="headphones-connected">
+        <item-type>String</item-type>
+        <label>Headphones Connected</label>
+        <description>Displays the headphones connected on your Roku device</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <!-- Future Functionality
+    <channel-type id="appbrowser">
+        <item-type>String</item-type>
+        <label>Installed App Menu</label>
+        <description>Displays all roku install applications and id's</description>
+        <state readOnly="true" />
+    </channel-type>
+    -->
+    <!-- Commands -->
+    <channel-type id="home">
+        <item-type>Switch</item-type>
+        <label>Home</label>
+        <description>emulates a home press on the roku device</description>
+    </channel-type>
+    
+    <channel-type id="play">
+        <item-type>Switch</item-type>
+        <label>Play</label>
+        <description>emulates a play press on the roku device</description>
+    </channel-type>
+    
+    <channel-type id="back">
+        <item-type>Switch</item-type>
+        <label>Back</label>
+        <description>emulates a back press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="rev">
+        <item-type>Switch</item-type>
+        <label>Reverse</label>
+        <description>emulates a reverse press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="fwd">
+        <item-type>Switch</item-type>
+        <label>Forward</label>
+        <description>emulates a forward press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="select">
+        <item-type>Switch</item-type>
+        <label>Select</label>
+        <description>emulates a select press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="left">
+        <item-type>Switch</item-type>
+        <label>Left</label>
+        <description>emulates a left press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="right">
+        <item-type>Switch</item-type>
+        <label>Right</label>
+        <description>emulates a right press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="down">
+        <item-type>Switch</item-type>
+        <label>Down</label>
+        <description>emulates a down press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="up">
+        <item-type>Switch</item-type>
+        <label>Up</label>
+        <description>emulates a up press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="instant-replay">
+        <item-type>Switch</item-type>
+        <label>Instant Replay</label>
+        <description>emulates a instance replay press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="info">
+        <item-type>Switch</item-type>
+        <label>Info</label>
+        <description>emulates a info press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="backspace">
+        <item-type>Switch</item-type>
+        <label>Backspace</label>
+        <description>emulates a backspace press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="search">
+        <item-type>Switch</item-type>
+        <label>Search</label>
+        <description>emulates a search press on the roku device</description>
+    </channel-type>
+        
+    <channel-type id="enter">
+        <item-type>Switch</item-type>
+        <label>Enter</label>
+        <description>emulates a enter press on the roku device</description>
+    </channel-type>
+</thing:thing-descriptions>
