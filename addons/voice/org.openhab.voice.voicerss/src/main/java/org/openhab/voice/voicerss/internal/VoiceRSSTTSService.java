@@ -69,7 +69,7 @@ public class VoiceRSSTTSService implements TTSService {
 
 			logger.info("Using VoiceRSS cache folder {}", getCacheFolderName());
 		} catch (Throwable t) {
-			logger.error("Failed to activate VoiceRSS: " + t.getMessage(), t);
+			logger.error("Failed to activate VoiceRSS: {}", t.getMessage(), t);
 		}
 	}
 
