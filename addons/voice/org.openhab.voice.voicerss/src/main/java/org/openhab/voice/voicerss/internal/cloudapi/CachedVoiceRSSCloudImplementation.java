@@ -66,10 +66,10 @@ public class CachedVoiceRSSCloudImplementation extends VoiceRSSCloudImplementati
 			// return from cache
 			return audioFileInCache;
 		} catch (FileNotFoundException ex) {
-			logger.warn("Could not write {} to cache, return null", audioFileInCache, ex);
+			logger.warn("Could not write " + audioFileInCache + " to cache, return null", ex);
 			return null;
 		} catch (IOException ex) {
-			logger.error("Could not write {} to cache, return null", audioFileInCache, ex);
+			logger.error("Could not write " + audioFileInCache + " to cache, return null", ex);
 			return null;
 		}
 	}
@@ -96,11 +96,11 @@ public class CachedVoiceRSSCloudImplementation extends VoiceRSSCloudImplementati
 			return fileName;
 		} catch (UnsupportedEncodingException ex) {
 			// should not happen
-			logger.error("Could not create MD5 hash for '{}'", text, ex);
+			logger.error("Could not create MD5 hash for '" + text + "'", ex);
 			return null;
 		} catch (NoSuchAlgorithmException ex) {
 			// should not happen
-			logger.error("Could not create MD5 hash for '{}'", text, ex);
+			logger.error("Could not create MD5 hash for '" + text + "'", ex);
 			return null;
 		}
 	}
