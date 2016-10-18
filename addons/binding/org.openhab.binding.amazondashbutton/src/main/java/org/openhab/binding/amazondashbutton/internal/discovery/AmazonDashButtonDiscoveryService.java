@@ -48,7 +48,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
 
-        List<PcapNetworkInterface> pcapNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
+        Iterable<PcapNetworkInterface> pcapNetworkInterfaces = PcapUtil.getBoundNetworkInterfaces();
 
         for (final PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {
             ArpRequestTracker arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);

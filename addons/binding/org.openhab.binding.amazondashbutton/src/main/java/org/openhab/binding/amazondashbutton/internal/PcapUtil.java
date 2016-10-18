@@ -5,10 +5,15 @@ import java.util.List;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.Pcaps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  *
- * a simple utitlity class which encapsulates {@link Pcaps} and which catches checked exceptions and transforms them
+ * A simple utitlity class which encapsulates {@link Pcaps} and which catches checked exceptions and transforms them
  * into {@link RuntimeException}s.
  *
  * @author Oliver Libutzki - Initial contribution
@@ -16,14 +21,29 @@ import org.pcap4j.core.Pcaps;
  */
 public class PcapUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger(PcapUtil.class);
+
     /**
-     * Returns all pcap network interfaces
+     * Returns all pcap network interfaces relying on {@link Pcaps#findAllDevs()}. The list is filtered as all
+     * interfaces which are not bound to an address are excluded.
      *
-     * @return A list of all {@link PcapNetworkInterface}s
+     * @return An {@link Iterable} of all {@link PcapNetworkInterface}s which are bound to an address
      */
-    public static List<PcapNetworkInterface> getAllNetworkInterfaces() {
+    public static Iterable<PcapNetworkInterface> getBoundNetworkInterfaces() {
         try {
-            return Pcaps.findAllDevs();
+            final List<PcapNetworkInterface> allNetworkInterfaces = Pcaps.findAllDevs();
+            return Iterables.filter(allNetworkInterfaces, new Predicate<PcapNetworkInterface>() {
+
+                @Override
+                public boolean apply(PcapNetworkInterface networkInterface) {
+                    final boolean suitable = !networkInterface.getAddresses().isEmpty();
+                    if (!suitable) {
+                        logger.debug("{} is not a suitable network interfaces as no addresses are bound to it.",
+                                networkInterface.getName());
+                    }
+                    return suitable;
+                }
+            });
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);
         }
