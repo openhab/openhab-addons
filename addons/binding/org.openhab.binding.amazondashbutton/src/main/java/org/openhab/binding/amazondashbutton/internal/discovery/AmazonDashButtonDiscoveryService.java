@@ -75,7 +75,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService {
                             thingDiscovered(discoveryResult);
                         } else {
                             logger.debug(
-                                    "Captured a packet from {} which is ignored as it's ot on the list of supported vendor prefixes.",
+                                    "Captured a packet from {} which is ignored as it's not on the list of supported vendor prefixes.",
                                     macAdress);
                         }
                     }

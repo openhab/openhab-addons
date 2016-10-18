@@ -9,7 +9,6 @@ package org.openhab.binding.amazondashbutton.handler;
 
 import static org.openhab.binding.amazondashbutton.AmazonDashButtonBindingConstants.PRESS;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -46,7 +45,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        // There are no commands to be handled
     }
 
     @Override
@@ -62,14 +61,15 @@ public class AmazonDashButtonHandler extends BaseThingHandler {
             return;
         }
 
-        ArpRequestTracker arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
+        arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
         arpRequestListener.startCapturing(new ArpRequestHandler() {
 
             @Override
             public void handleArpRequest(ArpPacket arpPacket) {
                 long now = System.currentTimeMillis();
                 if (lastCommandHandled + packetInterval < now) {
-                    postCommand(PRESS, OnOffType.ON);
+                    ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
+                    triggerChannel(pressChannel);
                     lastCommandHandled = now;
                 }
             }
