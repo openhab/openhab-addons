@@ -18,6 +18,7 @@
   <modules>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.astro</module>
+    <module>org.openhab.binding.astro.test</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.chromecast</module>

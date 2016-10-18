@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Astro Binding Tests
+Bundle-SymbolicName: org.openhab.binding.astro.test
+Bundle-Version: 2.0.0.qualifier
+Fragment-Host: org.openhab.binding.astro;bundle-version="2.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: groovy.lang,
+ org.codehaus.groovy.reflection,
+ org.codehaus.groovy.runtime,
+ org.codehaus.groovy.runtime.callsite,
+ org.codehaus.groovy.runtime.typehandling,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.items.events,
+ org.eclipse.smarthome.core.library.items,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.osgi.framework
