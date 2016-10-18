@@ -45,6 +45,7 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
 
 	private static Set<String> supportedAudioFormats = getSupportedAudioFormats();
 	private static Set<Locale> supportedLocales = getSupportedLocales();
+	private static Set<String> supportedVoices = getSupportedVoices();
 
 	/**
 	 * Will support only "MP3" for the moment.
@@ -79,12 +80,16 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
 	/**
 	 * Will support only a default voice with good quality.
 	 */
-	@Override
-	public Set<String> getAvailableVoices() {
+	private static Set<String> getSupportedVoices() {
 		// only one default voice, for every locale
 		Set<String> voices = new HashSet<String>();
 		voices.add("default");
 		return voices;
+	}
+
+	@Override
+	public Set<String> getAvailableVoices() {
+		return supportedVoices;
 	}
 
 	/**
