@@ -10,6 +10,11 @@ by providing host and port.
 Initially a thing for the main zone will be created. This will trigger a zone
 detection internally and all available additional zones will appear as new things.
 
+If your receiver is using menu-based net radio navigation, you can use this binding to
+select radio stations from a configured menu. By default, `Bookmarks/__My_Favorites` is
+used, but it can be overridden with the thing setting `NETRADIOMENU`. The German favorites
+folder, for example, is `Lesezeichen/__My_Favorites`. 
+
 ## Features
 The implemented channels are so far:
 
@@ -18,6 +23,7 @@ The implemented channels are so far:
 * `volume`: Openhab Type `Dimmer`, Set's the receivers Volume percent Value.
 * `input`: Openhab Type `String`, Set's the input selection, depends on your receiver's real inputs. Examples: HDMI1, HDMI2, AV4, TUNER, NET RADIO, etc. Those names can be changed on the receiver. A list of available inputs is fetched internally, but there is now way to make that available to sitemaps at the moment.
 * `surroundProgram`: Openhab Type `String`, Set's the surround Mode. Examples: 2ch Stereo, 7ch Stereo, Hall in Munic, Straight, Surround Decoder. A list of available modes is already defined but is not available for sitemaps at the moment due to openhab2 limitations.
+* `netradiostation`: Openhab Type `String`, Select the net radio station by name in the configured menu folder.
  
 ## Example
 
@@ -32,7 +38,8 @@ The implemented channels are so far:
      Switch Yamaha_Mute             "Mute [%s]"            
      String Yamaha_Input         "Input [%s]"              
      String Yamaha_Surround         "surround [%s]"        
-     Number Yamaha_NetRadio  "Net Radio" <netRadio> 
+     Number Yamaha_NetRadio  "Net Radio" <netRadio>   # Preset-based net radio
+     String Yamaha_NetRadioStation  "Net Radio [%s]" <netRadio>   # Menu-based net radio
 	 
 	 # Manually linking
 	 # Replace the UPNP UDN (here: 9ab0c000_f668_11de_9976_00a0de88ee65) with the real UDN provided by your UPNP discovery.
@@ -45,10 +52,12 @@ The implemented channels are so far:
      String Yamaha_Input         "Input [%s]"              {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:input"}
      String Yamaha_Surround         "surround [%s]"        {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:surroundProgram"}
      Number Yamaha_NetRadio  "Net Radio" <netRadio>        {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:netradiotune"}
+      String Yamaha_NetRadioStation  "Net Radio" <netRadio>        {channel="yamahareceiver:yamahaAV:9ab0c000_f668_11de_9976_00a0de88ee65:MAIN_ZONE:netradiostation"}
  
      .sitemap
-
+     
      Selection item=Yamaha_NetRadio label="Sender" mappings=[1="N Joy", 2="Radio Sport", 3="RDU", 4="91ZM", 5="Hauraki"]
+     Selection item=Yamaha_NetRadioStation label="Sender" mappings=["N Joy"="N Joy", "Radio Sport"="Radio Sport", "RDU"="RDU","91ZM" ="91ZM", "Hauraki"="Hauraki"]
      Selection item=Yamaha_Input mappings=[HDMI1="BlueRay",HDMI2="Satellite","NET RADIO"="NetRadio",TUNER="Tuner"]
      Selection item=Yamaha_Surround label="Surround Mode" mappings=["2ch Stereo"="2ch","7ch Stereo"="7ch"]
 	 

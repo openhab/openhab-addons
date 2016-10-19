@@ -30,6 +30,7 @@ public class YamahaReceiverState {
     public List<String> inputNames = new ArrayList<String>();
     private final YamahaReceiverCommunication com;
     public int netRadioChannel = 0;
+    public String netRadioStation = "";
 
     // Some AVR information
     public String name = "";
@@ -57,8 +58,8 @@ public class YamahaReceiverState {
      *
      * @throws IOException
      */
-    public void updateState() throws IOException {
-        com.updateState(this);
+    public void updateState(boolean includeNetradioStation) throws IOException {
+        com.updateState(this, includeNetradioStation);
     }
 
     public Zone getZone() {
@@ -160,6 +161,11 @@ public class YamahaReceiverState {
     public void setNetRadio(int netRadioChannel) throws IOException {
         com.setNetRadio(netRadioChannel);
         this.netRadioChannel = netRadioChannel;
+    }
+
+    public void setNetRadio(String menuDir, String netRadioStation) throws IOException {
+        com.setNetRadio(menuDir, netRadioStation, name);
+        this.netRadioStation = netRadioStation;
     }
 
     public String getHost() {
