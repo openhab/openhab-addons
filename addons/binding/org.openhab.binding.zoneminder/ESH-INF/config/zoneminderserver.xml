@@ -56,9 +56,9 @@
                 <default>10</default>
             </parameter>
             
-            <parameter name="refresh_interval" type="integer" required="true" min="1" max="65335">
+            <parameter name="refresh_interval" type="integer" required="true" min="0" max="65335">
                 <label>API Polling interval (low priority)</label>
-                <description>Seconds between each call to ZoneMinder Server API to refresh low priority values in OpenHAB. Server DiskUsage in ZoneMinder is an example of a value in this group</description>
+                <description>Seconds between each call to ZoneMinder Server API to refresh low priority values in OpenHAB. Server DiskUsage in ZoneMinder is an example of a value in this group. Default value is '0', which means that the feature is disabled (no data transferred).</description>
                 <default>0</default>
             </parameter>
             
