@@ -33,6 +33,7 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
     private String user;
     private String password;
     private Integer refresh_interval;
+    private Integer priority_refresh_interval;
 
     @Override
     public String getConfigId() {
@@ -95,11 +96,19 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
         this.password = password;
     }
 
-    public Integer getRefreshInterval() {
+    public Integer getLowPriorityRefreshInterval() {
         return refresh_interval;
     }
 
-    public void setRefreshInterval(Integer refreshInterval) {
+    public void setLowPriorityRefreshInterval(Integer refreshInterval) {
         this.refresh_interval = refreshInterval;
+    }
+
+    public Integer getPriorityRefreshInterval() {
+        return priority_refresh_interval;
+    }
+
+    public void setPriorityRefreshInterval(Integer refreshInterval) {
+        this.priority_refresh_interval = refreshInterval;
     }
 }

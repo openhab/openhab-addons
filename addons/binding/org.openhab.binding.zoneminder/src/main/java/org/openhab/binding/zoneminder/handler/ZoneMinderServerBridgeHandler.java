@@ -173,9 +173,11 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
             logger.debug("   Port (Telnet)       {}", telnetPort);
             logger.debug("   Server Path         {}", zoneMinderServerPath);
             logger.debug("   User:               {}", userName);
+            logger.debug("   Low Prio. refresh:  {}", config.getLowPriorityRefreshInterval());
+            logger.debug("   High Prio. refresh: {}", config.getPriorityRefreshInterval());
             // logger.debug(" Password: {}", password);
 
-            startMonitor(config.getRefreshInterval());
+            startMonitor(config.getPriorityRefreshInterval());
         } catch (Exception ex) {
             logger.error("'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'", ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
