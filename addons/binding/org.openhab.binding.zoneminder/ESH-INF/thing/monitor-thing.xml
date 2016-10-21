@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zoneminder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Supported ZoneMinder devices and features -->
+    <thing-type id="zoneminder-monitor-thing">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="zoneminder-server-bridge" />
+        </supported-bridge-type-refs>
+
+        <label>ZoneMinder Monitor</label>
+        <description>Camera in ZoneMinder</description>
+
+        <channels>
+            <channel id="name" typeId="monitor_name" />
+            <channel id="enabled" typeId="monitor_enabled" />
+            <channel id="trigger-event" typeId="monitor_trigger_event" />
+            <channel id="function" typeId="monitor_function" />
+            <channel id="daemon-capture-state" typeId="monitor_zmc_daemon_state" />
+            <channel id="daemon-capture-statustext" typeId="monitor_zmc_daemon_statustext" />
+            <channel id="daemon-analysis-state" typeId="monitor_zma_daemon_state" />
+            <channel id="daemon-analysis-statustext" typeId="monitor_zma_daemon_statustext" />
+            <channel id="daemon-frame-state" typeId="monitor_zmf_daemon_state" />
+            <channel id="daemon-frame-statustext" typeId="monitor_zmf_daemon_statustext" />
+        </channels>
+
+<!--            
+            <channel id="disk-usage" typeId="monitor_disk_usage" />
+
+            <channel id="online" typeId="monitor_online" />
+            <channel id="id" typeId="monitor_id" />                
+            <channel id="type" typeId="monitor_type" />
+
+            <channel id="event" typeId="monitor_event" />
+
+            <channel id="image-width" typeId="monitor_image_width" />
+            <channel id="image-height" typeId="monitor_image_height" />
+                 
+            <channel id="event-prefix" typeId="monitor_eventprefix" />
+                
+            <channel id="analysis-fps" typeId="monitor_analysis_fps" />
+                
+            <channel id="max-fps" typeId="monitor_max_fps" />
+            
+            <channel id="alarm-max-fps" typeId="monitor_alarm_max_fps" />
+     -->                       
+
+        <config-description-ref uri="thing-type:zonemindermonitor:config" />
+    </thing-type>
+
+
+    <!-- Channel definitions of ZoneMinder Server -->
+    <channel-type id="monitor_id">
+        <item-type>String</item-type>
+        <label>Monitor Id</label>
+        <description>ZoneMinder Server Id of Monitor</description>
+        <category>General</category>
+        <state readOnly="true" />
+    </channel-type>
+
+
+    <channel-type id="monitor_name">
+        <item-type>String</item-type>
+        <label>ZoneMinder Name</label>
+        <description>Name of Monitor in ZoneMinder Server </description>
+        <category>General</category>
+        <state readOnly="true" />
+    </channel-type>
+ 
+    <channel-type id="monitor_type">
+        <item-type>String</item-type>
+        <label>ZoneMinder Monitor type</label>
+        <description>Type of Monitor in ZoneMinder Server </description>
+        <category>General</category>
+        <state readOnly="true" />
+    </channel-type>
+           
+    <channel-type id="monitor_online">
+        <item-type>Switch</item-type>
+        <label>Online</label>
+        <description>Switch telling if the monitor is alive</description>
+        <category>Status</category>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="monitor_enabled">
+        <item-type>Switch</item-type>
+        <label>Enabled</label>
+        <description>Showing the value of the checkbox 'enabled' in ZoneMinder for the monitor.</description>
+        <category>Status</category>
+        <state readOnly="false" />
+    </channel-type>
+
+    <channel-type id="monitor_function">
+        <item-type>String</item-type>
+        <label>Operating mode</label>
+        <description>Current Monitor Function: None, Monitor, Modect, Record, Mocord, Nodect</description>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="none">None</option>
+                <option value="monitor">Monitor</option>
+                <option value="modect">Modect</option>
+                <option value="record">Record</option>
+                <option value="mocord">Mocord</option>
+                <option value="nodect">Nodect</option>
+            </options>
+        </state>
+    </channel-type>
+
+<!-- 
+    <channel-type id="monitor_event">
+        <item-type>Contact</item-type>
+        <label>Actual event state</label>
+        <description>Contact is on whenever the monitor in ZoneMonitor is recording</description>
+        <category>Event</category>
+        <state readOnly="true" />
+    </channel-type>
+     -->
+    <channel-type id="monitor_trigger_event">
+        <item-type>Switch</item-type>
+        <label>Start / stop recording</label>
+        <description>Switch is ON whenever the the monitor is recording, and OFF when the monitor is idle</description>
+        <category>Trigger</category>
+        <state readOnly="false" />
+    </channel-type>
+    <channel-type id="monitor_image_width">
+        <item-type>Number</item-type>
+        <label>Width of recorded image</label>
+        <description>Width of recorded image</description>
+        <category>Status</category>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="monitor_image_height">
+        <item-type>Number</item-type>
+        <label>Height of recorded image</label>
+        <description>Height of recorded image</description>
+        <category>Status</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="monitor_disk_usage">    
+        <item-type>Number</item-type>
+        <label>Diskusage</label>
+        <description>ZoneMinder Disk Usage for this monitor</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="monitor_zmc_daemon_state">
+        <item-type>Switch</item-type>
+        <label>zmc daemon State</label>
+        <description>State of ZoneMinder Capture daemon for this monitor</description>
+        <category>Daemons</category>
+        <state readOnly="true"/>
+    </channel-type>        
+    <channel-type id="monitor_zmc_daemon_statustext">
+        <item-type>String</item-type>
+        <label>zmc daemon Statustext</label>
+        <description>Status text for ZoneMinder Capture daemon for this monitor</description>
+        <category>Daemons</category>
+        <state readOnly="true"/>
+    </channel-type>        
+
+    <channel-type id="monitor_zma_daemon_state">
+        <item-type>Switch</item-type>
+        <label>zma daemon State</label>
+        <description>State of ZoneMinder Analysis daemon for this monitor</description>
+        <category>Daemons</category>
+        <state readOnly="true"/>
+    </channel-type>        
+    <channel-type id="monitor_zma_daemon_statustext">
+        <item-type>String</item-type>
+        <label>zma daemon Statustext</label>
+        <description>Status text for ZoneMinder Analysis daemon for this monitor</description>
+        <category>Daemons</category>
+        <state readOnly="true"/>
+    </channel-type>        
+
+
+
+    <channel-type id="monitor_zmf_daemon_state">
+        <item-type>Switch</item-type>
+        <label>zmf daemon State</label>
+        <description>State of ZoneMinder Frame daemon for this monitor</description>
+        <category>Daemons</category>
+        <state readOnly="true"/>
+    </channel-type>        
+    <channel-type id="monitor_zmf_daemon_statustext">
+        <item-type>String</item-type>
+        <label>zmf daemon Statustext</label>
+        <description>Status text for ZoneMinder Frame daemon for this monitor</description>
+        <category>Daemons</category>
+        <state readOnly="true"/>
+    </channel-type>        
+            
+</thing:thing-descriptions>
