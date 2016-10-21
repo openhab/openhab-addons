@@ -4,9 +4,9 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Supported ZoneMinder devices and features -->
-    <thing-type id="zoneminder-monitor-thing">
+    <thing-type id="zmmonitor">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="zoneminder-server-bridge" />
+            <bridge-type-ref id="zmserver" />
         </supported-bridge-type-refs>
 
         <label>ZoneMinder Monitor</label>

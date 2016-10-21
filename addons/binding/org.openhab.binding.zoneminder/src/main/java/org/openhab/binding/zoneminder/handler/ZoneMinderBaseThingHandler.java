@@ -49,9 +49,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /** Unique Id of the thing in zoneminder. */
     private String zoneMinderId;
 
-    // Threading and Job related variables
-    // protected ScheduledFuture<?> thingMonitorJob;
-
+    /** Configuration from OpenHAB */
     protected ZoneMinderThingConfig configuration;
 
     public ZoneMinderBaseThingHandler(Thing thing) {
@@ -60,6 +58,9 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
 
     /**
      * Initializes the monitor.
+     *
+     * @author Martin S. Eskildsen
+     *
      */
     @Override
     public void initialize() {
@@ -74,6 +75,11 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
 
     }
 
+    /**
+     * Helper method for getting ChannelUID from ChannelId.
+     *
+     * @author Martin S. Eskildsen
+     */
     public synchronized ChannelUID getChannelUIDFromChannelId(String id) {
         Channel ch = thing.getChannel(id);
         return ch.getUID();
@@ -235,10 +241,22 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         return getThing().getConfiguration().getProperties().get(configKey);
     }
 
+    /*
+     * Helper to get a value from configuration as a String
+     *
+     * @author Martin S. Eskildsen
+     *
+     */
     protected String getConfigValueAsString(String configKey) {
         return (String) getConfigValue(configKey);
     }
 
+    /*
+     * Helper to get a value from configuration as a Integer
+     *
+     * @author Martin S. Eskildsen
+     *
+     */
     protected Integer getConfigValueAsInteger(String configKey) {
         return (Integer) getConfigValue(configKey);
     }

@@ -244,7 +244,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
      */
     @Override
     public void updateChannel(ChannelUID channel) {
-        // OnOffType onOffType;
         State state = null;
         if (getMonitorData() == null) {
             return;
@@ -260,13 +259,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                  * break;
                  */ case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
                     state = getNameState();
-                    // state = new StringType(monitorData.getFPSReportInterval());
                     break;
                 // case ZoneMinderConstants.CHANNEL_MONITOR_TYPE:
                 // break;
                 case ZoneMinderConstants.CHANNEL_MONITOR_ENABLED:
                     state = getEnabledState();
-                    // state = ((monitorData.getEnabled().equalsIgnoreCase("1")) ? OnOffType.ON : OnOffType.OFF);
                     break;
                 case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
                     break;

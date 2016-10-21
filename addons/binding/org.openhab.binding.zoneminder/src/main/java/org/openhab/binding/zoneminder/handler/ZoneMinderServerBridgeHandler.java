@@ -143,7 +143,7 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
      *            Bridge object representing a ZoneMinder Server
      */
     public ZoneMinderServerBridgeHandler(Bridge bridge) {
-        super(bridge, ZoneMinderBridgeType.ZoneMinderServer);
+        super(bridge, ZoneMinderThingType.ZoneMinderServerBridge);
     }
 
     /**

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zoneminder.handler;
 
-public enum ZoneMinderBridgeType {
-    ZoneMinderServer;
+public enum ZoneMinderThingType {
+    ZoneMinderServerBridge,
+    ZoneMinderMonitorThing;
 }

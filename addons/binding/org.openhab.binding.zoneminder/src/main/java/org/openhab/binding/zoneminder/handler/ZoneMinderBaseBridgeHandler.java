@@ -40,7 +40,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /** The ZoneMinder bridge type. */
-    private ZoneMinderBridgeType zoneMinderBridgeType = null;
+    private ZoneMinderThingType zoneMinderBridgeType = null;
 
     /** Connection status for the bridge. */
     private boolean connected = false;
@@ -70,7 +70,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      *
      * @param bridge
      */
-    public ZoneMinderBaseBridgeHandler(Bridge bridge, ZoneMinderBridgeType zoneMinderBridgeType) {
+    public ZoneMinderBaseBridgeHandler(Bridge bridge, ZoneMinderThingType zoneMinderBridgeType) {
         super(bridge);
         this.zoneMinderBridgeType = zoneMinderBridgeType;
     }
