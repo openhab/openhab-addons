@@ -6,10 +6,11 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- lib/jsoup-1.8.3.jar
+ lib/jsoup-1.8.3.jar,
+  lib/jackson-annotations-2.4.0.jar,
+ lib/jackson-core-2.4.2.jar,
+ lib/jackson-databind-2.4.2.jar 
 Import-Package: 
- com.fasterxml.jackson.annotation;version="2.4.5",
- com.fasterxml.jackson.databind.annotation;version="2.4.5",
  com.google.common.collect;version="10.0.1",
  com.google.gson,
  javax.ws.rs.client;version="2.0.1",
