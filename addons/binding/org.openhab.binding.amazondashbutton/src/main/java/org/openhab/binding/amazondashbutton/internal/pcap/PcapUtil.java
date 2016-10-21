@@ -6,18 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.amazondashbutton.internal;
+package org.openhab.binding.amazondashbutton.internal.pcap;
 
 import java.util.List;
 
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.Pcaps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 
 /**
  *
@@ -29,36 +24,23 @@ import com.google.common.collect.Iterables;
  */
 public class PcapUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(PcapUtil.class);
-
     /**
-     * Returns all pcap network interfaces relying on {@link Pcaps#findAllDevs()}. The list is filtered as all
-     * interfaces which are not bound to an address are excluded.
+     * Returns all pcap network interfaces relying on {@link Pcaps#findAllDevs()}.
      *
-     * @return An {@link Iterable} of all {@link PcapNetworkInterface}s which are bound to an address
+     * @return A {@link List} of all {@link PcapNetworkInterface}s
      */
-    public static Iterable<PcapNetworkInterface> getBoundNetworkInterfaces() {
+    public static List<PcapNetworkInterface> getAllNetworkInterfaces() {
         try {
             final List<PcapNetworkInterface> allNetworkInterfaces = Pcaps.findAllDevs();
-            return Iterables.filter(allNetworkInterfaces, new Predicate<PcapNetworkInterface>() {
-
-                @Override
-                public boolean apply(PcapNetworkInterface networkInterface) {
-                    final boolean suitable = !networkInterface.getAddresses().isEmpty();
-                    if (!suitable) {
-                        logger.debug("{} is not a suitable network interfaces as no addresses are bound to it.",
-                                networkInterface.getName());
-                    }
-                    return suitable;
-                }
-            });
+            return allNetworkInterfaces;
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Returns the pcap network interface with the given name. If no interface is found, null is returned.
+     * Returns the pcap network interface with the given name relying on {@link Pcaps#getDevByName(String)}. If no
+     * interface is found, null is returned.
      *
      * @param name The name of the pcap network interface
      * @return The network interface with the given name. Returns null, if no interface is found

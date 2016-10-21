@@ -24,7 +24,7 @@ import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.amazondashbutton.AmazonDashButtonBindingConstants;
-import org.openhab.binding.amazondashbutton.internal.PcapUtil;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
 import org.pcap4j.core.PcapAddress;
 import org.pcap4j.core.PcapNetworkInterface;
 
@@ -49,7 +49,7 @@ public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvide
     }
 
     private Collection<ParameterOption> getPcapNetworkInterfacesOptions() {
-        Iterable<PcapNetworkInterface> pcapNetworkInterfaces = PcapUtil.getBoundNetworkInterfaces();
+        Set<PcapNetworkInterface> pcapNetworkInterfaces = PcapNetworkInterfaceService.instance().getNetworkInterfaces();
         List<ParameterOption> options = new ArrayList<>();
         for (PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {
             String name = pcapNetworkInterface.getName();

@@ -16,10 +16,12 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.amazondashbutton.internal.ArpRequestTracker;
-import org.openhab.binding.amazondashbutton.internal.ArpRequestTracker.ArpRequestHandler;
-import org.openhab.binding.amazondashbutton.internal.PcapUtil;
+import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
+import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
 import org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfig;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapUtil;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.packet.ArpPacket;
 import org.slf4j.Logger;
@@ -31,10 +33,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Oliver Libutzki - Initial contribution
  */
-public class AmazonDashButtonHandler extends BaseThingHandler {
+public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNetworkInterfaceListener {
 
     @SuppressWarnings("unused")
-    private Logger logger = LoggerFactory.getLogger(AmazonDashButtonHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AmazonDashButtonHandler.class);
 
     private ArpRequestTracker arpRequestListener;
 
@@ -51,6 +53,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        PcapNetworkInterfaceService.instance().registerListener(this);
         AmazonDashButtonConfig dashButtonConfig = getConfigAs(AmazonDashButtonConfig.class);
         String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
         String macAddress = dashButtonConfig.macAddress;
@@ -83,6 +86,29 @@ public class AmazonDashButtonHandler extends BaseThingHandler {
         super.dispose();
         if (arpRequestListener != null) {
             arpRequestListener.stopCapturing();
+            arpRequestListener = null;
+        }
+        PcapNetworkInterfaceService.instance().unregisterListener(this);
+    }
+
+    @Override
+    public void onPcapNetworkInterfaceAdded(PcapNetworkInterface newNetworkInterface) {
+        if (arpRequestListener != null) {
+            final PcapNetworkInterface trackedPcapNetworkInterface = arpRequestListener.getPcapNetworkInterface();
+            if (trackedPcapNetworkInterface.equals(newNetworkInterface)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+    }
+
+    @Override
+    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterface removedNetworkInterface) {
+        if (arpRequestListener != null) {
+            final PcapNetworkInterface trackedPcapNetworkInterface = arpRequestListener.getPcapNetworkInterface();
+            if (trackedPcapNetworkInterface.equals(removedNetworkInterface)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "The networkinterface " + removedNetworkInterface.getName() + " is not present anymore.");
+            }
         }
     }
 }

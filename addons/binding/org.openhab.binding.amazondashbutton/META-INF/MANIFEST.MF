@@ -15,6 +15,7 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.i18n,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.common.osgi,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.library.types,

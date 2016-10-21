@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.amazondashbutton.internal;
+package org.openhab.binding.amazondashbutton.internal.arp;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -21,6 +21,8 @@ import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
 import org.pcap4j.packet.ArpPacket;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.ArpOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ArpRequestTracker} is responsible for tracking/capturing ARP requests.
@@ -30,9 +32,7 @@ import org.pcap4j.packet.namednumber.ArpOperation;
  */
 public class ArpRequestTracker {
 
-    public interface ArpRequestHandler {
-        public void handleArpRequest(ArpPacket arpPacket);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ArpRequestTracker.class);
 
     private static final int READ_TIMEOUT = 10; // [ms]
     private static final int SNAPLEN = 65536; // [bytes]
@@ -110,6 +110,12 @@ public class ArpRequestTracker {
                 return null;
             }
         });
+        if (macAddress == null) {
+            logger.debug("Started capturing ARP requests for network device {}.", pcapNetworkInterface.getName());
+        } else {
+            logger.debug("Started capturing ARP requests for network device {} and MAC address.",
+                    pcapNetworkInterface.getName(), macAddress);
+        }
     }
 
     /**
@@ -121,6 +127,8 @@ public class ArpRequestTracker {
             if (pcapHandle.isOpen()) {
                 try {
                     pcapHandle.breakLoop();
+                    logger.debug("Stopped capturing ARP requests for network device {}.",
+                            pcapNetworkInterface.getName());
                 } catch (NotOpenException e) {
                     // Just ignore
                 }
@@ -128,5 +136,14 @@ public class ArpRequestTracker {
                 pcapHandle = null;
             }
         }
+    }
+
+    /**
+     * Returns the tracked {@link PcapNetworkInterface}.
+     *
+     * @return the tracked {@link PcapNetworkInterface
+     */
+    public PcapNetworkInterface getPcapNetworkInterface() {
+        return pcapNetworkInterface;
     }
 }

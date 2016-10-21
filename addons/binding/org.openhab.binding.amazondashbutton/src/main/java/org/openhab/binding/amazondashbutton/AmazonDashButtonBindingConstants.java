@@ -21,14 +21,14 @@ public class AmazonDashButtonBindingConstants {
     public static final String BINDING_ID = "amazondashbutton";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID DASH_BUTTON_THING_TYPE = new ThingTypeUID(BINDING_ID, "dashbutton");
+    public static final ThingTypeUID DASH_BUTTON_THING_TYPE = new ThingTypeUID(BINDING_ID, "dashbutton");
 
     // List of all Channel ids
-    public final static String PRESS = "press";
+    public static final String PRESS = "press";
 
     // Custom Properties
-    public final static String PROPERTY_MAC_ADDRESS = "macAddress";
-    public final static String PROPERTY_NETWORK_INTERFACE_NAME = "pcapNetworkInterfaceName";
-    public final static String PROPERTY_PACKET_INTERVAL = "packetInterval";
+    public static final String PROPERTY_MAC_ADDRESS = "macAddress";
+    public static final String PROPERTY_NETWORK_INTERFACE_NAME = "pcapNetworkInterfaceName";
+    public static final String PROPERTY_PACKET_INTERVAL = "packetInterval";
 
 }
