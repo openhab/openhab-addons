@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zoneminder"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+    <bridge-type id="zoneminder-server-bridge">
+        <label>ZoneMinder Server</label>
+        <description>ZoneMinder Server</description>
+        <channels>
+            <channel id="online" typeId="server_online">
+                <label>Online status</label>
+                <description>ON / OFF value to determine from OpenHAB if the server is actually up and running.</description>
+            </channel>
+
+            <channel id="cpu-load" typeId="server_cpu_load">
+                <label>CPU load</label>
+                <description>CPU load on ZoneMinder server</description>
+            </channel>
+            
+            <channel id="disk-usage" typeId="server_disk_usage">
+                <label>Disk Usage</label>
+                <description>Disk USage on ZoneMinder server</description>
+            </channel>
+
+            <channel id="zm-version" typeId="server_zm_version">
+                <label>Server Version</label>
+                <description>Version number of the ZoneMinder Server</description>
+            </channel>
+            
+            <channel id="zm-api-version" typeId="server_zm_api_version">
+                <label>Server API Version</label>
+                <description>Version number of the ZoneMinder Server API</description>
+            </channel>
+            
+        </channels>
+    
+        <config-description-ref uri="thing-type:zoneminderserver:config" />
+    </bridge-type>
+
+    <channel-type id="server_online">
+        <item-type>Switch</item-type>
+        <label>Server Online</label>
+        <description>ZoneMinder Server Online Status</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="server_cpu_load">
+        <item-type>Number</item-type>
+        <label>CPU Load on ZoneMinder Server</label>
+        <description>ZoneMinder Server CPU Load</description>
+        <state readOnly="true"/>
+    </channel-type>
+            
+
+    <channel-type id="server_disk_usage">    
+        <item-type>Number</item-type>
+        <label>Diskusage</label>
+        <description>ZoneMinder Server DiskUsage</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="server_zm_version">
+        <item-type>String</item-type>
+        <label>Server Version</label>
+        <description>ZoneMinder Server Versionnumber</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="server_zm_api_version">
+        <item-type>String</item-type>
+        <label>Server API Version</label>
+        <description>ZoneMinder Server API Versionnumber</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+</thing:thing-descriptions>
