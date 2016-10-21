@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,8 +17,12 @@ import java.net.SocketTimeoutException;
 
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ZoneMinderTelnetConnection {
+
+    private final Logger logger = LoggerFactory.getLogger(ZoneMinderTelnetConnection.class);
 
     private String hostname;
     private Integer port;
@@ -28,68 +32,10 @@ public class ZoneMinderTelnetConnection {
     private PrintWriter out = null;
     private BufferedReader in = null;
 
-    /*
-     * 2016.10.20 NOT IN USE???
-     * private List<ZoneMinderMonitorEventListener> eventListeners = new ArrayList<ZoneMinderMonitorEventListener>();
-     * 
-     * private List<ZoneMinderMonitorTriggerListener> triggerListeners = new
-     * ArrayList<ZoneMinderMonitorTriggerListener>();
-     */
     public ZoneMinderTelnetConnection(String hostname, Integer port, Integer timeout) {
         initialize(hostname, port, timeout);
     }
-    /*
-     * 2016.10.20 NOT IN USE???
-     * 
-     * public void addEventListener(ZoneMinderMonitorEventListener listener) {
-     * if (listener != null) {
-     * eventListeners.add(listener);
-     * }
-     * }
-     * 
-     * public void removeEventListener(ZoneMinderMonitorEventListener listener) {
-     * if (listener != null) {
-     * eventListeners.remove(listener);
-     * }
-     * }
-     * 
-     * public void addTriggerListener(ZoneMinderMonitorTriggerListener listener) {
-     * triggerListeners.add(listener);
-     * }
-     *
-     * public void removeTriggerListener(ZoneMinderMonitorTriggerListener listener) {
-     * triggerListeners.remove(listener);
-     * }
-     */
 
-    /*
-     * public void notifyAllListeners(ChannelUID channelUID, ZoneMinderTelnetCommand command) {
-     * // If request is an external trigger -> notify listeners
-     * if (command.getClass().getName().equals(ZoneMinderExternalTrigger.class.getName())) {
-     * notifyMonitorTriggerListeners((ZoneMinderExternalTrigger) command);
-     * }
-     *
-     * // If request is an event -> notify listeners
-     * if (command.getClass().getName().equals(ZoneMinderEvent.class.getName())) {
-     * notifyMonitorEventListeners(channelUID, (ZoneMinderEvent) command);
-     * }
-     * }
-     *
-     * private void notifyMonitorTriggerListeners(ZoneMinderExternalTrigger trigger) {
-     *
-     * for (ZoneMinderMonitorTriggerListener listener : triggerListeners) {
-     * listener.MonitorExternalTrigger(trigger);
-     * }
-     * }
-     *
-     *
-     * private void notifyMonitorEventListeners(ChannelUID channelUID, ZoneMinderEvent event) {
-     *
-     * for (ZoneMinderMonitorEventListener listener : eventListeners) {
-     * listener.MonitorEvent(channelUID, event);
-     * }
-     * }
-     */
     protected void initialize(String hostname, Integer port, Integer timeout) {
         this.hostname = hostname;
         this.port = port;
@@ -113,28 +59,18 @@ public class ZoneMinderTelnetConnection {
             return;
         }
 
-        /*
-         * if (telnetMonitorTask == null || telnetMonitorTask.isCancelled()) {
-         * // telnetMonitorTask = scheduler.scheduleAtFixedRate(monitorRunnable, 0, refreshInterval,
-         * // TimeUnit.MILLISECONDS);
-         * }
-         */
     }
 
     public void close() {
-        /*
-         * if (telnetMonitorTask != null) {
-         * telnetMonitorTask.cancel(false);
-         * }
-         */
+
         synchronized (telnetSocket) {
             try {
                 in.close();
                 out.close();
                 telnetSocket.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("close(): Error occurred in TelnetConnection to ZoneMinder Server. Exception='{}'",
+                        e.getMessage());
             }
         }
     }
@@ -148,8 +84,8 @@ public class ZoneMinderTelnetConnection {
                     telnetSocket.close();
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("recconnect(): Error occurred in TelnetConnection to ZoneMinder Server. Exception='{}'",
+                        e.getMessage());
             }
 
             connect();
@@ -157,16 +93,6 @@ public class ZoneMinderTelnetConnection {
 
     }
 
-    /*
-     * public void sendCommand(ChannelUID channelUID, ZoneMinderTelnetRequest request) throws IOException {
-     * // Send Command telnet
-     * out.println(request.toCommandString());
-     * // TODO Fixx me
-     * // HEST
-     * notifyAllListeners(channelUID, request);
-     *
-     * }
-     */
     public ZoneMinderEvent readInput() {
 
         ZoneMinderEvent event = null;
@@ -186,8 +112,11 @@ public class ZoneMinderTelnetConnection {
 
         } catch (SocketTimeoutException e) {
             // Just ignore timeouts
+            logger.trace("readInput(): SocketTimeout occurred in TelnetConnection to ZoneMinder Server.");
         } catch (IOException e) {
             // Occurs if socket is closed, probably because we are shutting down. Else it will be fixed on next run
+            logger.trace(
+                    "readInput(): IOException occurred in TelnetConnection to ZoneMinder Server. Either we are shutting down, or some error occurred. The binding will automatically recorver.");
         }
         return event;
     }

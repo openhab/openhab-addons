@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,11 +26,6 @@ public class ZoneMinderTrigger extends ZoneMinderOutgoingRequest {
 
     }
 
-    /*
-     * public static ZoneMinderTrigger create(String monitorId, Command command, String reason) {
-     * return new ZoneMinderTrigger(monitorId, command, reason, null, 0);
-     * }
-     */
     public static ZoneMinderTrigger create(String monitorId, Command command, String reason, Integer timeout) {
         return new ZoneMinderTrigger(monitorId, command, reason, null, timeout);
     }

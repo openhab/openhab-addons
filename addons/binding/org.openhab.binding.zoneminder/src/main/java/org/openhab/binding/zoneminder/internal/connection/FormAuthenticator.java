@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,6 +22,11 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+/**
+ * Wrapper class used when performing silent login.
+ *
+ * @author Martin S. Eskildsen
+ */
 public class FormAuthenticator implements ClientRequestFilter {
 
     private ArrayList<Object> cookies;

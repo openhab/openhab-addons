@@ -26,17 +26,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * When a {@link ZoneMinderServerHandler} finds a new Monitor we will
+ * When a {@link ZoneMinderMonitorDiscoveryService} finds a new Monitor we will
  * add it to the system.
  *
- * @author * @author Martin S. Eskildsen - Highly inspired by Dan Cunningham's SqueezeBox binding
+ * @author Martin S. Eskildsen - Highly inspired by Dan Cunningham's SqueezeBox binding
  *
  */
 public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService {
+
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderMonitorDiscoveryService.class);
 
     private final static int TIMEOUT = 60;
-    private final static int TTL = 60;
 
     private ZoneMinderServerBridgeHandler zoneMinderServerHandler;
     private ScheduledFuture<?> requestMonitorJob;
@@ -88,20 +88,13 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT,
                         ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT_DEFAULTVALUE);
 
-                /*
-                 * // Added other properties
-                 * properties.put("modelId", player.getModel());
-                 * properties.put("name", player.getName());
-                 * properties.put("uid", player.getUuid());
-                 * properties.put("ip", player.getIpAddr());
-                 */
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(monitor.getName()).build();
 
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception ex) {
-            logger.error("Error occurred when calling 'monitorAdded' from Discovery. Exceptin={}", ex.getMessage());
+            logger.error("Error occurred when calling 'monitorAdded' from Discovery. Exception={}", ex.getMessage());
         }
     }
 
@@ -124,8 +117,8 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
             }
         };
 
-        logger.debug("request monitor discovery job scheduled to run every {} seconds", TTL);
-        requestMonitorJob = scheduler.scheduleWithFixedDelay(runnable, 10, TTL, TimeUnit.SECONDS);
+        logger.debug("request monitor discovery job scheduled to run every {} seconds", TIMEOUT);
+        requestMonitorJob = scheduler.scheduleWithFixedDelay(runnable, 10, TIMEOUT, TimeUnit.SECONDS);
     }
 
 }

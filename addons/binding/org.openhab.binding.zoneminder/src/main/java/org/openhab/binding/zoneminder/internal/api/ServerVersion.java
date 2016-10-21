@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.zoneminder.internal.api;
 
+/**
+ * The Class ServerVersion Wraps JSON data from ZoneMinder API call.
+ *
+ * @author Martin S. Eskildsen
+ */
 public class ServerVersion {
     public String version;
     public String apiversion;

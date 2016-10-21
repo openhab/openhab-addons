@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.openhab.binding.zoneminder.discovery;
 
 import java.io.BufferedReader;
@@ -14,8 +23,6 @@ import java.util.Set;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
-//import org.apache.commons.net.util.SubnetUtils;
-//import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -26,14 +33,30 @@ import org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class ZoneMinderServerDiscoveryService.
+ *
+ * @author Martin S. Eskildsen
+ */
 public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
 
+    /** The logger. */
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderServerDiscoveryService.class);
 
+    /**
+     * Instantiates a new zone minder server discovery service.
+     *
+     * @throws IllegalArgumentException the illegal argument exception
+     */
     public ZoneMinderServerDiscoveryService() throws IllegalArgumentException {
         super(ZoneMinderServerBridgeHandler.SUPPORTED_THING_TYPES, 10);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#getSupportedThingTypes()
+     */
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return ZoneMinderServerBridgeHandler.SUPPORTED_THING_TYPES;
@@ -54,11 +77,21 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
      * }
      */
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
+     */
     @Override
     protected void startBackgroundDiscovery() {
 
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startScan()
+     */
     @Override
     protected void startScan() {
         // discoverZoneMinderServer();
@@ -119,8 +152,8 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Convert an IP address to a number.
      *
-     * @param ipAddress
-     * @return
+     * @param ipAddress the ip address
+     * @return the long
      */
     private long convertIPToNumber(String ipAddress) {
 
@@ -148,8 +181,8 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Convert a number to an IP address.
      *
-     * @param ip
-     * @return
+     * @param ip the ip
+     * @return the string
      */
     private String convertNumberToIP(long ip) {
         StringBuilder ipAddress = new StringBuilder(15);
@@ -169,7 +202,9 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Looks for devices that respond back with the proper title tags
+     * Looks for devices that respond back with the proper title tags.
+     *
+     * @param ipAddress the ip address
      */
     private void discoverZoneMinderServerHttp(String ipAddress) {
         String response = "";
@@ -191,8 +226,8 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             ThingUID uid = new ThingUID(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER,
                     ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("hostname", ipAddress);
-            properties.put("port", new Integer(80));
+            properties.put(ZoneMinderConstants.PARAMETER_HOSTNAME, ipAddress);
+            properties.put(ZoneMinderConstants.PARAMETER_PORT, new Integer(80));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel("ZoneMinder Server").build();
             thingDiscovered(result);
@@ -201,27 +236,12 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Performs a get request
+     * Performs a get request.
      *
-     * @param url
-     *            to get
+     * @param url to get
+     * @param timeout the timeout
      * @return the string response or null
-     * @throws IOException
-     */
-    /*
-     * private String get(String url) {
-     * String response = null;
-     * try {
-     * URL _url = new URL(url);
-     * URLConnection connection = _url.openConnection();
-     * response = IOUtils.toString(connection.getInputStream());
-     * } catch (MalformedURLException e) {
-     * logger.debug("Constructed url '{}' is not valid: {}", url, e.getMessage());
-     * } catch (IOException e) {
-     * logger.debug("Error accessing url '{}' : {} ", url, e.getMessage());
-     * }
-     * return response;
-     * }
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     protected String getHttpDocumentAsString(String url, int timeout) throws IOException {
         StringBuffer response = new StringBuffer();
@@ -236,17 +256,6 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
         conn.setRequestMethod("GET");
         conn.setUseCaches(false);
 
-        // act like a browser
-        // conn.setRequestProperty("User-Agent", USER_AGENT);
-        // conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        // conn.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        /*
-         * if (cookies != null) {
-         * for (String cookie : this.cookies) {
-         * conn.addRequestProperty("Cookie", cookie.split(";", 1)[0]);
-         * }
-         * }
-         */
         int responseCode = conn.getResponseCode();
 
         if (responseCode == 200) {
@@ -260,8 +269,6 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
 
             in.close();
             conn.disconnect();
-            // Update the cookies
-            // setCookies(conn.getHeaderFields().get("Set-Cookie"));
         } else {
             String message = "";
             switch (responseCode) {

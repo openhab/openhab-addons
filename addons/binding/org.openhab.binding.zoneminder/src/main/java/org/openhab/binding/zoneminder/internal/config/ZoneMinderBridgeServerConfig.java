@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,8 @@
 package org.openhab.binding.zoneminder.internal.config;
 
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Bean holding configuration data according to bridge.xml
@@ -17,6 +19,8 @@ import org.openhab.binding.zoneminder.ZoneMinderConstants;
  *
  */
 public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
+
+    private final Logger logger = LoggerFactory.getLogger(ZoneMinderBridgeServerConfig.class);
 
     private String hostname;
     private Integer http_port;
