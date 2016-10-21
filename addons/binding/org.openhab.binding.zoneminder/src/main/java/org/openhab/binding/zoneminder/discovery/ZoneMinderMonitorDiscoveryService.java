@@ -74,12 +74,13 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
 
         try {
             ThingUID bridgeUID = zoneMinderServerHandler.getThing().getUID();
+            // TODO:: THis is not good, fix the hardcoding
             String monitorUID = "monitor-" + monitor.getId();
             ThingUID thingUID = new ThingUID(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR, bridgeUID,
                     monitorUID);
 
             if (!monitorThingExists(thingUID)) {
-                logger.debug("monitor added {} : {} ", monitorUID, monitor.getName());
+                logger.debug("monitor added {} : {} ", monitor.getOpenHABId(), monitor.getDisplayName());
 
                 Map<String, Object> properties = new HashMap<>(0);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.getInteger(monitor.getId()));
@@ -89,7 +90,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
                         ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT_DEFAULTVALUE);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(monitor.getName()).build();
+                        .withBridge(bridgeUID).withLabel(monitor.getDisplayName()).build();
 
                 thingDiscovered(discoveryResult);
             }

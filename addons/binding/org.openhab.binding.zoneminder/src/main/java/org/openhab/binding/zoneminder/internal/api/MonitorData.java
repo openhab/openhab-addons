@@ -19,6 +19,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.openhab.binding.zoneminder.ZoneMinderConstants;
 
 /**
  * The Class MonitorData Wraps JSON data from ZoneMinder API call.
@@ -219,6 +220,16 @@ public class MonitorData extends ZoneMinderApiData {
     private String Sequence;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    public String getDisplayName() {
+        // TODO:: Fix hardcoding
+        return "ZoneMinder Monitor [" + ZoneMinderConstants.THING_ZONEMINDER_MONITOR + "-" + getId() + "]: "
+                + getName();
+    }
+
+    public String getOpenHABId() {
+        return ZoneMinderConstants.THING_ZONEMINDER_MONITOR + "-" + getId();
+    }
 
     /**
      *
