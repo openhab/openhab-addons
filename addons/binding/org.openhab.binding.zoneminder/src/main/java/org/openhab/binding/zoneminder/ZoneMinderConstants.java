@@ -28,10 +28,10 @@ public class ZoneMinderConstants {
     public static final String BINDING_ID = "zoneminder";
 
     // ZoneMinder Server Bridge
-    public static final String BRIDGE_ZONEMINDER_SERVER = "zmserver";
+    public static final String BRIDGE_ZONEMINDER_SERVER = "server";
 
     // ZoneMinder Monitor thing
-    public static final String THING_ZONEMINDER_MONITOR = "zmmonitor";
+    public static final String THING_ZONEMINDER_MONITOR = "monitor";
 
     /*
      * ZoneMinder Server
