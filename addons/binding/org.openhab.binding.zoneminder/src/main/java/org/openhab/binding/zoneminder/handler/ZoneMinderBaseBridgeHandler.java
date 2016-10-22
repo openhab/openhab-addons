@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -27,7 +26,6 @@ import org.openhab.binding.zoneminder.internal.command.ZoneMinderMessage.ZoneMin
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderOutgoingRequest;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderTelnetEvent;
 import org.openhab.binding.zoneminder.internal.command.http.ZoneMinderHttpRequest;
-import org.openhab.binding.zoneminder.internal.data.ZoneMinderData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +44,8 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     private boolean connected = false;
 
     // Polling variables
-    // public int pollPeriod = 15000;
     private long pollElapsedTime = 0;
     private long pollStartTime = 0;
-    // private long refreshInterval = 5000;
 
     private ScheduledFuture<?> monitorTask;
 
@@ -102,6 +98,8 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      */
     public ZoneMinderBaseThingHandler getZoneMinderThingHandlerFromZoneMinderId(ThingTypeUID thingTypeUID,
             String zoneMinderId) {
+
+        // BaseThingHandler myThing = thingRegistry.get(thingTypeUID.);
         // Inform thing handlers of connection
         List<Thing> things = getThing().getThings();
 
@@ -129,7 +127,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         OnOffType onOffType;
 
         switch (channel.getId()) {
-            case ZoneMinderConstants.CHANNEL_SERVER_ONLINE:
+            case ZoneMinderConstants.CHANNEL_ONLINE:
 
                 // onOffType = isAlive() ? OnOffType.ON : OnOffType.OFF;
                 // updateState(channel, onOffType);
@@ -145,12 +143,13 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /**
      * A bridge could eventually also have channels -> so we think of the bridge as a thing.
      */
-    protected abstract void refreshThings();
+    protected abstract void refreshThing();
 
     private void refreshBridge() {
         logger.trace("ZoneMinder Server: Refreshing Bridge!");
 
-        this.refreshThings();
+        // Refresh channels on the bridge
+        this.refreshThing();
 
         List<Thing> things = getThing().getThings();
 
@@ -162,7 +161,8 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
                 logger.debug("***Checking '{}' - Status: {}, Refreshed: {}", thing.getUID(), thing.getStatus(),
                         handler.isThingRefreshed());
 
-                List<Channel> channels = getThing().getChannels();
+                // TODO:: Uneccessary code
+                // List<Channel> channels = getThing().getChannels();
                 handler.refreshThing();
 
             } else {
@@ -212,7 +212,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      */
     public synchronized void setConnected(boolean connected) {
         if (this.connected != connected) {
-            updateState(ZoneMinderConstants.CHANNEL_SERVER_ONLINE, connected ? OnOffType.ON : OnOffType.OFF);
+            updateState(ZoneMinderConstants.CHANNEL_ONLINE, connected ? OnOffType.ON : OnOffType.OFF);
         }
         ThingStatus thingStatus = connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
         if (thingStatus != this.thing.getStatus()) {
@@ -357,18 +357,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    @Override
-    public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String zoneMinderId, ZoneMinderData data) {
-
-        ZoneMinderBaseThingHandler thing = getZoneMinderThingHandlerFromZoneMinderId(thingTypeUID, zoneMinderId);
-
-        // If thing not found, then it is not to this thing that it belongs :-)
-        if (thing != null) {
-            thing.notifyZoneMinderApiDataUpdated(thingTypeUID, zoneMinderId, data);
-        }
-
-    }
-
     public abstract boolean sendZoneMinderHttpRequest(ZoneMinderHttpRequest requestType);
 
     public boolean sendZoneMinderTelnetRequest(ZoneMinderRequestType requestType, ZoneMinderOutgoingRequest request) {
@@ -381,7 +369,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
-        updateState(ZoneMinderConstants.CHANNEL_SERVER_ONLINE,
+        updateState(ZoneMinderConstants.CHANNEL_ONLINE,
                 ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
 
     }

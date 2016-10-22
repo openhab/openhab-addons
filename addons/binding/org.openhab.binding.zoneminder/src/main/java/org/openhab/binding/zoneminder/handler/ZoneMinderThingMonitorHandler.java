@@ -130,7 +130,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 // They are all readonly in the channel config.
                 case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
                 case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
-                case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
+                case ZoneMinderConstants.CHANNEL_ONLINE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATUSTEXT:
                 case ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE:
@@ -270,7 +270,10 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
                 case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
                     state = getSourceTypeState();
-                case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
+
+                case ZoneMinderConstants.CHANNEL_ONLINE:
+                    // Ask super class to handle, because this is shared for all things
+                    super.updateChannel(channel);
                     break;
 
                 // Handled from Telnet listener, so just ignor it here.
@@ -306,6 +309,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 default:
                     logger.warn("updateChannel(): Monitor '{}': No handler defined for channel='{}'", thing.getLabel(),
                             channel.getAsString());
+
                     // Ask super class to handle
                     super.updateChannel(channel);
             }
@@ -333,7 +337,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
-        updateState(ZoneMinderConstants.CHANNEL_MONITOR_ONLINE,
+        updateState(ZoneMinderConstants.CHANNEL_ONLINE,
                 ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
 
     }

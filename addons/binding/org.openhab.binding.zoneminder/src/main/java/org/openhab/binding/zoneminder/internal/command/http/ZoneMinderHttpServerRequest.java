@@ -18,7 +18,7 @@ import org.openhab.binding.zoneminder.internal.command.ZoneMinderMessage.ZoneMin
  */
 public class ZoneMinderHttpServerRequest extends ZoneMinderHttpRequest {
 
-    ZoneMinderHttpServerRequest(ZoneMinderRequestType _requestType, String id) {
+    public ZoneMinderHttpServerRequest(ZoneMinderRequestType _requestType, String id) {
         super(_requestType, ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER, id);
         // TODO Auto-generated constructor stub
     }
