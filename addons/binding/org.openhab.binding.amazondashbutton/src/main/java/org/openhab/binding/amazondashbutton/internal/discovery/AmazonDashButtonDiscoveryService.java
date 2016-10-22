@@ -156,7 +156,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
         final String interfaceName = pcapNetworkInterface.getName();
         if (arpRequestTracker != null) {
             arpRequestTracker.stopCapturing();
-            logger.info("Stopped capturing for {}.", interfaceName);
+            logger.debug("Stopped capturing for {}.", interfaceName);
         } else {
             logger.warn("No active ARP Request Tracker registered for {}.", interfaceName);
         }
@@ -185,7 +185,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
                 String macAdress = arpPacket.getHeader().getSrcHardwareAddr().toString();
 
                 if (isAmazonVendor(macAdress)) {
-                    logger.info("Captured a packet from {} which seems to be sent from an Amazon Dash Button device.",
+                    logger.debug("Captured a packet from {} which seems to be sent from an Amazon Dash Button device.",
                             macAdress);
                     ThingUID dashButtonThing = new ThingUID(DASH_BUTTON_THING_TYPE, macAdress.replace(":", "-"));
                     // @formatter:off
@@ -205,7 +205,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
                 }
             }
         });
-        logger.info("Started capturing for {}.", interfaceName);
+        logger.debug("Started capturing for {}.", interfaceName);
     }
 
 }
