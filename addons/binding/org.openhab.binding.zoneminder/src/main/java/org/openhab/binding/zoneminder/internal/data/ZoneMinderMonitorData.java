@@ -40,6 +40,10 @@ public class ZoneMinderMonitorData extends ZoneMinderData {
         return _monitor.getFunction();
     }
 
+    public String getSourceType() {
+        return _monitor.getType();
+    }
+
     public Boolean getCaptureDaemonRunningState() {
         return _captureDaemonStatus.getStatus();
     }
