@@ -47,8 +47,11 @@ public class ZoneMinderConstants {
     public final static ThingTypeUID THING_TYPE_BRIDGE_ZONEMINDER_SERVER = new ThingTypeUID(BINDING_ID,
             BRIDGE_ZONEMINDER_SERVER);
 
+    // Shared channel for all
+    public final static String CHANNEL_ONLINE = "online";
+
     // Channel Id's for the ZoneMinder Server
-    public final static String CHANNEL_SERVER_ONLINE = "online";
+
     public final static String CHANNEL_SERVER_ZM_VERSION = "zm-version";
     public final static String CHANNEL_SERVER_ZM_API_VERSION = "zm-api-version";
 
@@ -74,7 +77,6 @@ public class ZoneMinderConstants {
     public final static String CHANNEL_MONITOR_NAME = "name";
     public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
     public final static String CHANNEL_MONITOR_ENABLED = "enabled";
-    public final static String CHANNEL_MONITOR_ONLINE = "online";
     // public final static String CHANNEL_MONITOR_EVENT = "event";
 
     // public final static String CHANNEL_MONITOR_IMAGE_WIDTH = "image-width";

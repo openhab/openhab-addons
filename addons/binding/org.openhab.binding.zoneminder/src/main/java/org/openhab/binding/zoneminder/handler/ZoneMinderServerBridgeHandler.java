@@ -22,14 +22,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
 import org.openhab.binding.zoneminder.internal.api.MonitorDaemonStatus;
 import org.openhab.binding.zoneminder.internal.api.MonitorData;
 import org.openhab.binding.zoneminder.internal.api.ServerVersion;
@@ -49,27 +53,13 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Sets;
 
 /**
- * TODOS
- *  Set Id of ZOneMinder Monitor to something (Hardcoded right now
- *  Check server version / API Version
- *  Check If Server is Online
- *  Don't set binding offline when server is Offline
- *  Call this one to indicate problems: updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not control device at IP address x.x.x.x");
- *  This API call indicates the state of the ZM Server: /zm/api/states.json
- *  This API call indicates the same as above:/zm/api/host/daemonCheck.json
- *  This API call indicate server load: /zm/api/host/getLoad.json
- *  This API call indicate disk usage /zm/api/host/getDiskPercent.json
- *  http://<SERVERNAME>/zm/cgi-bin/nph-zms?monitor=9&user=USER&pass=PASS
- *  http://<SERVERNAME>/zm/api/configs.json
- */
-
-/**
  * Handler for a ZoneMinder Server.
  *
  * @author Martin S. Eskildsen
  *
  */
-public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
+public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
+        implements ZoneMinderMonitorEventListener {
 
     public static final int TELNET_TIMEOUT = 5000;
 
@@ -98,7 +88,9 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
     private PrintWriter tcpOutput = null;
     private BufferedReader tcpInput = null;
 
-    private ServerVersion zmServerVersion;
+    // private ServerVersion zmServerVersion;
+
+    ZoneMinderServerData zoneMinderServerData = null;
 
     /**
      * Constructor
@@ -170,6 +162,10 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
         return this.getConfigAs(ZoneMinderBridgeServerConfig.class);
     }
 
+    protected ZoneMinderServerData getServerData() {
+        return zoneMinderServerData;
+    }
+
     /**
      * Just logging - nothing to do.
      */
@@ -179,9 +175,28 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
     }
 
     @Override
-    protected void refreshThings() {
+    protected void refreshThing() {
 
         List<Thing> things = getThing().getThings();
+
+        logger.debug("refreshThing(): Thing='{}'!", getThing().getUID(), this.getThing().getUID());
+
+        List<Channel> channels = getThing().getChannels();
+        logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
+
+        for (Channel channel : channels) {
+            updateChannel(channel.getUID());
+        }
+
+        // this.setThingRefreshed(true);
+
+        /*
+         * Fetch data for all monitors attached to this bridge
+         */
+
+        ZoneMinderHttpRequest request = new ZoneMinderHttpServerRequest(ZoneMinderRequestType.SERVER_THING,
+                getZoneMinderId());
+        sendZoneMinderHttpRequest(request);
 
         for (Thing thing : things) {
             try {
@@ -189,18 +204,34 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
                     Thing thingMonitor = thing;
                     ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
 
-                    ZoneMinderHttpRequest req = new ZoneMinderHttpMonitorRequest(ZoneMinderRequestType.MONITOR_THING,
+                    request = new ZoneMinderHttpMonitorRequest(ZoneMinderRequestType.MONITOR_THING,
                             thingHandler.getZoneMinderId());
-                    sendZoneMinderHttpRequest(req);
+                    sendZoneMinderHttpRequest(request);
                     logger.debug("Updated ZoneMinderApiData for Thing: {}  {}", thing.getThingTypeUID(),
                             thing.getUID());
                 }
+
             } catch (Exception ex) {
-                logger.error("Method 'refreshThings' for Bridge {} failed for thing='{}' - Exception='{}'",
+                logger.error("Method 'refreshThing()' for Bridge {} failed for thing='{}' - Exception='{}'",
                         this.getZoneMinderId(), thing.getUID(), ex.getMessage());
             }
         }
 
+    }
+
+    @Override
+    public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String zoneMinderId, ZoneMinderData data) {
+
+        if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
+            zoneMinderServerData = (ZoneMinderServerData) data;
+        } else {
+            ZoneMinderBaseThingHandler thing = getZoneMinderThingHandlerFromZoneMinderId(thingTypeUID, zoneMinderId);
+
+            // If thing not found, then it is not to this thing that it belongs :-)
+            if (thing != null) {
+                thing.notifyZoneMinderApiDataUpdated(thingTypeUID, zoneMinderId, data);
+            }
+        }
     }
 
     @Override
@@ -210,7 +241,38 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
 
     @Override
     public void updateChannel(ChannelUID channel) {
-        super.updateChannel(channel);
+        State state = null;
+        if (getServerData() == null) {
+            logger.warn("updateChannel(): ServerData not fetched for Thing='{}', Channel='{}'",
+                    getThing().getBridgeUID(), channel);
+            return;
+        }
+        try {
+            switch (channel.getId()) {
+                case ZoneMinderConstants.CHANNEL_ONLINE:
+                    super.updateChannel(channel);
+                    break;
+
+                case ZoneMinderConstants.CHANNEL_SERVER_ZM_VERSION:
+                    state = getServerVersionState();
+                    break;
+                case ZoneMinderConstants.CHANNEL_SERVER_ZM_API_VERSION:
+                    state = getServerVersionApiState();
+
+                default:
+                    logger.warn("updateChannel(): Server '{}': No handler defined for channel='{}'", thing.getLabel(),
+                            channel.getAsString());
+                    // Ask super class to handle
+                    super.updateChannel(channel);
+            }
+
+            if (state != null) {
+                updateState(channel.getId(), state);
+            }
+        } catch (Exception ex) {
+            logger.error("Error occurred when 'updateChannel()' was called for thing='{}', channel='{}'",
+                    channel.getThingUID(), channel.getId());
+        }
     }
 
     @Override
@@ -388,17 +450,6 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
                 ServerVersion serverVersionData = zoneMinderServerProxy.getServerVersion();
 
                 data = new ZoneMinderServerData(serverVersionData);
-                /*
-                 * case IS_ALIVE:
-                 * checkIsAlive();
-                 * try {
-                 * ChannelUID channel = this.thing.getChannel(ZoneMinderConstants.CHANNEL_SERVER_ONLINE).getUID();
-                 * updateChannel(channel);
-                 * } catch (Exception e) {
-                 * // Just ignore it :-)
-                 * }
-                 * return true;
-                 */
             default:
                 logger.warn("Unhandled HTTP request occurred (request='{}'", request.getRequestType());
         }
@@ -442,6 +493,16 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
 
     public ArrayList<MonitorData> getMonitors() {
         return zoneMinderServerProxy.getMonitors();
+    }
+
+    protected State getServerVersionState() {
+
+        return new StringType(getServerData().getServerVersion());
+    }
+
+    protected State getServerVersionApiState() {
+
+        return new StringType(getServerData().getServerVersionApi());
     }
 
 }

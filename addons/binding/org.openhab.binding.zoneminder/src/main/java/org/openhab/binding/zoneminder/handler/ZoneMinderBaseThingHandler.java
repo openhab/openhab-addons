@@ -147,7 +147,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         OnOffType onOffType;
 
         switch (channel.getId()) {
-            case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
+            case ZoneMinderConstants.CHANNEL_ONLINE:
                 onOffType = isAlive() ? OnOffType.ON : OnOffType.OFF;
                 updateState(channel, onOffType);
             default:

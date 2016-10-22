@@ -21,4 +21,13 @@ public class ZoneMinderServerData extends ZoneMinderData {
         // this._daemonStatus = daemonStatus;
 
     }
+
+    public String getServerVersion() {
+        return _serverVersion.version;
+    }
+
+    public String getServerVersionApi() {
+        return _serverVersion.apiversion;
+    }
+
 }
