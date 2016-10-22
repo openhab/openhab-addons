@@ -40,7 +40,6 @@ import org.openhab.binding.zoneminder.internal.command.http.ZoneMinderHttpReques
 import org.openhab.binding.zoneminder.internal.command.http.ZoneMinderHttpServerRequest;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderBridgeServerConfig;
 import org.openhab.binding.zoneminder.internal.connection.ZoneMinderHttpProxy;
-import org.openhab.binding.zoneminder.internal.connection.ZoneMinderTelnetConnection;
 import org.openhab.binding.zoneminder.internal.data.ZoneMinderData;
 import org.openhab.binding.zoneminder.internal.data.ZoneMinderMonitorData;
 import org.openhab.binding.zoneminder.internal.data.ZoneMinderServerData;
@@ -83,44 +82,9 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Telnet Connection to ZoneMinder Server
+     * Bridge configuration from OpenHAB
      */
-    private ZoneMinderTelnetConnection telnetMonitor = null;
-
-    /**
-     *
-     */
-    private String httpProtocol;
-
-    /**
-     *
-     */
-    private String hostName;
-
-    /**
-     *
-     */
-    private Integer telnetPort = ZoneMinderConstants.DEFAULT_TELNET_PORT;
-
-    /**
-     *
-     */
-    private Integer httpPort = ZoneMinderConstants.DEFAULT_HTTP_PORT;
-
-    /**
-     *
-     */
-    private String zoneMinderServerPath = ""; // ZoneMinderHttpProxy.PATH_ZONEMINDER_BASE;
-
-    /**
-     *
-     */
-    private String userName;
-
-    /**
-     *
-     */
-    private String password;
+    ZoneMinderBridgeServerConfig config = null;
 
     /**
      * ZoneMinder HTTP connection
@@ -156,26 +120,17 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
         try {
             updateStatus(ThingStatus.INITIALIZING);
 
-            ZoneMinderBridgeServerConfig config = getBridgeConfig();
-
-            this.httpProtocol = config.getProtocol();
-            this.hostName = config.getHostName();
-            this.telnetPort = config.getTelnetPort();
-            this.httpPort = config.getHttpPort();
-            this.zoneMinderServerPath = config.getServerBasePath();
-            this.userName = config.getUserName();
-            this.password = config.getPassword();
+            this.config = getBridgeConfig();
 
             logger.debug("ZoneMinder Server Bridge Handler Initialized");
-            logger.debug("   Protocol:           {}", httpProtocol);
-            logger.debug("   HostName:           {}", hostName);
-            logger.debug("   Port (HTTP)         {}", httpPort);
-            logger.debug("   Port (Telnet)       {}", telnetPort);
-            logger.debug("   Server Path         {}", zoneMinderServerPath);
-            logger.debug("   User:               {}", userName);
+            logger.debug("   HostName:           {}", config.getHostName());
+            logger.debug("   Protocol:           {}", config.getProtocol());
+            logger.debug("   Port (HTTP)         {}", config.getHttpPort());
+            logger.debug("   Port (Telnet)       {}", config.getTelnetPort());
+            logger.debug("   Server Path         {}", config.getServerBasePath());
+            logger.debug("   User:               {}", config.getUserName());
             logger.debug("   Low Prio. refresh:  {}", config.getLowPriorityRefreshInterval());
             logger.debug("   High Prio. refresh: {}", config.getPriorityRefreshInterval());
-            // logger.debug(" Password: {}", password);
 
             startMonitor(config.getPriorityRefreshInterval());
         } catch (Exception ex) {
@@ -185,7 +140,6 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
     }
 
     /**
-     * Disposes the bridge.
      */
     @Override
     public void dispose() {
@@ -271,7 +225,7 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler {
                 logger.debug("openConnection(): Connecting to ZoneMinder Server (Telnet)");
 
                 tcpSocket = new Socket();
-                SocketAddress TPIsocketAddress = new InetSocketAddress(hostName, telnetPort);
+                SocketAddress TPIsocketAddress = new InetSocketAddress(config.getHostName(), config.getTelnetPort());
                 tcpSocket.connect(TPIsocketAddress, TELNET_TIMEOUT);
                 tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
                 tcpOutput = new PrintWriter(tcpSocket.getOutputStream(), true);
