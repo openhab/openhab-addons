@@ -222,9 +222,9 @@ public class MonitorData extends ZoneMinderApiData {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getDisplayName() {
-        // TODO:: Fix hardcoding
-        return "ZoneMinder Monitor [" + ZoneMinderConstants.THING_ZONEMINDER_MONITOR + "-" + getId() + "]: "
-                + getName();
+
+        return String.format("%s [%s-%s]: %s", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME,
+                ZoneMinderConstants.THING_ZONEMINDER_MONITOR, getId(), getName());
     }
 
     public String getOpenHABId() {
