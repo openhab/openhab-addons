@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-  <config-description uri="thing-type:zonemindermonitor:config">
+  <config-description uri="thing-type:monitor-channels:config">
     <parameter name="monitorId" type="integer" required="true">
        <label>Monitor ID</label>
        <description>The ID of the monitor in ZoneMinder.</description>
