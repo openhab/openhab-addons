@@ -81,9 +81,8 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
 
             if (!monitorThingExists(thingUID)) {
                 logger.debug("monitor added {} : {} ", monitor.getOpenHABId(), monitor.getDisplayName());
-
                 Map<String, Object> properties = new HashMap<>(0);
-                properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.getInteger(monitor.getId()));
+                properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.valueOf(monitor.getId()));
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
                         ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT_DEFAULTVALUE);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT,

@@ -33,6 +33,12 @@ public class ZoneMinderConstants {
     // ZoneMinder Monitor thing
     public static final String THING_ZONEMINDER_MONITOR = "monitor";
 
+    // ZoneMinder Server displayable name
+    public static final String ZONEMINDER_SERVER_NAME = "ZoneMinder Server";
+
+    // ZoneMinder Monitor displayable name
+    public static final String ZONEMINDER_MONITOR_NAME = "ZoneMinder Monitor";
+
     /*
      * ZoneMinder Server
      */
