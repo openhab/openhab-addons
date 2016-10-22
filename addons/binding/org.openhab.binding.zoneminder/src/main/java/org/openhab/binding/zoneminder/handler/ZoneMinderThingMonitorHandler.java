@@ -268,7 +268,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 case ZoneMinderConstants.CHANNEL_MONITOR_ENABLED:
                     state = getEnabledState();
                     break;
-
+                case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
+                    state = getSourceTypeState();
                 case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
                     break;
 
@@ -343,6 +344,10 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     protected State getFunctionState() {
         return new StringType(getMonitorData().getFunction());
+    }
+
+    protected State getSourceTypeState() {
+        return new StringType(getMonitorData().getSourceType());
     }
 
     protected State getDiskUsageState() {
