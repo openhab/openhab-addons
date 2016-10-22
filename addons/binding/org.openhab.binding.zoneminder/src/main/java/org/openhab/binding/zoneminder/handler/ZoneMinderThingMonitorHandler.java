@@ -98,8 +98,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         try {
             // Communication TO Monitor
             switch (channelUID.getId()) {
-                case ZoneMinderConstants.CHANNEL_MONITOR_EVENT:
-                    break;
 
                 // Done via Telnet connection
                 case ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT:
@@ -114,6 +112,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                                         eventTimeout));
                     }
                     break;
+
                 case ZoneMinderConstants.CHANNEL_MONITOR_ENABLED:
                     // getZoneMinderBridgeHandler().sendZoneMinderRequest(ZoneMinderRequestType.MONITOR_TRIGGER,
                     logger.debug(
@@ -123,12 +122,23 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
 
                 case ZoneMinderConstants.CHANNEL_MONITOR_FUNCTION:
-                    // TODO:: Here we go
-                    // getZoneMinderBridgeHandler().sendZoneMinderHttpRequest(ZoneMinderRequestType.MONITOR_MODE);
-                    logger.debug("Command '{}' received for monitor mode: {}", command, channelUID.getId());
-
+                    logger.debug(
+                            "Missing implementation of set functionality in ZM for Command '{}' received for monitor mode: {}",
+                            command, channelUID.getId());
                     break;
 
+                // They are all readonly in the channel config.
+                case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
+                case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
+                case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
+                case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATE:
+                case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATUSTEXT:
+                case ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE:
+                case ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_DAEMON_STATUSTEXT:
+                case ZoneMinderConstants.CHANNEL_MONITOR_FRAME_DAEMON_STATE:
+                case ZoneMinderConstants.CHANNEL_MONITOR_FRAME_DAEMON_STATUSTEXT:
+                    // Do nothing, they are all read only
+                    break;
                 default:
                     logger.warn("Command received for an unknown channel: {}", channelUID.getId());
                     break;
@@ -162,7 +172,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
             // If event occurred in this ZoneMonitor monitor -> do something
             if (incommingMsg.getMonitorId() == config.getId()) {
-                Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_EVENT);
+                // Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_EVENT);
+                Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT);
                 this.updateState(channel.getUID(), incommingMsg.getStateAsOnOffType());
 
                 logger.debug("ZoneMinder event '{}' handled in ZoneMinderThingMonitorHandler",
@@ -250,47 +261,26 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         }
         try {
             switch (channel.getId()) {
-                /*
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_ID:
-                 * String monitorId = getZoneMinderId();
-                 * if (monitorId != "") {
-                 * state = new StringType(monitorId);
-                 * }
-                 * break;
-                 */ case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
+                case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
                     state = getNameState();
                     break;
-                // case ZoneMinderConstants.CHANNEL_MONITOR_TYPE:
-                // break;
+
                 case ZoneMinderConstants.CHANNEL_MONITOR_ENABLED:
                     state = getEnabledState();
                     break;
+
                 case ZoneMinderConstants.CHANNEL_MONITOR_ONLINE:
                     break;
-                /*
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_EVENT:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_IMAGE_WIDTH:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_HEIGHT:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_EVENTPREFIX:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_FPS:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_MAX_FPS:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_ALARM_MAX_FPS:
-                 * break;
-                 * case ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT:
-                 * break;
-                 */
+
+                // Handled from Telnet listener, so just ignor it here.
+                // The handler has to be here to avoid a warning in the OpenHAB log
+                case ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT:
+                    break;
+
                 case ZoneMinderConstants.CHANNEL_MONITOR_FUNCTION:
                     state = getFunctionState();
                     break;
-                case ZoneMinderConstants.CHANNEL_MONITOR_DISK_USAGE:
-                    state = getDiskUsageState();
-                    break;
+
                 case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATE:
                     state = getCaptureDaemonRunningState();
                     break;
@@ -313,6 +303,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
 
                 default:
+                    logger.warn("updateChannel(): Monitor '{}': No handler defined for channel='{}'", thing.getLabel(),
+                            channel.getAsString());
                     // Ask super class to handle
                     super.updateChannel(channel);
             }

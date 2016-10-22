@@ -72,21 +72,21 @@ public class ZoneMinderConstants {
      */
     public final static String CHANNEL_MONITOR_ID = "id";
     public final static String CHANNEL_MONITOR_NAME = "name";
-    public final static String CHANNEL_MONITOR_TYPE = "type";
+    public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
     public final static String CHANNEL_MONITOR_ENABLED = "enabled";
     public final static String CHANNEL_MONITOR_ONLINE = "online";
-    public final static String CHANNEL_MONITOR_EVENT = "event";
+    // public final static String CHANNEL_MONITOR_EVENT = "event";
 
-    public final static String CHANNEL_MONITOR_IMAGE_WIDTH = "image-width";
-    public final static String CHANNEL_MONITOR_HEIGHT = "image-height";
-    public final static String CHANNEL_MONITOR_EVENTPREFIX = "eventprefix";
-    public final static String CHANNEL_MONITOR_ANALYSIS_FPS = "analysis-fps";
-    public final static String CHANNEL_MONITOR_MAX_FPS = "monitor-max-fps";
-    public final static String CHANNEL_MONITOR_ALARM_MAX_FPS = "alarm-max-fps";
+    // public final static String CHANNEL_MONITOR_IMAGE_WIDTH = "image-width";
+    // public final static String CHANNEL_MONITOR_HEIGHT = "image-height";
+    // public final static String CHANNEL_MONITOR_EVENTPREFIX = "eventprefix";
+    // public final static String CHANNEL_MONITOR_ANALYSIS_FPS = "analysis-fps";
+    // public final static String CHANNEL_MONITOR_MAX_FPS = "monitor-max-fps";
+    // public final static String CHANNEL_MONITOR_ALARM_MAX_FPS = "alarm-max-fps";
 
     public final static String CHANNEL_MONITOR_TRIGGER_EVENT = "trigger-event";
     public final static String CHANNEL_MONITOR_FUNCTION = "function";
-    public final static String CHANNEL_MONITOR_DISK_USAGE = "disk-usage";
+    // public final static String CHANNEL_MONITOR_DISK_USAGE = "disk-usage";
     public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATE = "daemon-capture-state";
     public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATUSTEXT = "daemon-capture-statustext";
     public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE = "daemon-analysis-state";
