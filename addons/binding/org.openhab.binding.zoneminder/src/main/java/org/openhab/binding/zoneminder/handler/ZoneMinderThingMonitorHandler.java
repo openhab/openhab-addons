@@ -371,6 +371,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
                 case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
                     state = getSourceTypeState();
+                    break;
 
                 case ZoneMinderConstants.CHANNEL_IS_ALIVE:
                     // Ask super class to handle, because this is shared for all things

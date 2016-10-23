@@ -212,6 +212,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         switch (channel.getId()) {
             case ZoneMinderConstants.CHANNEL_IS_ALIVE:
                 updateState(channel, (isAlive ? OnOffType.ON : OnOffType.OFF));
+                break;
             default:
                 logger.error(
                         "updateChannel() in base class, called for an unknown channel '{}', this channel must be handled in super class.",
