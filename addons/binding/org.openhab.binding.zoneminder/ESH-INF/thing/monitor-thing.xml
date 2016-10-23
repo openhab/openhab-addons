@@ -18,7 +18,7 @@
             <channel id="sourcetype" typeId="monitor_sourcetype" />
             <channel id="trigger-event" typeId="monitor_trigger_event" />
             <channel id="function" typeId="monitor_function" />
-            <channel id="online" typeId="monitor_online" />
+            <channel id="is-alive" typeId="monitor_is_alive" />
             <channel id="daemon-capture-state" typeId="monitor_zmc_daemon_state" />
             <channel id="daemon-capture-statustext" typeId="monitor_zmc_daemon_statustext" />
             <channel id="daemon-analysis-state" typeId="monitor_zma_daemon_state" />
@@ -89,9 +89,9 @@
  -->        
     </channel-type>
            
-    <channel-type id="monitor_online">
+    <channel-type id="monitor_is_alive">
         <item-type>Switch</item-type>
-        <label>Online</label>
+        <label>Is Alive</label>
         <description>Switch telling if the monitor is alive</description>
         <category>Status</category>
         <state readOnly="true" />
@@ -131,7 +131,7 @@
      -->
     <channel-type id="monitor_trigger_event">
         <item-type>Switch</item-type>
-        <label>Start / stop recording</label>
+        <label>Force Alarm</label>
         <description>Switch is ON whenever the the monitor is recording, and OFF when the monitor is idle</description>
         <category>Trigger</category>
         <state readOnly="false" />

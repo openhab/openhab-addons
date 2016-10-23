@@ -13,10 +13,16 @@ package org.openhab.binding.zoneminder.internal.api;
  *
  * @author Martin S. Eskildsen
  */
-public class ServerVersion extends ZoneMinderApiData {
+public class ServerData extends ZoneMinderApiData {
     public String version;
     public String apiversion;
+    private boolean daemonCheckState;
 
-    public ServerVersion() {
+    public void setDaemonCheckState(boolean state) {
+        daemonCheckState = state;
+    }
+
+    public boolean getDaemonCheckState(boolean state) {
+        return daemonCheckState;
     }
 }

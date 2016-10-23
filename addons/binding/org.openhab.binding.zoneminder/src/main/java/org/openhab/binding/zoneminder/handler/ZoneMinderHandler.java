@@ -13,7 +13,11 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 public interface ZoneMinderHandler {
     String getZoneMinderId();
 
-    Boolean isAlive();
+    void updateAvaliabilityStatus();
+
+    Boolean isOnline();
+
+    Boolean isRunning();
 
     void updateChannel(ChannelUID channel);
 }
