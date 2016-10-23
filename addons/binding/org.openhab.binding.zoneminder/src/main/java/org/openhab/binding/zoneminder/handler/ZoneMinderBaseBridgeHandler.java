@@ -239,11 +239,11 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /**
      * Method to start a data refresh task.
      */
-    protected ScheduledFuture<?> startRefreshDataTask(Runnable command, long refreshInterval) {
+    protected ScheduledFuture<?> startRefreshDataTask(Runnable command, long refreshInterval, TimeUnit unit) {
         ScheduledFuture<?> task = null;
         logger.debug("Starting ZoneMinder Bridge Monitor Task. Command='{}'", command.toString());
         if (task == null || task.isCancelled()) {
-            task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, TimeUnit.SECONDS);
+            task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, unit);
         }
         return task;
     }
