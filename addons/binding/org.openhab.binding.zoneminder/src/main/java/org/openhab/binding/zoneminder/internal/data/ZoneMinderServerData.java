@@ -10,16 +10,16 @@ package org.openhab.binding.zoneminder.internal.data;
 
 import org.openhab.binding.zoneminder.internal.api.ServerCpuLoad;
 import org.openhab.binding.zoneminder.internal.api.ServerDiskUsage;
-import org.openhab.binding.zoneminder.internal.api.ServerVersion;
+import org.openhab.binding.zoneminder.internal.api.ServerData;
 
 public class ZoneMinderServerData extends ZoneMinderData {
 
-    private ServerVersion _serverVersion = null;
+    private ServerData _serverVersion = null;
     private ServerDiskUsage _serverDiskUsage = null;
     private ServerCpuLoad _serverCpuLoad = null;
     // private DaemonStatus _serverDaemonStatus = null;
 
-    public ZoneMinderServerData(ServerVersion version, ServerDiskUsage diskUsage, ServerCpuLoad cpuLoad) {
+    public ZoneMinderServerData(ServerData version, ServerDiskUsage diskUsage, ServerCpuLoad cpuLoad) {
 
         this._serverVersion = version;
         _serverDiskUsage = diskUsage;
@@ -28,7 +28,7 @@ public class ZoneMinderServerData extends ZoneMinderData {
 
     }
 
-    public void setServerVersionData(ServerVersion data) {
+    public void setServerVersionData(ServerData data) {
         _serverVersion = data;
     }
 
@@ -40,7 +40,7 @@ public class ZoneMinderServerData extends ZoneMinderData {
         _serverCpuLoad = data;
     }
 
-    public ServerVersion getServerVersionData() {
+    public ServerData getServerVersionData() {
         return _serverVersion;
     }
 

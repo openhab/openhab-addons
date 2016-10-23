@@ -40,8 +40,24 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /** The ZoneMinder bridge type. */
     private ZoneMinderThingType zoneMinderBridgeType = null;
 
+    private ScheduledFuture<?> taskWatchDog = null;
+
     /** Connection status for the bridge. */
     private boolean connected = false;
+
+    protected Boolean isAlive = false;
+
+    private Runnable watchDogRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                updateAvaliabilityStatus();
+            } catch (Exception exception) {
+                logger.error("Server WatchDog::run(): Exception: ", exception);
+            }
+        }
+    };
 
     /**
      * Constructor
@@ -53,6 +69,14 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         this.zoneMinderBridgeType = zoneMinderBridgeType;
     }
 
+    protected void startWatchDogTask() {
+        taskWatchDog = startTask(watchDogRunnable, 10, TimeUnit.SECONDS);
+    }
+
+    protected void stopWatchDogTask() {
+        stopTask(taskWatchDog);
+        taskWatchDog = null;
+    }
     /**
      * Register the Discovery Service.
      *
@@ -97,8 +121,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         return null;
     }
 
-    protected abstract void checkIsAlive();
-
     /**
      * Method to Update a Channel
      *
@@ -106,14 +128,10 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      */
     @Override
     public void updateChannel(ChannelUID channel) {
-        OnOffType onOffType;
 
         switch (channel.getId()) {
-            case ZoneMinderConstants.CHANNEL_ONLINE:
-
-                // onOffType = isAlive() ? OnOffType.ON : OnOffType.OFF;
-                // updateState(channel, onOffType);
-                setConnected(isAlive());
+            case ZoneMinderConstants.CHANNEL_IS_ALIVE:
+                updateState(channel, (isRunning() ? OnOffType.ON : OnOffType.OFF));
                 break;
             default:
                 logger.error(
@@ -160,13 +178,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      * @param connected
      */
     public synchronized void setConnected(boolean connected) {
-        if (this.connected != connected) {
-            updateState(ZoneMinderConstants.CHANNEL_ONLINE, connected ? OnOffType.ON : OnOffType.OFF);
-        }
-        ThingStatus thingStatus = connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
-        if (thingStatus != this.thing.getStatus()) {
-            updateStatus(thingStatus);
-        }
 
         this.connected = connected;
     }
@@ -188,7 +199,8 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     public void onConnected() {
         logger.debug("onConnected(): Bridge Connected!");
 
-        setBridgeConnection(true);
+        // HEST
+        // setBridgeConnection(true);
 
         // Inform thing handlers of connection
         List<Thing> things = getThing().getThings();
@@ -229,7 +241,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /**
      * Method for opening a connection to ZoneMinder Server.
      */
-    abstract void openConnection();
+    abstract Boolean openConnection();
 
     /**
      * Method for closing a connection to ZoneMinder Server.
@@ -239,9 +251,13 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /**
      * Method to start a data refresh task.
      */
-    protected ScheduledFuture<?> startRefreshDataTask(Runnable command, long refreshInterval, TimeUnit unit) {
+    protected ScheduledFuture<?> startTask(Runnable command, long refreshInterval, TimeUnit unit) {
         ScheduledFuture<?> task = null;
         logger.debug("Starting ZoneMinder Bridge Monitor Task. Command='{}'", command.toString());
+        if (refreshInterval == 0) {
+            return task;
+        }
+
         if (task == null || task.isCancelled()) {
             task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, unit);
         }
@@ -251,7 +267,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /**
      * Method to stop the datarefresh task.
      */
-    protected void stopRefreshDataTask(ScheduledFuture<?> task) {
+    protected void stopTask(ScheduledFuture<?> task) {
         logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
         if (task != null && !task.isCancelled()) {
             task.cancel(true);
@@ -336,14 +352,15 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    @Override
-    public void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-        updateState(ZoneMinderConstants.CHANNEL_ONLINE,
-                ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
-
-    }
-
+    /*
+     * @Override
+     * public void updateStatus(ThingStatus status) {
+     * super.updateStatus(status);
+     * updateState(ZoneMinderConstants.CHANNEL_IS_ALIVE,
+     * ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
+     *
+     * }
+     */
     protected abstract boolean onHandleZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
             ZoneMinderOutgoingRequest request);
 

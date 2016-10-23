@@ -10,18 +10,21 @@ package org.openhab.binding.zoneminder.handler;
 
 import java.util.EventObject;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
-import org.openhab.binding.zoneminder.internal.api.MonitorDaemonStatus;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +49,27 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /** This refresh status. */
     private boolean thingRefreshed = false;
 
+    private ScheduledFuture<?> taskWatchDog = null;
+
+    protected Boolean isAlive = false;
+
     /** Unique Id of the thing in zoneminder. */
     private String zoneMinderId;
 
     /** Configuration from OpenHAB */
     protected ZoneMinderThingConfig configuration;
+
+    private Runnable watchDogRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                updateAvaliabilityStatus();
+            } catch (Exception exception) {
+                logger.error("Thing WatchDog::run(): Exception: ", exception);
+            }
+        }
+    };
 
     public ZoneMinderBaseThingHandler(Thing thing) {
         super(thing);
@@ -68,11 +87,55 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
                 this.getThing().getUID());
 
         super.initialize();
+        try {
+
+        } catch (Exception ex) {
+            logger.error("'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'", ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+        } finally {
+            startWatchDogTask();
+        }
+    }
+
+    private void startWatchDogTask() {
+        taskWatchDog = startTask(watchDogRunnable, 10, TimeUnit.SECONDS);
+    }
+
+    private void stopWatchDogTask() {
+        stopTask(taskWatchDog);
+        taskWatchDog = null;
+    }
+
+    /**
+     * Method to start a data refresh task.
+     */
+    protected ScheduledFuture<?> startTask(Runnable command, long refreshInterval, TimeUnit unit) {
+        ScheduledFuture<?> task = null;
+        logger.debug("Starting ZoneMinder Bridge Monitor Task. Command='{}'", command.toString());
+        if (refreshInterval == 0) {
+            return task;
+        }
+
+        if (task == null || task.isCancelled()) {
+            task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, unit);
+        }
+        return task;
+    }
+
+    /**
+     * Method to stop the datarefresh task.
+     */
+    protected void stopTask(ScheduledFuture<?> task) {
+        logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
+        }
     }
 
     @Override
     public void dispose() {
 
+        stopWatchDogTask();
     }
 
     /**
@@ -147,9 +210,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         OnOffType onOffType;
 
         switch (channel.getId()) {
-            case ZoneMinderConstants.CHANNEL_ONLINE:
-                onOffType = isAlive() ? OnOffType.ON : OnOffType.OFF;
-                updateState(channel, onOffType);
+            case ZoneMinderConstants.CHANNEL_IS_ALIVE:
+                updateState(channel, (isAlive ? OnOffType.ON : OnOffType.OFF));
             default:
                 logger.error(
                         "updateChannel() in base class, called for an unknown channel '{}', this channel must be handled in super class.",
@@ -174,7 +236,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      */
     public abstract void ZoneMinderEventReceived(EventObject event, Thing thing);
 
-    protected abstract void checkIsAlive(MonitorDaemonStatus monitorStatus);
+    // protected abstract void checkIsAlive(MonitorDaemonStatus monitorStatus);
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

@@ -8,8 +8,8 @@
         <label>ZoneMinder Server</label>
         <description>ZoneMinder Server</description>
         <channels>
-            <channel id="online" typeId="server_online">
-                <label>Online status</label>
+            <channel id="is-alive" typeId="server_is_alive">
+                <label>Is Alive</label>
                 <description>ON / OFF value to determine from OpenHAB if the server is actually up and running.</description>
             </channel>
 
@@ -38,7 +38,7 @@
         <config-description-ref uri="thing-type:zoneminderserver:config" />
     </bridge-type>
 
-    <channel-type id="server_online">
+    <channel-type id="server_is_alive">
         <item-type>Switch</item-type>
         <label>Server Online</label>
         <description>ZoneMinder Server Online Status</description>

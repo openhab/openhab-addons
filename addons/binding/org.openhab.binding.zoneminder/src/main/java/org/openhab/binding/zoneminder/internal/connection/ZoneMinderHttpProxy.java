@@ -29,6 +29,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.api.ConfigData;
+import org.openhab.binding.zoneminder.internal.api.ConfigEnum;
 import org.openhab.binding.zoneminder.internal.api.Event;
 import org.openhab.binding.zoneminder.internal.api.EventWrapper;
 import org.openhab.binding.zoneminder.internal.api.MonitorDaemonStatus;
@@ -36,8 +38,8 @@ import org.openhab.binding.zoneminder.internal.api.MonitorData;
 import org.openhab.binding.zoneminder.internal.api.MonitorWrapper;
 import org.openhab.binding.zoneminder.internal.api.Pagination;
 import org.openhab.binding.zoneminder.internal.api.ServerCpuLoad;
+import org.openhab.binding.zoneminder.internal.api.ServerData;
 import org.openhab.binding.zoneminder.internal.api.ServerDiskUsage;
-import org.openhab.binding.zoneminder.internal.api.ServerVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +58,10 @@ public class ZoneMinderHttpProxy {
     private static final String SUBPATH_API_SERVERVERSION_JSON = "/host/getVersion.json";
     private static final String SUBPATH_API_SERVER_CPULOAD_JSON = "/host/getLoad.json";
     private static final String SUBPATH_API_SERVER_DISKPERCENT_JSON = "/host/getDiskPercent.json";
+    private static final String SUBPATH_API_SERVER_DAEMON_CHECKSTATE = "/host/daemonCheck.json";
+
+    private static final String SUBPATH_API_SERVER_GET_CONFIG_JSON = "/configs/view/{ConfigId}.json";
+
     private static final String SUBPATH_API_MONITORS_JSON = "/monitors.json";
     private static final String SUBPATH_API_MONITOR_SPECIFIC_JSON = "/monitors/{MonitorId}.json";
     private static final String SUBPATH_API_EVENTS_SPECIFIC_MONITOR_JSON = "/events/index/MonitorId:{MonitorId}.json";
@@ -105,7 +111,7 @@ public class ZoneMinderHttpProxy {
         this.password = password;
     }
 
-    protected Boolean getIsConnected() {
+    public Boolean getIsConnected() {
         return this.isConnected;
     }
 
@@ -159,7 +165,7 @@ public class ZoneMinderHttpProxy {
         return url;
     }
 
-    protected void sendPost(URI uri, String postParams) throws Exception {
+    protected String sendPost(URI uri, String postParams) throws Exception {
 
         conn = (HttpURLConnection) uri.toURL().openConnection();
 
@@ -200,6 +206,7 @@ public class ZoneMinderHttpProxy {
                 response.append(inputLine);
             }
             in.close();
+            return response.toString();
         } else {
             String message = "";
             switch (responseCode) {
@@ -215,6 +222,7 @@ public class ZoneMinderHttpProxy {
             }
             logger.error(message);
         }
+        return null;
 
     }
 
@@ -224,15 +232,31 @@ public class ZoneMinderHttpProxy {
      * return PATH_API;
      * }
      */
-    public ServerVersion getServerVersion() {
-
+    public ServerData getServerData() {
+        ServerData serverData = null;
         JsonObject jsonObject = null;
         try {
+
             jsonObject = getJson(SUBPATH_API_SERVERVERSION_JSON);
+            serverData = gson.fromJson(jsonObject, ServerData.class);
+
+            serverData.setDaemonCheckState(getServerDaemonCheckState());
         } catch (Exception e) {
             logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
         }
-        return gson.fromJson(jsonObject, ServerVersion.class);
+        return serverData;
+    }
+
+    protected Boolean getServerDaemonCheckState() {
+
+        try {
+            return ((getJson(SUBPATH_API_SERVER_DAEMON_CHECKSTATE).get("result").getAsInt() == 1) ? true : false);
+
+        } catch (Exception e) {
+            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+        }
+        return null;
+
     }
 
     public ServerCpuLoad getServerCpuLoad() {
@@ -330,7 +354,8 @@ public class ZoneMinderHttpProxy {
 
         JsonObject jsonObject = null;
         try {
-            jsonObject = getJson(resolveCommands(SUBPATH_API_MONITOR_SPECIFIC_JSON, "MonitorId", MonitorId));
+            jsonObject = getJson(resolveCommands(SUBPATH_API_MONITOR_SPECIFIC_JSON, "MonitorId", MonitorId))
+                    .getAsJsonObject("monitor").getAsJsonObject("Monitor");
         } catch (Exception e) {
             logger.error("Error occurred in 'getMonitor' Error message: '{}'", e.getMessage());
         }
@@ -338,7 +363,28 @@ public class ZoneMinderHttpProxy {
             return null;
         }
 
-        return gson.fromJson(jsonObject.getAsJsonObject("monitor").getAsJsonObject("Monitor"), MonitorData.class);
+        return gson.fromJson(jsonObject, MonitorData.class);
+
+    }
+
+    public ConfigData getConfig(ConfigEnum configId) {
+
+        ConfigData configData = null;
+        JsonObject jsonObject = null;
+        try {
+            jsonObject = getJson(resolveCommands(SUBPATH_API_SERVER_GET_CONFIG_JSON, "ConfigId", configId.name()))
+                    .getAsJsonObject("config").getAsJsonObject("Config");
+
+            configData = new ConfigData(jsonObject.get("Id"), jsonObject.get("Name"), jsonObject.get("Value"),
+                    jsonObject.get("Type"), jsonObject.get("DefaultValue"), jsonObject.get("Readonly"));
+
+        } catch (Exception e) {
+            logger.error("Error occurred in 'getConfig' Error message: '{}'", e.getMessage());
+        }
+        if (jsonObject == null) {
+            return null;
+        }
+        return configData;
 
     }
 
@@ -458,17 +504,44 @@ public class ZoneMinderHttpProxy {
 
     }
 
+    private static String TAG_LOGGING_IN_PAGE = "Logging in";
+    private static String TAG_LOGIN_PAGE = "ZoneMinder Login";
+    private static String TAG_START_PAGE = "- Console";
+
+    protected ZoneMinderWelcomePageEnum getFirstPageType(String html) {
+        Document doc = Jsoup.parse(html);
+
+        // Seems like we must provide user credentials
+        if ((doc.getElementsContainingText(TAG_LOGIN_PAGE).size() > 0) && (doc.getElementById("loginForm") != null)) {
+            return ZoneMinderWelcomePageEnum.LOGIN_PAGE;
+        }
+        // We are trying to login, don't know the result yet :-)
+        else if (doc.getElementsContainingText(TAG_LOGGING_IN_PAGE).size() > 0) {
+            return ZoneMinderWelcomePageEnum.LOGGING_IN_PAGE;
+        }
+        // Finally check if we ended on the startpage
+        else if (doc.title().endsWith(TAG_START_PAGE)) {
+            return ZoneMinderWelcomePageEnum.START_PAGE;
+        }
+        return ZoneMinderWelcomePageEnum.UNKNOWN_PAGE;
+    }
+
     protected Boolean ensureLogin(URI uriLogin, String username, String password) throws Exception {
         // Fetch page
         String html = getDocumentAsString(uriLogin, false);
-        // Get the Document
-        Document doc = Jsoup.parse(html);
 
-        // Lets see if we got a ZoneMinder FormLogin id
-        Element loginForm = doc.getElementById("loginForm");
+        ZoneMinderWelcomePageEnum pageType = getFirstPageType(html);
 
         // We didn't hit the login form. Server is probably not protected by login
-        if (loginForm != null) {
+        if (pageType == ZoneMinderWelcomePageEnum.LOGIN_PAGE) {
+
+            // Get the Document
+            Document doc = Jsoup.parse(html);
+
+            // Lets see if we got a ZoneMinder FormLogin id
+            Element loginForm = doc.getElementById("loginForm");
+
+            // Lets do the magic....
             Elements inputElements = loginForm.getElementsByTag("input");
             List<String> paramList = new ArrayList<String>();
             for (Element inputElement : inputElements) {
@@ -495,13 +568,56 @@ public class ZoneMinderHttpProxy {
                     result.append("&" + param);
                 }
             }
-            sendPost(uriLogin, result.toString());
 
-            // Set isConnnected Boolean to True
-            setIsConnected(true);
+            Integer retries = 0;
+            // Trying to login
+            String responseHtml = sendPost(uriLogin, result.toString());
+            while ((getFirstPageType(responseHtml) == ZoneMinderWelcomePageEnum.LOGGING_IN_PAGE) && (retries < 10)) {
+                Thread.sleep(100);
+
+                // Keep trying
+                responseHtml = getDocumentAsString(uriLogin, false);
+                retries++;
+            }
+
+            if (getFirstPageType(responseHtml) == ZoneMinderWelcomePageEnum.START_PAGE) {
+                setIsConnected(true);
+            } else {
+                logger.error("Unable to login to ZoneMinder Server");
+                setIsConnected(false);
+            }
+            /*
+             * // Get the Document
+             * Document docResponse = Jsoup.parse(response);
+             * Element e = doc.getElementById("h2");
+             * Thread.sleep(500);
+             * response = sendPost(uriLogin, "");
+             *
+             * // Get the Document
+             * docResponse = Jsoup.parse(response);
+             *
+             * // Lets see if we got a ZoneMinder FormLogin id
+             * Element loginForm1 = docResponse.getElementById("loginForm");
+             * if (loginForm == null) {
+             * logger.debug("Success!");
+             * } else {
+             * logger.debug("Login failure!");
+             * }
+             */ /*
+                * // Just try to call something in the API.
+                * if (getServerVersion() == null) {
+                * // Set isConnnected Boolean to True
+                * setIsConnected(false);
+                * } else {
+                * String htmlAfter = getDocumentAsString(uriLogin, false);
+                * Document docAfter = Jsoup.parse(htmlAfter);
+                * // Set isConnnected Boolean to True
+                * setIsConnected(true);
+                * }
+                */
         }
-        // If we land on the main form something login isn't activated in the config -> just continue :-)
-        else if (doc.title().equals("ZM - Console")) {
+        // If we land directly on the main form login isn't activated in the config -> just continue :-)
+        else if (pageType == ZoneMinderWelcomePageEnum.START_PAGE) {
             // Set isConnnected Boolean to True
             setIsConnected(true);
         }
@@ -515,9 +631,6 @@ public class ZoneMinderHttpProxy {
             return false;
         }
 
-        // Validate that API is supported
-        ServerVersion version = getServerVersion();
-        // TODO:: Validate
         return getIsConnected();
     }
 

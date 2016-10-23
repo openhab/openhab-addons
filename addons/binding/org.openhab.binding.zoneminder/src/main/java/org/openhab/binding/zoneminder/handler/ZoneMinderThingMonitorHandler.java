@@ -20,12 +20,12 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
-import org.openhab.binding.zoneminder.internal.api.MonitorDaemonStatus;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderEvent;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderMessage.ZoneMinderRequestType;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderTelnetEvent;
@@ -60,7 +60,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     private String lastMonitorStatus = MONITOR_STATUS_NOT_INIT;
     private Integer monitorStatusMatchCount = 3;
-    private Boolean alive = false;
 
     private ZoneMinderThingMonitorConfig config;
 
@@ -70,12 +69,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     @Override
     public void dispose() {
-    }
-
-    /** isAlive Method */
-    @Override
-    public Boolean isAlive() {
-        return alive;
     }
 
     @Override
@@ -130,7 +123,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 // They are all readonly in the channel config.
                 case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
                 case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
-                case ZoneMinderConstants.CHANNEL_ONLINE:
+                case ZoneMinderConstants.CHANNEL_IS_ALIVE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATUSTEXT:
                 case ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE:
@@ -191,52 +184,160 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         return ZoneMinderConstants.THING_ZONEMINDER_MONITOR;
     }
 
+    private Boolean isDaemonRunning(Boolean daemonStatus, String daemonStatusText) {
+        Boolean result = false;
+
+        Pattern pattern = Pattern
+                .compile("[0-9]{2}/[0-9]{2}/[0-9]{2}\\s+([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]");
+
+        Matcher matcher = pattern.matcher(daemonStatusText);
+        /*
+         * if (monitorStatusMatchCount > MAX_MONITOR_STATUS_WATCH_COUNT) {
+         * monitorStatusMatchCount--;
+         * }
+         *
+         * if (matcher.find()) {
+         * // logger.debug("IsAlive(): Found the text '{}' starting at index {} and ending at index {}.",
+         * // matcher.group(), matcher.start(), matcher.end());
+         *
+         * String currentMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
+         * if (lastMonitorStatus.equals(currentMonitorStatus)) {
+         * monitorStatusMatchCount++;
+         * } else if (lastMonitorStatus.equals(MONITOR_STATUS_NOT_INIT)) {
+         * // We have just started, so we will assume that the monitor is running (don't set match count
+         * // to Zero
+         * monitorStatusMatchCount++;
+         * lastMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
+         * } else {
+         * monitorStatusMatchCount = 0;
+         * lastMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
+         * }
+         * }
+         *
+         * else {
+         * monitorStatusMatchCount = 0;
+         * lastMonitorStatus = "";
+         * logger.debug("IsAlive(): No match found in status text.");
+         * }
+         * isAlive = (daemonStatus && (monitorStatusMatchCount > MAX_MONITOR_STATUS_WATCH_COUNT));
+         *
+         * return isAlive;
+         */
+        if (matcher.find()) {
+
+            String currentMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
+            if (lastMonitorStatus.equals(currentMonitorStatus)) {
+                monitorStatusMatchCount++;
+            } else if (lastMonitorStatus.equals(MONITOR_STATUS_NOT_INIT)) {
+                // We have just started, so we will assume that the monitor is running (don't set match count
+                // to Zero
+                monitorStatusMatchCount++;
+                lastMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
+            } else {
+                monitorStatusMatchCount = 0;
+                lastMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
+            }
+        }
+
+        else {
+            monitorStatusMatchCount = 0;
+            lastMonitorStatus = "";
+            logger.debug("IsAlive(): No match found in status text.");
+        }
+        return daemonStatus;
+    }
+
     @Override
-    protected void checkIsAlive(MonitorDaemonStatus status) {
+    public void updateAvaliabilityStatus() {
         ThingStatus newThingStatus = ThingStatus.OFFLINE;
 
         try {
-            if (status == null) {
+
+            if (zoneMinderMonitorData == null) {
                 monitorStatusMatchCount = 0;
                 lastMonitorStatus = "";
-                alive = false;
+                isAlive = false;
             } else {
+                String msg;
+                // 1. Is there a Bridge assigned?
+                if (getBridge() == null) {
+                    msg = String.format("No Bridge assigned to monitor '{}'", thing.getUID());
 
-                Pattern pattern = Pattern
-                        .compile("[0-9]{2}/[0-9]{2}/[0-9]{2}\\s+([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]");
-                String statusText = status.getStatustext();
-                Matcher matcher = pattern.matcher(statusText);
-
-                if (monitorStatusMatchCount > MAX_MONITOR_STATUS_WATCH_COUNT) {
-                    monitorStatusMatchCount--;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                    logger.error(msg);
+                    return;
                 }
 
-                if (matcher.find()) {
-                    // logger.debug("IsAlive(): Found the text '{}' starting at index {} and ending at index {}.",
-                    // matcher.group(), matcher.start(), matcher.end());
+                // 2. Is Bridge Online?
+                if (getBridge().getStatus() != ThingStatus.ONLINE) {
+                    msg = String.format("Bridge {} is OFFLINE", getBridge().getBridgeUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                    logger.error(msg);
+                    return;
+                }
 
-                    String currentMonitorStatus = status.getStatustext().substring(matcher.start(), matcher.end());
-                    if (lastMonitorStatus.equals(currentMonitorStatus)) {
-                        monitorStatusMatchCount++;
-                    } else if (lastMonitorStatus.equals(MONITOR_STATUS_NOT_INIT)) {
-                        // We have just started, so we will assume that the monitor is running (don't set match count
-                        // to Zero
-                        monitorStatusMatchCount++;
-                        lastMonitorStatus = status.getStatustext().substring(matcher.start(), matcher.end());
-                    } else {
-                        monitorStatusMatchCount = 0;
-                        lastMonitorStatus = status.getStatustext().substring(matcher.start(), matcher.end());
+                // 3. Is Configuration OK?
+                if (getMonitorConfig() == null) {
+                    msg = String.format("No valid configuration found for {}", thing.getUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    logger.error(msg);
+                    return;
+
+                }
+
+                if (getMonitorConfig().getZoneMinderId().isEmpty()) {
+                    msg = String.format("No Id is specified for monitor {}", thing.getUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    logger.error(msg);
+                    return;
+
+                }
+                // 4. Is Daemons running?
+                // a. Capture daemon must ALWAYS run
+                // b. Analysis daemon must run when function is NOT None
+                // c. Frame daemon must run when function is NOT None, AND option OPT_FRAME_SERVER=true
+                // None -> C=0 A=0 F=0
+                // Monitor -> C=1 A=0 F=0 (Både Enabled=1 og =0)
+                // Modect -> C=1 A=1 F=1
+                // Record -> C=1 A=1 F=1
+                // Mocord -> C=1 A=1 F=1
+                // Nodect -> C=1 A=1 F=1
+
+                if (!isDaemonRunning(zoneMinderMonitorData.getCaptureDaemonRunningState(),
+                        zoneMinderMonitorData.getCaptureDaemonStatusText())) {
+
+                    updateStatus(ThingStatus.OFFLINE);
+                    logger.error("Capture Daemon for monitor '{}' is not running on ZoneMinder Server",
+                            getZoneMinderId());
+                    return;
+                }
+
+                if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
+                        zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
+                    if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
+                        updateStatus(ThingStatus.OFFLINE);
+                        logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
+                                getZoneMinderId());
+                        return;
                     }
                 }
 
-                else {
-                    monitorStatusMatchCount = 0;
-                    lastMonitorStatus = "";
-                    logger.debug("IsAlive(): No match found in status text.");
-                }
-                alive = (status.getStatus() && (monitorStatusMatchCount > MAX_MONITOR_STATUS_WATCH_COUNT));
+                // TODO::: Check FrameDaemon as well -> requires access to server config.
+                /*
+                 * if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
+                 * zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
+                 * if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
+                 * updateStatus(ThingStatus.OFFLINE);
+                 * logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
+                 * getZoneMinderId());
+                 * return;
+                 * }
+                 * }
+                 */
             }
-            newThingStatus = alive ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
+            isAlive = true;
+            newThingStatus = isAlive ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
+
         } catch (Exception exception) {
 
         } finally {
@@ -271,7 +372,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 case ZoneMinderConstants.CHANNEL_MONITOR_SOURCETYPE:
                     state = getSourceTypeState();
 
-                case ZoneMinderConstants.CHANNEL_ONLINE:
+                case ZoneMinderConstants.CHANNEL_IS_ALIVE:
                     // Ask super class to handle, because this is shared for all things
                     super.updateChannel(channel);
                     break;
@@ -337,7 +438,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
-        updateState(ZoneMinderConstants.CHANNEL_ONLINE,
+        updateState(ZoneMinderConstants.CHANNEL_IS_ALIVE,
                 ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
 
     }
@@ -387,6 +488,18 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     protected State getFrameDaemonStatusTextState() {
         return new StringType(getMonitorData().getFrameDaemonStatusText());
+    }
+
+    @Override
+    public Boolean isOnline() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Boolean isRunning() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
