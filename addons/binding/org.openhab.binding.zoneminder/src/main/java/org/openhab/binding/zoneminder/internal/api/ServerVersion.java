@@ -13,7 +13,7 @@ package org.openhab.binding.zoneminder.internal.api;
  *
  * @author Martin S. Eskildsen
  */
-public class ServerVersion {
+public class ServerVersion extends ZoneMinderApiData {
     public String version;
     public String apiversion;
 

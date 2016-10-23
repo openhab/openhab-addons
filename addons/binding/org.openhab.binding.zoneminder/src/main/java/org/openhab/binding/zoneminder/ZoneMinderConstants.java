@@ -54,6 +54,8 @@ public class ZoneMinderConstants {
 
     public final static String CHANNEL_SERVER_ZM_VERSION = "zm-version";
     public final static String CHANNEL_SERVER_ZM_API_VERSION = "zm-api-version";
+    public final static String CHANNEL_SERVER_DISKUSAGE = "disk-usage";
+    public final static String CHANNEL_SERVER_CPULOAD = "cpu-load";
 
     // Parameters for the ZoneMinder Server
     public final static String PARAMETER_HOSTNAME = "hostname";

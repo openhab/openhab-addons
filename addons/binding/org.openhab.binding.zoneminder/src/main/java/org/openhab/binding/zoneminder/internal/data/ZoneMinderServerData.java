@@ -8,16 +8,22 @@
  */
 package org.openhab.binding.zoneminder.internal.data;
 
+import org.openhab.binding.zoneminder.internal.api.ServerCpuLoad;
+import org.openhab.binding.zoneminder.internal.api.ServerDiskUsage;
 import org.openhab.binding.zoneminder.internal.api.ServerVersion;
 
 public class ZoneMinderServerData extends ZoneMinderData {
 
     private ServerVersion _serverVersion = null;
+    private ServerDiskUsage _serverDiskUsage = null;
+    private ServerCpuLoad _serverCpuLoad = null;
     // private DaemonStatus _serverDaemonStatus = null;
 
-    public ZoneMinderServerData(ServerVersion version) {
+    public ZoneMinderServerData(ServerVersion version, ServerDiskUsage diskUsage, ServerCpuLoad cpuLoad) {
 
         this._serverVersion = version;
+        _serverDiskUsage = diskUsage;
+        _serverCpuLoad = cpuLoad;
         // this._daemonStatus = daemonStatus;
 
     }
@@ -30,4 +36,13 @@ public class ZoneMinderServerData extends ZoneMinderData {
         return _serverVersion.apiversion;
     }
 
+    public String getServerDiskUsage() {
+        return _serverDiskUsage.getSpace();
+
+    }
+
+    public Double getServerCpuLoad() {
+        return _serverCpuLoad.getCpuLoad();
+
+    }
 }
