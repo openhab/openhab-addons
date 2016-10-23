@@ -8,14 +8,6 @@
  */
 package org.openhab.binding.zoneminder.internal.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Generated;
-
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonAnySetter;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -28,7 +20,6 @@ import org.openhab.binding.zoneminder.ZoneMinderConstants;
  */
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-@Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({ "Id", "Name", "ServerId", "Type", "Function", "Enabled", "LinkedMonitors", "Triggers", "Device",
         "Channel", "Format", "V4LMultiBuffer", "V4LCapturesPerFrame", "Protocol", "Method", "Host", "Port", "SubPath",
         "Path", "Options", "User", "Pass", "Width", "Height", "Colours", "Palette", "Orientation", "Deinterlacing",
@@ -218,8 +209,9 @@ public class MonitorData extends ZoneMinderApiData {
     private Boolean Exif;
     @JsonProperty("Sequence")
     private String Sequence;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    // @JsonIgnore
+    // private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getDisplayName() {
 
@@ -285,11 +277,11 @@ public class MonitorData extends ZoneMinderApiData {
      *
      * @param ServerId
      *            The ServerId
+     *            @JsonProperty("ServerId")
+     *            public void setServerId(String ServerId) {
+     *            this.ServerId = ServerId;
+     *            }
      */
-    @JsonProperty("ServerId")
-    public void setServerId(String ServerId) {
-        this.ServerId = ServerId;
-    }
 
     /**
      *
@@ -305,11 +297,11 @@ public class MonitorData extends ZoneMinderApiData {
      *
      * @param Type
      *            The Type
+     *            @JsonProperty("Type")
+     *            public void setType(String Type) {
+     *            this.Type = Type;
+     *            }
      */
-    @JsonProperty("Type")
-    public void setType(String Type) {
-        this.Type = Type;
-    }
 
     /**
      *
@@ -325,12 +317,12 @@ public class MonitorData extends ZoneMinderApiData {
      *
      * @param Function
      *            The Function
+     * 
+     *            @JsonProperty("Function")
+     *            public void setFunction(String Function) {
+     *            this.Function = Function;
+     *            }
      */
-    @JsonProperty("Function")
-    public void setFunction(String Function) {
-        this.Function = Function;
-    }
-
     /**
      *
      * @return
@@ -1563,32 +1555,12 @@ public class MonitorData extends ZoneMinderApiData {
 
     /**
      *
-     * @param SignalCheckColour
-     *            The SignalCheckColour
-     */
-    @JsonProperty("SignalCheckColour")
-    public void setSignalCheckColour(String SignalCheckColour) {
-        this.SignalCheckColour = SignalCheckColour;
-    }
-
-    /**
-     *
      * @return
      *         The WebColour
      */
     @JsonProperty("WebColour")
     public String getWebColour() {
         return WebColour;
-    }
-
-    /**
-     *
-     * @param WebColour
-     *            The WebColour
-     */
-    @JsonProperty("WebColour")
-    public void setWebColour(String WebColour) {
-        this.WebColour = WebColour;
     }
 
     /**
@@ -1603,16 +1575,6 @@ public class MonitorData extends ZoneMinderApiData {
 
     /**
      *
-     * @param Exif
-     *            The Exif
-     */
-    @JsonProperty("Exif")
-    public void setExif(Boolean Exif) {
-        this.Exif = Exif;
-    }
-
-    /**
-     *
      * @return
      *         The Sequence
      */
@@ -1621,23 +1583,4 @@ public class MonitorData extends ZoneMinderApiData {
         return Sequence;
     }
 
-    /**
-     *
-     * @param Sequence
-     *            The Sequence
-     */
-    @JsonProperty("Sequence")
-    public void setSequence(String Sequence) {
-        this.Sequence = Sequence;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
 }

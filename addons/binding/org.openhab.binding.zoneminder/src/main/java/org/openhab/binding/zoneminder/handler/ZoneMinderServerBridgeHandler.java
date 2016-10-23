@@ -36,6 +36,8 @@ import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
 import org.openhab.binding.zoneminder.internal.api.MonitorDaemonStatus;
 import org.openhab.binding.zoneminder.internal.api.MonitorData;
+import org.openhab.binding.zoneminder.internal.api.ServerCpuLoad;
+import org.openhab.binding.zoneminder.internal.api.ServerDiskUsage;
 import org.openhab.binding.zoneminder.internal.api.ServerVersion;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderMessage.ZoneMinderRequestType;
 import org.openhab.binding.zoneminder.internal.command.ZoneMinderOutgoingRequest;
@@ -258,12 +260,19 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
                     break;
                 case ZoneMinderConstants.CHANNEL_SERVER_ZM_API_VERSION:
                     state = getServerVersionApiState();
-
+                    break;
+                case ZoneMinderConstants.CHANNEL_SERVER_DISKUSAGE:
+                    state = getServerDiskUsageState();
+                    break;
+                case ZoneMinderConstants.CHANNEL_SERVER_CPULOAD:
+                    state = getServerCpuLoadState();
+                    break;
                 default:
                     logger.warn("updateChannel(): Server '{}': No handler defined for channel='{}'", thing.getLabel(),
                             channel.getAsString());
                     // Ask super class to handle
                     super.updateChannel(channel);
+                    break;
             }
 
             if (state != null) {
@@ -448,8 +457,11 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
             case SERVER_THING:
                 ZoneMinderHttpServerRequest serverRequest = (ZoneMinderHttpServerRequest) request;
                 ServerVersion serverVersionData = zoneMinderServerProxy.getServerVersion();
+                ServerDiskUsage serverDiskUsage = zoneMinderServerProxy.getServerDiskUsage();
+                ServerCpuLoad serverCpuLoad = zoneMinderServerProxy.getServerCpuLoad();
 
-                data = new ZoneMinderServerData(serverVersionData);
+                data = new ZoneMinderServerData(serverVersionData, serverDiskUsage, serverCpuLoad);
+                break;
             default:
                 logger.warn("Unhandled HTTP request occurred (request='{}'", request.getRequestType());
         }
@@ -505,4 +517,13 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
         return new StringType(getServerData().getServerVersionApi());
     }
 
+    protected State getServerCpuLoadState() {
+
+        return new StringType(getServerData().getServerCpuLoad().toString());
+    }
+
+    protected State getServerDiskUsageState() {
+
+        return new StringType(getServerData().getServerDiskUsage());
+    }
 }

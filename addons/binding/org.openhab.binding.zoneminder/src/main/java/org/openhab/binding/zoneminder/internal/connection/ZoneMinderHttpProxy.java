@@ -19,6 +19,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -33,11 +35,14 @@ import org.openhab.binding.zoneminder.internal.api.MonitorDaemonStatus;
 import org.openhab.binding.zoneminder.internal.api.MonitorData;
 import org.openhab.binding.zoneminder.internal.api.MonitorWrapper;
 import org.openhab.binding.zoneminder.internal.api.Pagination;
+import org.openhab.binding.zoneminder.internal.api.ServerCpuLoad;
+import org.openhab.binding.zoneminder.internal.api.ServerDiskUsage;
 import org.openhab.binding.zoneminder.internal.api.ServerVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -49,6 +54,8 @@ public class ZoneMinderHttpProxy {
     private static final String SUBPATH_API = "/api";
     private static final String SUBPATH_SERVERLOGIN = "/index.php";
     private static final String SUBPATH_API_SERVERVERSION_JSON = "/host/getVersion.json";
+    private static final String SUBPATH_API_SERVER_CPULOAD_JSON = "/host/getLoad.json";
+    private static final String SUBPATH_API_SERVER_DISKPERCENT_JSON = "/host/getDiskPercent.json";
     private static final String SUBPATH_API_MONITORS_JSON = "/monitors.json";
     private static final String SUBPATH_API_MONITOR_SPECIFIC_JSON = "/monitors/{MonitorId}.json";
     private static final String SUBPATH_API_EVENTS_SPECIFIC_MONITOR_JSON = "/events/index/MonitorId:{MonitorId}.json";
@@ -226,6 +233,46 @@ public class ZoneMinderHttpProxy {
             logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
         }
         return gson.fromJson(jsonObject, ServerVersion.class);
+    }
+
+    public ServerCpuLoad getServerCpuLoad() {
+
+        JsonObject jsonObject = null;
+        try {
+
+            jsonObject = getJson(SUBPATH_API_SERVER_CPULOAD_JSON);
+            // jsonObject = getJson(SUBPATH_API_SERVER_DISKPERCENT_JSON).get("load").get();
+            // jsonObject
+            // for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet())
+            // {
+
+            // }
+        } catch (Exception e) {
+            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+        }
+        return gson.fromJson(jsonObject, ServerCpuLoad.class);
+
+    }
+
+    public ServerDiskUsage getServerDiskUsage() {
+        JsonObject jsonObject = null;
+        try {
+            jsonObject = getJson(SUBPATH_API_SERVER_DISKPERCENT_JSON).get("usage").getAsJsonObject();
+
+            Set<Map.Entry<String, JsonElement>> entries = jsonObject.entrySet();
+            for (Map.Entry<String, JsonElement> entry : entries) {
+                if (entry.getKey().equalsIgnoreCase("Total")) {
+                    JsonObject Test = (JsonObject) entry.getValue();
+                    return gson.fromJson(Test, ServerDiskUsage.class);
+
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+        }
+        return null;
+
     }
 
     public MonitorDaemonStatus getMonitorCaptureDaemonStatus(String monitorId) {
