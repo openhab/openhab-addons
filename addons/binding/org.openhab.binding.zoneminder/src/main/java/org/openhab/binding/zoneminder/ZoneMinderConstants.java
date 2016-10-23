@@ -58,9 +58,10 @@ public class ZoneMinderConstants {
     public final static String CHANNEL_SERVER_CPULOAD = "cpu-load";
 
     // Parameters for the ZoneMinder Server
-    public final static String PARAMETER_HOSTNAME = "hostname";
-    public final static String PARAMETER_PORT = "port";
-
+    public final static String PARAM_HOSTNAME = "hostname";
+    public final static String PARAM_PORT = "port";
+    public final static String PARAM_REFRESH_INTERVAL_ = "refresh_interval";
+    public final static String PARAM_REFRESH_INTERVAL_DISKUSAGE = "refresh_interval_disk_usage";
     // Default values for Monitor parameters
     public static final Integer DEFAULT_HTTP_PORT = 80;
     public static final Integer DEFAULT_TELNET_PORT = 6802;

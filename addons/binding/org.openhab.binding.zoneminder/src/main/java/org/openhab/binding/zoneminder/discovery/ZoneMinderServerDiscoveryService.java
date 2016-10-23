@@ -226,8 +226,8 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             ThingUID uid = new ThingUID(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER,
                     ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
             Map<String, Object> properties = new HashMap<>(0);
-            properties.put(ZoneMinderConstants.PARAMETER_HOSTNAME, ipAddress);
-            properties.put(ZoneMinderConstants.PARAMETER_PORT, new Integer(80));
+            properties.put(ZoneMinderConstants.PARAM_HOSTNAME, ipAddress);
+            properties.put(ZoneMinderConstants.PARAM_PORT, new Integer(80));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(ZoneMinderConstants.ZONEMINDER_SERVER_NAME).build();
             thingDiscovered(result);
