@@ -147,6 +147,7 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
         super.initialize();
         try {
             updateStatus(ThingStatus.INITIALIZING);
+
             this.config = getBridgeConfig();
 
             logger.debug("ZoneMinder Server Bridge Handler Initialized");
@@ -158,6 +159,8 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
             logger.debug("   User:               {}", config.getUserName());
             logger.debug("   Refresh interval:   {}", config.getRefreshInterval());
             logger.debug("   Low  prio. refresh: {}", config.getRefreshIntervalLowPriorityTask());
+
+            closeConnection();
 
             taskHighPriorityRefresh = startTask(refreshHighPriorityDataRunnable, config.getRefreshInterval(),
                     TimeUnit.SECONDS);
