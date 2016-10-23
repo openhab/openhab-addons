@@ -22,9 +22,16 @@ CUxD: 8701
 TclRegaScript: 8181  
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
-- BIN-RPC for a Homegear gateway
-- BIN-RPC for a gateway NOT supporting Homematic IP
-- XML-RPC for a gateway supporting Homematic IP (Homematic IP does not support BIN-RPC)
+
+* **CCU**
+    * **RF**: BIN-RPC
+    * **WIRED**: BIN-RPC
+    * **HMIP**: XML-RPC
+    * **CUxD**: BIN-RPC (CUxD version >= 1.6 required)
+* **Homegear**
+    * BIN-RPC
+* **Other**
+    * XML-RPC
 
 ## Supported Things
 

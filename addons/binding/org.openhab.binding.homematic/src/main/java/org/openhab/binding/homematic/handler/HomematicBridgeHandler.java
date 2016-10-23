@@ -119,7 +119,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             gateway.dispose();
         }
         if (config != null) {
-            portPool.release(config.getCallbackPort());
+            portPool.release(config.getXmlCallbackPort());
+            portPool.release(config.getBinCallbackPort());
         }
     }
 
@@ -170,10 +171,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         if (homematicConfig.getCallbackHost() == null) {
             homematicConfig.setCallbackHost(LocalNetworkInterface.getLocalNetworkInterface());
         }
-        if (homematicConfig.getCallbackPort() == 0) {
-            homematicConfig.setCallbackPort(portPool.getNextPort());
+        if (homematicConfig.getXmlCallbackPort() == 0) {
+            homematicConfig.setXmlCallbackPort(portPool.getNextPort());
         } else {
-            portPool.setInUse(homematicConfig.getCallbackPort());
+            portPool.setInUse(homematicConfig.getXmlCallbackPort());
+        }
+        if (homematicConfig.getBinCallbackPort() == 0) {
+            homematicConfig.setBinCallbackPort(portPool.getNextPort());
+        } else {
+            portPool.setInUse(homematicConfig.getBinCallbackPort());
         }
         logger.debug(homematicConfig.toString());
         return homematicConfig;
