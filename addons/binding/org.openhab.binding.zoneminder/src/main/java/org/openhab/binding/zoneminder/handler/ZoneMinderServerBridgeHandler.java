@@ -21,6 +21,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -90,9 +91,37 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
     private PrintWriter tcpOutput = null;
     private BufferedReader tcpInput = null;
 
-    // private ServerVersion zmServerVersion;
+    private ZoneMinderServerData zoneMinderServerData = null;
+    // private ServerVersion _serverVersion = null;
+    // private ServerDiskUsage _serverDiskUsage = null;
+    // private ServerCpuLoad _serverCpuLoad = null;
 
-    ZoneMinderServerData zoneMinderServerData = null;
+    private ScheduledFuture<?> taskHighPriorityRefresh = null;
+    private ScheduledFuture<?> taskLowPriorityRefresh = null;
+
+    private Runnable refreshHighPriorityDataRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                refreshHighPriorityPriorityData();
+            } catch (Exception exception) {
+                logger.error("monitorRunnable::run(): Exception: ", exception);
+            }
+        }
+    };
+
+    private Runnable refreshLowPriorityDataRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                refreshLowPriorityPriorityData();
+            } catch (Exception exception) {
+                logger.error("monitorRunnable::run(): Exception: ", exception);
+            }
+        }
+    };
 
     /**
      * Constructor
@@ -123,10 +152,14 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
             logger.debug("   Port (Telnet)       {}", config.getTelnetPort());
             logger.debug("   Server Path         {}", config.getServerBasePath());
             logger.debug("   User:               {}", config.getUserName());
-            logger.debug("   Low Prio. refresh:  {}", config.getLowPriorityRefreshInterval());
-            logger.debug("   High Prio. refresh: {}", config.getPriorityRefreshInterval());
+            logger.debug("   Refresh interval:   {}", config.getRefreshInterval());
+            logger.debug("   Low  prio. refresh: {}", config.getRefreshIntervalLowPriorityTask());
 
-            startMonitor(config.getPriorityRefreshInterval());
+            taskHighPriorityRefresh = startRefreshDataTask(refreshHighPriorityDataRunnable,
+                    config.getRefreshInterval());
+            taskLowPriorityRefresh = startRefreshDataTask(refreshLowPriorityDataRunnable,
+                    config.getRefreshIntervalLowPriorityTask());
+
         } catch (Exception ex) {
             logger.error("'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'", ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
@@ -139,7 +172,8 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
     public void dispose() {
         logger.debug("Stop polling of ZoneMinder Server API");
 
-        stopMonitor();
+        stopRefreshDataTask(taskHighPriorityRefresh);
+        stopRefreshDataTask(taskLowPriorityRefresh);
     }
 
     @Override
@@ -166,6 +200,53 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
 
     protected ZoneMinderServerData getServerData() {
         return zoneMinderServerData;
+    }
+
+    /**
+     * Method for polling the ZoneMinder Server.
+     */
+    @Override
+    protected void onRefreshLowPriorityPriorityData() {
+        logger.debug("Refreshing diskusage from ZoneMinder Server Task - '{}'", getThing().getUID());
+
+        if (!isConnected()) {
+            logger.error("Not Connected to the ZoneMinder Server!");
+            connect();
+        }
+
+        if (isConnected()) {
+            ZoneMinderHttpRequest request = new ZoneMinderHttpServerRequest(
+                    ZoneMinderRequestType.SERVER_LOW_PRIORITY_DATA, getZoneMinderId());
+            sendZoneMinderHttpRequest(request);
+
+        }
+    }
+
+    @Override
+    protected void onRefreshHighPriorityPriorityData() {
+        logger.trace("ZoneMinder Server: Refreshing Bridge...");
+
+        // Refresh channels on the bridge
+        this.refreshThing();
+
+        List<Thing> things = getThing().getThings();
+
+        for (Thing thing : things) {
+
+            ZoneMinderBaseThingHandler handler = (ZoneMinderBaseThingHandler) thing.getHandler();
+
+            if (handler != null) {
+                logger.debug("***Checking '{}' - Status: {}, Refreshed: {}", thing.getUID(), thing.getStatus(),
+                        handler.isThingRefreshed());
+
+                handler.refreshThing();
+
+            } else {
+                logger.error("refreshBridge(): Thing handler not found!");
+            }
+
+        }
+
     }
 
     /**
@@ -196,7 +277,7 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
          * Fetch data for all monitors attached to this bridge
          */
 
-        ZoneMinderHttpRequest request = new ZoneMinderHttpServerRequest(ZoneMinderRequestType.SERVER_THING,
+        ZoneMinderHttpRequest request = new ZoneMinderHttpServerRequest(ZoneMinderRequestType.SERVER_HIGH_PRIORITY_DATA,
                 getZoneMinderId());
         sendZoneMinderHttpRequest(request);
 
@@ -225,7 +306,25 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
     public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String zoneMinderId, ZoneMinderData data) {
 
         if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
-            zoneMinderServerData = (ZoneMinderServerData) data;
+
+            // Check data sets individually and update the local copy if they are there
+            ZoneMinderServerData updatedData = (ZoneMinderServerData) data;
+
+            if (zoneMinderServerData == null) {
+                zoneMinderServerData = new ZoneMinderServerData(null, null, null);
+            }
+
+            if (updatedData.getServerVersionData() != null) {
+                zoneMinderServerData.setServerVersionData(updatedData.getServerVersionData());
+            }
+
+            if (updatedData.getServerCpuLoadData() != null) {
+                zoneMinderServerData.setServerCpuLoadData(updatedData.getServerCpuLoadData());
+            }
+            if (updatedData.getServerDiskUsageData() != null) {
+                zoneMinderServerData.setServerDiskUsageData(updatedData.getServerDiskUsageData());
+            }
+
         } else {
             ZoneMinderBaseThingHandler thing = getZoneMinderThingHandlerFromZoneMinderId(thingTypeUID, zoneMinderId);
 
@@ -454,13 +553,16 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
                 data = new ZoneMinderMonitorData(monitorData, captureDaemonStatus, analysisDaemonStatus,
                         frameDaemonStatus);
                 break;
-            case SERVER_THING:
+            case SERVER_HIGH_PRIORITY_DATA:
                 ZoneMinderHttpServerRequest serverRequest = (ZoneMinderHttpServerRequest) request;
                 ServerVersion serverVersionData = zoneMinderServerProxy.getServerVersion();
-                ServerDiskUsage serverDiskUsage = zoneMinderServerProxy.getServerDiskUsage();
                 ServerCpuLoad serverCpuLoad = zoneMinderServerProxy.getServerCpuLoad();
-
-                data = new ZoneMinderServerData(serverVersionData, serverDiskUsage, serverCpuLoad);
+                data = new ZoneMinderServerData(serverVersionData, null, serverCpuLoad);
+                break;
+            case SERVER_LOW_PRIORITY_DATA:
+                ZoneMinderHttpServerRequest serverDiskUsageRequest = (ZoneMinderHttpServerRequest) request;
+                ServerDiskUsage serverDiskUsage = zoneMinderServerProxy.getServerDiskUsage();
+                data = new ZoneMinderServerData(null, serverDiskUsage, null);
                 break;
             default:
                 logger.warn("Unhandled HTTP request occurred (request='{}'", request.getRequestType());
@@ -523,7 +625,15 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
     }
 
     protected State getServerDiskUsageState() {
+        try {
 
-        return new StringType(getServerData().getServerDiskUsage());
+            return new StringType(getServerData().getServerDiskUsageData().getDiskUsage());
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+
+        }
+
+        return null;
+
     }
 }

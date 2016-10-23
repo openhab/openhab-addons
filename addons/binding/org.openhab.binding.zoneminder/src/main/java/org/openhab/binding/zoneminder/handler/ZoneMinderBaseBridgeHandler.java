@@ -43,24 +43,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /** Connection status for the bridge. */
     private boolean connected = false;
 
-    // Polling variables
-    private long pollElapsedTime = 0;
-    private long pollStartTime = 0;
-
-    private ScheduledFuture<?> monitorTask;
-
-    private Runnable monitorRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                monitor();
-            } catch (Exception exception) {
-                logger.error("monitorRunnable::run(): Exception: ", exception);
-            }
-        }
-    };
-
     /**
      * Constructor
      *
@@ -141,42 +123,9 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * A bridge could eventually also have channels -> so we think of the bridge as a thing.
-     */
-    protected abstract void refreshThing();
-
-    private void refreshBridge() {
-        logger.trace("ZoneMinder Server: Refreshing Bridge!");
-
-        // Refresh channels on the bridge
-        this.refreshThing();
-
-        List<Thing> things = getThing().getThings();
-
-        for (Thing thing : things) {
-
-            ZoneMinderBaseThingHandler handler = (ZoneMinderBaseThingHandler) thing.getHandler();
-
-            if (handler != null) {
-                logger.debug("***Checking '{}' - Status: {}, Refreshed: {}", thing.getUID(), thing.getStatus(),
-                        handler.isThingRefreshed());
-
-                // TODO:: Uneccessary code
-                // List<Channel> channels = getThing().getChannels();
-                handler.refreshThing();
-
-            } else {
-                logger.error("refreshBridge(): Thing handler not found!");
-            }
-
-        }
-
-    }
-
-    /**
      * Connect The Bridge.
      */
-    private synchronized void connect() {
+    protected synchronized void connect() {
         onDisconnected();
 
         openConnection();
@@ -288,23 +237,24 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     abstract void closeConnection();
 
     /**
-     * Method to start the monitor task.
+     * Method to start a data refresh task.
      */
-    protected void startMonitor(long refreshInterval) {
-        logger.debug("Starting ZoneMinder Bridge Monitor Task.");
-        if (monitorTask == null || monitorTask.isCancelled()) {
-            monitorTask = scheduler.scheduleAtFixedRate(monitorRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+    protected ScheduledFuture<?> startRefreshDataTask(Runnable command, long refreshInterval) {
+        ScheduledFuture<?> task = null;
+        logger.debug("Starting ZoneMinder Bridge Monitor Task. Command='{}'", command.toString());
+        if (task == null || task.isCancelled()) {
+            task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, TimeUnit.SECONDS);
         }
+        return task;
     }
 
     /**
-     * Method to stop the monitor task.
+     * Method to stop the datarefresh task.
      */
-    protected void stopMonitor() {
-        logger.debug("Stopping ZoneMinder Bridge Monitor Task.");
-        if (monitorTask != null && !monitorTask.isCancelled()) {
-            monitorTask.cancel(true);
-            monitorTask = null;
+    protected void stopRefreshDataTask(ScheduledFuture<?> task) {
+        logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
+        if (task != null && !task.isCancelled()) {
+            task.cancel(true);
         }
     }
 
@@ -327,18 +277,38 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Method for polling the ZoneMinder Server.
+     * A bridge could eventually also have channels -> so we think of the bridge as a thing.
+     */
+    protected abstract void refreshThing();
+
+    protected abstract void onRefreshLowPriorityPriorityData();
+
+    protected abstract void onRefreshHighPriorityPriorityData();
+
+    /**
+     * Method for updating High priority Data.
      */
 
-    public synchronized void monitor() {
-        logger.debug("ZoneMinder Polling Task - '{}'", getThing().getUID());
+    public synchronized void refreshHighPriorityPriorityData() {
+        logger.debug("Refreshing high priority data from ZoneMinder Server Task - '{}'", getThing().getUID());
 
         if (isConnected()) {
-            // TODO:: Fix call to sendZoneMinderHttpRequest
-            // Make sure we have checked online status before refreshing
-            // sendZoneMinderHttpRequest(ZoneMinderRequestType.IS_ALIVE);
+            onRefreshHighPriorityPriorityData();
+        } else {
+            logger.error("Not Connected to the ZoneMinder Server!");
+            connect();
+        }
+    }
 
-            refreshBridge();
+    /**
+     * Method for updating Low priority Data.
+     */
+
+    public synchronized void refreshLowPriorityPriorityData() {
+        logger.debug("Refreshing low priority data from ZoneMinder Server Task - '{}'", getThing().getUID());
+
+        if (isConnected()) {
+            onRefreshLowPriorityPriorityData();
         } else {
             logger.error("Not Connected to the ZoneMinder Server!");
             connect();

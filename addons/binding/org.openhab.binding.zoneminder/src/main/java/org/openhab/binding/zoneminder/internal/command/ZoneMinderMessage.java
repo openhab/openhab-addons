@@ -29,7 +29,9 @@ public abstract class ZoneMinderMessage {
     protected Integer timeout = null;
 
     public enum ZoneMinderRequestType {
-        SERVER_THING,
+        SERVER_LOW_PRIORITY_DATA,
+        SERVER_HIGH_PRIORITY_DATA,
+
         MONITOR_THING,
         // Telnet
         MONITOR_EVENT,

@@ -28,21 +28,57 @@ public class ZoneMinderServerData extends ZoneMinderData {
 
     }
 
+    public void setServerVersionData(ServerVersion data) {
+        _serverVersion = data;
+    }
+
+    public void setServerDiskUsageData(ServerDiskUsage data) {
+        _serverDiskUsage = data;
+    }
+
+    public void setServerCpuLoadData(ServerCpuLoad data) {
+        _serverCpuLoad = data;
+    }
+
+    public ServerVersion getServerVersionData() {
+        return _serverVersion;
+    }
+
+    public ServerDiskUsage getServerDiskUsageData() {
+        return _serverDiskUsage;
+    }
+
+    public ServerCpuLoad getServerCpuLoadData() {
+        return _serverCpuLoad;
+    }
+
     public String getServerVersion() {
-        return _serverVersion.version;
+        if (_serverVersion != null) {
+            return _serverVersion.version;
+        }
+        return "";
     }
 
     public String getServerVersionApi() {
-        return _serverVersion.apiversion;
+        if (_serverVersion != null) {
+            return _serverVersion.apiversion;
+        }
+        return "";
     }
 
-    public String getServerDiskUsage() {
-        return _serverDiskUsage.getSpace();
-
-    }
-
+    /*
+     * public String getServerDiskUsage() {
+     * if (_serverDiskUsage != null) {
+     * return _serverDiskUsage.getSpace();
+     * }
+     * return "";
+     * }
+     */
     public Double getServerCpuLoad() {
-        return _serverCpuLoad.getCpuLoad();
+        if (_serverDiskUsage != null) {
+            return _serverCpuLoad.getCpuLoad();
+        }
+        return null;
 
     }
 }
