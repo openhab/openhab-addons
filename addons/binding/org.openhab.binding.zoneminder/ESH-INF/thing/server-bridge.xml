@@ -40,7 +40,7 @@
 
     <channel-type id="server_is_alive">
         <item-type>Switch</item-type>
-        <label>Server Online</label>
+        <label>Server IsAlive</label>
         <description>ZoneMinder Server Online Status</description>
         <state readOnly="true"/>
     </channel-type>

@@ -91,7 +91,7 @@
            
     <channel-type id="monitor_is_alive">
         <item-type>Switch</item-type>
-        <label>Is Alive</label>
+        <label>Monitor IsAlive</label>
         <description>Switch telling if the monitor is alive</description>
         <category>Status</category>
         <state readOnly="true" />
