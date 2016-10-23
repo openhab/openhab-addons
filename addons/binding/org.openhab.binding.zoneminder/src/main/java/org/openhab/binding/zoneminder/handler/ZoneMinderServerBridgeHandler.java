@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -155,10 +156,10 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
             logger.debug("   Refresh interval:   {}", config.getRefreshInterval());
             logger.debug("   Low  prio. refresh: {}", config.getRefreshIntervalLowPriorityTask());
 
-            taskHighPriorityRefresh = startRefreshDataTask(refreshHighPriorityDataRunnable,
-                    config.getRefreshInterval());
+            taskHighPriorityRefresh = startRefreshDataTask(refreshHighPriorityDataRunnable, config.getRefreshInterval(),
+                    TimeUnit.SECONDS);
             taskLowPriorityRefresh = startRefreshDataTask(refreshLowPriorityDataRunnable,
-                    config.getRefreshIntervalLowPriorityTask());
+                    config.getRefreshIntervalLowPriorityTask(), TimeUnit.MINUTES);
 
         } catch (Exception ex) {
             logger.error("'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'", ex.getMessage());
