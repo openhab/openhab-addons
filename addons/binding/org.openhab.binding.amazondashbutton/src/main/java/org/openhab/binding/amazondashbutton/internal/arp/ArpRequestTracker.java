@@ -12,11 +12,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.pcap4j.core.BpfProgram.BpfCompileMode;
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PacketListener;
 import org.pcap4j.core.PcapHandle;
-import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
 import org.pcap4j.packet.ArpPacket;
 import org.pcap4j.packet.Packet;
@@ -37,11 +37,11 @@ public class ArpRequestTracker {
     private static final int READ_TIMEOUT = 10; // [ms]
     private static final int SNAPLEN = 65536; // [bytes]
 
-    private final PcapNetworkInterface pcapNetworkInterface;
+    private final PcapNetworkInterfaceWrapper pcapNetworkInterface;
 
     private PcapHandle pcapHandle;
 
-    public ArpRequestTracker(PcapNetworkInterface pcapNetworkInterface) {
+    public ArpRequestTracker(PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         this.pcapNetworkInterface = pcapNetworkInterface;
     }
 
@@ -113,7 +113,7 @@ public class ArpRequestTracker {
         if (macAddress == null) {
             logger.debug("Started capturing ARP requests for network device {}.", pcapNetworkInterface.getName());
         } else {
-            logger.debug("Started capturing ARP requests for network device {} and MAC address.",
+            logger.debug("Started capturing ARP requests for network device {} and MAC address {}.",
                     pcapNetworkInterface.getName(), macAddress);
         }
     }
@@ -139,11 +139,11 @@ public class ArpRequestTracker {
     }
 
     /**
-     * Returns the tracked {@link PcapNetworkInterface}.
+     * Returns the tracked {@link PcapNetworkInterfaceWrapper}.
      *
-     * @return the tracked {@link PcapNetworkInterface
+     * @return the tracked {@link PcapNetworkInterfaceWrapper}
      */
-    public PcapNetworkInterface getPcapNetworkInterface() {
+    public PcapNetworkInterfaceWrapper getPcapNetworkInterface() {
         return pcapNetworkInterface;
     }
 }

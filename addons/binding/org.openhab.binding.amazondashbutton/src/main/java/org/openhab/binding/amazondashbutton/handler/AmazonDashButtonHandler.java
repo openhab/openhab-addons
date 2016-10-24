@@ -19,10 +19,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
 import org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfig;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapUtil;
-import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.packet.ArpPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,8 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
         String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
         String macAddress = dashButtonConfig.macAddress;
         final Integer packetInterval = dashButtonConfig.packetInterval;
-        PcapNetworkInterface pcapNetworkInterface = PcapUtil.getNetworkInterfaceByName(pcapNetworkInterfaceName);
+        PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
+                .getNetworkInterfaceByName(pcapNetworkInterfaceName);
         if (pcapNetworkInterface == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
@@ -92,9 +93,10 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
     }
 
     @Override
-    public void onPcapNetworkInterfaceAdded(PcapNetworkInterface newNetworkInterface) {
+    public void onPcapNetworkInterfaceAdded(PcapNetworkInterfaceWrapper newNetworkInterface) {
         if (arpRequestListener != null) {
-            final PcapNetworkInterface trackedPcapNetworkInterface = arpRequestListener.getPcapNetworkInterface();
+            final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = arpRequestListener
+                    .getPcapNetworkInterface();
             if (trackedPcapNetworkInterface.equals(newNetworkInterface)) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -102,9 +104,10 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
     }
 
     @Override
-    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterface removedNetworkInterface) {
+    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterfaceWrapper removedNetworkInterface) {
         if (arpRequestListener != null) {
-            final PcapNetworkInterface trackedPcapNetworkInterface = arpRequestListener.getPcapNetworkInterface();
+            final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = arpRequestListener
+                    .getPcapNetworkInterface();
             if (trackedPcapNetworkInterface.equals(removedNetworkInterface)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         "The networkinterface " + removedNetworkInterface.getName() + " is not present anymore.");

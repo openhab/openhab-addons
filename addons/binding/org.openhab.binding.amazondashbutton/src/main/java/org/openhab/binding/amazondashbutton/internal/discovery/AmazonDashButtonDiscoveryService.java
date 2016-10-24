@@ -21,6 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
 import org.pcap4j.core.PcapNetworkInterface;
@@ -82,7 +83,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
         return vendorPrefixes.contains(vendorPrefix);
     }
 
-    private final Map<PcapNetworkInterface, ArpRequestTracker> arpRequestTrackers = new ConcurrentHashMap<>();
+    private final Map<PcapNetworkInterfaceWrapper, ArpRequestTracker> arpRequestTrackers = new ConcurrentHashMap<>();
 
     private boolean explicitScanning = false;
     private boolean backgroundScanning = false;
@@ -117,12 +118,12 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
     }
 
     @Override
-    public void onPcapNetworkInterfaceAdded(final PcapNetworkInterface networkInterface) {
+    public void onPcapNetworkInterfaceAdded(final PcapNetworkInterfaceWrapper networkInterface) {
         startCapturing(networkInterface);
     }
 
     @Override
-    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterface networkInterface) {
+    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterfaceWrapper networkInterface) {
         stopCapturing(networkInterface);
     }
 
@@ -131,16 +132,16 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
         if (shouldListen) {
             PcapNetworkInterfaceService.instance().registerListener(this);
             // Start capturing for all network interfaces
-            final Set<PcapNetworkInterface> networkInterfaces = PcapNetworkInterfaceService.instance()
+            final Set<PcapNetworkInterfaceWrapper> networkInterfaces = PcapNetworkInterfaceService.instance()
                     .getNetworkInterfaces();
-            for (PcapNetworkInterface pcapNetworkInterface : networkInterfaces) {
+            for (PcapNetworkInterfaceWrapper pcapNetworkInterface : networkInterfaces) {
                 startCapturing(pcapNetworkInterface);
             }
         } else {
             PcapNetworkInterfaceService.instance().unregisterListener(this);
             // Stop capturing for all network interfaces
-            final Set<PcapNetworkInterface> networkInterfaces = arpRequestTrackers.keySet();
-            for (PcapNetworkInterface pcapNetworkInterface : networkInterfaces) {
+            final Set<PcapNetworkInterfaceWrapper> networkInterfaces = arpRequestTrackers.keySet();
+            for (PcapNetworkInterfaceWrapper pcapNetworkInterface : networkInterfaces) {
                 stopCapturing(pcapNetworkInterface);
             }
         }
@@ -151,7 +152,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      *
      * @param pcapNetworkInterface The {@link PcapNetworkInterface} the capturing should be stopped for.
      */
-    private void stopCapturing(final PcapNetworkInterface pcapNetworkInterface) {
+    private void stopCapturing(final PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         final ArpRequestTracker arpRequestTracker = arpRequestTrackers.remove(pcapNetworkInterface);
         final String interfaceName = pcapNetworkInterface.getName();
         if (arpRequestTracker != null) {
@@ -168,7 +169,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      *
      * @param pcapNetworkInterface The {@link PcapNetworkInterface} to be captured
      */
-    private void startCapturing(final PcapNetworkInterface pcapNetworkInterface) {
+    private void startCapturing(final PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         if (arpRequestTrackers.containsKey(pcapNetworkInterface)) {
             // We already have a tracker
             return;

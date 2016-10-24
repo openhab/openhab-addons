@@ -22,16 +22,16 @@ import org.pcap4j.core.PcapNetworkInterface;
 public interface PcapNetworkInterfaceListener {
 
     /**
-     * This method is called whenever a new {@link PcapNetworkInterface} is added.
+     * This method is called whenever a new {@link PcapNetworkInterfaceWrapper} is added.
      *
      * @param newNetworkInterface The added networkInterface
      */
-    public void onPcapNetworkInterfaceAdded(PcapNetworkInterface newNetworkInterface);
+    public void onPcapNetworkInterfaceAdded(PcapNetworkInterfaceWrapper newNetworkInterface);
 
     /**
-     * This method is called whenever a {@link PcapNetworkInterface} is removed.
+     * This method is called whenever a {@link PcapNetworkInterfaceWrapper} is removed.
      *
      * @param removedNetworkInterface The removed networkInterface
      */
-    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterface removedNetworkInterface);
+    public void onPcapNetworkInterfaceRemoved(PcapNetworkInterfaceWrapper removedNetworkInterface);
 }

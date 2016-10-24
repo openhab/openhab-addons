@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,11 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 /**
  * The {@link PcapNetworkInterfaceService} is a singleton which can be obtained by calling {@link #instance()}.
@@ -47,7 +44,7 @@ public class PcapNetworkInterfaceService {
     private static final String THREADPOOL_NAME = "pcapNetworkInterfaceService";
 
     private final Set<PcapNetworkInterfaceListener> listeners = new CopyOnWriteArraySet<>();
-    private final Set<PcapNetworkInterface> pcapNetworkInterfaces = new CopyOnWriteArraySet<>();
+    private final Set<PcapNetworkInterfaceWrapper> pcapNetworkInterfaces = new CopyOnWriteArraySet<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THREADPOOL_NAME);
 
@@ -58,24 +55,24 @@ public class PcapNetworkInterfaceService {
         @Override
         public void run() {
             synchronized (pcapNetworkInterfaces) {
-                // We cannot use Sets because of https://github.com/kaitoy/pcap4j/issues/73
-                final List<PcapNetworkInterface> determinedNetworkInterfaces = Lists
-                        .newArrayList(determineBoundNetworkInterfaces());
-                final List<PcapNetworkInterface> currentNetworkInterfaces = Lists.newArrayList(pcapNetworkInterfaces);
+                final Set<PcapNetworkInterfaceWrapper> determinedNetworkInterfaces = Sets
+                        .newHashSet(determineBoundNetworkInterfaces());
+                final Set<PcapNetworkInterfaceWrapper> currentNetworkInterfaces = Sets
+                        .newHashSet(pcapNetworkInterfaces);
 
-                final Collection<PcapNetworkInterface> newNetworkInterfaces = Collections2
-                        .filter(determinedNetworkInterfaces, Predicates.not(Predicates.in(currentNetworkInterfaces)));
-                final Collection<PcapNetworkInterface> removedNetworkInterfaces = Collections2
-                        .filter(currentNetworkInterfaces, Predicates.not(Predicates.in(determinedNetworkInterfaces)));
+                final SetView<PcapNetworkInterfaceWrapper> newNetworkInterfaces = Sets
+                        .difference(determinedNetworkInterfaces, currentNetworkInterfaces);
+                final SetView<PcapNetworkInterfaceWrapper> removedNetworkInterfaces = Sets
+                        .difference(currentNetworkInterfaces, determinedNetworkInterfaces);
 
                 pcapNetworkInterfaces.clear();
                 pcapNetworkInterfaces.addAll(determinedNetworkInterfaces);
 
-                for (PcapNetworkInterface pcapNetworkInterface : newNetworkInterfaces) {
+                for (PcapNetworkInterfaceWrapper pcapNetworkInterface : newNetworkInterfaces) {
                     notifyNetworkInterfacesAdded(pcapNetworkInterface);
                 }
 
-                for (PcapNetworkInterface pcapNetworkInterface : removedNetworkInterfaces) {
+                for (PcapNetworkInterfaceWrapper pcapNetworkInterface : removedNetworkInterfaces) {
                     notifyNetworkInterfacesRemoved(pcapNetworkInterface);
                 }
             }
@@ -103,7 +100,7 @@ public class PcapNetworkInterfaceService {
      *
      * @return the network interface set
      */
-    public Set<PcapNetworkInterface> getNetworkInterfaces() {
+    public Set<PcapNetworkInterfaceWrapper> getNetworkInterfaces() {
         synchronized (pcapNetworkInterfaces) {
             return ImmutableSet.copyOf(pcapNetworkInterfaces);
         }
@@ -136,20 +133,20 @@ public class PcapNetworkInterfaceService {
         }
     }
 
-    private void notifyNetworkInterfacesAdded(PcapNetworkInterface pcapNetworkInterface) {
+    private void notifyNetworkInterfacesAdded(PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         for (PcapNetworkInterfaceListener listener : listeners) {
             notifyNetworkInterfacesAdded(listener, pcapNetworkInterface);
         }
     }
 
-    private void notifyNetworkInterfacesRemoved(PcapNetworkInterface pcapNetworkInterface) {
+    private void notifyNetworkInterfacesRemoved(PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         for (PcapNetworkInterfaceListener listener : listeners) {
             notifyNetworkInterfacesRemoved(listener, pcapNetworkInterface);
         }
     }
 
     private void notifyNetworkInterfacesAdded(PcapNetworkInterfaceListener listener,
-            PcapNetworkInterface pcapNetworkInterface) {
+            PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         try {
             listener.onPcapNetworkInterfaceAdded(pcapNetworkInterface);
         } catch (Exception e) {
@@ -158,7 +155,7 @@ public class PcapNetworkInterfaceService {
     }
 
     private void notifyNetworkInterfacesRemoved(PcapNetworkInterfaceListener listener,
-            PcapNetworkInterface pcapNetworkInterface) {
+            PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         try {
             listener.onPcapNetworkInterfaceRemoved(pcapNetworkInterface);
         } catch (Exception e) {
@@ -170,14 +167,14 @@ public class PcapNetworkInterfaceService {
      * Returns all pcap network interfaces relying on {@link PcapUtil#getAllNetworkInterfaces()}. The list is filtered
      * as all interfaces which are not bound to an address are excluded.
      *
-     * @return An {@link Iterable} of all {@link PcapNetworkInterface}s which are bound to an address
+     * @return An {@link Iterable} of all {@link PcapNetworkInterfaceWrapper}s which are bound to an address
      */
-    private Iterable<PcapNetworkInterface> determineBoundNetworkInterfaces() {
-        final List<PcapNetworkInterface> allNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
-        return Iterables.filter(allNetworkInterfaces, new Predicate<PcapNetworkInterface>() {
+    private Iterable<PcapNetworkInterfaceWrapper> determineBoundNetworkInterfaces() {
+        final Iterable<PcapNetworkInterfaceWrapper> allNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
+        return Iterables.filter(allNetworkInterfaces, new Predicate<PcapNetworkInterfaceWrapper>() {
 
             @Override
-            public boolean apply(PcapNetworkInterface networkInterface) {
+            public boolean apply(PcapNetworkInterfaceWrapper networkInterface) {
                 final boolean suitable = !networkInterface.getAddresses().isEmpty();
                 if (!suitable) {
                     logger.debug("{} is not a suitable network interfaces as no addresses are bound to it.",

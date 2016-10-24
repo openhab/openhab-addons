@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
-import java.util.List;
-
 import org.pcap4j.core.PcapNativeException;
-import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.Pcaps;
+
+import com.google.common.collect.Iterables;
 
 /**
  *
@@ -25,13 +24,14 @@ import org.pcap4j.core.Pcaps;
 public class PcapUtil {
 
     /**
-     * Returns all pcap network interfaces relying on {@link Pcaps#findAllDevs()}.
+     * Returns all Pcap network interfaces relying on {@link Pcaps#findAllDevs()}.
      *
-     * @return A {@link List} of all {@link PcapNetworkInterface}s
+     * @return A {@link Iterable} of all {@link PcapNetworkInterfaceWrapper}s
      */
-    public static List<PcapNetworkInterface> getAllNetworkInterfaces() {
+    public static Iterable<PcapNetworkInterfaceWrapper> getAllNetworkInterfaces() {
         try {
-            final List<PcapNetworkInterface> allNetworkInterfaces = Pcaps.findAllDevs();
+            final Iterable<PcapNetworkInterfaceWrapper> allNetworkInterfaces = Iterables
+                    .transform(Pcaps.findAllDevs(), PcapNetworkInterfaceWrapper.TRANSFORMER);
             return allNetworkInterfaces;
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);
@@ -39,15 +39,15 @@ public class PcapUtil {
     }
 
     /**
-     * Returns the pcap network interface with the given name relying on {@link Pcaps#getDevByName(String)}. If no
+     * Returns the Pcap network interface with the given name relying on {@link Pcaps#getDevByName(String)}. If no
      * interface is found, null is returned.
      *
-     * @param name The name of the pcap network interface
+     * @param name The name of the Pcap network interface
      * @return The network interface with the given name. Returns null, if no interface is found
      */
-    public static PcapNetworkInterface getNetworkInterfaceByName(String name) {
+    public static PcapNetworkInterfaceWrapper getNetworkInterfaceByName(String name) {
         try {
-            return Pcaps.getDevByName(name);
+            return PcapNetworkInterfaceWrapper.TRANSFORMER.apply(Pcaps.getDevByName(name));
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);
         }

@@ -24,9 +24,9 @@ import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.amazondashbutton.AmazonDashButtonBindingConstants;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
 import org.pcap4j.core.PcapAddress;
-import org.pcap4j.core.PcapNetworkInterface;
 
 /**
  * The {@link AmazonDashButtonConfigOptionProvider} is responsible for providing options for the
@@ -49,9 +49,10 @@ public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvide
     }
 
     private Collection<ParameterOption> getPcapNetworkInterfacesOptions() {
-        Set<PcapNetworkInterface> pcapNetworkInterfaces = PcapNetworkInterfaceService.instance().getNetworkInterfaces();
+        Set<PcapNetworkInterfaceWrapper> pcapNetworkInterfaces = PcapNetworkInterfaceService.instance()
+                .getNetworkInterfaces();
         List<ParameterOption> options = new ArrayList<>();
-        for (PcapNetworkInterface pcapNetworkInterface : pcapNetworkInterfaces) {
+        for (PcapNetworkInterfaceWrapper pcapNetworkInterface : pcapNetworkInterfaces) {
             String name = pcapNetworkInterface.getName();
 
             options.add(new ParameterOption(name, getLabel(pcapNetworkInterface)));
@@ -59,7 +60,7 @@ public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvide
         return options;
     }
 
-    private String getLabel(PcapNetworkInterface pcapNetworkInterface) {
+    private String getLabel(PcapNetworkInterfaceWrapper pcapNetworkInterface) {
         StringBuilder sb = new StringBuilder(pcapNetworkInterface.getName());
         List<PcapAddress> addresses = pcapNetworkInterface.getAddresses();
         final String description = pcapNetworkInterface.getDescription();
