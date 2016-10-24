@@ -10,6 +10,7 @@ package org.openhab.binding.amazondashbutton.internal.discovery;
 
 import static org.openhab.binding.amazondashbutton.AmazonDashButtonBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -21,9 +22,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
-import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.packet.ArpPacket;
 import org.slf4j.Logger;
@@ -195,7 +196,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
                             .withRepresentationProperty(macAdress)
                             .withProperty(PROPERTY_MAC_ADDRESS, macAdress)
                             .withProperty(PROPERTY_NETWORK_INTERFACE_NAME, interfaceName)
-                            .withProperty(PROPERTY_PACKET_INTERVAL, 5000)
+                            .withProperty(PROPERTY_PACKET_INTERVAL, BigDecimal.valueOf(5000))
                             .build();
                     // @formatter:on
                     thingDiscovered(discoveryResult);
