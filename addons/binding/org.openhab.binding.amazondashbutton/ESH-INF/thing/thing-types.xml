@@ -9,7 +9,10 @@
 		<description>@text/dashButtonDescription</description>
 
 		<channels>
-			<channel id="press" typeId="trigger-channel" />
+			<channel id="press" typeId="system.trigger">
+		        <label>@text/dashButtonPressChannelLabel</label>
+		        <description>@text/dashButtonPressChannelLabel</description>
+			</channel>
 		</channels>
 		<config-description>
 			<parameter name="pcapNetworkInterfaceName" type="text">
@@ -27,12 +30,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<!-- Sample Channel Type -->
-	<channel-type id="trigger-channel">
-		<kind>trigger</kind>
-		<label>@text/dashButtonPressChannelLabel</label>
-		<description>@text/dashButtonPressChannelLabel</description>
-	</channel-type>
-
 </thing:thing-descriptions>
