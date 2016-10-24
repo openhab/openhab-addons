@@ -148,6 +148,6 @@ public class HmGatewayInfo {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("type", type)
                 .append("firmware", firmware).append("address", address).append("wired", wiredInterface)
-                .append("hmip", hmipInterface).append("cuxd", hmipInterface).toString();
+                .append("hmip", hmipInterface).append("cuxd", cuxdInterface).toString();
     }
 }
