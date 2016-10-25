@@ -296,9 +296,9 @@ public class HomematicConfig {
         tsb.append("gatewayAddress", gatewayAddress).append("callbackHost", callbackHost)
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
-                .append("hmIpPort", hmIpPort).append("cuxdPort", getCuxdPort()).append("aliveInterval", aliveInterval)
-                .append("reconnectInterval", reconnectInterval).append("timeout", timeout)
-                .append("socketMaxAlive", socketMaxAlive);
+                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort())
+                .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
+                .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();
     }
 }
