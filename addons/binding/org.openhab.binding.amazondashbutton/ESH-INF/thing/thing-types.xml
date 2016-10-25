@@ -10,8 +10,8 @@
 
 		<channels>
 			<channel id="press" typeId="system.trigger">
-		        <label>@text/dashButtonPressChannelLabel</label>
-		        <description>@text/dashButtonPressChannelLabel</description>
+				<label>@text/dashButtonPressChannelLabel</label>
+				<description>@text/dashButtonPressChannelLabel</description>
 			</channel>
 		</channels>
 		<config-description>
