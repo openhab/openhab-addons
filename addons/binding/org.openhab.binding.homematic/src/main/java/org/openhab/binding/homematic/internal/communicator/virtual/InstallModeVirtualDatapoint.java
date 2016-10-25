@@ -19,6 +19,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
@@ -58,7 +59,8 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
         if (enable) {
             gateway.disableDatapoint(dp, duration);
         }
-        gateway.getRpcClient().setInstallMode(dp.getChannel().getDevice().getHmInterface(), enable, duration);
+        HmInterface hmInterface = dp.getChannel().getDevice().getHmInterface();
+        gateway.getRpcClient(hmInterface).setInstallMode(hmInterface, enable, duration);
     }
 
     /**

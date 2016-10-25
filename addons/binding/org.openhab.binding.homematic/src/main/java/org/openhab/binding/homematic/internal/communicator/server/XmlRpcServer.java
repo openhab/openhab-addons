@@ -62,9 +62,9 @@ public class XmlRpcServer implements RpcServer {
      */
     @Override
     public void start() throws IOException {
-        logger.debug("Initializing XML-RPC server at port {}", config.getCallbackPort());
+        logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
-        xmlRpcHTTPD = new Server(config.getCallbackPort());
+        xmlRpcHTTPD = new Server(config.getXmlCallbackPort());
         xmlRpcHTTPD.setHandler(new ResponseHandler());
 
         try {
