@@ -68,7 +68,7 @@ public class XmlRpcClient extends RpcClient {
      */
     @Override
     protected String getRpcCallbackUrl() {
-        return "http://" + config.getCallbackHost() + ":" + config.getCallbackPort();
+        return "http://" + config.getCallbackHost() + ":" + config.getXmlCallbackPort();
     }
 
     /**
