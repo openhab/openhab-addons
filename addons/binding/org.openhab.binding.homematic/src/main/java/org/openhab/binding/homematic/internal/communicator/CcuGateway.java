@@ -68,8 +68,8 @@ public class CcuGateway extends AbstractHomematicGateway {
      * {@inheritDoc}
      */
     @Override
-    protected void startClient() throws IOException {
-        super.startClient();
+    protected void startClients() throws IOException {
+        super.startClients();
 
         tclregaScripts = loadTclRegaScripts();
 
@@ -86,8 +86,8 @@ public class CcuGateway extends AbstractHomematicGateway {
      * {@inheritDoc}
      */
     @Override
-    protected void stopClient() {
-        super.stopClient();
+    protected void stopClients() {
+        super.stopClients();
         tclregaScripts = null;
         if (httpClient != null) {
             try {

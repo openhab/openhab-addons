@@ -17,6 +17,7 @@ import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
@@ -37,7 +38,7 @@ public class DeleteDeviceModeVirtualDatapointHandler extends AbstractVirtualData
      */
     @Override
     public void add(HmDevice device) {
-        if (!device.isGatewayExtras()) {
+        if (!device.isGatewayExtras() && !(device.getHmInterface() == HmInterface.CUXD)) {
             HmDatapoint dp = addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE, HmValueType.ENUM, 0,
                     false);
             dp.setOptions(new String[] { MODE_LOCKED, MODE_RESET, MODE_FORCE, MODE_DEFER });

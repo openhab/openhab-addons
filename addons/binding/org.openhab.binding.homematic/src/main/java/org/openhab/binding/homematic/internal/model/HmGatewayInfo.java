@@ -25,6 +25,9 @@ public class HmGatewayInfo {
     private String type;
     private String firmware;
     private String address;
+    private boolean wiredInterface;
+    private boolean cuxdInterface;
+    private boolean hmipInterface;
 
     /**
      * Returns the id of the gateway type.
@@ -97,11 +100,54 @@ public class HmGatewayInfo {
     }
 
     /**
+     * Returns true, if the gateway supports the CUxD interface.
+     */
+    public boolean isCuxdInterface() {
+        return cuxdInterface;
+    }
+
+    /**
+     * Sets the CUxD support of the gateway.
+     */
+    public void setCuxdInterface(boolean cuxdInterface) {
+        this.cuxdInterface = cuxdInterface;
+    }
+
+    /**
+     * Returns true, if the gateway supports the wired interface.
+     */
+    public boolean isWiredInterface() {
+        return wiredInterface;
+    }
+
+    /**
+     * Sets the wired support of the gateway.
+     */
+    public void setWiredInterface(boolean wiredInterface) {
+        this.wiredInterface = wiredInterface;
+    }
+
+    /**
+     * Returns true, if the gateway supports the HMIP interface.
+     */
+    public boolean isHmipInterface() {
+        return hmipInterface;
+    }
+
+    /**
+     * Sets the HMIP support of the gateway.
+     */
+    public void setHmipInterface(boolean hmipInterface) {
+        this.hmipInterface = hmipInterface;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("type", type)
-                .append("firmware", firmware).append("address", address).toString();
+                .append("firmware", firmware).append("address", address).append("wired", wiredInterface)
+                .append("hmip", hmipInterface).append("cuxd", cuxdInterface).toString();
     }
 }
