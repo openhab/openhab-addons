@@ -20,4 +20,9 @@ public interface ZoneMinderHandler {
     Boolean isRunning();
 
     void updateChannel(ChannelUID channel);
+
+    void onBridgeConnected(ZoneMinderBaseBridgeHandler bridge);
+
+    void onBridgeDisconnected(ZoneMinderBaseBridgeHandler bridge);
+
 }

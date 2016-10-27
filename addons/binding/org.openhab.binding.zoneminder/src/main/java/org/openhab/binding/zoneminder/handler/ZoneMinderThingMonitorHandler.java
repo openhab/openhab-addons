@@ -65,6 +65,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     public ZoneMinderThingMonitorHandler(Thing thing) {
         super(thing);
+
+        logger.info("Starting ZoneMinder Server Thing Handler (Thing='{}')", thing.getUID());
     }
 
     @Override
@@ -340,6 +342,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
         } catch (Exception exception) {
 
+            logger.error("'ThingMonitorHandler.updateAvailabilityStatus()': Exception occurred '{}'",
+                    exception.getMessage());
         } finally {
             if (this.thing.getStatus() != newThingStatus) {
                 updateStatus(newThingStatus);
