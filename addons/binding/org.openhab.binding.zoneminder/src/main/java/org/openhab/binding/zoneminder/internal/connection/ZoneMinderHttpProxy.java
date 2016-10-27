@@ -58,6 +58,7 @@ public class ZoneMinderHttpProxy {
     private static final String SUBPATH_API_SERVERVERSION_JSON = "/host/getVersion.json";
     private static final String SUBPATH_API_SERVER_CPULOAD_JSON = "/host/getLoad.json";
     private static final String SUBPATH_API_SERVER_DISKPERCENT_JSON = "/host/getDiskPercent.json";
+    private static final String SUBPATH_API_SERVER_DISKPERCENT_XML = "/host/getDiskPercent.xml";
     private static final String SUBPATH_API_SERVER_DAEMON_CHECKSTATE = "/host/daemonCheck.json";
 
     private static final String SUBPATH_API_SERVER_GET_CONFIG_JSON = "/configs/view/{ConfigId}.json";
@@ -226,13 +227,7 @@ public class ZoneMinderHttpProxy {
 
     }
 
-    // TODO:: Use custom API Path
-    /*
-     * private String getApiPath() {
-     * return PATH_API;
-     * }
-     */
-    public ServerData getServerData() {
+    public synchronized ServerData getServerData() {
         ServerData serverData = null;
         JsonObject jsonObject = null;
         try {
@@ -242,45 +237,40 @@ public class ZoneMinderHttpProxy {
 
             serverData.setDaemonCheckState(getServerDaemonCheckState());
         } catch (Exception e) {
-            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+            logger.error("Error occurred in 'getServerData' Error message: '{}'", e.getMessage());
         }
         return serverData;
     }
 
-    protected Boolean getServerDaemonCheckState() {
+    public synchronized Boolean getServerDaemonCheckState() {
 
         try {
             return ((getJson(SUBPATH_API_SERVER_DAEMON_CHECKSTATE).get("result").getAsInt() == 1) ? true : false);
 
         } catch (Exception e) {
-            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+            logger.error("Error occurred in 'getServerDaemoinCheckState' Error message: '{}'", e.getMessage());
         }
         return null;
 
     }
 
-    public ServerCpuLoad getServerCpuLoad() {
+    public synchronized ServerCpuLoad getServerCpuLoad() {
 
-        JsonObject jsonObject = null;
+        ServerCpuLoad data = null;
         try {
 
-            jsonObject = getJson(SUBPATH_API_SERVER_CPULOAD_JSON);
-            // jsonObject = getJson(SUBPATH_API_SERVER_DISKPERCENT_JSON).get("load").get();
-            // jsonObject
-            // for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet())
-            // {
-
-            // }
+            data = gson.fromJson(getJson(SUBPATH_API_SERVER_CPULOAD_JSON), ServerCpuLoad.class);
         } catch (Exception e) {
-            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+            logger.error("Error occurred in 'getServerCpuLoad' Error message: '{}'", e.getMessage());
         }
-        return gson.fromJson(jsonObject, ServerCpuLoad.class);
+        return data;
 
     }
 
-    public ServerDiskUsage getServerDiskUsage() {
+    public synchronized ServerDiskUsage getServerDiskUsage() {
         JsonObject jsonObject = null;
         try {
+
             jsonObject = getJson(SUBPATH_API_SERVER_DISKPERCENT_JSON).get("usage").getAsJsonObject();
 
             Set<Map.Entry<String, JsonElement>> entries = jsonObject.entrySet();
@@ -293,33 +283,31 @@ public class ZoneMinderHttpProxy {
             }
 
         } catch (Exception e) {
-            logger.error("Error occurred in 'getServerVersion' Error message: '{}'", e.getMessage());
+            logger.error("Error occurred in 'getServerDiskUsage' Error message: '{}'", e.getMessage());
         }
         return null;
 
     }
 
-    public MonitorDaemonStatus getMonitorCaptureDaemonStatus(String monitorId) {
+    public synchronized MonitorDaemonStatus getMonitorCaptureDaemonStatus(String monitorId) {
         return getMonitorStatus(monitorId, DAEMON_NAME_CAPTURE);
     }
 
-    public MonitorDaemonStatus getMonitorAnalysisDaemonStatus(String monitorId) {
+    public synchronized MonitorDaemonStatus getMonitorAnalysisDaemonStatus(String monitorId) {
         return getMonitorStatus(monitorId, DAEMON_NAME_ANALYSIS);
     }
 
-    public MonitorDaemonStatus getMonitorFrameDaemonStatus(String monitorId) {
+    public synchronized MonitorDaemonStatus getMonitorFrameDaemonStatus(String monitorId) {
         return getMonitorStatus(monitorId, DAEMON_NAME_FRAME);
     }
 
-    protected MonitorDaemonStatus getMonitorStatus(String monitorId, String daemonName) {
+    protected synchronized MonitorDaemonStatus getMonitorStatus(String monitorId, String daemonName) {
 
         JsonObject jsonObject = null;
-        JsonObject jsonObject1 = null;
         try {
             String strCommand = resolveCommands(SUBPATH_API_MONITORSTATUS_JSON, "MonitorId", monitorId);
             strCommand = resolveCommands(strCommand, "DaemonName", daemonName);
             jsonObject = getJson(strCommand);
-            // jsonObject1 = jsonObject.getAsJsonObject("events");
         } catch (Exception e) {
             logger.error("Error occurred in 'getMonitorStatus' Error message: '{}'", e.getMessage());
         }
@@ -328,7 +316,7 @@ public class ZoneMinderHttpProxy {
 
     }
 
-    public ArrayList<MonitorData> getMonitors() {
+    public synchronized ArrayList<MonitorData> getMonitors() {
 
         JsonObject jsonObject = null;
         try {
@@ -350,7 +338,7 @@ public class ZoneMinderHttpProxy {
         return array;
     }
 
-    public MonitorData getMonitor(String MonitorId) {
+    public synchronized MonitorData getMonitor(String MonitorId) {
 
         JsonObject jsonObject = null;
         try {
@@ -367,7 +355,7 @@ public class ZoneMinderHttpProxy {
 
     }
 
-    public ConfigData getConfig(ConfigEnum configId) {
+    public synchronized ConfigData getConfig(ConfigEnum configId) {
 
         ConfigData configData = null;
         JsonObject jsonObject = null;
@@ -388,7 +376,7 @@ public class ZoneMinderHttpProxy {
 
     }
 
-    public Event getLastEvent(Integer MonitorId) {
+    public synchronized Event getLastEvent(Integer MonitorId) {
 
         JsonObject jsonObject = null;
         ArrayList<Event> list = new ArrayList<Event>();

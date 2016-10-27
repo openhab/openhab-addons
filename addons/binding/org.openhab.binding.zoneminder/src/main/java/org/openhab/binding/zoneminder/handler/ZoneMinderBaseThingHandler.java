@@ -49,8 +49,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /** This refresh status. */
     private boolean thingRefreshed = false;
 
-    private ScheduledFuture<?> taskWatchDog = null;
-
     protected Boolean isAlive = false;
 
     /** Unique Id of the thing in zoneminder. */
@@ -58,18 +56,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
 
     /** Configuration from OpenHAB */
     protected ZoneMinderThingConfig configuration;
-
-    private Runnable watchDogRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                updateAvaliabilityStatus();
-            } catch (Exception exception) {
-                logger.error("Thing WatchDog::run(): Exception: ", exception);
-            }
-        }
-    };
 
     public ZoneMinderBaseThingHandler(Thing thing) {
         super(thing);
@@ -93,21 +79,15 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
             logger.error("'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'", ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
         } finally {
-            startWatchDogTask();
         }
-    }
-
-    private void startWatchDogTask() {
-        taskWatchDog = startTask(watchDogRunnable, 10, TimeUnit.SECONDS);
-    }
-
-    private void stopWatchDogTask() {
-        stopTask(taskWatchDog);
-        taskWatchDog = null;
     }
 
     /**
      * Method to start a data refresh task.
+     *
+     * @param command
+     * @param refreshInterval
+     * @param unit
      */
     protected ScheduledFuture<?> startTask(Runnable command, long refreshInterval, TimeUnit unit) {
         ScheduledFuture<?> task = null;
@@ -117,13 +97,16 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         }
 
         if (task == null || task.isCancelled()) {
-            task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, unit);
+            task = scheduler.scheduleAtFixedRate(command, 500, refreshInterval, unit);
         }
         return task;
     }
 
     /**
-     * Method to stop the datarefresh task.
+     * Method to stop the data Refresh task.
+     *
+     * @param task
+     *
      */
     protected void stopTask(ScheduledFuture<?> task) {
         logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
@@ -135,13 +118,11 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     @Override
     public void dispose() {
 
-        stopWatchDogTask();
     }
 
     /**
      * Helper method for getting ChannelUID from ChannelId.
      *
-     * @author Martin S. Eskildsen
      */
     public synchronized ChannelUID getChannelUIDFromChannelId(String id) {
         Channel ch = thing.getChannel(id);
@@ -237,25 +218,28 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      */
     public abstract void ZoneMinderEventReceived(EventObject event, Thing thing);
 
-    // protected abstract void checkIsAlive(MonitorDaemonStatus monitorStatus);
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    @Override
     public void onBridgeConnected(ZoneMinderBaseBridgeHandler bridge) {
         logger.debug("onBridgeConnected(): Bridge '{}' is connected", bridge.getThing().getUID());
 
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
-            updateStatus(bridge.getThing().getStatus());
+            // updateStatus(bridge.getThing().getStatus());
+            updateAvaliabilityStatus();
+
             refreshThing();
         }
     }
 
+    @Override
     public void onBridgeDisconnected(ZoneMinderBaseBridgeHandler bridge) {
         logger.debug("onBridgeDisconnected(): Bridge '{}' disconnected", bridge.getThing().getUID());
 
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
+
             this.setThingRefreshed(false);
         }
     }
@@ -263,7 +247,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /**
      * Get Channel by ChannelUID.
      *
-     * @param channelUID
+     * @param {ChannelUID} channelUID Identifier of Channel
      */
     public Channel getChannel(ChannelUID channelUID) {
         Channel channel = null;
@@ -292,7 +276,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /**
      * Set Thing Handler refresh status.
      *
-     * @param deviceInitialized
+     * @param {boolean} refreshed Sets status refreshed of thing
      */
     public void setThingRefreshed(boolean refreshed) {
         this.thingRefreshed = refreshed;

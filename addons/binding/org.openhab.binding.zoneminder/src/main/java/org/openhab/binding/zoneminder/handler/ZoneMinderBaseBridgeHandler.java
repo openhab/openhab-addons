@@ -177,9 +177,18 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      *
      * @param connected
      */
-    public synchronized void setConnected(boolean connected) {
+    private synchronized void setConnected(boolean connected) {
 
-        this.connected = connected;
+        if (this.connected != connected) {
+            this.connected = connected;
+
+            if (connected == true) {
+                onConnected();
+            } else if (connected == false) {
+                onDisconnected();
+            }
+        }
+
     }
 
     /**
@@ -187,21 +196,24 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      *
      * @param connected
      */
-    public void setBridgeConnection(boolean connected) {
+    protected void setBridgeConnection(boolean connected) {
         logger.debug("setBridgeConnection(): Set Bridge to {}", connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
+        Bridge bridge = getBridge();
+        ThingStatus status = bridge.getStatus();
+        logger.debug("Bridge ThingStatus is: {}", status);
+
         setConnected(connected);
+
     }
 
     /**
-     * Runs when connected.
+     * Runs when connection established.
      */
     public void onConnected() {
         logger.debug("onConnected(): Bridge Connected!");
 
-        // HEST
-        // setBridgeConnection(true);
-
+        refreshThing();
         // Inform thing handlers of connection
         List<Thing> things = getThing().getThings();
 
@@ -223,6 +235,8 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         logger.debug("onDisconnected(): Bridge Disconnected!");
 
         setBridgeConnection(false);
+
+        onBridgeDisconnected(this);
 
         // Inform thing handlers of disconnection
         List<Thing> things = getThing().getThings();
@@ -259,7 +273,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         }
 
         if (task == null || task.isCancelled()) {
-            task = scheduler.scheduleAtFixedRate(command, 0, refreshInterval, unit);
+            task = scheduler.scheduleWithFixedDelay(command, 0, refreshInterval, unit);
         }
         return task;
     }
@@ -308,12 +322,12 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     public synchronized void refreshHighPriorityPriorityData() {
         logger.debug("Refreshing high priority data from ZoneMinder Server Task - '{}'", getThing().getUID());
 
-        if (isConnected()) {
-            onRefreshHighPriorityPriorityData();
-        } else {
+        if (!isConnected()) {
             logger.error("Not Connected to the ZoneMinder Server!");
             connect();
         }
+
+        onRefreshHighPriorityPriorityData();
     }
 
     /**
