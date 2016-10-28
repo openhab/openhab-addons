@@ -13,6 +13,11 @@
 
     <!-- binding -->
 
+    <feature name="openhab-binding-amazondashbutton" description="Amazon Dash Button Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.amazondashbutton/${project.version}</bundle>
+    </feature>
+	
     <feature name="openhab-binding-astro" description="Astro Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.astro/${project.version}</bundle>
@@ -125,6 +130,7 @@
 
     <feature name="openhab-binding-oceanic" description="Oceanic Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.oceanic/${project.version}</bundle>
     </feature>
 
