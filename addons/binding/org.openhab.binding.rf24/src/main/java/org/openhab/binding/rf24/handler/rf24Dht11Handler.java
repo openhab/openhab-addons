@@ -7,41 +7,38 @@
  */
 package org.openhab.binding.rf24.handler;
 
-import static org.openhab.binding.rf24.rf24BindingConstants.*;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.rf24.rf24BindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link rf24Handler} is responsible for handling commands, which are
+ * The {@link rf24Dht11Handler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Martin Grzeslowski - Initial contribution
  */
-public class rf24Handler extends BaseThingHandler {
+public class rf24Dht11Handler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(rf24Handler.class);
+    private Logger logger = LoggerFactory.getLogger(rf24Dht11Handler.class);
 
-	public rf24Handler(Thing thing) {
-		super(thing);
-	}
+    public rf24Dht11Handler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-        if(channelUID.getId().equals(CHANNEL_1)) {
-            // TODO: handle command
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        // thing.ge
+
+        if (channelUID.getId().equals(rf24BindingConstants.DHT11_TEMPERATURE_CHANNEL)) {
+            // DecimalType temperature =
         }
-	}
+    }
 
     @Override
     public void initialize() {
