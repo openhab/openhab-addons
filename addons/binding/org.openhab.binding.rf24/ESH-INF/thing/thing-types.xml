@@ -4,21 +4,59 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>rf24 Binding Thing</label>
-        <description>Sample thing for rf24 Binding</description>
-
+    <thing-type id="rf24OnOffThing">
+        <label>On Off Command</label>
+        <description>This thing is to send ON/OFF command through RF24</description>
         <channels>
-            <channel id="channel1" typeId="sample-channel"/>
+            <channel id="sendToDevice" typeId="rf24DeviceId" />
+            <channel id="switch" typeId="switch" />
+        </channels>
+    </thing-type>
+    
+    <thing-type id="rf24Dht11Thing">
+        <label>DHT information Thing</label>
+        <description>This thing is to retrieve information from DHT11 sensors through RF24</description>
+        <channels>
+            <channel id="gotFromDevice" typeId="rf24DeviceId" />
+            <channel id="dht11Temperature" typeId="dht11Temperature" />
+            <channel id="dht11Humidity" typeId="dht11Humidity" />
         </channels>
     </thing-type>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>rf24Item</item-type>
-        <label>rf24 Binding Channel</label>
-        <description>Sample channel for rf24 Binding</description>
+    <channel-type id="rf24DeviceId" advanced="true">
+        <item-type>Number</item-type>
+        <label>Device ID</label>
+        <category>ID</category>
+        <tags>
+            <tag>ID</tag>
+            <tag>RF24</tag>
+        </tags>
+        <state min="1" max="99999" pattern="#%5d" readOnly="true">
+        </state>
+    </channel-type>
+
+    <channel-type id="dht11Temperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature from DHT11</label>
+        <category>Temperature</category>
+        <tags>
+            <tag>Temperature</tag>
+            <tag>RF24</tag>
+            <tag>DHT11</tag>
+        </tags>
+        <state min="0" max="50" step="1" pattern="%.1f °C" readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="dht11Humidity" advanced="true">
+        <item-type>Number</item-type>
+        <label>Humidity from DHT11</label>
+        <category>Temperature</category>
+        <tags>
+            <tag>Temperature</tag>
+            <tag>RF24</tag>
+            <tag>DHT11</tag>
+        </tags>
+        <state min="20" max="90" step="1" pattern="%.1f %RH" readOnly="true"></state>
     </channel-type>
 
 </thing:thing-descriptions>
