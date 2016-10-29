@@ -14,8 +14,9 @@
   <name>openHAB Bindings</name>
 
   <packaging>pom</packaging>
-
+ 
   <modules>
+<<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
@@ -34,21 +35,39 @@
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.gardena</module>
+=======
+    <module>org.openhab.binding.amazondashbutton</module>
+    <module>org.openhab.binding.astro</module>
+    <module>org.openhab.binding.autelis</module>
+    <module>org.openhab.binding.avmfritz</module>
+	<module>org.openhab.binding.chamberlainmyq</module>
+    <module>org.openhab.binding.dscalarm</module>
+    <module>org.openhab.binding.feed</module>
+    <module>org.openhab.binding.feed.test</module>
+    <module>org.openhab.binding.freebox</module>
+>>>>>>> readded branch changes
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.homematic</module>
+<<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.kodi</module>
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lgtvserial</module>
+=======
+    <module>org.openhab.binding.ipp</module>
+    <module>org.openhab.binding.keba</module>
+    <module>org.openhab.binding.kostalinverter</module>
+>>>>>>> readded branch changes
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
+<<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
@@ -57,6 +76,12 @@
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
+=======
+    <module>org.openhab.binding.milight</module>
+    <module>org.openhab.binding.netatmo</module>
+    <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.oceanic</module>
+>>>>>>> readded branch changes
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
@@ -72,15 +97,21 @@
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
+<<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
+=======
+    <module>org.openhab.binding.systeminfo</module>
+    <module>org.openhab.binding.systeminfo.test</module>
+>>>>>>> readded branch changes
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
+<<<<<<< cad792d1db089a4cdc0f4da30cebc7c91f21bdcc
 <<<<<<< 1890327677540776060f92d04c05da99fae895c2
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
@@ -90,6 +121,9 @@
 =======
     <module>org.openhab.binding.chamberlainmyq</module>
 >>>>>>> Added Chamberlain MyQ skeleton
+=======
+    <module>org.openhab.binding.yamahareceiver</module>
+>>>>>>> readded branch changes
   </modules>
 
 </project>
