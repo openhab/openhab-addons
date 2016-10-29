@@ -27,6 +27,7 @@ import org.openhab.binding.kodi.handler.KodiHandler;
  * This makes a Sonos speaker to serve as an {@link AudioSink}-
  *
  * @author Kai Kreuzer - Initial contribution and API
+ * @author Paul Frank - Adapted for kodi
  *
  */
 public class KodiAudioSink implements AudioSink {
