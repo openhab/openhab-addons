@@ -183,8 +183,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     public void playNotificationSoundURI(Command command) {
-        // TODO: implement this as notification sound and do not overwrite the currently played song.
-        connection.playURI(command.toString());
+        connection.playNotificationSoundURI(command.toString());
     }
 
     public PercentType getNotificationSoundVolume() {

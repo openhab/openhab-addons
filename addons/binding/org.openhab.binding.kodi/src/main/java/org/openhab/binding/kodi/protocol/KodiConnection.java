@@ -543,4 +543,27 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Input.SendText", params);
 
     }
+
+    public void playNotificationSoundURI(String uri) {
+        // TODO: implement this as notification sound and do not overwrite the currently played song.
+        /*
+         * boolean wasPlaying = false;
+         * if (currentState == KodiState.Play) {
+         * wasPlaying = true;
+         * int activePlayer = getActivePlayer();
+         * 
+         * final String[] properties = { "all" };
+         * 
+         * JsonObject params = new JsonObject();
+         * params.addProperty("playerid", activePlayer);
+         * params.add("properties", getJsonArray(properties));
+         * JsonElement response = socket.callMethod("Player.GetItem", params);
+         * 
+         * JsonObject item = ((JsonObject) response).get("item").getAsJsonObject();
+         * }
+         */
+
+        playURI(uri);
+
+    }
 }

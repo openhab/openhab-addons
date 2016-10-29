@@ -72,7 +72,7 @@ public class KodiAudioSink implements AudioSink {
             if (!(audioStream instanceof FixedLengthAudioStream)) {
                 // Note that we have to pass a FixedLengthAudioStream, since Sonos does multiple concurrent requests to
                 // the AudioServlet, so a one time serving won't work.
-                throw new UnsupportedAudioFormatException("Sonos can only handle FixedLengthAudioStreams.", null);
+                throw new UnsupportedAudioFormatException("Kodi can only handle FixedLengthAudioStreams.", null);
                 // TODO: Instead of throwing an exception, we could ourselves try to wrap it into a
                 // FixedLengthAudioStream, but this might be dangerous as we have no clue, how much data to expect from
                 // the stream.
@@ -84,7 +84,7 @@ public class KodiAudioSink implements AudioSink {
                 } else if (AudioFormat.MP3.isCompatible(format)) {
                     handler.playNotificationSoundURI(new StringType(url + ".mp3"));
                 } else {
-                    throw new UnsupportedAudioFormatException("Sonos only supports MP3 or WAV.", format);
+                    throw new UnsupportedAudioFormatException("Kodi only supports MP3 or WAV.", format);
                 }
             }
         }
