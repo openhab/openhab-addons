@@ -9,11 +9,13 @@
 package org.openhab.binding.netatmo.handler.thermostat;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
+import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.NADeviceAdapter;
+import org.openhab.binding.netatmo.internal.NAPlugAdapter;
 
-import io.swagger.client.model.NADeviceListBody;
+import io.swagger.client.model.NAThermostatDataBody;
 
 /**
  * {@link NAPlugHandler} is the class used to handle the plug
@@ -22,23 +24,15 @@ import io.swagger.client.model.NADeviceListBody;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-public class NAPlugHandler extends NetatmoDeviceHandler {
-
+public class NAPlugHandler extends NetatmoDeviceHandler<NetatmoDeviceConfiguration> {
     public NAPlugHandler(Thing thing) {
-        super(thing);
+        super(thing, NetatmoDeviceConfiguration.class);
     }
 
     @Override
-    protected void updateChannels() {
-        try {
-            NADeviceListBody deviceList = bridgeHandler.getThermostatApi().devicelist(actualApp, getId(), false)
-                    .getBody();
-            device = deviceList.getDevices().get(0);
-
-            super.updateChannels();
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-        }
+    protected NADeviceAdapter<?> updateReadings(NetatmoBridgeHandler bridgeHandler, String equipmentId) {
+        NAThermostatDataBody thermostatDataBody = bridgeHandler.getThermostatsDataBody(equipmentId);
+        return new NAPlugAdapter(thermostatDataBody);
     }
 
 }

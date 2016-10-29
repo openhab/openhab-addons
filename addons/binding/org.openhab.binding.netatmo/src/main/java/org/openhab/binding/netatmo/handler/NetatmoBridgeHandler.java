@@ -8,15 +8,9 @@
  */
 package org.openhab.binding.netatmo.handler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.netatmo.config.NetatmoBridgeConfiguration;
@@ -26,10 +20,11 @@ import org.slf4j.LoggerFactory;
 import io.swagger.client.ApiClient;
 import io.swagger.client.api.StationApi;
 import io.swagger.client.api.ThermostatApi;
+import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.auth.OAuth;
 import io.swagger.client.auth.OAuthFlow;
-import io.swagger.client.model.NAUserAdministrative;
-import io.swagger.client.model.NAUserResponse;
+import io.swagger.client.model.NAStationDataBody;
+import io.swagger.client.model.NAThermostatDataBody;
 import retrofit.RestAdapter.LogLevel;
 
 /**
@@ -38,6 +33,7 @@ import retrofit.RestAdapter.LogLevel;
  * {@link NetatmoBridgeHandler} to request informations about their status
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
 public class NetatmoBridgeHandler extends BaseBridgeHandler {
@@ -46,9 +42,11 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private ApiClient apiClient;
     private StationApi stationApi = null;
     private ThermostatApi thermostatApi = null;
+    private WelcomeApi welcomeApi = null;
 
     public NetatmoBridgeHandler(Bridge bridge) {
         super(bridge);
+        configuration = getConfigAs(NetatmoBridgeConfiguration.class);
     }
 
     @Override
@@ -73,48 +71,8 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         apiClient.configureFromOkclient(new TrustingOkHttpClient());
         apiClient.getTokenEndPoint().setScope(getApiScope());
         apiClient.getAdapterBuilder().setLogLevel(LogLevel.NONE);
+        super.initialize();
 
-        updateChannels();
-
-    }
-
-    private void updateChannels() {
-        NAUserResponse user = null;
-
-        getStationApi();
-        if (stationApi != null) {
-            user = stationApi.getuser();
-        } else {
-            getThermostatApi();
-            if (thermostatApi != null) {
-                user = thermostatApi.getuser();
-            }
-        }
-
-        if (user != null) {
-            NAUserAdministrative admin = user.getBody().getAdministrative();
-            for (Channel channel : getThing().getChannels()) {
-                String chanelId = channel.getUID().getId();
-                switch (chanelId) {
-                    case CHANNEL_UNIT: {
-                        updateState(channel.getUID(), new DecimalType(admin.getUnit()));
-                        break;
-                    }
-                    case CHANNEL_WIND_UNIT: {
-                        updateState(channel.getUID(), new DecimalType(admin.getWindunit()));
-                        break;
-                    }
-                    case CHANNEL_PRESSURE_UNIT: {
-                        updateState(channel.getUID(), new DecimalType(admin.getPressureunit()));
-                        break;
-                    }
-                }
-            }
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Unable to initialize Netatmo API connection (check credentials)");
-        }
     }
 
     private String getApiScope() {
@@ -128,6 +86,18 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             stringBuilder.append("read_thermostat write_thermostat ");
         }
 
+        if (configuration.readWelcome) {
+            stringBuilder.append("read_camera ");
+        }
+
+        if (configuration.accessWelcome) {
+            stringBuilder.append("access_camera ");
+        }
+
+        if (configuration.writeWelcome) {
+            stringBuilder.append("write_camera ");
+        }
+
         return stringBuilder.toString().trim();
     }
 
@@ -136,7 +106,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.warn("This Bridge is read-only and does not handle commands");
     }
 
-    public StationApi getStationApi() {
+    private StationApi getStationApi() {
         if (configuration.readStation && stationApi == null) {
             stationApi = apiClient.createService(StationApi.class);
         }
@@ -149,5 +119,45 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }
         return thermostatApi;
     }
+    public NAStationDataBody getStationsDataBody(String equipmentId) {
+        if (getStationApi() != null) {
+            try {
+                return getStationApi().getstationsdata(equipmentId).getBody();
+            } catch (Exception e) {
+                logger.warn("An error occured while calling station API : {}", e.getMessage());
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
+    public NAThermostatDataBody getThermostatsDataBody(String equipmentId) {
+        if (getThermostatApi() != null) {
+            try {
+                return getThermostatApi().getthermostatsdata(equipmentId).getBody();
+            } catch (Exception e) {
+                logger.warn("An error occured while calling thermostat API : {}", e.getMessage());
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+    }
+
+    public WelcomeApi getWelcomeApi() {
+        if (configuration.readWelcome && welcomeApi == null) {
+            welcomeApi = apiClient.createService(WelcomeApi.class);
+        }
+        return welcomeApi;
+    }
+
+    public int getWelcomeEventThings() {
+        return configuration.welcomeEventThings;
+    }
+
+    public int getWelcomeUnknownPersonThings() {
+        return configuration.welcomeUnknownPersonThings;
+    }
 }

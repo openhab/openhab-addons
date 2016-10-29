@@ -9,16 +9,11 @@
 package org.openhab.binding.netatmo.config;
 
 /**
- * The {@link NetatmoModuleConfiguration} is responsible for holding configuration
- * informations needed to access a Netatmo Module (that depends upon a device)
+ * The {@link NATherm1Configuration} is responsible for holding specific
+ * informations needed to configure the Thermostat module
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class NetatmoModuleConfiguration extends NetatmoThingConfiguration {
-    private String parentId;
-
-    public String getParentId() {
-        // Bug #3891 : Netatmo API only works with lower case device/module ids
-        return parentId.toLowerCase();
-    }
+public class NATherm1Configuration extends NetatmoModuleConfiguration {
+    public Integer setpointDefaultDuration;
 }

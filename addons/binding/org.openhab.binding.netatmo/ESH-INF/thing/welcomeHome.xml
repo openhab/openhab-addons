@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+      
+    <thing-type id="NAWelcomeHome">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+        
+        <label>Welcome Camera Home</label>
+        <description>This represents a home</description>
+
+        <channels>
+            <channel id="welcomeHomeId" typeId="homeid"></channel>
+        	<channel id="welcomeHomeName" typeId="homename"></channel>
+        	<channel id="welcomeHomeCity" typeId="homecity"></channel>
+        	<channel id="welcomeHomeCountry" typeId="homecountry"></channel>
+        	<channel id="welcomeHomeTimezone" typeId="hometimezone"></channel>
+        	
+            <channel id="welcomeHomeSomebodyAtHome" typeId="homesomebodyathome"></channel>
+            <channel id="welcomeHomePersonCount" typeId="homepersoncount"></channel>
+            <channel id="welcomeHomeUnknownCount" typeId="homeunknowncount"></channel>
+                                            	    
+        </channels>
+        
+        <properties>
+             <property name="actualApp">app_welcomecamera</property>
+        </properties>         
+        
+        <config-description>
+            <parameter name="welcomeHomeId" type="text" required="true" readOnly="true">
+                <label>Home ID</label>
+                <description>Id of the home</description>
+             </parameter>
+             
+	        <parameter name="refreshInterval" type="integer" required="false">
+	            <label>Refresh Interval</label>
+	            <description>The refresh interval to poll Netatmo API (in ms).</description>
+	            <default>60000</default>
+	            <advanced>true</advanced>
+	        </parameter>
+             
+         </config-description>    
+               
+    </thing-type>
+      
+    <channel-type id="homeid">
+        <item-type>String</item-type>
+        <label>Id</label>
+        <description>ID of the home</description>
+        <state readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="homename">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>Name of the home</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="homecity">
+        <item-type>String</item-type>
+        <label>City</label>
+        <description>City of the home</description>
+        <state readOnly="true"></state>
+    </channel-type>
+        <channel-type id="homecountry">
+        <item-type>String</item-type>
+        <label>Country</label>
+        <description>Country of the home</description>
+        <state readOnly="false"></state>
+    </channel-type>
+        <channel-type id="hometimezone">
+        <item-type>String</item-type>
+        <label>Timezone</label>
+        <description>Timezone of the home</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="homesomebodyathome" advanced="true">
+        <item-type>Boolean</item-type>
+        <label>Somebody at home</label>
+        <description>True if some Person or unknown Person is at home (not seen)</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="homepersoncount" advanced="true">
+        <item-type>Number</item-type>
+        <label>Person counter</label>
+        <description>Count how many Persons are at home</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+        <channel-type id="homeunknowncount" advanced="true">
+        <item-type>Number</item-type>
+        <label>Unknown Person counter</label>
+        <description>Count how many unknown Persons are at home</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>                                                
+                                                        
+</thing:thing-descriptions>
