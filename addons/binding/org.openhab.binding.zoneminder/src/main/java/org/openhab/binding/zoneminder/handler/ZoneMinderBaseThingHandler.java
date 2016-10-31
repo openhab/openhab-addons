@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.zoneminder.handler;
 
+import java.math.BigDecimal;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -28,6 +32,8 @@ import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import name.eskildsen.zoneminder.api.ZoneMinderData;
 
 /**
  * The {@link ZoneMinderBaseThingHandler} is responsible for handling commands, which are
@@ -53,6 +59,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
 
     /** Unique Id of the thing in zoneminder. */
     private String zoneMinderId;
+
+    private Map<String, ZoneMinderData> zmMonitorDataArr = new HashMap<String, ZoneMinderData>();
 
     /** Configuration from OpenHAB */
     protected ZoneMinderThingConfig configuration;
@@ -306,5 +314,35 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      */
     protected Integer getConfigValueAsInteger(String configKey) {
         return (Integer) getConfigValue(configKey);
+    }
+
+    protected BigDecimal getConfigValueAsBigDecimal(String configKey) {
+        return (BigDecimal) getConfigValue(configKey);
+    }
+
+    @Override
+    public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId,
+            List<ZoneMinderData> arrData) {
+
+        synchronized (zmMonitorDataArr) {
+            for (ZoneMinderData data : arrData) {
+                String dataClassKey = data.getKey();
+                if (zmMonitorDataArr.containsKey(dataClassKey)) {
+                    zmMonitorDataArr.remove(dataClassKey);
+                }
+                zmMonitorDataArr.put(dataClassKey, data);
+            }
+        }
+
+    }
+
+    protected ZoneMinderData getZoneMinderData(Class type) {
+
+        synchronized (zmMonitorDataArr) {
+            if (zmMonitorDataArr.containsKey(type.getSimpleName())) {
+                return zmMonitorDataArr.get(type.getSimpleName());
+            }
+        }
+        return null;
     }
 }

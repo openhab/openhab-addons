@@ -62,30 +62,19 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
         return ZoneMinderServerBridgeHandler.SUPPORTED_THING_TYPES;
     }
 
-    /*
-     * Background discovery disabled for now!
-     *
-     * @Override
-     * protected void startBackgroundDiscovery() {
-     * scheduler.schedule(new Runnable() {
-     *
-     * @Override
-     * public void run() {
-     * discoverZoneMinderServer();
-     * }
-     * }, 0, TimeUnit.MILLISECONDS);
-     * }
-     */
+    // Background discovery disabled for now!
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
-     */
     @Override
     protected void startBackgroundDiscovery() {
-
-    }
+        /*
+         * scheduler.schedule(new Runnable() {
+         *
+         * @Override
+         * public void run() {
+         * discoverZoneMinderServer();
+         * }
+         * }, 0, TimeUnit.MILLISECONDS);
+         */ }
 
     /*
      * (non-Javadoc)
@@ -114,8 +103,8 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             subnetUtils = new SubnetUtils(localHost.getHostAddress() + "/"
                     + networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
             subnetInfo = subnetUtils.getInfo();
-            lowIP = convertIPToNumber(subnetInfo.getLowAddress());
-            highIP = convertIPToNumber(subnetInfo.getHighAddress());
+            lowIP = convertIPToNumber("192.168.1.53");// subnetInfo.getLowAddress());
+            highIP = convertIPToNumber("192.168.1.56");// (subnetInfo.getHighAddress());
         } catch (IllegalArgumentException e) {
             logger.error("discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
             return;

@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.zoneminder.internal;
 
+import java.util.List;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderEvent;
-import org.openhab.binding.zoneminder.internal.data.ZoneMinderData;
+
+import name.eskildsen.zoneminder.api.ZoneMinderData;
 
 public interface ZoneMinderMonitorEventListener {
 
-    void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId, ZoneMinderData data);
+    void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId, List<ZoneMinderData> arrData);
 
-    void notifyZoneMinderEvent(ZoneMinderEvent event);
+    // TODO:: FIXME void notifyZoneMinderEvent(ZoneMinderEvent event);
 }

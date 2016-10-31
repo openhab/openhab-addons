@@ -8,77 +8,72 @@
  */
 package org.openhab.binding.zoneminder.internal.data;
 
-import org.openhab.binding.zoneminder.internal.api.ServerCpuLoad;
-import org.openhab.binding.zoneminder.internal.api.ServerData;
-import org.openhab.binding.zoneminder.internal.api.ServerDiskUsage;
+public class ZoneMinderServerData extends ZoneMinderDataLocal {
 
-public class ZoneMinderServerData extends ZoneMinderData {
-
-    private ServerData _serverVersion = null;
-    private ServerDiskUsage _serverDiskUsage = null;
-    private ServerCpuLoad _serverCpuLoad = null;
+    // TODO:: FIXME private ServerData _serverVersion = null;
+    // TODO:: FIXME private ServerDiskUsage _serverDiskUsage = null;
+    // TODO:: FIXME private ServerCpuLoad _serverCpuLoad = null;
     // private DaemonStatus _serverDaemonStatus = null;
 
-    public ZoneMinderServerData(ServerData version, ServerDiskUsage diskUsage, ServerCpuLoad cpuLoad) {
+    public ZoneMinderServerData(/*
+                                 * //TODO:: FIXME
+                                 * ServerData version, ServerDiskUsage diskUsage, ServerCpuLoad cpuLoad
+                                 */) {
 
-        this._serverVersion = version;
-        this._serverDiskUsage = diskUsage;
-        this._serverCpuLoad = cpuLoad;
+        // TODO:: FIXME this._serverVersion = version;
+        // TODO:: FIXME this._serverDiskUsage = diskUsage;
+        // TODO:: FIXME this._serverCpuLoad = cpuLoad;
         // this._daemonStatus = daemonStatus;
 
     }
-
-    public void setServerVersionData(ServerData data) {
-        _serverVersion = data;
-    }
-
-    public void setServerDiskUsageData(ServerDiskUsage data) {
-        _serverDiskUsage = data;
-    }
-
-    public void setServerCpuLoadData(ServerCpuLoad data) {
-        _serverCpuLoad = data;
-    }
-
-    public ServerData getServerVersionData() {
-        return _serverVersion;
-    }
-
-    public ServerDiskUsage getServerDiskUsageData() {
-        return _serverDiskUsage;
-    }
-
-    public ServerCpuLoad getServerCpuLoadData() {
-        return _serverCpuLoad;
-    }
-
-    public String getServerVersion() {
-        if (_serverVersion != null) {
-            return _serverVersion.version;
-        }
-        return "";
-    }
-
-    public String getServerVersionApi() {
-        if (_serverVersion != null) {
-            return _serverVersion.apiversion;
-        }
-        return "";
-    }
-
     /*
-     * public String getServerDiskUsage() {
-     * if (_serverDiskUsage != null) {
-     * return _serverDiskUsage.getSpace();
+     * //TODO:: FIXME
+     * 
+     * public void setServerVersionData(ServerData data) {
+     * _serverVersion = data;
+     * }
+     * 
+     * public void setServerDiskUsageData(ServerDiskUsage data) {
+     * _serverDiskUsage = data;
+     * }
+     * 
+     * public void setServerCpuLoadData(ServerCpuLoad data) {
+     * _serverCpuLoad = data;
+     * }
+     * 
+     * public ServerData getServerVersionData() {
+     * return _serverVersion;
+     * }
+     * 
+     * public ServerDiskUsage getServerDiskUsageData() {
+     * return _serverDiskUsage;
+     * }
+     * 
+     * public ServerCpuLoad getServerCpuLoadData() {
+     * return _serverCpuLoad;
+     * }
+     * 
+     * public String getServerVersion() {
+     * if (_serverVersion != null) {
+     * return _serverVersion.version;
      * }
      * return "";
      * }
+     * 
+     * public String getServerVersionApi() {
+     * if (_serverVersion != null) {
+     * return _serverVersion.apiversion;
+     * }
+     * return "";
+     * }
+     * 
+     * 
+     * public Double getServerCpuLoad() {
+     * if (_serverCpuLoad != null) {
+     * return _serverCpuLoad.getCpuLoad();
+     * }
+     * return null;
+     * 
+     * }
      */
-    public Double getServerCpuLoad() {
-        if (_serverCpuLoad != null) {
-            return _serverCpuLoad.getCpuLoad();
-        }
-        return null;
-
-    }
 }

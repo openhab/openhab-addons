@@ -21,9 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler;
 import org.openhab.binding.zoneminder.handler.ZoneMinderThingMonitorHandler;
-import org.openhab.binding.zoneminder.internal.api.MonitorData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import name.eskildsen.zoneminder.api.monitor.ZoneMinderMonitor;
 
 /**
  * When a {@link ZoneMinderMonitorDiscoveryService} finds a new Monitor we will
@@ -70,7 +71,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         }
     }
 
-    public void monitorAdded(MonitorData monitor) {
+    public void monitorAdded(ZoneMinderMonitor monitor) {
 
         try {
             ThingUID bridgeUID = zoneMinderServerHandler.getThing().getUID();
@@ -80,7 +81,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
                     monitorUID);
 
             if (!monitorThingExists(thingUID)) {
-                logger.debug("monitor added {} : {} ", monitor.getOpenHABId(), monitor.getDisplayName());
+                logger.debug("monitor added {} : {} ", monitor.getId(), monitor.getName());
                 Map<String, Object> properties = new HashMap<>(0);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.valueOf(monitor.getId()));
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
@@ -89,7 +90,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
                         ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT_DEFAULTVALUE);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(monitor.getDisplayName()).build();
+                        .withBridge(bridgeUID).withLabel(String.format("%s", monitor.getName())).build();
 
                 thingDiscovered(discoveryResult);
             }
@@ -109,9 +110,9 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                ArrayList<MonitorData> monitors = zoneMinderServerHandler.getMonitors();
+                ArrayList<ZoneMinderMonitor> monitors = zoneMinderServerHandler.getMonitors();
 
-                for (MonitorData monitor : monitors) {
+                for (ZoneMinderMonitor monitor : monitors) {
                     monitorAdded(monitor);
                 }
             }
