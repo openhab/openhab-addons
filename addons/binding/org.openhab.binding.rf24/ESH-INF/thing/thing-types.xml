@@ -21,7 +21,7 @@
 
 	<!-- Channels -->
 
-	<channel-type id="rf24OnOff" advanced="true">
+	<channel-type id="rf24OnOff">
 		<item-type>Switch</item-type>
 		<label>Turn me ON/OFF</label>
 		<category>Switch</category>
