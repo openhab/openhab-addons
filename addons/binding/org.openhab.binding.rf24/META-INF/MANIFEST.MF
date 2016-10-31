@@ -24,3 +24,5 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.rf24,
  org.openhab.binding.rf24.handler
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.osgi.services
