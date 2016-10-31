@@ -22,7 +22,6 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffResponse;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshOnOffRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
-import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
 
 public class OnOffChannel implements Channel {
@@ -54,24 +53,12 @@ public class OnOffChannel implements Channel {
                     .setRefreshOnOffRequest(RefreshOnOffRequest.getDefaultInstance()).build();
 
             wifi.write(pipe, request);
-            return Optional.of(new Consumer<Updatable>() {
-
-                @Override
-                public void accept(Updatable updatable) {
-
-                    // TODO here might be needed some delay!!!
-                    wifi.read(pipe).ifPresent(new Consumer<SensorResponse>() {
-
-                        @Override
-                        public void accept(SensorResponse response) {
-                            if (response.hasOnOffResponse()) {
-                                OnOffResponse onOffResponse = response.getOnOffResponse();
-                                updatable.updateState(channelUID, findOnOffType(onOffResponse));
-                            }
-                        }
-                    });
+            return Optional.of(updatable -> wifi.read(pipe).ifPresent(response -> {
+                if (response.hasOnOffResponse()) {
+                    OnOffResponse onOffResponse = response.getOnOffResponse();
+                    updatable.updateState(channelUID, findOnOffType(onOffResponse));
                 }
-            });
+            }));
         } else {
             return Optional.empty();
         }

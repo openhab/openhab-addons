@@ -93,7 +93,6 @@ public class StubWiFi implements WiFi {
 
                     // If has request for DHT11 state, return DHT11 state
                     if (cmd.hasRefreshDht11Request()) {
-                        Random r = new Random();
                         Dht11Response dht11Response = Dht11Response.newBuilder().setTemperature(randomTemperature())
                                 .setHumidity(randomHumidity()).build();
                         ack.setDht11Response(dht11Response);

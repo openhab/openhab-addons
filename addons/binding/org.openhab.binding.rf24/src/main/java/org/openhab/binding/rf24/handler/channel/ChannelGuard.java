@@ -38,12 +38,8 @@ public class ChannelGuard implements Channel {
     }
 
     private boolean isGoodChannel(ChannelUID channelUID) {
-        for (String supportedChannel : whatChannelIdCanProcess()) {
-            if (Objects.equal(channelUID.getId(), supportedChannel)) {
-                return true;
-            }
-        }
-        return false;
+        return whatChannelIdCanProcess().stream()
+                .filter(supportedChannel -> Objects.equal(channelUID.getId(), supportedChannel)).findAny().isPresent();
     }
 
     @Override
