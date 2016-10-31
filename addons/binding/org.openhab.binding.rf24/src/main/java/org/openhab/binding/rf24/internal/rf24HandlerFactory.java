@@ -34,12 +34,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        for (ThingTypeUID thing : SUPPORTED_THING_TYPES_UIDS) {
-            if (thing.equals(thingTypeUID)) {
-                return true;
-            }
-        }
-        return false;
+        return SUPPORTED_THING_TYPES_UIDS.stream().filter(thingTypeUID::equals).findFirst().isPresent();
     }
 
     private final WiFi wifi;
