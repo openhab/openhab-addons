@@ -4,9 +4,6 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import pl.grzeslowski.smarthome.proto.common.Basic;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor;
 import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
 
@@ -16,11 +13,11 @@ public interface WiFi extends AutoCloseable {
     @Override
     void close();
 
-    boolean write(Pipe pipe, Sensor.SensorCommandMessage cmd);
+    boolean write(Pipe pipe, Sensor.SensorRequest cmd);
 
-    Optional<Basic.AckMessage> read(List<Pipe> pipes, ByteOrder byteOrder) throws InvalidProtocolBufferException;
+    Optional<Sensor.SensorResponse> read(List<Pipe> pipes, ByteOrder byteOrder);
 
-    Optional<Basic.AckMessage> read(Pipe pipe) throws InvalidProtocolBufferException;
+    Optional<Sensor.SensorResponse> read(Pipe pipe);
 
-    Optional<Basic.AckMessage> read(Pipe pipe, ByteOrder byteOrder) throws InvalidProtocolBufferException;
+    Optional<Sensor.SensorResponse> read(Pipe pipe, ByteOrder byteOrder);
 }

@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import pl.grzeslowski.smarthome.proto.common.Basic;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor;
+import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 import pl.grzeslowski.smarthome.rpi.wifi.Rf24;
 import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
 import pl.grzeslowski.smarthome.rpi.wifi.help.rf24.Payload;
@@ -42,14 +42,13 @@ public class Rf24WiFi implements WiFi {
     }
 
     @Override
-    public boolean write(Pipe pipe, Sensor.SensorCommandMessage cmd) {
+    public boolean write(Pipe pipe, Sensor.SensorRequest cmd) {
         logger.info("Write RF24");
         return wifi.write(pipe, cmd.toByteArray());
     }
 
     @Override
-    public Optional<Basic.AckMessage> read(List<Pipe> pipes, ByteOrder byteOrder)
-            throws InvalidProtocolBufferException {
+    public Optional<Sensor.SensorResponse> read(List<Pipe> pipes, ByteOrder byteOrder) {
         logger.info("Read RF24");
         ByteBuffer buffer = ByteBuffer.allocate(wifi.getPayload().getSize());
         buffer.order(byteOrder);
@@ -57,20 +56,28 @@ public class Rf24WiFi implements WiFi {
         if (read) {
             byte[] data = new byte[buffer.remaining()];
             buffer.get(data);
-            final Basic.AckMessage ackMessage = Basic.AckMessage.parseFrom(data);
+            final Sensor.SensorResponse ackMessage = parseSensorResponse(data);
             return Optional.of(ackMessage);
         } else {
             return Optional.empty();
         }
     }
 
+    private SensorResponse parseSensorResponse(byte[] data) {
+        try {
+            return Sensor.SensorResponse.parseFrom(data);
+        } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException("Could not parse data into Sensor.SensorResponse!");
+        }
+    }
+
     @Override
-    public Optional<Basic.AckMessage> read(Pipe pipe) throws InvalidProtocolBufferException {
+    public Optional<Sensor.SensorResponse> read(Pipe pipe) {
         return read(Collections.singletonList(pipe), ARDUINO_BYTE_ORDER);
     }
 
     @Override
-    public Optional<Basic.AckMessage> read(Pipe pipe, ByteOrder byteOrder) throws InvalidProtocolBufferException {
+    public Optional<Sensor.SensorResponse> read(Pipe pipe, ByteOrder byteOrder) {
         return read(Collections.singletonList(pipe), byteOrder);
     }
 }

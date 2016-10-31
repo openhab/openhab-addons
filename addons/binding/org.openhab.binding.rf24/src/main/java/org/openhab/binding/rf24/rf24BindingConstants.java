@@ -20,14 +20,12 @@ public class rf24BindingConstants {
     public static final String BINDING_ID = "rf24";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID RF24_ON_OFF_THING_TYPE = new ThingTypeUID(BINDING_ID, "rf24OnOffThing");
-    public final static ThingTypeUID RF24_DHT11_THING_TYPE = new ThingTypeUID(BINDING_ID, "rf24Dht11Thing");
+    public final static ThingTypeUID RF24_RECIVER_THING_TYPE = new ThingTypeUID(BINDING_ID, "rf24ReciverThing");
 
     // List of all Channel ids
-    public final static String RF24_DEVICE_ID_CHANNEL = "rf24DeviceId";
     public final static String DHT11_TEMPERATURE_CHANNEL = "dht11Temperature";
     public final static String DHT11_HUMIDITY_CHANNEL = "dht11Humidity";
-    public final static String RF24_ON_OFF_CHANNEL = "rf24OnOff";
+    public final static String RF24_ON_OFF_CHANNEL = "rf24OnOffCommand";
 
     public final static String RECIVER_PIPE_CONFIGURATION = "reciverPipe";
 }
