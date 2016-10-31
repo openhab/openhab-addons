@@ -23,7 +23,6 @@ import pl.grzeslowski.smarthome.proto.common.Basic.BasicMessage;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.Dht11Response;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshDht11Request;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
-import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
 
 public class Dht11Channel implements Channel {
@@ -57,33 +56,15 @@ public class Dht11Channel implements Channel {
                     .setRefreshDht11Request(RefreshDht11Request.getDefaultInstance()).build();
 
             wifi.write(pipe, request);
-            return Optional.of(new Consumer<Updatable>() {
-
-                @Override
-                public void accept(Updatable updatable) {
-                    // TODO here might be needed some delay!!!
-                    wifi.read(pipe).ifPresent(new Consumer<SensorResponse>() {
-
-                        @Override
-                        public void accept(SensorResponse response) {
-                            if (response.hasDht11Response()) {
-                                findDecimalTypeForChannel(channelUID, response.getDht11Response())
-                                        .ifPresent(new Consumer<DecimalType>() {
-
-                                            @Override
-                                            public void accept(DecimalType decimalType) {
-                                                updatable.updateState(channelUID, decimalType);
-                                            }
-                                        });
-                            } else {
-                                logger.warn(String.format(
-                                        "SensorResponse for pipe %s should have Dht11Response! Response:%n%s", pipe,
-                                        response));
-                            }
-                        }
-                    });
+            return Optional.of(updatable -> wifi.read(pipe).ifPresent(response -> {
+                if (response.hasDht11Response()) {
+                    findDecimalTypeForChannel(channelUID, response.getDht11Response())
+                            .ifPresent(decimalType -> updatable.updateState(channelUID, decimalType));
+                } else {
+                    logger.warn(String.format("SensorResponse for pipe %s should have Dht11Response! Response:%n%s",
+                            pipe, response));
                 }
-            });
+            }));
         } else {
             return Optional.empty();
         }
