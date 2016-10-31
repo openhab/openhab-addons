@@ -8,16 +8,16 @@
 package org.openhab.binding.rf24.internal;
 
 import java.util.Collection;
-import java.util.function.Function;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.handler.rf24Dht11Handler;
-import org.openhab.binding.rf24.handler.rf24OnOffHandler;
+import org.openhab.binding.rf24.handler.rf24BaseHandler;
+import org.openhab.binding.rf24.wifi.StubWiFi;
+import org.openhab.binding.rf24.wifi.WiFi;
+import org.osgi.service.component.ComponentContext;
 
 import com.google.common.collect.Lists;
 
@@ -29,52 +29,39 @@ import com.google.common.collect.Lists;
  */
 public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Collection<ThingHandlerPair> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(
-            new ThingHandlerPair(rf24BindingConstants.RF24_DHT11_THING_TYPE, new Function<Thing, BaseThingHandler>() {
-
-                @Override
-                public BaseThingHandler apply(Thing t) {
-                    return new rf24Dht11Handler(t);
-                }
-            }),
-            new ThingHandlerPair(rf24BindingConstants.RF24_ON_OFF_THING_TYPE, new Function<Thing, BaseThingHandler>() {
-
-                @Override
-                public BaseThingHandler apply(Thing t) {
-                    return new rf24OnOffHandler(t);
-                }
-
-            }));
+    private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
+            .newArrayList(rf24BindingConstants.RF24_RECIVER_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        for (ThingHandlerPair thingHandlerPair : SUPPORTED_THING_TYPES_UIDS) {
-            ThingTypeUID map = thingHandlerPair.thingTypeUID;
-            if (map.equals(thingTypeUID)) {
+        for (ThingTypeUID thing : SUPPORTED_THING_TYPES_UIDS) {
+            if (thing.equals(thingTypeUID)) {
                 return true;
             }
         }
         return false;
     }
 
-    @Override
-    protected ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        for (ThingHandlerPair thingHandlerPair : SUPPORTED_THING_TYPES_UIDS) {
-            if (thingHandlerPair.thingTypeUID.equals(thingTypeUID)) {
-                return thingHandlerPair.handler.apply(thing);
-            }
-        }
-        return null;
+    private final WiFi wifi;
+
+    public rf24HandlerFactory() {
+        wifi = new StubWiFi();
     }
 
-    private static class ThingHandlerPair {
-        private final ThingTypeUID thingTypeUID;
-        private final Function<Thing, ? extends BaseThingHandler> handler;
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        wifi.init();
+        super.activate(componentContext);
+    }
 
-        public ThingHandlerPair(ThingTypeUID thingTypeUID, Function<Thing, ? extends BaseThingHandler> handler) {
-            this.thingTypeUID = thingTypeUID;
-            this.handler = handler;
-        }
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        wifi.close();
+    }
+
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
+        return new rf24BaseHandler(thing, wifi);
     }
 }
