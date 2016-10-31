@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -26,17 +25,18 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderEvent;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderMessage.ZoneMinderRequestType;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderTelnetEvent;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderTrigger;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingMonitorConfig;
-import org.openhab.binding.zoneminder.internal.data.ZoneMinderData;
-import org.openhab.binding.zoneminder.internal.data.ZoneMinderMonitorData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
+
+import name.eskildsen.zoneminder.api.daemon.ZoneMinderMonitorAnalysisDaemonStatus;
+import name.eskildsen.zoneminder.api.daemon.ZoneMinderMonitorCaptureDaemonStatus;
+import name.eskildsen.zoneminder.api.daemon.ZoneMinderMonitorFrameDaemonStatus;
+import name.eskildsen.zoneminder.api.monitor.ZoneMinderMonitor;
+import name.eskildsen.zoneminder.api.telnet.ZoneMinderTriggerEvent;
+import name.eskildsen.zoneminder.trigger.ZoneMinderTriggerSubscriber;
 
 /**
  * The {@link ZoneMinderThingMonitorHandler} is responsible for handling commands, which are
@@ -45,15 +45,13 @@ import com.google.common.collect.Sets;
  * @author Martin S. Eskildsen - Initial contribution
  */
 public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
-        implements ZoneMinderMonitorEventListener {
+        implements ZoneMinderTriggerSubscriber, ZoneMinderMonitorEventListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets
             .newHashSet(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR);
 
     private static final String MONITOR_STATUS_NOT_INIT = "<Not Initialized>";
     private static final int MAX_MONITOR_STATUS_WATCH_COUNT = 3;
-
-    private ZoneMinderMonitorData zoneMinderMonitorData = null;
 
     /** Make sure we can log errors, warnings or what ever somewhere */
     private Logger logger = LoggerFactory.getLogger(ZoneMinderThingMonitorHandler.class);
@@ -83,28 +81,45 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     }
 
-    protected ZoneMinderMonitorData getMonitorData() {
-        return zoneMinderMonitorData;
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         try {
+            logger.debug("Channel '{}' in monitor '{}' received command='{}'", channelUID, getZoneMinderId(), command);
+
             // Communication TO Monitor
             switch (channelUID.getId()) {
 
                 // Done via Telnet connection
                 case ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT:
-                    logger.debug("Command '{}' received for an external trigger: {}", command, channelUID.getId());
 
                     if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
                         String eventText = getConfigValueAsString(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT);
-                        Integer eventTimeout = getConfigValueAsInteger(
-                                ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
-                        getZoneMinderBridgeHandler().sendZoneMinderTelnetRequest(ZoneMinderRequestType.MONITOR_TRIGGER,
-                                ZoneMinderTrigger.create(getMonitorConfig().getZoneMinderId(), command, eventText,
-                                        eventTimeout));
+                        // TODO: Fix This
+                        // BigDecimal eventTimeout = getConfigValueAsBigDecimal(
+                        // ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
+
+                        Integer eventTimeout = 60;
+
+                        ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
+                        if (bridge == null) {
+                            logger.warn("'handleCommand()': Bridge is 'null'!");
+                        }
+
+                        if (command == OnOffType.ON) {
+                            logger.debug(String.format(
+                                    "Activate 'ForceAlarm' for monitor '%s' (Reason='%s', Timeout='%d'), from OpenHAB in ZoneMinder",
+                                    getZoneMinderId(), eventText, eventTimeout));
+                            bridge.activateZoneMinderMonitorTrigger(getZoneMinderId(), eventText,
+                                    eventTimeout.intValue());
+                        }
+
+                        else if (command == OnOffType.OFF) {
+                            logger.debug(
+                                    String.format("Cancel 'ForceAlarm' for monitor '%s', from OpenHAB in ZoneMinder",
+                                            getZoneMinderId()));
+                            bridge.cancelZoneMinderMonitorTrigger(getZoneMinderId());
+                        }
                     }
                     break;
 
@@ -117,7 +132,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
 
                 case ZoneMinderConstants.CHANNEL_MONITOR_FUNCTION:
-                    logger.debug(
+                    logger.warn(
                             "Missing implementation of set functionality in ZM for Command '{}' received for monitor mode: {}",
                             command, channelUID.getId());
                     break;
@@ -139,7 +154,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
             }
         } catch (Exception ex) {
-            logger.error("handleCommand: Command='{}' failed for channel='{}'", command, channelUID.getId());
+            logger.error("handleCommand: Command='{}' failed for channel='{}' Exception='{}'", command,
+                    channelUID.getId(), ex.getMessage());
         }
     }
 
@@ -153,28 +169,10 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     }
 
     @Override
-    public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId, ZoneMinderData data) {
-
-        zoneMinderMonitorData = (ZoneMinderMonitorData) data;
-    }
-
-    @Override
-    public void notifyZoneMinderEvent(ZoneMinderEvent event) {
-
-        if (event.getZoneMinderMessage() instanceof ZoneMinderTelnetEvent) {
-
-            ZoneMinderTelnetEvent incommingMsg = (ZoneMinderTelnetEvent) event.getZoneMinderMessage();
-
-            // If event occurred in this ZoneMonitor monitor -> do something
-            if (incommingMsg.getMonitorId() == config.getId()) {
-                // Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_EVENT);
-                Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT);
-                this.updateState(channel.getUID(), incommingMsg.getStateAsOnOffType());
-
-                logger.debug("ZoneMinder event '{}' handled in ZoneMinderThingMonitorHandler",
-                        incommingMsg.toCommandString());
-            }
-        }
+    public void onTrippedForceAlarm(ZoneMinderTriggerEvent event) {
+        logger.debug(String.format("Tripped forceAlarm for monitor {}", event.getMonitorId()));
+        Channel channel = this.getThing().getChannel(ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT);
+        this.updateState(channel.getUID(), event.getState() ? OnOffType.ON : OnOffType.OFF);
     }
 
     protected ZoneMinderThingMonitorConfig getMonitorConfig() {
@@ -254,93 +252,92 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         ThingStatus newThingStatus = ThingStatus.OFFLINE;
 
         try {
+            String msg;
+            // 1. Is there a Bridge assigned?
+            if (getBridge() == null) {
+                msg = String.format("No Bridge assigned to monitor '{}'", thing.getUID());
 
-            if (zoneMinderMonitorData == null) {
-                monitorStatusMatchCount = 0;
-                lastMonitorStatus = "";
-                isAlive = false;
-            } else {
-                String msg;
-                // 1. Is there a Bridge assigned?
-                if (getBridge() == null) {
-                    msg = String.format("No Bridge assigned to monitor '{}'", thing.getUID());
-
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
-                    logger.error(msg);
-                    return;
-                }
-
-                // 2. Is Bridge Online?
-                if (getBridge().getStatus() != ThingStatus.ONLINE) {
-                    msg = String.format("Bridge {} is OFFLINE", getBridge().getBridgeUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
-                    logger.error(msg);
-                    return;
-                }
-
-                // 3. Is Configuration OK?
-                if (getMonitorConfig() == null) {
-                    msg = String.format("No valid configuration found for {}", thing.getUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-                    logger.error(msg);
-                    return;
-
-                }
-
-                if (getMonitorConfig().getZoneMinderId().isEmpty()) {
-                    msg = String.format("No Id is specified for monitor {}", thing.getUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-                    logger.error(msg);
-                    return;
-
-                }
-                // 4. Is Daemons running?
-                // a. Capture daemon must ALWAYS run
-                // b. Analysis daemon must run when function is NOT None
-                // c. Frame daemon must run when function is NOT None, AND option OPT_FRAME_SERVER=true
-                // None -> C=0 A=0 F=0
-                // Monitor -> C=1 A=0 F=0 (Både Enabled=1 og =0)
-                // Modect -> C=1 A=1 F=1
-                // Record -> C=1 A=1 F=1
-                // Mocord -> C=1 A=1 F=1
-                // Nodect -> C=1 A=1 F=1
-
-                if (!isDaemonRunning(zoneMinderMonitorData.getCaptureDaemonRunningState(),
-                        zoneMinderMonitorData.getCaptureDaemonStatusText())) {
-
-                    updateStatus(ThingStatus.OFFLINE);
-                    logger.error("Capture Daemon for monitor '{}' is not running on ZoneMinder Server",
-                            getZoneMinderId());
-                    return;
-                }
-
-                if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
-                        zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
-                    if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
-                        updateStatus(ThingStatus.OFFLINE);
-                        logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
-                                getZoneMinderId());
-                        return;
-                    }
-                }
-
-                // TODO::: Check FrameDaemon as well -> requires access to server config.
-                /*
-                 * if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
-                 * zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
-                 * if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
-                 * updateStatus(ThingStatus.OFFLINE);
-                 * logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
-                 * getZoneMinderId());
-                 * return;
-                 * }
-                 * }
-                 */
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                logger.error(msg);
+                return;
             }
+
+            // 2. Is Bridge Online?
+            if (getBridge().getStatus() != ThingStatus.ONLINE) {
+                msg = String.format("Bridge {} is OFFLINE", getBridge().getBridgeUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                logger.error(msg);
+                return;
+            }
+
+            // 3. Is Configuration OK?
+            if (getMonitorConfig() == null) {
+                msg = String.format("No valid configuration found for {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                logger.error(msg);
+                return;
+
+            }
+
+            if (getMonitorConfig().getZoneMinderId().isEmpty()) {
+                msg = String.format("No Id is specified for monitor {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                logger.error(msg);
+                return;
+
+            }
+            // 4. Is Daemons running?
+            // a. Capture daemon must ALWAYS run
+            // b. Analysis daemon must run when function is NOT None
+            // c. Frame daemon must run when function is NOT None, AND option OPT_FRAME_SERVER=true
+            // None -> C=0 A=0 F=0
+            // Monitor -> C=1 A=0 F=0 (Både Enabled=1 og =0)
+            // Modect -> C=1 A=1 F=1
+            // Record -> C=1 A=1 F=1
+            // Mocord -> C=1 A=1 F=1
+            // Nodect -> C=1 A=1 F=1
+            /*
+             * //TODO:: FIXME
+             * if (!isDaemonRunning(zoneMinderMonitorData.getCaptureDaemonRunningState(),
+             * zoneMinderMonitorData.getCaptureDaemonStatusText())) {
+             *
+             * updateStatus(ThingStatus.OFFLINE);
+             * logger.error("Capture Daemon for monitor '{}' is not running on ZoneMinder Server",
+             * getZoneMinderId());
+             * return;
+             * }
+             *
+             * if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
+             * zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
+             * if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
+             * updateStatus(ThingStatus.OFFLINE);
+             * logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
+             * getZoneMinderId());
+             * return;
+             * }
+             * }
+             */
+
+            // TODO::: Check FrameDaemon as well -> requires access to server config.
+            /*
+             * TODO:: THIS IS OLD STUFF
+             * if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
+             * zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
+             * if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
+             * updateStatus(ThingStatus.OFFLINE);
+             * logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
+             * getZoneMinderId());
+             * return;
+             * }
+             * }
+             */
+
             isAlive = true;
             newThingStatus = isAlive ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
 
-        } catch (Exception exception) {
+        } catch (
+
+        Exception exception) {
 
             logger.error("'ThingMonitorHandler.updateAvailabilityStatus()': Exception occurred '{}'",
                     exception.getMessage());
@@ -361,9 +358,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void updateChannel(ChannelUID channel) {
         State state = null;
-        if (getMonitorData() == null) {
-            return;
-        }
+
         try {
             switch (channel.getId()) {
                 case ZoneMinderConstants.CHANNEL_MONITOR_NAME:
@@ -382,7 +377,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     super.updateChannel(channel);
                     break;
 
-                // Handled from Telnet listener, so just ignor it here.
+                // Handled from Telnet listener, so just ignore it here.
                 // The handler has to be here to avoid a warning in the OpenHAB log
                 case ZoneMinderConstants.CHANNEL_MONITOR_TRIGGER_EVENT:
                     break;
@@ -449,50 +444,181 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     }
 
     protected State getNameState() {
-        return new StringType(getMonitorData().getName());
+        State state = new StringType("");
+
+        try {
+            ZoneMinderMonitor data = (ZoneMinderMonitor) getZoneMinderData(ZoneMinderMonitor.class);
+            if (data != null) {
+                state = new StringType(data.getName());
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
     }
 
     protected State getFunctionState() {
-        return new StringType(getMonitorData().getFunction());
+        State state = new StringType("");
+
+        try {
+            ZoneMinderMonitor data = (ZoneMinderMonitor) getZoneMinderData(ZoneMinderMonitor.class);
+            if (data != null) {
+                state = new StringType(data.getFunction());
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
     }
 
     protected State getSourceTypeState() {
-        return new StringType(getMonitorData().getSourceType());
+        State state = new StringType("");
+
+        try {
+            ZoneMinderMonitor data = (ZoneMinderMonitor) getZoneMinderData(ZoneMinderMonitor.class);
+            if (data != null) {
+                state = new StringType(data.getSourceType());
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
     }
 
     protected State getDiskUsageState() {
-        return new DecimalType(0.0); // getMonitorData().getName());
+        // TODO:: Fetch and update Disk Usage
+        return null; // new DecimalType(0.0); // getMonitorData().getName());
     }
 
     protected State getEnabledState() {
-        return ((getMonitorData().getEnabled().equalsIgnoreCase("1")) ? OnOffType.ON : OnOffType.OFF);
+        State state = OnOffType.OFF;
+
+        try {
+            ZoneMinderMonitor data = (ZoneMinderMonitor) getZoneMinderData(ZoneMinderMonitor.class);
+            if (data != null) {
+                state = data.getEnabled() ? OnOffType.ON : OnOffType.OFF;
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
+
     }
 
     protected State getCaptureDaemonRunningState() {
+        State state = OnOffType.OFF;
 
-        return (getMonitorData().getCaptureDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
+        try {
+            ZoneMinderMonitorCaptureDaemonStatus data = (ZoneMinderMonitorCaptureDaemonStatus) getZoneMinderData(
+                    ZoneMinderMonitorCaptureDaemonStatus.class);
+            if (data != null) {
+                state = data.getStatus() ? OnOffType.ON : OnOffType.OFF;
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
     }
 
     protected State getCaptureDaemonStatusTextState() {
-        return new StringType(getMonitorData().getCaptureDaemonStatusText());
+
+        State state = new StringType("");
+
+        try {
+            ZoneMinderMonitorCaptureDaemonStatus data = (ZoneMinderMonitorCaptureDaemonStatus) getZoneMinderData(
+                    ZoneMinderMonitorCaptureDaemonStatus.class);
+            if (data != null) {
+                state = new StringType(data.getStatusText());
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+        return state;
     }
 
     protected State getAnalysisDaemonRunningState() {
+        State state = OnOffType.OFF;
 
-        return (getMonitorData().getAnalysisDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
+        try {
+            ZoneMinderMonitorAnalysisDaemonStatus data = (ZoneMinderMonitorAnalysisDaemonStatus) getZoneMinderData(
+                    ZoneMinderMonitorAnalysisDaemonStatus.class);
+            if (data != null) {
+                state = data.getStatus() ? OnOffType.ON : OnOffType.OFF;
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
+        // return (getMonitorData().getAnalysisDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
     }
 
     protected State getAnalysisDaemonStatusTextState() {
-        return new StringType(getMonitorData().getAnalysisDaemonStatusText());
+        State state = new StringType("");
+
+        try {
+
+            ZoneMinderMonitorAnalysisDaemonStatus data = (ZoneMinderMonitorAnalysisDaemonStatus) getZoneMinderData(
+                    ZoneMinderMonitorAnalysisDaemonStatus.class);
+            if (data != null) {
+                state = new StringType(data.getStatusText());
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
+        // return new StringType(getMonitorData().getAnalysisDaemonStatusText());
     }
 
     protected State getFrameDaemonRunningState() {
 
-        return (getMonitorData().getFrameDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
+        State state = OnOffType.OFF;
+
+        try {
+            ZoneMinderMonitorFrameDaemonStatus data = (ZoneMinderMonitorFrameDaemonStatus) getZoneMinderData(
+                    ZoneMinderMonitorFrameDaemonStatus.class);
+            if (data != null) {
+                state = data.getStatus() ? OnOffType.ON : OnOffType.OFF;
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
+        // return (getMonitorData().getFrameDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
     }
 
     protected State getFrameDaemonStatusTextState() {
-        return new StringType(getMonitorData().getFrameDaemonStatusText());
+        State state = new StringType("");
+
+        try {
+            ZoneMinderMonitorFrameDaemonStatus data = (ZoneMinderMonitorFrameDaemonStatus) getZoneMinderData(
+                    ZoneMinderMonitorFrameDaemonStatus.class);
+            if (data != null) {
+                state = new StringType(data.getStatusText());
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
+        // return new StringType(getMonitorData().getFrameDaemonStatusText());
     }
 
     @Override

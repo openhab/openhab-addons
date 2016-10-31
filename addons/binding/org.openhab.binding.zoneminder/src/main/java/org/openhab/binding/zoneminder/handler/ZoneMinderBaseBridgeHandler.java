@@ -21,11 +21,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderEvent;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderMessage.ZoneMinderRequestType;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderOutgoingRequest;
-import org.openhab.binding.zoneminder.internal.command.ZoneMinderTelnetEvent;
-import org.openhab.binding.zoneminder.internal.command.http.ZoneMinderHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,8 +195,10 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         logger.debug("setBridgeConnection(): Set Bridge to {}", connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         Bridge bridge = getBridge();
-        ThingStatus status = bridge.getStatus();
-        logger.debug("Bridge ThingStatus is: {}", status);
+        if (bridge != null) {
+            ThingStatus status = bridge.getStatus();
+            logger.debug("Bridge ThingStatus is: {}", status);
+        }
 
         setConnected(connected);
 
@@ -212,6 +209,8 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      */
     public void onConnected() {
         logger.debug("onConnected(): Bridge Connected!");
+
+        onBridgeConnected(this);
 
         refreshThing();
         // Inform thing handlers of connection
@@ -233,8 +232,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      */
     public void onDisconnected() {
         logger.debug("onDisconnected(): Bridge Disconnected!");
-
-        setBridgeConnection(false);
 
         onBridgeDisconnected(this);
 
@@ -295,13 +292,14 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      */
     public synchronized void handleIncomingTelnetMessage(String incomingMessage) {
         if (incomingMessage != null && incomingMessage != "") {
-            ZoneMinderTelnetEvent message = new ZoneMinderTelnetEvent(incomingMessage);
-            logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage,
-                    message.toCommandString());
+            // TODO:: Fixme ZoneMinderTelnetEvent message = new ZoneMinderTelnetEvent(incomingMessage);
+            // TODO:: Fixme logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage,
+            // TODO:: Fixme message.toCommandString());
 
-            ZoneMinderEvent event = new ZoneMinderEvent(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR,
-                    message);
-            notifyZoneMinderEvent(event);
+            // TODO:: Fixme ZoneMinderEvent event = new
+            // ZoneMinderEvent(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR,
+            // TODO:: Fixme message);
+            // TODO:: Fixme notifyZoneMinderEvent(event);
 
         }
     }
@@ -345,26 +343,28 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    @Override
-    public void notifyZoneMinderEvent(ZoneMinderEvent event) {
+    // TODO:: Fixme @Override
+    // TODO:: Fixme public void notifyZoneMinderEvent(ZoneMinderEvent event) {
 
-        ZoneMinderBaseThingHandler thing = getZoneMinderThingHandlerFromZoneMinderId(event.getThingTypeUID(),
-                event.getZoneMinderId());
+    // TODO:: Fixme ZoneMinderBaseThingHandler thing =
+    // getZoneMinderThingHandlerFromZoneMinderId(event.getThingTypeUID(),
+    // TODO:: Fixme event.getZoneMinderId());
 
-        // If thing not found, then it is not to this thing that it belongs :-)
-        if (thing != null) {
-            thing.notifyZoneMinderEvent(event);
-        }
-    }
+    // If thing not found, then it is not to this thing that it belongs :-)
+    // TODO:: Fixme if (thing != null) {
+    // TODO:: Fixme thing.notifyZoneMinderEvent(event);
+    // TODO:: Fixme }
+    // TODO:: Fixme }
 
-    public abstract boolean sendZoneMinderHttpRequest(ZoneMinderHttpRequest requestType);
+    // TODO:: Fixme public abstract boolean sendZoneMinderHttpRequest(ZoneMinderHttpRequest requestType);
 
-    public boolean sendZoneMinderTelnetRequest(ZoneMinderRequestType requestType, ZoneMinderOutgoingRequest request) {
-        switch (requestType) {
-            default:
-                return onHandleZoneMinderTelnetRequest(requestType, request);
-        }
-    }
+    // TODO:: Fixme public boolean sendZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
+    // ZoneMinderOutgoingRequest request) {
+    // TODO:: Fixme switch (requestType) {
+    // TODO:: Fixme default:
+    // TODO:: Fixme return onHandleZoneMinderTelnetRequest(requestType, request);
+    // TODO:: Fixme }
+    // TODO:: Fixme }
 
     /*
      * @Override
@@ -375,7 +375,9 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
      *
      * }
      */
-    protected abstract boolean onHandleZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
-            ZoneMinderOutgoingRequest request);
-
+    /*
+     * //TODO:: Fixme
+     * protected abstract boolean onHandleZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
+     * ZoneMinderOutgoingRequest request);
+     */
 }
