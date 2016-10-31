@@ -4,7 +4,7 @@ Bundle-Name: rf24 Binding
 Bundle-SymbolicName: org.openhab.binding.rf24;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/RF24-all-1.0.0-SNAPSHOT.jar
 Import-Package: 
