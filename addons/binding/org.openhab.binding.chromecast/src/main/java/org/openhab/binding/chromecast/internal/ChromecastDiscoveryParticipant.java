@@ -24,7 +24,7 @@ import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.openhab.binding.chromecast.ChromecastBindingConstants;
 
 /**
- * The {@link ChromecastDiscoveryParticipant} is responsible for discovering Chromecast devices through mDNS.
+ * The {@link ChromecastDiscoveryParticipant} is responsible for discovering Chromecast devices through UPnP.
  *
  * @author Kai Kreuzer - Initial contribution
  *
