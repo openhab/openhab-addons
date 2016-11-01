@@ -103,7 +103,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
                         .getService(serviceReg.getReference());
                 discoveryService.cancelRequestMonitorJob();
 
-                // Unregister the PlayerListener service
+                // Unregister the Listener service
                 serviceReg.unregister();
 
                 // Remove the service from the ServiceRegistration map

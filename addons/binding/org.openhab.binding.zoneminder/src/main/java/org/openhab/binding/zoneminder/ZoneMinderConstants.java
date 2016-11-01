@@ -10,13 +10,6 @@ package org.openhab.binding.zoneminder;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-/*
- *http://<SERVER>/zm/api/events/index/StartTime%20%3E:%202015-12-27%2023:00:00.json
- *
- *http://<SERVER>/zm/api/events/index/MonitorId =: 1.json
- * http://zoneminder.readthedocs.org/en/latest/api.html#examples-please-read-security-notice-above
- */
-
 /**
  * The {@link ZoneMinderConstants} class defines common constants, which are
  * used across the whole binding.
@@ -80,18 +73,8 @@ public class ZoneMinderConstants {
     public final static String CHANNEL_MONITOR_NAME = "name";
     public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
     public final static String CHANNEL_MONITOR_ENABLED = "enabled";
-    // public final static String CHANNEL_MONITOR_EVENT = "event";
-
-    // public final static String CHANNEL_MONITOR_IMAGE_WIDTH = "image-width";
-    // public final static String CHANNEL_MONITOR_HEIGHT = "image-height";
-    // public final static String CHANNEL_MONITOR_EVENTPREFIX = "eventprefix";
-    // public final static String CHANNEL_MONITOR_ANALYSIS_FPS = "analysis-fps";
-    // public final static String CHANNEL_MONITOR_MAX_FPS = "monitor-max-fps";
-    // public final static String CHANNEL_MONITOR_ALARM_MAX_FPS = "alarm-max-fps";
-
     public final static String CHANNEL_MONITOR_TRIGGER_EVENT = "trigger-event";
     public final static String CHANNEL_MONITOR_FUNCTION = "function";
-    // public final static String CHANNEL_MONITOR_DISK_USAGE = "disk-usage";
     public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATE = "daemon-capture-state";
     public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATUSTEXT = "daemon-capture-statustext";
     public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE = "daemon-analysis-state";

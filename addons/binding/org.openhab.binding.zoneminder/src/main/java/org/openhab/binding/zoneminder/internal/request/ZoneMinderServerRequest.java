@@ -19,7 +19,7 @@ public class ZoneMinderServerRequest extends ZoneMinderServerBaseRequest {
 
     public ZoneMinderServerRequest(ZoneMinderRequestType _requestType, String id) {
         super(_requestType, ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER, id);
-        // TODO Auto-generated constructor stub
+
     }
 
 }

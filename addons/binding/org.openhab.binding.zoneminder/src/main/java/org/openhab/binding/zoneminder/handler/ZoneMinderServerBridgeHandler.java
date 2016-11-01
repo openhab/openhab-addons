@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -421,21 +421,20 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
             updateStatus(newStatus);
         }
 
-        /*
-         * // Ask all things to update their Availability Status
-         * for (Thing thing : getThing().getThings()) {
-         * ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
-         * if (thingHandler instanceof ZoneMinderThingMonitorHandler) {
-         * try {
-         * thingHandler.updateAvaliabilityStatus();
-         * } catch (Exception ex) {
-         * logger.debug("Failed to call 'updateAvailabilityStatus()' for '{}'",
-         * thingHandler.getThing().getUID());
-         * }
-         * }
-         *
-         * }
-         */
+        // Ask child things to update their Availability Status
+        for (Thing thing : getThing().getThings()) {
+            ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
+            if (thingHandler instanceof ZoneMinderThingMonitorHandler) {
+                try {
+                    thingHandler.updateAvaliabilityStatus();
+                } catch (Exception ex) {
+                    logger.debug("Failed to call 'updateAvailabilityStatus()' for '{}'",
+                            thingHandler.getThing().getUID());
+                }
+            }
+
+        }
+
     }
 
     protected Boolean isConfigValid() {
@@ -466,63 +465,6 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
 
     protected Boolean isZoneMinderApiEnabled() {
 
-        /*
-         * JSON Return upon Error
-         * {
-         * "success": false,
-         * "data": {
-         * "name": "API Disabled",
-         * "message": "API Disabled",
-         * "url": "\/zm\/api\/configs\/view\/ZM_OPT_USE_API.json",
-         * "exception": {
-         * "class": "UnauthorizedException",
-         * "code": 401,
-         * "message": "API Disabled",
-         * "trace": [
-         * "#0 [internal function]: AppController->beforeFilter(Object(CakeEvent))",
-         * "#1 \/usr\/share\/zoneminder\/www\/api\/lib\/Cake\/Event\/CakeEventManager.php(243): call_user_func(Array, Object(CakeEvent))"
-         * ,
-         * "#2 \/usr\/share\/zoneminder\/www\/api\/lib\/Cake\/Controller\/Controller.php(677): CakeEventManager->dispatch(Object(CakeEvent))"
-         * ,
-         * "#3 \/usr\/share\/zoneminder\/www\/api\/lib\/Cake\/Routing\/Dispatcher.php(189): Controller->startupProcess()"
-         * ,
-         * "#4 \/usr\/share\/zoneminder\/www\/api\/lib\/Cake\/Routing\/Dispatcher.php(167): Dispatcher->_invoke(Object(ConfigsController), Object(CakeRequest))"
-         * ,
-         * "#5 \/usr\/share\/zoneminder\/www\/api\/app\/webroot\/index.php(108): Dispatcher->dispatch(Object(CakeRequest), Object(CakeResponse))"
-         * ,
-         * "#6 {main}"
-         * ]
-         * },
-         * "queryLog": {
-         * "default": {
-         * "log": [
-         * {
-         * "query":
-         * "SELECT `Config`.`Id`, `Config`.`Name`, `Config`.`Value`, `Config`.`Type`, `Config`.`DefaultValue`, `Config`.`Hint`, `Config`.`Pattern`, `Config`.`Format`, `Config`.`Prompt`, `Config`.`Help`, `Config`.`Category`, `Config`.`Readonly`, `Config`.`Requires` FROM `zm`.`Config` AS `Config`   WHERE `Config`.`Name` = 'ZM_OPT_USE_API'    LIMIT 1"
-         * ,
-         * "params": [],
-         * "affected": 1,
-         * "numRows": 1,
-         * "took": 0
-         * },
-         * {
-         * "query":
-         * "SELECT `Config`.`Id`, `Config`.`Name`, `Config`.`Value`, `Config`.`Type`, `Config`.`DefaultValue`, `Config`.`Hint`, `Config`.`Pattern`, `Config`.`Format`, `Config`.`Prompt`, `Config`.`Help`, `Config`.`Category`, `Config`.`Readonly`, `Config`.`Requires` FROM `zm`.`Config` AS `Config`   WHERE `Config`.`Name` = 'ZM_OPT_USE_API'    LIMIT 1"
-         * ,
-         * "params": [],
-         * "affected": 1,
-         * "numRows": 1,
-         * "took": 0
-         * }
-         * ],
-         * "count": 2,
-         * "time": 0
-         * }
-         * }
-         * }
-         * }
-         */
-        // TODO:: FIXME ConfigData cfg = zoneMinderServerProxy.getConfig(ConfigEnum.ZM_OPT_USE_API);
         return true;
     }
 
@@ -804,18 +746,6 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
     }
 
     @Override
-    public Boolean isOnline() {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    @Override
-    public Boolean isRunning() {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    @Override
     public void onBridgeConnected(ZoneMinderBaseBridgeHandler bridge) {
 
         if (taskHighPriorityRefresh == null) {
@@ -832,13 +762,7 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
 
     @Override
     public void onBridgeDisconnected(ZoneMinderBaseBridgeHandler bridge) {
-        // TODO:: FIXME zoneMinderServerProxy.close();
-        /*
-         * if (taskHighPriorityRefresh != null) {
-         * stopTask(taskHighPriorityRefresh);
-         * taskHighPriorityRefresh = null;
-         * }
-         */
+
         if (taskLowPriorityRefresh != null) {
             stopTask(taskLowPriorityRefresh);
             taskLowPriorityRefresh = null;

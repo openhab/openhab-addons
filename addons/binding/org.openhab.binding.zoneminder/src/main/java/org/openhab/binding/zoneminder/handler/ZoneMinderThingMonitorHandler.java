@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zoneminder.handler;
 
+import java.math.BigDecimal;
 import java.util.EventObject;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -61,6 +62,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     private ZoneMinderThingMonitorConfig config;
 
+    private Boolean _running = false;
+
     public ZoneMinderThingMonitorHandler(Thing thing) {
         super(thing);
 
@@ -96,8 +99,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
                         String eventText = getConfigValueAsString(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT);
                         // TODO: Fix This
-                        // BigDecimal eventTimeout = getConfigValueAsBigDecimal(
-                        // ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
+                        BigDecimal eventTimeout1 = getConfigValueAsBigDecimal(
+                                ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
 
                         Integer eventTimeout = 60;
 
@@ -124,11 +127,13 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     break;
 
                 case ZoneMinderConstants.CHANNEL_MONITOR_ENABLED:
-                    // getZoneMinderBridgeHandler().sendZoneMinderRequest(ZoneMinderRequestType.MONITOR_TRIGGER,
-                    logger.debug(
-                            "'handleCommand' => CHANNEL_MONITOR_ENABLED: Command '{}' received for monitor enabled: {}",
-                            command, channelUID.getId());
-
+                    if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
+                        logger.debug(
+                                "'handleCommand' => CHANNEL_MONITOR_ENABLED: Command '{}' received for monitor enabled: {}",
+                                command, channelUID.getId());
+                        ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
+                        // bridge.setMonitorEnabled((command == OnOffType.ON) ? true : false);
+                    }
                     break;
 
                 case ZoneMinderConstants.CHANNEL_MONITOR_FUNCTION:
@@ -166,6 +171,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
         super.initialize();
         this.config = getMonitorConfig();
+
     }
 
     @Override
@@ -191,38 +197,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 .compile("[0-9]{2}/[0-9]{2}/[0-9]{2}\\s+([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]");
 
         Matcher matcher = pattern.matcher(daemonStatusText);
-        /*
-         * if (monitorStatusMatchCount > MAX_MONITOR_STATUS_WATCH_COUNT) {
-         * monitorStatusMatchCount--;
-         * }
-         *
-         * if (matcher.find()) {
-         * // logger.debug("IsAlive(): Found the text '{}' starting at index {} and ending at index {}.",
-         * // matcher.group(), matcher.start(), matcher.end());
-         *
-         * String currentMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
-         * if (lastMonitorStatus.equals(currentMonitorStatus)) {
-         * monitorStatusMatchCount++;
-         * } else if (lastMonitorStatus.equals(MONITOR_STATUS_NOT_INIT)) {
-         * // We have just started, so we will assume that the monitor is running (don't set match count
-         * // to Zero
-         * monitorStatusMatchCount++;
-         * lastMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
-         * } else {
-         * monitorStatusMatchCount = 0;
-         * lastMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
-         * }
-         * }
-         *
-         * else {
-         * monitorStatusMatchCount = 0;
-         * lastMonitorStatus = "";
-         * logger.debug("IsAlive(): No match found in status text.");
-         * }
-         * isAlive = (daemonStatus && (monitorStatusMatchCount > MAX_MONITOR_STATUS_WATCH_COUNT));
-         *
-         * return isAlive;
-         */
+
         if (matcher.find()) {
 
             String currentMonitorStatus = daemonStatusText.substring(matcher.start(), matcher.end());
@@ -286,51 +261,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 return;
 
             }
-            // 4. Is Daemons running?
-            // a. Capture daemon must ALWAYS run
-            // b. Analysis daemon must run when function is NOT None
-            // c. Frame daemon must run when function is NOT None, AND option OPT_FRAME_SERVER=true
-            // None -> C=0 A=0 F=0
-            // Monitor -> C=1 A=0 F=0 (Både Enabled=1 og =0)
-            // Modect -> C=1 A=1 F=1
-            // Record -> C=1 A=1 F=1
-            // Mocord -> C=1 A=1 F=1
-            // Nodect -> C=1 A=1 F=1
-            /*
-             * //TODO:: FIXME
-             * if (!isDaemonRunning(zoneMinderMonitorData.getCaptureDaemonRunningState(),
-             * zoneMinderMonitorData.getCaptureDaemonStatusText())) {
-             *
-             * updateStatus(ThingStatus.OFFLINE);
-             * logger.error("Capture Daemon for monitor '{}' is not running on ZoneMinder Server",
-             * getZoneMinderId());
-             * return;
-             * }
-             *
-             * if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
-             * zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
-             * if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
-             * updateStatus(ThingStatus.OFFLINE);
-             * logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
-             * getZoneMinderId());
-             * return;
-             * }
-             * }
-             */
-
-            // TODO::: Check FrameDaemon as well -> requires access to server config.
-            /*
-             * TODO:: THIS IS OLD STUFF
-             * if (!isDaemonRunning(zoneMinderMonitorData.getAnalysisDaemonRunningState(),
-             * zoneMinderMonitorData.getAnalysisDaemonStatusText())) {
-             * if (!zoneMinderMonitorData.getFunction().equalsIgnoreCase("None")) {
-             * updateStatus(ThingStatus.OFFLINE);
-             * logger.error("Analysis Daemon for monitor '{}' is not running on ZoneMinder Server",
-             * getZoneMinderId());
-             * return;
-             * }
-             * }
-             */
 
             isAlive = true;
             newThingStatus = isAlive ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
@@ -491,11 +421,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         return state;
     }
 
-    protected State getDiskUsageState() {
-        // TODO:: Fetch and update Disk Usage
-        return null; // new DecimalType(0.0); // getMonitorData().getName());
-    }
-
     protected State getEnabledState() {
         State state = OnOffType.OFF;
 
@@ -562,7 +487,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         }
 
         return state;
-        // return (getMonitorData().getAnalysisDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
     }
 
     protected State getAnalysisDaemonStatusTextState() {
@@ -581,7 +505,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         }
 
         return state;
-        // return new StringType(getMonitorData().getAnalysisDaemonStatusText());
     }
 
     protected State getFrameDaemonRunningState() {
@@ -600,7 +523,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         }
 
         return state;
-        // return (getMonitorData().getFrameDaemonRunningState() ? OnOffType.ON : OnOffType.OFF);
     }
 
     protected State getFrameDaemonStatusTextState() {
@@ -618,19 +540,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         }
 
         return state;
-        // return new StringType(getMonitorData().getFrameDaemonStatusText());
-    }
-
-    @Override
-    public Boolean isOnline() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Boolean isRunning() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }
