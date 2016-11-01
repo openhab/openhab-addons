@@ -1,18 +1,4 @@
-## openHAB 2 Add-ons
+## Zoneminder Binding
 
-This repository contains add-ons that are implemenented using the new [Eclipse SmartHome APIs](https://www.eclipse.org/smarthome/documentation/development/bindings/how-to.html) of openHAB 2.
+This binding offers integration to a ZoneMinder Server. It currently only offers to integrate to monitors (eg. cameras in ZoneMinder). It also only offers access to a limited set of values, as well as a even more limited option to update values in ZoneMinder. It requires at least ZoneMinder 1.29 with API enabled (option 'OPT_USE_API' in ZoneMinder must be enabled). The option 'OPT_TRIGGERS' must be anabled to allow OpenHAB to trip the ForceAlarm in ZoneMinder.
 
-Note that all information about openHAB itself, the IDE setup and the contribution processes can be found in the [openhab-distro](https://github.com/openhab/openhab-distro) project, so please go there for any further details!
-
-## Add-ons in other repositories
-Some add-ons (e.g. specific bindings such as [Z-Wave](https://github.com/openhab/org.openhab.binding.zwave)) are maintained in separate repositories in order to improve their management. In order to contribute to these bindings, you should follow the following steps -:
-
-1. Fork the repository on Github
-2. Clone your repository to your local computer as described in the [Github tutorial](https://help.github.com/articles/cloning-a-repository/)
-3. Open the openHAB Eclipse IDE
-4. Select the *File | Import* menu option
-5. Select *General | Existing Projects into Workspace* and click Next
-6. Select the root directory where you made the local clone of the repository
-7. Select the project and click *Next*
-8. The project will now be imported and available in the Package Explorer
-9. You may want to add the project to the *OH2 Add-ons* Working Set
