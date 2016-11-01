@@ -54,6 +54,7 @@
         <ohcp2.version>2.0.0.x</ohcp2.version>
         <ohdr.version>1.0.6</ohdr.version>
         <karaf.version>4.0.4</karaf.version>
+        <jackson.version>1.9.13</jackson.version>
         <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
