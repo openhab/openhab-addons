@@ -17,7 +17,7 @@ The binding currently supports the "classic" Chromecast that is an HDMI dongle a
 
 ## Discovery
 
-Chromecast devices are discovered on the network using mDNS (Bonjour).
+Chromecast devices are discovered on the network using UPnP.
 No authentication is required for accessing the devices on the network.
 
 ## Thing Configuration
