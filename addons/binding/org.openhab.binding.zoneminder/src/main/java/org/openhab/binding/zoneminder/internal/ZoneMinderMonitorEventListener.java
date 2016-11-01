@@ -17,6 +17,4 @@ import name.eskildsen.zoneminder.api.ZoneMinderData;
 public interface ZoneMinderMonitorEventListener {
 
     void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId, List<ZoneMinderData> arrData);
-
-    // TODO:: FIXME void notifyZoneMinderEvent(ZoneMinderEvent event);
 }

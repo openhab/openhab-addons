@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -47,7 +47,9 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         @Override
         public void run() {
             try {
+
                 updateAvaliabilityStatus();
+
             } catch (Exception exception) {
                 logger.error("Server WatchDog::run(): Exception: ", exception);
             }
@@ -72,27 +74,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         stopTask(taskWatchDog);
         taskWatchDog = null;
     }
-    /**
-     * Register the Discovery Service.
-     *
-     * @param discoveryService
-     */
-    // public void registerDiscoveryService(DSCAlarmDiscoveryService discoveryService) {
-    // if (discoveryService == null) {
-    // throw new IllegalArgumentException("registerDiscoveryService(): Illegal Argument. Not allowed to be Null!");
-    // } else {
-    // this.zoneMinderDiscoveryService = discoveryService;
-    // logger.trace("registerDiscoveryService(): Discovery Service Registered!");
-    // }
-    // }
-
-    /**
-     * Unregister the Discovery Service.
-     */
-    // public void unregisterDiscoveryService() {
-    // zoneMinderDiscoveryService = null;
-    // logger.trace("unregisterDiscoveryService(): Discovery Service Unregistered!");
-    // }
 
     /**
      *
@@ -100,7 +81,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     public ZoneMinderBaseThingHandler getZoneMinderThingHandlerFromZoneMinderId(ThingTypeUID thingTypeUID,
             String zoneMinderId) {
 
-        // BaseThingHandler myThing = thingRegistry.get(thingTypeUID.);
         // Inform thing handlers of connection
         List<Thing> things = getThing().getThings();
 
@@ -126,7 +106,7 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
 
         switch (channel.getId()) {
             case ZoneMinderConstants.CHANNEL_IS_ALIVE:
-                updateState(channel, (isRunning() ? OnOffType.ON : OnOffType.OFF));
+                updateState(channel, (isAlive() ? OnOffType.ON : OnOffType.OFF));
                 break;
             default:
                 logger.error(
@@ -163,8 +143,12 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     /**
      * Returns connection status.
      */
-    public synchronized boolean isConnected() {
+    public synchronized Boolean isConnected() {
         return connected;
+    }
+
+    public Boolean isAlive() {
+        return isAlive;
     }
 
     /**
@@ -286,25 +270,6 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
     }
 
     /**
-     * Handles an incoming message from ZoneMinder Server.
-     *
-     * @param incomingMessage
-     */
-    public synchronized void handleIncomingTelnetMessage(String incomingMessage) {
-        if (incomingMessage != null && incomingMessage != "") {
-            // TODO:: Fixme ZoneMinderTelnetEvent message = new ZoneMinderTelnetEvent(incomingMessage);
-            // TODO:: Fixme logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage,
-            // TODO:: Fixme message.toCommandString());
-
-            // TODO:: Fixme ZoneMinderEvent event = new
-            // ZoneMinderEvent(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR,
-            // TODO:: Fixme message);
-            // TODO:: Fixme notifyZoneMinderEvent(event);
-
-        }
-    }
-
-    /**
      * A bridge could eventually also have channels -> so we think of the bridge as a thing.
      */
     protected abstract void refreshThing();
@@ -343,41 +308,4 @@ public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    // TODO:: Fixme @Override
-    // TODO:: Fixme public void notifyZoneMinderEvent(ZoneMinderEvent event) {
-
-    // TODO:: Fixme ZoneMinderBaseThingHandler thing =
-    // getZoneMinderThingHandlerFromZoneMinderId(event.getThingTypeUID(),
-    // TODO:: Fixme event.getZoneMinderId());
-
-    // If thing not found, then it is not to this thing that it belongs :-)
-    // TODO:: Fixme if (thing != null) {
-    // TODO:: Fixme thing.notifyZoneMinderEvent(event);
-    // TODO:: Fixme }
-    // TODO:: Fixme }
-
-    // TODO:: Fixme public abstract boolean sendZoneMinderHttpRequest(ZoneMinderHttpRequest requestType);
-
-    // TODO:: Fixme public boolean sendZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
-    // ZoneMinderOutgoingRequest request) {
-    // TODO:: Fixme switch (requestType) {
-    // TODO:: Fixme default:
-    // TODO:: Fixme return onHandleZoneMinderTelnetRequest(requestType, request);
-    // TODO:: Fixme }
-    // TODO:: Fixme }
-
-    /*
-     * @Override
-     * public void updateStatus(ThingStatus status) {
-     * super.updateStatus(status);
-     * updateState(ZoneMinderConstants.CHANNEL_IS_ALIVE,
-     * ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
-     *
-     * }
-     */
-    /*
-     * //TODO:: Fixme
-     * protected abstract boolean onHandleZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
-     * ZoneMinderOutgoingRequest request);
-     */
 }
