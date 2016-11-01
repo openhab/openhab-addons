@@ -10,7 +10,6 @@ Bundle-ClassPath: .,
  lib/shk-library-chromecast-api-1.11-SNAPSHOT.jar
 Import-Package: 
  com.fasterxml.jackson.annotation,
- javax.jmdns,
  org.apache.commons.lang,
  org.codehaus.jackson,
  org.codehaus.jackson.annotate,
