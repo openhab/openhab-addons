@@ -14,12 +14,16 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 
 The Homematic IP Access Point does not support this API and can't be used with this binding. But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15.
 
-These ports are used by the binding by default:  
-RF components: 2001  
-WIRED components: 2000  
-HMIP components: 2010  
-CUxD: 8701  
-TclRegaScript: 8181  
+These ports are used by the binding by default to communicate **TO** the gateway:  
+- RF components: 2001
+- WIRED components: 2000
+- HMIP components: 2010 
+- CUxD: 8701
+- TclRegaScript: 8181
+
+And **FROM** the gateway to openHab:
+- XML-RPC: 9125
+- BIN-RPC: 9126
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
 
@@ -58,8 +62,14 @@ Hint for the binding to identify the gateway type (auto|ccu) (default = auto)
 - **callbackHost**  
 Callback network address of the openHAB server, default is auto-discovery
 
-- **callbackPort**  
+- **callbackPort DEPRECATED, use binCallbackPort and xmlCallbackPort**  
 Callback port of the openHAB server, default is 9125 and counts up for each additional bridge
+
+- **xmlCallbackPort**  
+Callback port of the XML-RPC openHAB server, default is 9125 and counts up for each additional bridge
+
+- **binCallbackPort**  
+Callback port of the BIN-RPC openHAB server, default is 9126 and counts up for each additional bridge
 
 - **aliveInterval**  
 The interval in seconds to check if the communication with the Homematic gateway is still alive. If no message receives from the Homematic gateway, the RPC server restarts (default = 300)
