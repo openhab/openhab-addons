@@ -22,9 +22,9 @@ API Version    | Text      | Version of API
 Is Alive       | Switch    | Parameter indicationg if the monitor IsAlive
 Enabled        | Switch    | Parameter indicationg if the monitor is enabled
 Name           | Text      | Name of Monitor
-SourceType     | Text      | As stated in ZoneMinder (Local, remote, File, Ffmpeg, Libvlc, cUrl)
+SourceType     | Text      | As stated in ZoneMinder (Local, Remote, File, Ffmpeg, Libvlc, cUrl)
 Trigger        | Switch    | 
-Function       | Text      | Version of ZoneMinder
+Function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
 ZMC Daemon State    | Switch      | Run state of ZMC Daemon 
 ZMA Daemon State    | Switch      | Run state of ZMA Daemon 
 ZMF Daemon State    | Switch      | Run state of ZMF Daemon 
