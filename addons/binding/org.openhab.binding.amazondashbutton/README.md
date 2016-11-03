@@ -1,6 +1,6 @@
 # Amazon Dash Button Binding
 
-The Amazon Dash Button is a very cheap device in order to integrate it in your home automation setup. In openHAB it can be used as a simple switch.
+The Amazon Dash Button is a very cheap device in order to integrate it in your home automation setup.
 
 ## Prerequisites
 
@@ -75,4 +75,15 @@ Background discovery is supported. Just press the button in order to put it into
 
 ## Channels
 
-* Press: Channel for recognizing presses on the Amazon Dash Button
+* Press: Trigger channel for recognizing presses on the Amazon Dash Button. You do not have to link this channel to an item. Just reference the channel in your .rules-file like documented in the 'Example usage' section.
+
+## Example usage
+
+```
+rule "Dash button pressed"
+    when
+        Channel "amazondashbutton:dashbutton:ac-63-be-xx-xx-xx:press" triggered
+    then
+        println("The Dash button has been pressed")
+end
+```
