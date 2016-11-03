@@ -49,9 +49,10 @@ public class ArpRequestTracker {
      * Calls {@link #startCapturing(ArpRequestHandler, String)} with a null MAC address.
      *
      * @param arpRequestHandler The handler to be called every time an ARP Packet is detected
+     * @return Returns true, if the capturing has been started successfully, otherwise returns false
      */
-    public void startCapturing(final ArpRequestHandler arpRequestHandler) {
-        startCapturing(arpRequestHandler, null);
+    public boolean startCapturing(final ArpRequestHandler arpRequestHandler) {
+        return startCapturing(arpRequestHandler, null);
     }
 
     /**
@@ -64,8 +65,11 @@ public class ArpRequestTracker {
      * @param arpRequestHandler The handler to be called every time an ARP Packet is detected
      * @param macAddress The source MAC address of the ARP Request, might be null in order to deactivate this filter
      *            criteria
+     * @return Returns true, if the capturing has been started successfully, otherwise returns false
+     * @throws IllegalStateException Thrown if {@link PcapHandle#isOpen()} of {@link #pcapHandle} returns true
      */
-    public void startCapturing(final ArpRequestHandler arpRequestHandler, final String macAddress) {
+
+    public boolean startCapturing(final ArpRequestHandler arpRequestHandler, final String macAddress) {
         if (pcapHandle != null) {
             if (pcapHandle.isOpen()) {
                 throw new IllegalStateException("There is an open pcap handle.");
@@ -81,7 +85,8 @@ public class ArpRequestTracker {
             }
             pcapHandle.setFilter(filterBuilder.toString(), BpfCompileMode.OPTIMIZE);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error("Capturing packets on device " + pcapNetworkInterface.getName() + " failed.", e);
+            return false;
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(new Callable<Void>() {
@@ -116,6 +121,7 @@ public class ArpRequestTracker {
             logger.debug("Started capturing ARP requests for network device {} and MAC address {}.",
                     pcapNetworkInterface.getName(), macAddress);
         }
+        return true;
     }
 
     /**
