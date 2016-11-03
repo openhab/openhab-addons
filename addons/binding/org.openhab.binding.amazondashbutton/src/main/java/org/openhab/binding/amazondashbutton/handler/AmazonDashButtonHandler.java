@@ -19,9 +19,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
 import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
 import org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfig;
-import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapUtil;
 import org.pcap4j.packet.ArpPacket;
 import org.slf4j.Logger;
@@ -58,8 +58,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
         String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
         String macAddress = dashButtonConfig.macAddress;
         final Integer packetInterval = dashButtonConfig.packetInterval;
-        PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
-                .getNetworkInterfaceByName(pcapNetworkInterfaceName);
+        PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil.getNetworkInterfaceByName(pcapNetworkInterfaceName);
         if (pcapNetworkInterface == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
@@ -67,7 +66,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
         }
 
         arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
-        arpRequestListener.startCapturing(new ArpRequestHandler() {
+        boolean capturingStarted = arpRequestListener.startCapturing(new ArpRequestHandler() {
 
             @Override
             public void handleArpRequest(ArpPacket arpPacket) {
@@ -79,7 +78,12 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
                 }
             }
         }, macAddress);
-        updateStatus(ThingStatus.ONLINE);
+        if (capturingStarted) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
+        }
     }
 
     @Override
