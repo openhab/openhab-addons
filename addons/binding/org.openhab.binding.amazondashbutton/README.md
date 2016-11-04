@@ -41,8 +41,16 @@ Or, if on Linux, you can run Pcap4J with a non-root user by granting capabilitie
 to your java command by the following command: 
 
 ```
-setcap cap_net_raw,cap_net_admin=eip /path/to/java
+sudo setcap cap_net_raw,cap_net_admin=eip `realpath /usr/bin/java`
 ```
+
+Be aware of other capabilities which are set by setcap. **These capabilities will be overwritten!**
+
+If you need more capabilities (like cap_net_bind_service), you have to add them like this :
+```
+sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' `realpath /usr/bin/java`
+```
+
 
 Source: [https://www.pcap4j.org/](https://www.pcap4j.org/)
 
