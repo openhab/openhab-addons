@@ -1,6 +1,6 @@
 # Amazon Dash Button Binding
 
-The Amazon Dash Button is a very cheap device in order to integrate it in your home automation setup. In openHAB it can be used as a simple switch.
+The Amazon Dash Button is a very cheap device in order to integrate it in your home automation setup.
 
 ## Prerequisites
 
@@ -41,8 +41,16 @@ Or, if on Linux, you can run Pcap4J with a non-root user by granting capabilitie
 to your java command by the following command: 
 
 ```
-setcap cap_net_raw,cap_net_admin=eip /path/to/java
+sudo setcap cap_net_raw,cap_net_admin=eip `realpath /usr/bin/java`
 ```
+
+Be aware of other capabilities which are set by setcap. **These capabilities will be overwritten!**
+
+If you need more capabilities (like cap_net_bind_service), you have to add them like this :
+```
+sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' `realpath /usr/bin/java`
+```
+
 
 Source: [https://www.pcap4j.org/](https://www.pcap4j.org/)
 
@@ -75,4 +83,15 @@ Background discovery is supported. Just press the button in order to put it into
 
 ## Channels
 
-* Press: Channel for recognizing presses on the Amazon Dash Button
+* Press: Trigger channel for recognizing presses on the Amazon Dash Button. You do not have to link this channel to an item. Just reference the channel in your .rules-file like documented in the 'Example usage' section.
+
+## Example usage
+
+```
+rule "Dash button pressed"
+    when
+        Channel "amazondashbutton:dashbutton:ac-63-be-xx-xx-xx:press" triggered
+    then
+        println("The Dash button has been pressed")
+end
+```
