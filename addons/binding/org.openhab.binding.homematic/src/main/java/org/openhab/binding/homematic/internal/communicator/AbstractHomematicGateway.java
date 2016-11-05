@@ -194,6 +194,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (RpcClient rpcClient : rpcClients.values()) {
             rpcClient.dispose();
         }
+        rpcClients.clear();
     }
 
     /**
@@ -228,6 +229,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (TransferMode mode : rpcServers.keySet()) {
             rpcServers.get(mode).shutdown();
         }
+        rpcServers.clear();
     }
 
     /**
