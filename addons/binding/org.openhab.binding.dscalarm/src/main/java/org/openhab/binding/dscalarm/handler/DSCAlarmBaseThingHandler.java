@@ -33,320 +33,330 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(DSCAlarmBaseThingHandler.class);
+	private Logger logger = LoggerFactory.getLogger(DSCAlarmBaseThingHandler.class);
 
-    /** Bridge Handler for the Thing. */
-    public DSCAlarmBaseBridgeHandler dscAlarmBridgeHandler = null;
+	/** Bridge Handler for the Thing. */
+	public DSCAlarmBaseBridgeHandler dscAlarmBridgeHandler = null;
 
-    /** DSC Alarm Thing type. */
-    private DSCAlarmThingType dscAlarmThingType = null;
+	/** DSC Alarm Thing type. */
+	private DSCAlarmThingType dscAlarmThingType = null;
 
-    /** DSC Alarm Properties. */
+	/** DSC Alarm Properties. */
 
-    private boolean thingRefreshed = false;
+	private boolean thingHandlerInitialized = false;
 
-    /** User Code for some DSC Alarm commands. */
-    private String userCode = null;
+	/** User Code for some DSC Alarm commands. */
+	private String userCode = null;
 
-    /** Suppress Acknowledge messages when received. */
-    private boolean suppressAcknowledgementMsgs = false;
+	/** Suppress Acknowledge messages when received. */
+	private boolean suppressAcknowledgementMsgs = false;
 
-    /** Partition Number. */
-    private int partitionNumber;
+	/** Partition Number. */
+	private int partitionNumber;
 
-    /** Zone Number. */
-    private int zoneNumber;
+	/** Zone Number. */
+	private int zoneNumber;
 
-    /**
-     * Constructor.
-     *
-     * @param thing
-     */
-    public DSCAlarmBaseThingHandler(Thing thing) {
-        super(thing);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param thing
+	 */
+	public DSCAlarmBaseThingHandler(Thing thing) {
+		super(thing);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void initialize() {
-        logger.debug("Initializing DSC Alarm Thing handler - Thing Type: {}; Thing ID: {}.", dscAlarmThingType, this.getThing().getUID());
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void initialize() {
+		logger.debug("Initializing DSC Alarm Thing handler - Thing Type: {}; Thing ID: {}.", dscAlarmThingType, this.getThing().getUID());
 
-        getConfiguration(dscAlarmThingType);
-    }
+		getConfiguration(dscAlarmThingType);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dispose() {
-        logger.debug("Thing {} disposed.", getThing().getUID());
+		// set the Thing offline for now
+		updateStatus(ThingStatus.OFFLINE);
+	}
 
-        this.setThingRefreshed(false);
-        super.dispose();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void dispose() {
+		logger.debug("Thing {} disposed.", getThing().getUID());
 
-    /**
-     * Method to Refresh Thing Handler.
-     */
-    public void refreshThing() {
+		this.setThingHandlerInitialized(false);
 
-        if (getDSCAlarmBridgeHandler() != null) {
+		super.dispose();
+	}
 
-            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+	/**
+	 * Method to Initialize Thing Handler.
+	 */
+	public void initializeThingHandler() {
 
-                Thing thing = getThing();
-                List<Channel> channels = thing.getChannels();
-                logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
+		if (getDSCAlarmBridgeHandler() != null) {
 
-                for (Channel channel : channels) {
-                    updateChannel(channel.getUID(), 0, "");
-                }
+			if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
 
-                if (dscAlarmThingType.equals(DSCAlarmThingType.PANEL)) {
-                    dscAlarmBridgeHandler.setUserCode(getUserCode());
-                }
+				Thing thing = getThing();
+				List<Channel> channels = thing.getChannels();
+				logger.debug("initializeThingHandler(): Initialize Thing Handler - {}", thing.getUID());
 
-                this.setThingRefreshed(true);
+				for (Channel channel : channels) {
+					if (channel.getAcceptedItemType().equals("DateTime")) {
+						updateChannel(channel.getUID(), 0, "0000010100");
+					} else {
+						updateChannel(channel.getUID(), 0, "");
+					}
+				}
 
-                logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
-            } else {
-                logger.debug("refreshThing(): Thing '{}' Unable To Be Refreshed!: Status - {}", thing.getUID(), thing.getStatus());
-            }
-        }
-    }
+				if (dscAlarmThingType.equals(DSCAlarmThingType.PANEL)) {
+					dscAlarmBridgeHandler.setUserCode(getUserCode());
+				}
 
-    /**
-     * Get the Bridge Handler for the DSC Alarm.
-     *
-     * @return dscAlarmBridgeHandler
-     */
-    public synchronized DSCAlarmBaseBridgeHandler getDSCAlarmBridgeHandler() {
+				this.setThingHandlerInitialized(true);
 
-        if (this.dscAlarmBridgeHandler == null) {
+				logger.debug("initializeThingHandler(): Thing Handler Initialized - {}", thing.getUID());
+			} else {
+				logger.debug("initializeThingHandler(): Thing '{}' Unable To Initialize Thing Handler!: Status - {}", thing.getUID(), thing.getStatus());
+			}
+		}
+	}
 
-            Bridge bridge = getBridge();
+	/**
+	 * Get the Bridge Handler for the DSC Alarm.
+	 *
+	 * @return dscAlarmBridgeHandler
+	 */
+	public synchronized DSCAlarmBaseBridgeHandler getDSCAlarmBridgeHandler() {
 
-            if (bridge == null) {
-                logger.debug("getDSCAlarmBridgeHandler(): Unable to get bridge!");
-                return null;
-            }
+		if (this.dscAlarmBridgeHandler == null) {
 
-            logger.debug("getDSCAlarmBridgeHandler(): Bridge for '{}' - '{}'", getThing().getUID(), bridge.getUID());
+			Bridge bridge = getBridge();
 
-            ThingHandler handler = bridge.getHandler();
+			if (bridge == null) {
+				logger.debug("getDSCAlarmBridgeHandler(): Unable to get bridge!");
+				return null;
+			}
 
-            if (handler instanceof DSCAlarmBaseBridgeHandler) {
-                this.dscAlarmBridgeHandler = (DSCAlarmBaseBridgeHandler) handler;
-            } else {
-                logger.debug("getDSCAlarmBridgeHandler(): Unable to get bridge handler!");
-            }
-        }
+			logger.debug("getDSCAlarmBridgeHandler(): Bridge for '{}' - '{}'", getThing().getUID(), bridge.getUID());
 
-        return this.dscAlarmBridgeHandler;
-    }
+			ThingHandler handler = bridge.getHandler();
 
-    /**
-     * Method to Update a Channel
-     *
-     * @param channel
-     * @param state
-     * @param description
-     */
-    public abstract void updateChannel(ChannelUID channel, int state, String description);
+			if (handler instanceof DSCAlarmBaseBridgeHandler) {
+				this.dscAlarmBridgeHandler = (DSCAlarmBaseBridgeHandler) handler;
+			} else {
+				logger.debug("getDSCAlarmBridgeHandler(): Unable to get bridge handler!");
+			}
+		}
 
-    /**
-     * Method to Update Device Properties.
-     *
-     * @param channelUID
-     * @param state
-     * @param description
-     */
-    // public abstract void updateProperties(ChannelUID channelUID, int state, String description);
+		return this.dscAlarmBridgeHandler;
+	}
 
-    /**
-     * Receives DSC Alarm Events from the bridge.
-     *
-     * @param event.
-     * @param thing
-     */
-    public abstract void dscAlarmEventReceived(EventObject event, Thing thing);
+	/**
+	 * Method to Update a Channel
+	 *
+	 * @param channel
+	 * @param state
+	 * @param description
+	 */
+	public abstract void updateChannel(ChannelUID channel, int state, String description);
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
+	/**
+	 * Method to Update Device Properties.
+	 *
+	 * @param channelUID
+	 * @param state
+	 * @param description
+	 */
+	// public abstract void updateProperties(ChannelUID channelUID, int state,
+	// String description);
 
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged(): '{}' - Bridge Status Changed to '{}'!", getThing().getUID(), bridgeStatusInfo);
+	/**
+	 * Receives DSC Alarm Events from the bridge.
+	 *
+	 * @param event.
+	 * @param thing
+	 */
+	public abstract void dscAlarmEventReceived(EventObject event, Thing thing);
 
-        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            updateStatus(bridgeStatusInfo.getStatus());
-            this.refreshThing();
-        } else {
-            this.setThingRefreshed(false);
-        }
-    }
+	@Override
+	public void handleCommand(ChannelUID channelUID, Command command) {
+	}
 
-    /**
-     * Get the thing configuration.
-     *
-     * @param dscAlarmDeviceType
-     */
-    private void getConfiguration(DSCAlarmThingType dscAlarmDeviceType) {
+	@Override
+	public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
 
-        switch (dscAlarmDeviceType) {
-            case PANEL:
-                DSCAlarmPanelConfiguration panelConfiguration = getConfigAs(DSCAlarmPanelConfiguration.class);
-                setUserCode(panelConfiguration.userCode);
-                setSuppressAcknowledgementMsgs(panelConfiguration.suppressAcknowledgementMsgs);
-                break;
-            case PARTITION:
-                DSCAlarmPartitionConfiguration partitionConfiguration = getConfigAs(DSCAlarmPartitionConfiguration.class);
-                setPartitionNumber(partitionConfiguration.partitionNumber.intValue());
-                break;
-            case ZONE:
-                DSCAlarmZoneConfiguration zoneConfiguration = getConfigAs(DSCAlarmZoneConfiguration.class);
-                setPartitionNumber(zoneConfiguration.partitionNumber.intValue());
-                setZoneNumber(zoneConfiguration.zoneNumber.intValue());
-                break;
-            case KEYPAD:
-            default:
-                break;
-        }
-    }
+		if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+			updateStatus(bridgeStatusInfo.getStatus());
+			this.initializeThingHandler();
+		} else {
+			this.setThingHandlerInitialized(false);
+		}
 
-    /**
-     * Get the DSC Alarm Thing type.
-     *
-     * @return dscAlarmThingType
-     */
-    public DSCAlarmThingType getDSCAlarmThingType() {
-        return dscAlarmThingType;
-    }
+		logger.debug("bridgeStatusChanged(): Bridge Status: '{}' - Thing '{}' Status: '{}'!", bridgeStatusInfo, getThing().getUID(), getThing().getStatus());
+	}
 
-    /**
-     * Set the DSC Alarm Thing type.
-     *
-     * @param dscAlarmDeviceType
-     */
-    public void setDSCAlarmThingType(DSCAlarmThingType dscAlarmDeviceType) {
-        if (dscAlarmDeviceType == null) {
-            String thingType = getThing().getThingTypeUID().toString().split(":")[1];
-            this.dscAlarmThingType = DSCAlarmThingType.getDSCAlarmThingType(thingType);
-        } else {
-            this.dscAlarmThingType = dscAlarmDeviceType;
-        }
-    }
+	/**
+	 * Get the thing configuration.
+	 *
+	 * @param dscAlarmDeviceType
+	 */
+	private void getConfiguration(DSCAlarmThingType dscAlarmDeviceType) {
 
-    /**
-     * Get suppressAcknowledgementMsgs.
-     *
-     * @return suppressAcknowledgementMsgs
-     */
-    public boolean getSuppressAcknowledgementMsgs() {
-        return suppressAcknowledgementMsgs;
-    }
+		switch (dscAlarmDeviceType) {
+		case PANEL:
+			DSCAlarmPanelConfiguration panelConfiguration = getConfigAs(DSCAlarmPanelConfiguration.class);
+			setUserCode(panelConfiguration.userCode);
+			setSuppressAcknowledgementMsgs(panelConfiguration.suppressAcknowledgementMsgs);
+			break;
+		case PARTITION:
+			DSCAlarmPartitionConfiguration partitionConfiguration = getConfigAs(DSCAlarmPartitionConfiguration.class);
+			setPartitionNumber(partitionConfiguration.partitionNumber.intValue());
+			break;
+		case ZONE:
+			DSCAlarmZoneConfiguration zoneConfiguration = getConfigAs(DSCAlarmZoneConfiguration.class);
+			setPartitionNumber(zoneConfiguration.partitionNumber.intValue());
+			setZoneNumber(zoneConfiguration.zoneNumber.intValue());
+			break;
+		case KEYPAD:
+		default:
+			break;
+		}
+	}
 
-    /**
-     * Set suppressAcknowledgementMsgs.
-     *
-     * @param suppressAckMsgs
-     */
-    public void setSuppressAcknowledgementMsgs(boolean suppressAckMsgs) {
-        this.suppressAcknowledgementMsgs = suppressAckMsgs;
-    }
+	/**
+	 * Get the DSC Alarm Thing type.
+	 *
+	 * @return dscAlarmThingType
+	 */
+	public DSCAlarmThingType getDSCAlarmThingType() {
+		return dscAlarmThingType;
+	}
 
-    /**
-     * Get Partition Number.
-     *
-     * @return partitionNumber
-     */
-    public int getPartitionNumber() {
-        return partitionNumber;
-    }
+	/**
+	 * Set the DSC Alarm Thing type.
+	 *
+	 * @param dscAlarmDeviceType
+	 */
+	public void setDSCAlarmThingType(DSCAlarmThingType dscAlarmDeviceType) {
+		if (dscAlarmDeviceType == null) {
+			String thingType = getThing().getThingTypeUID().toString().split(":")[1];
+			this.dscAlarmThingType = DSCAlarmThingType.getDSCAlarmThingType(thingType);
+		} else {
+			this.dscAlarmThingType = dscAlarmDeviceType;
+		}
+	}
 
-    /**
-     * Set Partition Number.
-     *
-     * @param partitionNumber
-     */
-    public void setPartitionNumber(int partitionNumber) {
-        this.partitionNumber = partitionNumber;
-    }
+	/**
+	 * Get suppressAcknowledgementMsgs.
+	 *
+	 * @return suppressAcknowledgementMsgs
+	 */
+	public boolean getSuppressAcknowledgementMsgs() {
+		return suppressAcknowledgementMsgs;
+	}
 
-    /**
-     * Get Zone Number.
-     *
-     * @return zoneNumber
-     */
-    public int getZoneNumber() {
-        return zoneNumber;
-    }
+	/**
+	 * Set suppressAcknowledgementMsgs.
+	 *
+	 * @param suppressAckMsgs
+	 */
+	public void setSuppressAcknowledgementMsgs(boolean suppressAckMsgs) {
+		this.suppressAcknowledgementMsgs = suppressAckMsgs;
+	}
 
-    /**
-     * Set Zone Number.
-     *
-     * @param zoneNumber
-     */
-    public void setZoneNumber(int zoneNumber) {
-        this.zoneNumber = zoneNumber;
-    }
+	/**
+	 * Get Partition Number.
+	 *
+	 * @return partitionNumber
+	 */
+	public int getPartitionNumber() {
+		return partitionNumber;
+	}
 
-    /**
-     * Get User Code.
-     *
-     * @return userCode
-     */
-    public String getUserCode() {
-        return userCode;
-    }
+	/**
+	 * Set Partition Number.
+	 *
+	 * @param partitionNumber
+	 */
+	public void setPartitionNumber(int partitionNumber) {
+		this.partitionNumber = partitionNumber;
+	}
 
-    /**
-     * Set User Code.
-     *
-     * @param userCode
-     */
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
-    }
+	/**
+	 * Get Zone Number.
+	 *
+	 * @return zoneNumber
+	 */
+	public int getZoneNumber() {
+		return zoneNumber;
+	}
 
-    /**
-     * Get Channel by ChannelUID.
-     *
-     * @param channelUID
-     */
-    public Channel getChannel(ChannelUID channelUID) {
-        Channel channel = null;
+	/**
+	 * Set Zone Number.
+	 *
+	 * @param zoneNumber
+	 */
+	public void setZoneNumber(int zoneNumber) {
+		this.zoneNumber = zoneNumber;
+	}
 
-        List<Channel> channels = getThing().getChannels();
+	/**
+	 * Get User Code.
+	 *
+	 * @return userCode
+	 */
+	public String getUserCode() {
+		return userCode;
+	}
 
-        for (Channel ch : channels) {
-            if (channelUID == ch.getUID()) {
-                channel = ch;
-                break;
-            }
-        }
+	/**
+	 * Set User Code.
+	 *
+	 * @param userCode
+	 */
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
 
-        return channel;
-    }
+	/**
+	 * Get Channel by ChannelUID.
+	 *
+	 * @param channelUID
+	 */
+	public Channel getChannel(ChannelUID channelUID) {
+		Channel channel = null;
 
-    /**
-     * Get Thing Handler refresh status.
-     *
-     * @return thingRefresh
-     */
-    public boolean isThingRefreshed() {
-        return thingRefreshed;
-    }
+		List<Channel> channels = getThing().getChannels();
 
-    /**
-     * Set Thing Handler refresh status.
-     *
-     * @param deviceInitialized
-     */
-    public void setThingRefreshed(boolean refreshed) {
-        this.thingRefreshed = refreshed;
-    }
+		for (Channel ch : channels) {
+			if (channelUID == ch.getUID()) {
+				channel = ch;
+				break;
+			}
+		}
+
+		return channel;
+	}
+
+	/**
+	 * Get Thing Handler refresh status.
+	 *
+	 * @return thingRefresh
+	 */
+	public boolean isThingHandlerInitialized() {
+		return thingHandlerInitialized;
+	}
+
+	/**
+	 * Set Thing Handler refresh status.
+	 *
+	 * @param deviceInitialized
+	 */
+	public void setThingHandlerInitialized(boolean refreshed) {
+		this.thingHandlerInitialized = refreshed;
+	}
 }
