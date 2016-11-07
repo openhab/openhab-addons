@@ -23,8 +23,14 @@ Is Alive       | Switch    | Parameter indicationg if the monitor IsAlive
 Enabled        | Switch    | Parameter indicationg if the monitor is enabled
 Name           | Text      | Name of Monitor
 SourceType     | Text      | As stated in ZoneMinder (Local, Remote, File, Ffmpeg, Libvlc, cUrl)
-Trigger        | Switch    | 
+Trigger        | Switch    | State of the ForceAlarm in ZoneMidner. This can both be read and set from OpenHAB.
 Function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
 ZMC Daemon State    | Switch      | Run state of ZMC Daemon 
 ZMA Daemon State    | Switch      | Run state of ZMA Daemon 
 ZMF Daemon State    | Switch      | Run state of ZMF Daemon 
+
+##Troubleshooting##
+Description                         | Description
+----------------------------------- | ----------------------------------
+Cannot connect to ZoneMinder Bridge | Check if you can logon to ZoneMidner from your OpenHAB server (with http). 
+                                    
