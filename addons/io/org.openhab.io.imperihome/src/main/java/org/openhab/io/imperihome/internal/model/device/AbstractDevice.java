@@ -27,11 +27,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract parent of all devices. Sets up and tears down state listeners and contains parameter and link data.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public abstract class AbstractDevice implements StateChangeListener {
 
-    protected transient final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    protected transient final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String id;
     private String name;
@@ -123,7 +124,7 @@ public abstract class AbstractDevice implements StateChangeListener {
     }
 
     public void addParam(DeviceParam param) {
-        LOGGER.trace("Setting param for device {}: {}", this, param);
+        logger.trace("Setting param for device {}: {}", this, param);
         params.set(param);
     }
 
@@ -168,28 +169,30 @@ public abstract class AbstractDevice implements StateChangeListener {
     }
 
     /**
-     * Can be implemented by Devices that require their state to be updated manually, instead of relying (only) on Item state change events.
+     * Can be implemented by Devices that require their state to be updated manually, instead of relying (only) on Item
+     * state change events.
      * This method is called just before serializing the device to JSON.
      */
     public void updateParams() {
-        LOGGER.trace("updateParams on {}", this);
+        logger.trace("updateParams on {}", this);
     }
 
     /**
      * Performs an action on this device.
+     * 
      * @param action Action name.
      * @param value Action value.
      */
     public void performAction(String action, String value) {
         Action actionInst = actionRegistry.get(action);
         if (actionInst == null) {
-            LOGGER.warn("Unknown action: {}", action);
+            logger.warn("Unknown action: {}", action);
             return;
         }
 
         Item item = getItem();
         if (!actionInst.supports(this, item)) {
-            LOGGER.warn("Action '{}' not supported on this device ({})", action, this);
+            logger.warn("Action '{}' not supported on this device ({})", action, this);
             return;
         }
 
@@ -202,7 +205,7 @@ public abstract class AbstractDevice implements StateChangeListener {
 
     @Override
     public void stateUpdated(Item item, State newState) {
-        LOGGER.debug("Device item {} state changed to {}", item, newState);
+        logger.debug("Device item {} state changed to {}", item, newState);
 
         OnOffType onOffState = (OnOffType) item.getStateAs(OnOffType.class);
         if (onOffState != null) {
@@ -214,14 +217,8 @@ public abstract class AbstractDevice implements StateChangeListener {
 
     @Override
     public String toString() {
-        return "AbstractDevice{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", room='" + room + '\'' +
-            ", type=" + type +
-            ", invert=" + inverted +
-            ", links=" + links +
-            '}';
+        return "AbstractDevice{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", room='" + room + '\'' + ", type="
+                + type + ", invert=" + inverted + ", links=" + links + '}';
     }
 
 }

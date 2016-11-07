@@ -15,6 +15,7 @@ import org.openhab.io.imperihome.internal.model.System;
 
 /**
  * System data request handler.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class SystemHandler {

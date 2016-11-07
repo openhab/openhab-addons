@@ -12,6 +12,7 @@ import java.util.Date;
 
 /**
  * History item data object.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class HistoryItem {

@@ -18,6 +18,7 @@ import org.openhab.io.imperihome.internal.processor.ItemProcessor;
 
 /**
  * Wind sensor device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class WindDevice extends AbstractNumericValueDevice {
@@ -37,13 +38,14 @@ public class WindDevice extends AbstractNumericValueDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice dirDevice = getDeviceRegistry().getDevice(deviceId);
             if (dirDevice == null) {
-                LOGGER.error("Couldn't resolve linked wind direction device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked wind direction device '{}', make sure the Item has iss tags",
+                        deviceName);
                 return;
             }
 
             NumericValueParam valueParam = (NumericValueParam) dirDevice.getParams().get(ParamType.GENERIC_VALUE);
             if (valueParam == null) {
-                LOGGER.warn("Linked Wind direction device has no Value parameter: {}", dirDevice);
+                logger.warn("Linked Wind direction device has no Value parameter: {}", dirDevice);
                 return;
             }
 

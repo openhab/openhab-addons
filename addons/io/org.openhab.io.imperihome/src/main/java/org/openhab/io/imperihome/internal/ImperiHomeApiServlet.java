@@ -47,11 +47,14 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Main OSGi service and HTTP servlet for ImperiHome integration.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class ImperiHomeApiServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImperiHomeApiServlet.class);
+    private static final long serialVersionUID = -1966364789075448441L;
+
+    private final Logger logger = LoggerFactory.getLogger(ImperiHomeApiServlet.class);
 
     private static final String PATH = "/imperihome/iss";
 
@@ -61,8 +64,10 @@ public class ImperiHomeApiServlet extends HttpServlet {
     private static final Pattern URL_PATTERN_SYSTEM = Pattern.compile(PATH + "/system$", Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN_ROOMS = Pattern.compile(PATH + "/rooms$", Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN_DEVICES = Pattern.compile(PATH + "/devices$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern URL_PATTERN_DEVICE_ACTION = Pattern.compile(PATH + "/devices/(.+?)/action/(.+?)/(.*?)$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern URL_PATTERN_DEVICE_HISTORY = Pattern.compile(PATH + "/devices/(.+?)/(.+?)/histo/(.+?)/(.+?)$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN_DEVICE_ACTION = Pattern
+            .compile(PATH + "/devices/(.+?)/action/(.+?)/(.*?)$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN_DEVICE_HISTORY = Pattern
+            .compile(PATH + "/devices/(.+?)/(.+?)/histo/(.+?)/(.+?)$", Pattern.CASE_INSENSITIVE);
 
     private final Gson gson;
 
@@ -93,6 +98,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
 
     /**
      * OSGi activation callback.
+     *
      * @param config Service config.
      */
     protected void activate(Map<String, Object> config) {
@@ -108,14 +114,15 @@ public class ImperiHomeApiServlet extends HttpServlet {
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            LOGGER.info("Started ImperiHome integration service at " + PATH);
+            logger.info("Started ImperiHome integration service at " + PATH);
         } catch (Exception e) {
-            LOGGER.error("Could not start ImperiHome integration service: {}", e.getMessage(), e);
+            logger.error("Could not start ImperiHome integration service: {}", e.getMessage(), e);
         }
     }
 
     /**
      * OSGi deactivation callback.
+     *
      * @param componentContext Context.
      */
     protected void deactivate(ComponentContext componentContext) {
@@ -134,7 +141,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         deviceActionHandler = null;
         deviceHistoryHandler = null;
 
-        LOGGER.info("ImperiHome integration service stopped");
+        logger.info("ImperiHome integration service stopped");
     }
 
     protected void setItemRegistry(ItemRegistry itemRegistry) {
@@ -172,7 +179,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getRequestURI();
-        LOGGER.debug("{}: {} {}", req.getRemoteAddr(), req.getMethod(), path);
+        logger.debug("{}: {} {}", req.getRemoteAddr(), req.getMethod(), path);
         setHeaders(resp);
 
         Object response = null;
@@ -191,7 +198,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         } else if (URL_PATTERN_SYSTEM.matcher(path).matches()) {
             response = systemHandler.handle(req);
         } else {
-            LOGGER.warn("Unrecognized request: {}", path);
+            logger.warn("Unrecognized request: {}", path);
         }
 
         resp.getWriter().write(gson.toJson(response));

@@ -19,10 +19,12 @@ import com.google.gson.JsonSerializer;
 
 /**
  * Serializer for {@link ParamType}.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class ParamTypeSerializer implements JsonSerializer<ParamType> {
 
+    @Override
     public JsonElement serialize(ParamType paramType, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(paramType.getApiString());
     }

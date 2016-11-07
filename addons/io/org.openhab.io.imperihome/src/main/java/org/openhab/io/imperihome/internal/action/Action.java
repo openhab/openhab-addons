@@ -14,6 +14,7 @@ import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
 
 /**
  * Abstract action, called through the API by ImperiHome clients.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public abstract class Action {
@@ -37,6 +38,7 @@ public abstract class Action {
 
     /**
      * Perform this action on the given Item.
+     * 
      * @param device
      * @param item Item to perform action on.
      * @param value Action parameter value.

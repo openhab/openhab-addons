@@ -12,6 +12,7 @@ import java.util.Collection;
 
 /**
  * Device list holder.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceList {
@@ -28,9 +29,7 @@ public class DeviceList {
 
     @Override
     public String toString() {
-        return "DeviceList{" +
-            "devices=" + devices +
-            '}';
+        return "DeviceList{" + "devices=" + devices + '}';
     }
 
 }

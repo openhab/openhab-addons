@@ -16,6 +16,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * Hygrometry sensor device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class HygrometryDevice extends AbstractNumericValueDevice {
