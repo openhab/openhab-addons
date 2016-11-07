@@ -27,14 +27,10 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -123,30 +119,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             bridgeHandler = (SqueezeBoxServerHandler) bridge.getHandler();
         }
         return bridgeHandler;
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        if (thingHandler instanceof SqueezeBoxServerHandler) {
-            this.squeezeBoxServerHandler = (SqueezeBoxServerHandler) thingHandler;
-            updateStatus(ThingStatus.ONLINE);
-            logger.debug("bridgeHandlerInitialized: updating status of player {} to ONLINE", mac);
-        }
-    }
-
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        // Mark the player OFFLINE
-        updateStatus(ThingStatus.OFFLINE);
-        this.squeezeBoxServerHandler = null;
-        logger.debug("bridgeHandlerDisposed: updating status of player {} to OFFLINE", mac);
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        // Change player status to match the server status
-        updateStatus(bridgeStatusInfo.getStatus());
-        logger.debug("bridgeStatusChanged: updating status of player {} to {}", mac, bridgeStatusInfo.getStatus());
     }
 
     @Override
