@@ -21,6 +21,7 @@ import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
 
 /**
  * Action performed on a DevScene. Sends an {@link OnOffType#ON} or {@link DecimalType} 1 to the Item.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class LaunchSceneAction extends Action {
@@ -32,8 +33,7 @@ public class LaunchSceneAction extends Action {
     @Override
     public boolean supports(AbstractDevice device, Item item) {
         List<Class<? extends Command>> acceptedCommandTypes = item.getAcceptedCommandTypes();
-        return acceptedCommandTypes.contains(OnOffType.class) ||
-            acceptedCommandTypes.contains(DecimalType.class);
+        return acceptedCommandTypes.contains(OnOffType.class) || acceptedCommandTypes.contains(DecimalType.class);
     }
 
     @Override

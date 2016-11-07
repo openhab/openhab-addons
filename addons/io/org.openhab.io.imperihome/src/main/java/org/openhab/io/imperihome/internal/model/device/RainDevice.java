@@ -18,6 +18,7 @@ import org.openhab.io.imperihome.internal.processor.ItemProcessor;
 
 /**
  * Rain sensor device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class RainDevice extends AbstractNumericValueDevice {
@@ -37,13 +38,14 @@ public class RainDevice extends AbstractNumericValueDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice accumDevice = getDeviceRegistry().getDevice(deviceId);
             if (accumDevice == null) {
-                LOGGER.error("Couldn't resolve linked accumulation device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked accumulation device '{}', make sure the Item has iss tags",
+                        deviceName);
                 return;
             }
 
             NumericValueParam valueParam = (NumericValueParam) accumDevice.getParams().get(ParamType.GENERIC_VALUE);
             if (valueParam == null) {
-                LOGGER.warn("Linked Accumulation device has no Value parameter: {}", accumDevice);
+                logger.warn("Linked Accumulation device has no Value parameter: {}", accumDevice);
                 return;
             }
 

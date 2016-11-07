@@ -20,11 +20,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Electricity device, containing current (Watt) and total (KWh) consumption.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class ElectricityDevice extends AbstractNumericValueDevice {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElectricityDevice.class);
+    private final Logger logger = LoggerFactory.getLogger(ElectricityDevice.class);
 
     private static final String LINK_WATTS = "watt";
     private static final String LINK_KWH = "kwh";
@@ -66,7 +67,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice wattsDevice = getDeviceRegistry().getDevice(deviceId);
             if (wattsDevice == null) {
-                LOGGER.error("Couldn't resolve linked watts device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked watts device '{}', make sure the Item has iss tags", deviceName);
             } else {
                 setWattsParam(wattsDevice);
             }
@@ -77,7 +78,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice kwhDevice = getDeviceRegistry().getDevice(deviceId);
             if (kwhDevice == null) {
-                LOGGER.error("Couldn't resolve linked KWh device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked KWh device '{}', make sure the Item has iss tags", deviceName);
             } else {
                 setKwhParam(kwhDevice);
             }
@@ -87,7 +88,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
     private void setWattsParam(AbstractDevice device) {
         NumericValueParam valueParam = (NumericValueParam) device.getParams().get(ParamType.WATTS);
         if (valueParam == null) {
-            LOGGER.warn("Linked Watts device has no Watt value parameter: {}", device);
+            logger.warn("Linked Watts device has no Watt value parameter: {}", device);
             return;
         }
 
@@ -102,7 +103,7 @@ public class ElectricityDevice extends AbstractNumericValueDevice {
     private void setKwhParam(AbstractDevice device) {
         NumericValueParam valueParam = (NumericValueParam) device.getParams().get(ParamType.KWH);
         if (valueParam == null) {
-            LOGGER.warn("Linked KWh device has no KWh value parameter: {}", device);
+            logger.warn("Linked KWh device has no KWh value parameter: {}", device);
             return;
         }
 

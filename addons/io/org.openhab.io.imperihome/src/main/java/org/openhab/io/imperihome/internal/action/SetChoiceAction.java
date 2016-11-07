@@ -23,11 +23,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Action setting a choice from a selection list, e.g. MultiSwitch.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class SetChoiceAction extends Action {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetChoiceAction.class);
+    private final Logger logger = LoggerFactory.getLogger(SetChoiceAction.class);
 
     public SetChoiceAction(EventPublisher eventPublisher) {
         super(eventPublisher);
@@ -51,11 +52,12 @@ public class SetChoiceAction extends Action {
         }
 
         if (newValue == null) {
-            LOGGER.warn("Could not find selection '{}' in mapping {} of device {}", value, device.getMapping(), device);
+            logger.warn("Could not find selection '{}' in mapping {} of device {}", value, device.getMapping(), device);
             return;
         }
 
-        ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), new DecimalType(newValue), COMMAND_SOURCE);
+        ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), new DecimalType(newValue),
+                COMMAND_SOURCE);
         eventPublisher.post(event);
     }
 

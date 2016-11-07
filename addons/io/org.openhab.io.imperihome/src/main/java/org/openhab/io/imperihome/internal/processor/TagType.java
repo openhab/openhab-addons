@@ -10,15 +10,16 @@ package org.openhab.io.imperihome.internal.processor;
 
 /**
  * ISS tag types enumeration.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public enum TagType {
 
-    LABEL ("label", false),
-    ROOM ("room", false),
-    TYPE ("type", false),
-    MAPPING ("mapping", false),
-    LINK ("link", true),
+    LABEL("label", false),
+    ROOM("room", false),
+    TYPE("type", false),
+    MAPPING("mapping", false),
+    LINK("link", true),
     UNIT("unit", false),
     INVERT("invert", false);
 

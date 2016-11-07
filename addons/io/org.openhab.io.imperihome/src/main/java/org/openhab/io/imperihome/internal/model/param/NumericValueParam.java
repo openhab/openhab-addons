@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 
 /**
  * Numeric value param
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class NumericValueParam extends DeviceParam {
@@ -29,6 +30,7 @@ public class NumericValueParam extends DeviceParam {
         setValue(value == null ? 0 : value.doubleValue());
     }
 
+    @Override
     public Number getValue() {
         return (Number) super.getValue();
     }
@@ -75,11 +77,8 @@ public class NumericValueParam extends DeviceParam {
 
     @Override
     public String toString() {
-        return "NumericValueParam{" +
-            "super=" + super.toString() +
-            ", unit='" + unit + '\'' +
-            ", graphable=" + graphable +
-            '}';
+        return "NumericValueParam{" + "super=" + super.toString() + ", unit='" + unit + '\'' + ", graphable="
+                + graphable + '}';
     }
 
 }

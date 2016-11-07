@@ -16,6 +16,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * Dimmer device, containing on/off status and dim level.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DimmerDevice extends AbstractEnergyLinkDevice {

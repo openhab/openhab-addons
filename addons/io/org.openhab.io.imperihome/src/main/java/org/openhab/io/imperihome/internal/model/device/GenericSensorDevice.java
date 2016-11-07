@@ -17,6 +17,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * Generic sensor device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class GenericSensorDevice extends AbstractNumericValueDevice {

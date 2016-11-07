@@ -17,6 +17,7 @@ import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
 
 /**
  * Action setting percentage level, e.g. dimmer.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class SetLevelAction extends Action {
@@ -32,7 +33,8 @@ public class SetLevelAction extends Action {
 
     @Override
     public void perform(AbstractDevice device, Item item, String value) {
-        ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), new PercentType(value), COMMAND_SOURCE);
+        ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), new PercentType(value),
+                COMMAND_SOURCE);
         eventPublisher.post(event);
     }
 

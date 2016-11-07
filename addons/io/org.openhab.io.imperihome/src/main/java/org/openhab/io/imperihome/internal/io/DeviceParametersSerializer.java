@@ -20,11 +20,14 @@ import com.google.gson.JsonSerializer;
 
 /**
  * Serializer for {@link DeviceParameters}.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceParametersSerializer implements JsonSerializer<DeviceParameters> {
 
-    public JsonElement serialize(DeviceParameters params, Type type, JsonSerializationContext jsonSerializationContext) {
+    @Override
+    public JsonElement serialize(DeviceParameters params, Type type,
+            JsonSerializationContext jsonSerializationContext) {
         JsonArray result = new JsonArray();
         for (DeviceParam param : params.values()) {
             result.add(jsonSerializationContext.serialize(param));
