@@ -32,5 +32,6 @@ ZMF Daemon State    | Switch      | Run state of ZMF Daemon
 ##Troubleshooting##
 Description                         | Description
 ----------------------------------- | ----------------------------------
-Cannot connect to ZoneMinder Bridge | Check if you can logon to ZoneMidner from your OpenHAB server (with http). 
+Cannot connect to ZoneMinder Bridge | Check if you can logon to ZoneMinder from your OpenHAB server (with http). 
+                                      Check that it is possible to establish a Telnet connection from OpenHAB server to Zoneminder Server
                                     
