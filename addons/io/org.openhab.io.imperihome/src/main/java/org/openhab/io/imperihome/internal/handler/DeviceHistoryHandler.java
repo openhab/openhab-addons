@@ -34,11 +34,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Device history request handler.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceHistoryHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceHistoryHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceHistoryHandler.class);
 
     private static final String CHARSET = "UTF-8";
 
@@ -62,41 +63,40 @@ public class DeviceHistoryHandler {
             throw new RuntimeException("Could not decode request params", e);
         }
 
-        LOGGER.debug("History request for device {}, field {}: {}-{}", deviceId, field, start, end);
+        logger.debug("History request for device {}, field {}: {}-{}", deviceId, field, start, end);
 
         AbstractDevice device = deviceRegistry.getDevice(deviceId);
         if (device == null) {
-            LOGGER.warn("Received history request for unknown device: {}", urlMatcher.group(0));
+            logger.warn("Received history request for unknown device: {}", urlMatcher.group(0));
             return null;
         }
 
         PersistenceService persistence = persistenceServiceRegistry.getDefault();
         if (persistence == null) {
-            LOGGER.warn("Could not retrieve default persistence service; can't serve history request");
+            logger.warn("Could not retrieve default persistence service; can't serve history request");
             return null;
         }
         if (!(persistence instanceof QueryablePersistenceService)) {
-            LOGGER.warn("Default persistence service is not queryable; can't serve history request");
+            logger.warn("Default persistence service is not queryable; can't serve history request");
             return null;
         }
 
         return serveHistory(device, (QueryablePersistenceService) persistence, start, end);
     }
 
-    private HistoryList serveHistory(AbstractDevice device, QueryablePersistenceService persistence, long start, long end) {
-        LOGGER.info("Querying persistence for history of Item {}, from {} to {}", device.getItemName(), start, end);
+    private HistoryList serveHistory(AbstractDevice device, QueryablePersistenceService persistence, long start,
+            long end) {
+        logger.info("Querying persistence for history of Item {}, from {} to {}", device.getItemName(), start, end);
 
-        FilterCriteria criteria = new FilterCriteria()
-            .setItemName(device.getItemName())
-            .setBeginDate(new Date(start))
-            .setEndDate(new Date(end));
+        FilterCriteria criteria = new FilterCriteria().setItemName(device.getItemName()).setBeginDate(new Date(start))
+                .setEndDate(new Date(end));
 
         List<HistoryItem> resultItems = new LinkedList<>();
         Iterable<HistoricItem> historicItems = persistence.query(criteria);
 
         Iterator<HistoricItem> iterator = historicItems.iterator();
         if (!iterator.hasNext()) {
-            LOGGER.info("Persistence returned no results for history query");
+            logger.info("Persistence returned no results for history query");
         } else {
             while (iterator.hasNext()) {
                 HistoricItem historicItem = iterator.next();
@@ -108,7 +108,8 @@ public class DeviceHistoryHandler {
             }
 
             if (resultItems.isEmpty()) {
-                LOGGER.warn("Persistence returned results for history query, but could not be interpreted as DecimalTypes");
+                logger.warn(
+                        "Persistence returned results for history query, but could not be interpreted as DecimalTypes");
             }
         }
 

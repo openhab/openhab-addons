@@ -20,6 +20,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * RGB light device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class RgbLightDevice extends AbstractEnergyLinkDevice {
@@ -39,18 +40,18 @@ public class RgbLightDevice extends AbstractEnergyLinkDevice {
         State state = item.getStateAs(HSBType.class);
         boolean isHsbState = state instanceof HSBType;
 
-        //State can be of UndefType, even with the getStateAs above
+        // State can be of UndefType, even with the getStateAs above
         if (isHsbState) {
             HSBType hsbState = (HSBType) state;
             PercentType[] rgb = hsbState.toRGB();
 
-            //Set state to ON if any channel > 0
+            // Set state to ON if any channel > 0
             boolean isOn = rgb[0].doubleValue() > 0 || rgb[1].doubleValue() > 0 || rgb[2].doubleValue() > 0;
             if (isOn) {
                 status = true;
             }
 
-            //Build hex string
+            // Build hex string
             int r = convertPercentToByte(rgb[0]) & 0xFF;
             int g = convertPercentToByte(rgb[1]) & 0xFF;
             int b = convertPercentToByte(rgb[2]) & 0xFF;
@@ -79,7 +80,7 @@ public class RgbLightDevice extends AbstractEnergyLinkDevice {
 
     private int convertPercentToByte(PercentType percent) {
         return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
-            .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).intValue();
+                .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).intValue();
     }
 
 }

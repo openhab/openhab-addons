@@ -13,6 +13,7 @@ import org.openhab.io.imperihome.internal.model.param.NumericValueParam;
 
 /**
  * Parent of devices with a {@link NumericValueParam}. Contains the value unit.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public abstract class AbstractNumericValueDevice extends AbstractDevice {
@@ -34,10 +35,7 @@ public abstract class AbstractNumericValueDevice extends AbstractDevice {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
-            "super=" + super.toString() +
-            ", unit='" + unit + '\'' +
-            '}';
+        return getClass().getSimpleName() + "{" + "super=" + super.toString() + ", unit='" + unit + '\'' + '}';
     }
 
 }

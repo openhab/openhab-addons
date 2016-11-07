@@ -16,6 +16,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * Simple on/off switch device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class SwitchDevice extends AbstractEnergyLinkDevice {

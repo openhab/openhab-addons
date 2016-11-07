@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * History list data object.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class HistoryList {

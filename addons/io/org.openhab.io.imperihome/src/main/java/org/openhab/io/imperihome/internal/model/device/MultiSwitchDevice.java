@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 
 /**
  * MultiSwitch device, mimics behavior of a OH Switch with a mapping.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class MultiSwitchDevice extends AbstractDevice {
@@ -36,14 +37,14 @@ public class MultiSwitchDevice extends AbstractDevice {
 
         Map<String, String> mapping = getMapping();
         if (mapping == null || mapping.isEmpty()) {
-            LOGGER.error("MultiSwitch device {} contains no mapping", this);
+            logger.error("MultiSwitch device {} contains no mapping", this);
             return;
         }
 
         DeviceParam choicesParam = new DeviceParam(ParamType.CHOICES, Joiner.on(',').join(mapping.values()));
         addParam(choicesParam);
 
-        //Find current value text
+        // Find current value text
         String currentValue = "";
         if (mapping.containsKey(itemValue)) {
             currentValue = mapping.get(itemValue);

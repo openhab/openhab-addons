@@ -10,6 +10,7 @@ package org.openhab.io.imperihome.internal.model;
 
 /**
  * System data object.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class System {

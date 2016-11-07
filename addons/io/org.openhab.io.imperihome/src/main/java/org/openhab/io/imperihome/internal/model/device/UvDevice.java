@@ -16,6 +16,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * UV sensor device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class UvDevice extends AbstractNumericValueDevice {

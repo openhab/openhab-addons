@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.items.Item;
 
 /**
  * Scene activation device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class SceneDevice extends AbstractDevice {

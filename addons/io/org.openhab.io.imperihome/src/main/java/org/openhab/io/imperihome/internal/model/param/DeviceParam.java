@@ -10,6 +10,7 @@ package org.openhab.io.imperihome.internal.model.param;
 
 /**
  * Basic device key/value parameter.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceParam {
@@ -63,10 +64,7 @@ public class DeviceParam {
 
     @Override
     public String toString() {
-        return "DeviceParam{" +
-            "key=" + key +
-            ", value='" + value + '\'' +
-            '}';
+        return "DeviceParam{" + "key=" + key + ", value='" + value + '\'' + '}';
     }
 
 }

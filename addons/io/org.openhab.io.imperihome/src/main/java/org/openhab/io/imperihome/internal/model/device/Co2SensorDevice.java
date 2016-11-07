@@ -16,6 +16,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * CO2 sensor device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class Co2SensorDevice extends AbstractNumericValueDevice {

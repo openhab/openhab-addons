@@ -22,6 +22,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * Abstraction of devices that are trippable, i.e. DevDoor, DevFlood, DevMotion, DevSmoke, DevCO2Alert.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class TrippableDevice extends AbstractDevice {
@@ -54,7 +55,7 @@ public class TrippableDevice extends AbstractDevice {
             StringType state = (StringType) item.getStateAs(StringType.class);
             tripped = StringUtils.isNotBlank(state.toString()) && !state.toString().trim().equals("ok");
         } else {
-            LOGGER.warn("Can't interpret state {} as tripped status", item.getState());
+            logger.warn("Can't interpret state {} as tripped status", item.getState());
         }
 
         addParam(new DeviceParam(ParamType.TRIPPED, tripped ^ isInverted() ? "1" : "0"));

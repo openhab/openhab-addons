@@ -10,6 +10,7 @@ package org.openhab.io.imperihome.internal.model;
 
 /**
  * Room data object.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class Room {
@@ -35,8 +36,12 @@ public class Room {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Room)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Room)) {
+            return false;
+        }
 
         Room room = (Room) o;
 
@@ -51,10 +56,7 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            '}';
+        return "Room{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
     }
 
 }
