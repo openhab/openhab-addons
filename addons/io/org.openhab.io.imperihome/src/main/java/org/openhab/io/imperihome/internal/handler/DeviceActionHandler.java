@@ -21,11 +21,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Device action request handler.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceActionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceActionHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceActionHandler.class);
 
     private static final String CHARSET = "UTF-8";
 
@@ -45,11 +46,11 @@ public class DeviceActionHandler {
             throw new RuntimeException("Could not decode request params", e);
         }
 
-        LOGGER.debug("Action request for device {}: [{}] [{}]", deviceId, action, value);
+        logger.debug("Action request for device {}: [{}] [{}]", deviceId, action, value);
 
         AbstractDevice device = deviceRegistry.getDevice(deviceId);
         if (device == null) {
-            LOGGER.warn("Received action request for unknown device: {}", urlMatcher.group(0));
+            logger.warn("Received action request for unknown device: {}", urlMatcher.group(0));
         } else {
             device.performAction(action, value);
         }

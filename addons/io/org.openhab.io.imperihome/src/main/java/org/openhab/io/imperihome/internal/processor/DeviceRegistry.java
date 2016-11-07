@@ -21,6 +21,7 @@ import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
 
 /**
  * The device registry stores created devices by ID.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceRegistry implements Iterable<AbstractDevice> {

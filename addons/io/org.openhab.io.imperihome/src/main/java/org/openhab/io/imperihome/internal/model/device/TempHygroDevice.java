@@ -18,13 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Combined temperature/hygro sensor device. Can be specified on either a temp or hygro Item, with a link to the other one.
+ * Combined temperature/hygro sensor device. Can be specified on either a temp or hygro Item, with a link to the other
+ * one.
  * The linked value will be retrieved in {@link #updateParams()}.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class TempHygroDevice extends AbstractNumericValueDevice {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TempHygroDevice.class);
+    private final Logger logger = LoggerFactory.getLogger(TempHygroDevice.class);
 
     private static final String LINK_HYGRO = "hygro";
     private static final String LINK_TEMP = "temp";
@@ -68,7 +70,7 @@ public class TempHygroDevice extends AbstractNumericValueDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice hygroDevice = getDeviceRegistry().getDevice(deviceId);
             if (hygroDevice == null) {
-                LOGGER.error("Couldn't resolve linked hygro device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked hygro device '{}', make sure the Item has iss tags", deviceName);
             } else {
                 setHygroParam(hygroDevice);
                 foundLink = true;
@@ -80,7 +82,7 @@ public class TempHygroDevice extends AbstractNumericValueDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice tempDevice = getDeviceRegistry().getDevice(deviceId);
             if (tempDevice == null) {
-                LOGGER.error("Couldn't resolve linked temp device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked temp device '{}', make sure the Item has iss tags", deviceName);
             } else {
                 setTempParam(tempDevice);
                 foundLink = true;
@@ -88,14 +90,15 @@ public class TempHygroDevice extends AbstractNumericValueDevice {
         }
 
         if (!foundLink) {
-            LOGGER.warn("DevTempHygro device contains no valid 'hygro' or 'temp' link. Add a link to another item using 'iss:link:<type>:<item>'");
+            logger.warn(
+                    "DevTempHygro device contains no valid 'hygro' or 'temp' link. Add a link to another item using 'iss:link:<type>:<item>'");
         }
     }
 
     private void setHygroParam(AbstractDevice device) {
         NumericValueParam valueParam = (NumericValueParam) device.getParams().get(ParamType.HYGROMETRY_VALUE);
         if (valueParam == null) {
-            LOGGER.warn("Linked Hygro device has no Value parameter: {}", device);
+            logger.warn("Linked Hygro device has no Value parameter: {}", device);
             return;
         }
 
@@ -107,7 +110,7 @@ public class TempHygroDevice extends AbstractNumericValueDevice {
     private void setTempParam(AbstractDevice device) {
         NumericValueParam valueParam = (NumericValueParam) device.getParams().get(ParamType.TEMPERATURE_VALUE);
         if (valueParam == null) {
-            LOGGER.warn("Linked Temperature device has no Value parameter: {}", device);
+            logger.warn("Linked Temperature device has no Value parameter: {}", device);
             return;
         }
 

@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Digest utility.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public final class DigestUtil {
@@ -31,7 +32,7 @@ public final class DigestUtil {
         }
     }
 
-    //Hidden constructor
+    // Hidden constructor
     private DigestUtil() {
     }
 

@@ -26,18 +26,41 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.imperihome.internal.action.ActionRegistry;
-import org.openhab.io.imperihome.internal.model.device.*;
+import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
+import org.openhab.io.imperihome.internal.model.device.AbstractNumericValueDevice;
+import org.openhab.io.imperihome.internal.model.device.Co2SensorDevice;
+import org.openhab.io.imperihome.internal.model.device.DeviceType;
+import org.openhab.io.imperihome.internal.model.device.DimmerDevice;
+import org.openhab.io.imperihome.internal.model.device.ElectricityDevice;
+import org.openhab.io.imperihome.internal.model.device.GenericSensorDevice;
+import org.openhab.io.imperihome.internal.model.device.HygrometryDevice;
+import org.openhab.io.imperihome.internal.model.device.LockDevice;
+import org.openhab.io.imperihome.internal.model.device.LuminosityDevice;
+import org.openhab.io.imperihome.internal.model.device.MultiSwitchDevice;
+import org.openhab.io.imperihome.internal.model.device.NoiseDevice;
+import org.openhab.io.imperihome.internal.model.device.PressureDevice;
+import org.openhab.io.imperihome.internal.model.device.RainDevice;
+import org.openhab.io.imperihome.internal.model.device.RgbLightDevice;
+import org.openhab.io.imperihome.internal.model.device.SceneDevice;
+import org.openhab.io.imperihome.internal.model.device.SwitchDevice;
+import org.openhab.io.imperihome.internal.model.device.TempHygroDevice;
+import org.openhab.io.imperihome.internal.model.device.TemperatureDevice;
+import org.openhab.io.imperihome.internal.model.device.TrippableDevice;
+import org.openhab.io.imperihome.internal.model.device.UvDevice;
+import org.openhab.io.imperihome.internal.model.device.WindDevice;
 import org.openhab.io.imperihome.internal.util.DigestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Processor of openHAB Items. Parses ISS tags and creates and registers {@link AbstractDevice} implementations where applicable.
+ * Processor of openHAB Items. Parses ISS tags and creates and registers {@link AbstractDevice} implementations where
+ * applicable.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class ItemProcessor implements ItemRegistryChangeListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ItemProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(ItemProcessor.class);
 
     private static final String PREFIX_ISS = "iss:";
 
@@ -57,7 +80,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     public void destroy() {
         itemRegistry.removeRegistryChangeListener(this);
 
-        //Destroy all Devices (unregisters state listeners)
+        // Destroy all Devices (unregisters state listeners)
         for (Item item : itemRegistry.getItems()) {
             String deviceId = getDeviceId(item);
             if (deviceRegistry.hasDevice(deviceId)) {
@@ -69,11 +92,11 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     private void parseItem(Item item) {
         Map<TagType, List<String>> issTags = getIssTags(item);
         if (!issTags.isEmpty()) {
-            LOGGER.debug("Found item {} with ISS tags: {}", item, issTags);
+            logger.debug("Found item {} with ISS tags: {}", item, issTags);
 
             DeviceType deviceType = getDeviceType(item, issTags);
             if (deviceType == null) {
-                LOGGER.warn("Unrecognized device type for item: {}", item);
+                logger.warn("Unrecognized device type for item: {}", item);
             } else {
                 AbstractDevice device = getDeviceInstance(deviceType, item);
                 device.setId(getDeviceId(item));
@@ -86,10 +109,10 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                 setMapping(device, item, issTags);
                 setUnit(device, issTags);
 
-                //Set initial state
+                // Set initial state
                 device.stateUpdated(item, item.getState());
 
-                LOGGER.debug("Item parsed to device: {}", device);
+                logger.debug("Item parsed to device: {}", device);
                 deviceRegistry.add(device);
             }
         }
@@ -139,6 +162,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
             case MOTION:
             case FLOOD:
                 return new TrippableDevice(deviceType, item);
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("Unknown device type: " + deviceType);
@@ -176,16 +201,16 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     private void setDeviceLinks(AbstractDevice device, Item item, Map<TagType, List<String>> issTags) {
         if (issTags.containsKey(TagType.LINK)) {
-            //Pass device registry to device for linked device lookup
+            // Pass device registry to device for linked device lookup
             device.setDeviceRegistry(deviceRegistry);
 
-            //Parse link tags
+            // Parse link tags
             for (String link : issTags.get(TagType.LINK)) {
                 String[] parts = link.split(":");
                 if (parts.length == 2) {
                     device.addLink(parts[0].toLowerCase().trim(), parts[1].trim());
                 } else {
-                    LOGGER.error("Item has incorrect link format (should be 'iss:link:<type>:<item>'): {}", item);
+                    logger.error("Item has incorrect link format (should be 'iss:link:<type>:<item>'): {}", item);
                 }
             }
         }
@@ -202,7 +227,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
             for (String mapItem : mapItems.split(",")) {
                 String[] keyVal = mapItem.split("=", 2);
                 if (keyVal.length != 2) {
-                    LOGGER.error("Invalid mapping syntax for Item {}", item);
+                    logger.error("Invalid mapping syntax for Item {}", item);
                     return;
                 }
                 mapping.put(keyVal[0].trim(), keyVal[1].trim());
@@ -218,7 +243,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     private void setUnit(AbstractDevice device, Map<TagType, List<String>> issTags) {
         if (issTags.containsKey(TagType.UNIT)) {
             if (!(device instanceof AbstractNumericValueDevice)) {
-                LOGGER.warn("Unit tag is not supported for device {}", device);
+                logger.warn("Unit tag is not supported for device {}", device);
                 return;
             }
 
@@ -227,7 +252,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     }
 
     /**
-     * Determines the Device type for the given Item. Uses the 'type' tag first, tries to auto-detect the type if no such tag exists.
+     * Determines the Device type for the given Item. Uses the 'type' tag first, tries to auto-detect the type if no
+     * such tag exists.
      */
     private DeviceType getDeviceType(Item item, Map<TagType, List<String>> issTags) {
         if (issTags.containsKey(TagType.TYPE)) {
@@ -277,7 +303,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                         if (!tags.containsKey(tagType)) {
                             tags.put(tagType, new LinkedList<String>());
                         } else if (!tagType.isMultiValue()) {
-                            LOGGER.error("Found multiple values for tag " + tagType.getPrefix() + " - only first value is used");
+                            logger.error("Found multiple values for tag " + tagType.getPrefix()
+                                    + " - only first value is used");
                         }
                         tags.get(tagType).add(tagValue);
                         break;
@@ -291,6 +318,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Removes the given item for the device list.
+     *
      * @param item Item to remove.
      */
     private void removeItem(Item item) {
@@ -299,12 +327,13 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
     /**
      * Removes the given item for the device list.
+     *
      * @param itemName Name of the Item to remove.
      */
     private void removeItem(String itemName) {
         String deviceId = getDeviceId(itemName);
         if (deviceRegistry.hasDevice(deviceId)) {
-            LOGGER.debug("Removing Device from ISS registry for Item: {}", itemName);
+            logger.debug("Removing Device from ISS registry for Item: {}", itemName);
             deviceRegistry.remove(deviceId).destroy();
         }
     }
@@ -348,7 +377,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
         }
 
         if (deviceRegistry.hasDevices()) {
-            LOGGER.warn("There are still Devices left after processing all Items from allItemsChanged(): " + deviceRegistry.getDevices());
+            logger.warn("There are still Devices left after processing all Items from allItemsChanged(): "
+                    + deviceRegistry.getDevices());
             deviceRegistry.clear();
         }
 

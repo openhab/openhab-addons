@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.events.EventPublisher;
 
 /**
  * Action registry. Maps ImperiHome API action name to {@link Action} implementation.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class ActionRegistry {

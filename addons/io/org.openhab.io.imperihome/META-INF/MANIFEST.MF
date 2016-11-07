@@ -32,3 +32,4 @@ Import-Package: com.google.common.base,
  org.osgi.service.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy

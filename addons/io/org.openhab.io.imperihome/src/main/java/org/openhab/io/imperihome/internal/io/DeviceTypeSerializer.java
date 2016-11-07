@@ -19,10 +19,12 @@ import com.google.gson.JsonSerializer;
 
 /**
  * Serializer for {@link DeviceType}.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DeviceTypeSerializer implements JsonSerializer<DeviceType> {
 
+    @Override
     public JsonElement serialize(DeviceType deviceType, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(deviceType.getApiString());
     }

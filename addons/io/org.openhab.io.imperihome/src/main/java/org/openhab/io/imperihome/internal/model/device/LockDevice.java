@@ -16,6 +16,7 @@ import org.openhab.io.imperihome.internal.model.param.ParamType;
 
 /**
  * Lock device.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class LockDevice extends AbstractDevice {

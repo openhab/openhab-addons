@@ -20,11 +20,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Device list request handler.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class DevicesListHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DevicesListHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DevicesListHandler.class);
 
     private final DeviceRegistry deviceRegistry;
 
@@ -42,7 +43,7 @@ public class DevicesListHandler {
 
         response.setDevices(devices);
 
-        LOGGER.debug("Device list response: {}", response);
+        logger.debug("Device list response: {}", response);
         return response;
     }
 

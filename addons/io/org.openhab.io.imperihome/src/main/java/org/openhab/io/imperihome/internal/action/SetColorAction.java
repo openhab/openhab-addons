@@ -19,11 +19,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Items setting RGB color value.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class SetColorAction extends Action {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetColorAction.class);
+    private final Logger logger = LoggerFactory.getLogger(SetColorAction.class);
 
     public SetColorAction(EventPublisher eventPublisher) {
         super(eventPublisher);
@@ -37,7 +38,7 @@ public class SetColorAction extends Action {
     @Override
     public void perform(AbstractDevice device, Item item, String value) {
         if (value == null || value.length() != 8) {
-            LOGGER.error("Invalid parameter: '{}'. Format must be 'aarrggbb'.", value);
+            logger.error("Invalid parameter: '{}'. Format must be 'aarrggbb'.", value);
             return;
         }
 

@@ -15,6 +15,7 @@ import org.openhab.io.imperihome.internal.processor.DeviceRegistry;
 
 /**
  * Rooms list request handler.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class RoomListHandler {

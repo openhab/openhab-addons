@@ -10,6 +10,7 @@ package org.openhab.io.imperihome.internal.model.param;
 
 /**
  * Parameter type enumeration. Contains the ISS API parameter key string.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public enum ParamType {
@@ -25,24 +26,24 @@ public enum ParamType {
     NOISE_VALUE("Value"),
     RAIN_VALUE("Value"),
     UV_VALUE("Value"),
-    DIMMABLE ("dimmable"),
-    ENERGY ("Energy"),
-    STATUS ("Status"),
+    DIMMABLE("dimmable"),
+    ENERGY("Energy"),
+    STATUS("Status"),
     MULTISWITCH_VALUE("Value"),
     CHOICES("Choices"),
-    COLOR ("color"),
-    LEVEL ("Level"),
-    WHITE_CHANNEL ("whitechannel"),
-    WATTS ("Watts"),
-    KWH ("ConsoTotal"),
-    ARMABLE ("armable"),
-    ARMED ("Armed"),
-    ACKABLE ("ackable"),
-    TRIPPED ("Tripped"),
-    LAST_TRIP ("lasttrip"),
+    COLOR("color"),
+    LEVEL("Level"),
+    WHITE_CHANNEL("whitechannel"),
+    WATTS("Watts"),
+    KWH("ConsoTotal"),
+    ARMABLE("armable"),
+    ARMED("Armed"),
+    ACKABLE("ackable"),
+    TRIPPED("Tripped"),
+    LAST_TRIP("lasttrip"),
     ACCUMULATION("Accumulation"),
-    SPEED ("Speed"),
-    DIRECTION ("Direction");
+    SPEED("Speed"),
+    DIRECTION("Direction");
 
     private final String apiString;
 

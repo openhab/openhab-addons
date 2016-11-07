@@ -15,6 +15,7 @@ import org.openhab.io.imperihome.internal.processor.ItemProcessor;
 
 /**
  * Abstraction of devices that allow a link to a current energy consumption item.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public abstract class AbstractEnergyLinkDevice extends AbstractDevice {
@@ -32,11 +33,11 @@ public abstract class AbstractEnergyLinkDevice extends AbstractDevice {
             String deviceId = ItemProcessor.getDeviceId(deviceName);
             AbstractDevice energyDevice = getDeviceRegistry().getDevice(deviceId);
             if (energyDevice == null) {
-                LOGGER.error("Couldn't resolve linked energy device '{}', make sure the Item has iss tags", deviceName);
+                logger.error("Couldn't resolve linked energy device '{}', make sure the Item has iss tags", deviceName);
             } else {
                 NumericValueParam valueParam = (NumericValueParam) energyDevice.getParams().get(ParamType.WATTS);
                 if (valueParam == null) {
-                    LOGGER.warn("Linked energy device has no Watts value parameter: {}", energyDevice);
+                    logger.warn("Linked energy device has no Watts value parameter: {}", energyDevice);
                 } else {
                     NumericValueParam energyParam = new NumericValueParam(ParamType.ENERGY, valueParam.getUnit(), null);
                     energyParam.setValue(valueParam.getValue());

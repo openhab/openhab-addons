@@ -12,6 +12,7 @@ import java.util.Collection;
 
 /**
  * Room list data object.
+ *
  * @author Pepijn de Geus - Initial contribution
  */
 public class RoomList {
