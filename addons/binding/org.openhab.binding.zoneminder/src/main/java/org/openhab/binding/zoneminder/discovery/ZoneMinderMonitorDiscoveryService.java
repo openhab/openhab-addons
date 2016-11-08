@@ -56,8 +56,8 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     protected void startScan() {
-        logger.debug("startScan invoked in ZoneMonitorDiscoveryService");
-        // this.zoneMinderServerHandler.getMonitors();
+        // Intentionally left blank
+
     }
 
     /*
@@ -75,8 +75,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
 
         try {
             ThingUID bridgeUID = zoneMinderServerHandler.getThing().getUID();
-            // TODO:: THis is not good, fix the hardcoding
-            String monitorUID = "monitor-" + monitor.getId();
+            String monitorUID = String.format("%s-%s", ZoneMinderConstants.THING_ZONEMINDER_MONITOR, monitor.getId());
             ThingUID thingUID = new ThingUID(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR, bridgeUID,
                     monitorUID);
 

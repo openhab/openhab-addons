@@ -10,6 +10,11 @@ package org.openhab.binding.zoneminder.internal.config;
 
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 
+/**
+ * Specific configuration class for Monitor COnfig.
+ *
+ * @author Martin S. Eskildsen - Initial contribution
+ */
 public class ZoneMinderThingMonitorConfig extends ZoneMinderThingConfig {
 
     // Parameters

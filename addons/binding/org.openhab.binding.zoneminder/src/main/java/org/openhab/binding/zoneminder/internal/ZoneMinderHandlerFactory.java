@@ -34,7 +34,7 @@ import com.google.common.collect.Sets;
 
 /**
  * The {@link ZoneMinderHandlerFactory} is responsible for creating things and thing
- * handlers.l
+ * handlers.
  *
  * @author Martin S. Eskildsen - Initial contribution
  *
@@ -63,7 +63,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
             ZoneMinderServerBridgeHandler bridge = new ZoneMinderServerBridgeHandler((Bridge) thing);
             registerZoneMinderMonitorDiscoveryService(bridge);
 
-            return bridge; // new ZoneMinderServerBridgeHandler((Bridge) thing);
+            return bridge;
         } else if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
             return new ZoneMinderThingMonitorHandler(thing);
         }
@@ -118,7 +118,6 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
             if (bridge != null) {
                 logger.trace("removing handler for monitor thing {}", thingHandler.getThing());
-                // bridge.removePlayerCache(((SqueezeBoxPlayerHandler) thingHandler).getMac());
             }
         }
     }

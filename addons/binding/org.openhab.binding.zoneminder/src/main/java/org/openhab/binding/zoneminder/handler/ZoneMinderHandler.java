@@ -10,14 +10,15 @@ package org.openhab.binding.zoneminder.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
+/**
+ * Interface for ZoneMinder handlers.
+ *
+ * @author Martin S. Eskildsen
+ */
 public interface ZoneMinderHandler {
     String getZoneMinderId();
 
     void updateAvaliabilityStatus();
-
-    // Boolean isOnline();
-
-    // Boolean isRunning();
 
     void updateChannel(ChannelUID channel);
 

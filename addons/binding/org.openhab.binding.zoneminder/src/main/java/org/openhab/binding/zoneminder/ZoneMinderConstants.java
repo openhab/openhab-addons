@@ -33,7 +33,7 @@ public class ZoneMinderConstants {
     public static final String ZONEMINDER_MONITOR_NAME = "ZoneMinder Monitor";
 
     /*
-     * ZoneMinder Server
+     * ZoneMinder Server Constants
      */
 
     // Thing Type UID for Server
@@ -60,7 +60,7 @@ public class ZoneMinderConstants {
     public static final Integer DEFAULT_TELNET_PORT = 6802;
 
     /*
-     * ZoneMinder Monitor
+     * ZoneMinder Monitor Constants
      */
 
     // Thing Type UID for Monitor

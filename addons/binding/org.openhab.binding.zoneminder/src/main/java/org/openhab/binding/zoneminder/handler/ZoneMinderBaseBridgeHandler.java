@@ -24,6 +24,11 @@ import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract class for Bridge Handler.
+ *
+ * @author Martin S. Eskildsen
+ */
 public abstract class ZoneMinderBaseBridgeHandler extends BaseBridgeHandler
         implements ZoneMinderHandler, ZoneMinderMonitorEventListener {
 
