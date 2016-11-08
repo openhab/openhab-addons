@@ -105,11 +105,9 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
                     if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
                         String eventText = getConfigValueAsString(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT);
-                        // TODO: Fix This
-                        BigDecimal eventTimeout1 = getConfigValueAsBigDecimal(
-                                ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
 
-                        Integer eventTimeout = 60;
+                        BigDecimal eventTimeout = getConfigValueAsBigDecimal(
+                                ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
 
                         ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
                         if (bridge == null) {
@@ -119,7 +117,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                         if (command == OnOffType.ON) {
                             logger.debug(String.format(
                                     "Activate 'ForceAlarm' for monitor '%s' (Reason='%s', Timeout='%d'), from OpenHAB in ZoneMinder",
-                                    getZoneMinderId(), eventText, eventTimeout));
+                                    getZoneMinderId(), eventText, eventTimeout.intValue()));
                             bridge.activateZoneMinderMonitorTrigger(getZoneMinderId(), eventText,
                                     eventTimeout.intValue());
                         }
@@ -360,13 +358,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     @Override
     public void updateProperties(ChannelUID channelUID, int state, String description) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void ZoneMinderEventReceived(EventObject event, Thing thing) {
-        // TODO Auto-generated method stub
 
     }
 
