@@ -167,7 +167,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void initialize() {
         logger.debug("Initializing ZoneMinder handler.");
-        updateStatus(ThingStatus.INITIALIZING);
 
         super.initialize();
         this.config = getMonitorConfig();
