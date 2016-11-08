@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
@@ -90,6 +91,12 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         try {
             logger.debug("Channel '{}' in monitor '{}' received command='{}'", channelUID, getZoneMinderId(), command);
 
+            // Allow refresh of channels
+            if (command == RefreshType.REFRESH) {
+                updateChannel(channelUID);
+                return;
+            }
+
             // Communication TO Monitor
             switch (channelUID.getId()) {
 
@@ -132,7 +139,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                                 "'handleCommand' => CHANNEL_MONITOR_ENABLED: Command '{}' received for monitor enabled: {}",
                                 command, channelUID.getId());
                         ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
-                        // bridge.setMonitorEnabled((command == OnOffType.ON) ? true : false);
                     }
                     break;
 
