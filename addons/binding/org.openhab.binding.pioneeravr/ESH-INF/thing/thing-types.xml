@@ -36,9 +36,9 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-            <channel-group typeId="zone1Controls" id="zone1" />
-            <channel-group typeId="zone2Controls" id="zone2" />
-            <channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone3Controls" id="zone3" />
 		</channel-groups>
 
 		<config-description>
@@ -62,9 +62,9 @@
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
-            <channel-group typeId="zone1Controls" id="zone1" />
-            <channel-group typeId="zone2Controls" id="zone2" />
-            <channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone3Controls" id="zone3" />
 		</channel-groups>
 
 		<config-description>
@@ -129,7 +129,7 @@
 		<state min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
-	<channel-type id="volumeChannelDb">
+	<channel-type id="volumeChannelDb" advanced="true">
 		<item-type>Number</item-type>
 		<label>Volume</label>
 		<description>Set the volume level (dB)</description>
