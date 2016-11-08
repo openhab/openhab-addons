@@ -132,7 +132,6 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
         logger.debug("About to initialize bridge " + ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
         super.initialize();
         try {
-            updateStatus(ThingStatus.INITIALIZING);
 
             this.config = getBridgeConfig();
 

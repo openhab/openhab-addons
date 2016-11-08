@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
@@ -90,6 +91,12 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
         try {
             logger.debug("Channel '{}' in monitor '{}' received command='{}'", channelUID, getZoneMinderId(), command);
 
+            // Allow refresh of channels
+            if (command == RefreshType.REFRESH) {
+                updateChannel(channelUID);
+                return;
+            }
+
             // Communication TO Monitor
             switch (channelUID.getId()) {
 
@@ -98,11 +105,9 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
                     if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
                         String eventText = getConfigValueAsString(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT);
-                        // TODO: Fix This
-                        BigDecimal eventTimeout1 = getConfigValueAsBigDecimal(
-                                ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
 
-                        Integer eventTimeout = 60;
+                        BigDecimal eventTimeout = getConfigValueAsBigDecimal(
+                                ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
 
                         ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
                         if (bridge == null) {
@@ -112,7 +117,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                         if (command == OnOffType.ON) {
                             logger.debug(String.format(
                                     "Activate 'ForceAlarm' for monitor '%s' (Reason='%s', Timeout='%d'), from OpenHAB in ZoneMinder",
-                                    getZoneMinderId(), eventText, eventTimeout));
+                                    getZoneMinderId(), eventText, eventTimeout.intValue()));
                             bridge.activateZoneMinderMonitorTrigger(getZoneMinderId(), eventText,
                                     eventTimeout.intValue());
                         }
@@ -132,7 +137,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                                 "'handleCommand' => CHANNEL_MONITOR_ENABLED: Command '{}' received for monitor enabled: {}",
                                 command, channelUID.getId());
                         ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
-                        // bridge.setMonitorEnabled((command == OnOffType.ON) ? true : false);
                     }
                     break;
 
@@ -167,7 +171,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void initialize() {
         logger.debug("Initializing ZoneMinder handler.");
-        updateStatus(ThingStatus.INITIALIZING);
 
         super.initialize();
         this.config = getMonitorConfig();
@@ -355,13 +358,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     @Override
     public void updateProperties(ChannelUID channelUID, int state, String description) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void ZoneMinderEventReceived(EventObject event, Thing thing) {
-        // TODO Auto-generated method stub
 
     }
 
