@@ -13,6 +13,11 @@
 
     <!-- binding -->
 
+    <feature name="openhab-binding-amazondashbutton" description="Amazon Dash Button Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.amazondashbutton/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-astro" description="Astro Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.astro/${project.version}</bundle>
@@ -27,6 +32,14 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.chromecast/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jackson.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-dscalarm" description="DSCAlarm Binding" version="${project.version}">
@@ -123,6 +136,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-oceanic" description="Oceanic Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.oceanic/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-onkyo" description="Onkyo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
@@ -133,7 +152,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.opensprinkler/${project.version}</bundle>
     </feature>
-	
+    
     <feature name="openhab-binding-orvibo" description="Orvibo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.orvibo/${project.version}</bundle>
@@ -190,7 +209,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tesla/${project.version}</bundle>
     </feature>
-	
+    
     <feature name="openhab-binding-urtsi" description="Somfy URTSI II Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
@@ -213,13 +232,18 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.yamahareceiver/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-zoneminder" description="ZoneMinder Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zoneminder/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-zwave" description="Z-Wave Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
     </feature>
 
-	<!-- io -->
+    <!-- io -->
 
     <feature name="openhab-transport-feed" description="Feed Transport" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -293,6 +317,12 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-ui-habpanel" description="HABPanel" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-dashboard</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habpanel/${project.version}</bundle>
     </feature>
     
 </features>

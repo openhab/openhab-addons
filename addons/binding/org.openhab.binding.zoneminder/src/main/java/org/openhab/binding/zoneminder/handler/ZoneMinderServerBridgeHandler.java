@@ -542,6 +542,29 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
 
                 setBridgeConnection(connected);
 
+                // Subscribe to events for this monitor
+                List<Thing> things = getThing().getThings();
+                for (Thing thing : things) {
+                    try {
+                        if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
+                            Thing thingMonitor = thing;
+                            ZoneMinderThingMonitorHandler monitorHandler = (ZoneMinderThingMonitorHandler) thing
+                                    .getHandler();
+
+                            logger.debug(
+                                    String.format("Subscribe to events from ZoneMinder Server for monitor '%s'....",
+                                            monitorHandler.getZoneMinderId()));
+
+                            zoneMinderServerProxy.SubscribeMonitorEvents(monitorHandler.getZoneMinderId(),
+                                    monitorHandler);
+                        }
+
+                    } catch (Exception ex) {
+                        logger.error("Method 'refreshThing()' for Bridge {} failed for thing='{}' - Exception='{}'",
+                                this.getZoneMinderId(), thing.getUID(), ex.getMessage());
+                    }
+                }
+
             } catch (UnknownHostException unknownException) {
                 logger.error("openConnection(): Unknown Host Exception: ", unknownException);
                 setBridgeConnection(false);
@@ -648,28 +671,6 @@ public class ZoneMinderServerBridgeHandler extends ZoneMinderBaseBridgeHandler
         return false;
 
     }
-
-    /*
-     * // TODO:: FIXME
-     *
-     * @Override
-     * protected boolean onHandleZoneMinderTelnetRequest(ZoneMinderRequestType requestType,
-     * ZoneMinderOutgoingRequest request) {
-     * boolean result = false;
-     *
-     * switch (requestType) {
-     * case MONITOR_TRIGGER:
-     * logger.debug("[TCP] Writing command '{}' to ZoneMinder Server", request.toCommandString());
-     * writeTCP(request.toCommandString());
-     * result = true;
-     * break;
-     *
-     * default:
-     * result = false;
-     * }
-     * return result;
-     * }
-     */
 
     public ArrayList<ZoneMinderMonitor> getMonitors() {
         return zoneMinderServerProxy.getMonitors();

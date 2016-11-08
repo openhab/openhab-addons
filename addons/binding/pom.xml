@@ -16,9 +16,11 @@
   <packaging>pom</packaging>
  
   <modules>
+    <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
@@ -38,6 +40,7 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
@@ -55,6 +58,7 @@
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
+    <module>org.openhab.binding.zoneminder</module>
   </modules>
 
 </project>

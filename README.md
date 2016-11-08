@@ -1,18 +1,37 @@
-## openHAB 2 Add-ons
+# Zoneminder Binding #
 
-This repository contains add-ons that are implemenented using the new [Eclipse SmartHome APIs](https://www.eclipse.org/smarthome/documentation/development/bindings/how-to.html) of openHAB 2.
+This binding offers integration to a ZoneMinder Server. It currently only offers to integrate to monitors (eg. cameras in ZoneMinder). It also only offers access to a limited set of values, as well as a even more limited option to update values in ZoneMinder. It requires at least ZoneMinder 1.29 with API enabled (option 'OPT_USE_API' in ZoneMinder must be enabled). The option 'OPT_TRIGGERS' must be anabled to allow OpenHAB to trip the ForceAlarm in ZoneMinder.
 
-Note that all information about openHAB itself, the IDE setup and the contribution processes can be found in the [openhab-distro](https://github.com/openhab/openhab-distro) project, so please go there for any further details!
+## Getting started /  Discovery ##
+The binding consists of a Bridge (the ZoneMinder Server it self), and a number of Things, which relates to the induvidual monitors in ZoneMinder. The Bridge will not be autodiscovered, since the ZoneMinder API can be configured to communicate on custom ports, thus making it meaningless to scan for a ZoneMinder Server. The Bridge must instead be added manually. After adding the Bridge it will become accesible after a short while and it will the auto discover the monitors (they will simply appear in the Inbox).
 
-## Add-ons in other repositories
-Some add-ons (e.g. specific bindings such as [Z-Wave](https://github.com/openhab/org.openhab.binding.zwave)) are maintained in separate repositories in order to improve their management. In order to contribute to these bindings, you should follow the following steps -:
 
-1. Fork the repository on Github
-2. Clone your repository to your local computer as described in the [Github tutorial](https://help.github.com/articles/cloning-a-repository/)
-3. Open the openHAB Eclipse IDE
-4. Select the *File | Import* menu option
-5. Select *General | Existing Projects into Workspace* and click Next
-6. Select the root directory where you made the local clone of the repository
-7. Select the project and click *Next*
-8. The project will now be imported and available in the Package Explorer
-9. You may want to add the project to the *OH2 Add-ons* Working Set
+### Bridge ###
+ Channel       | Type      | Description
+-------------- | --------- | ----------------------------------
+Is Alive       | Switch    | Parameter indicationg if the server IsAlive
+CPU load       | Text      | Current CPU Load of server
+Disk Usage     | text      | Current Disk Usage on server
+Server Version | Text      | Version of ZoneMinder
+API Version    | Text      | Version of API 
+
+### Thing ###
+
+ Channel       | Type      | Description
+-------------- | --------- | ----------------------------------
+Is Alive       | Switch    | Parameter indicationg if the monitor IsAlive
+Enabled        | Switch    | Parameter indicationg if the monitor is enabled
+Name           | Text      | Name of Monitor
+SourceType     | Text      | As stated in ZoneMinder (Local, Remote, File, Ffmpeg, Libvlc, cUrl)
+Trigger        | Switch    | State of the ForceAlarm in ZoneMidner. This can both be read and set from OpenHAB.
+Function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
+ZMC Daemon State    | Switch      | Run state of ZMC Daemon 
+ZMA Daemon State    | Switch      | Run state of ZMA Daemon 
+ZMF Daemon State    | Switch      | Run state of ZMF Daemon 
+
+##Troubleshooting##
+Description                         | Description
+----------------------------------- | ----------------------------------
+Cannot connect to ZoneMinder Bridge | Check if you can logon to ZoneMinder from your OpenHAB server (with http). 
+                                      Check that it is possible to establish a Telnet connection from OpenHAB server to Zoneminder Server
+                                    

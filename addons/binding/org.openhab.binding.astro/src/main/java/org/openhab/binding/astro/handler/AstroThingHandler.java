@@ -165,7 +165,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * already scheduled jobs first.
      */
     private void restartJobs() {
-        logger.debug("restartJobs");
+        logger.debug("Restarting jobs for thing {}", getThing().getUID());
 
         if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
             schedulerFuture.cancel(true);
@@ -202,7 +202,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
 
-                            if (linkedPositionalChannels > 0) {
+                            if (isPositionalChannelLinked()) {
                                 // positional intervalJob
                                 jobIdentity = PositionalJob.class.getSimpleName();
                                 Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
@@ -225,8 +225,11 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         }, 2000, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Stops all jobs for this thing.
+     */
     private void stopJobs() {
-        logger.debug("stopJobs");
+        logger.debug("Stopping jobs for thing {}", getThing().getUID());
         synchronized (schedulerLock) {
             if (quartzScheduler != null) {
                 try {
@@ -242,12 +245,18 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
         linkedChannelChange(channelUID, 1);
         publishChannelIfLinked(channelUID);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         linkedChannelChange(channelUID, -1);
@@ -257,7 +266,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Counts positional channels and restarts astro jobs.
      */
     private void linkedChannelChange(ChannelUID channelUID, int step) {
-        logger.debug("linkedChannelChange {} step {}", channelUID, step);
         if (ArrayUtils.contains(getPositionalChannelIds(), channelUID.getId())) {
             int oldValue = linkedPositionalChannels;
             linkedPositionalChannels += step;
@@ -265,6 +273,19 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 restartJobs();
             }
         }
+    }
+
+    /**
+     * Returns true, if at least one positional channel is linked.
+     */
+    private boolean isPositionalChannelLinked() {
+        for (Channel channel : getThing().getChannels()) {
+            if (ArrayUtils.contains(getPositionalChannelIds(), channel.getUID().getId())
+                    && isLinked(channel.getUID().getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

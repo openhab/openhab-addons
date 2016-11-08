@@ -37,6 +37,7 @@ This is the case with a lot of devices and operating system (e.g. Windows 10).
 
 Many devices provide services on other TCP ports (web-frontends, streaming servers, ...), which you can use to confirm reachability. Most operating systems have options to list open ports.
 From another linux-based system, you may use namp to discover all connectable TCP ports on the device with the specified IP adress:
+
 ```
 $ sudo nmap -Pn -sT -p- 192.168.0.42
 
@@ -52,6 +53,7 @@ PORT      STATE SERVICE
 
 Nmap done: 1 IP address (1 host up) scanned in 106.17 seconds
 ```
+
 In this example, there are four suitable ports to use.
 The port 554 is open on most Windows PCs, providing streaming capabilities, the other three shown ports are provided by a famous media center software installed on this PC.
 If your device does not have any open ports, you may open one yourself, for example by installing a [minimal webserver](https://github.com/cesanta/mongoose).
@@ -64,7 +66,9 @@ On a standard Linux system, this can be achieved by setting the `cap_net_bind_se
 ```shell
 sudo setcap cap_net_bind_service=+ep `realpath /usr/bin/java`
 ```
+
 Check if it was successful:
+
 ```shell
 sudo getcap `realpath /usr/bin/java`
 ```
