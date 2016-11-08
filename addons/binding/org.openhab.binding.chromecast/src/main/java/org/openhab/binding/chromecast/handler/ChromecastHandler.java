@@ -33,15 +33,13 @@ import org.openhab.binding.chromecast.ChromecastBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.maggu2810.shk.chromecast_api.Application;
-import de.maggu2810.shk.chromecast_api.ChromeCast;
-import de.maggu2810.shk.chromecast_api.ChromeCastConnectionEvent;
-import de.maggu2810.shk.chromecast_api.ChromeCastConnectionEventListener;
-import de.maggu2810.shk.chromecast_api.ChromeCastMessageEvent;
-import de.maggu2810.shk.chromecast_api.ChromeCastMessageEventListener;
-import de.maggu2810.shk.chromecast_api.MediaStatus;
-import de.maggu2810.shk.chromecast_api.Status;
-import de.maggu2810.shk.chromecast_api.Volume;
+import su.litvak.chromecast.api.v2.Application;
+import su.litvak.chromecast.api.v2.ChromeCast;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEventListener;
+import su.litvak.chromecast.api.v2.MediaStatus;
+import su.litvak.chromecast.api.v2.Status;
+import su.litvak.chromecast.api.v2.Volume;
 
 /**
  * The {@link ChromecastHandler} is responsible for handling commands, which are
@@ -52,7 +50,7 @@ import de.maggu2810.shk.chromecast_api.Volume;
  *
  */
 public class ChromecastHandler extends BaseThingHandler
-        implements ChromeCastConnectionEventListener, ChromeCastMessageEventListener, AudioSink {
+        implements ChromeCastSpontaneousEventListener, AudioSink {
 
     private static final String MEDIA_PLAYER = "CC1AD845";
 
@@ -91,16 +89,14 @@ public class ChromecastHandler extends BaseThingHandler
     private void createChromecast(final String address) {
         try {
             chromecast = new ChromeCast(address);
-            chromecast.registerConnectionListener(this);
-            chromecast.registerMessageListener(this);
+            chromecast.registerListener(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void destroyChromecast() {
-        chromecast.unregisterMessageListener(this);
-        chromecast.unregisterConnectionListener(this);
+        chromecast.unregisterListener(this);
         try {
             chromecast.disconnect();
         } catch (final IOException ex) {
@@ -203,20 +199,6 @@ public class ChromecastHandler extends BaseThingHandler
         }
     }
 
-    private void handleCcConnected() {
-        updateStatus(ThingStatus.ONLINE);
-        try {
-            handleCcStatus(chromecast.getStatus());
-        } catch (final IOException ex) {
-            logger.debug("Cannot fetch status.", ex);
-        }
-    }
-
-    private void handleCcDisconnected() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Connection has been closed.");
-        scheduleConnect(false);
-    }
-
     private void handleCcStatus(final Status status) {
         handleCcVolume(status.volume);
     }
@@ -245,7 +227,7 @@ public class ChromecastHandler extends BaseThingHandler
     }
 
     @Override
-    public void messageEventReceived(final ChromeCastMessageEvent event) {
+    public void spontaneousEventReceived(final ChromeCastSpontaneousEvent event) {
         switch (event.getType()) {
             case MEDIA_STATUS:
                 final MediaStatus mediaStatus = event.getData(MediaStatus.class);
@@ -262,15 +244,6 @@ public class ChromecastHandler extends BaseThingHandler
                 logger.debug("Unhandled event type: {}", event.getData());
                 break;
 
-        }
-    }
-
-    @Override
-    public void connectionEventReceived(final ChromeCastConnectionEvent event) {
-        if (event.isConnected()) {
-            handleCcConnected();
-        } else {
-            handleCcDisconnected();
         }
     }
 
