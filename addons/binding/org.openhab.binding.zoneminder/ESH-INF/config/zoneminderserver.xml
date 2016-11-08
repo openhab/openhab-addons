@@ -62,15 +62,6 @@
                 <default>0</default>
             </parameter>
             
-<!-- 
-            <parameter name="connectionTimeout" type="integer"
-                required="false">
-                <label>Connection Timeout</label>
-                <description>TCP Socket Connection Timeout (milliseconds).</description>
-                <default>5000</default>
-            </parameter>
-
--->
 
   </config-description>
 

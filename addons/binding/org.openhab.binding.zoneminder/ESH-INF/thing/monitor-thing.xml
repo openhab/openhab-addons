@@ -28,26 +28,6 @@
             
         </channels>
 
-<!--            
-            <channel id="disk-usage" typeId="monitor_disk_usage" />
-
-            
-            <channel id="id" typeId="monitor_id" />                
-
-            <channel id="event" typeId="monitor_event" />
-
-            <channel id="image-width" typeId="monitor_image_width" />
-            <channel id="image-height" typeId="monitor_image_height" />
-                 
-            <channel id="event-prefix" typeId="monitor_eventprefix" />
-                
-            <channel id="analysis-fps" typeId="monitor_analysis_fps" />
-                
-            <channel id="max-fps" typeId="monitor_max_fps" />
-            
-            <channel id="alarm-max-fps" typeId="monitor_alarm_max_fps" />
-     -->                       
-
         <config-description-ref uri="thing-type:monitor-channels:config" />
     </thing-type>
 
@@ -76,17 +56,6 @@
         <description>Source Type of Monitor in ZoneMinder Server </description>
         <category>General</category>
         <state readOnly="true" />
-<!--         <state pattern="%s" readOnly="true">
-            <options>
-                <option value="local">None</option>
-                <option value="remote">Monitor</option>
-                <option value="file">Modect</option>
-                <option value="ffmpeg">Record</option>
-                <option value="libvlc">Mocord</option>
-                <option value="curl">Nodect</option>
-            </options>
-        </state>
- -->        
     </channel-type>
            
     <channel-type id="monitor_is_alive">
@@ -120,15 +89,6 @@
         </state>
     </channel-type>
 
-<!-- 
-    <channel-type id="monitor_event">
-        <item-type>Contact</item-type>
-        <label>Actual event state</label>
-        <description>Contact is on whenever the monitor in ZoneMonitor is recording</description>
-        <category>Event</category>
-        <state readOnly="true" />
-    </channel-type>
-     -->
     <channel-type id="monitor_trigger_event">
         <item-type>Switch</item-type>
         <label>Force Alarm</label>
