@@ -106,9 +106,9 @@
 				<option value="32">TAPE1</option>
 				<option value="33">TAPE2</option>
 				<option value="34">PHONO</option>
-				<option value="35">CD</option>
-				<option value="36">FM</option>
-				<option value="37">AM</option>
+				<option value="35">CD/TV</option>
+				<option value="36">TUNER FM</option>
+				<option value="37">TUNER AM</option>
 				<option value="38">TUNER</option>
 				<option value="39">MUSICSERVER</option>
 				<option value="40">INTERETRADIO</option>
@@ -146,11 +146,23 @@
 		<state>
 			<options>
 				<option value="00">Stereo</option>
+                <option value="03">Game RPG</option>
+                <option value="05">Game Action</option>
+                <option value="06">Game Rock</option>
+                <option value="08">Orchestra</option>
+                <option value="09">unplugged</option>
+                <option value="10">Studio Mix</option>
+                <option value="11">TV Logic</option>
 				<option value="12">All Channel Stereo</option>
+                <option value="12">Theater Dimensional</option>
+                <option value="12">Pure Audio</option>
+                <option value="12">Mono</option>
 				<option value="22">Audyssey DSX</option>
 				<option value="64">5.1ch Surround</option>
 				<option value="128">PLII/PLIIx Movie</option>
 				<option value="129">PLII/PLIIx Music</option>
+                <option value="131">Neo:6 Music</option>
+                <option value="134">PLII/PLIIx Game</option>
 				<option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
 				<option value="161">PLIIx/PLII Music + Audyssey DSX</option>
 				<option value="162">PLIIx/PLII Game + Audyssey DSX</option>

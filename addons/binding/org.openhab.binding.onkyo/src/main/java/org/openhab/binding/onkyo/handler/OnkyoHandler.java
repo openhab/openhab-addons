@@ -264,83 +264,89 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
 
         updateStatus(ThingStatus.ONLINE);
 
-        EiscpCommand receivedCommand = null;
-        for (EiscpCommand candidate : EiscpCommand.values()) {
-            String deviceCmd = candidate.getCommand();
-            if (data.startsWith(deviceCmd)) {
-                receivedCommand = candidate;
-                break;
+        try {
+            EiscpCommand receivedCommand = null;
+            for (EiscpCommand candidate : EiscpCommand.values()) {
+                String deviceCmd = candidate.getCommand();
+                if (data.startsWith(deviceCmd)) {
+                    receivedCommand = candidate;
+                    break;
+                }
             }
-        }
 
-        if (receivedCommand != null) {
-            switch (receivedCommand.getCommandRef()) {
-                case POWER_OFF:
-                    updateState(CHANNEL_POWER, OnOffType.OFF);
-                    break;
-                case POWER_ON:
-                    updateState(CHANNEL_POWER, OnOffType.ON);
-                    break;
-                case MUTE:
-                    updateState(CHANNEL_MUTE, OnOffType.ON);
-                    break;
-                case UNMUTE:
-                    updateState(CHANNEL_MUTE, OnOffType.OFF);
-                    break;
-                case VOLUME_SET:
-                    updateState(CHANNEL_VOLUME, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
-                    break;
-                case SOURCE_SET:
-                    int input = Integer.parseInt(data.substring(3, 5), 16);
-                    updateState(CHANNEL_INPUT, new DecimalType(input));
-                    onInputChanged(input);
-                    break;
-                case NETUSB_SONG_ARTIST_QUERY:
-                    updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_SONG_ALBUM_QUERY:
-                    updateState(CHANNEL_ALBUM, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_SONG_TITLE_QUERY:
-                    updateState(CHANNEL_TITLE, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_SONG_ELAPSEDTIME_QUERY:
-                    updateState(CHANNEL_CURRENTPLAYINGTIME, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_PLAY_STATUS_QUERY:
-                    updateNetUsbPlayStatus(data.charAt(3));
-                    break;
-                case LISTEN_MODE_SET:
-                    int listenMode = Integer.parseInt(data.substring(3, 5), 16);
-                    updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
-                    break;
-                case ZONE2_POWER_SBY:
-                    updateState(CHANNEL_POWERZONE2, OnOffType.OFF);
-                    break;
-                case ZONE2_POWER_ON:
-                    updateState(CHANNEL_POWERZONE2, OnOffType.ON);
-                    break;
-                case ZONE2_MUTE:
-                    updateState(CHANNEL_MUTEZONE2, OnOffType.ON);
-                    break;
-                case ZONE2_UNMUTE:
-                    updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
-                    break;
-                case ZONE2_VOLUME_SET:
-                    updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
-                    break;
-                case ZONE2_SOURCE_SET:
-                    int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
-                    updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
-                    break;
-                default:
-                    logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
-                            connection.getConnectionName(), data);
+            if (receivedCommand != null) {
+                switch (receivedCommand.getCommandRef()) {
+                    case POWER_OFF:
+                        updateState(CHANNEL_POWER, OnOffType.OFF);
+                        break;
+                    case POWER_ON:
+                        updateState(CHANNEL_POWER, OnOffType.ON);
+                        break;
+                    case MUTE:
+                        updateState(CHANNEL_MUTE, OnOffType.ON);
+                        break;
+                    case UNMUTE:
+                        updateState(CHANNEL_MUTE, OnOffType.OFF);
+                        break;
+                    case VOLUME_SET:
+                        updateState(CHANNEL_VOLUME, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        break;
+                    case SOURCE_SET:
+                        int input = Integer.parseInt(data.substring(3, 5), 16);
+                        updateState(CHANNEL_INPUT, new DecimalType(input));
+                        onInputChanged(input);
+                        break;
+                    case NETUSB_SONG_ARTIST_QUERY:
+                        updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_SONG_ALBUM_QUERY:
+                        updateState(CHANNEL_ALBUM, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_SONG_TITLE_QUERY:
+                        updateState(CHANNEL_TITLE, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_SONG_ELAPSEDTIME_QUERY:
+                        updateState(CHANNEL_CURRENTPLAYINGTIME, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_PLAY_STATUS_QUERY:
+                        updateNetUsbPlayStatus(data.charAt(3));
+                        break;
+                    case LISTEN_MODE_SET:
+                        int listenMode = Integer.parseInt(data.substring(3, 5), 16);
+                        updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
+                        break;
+                    case ZONE2_POWER_SBY:
+                        updateState(CHANNEL_POWERZONE2, OnOffType.OFF);
+                        break;
+                    case ZONE2_POWER_ON:
+                        updateState(CHANNEL_POWERZONE2, OnOffType.ON);
+                        break;
+                    case ZONE2_MUTE:
+                        updateState(CHANNEL_MUTEZONE2, OnOffType.ON);
+                        break;
+                    case ZONE2_UNMUTE:
+                        updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
+                        break;
+                    case ZONE2_VOLUME_SET:
+                        updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        break;
+                    case ZONE2_SOURCE_SET:
+                        int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
+                        updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
+                        break;
+                    default:
+                        logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
+                                connection.getConnectionName(), data);
+
+                }
+            } else {
+                logger.debug("Received unknown status update from Onkyo Receiver @{}: data={}",
+                        connection.getConnectionName(), data);
 
             }
-        } else {
-            logger.debug("Received unknown status update from Onkyo Receiver @{}: data={}",
-                    connection.getConnectionName(), data);
+        } catch (Exception ex) {
+            logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
+                    connection.getConnectionName(), ex.getMessage(), data);
 
         }
     }
