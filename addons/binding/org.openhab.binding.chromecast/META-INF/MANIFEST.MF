@@ -7,7 +7,7 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/protobuf-java-2.6.0.jar,
- lib/shk-library-chromecast-api-1.11-SNAPSHOT.jar
+ lib/api-v2-0.9.4-SNAPSHOT.jar
 Import-Package: 
  com.fasterxml.jackson.annotation,
  org.apache.commons.lang,
