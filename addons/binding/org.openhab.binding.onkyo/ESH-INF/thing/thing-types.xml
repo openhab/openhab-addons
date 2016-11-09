@@ -155,8 +155,8 @@
                 <option value="11">TV Logic</option>
 				<option value="12">All Channel Stereo</option>
                 <option value="12">Theater Dimensional</option>
-                <option value="12">Pure Audio</option>
-                <option value="12">Mono</option>
+                <option value="17">Pure Audio</option>
+                <option value="19">Mono</option>
 				<option value="22">Audyssey DSX</option>
 				<option value="64">5.1ch Surround</option>
 				<option value="128">PLII/PLIIx Movie</option>
