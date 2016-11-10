@@ -1,25 +1,16 @@
 package org.openhab.binding.bosesoundtouch.internal.items;
 
-public class ContentItem {
-    public static enum Source {
-        STANDBY,
-        INTERNET_RADIO,
-        BLUETOOTH,
-        STORED_MUSIC,
-        SPOTIFY,
-        PANDORA,
-        DEEZER,
-        SIRIUSXM,
-        UNKNOWN
-    }; // TODO incomplete!
+import org.openhab.binding.bosesoundtouch.types.OperationModeType;
+import org.openhab.binding.bosesoundtouch.types.RadioStationType;
 
-    public Source source;
+public class ContentItem {
+    public OperationModeType operationMode;
+    public RadioStationType radioStation;
     public String location;
     public String sourceAccount;
     public String itemName;
-    public boolean isPresetable;
 
-    private boolean se(String s1, String s2) {
+    private boolean isEqual(String s1, String s2) {
         if (s1 == s2) {
             return true;
         }
@@ -33,19 +24,16 @@ public class ContentItem {
     public boolean equals(Object obj) {
         if (obj instanceof ContentItem) {
             ContentItem other = (ContentItem) obj;
-            if (other.source != this.source) {
+            if (other.radioStation != this.radioStation) {
                 return false;
             }
-            if (other.isPresetable != this.isPresetable) {
+            if (!isEqual(other.location, this.location)) {
                 return false;
             }
-            if (!se(other.location, this.location)) {
+            if (!isEqual(other.sourceAccount, this.sourceAccount)) {
                 return false;
             }
-            if (!se(other.sourceAccount, this.sourceAccount)) {
-                return false;
-            }
-            if (!se(other.itemName, this.itemName)) {
+            if (!isEqual(other.itemName, this.itemName)) {
                 return false;
             }
             return true;

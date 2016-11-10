@@ -4,7 +4,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.PrimitiveType;
 import org.eclipse.smarthome.core.types.State;
 
-public enum OperationModeType implements PrimitiveType,State,Command {
+public enum OperationModeType implements PrimitiveType, State, Command {
     OFFLINE,
     STANDBY,
     PRESET1,
@@ -27,5 +27,10 @@ public enum OperationModeType implements PrimitiveType,State,Command {
     @Override
     public String format(String pattern) {
         return String.format(pattern, this.toString());
+    }
+
+    @Override
+    public String toFullString() {
+        return this.toString();
     }
 }
