@@ -19,8 +19,6 @@
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 
 		<config-description>
