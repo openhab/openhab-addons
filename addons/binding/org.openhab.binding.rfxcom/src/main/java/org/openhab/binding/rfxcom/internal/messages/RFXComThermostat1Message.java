@@ -98,8 +98,8 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.TEMPERATURE,
-            RFXComValueSelector.SET_POINT, RFXComValueSelector.CONTACT);
+            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.TEMPERATURE, RFXComValueSelector.SET_POINT,
+            RFXComValueSelector.CONTACT);
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
