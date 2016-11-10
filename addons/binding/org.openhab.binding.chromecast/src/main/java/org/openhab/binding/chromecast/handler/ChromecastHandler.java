@@ -180,11 +180,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     private void handlePlayUri(Command command) {
         if (command instanceof StringType) {
-            if (command.equals("NULL")) {
-                playMedia(null, null, null, null);
-            } else {
-                playMedia(null, null, command.toString(), null);
-            }
+            playMedia(null, null, command.toString(), null);
         }
     }
 
@@ -301,10 +297,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                     final Application app = chromecast.launchApp(MEDIA_PLAYER);
                     logger.debug("Application launched: {}", app);
                 }
-                if (url == null) {
-                    // stop whatever stream is currently playing
-                    chromecast.pause();
-                } else {
+                if (url != null) {
                     chromecast.load(title, imgUrl, url, mimeType);
                 }
             } else {
