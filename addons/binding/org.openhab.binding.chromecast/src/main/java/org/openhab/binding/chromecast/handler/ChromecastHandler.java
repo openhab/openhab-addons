@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -47,10 +48,10 @@ import su.litvak.chromecast.api.v2.Volume;
  *
  * @author Markus Rathgeb - Original author
  * @author Kai Kreuzer - Initial contribution as openHAB add-on
+ * @author Daniel Walters - Online status fix, handle playuri channel and refactor play media code
  *
  */
-public class ChromecastHandler extends BaseThingHandler
-        implements ChromeCastSpontaneousEventListener, AudioSink {
+public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpontaneousEventListener, AudioSink {
 
     private static final String MEDIA_PLAYER = "CC1AD845";
 
@@ -114,6 +115,8 @@ public class ChromecastHandler extends BaseThingHandler
         futureConnect = scheduler.schedule(() -> {
             try {
                 chromecast.connect();
+                // assume device is online as we no longer get notified
+                updateStatus(ThingStatus.ONLINE);
             } catch (final Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 scheduleConnect(false);
@@ -166,9 +169,22 @@ public class ChromecastHandler extends BaseThingHandler
             case ChromecastBindingConstants.CHANNEL_VOLUME:
                 handleVolume(command);
                 break;
+            case ChromecastBindingConstants.CHANNEL_PLAY_URI:
+                handlePlayUri(command);
+                break;
             default:
                 logger.debug("Received command {} for unknown channel: {}", command, channelUID);
                 break;
+        }
+    }
+
+    private void handlePlayUri(Command command) {
+        if (command instanceof StringType) {
+            if (command.equals("NULL")) {
+                playMedia(null, null, null, null);
+            } else {
+                playMedia(null, null, command.toString(), null);
+            }
         }
     }
 
@@ -274,10 +290,14 @@ public class ChromecastHandler extends BaseThingHandler
                 return;
             }
         }
+        String mimeType = audioStream.getFormat().getCodec() == AudioFormat.CODEC_MP3 ? "audio/mpeg" : "audio/wav";
+        playMedia("Notification", null, url, mimeType);
+    }
+
+    private void playMedia(String title, String imgUrl, String url, String mimeType) {
         try {
-            final Status status = chromecast.getStatus();
             if (chromecast.isAppAvailable(MEDIA_PLAYER)) {
-                if (!status.isAppRunning(MEDIA_PLAYER)) {
+                if (!chromecast.isAppRunning(MEDIA_PLAYER)) {
                     final Application app = chromecast.launchApp(MEDIA_PLAYER);
                     logger.debug("Application launched: {}", app);
                 }
@@ -285,15 +305,13 @@ public class ChromecastHandler extends BaseThingHandler
                     // stop whatever stream is currently playing
                     chromecast.pause();
                 } else {
-                    String mimeType = audioStream.getFormat().getCodec() == AudioFormat.CODEC_MP3 ? "audio/mpeg"
-                            : "audio/wav";
-                    chromecast.load("Notification", null, url.toString(), mimeType);
+                    chromecast.load(title, imgUrl, url, mimeType);
                 }
             } else {
-                logger.error("Missing media player app - cannot process audio stream.");
+                logger.error("Missing media player app - cannot process media.");
             }
         } catch (final IOException e) {
-            logger.debug("Failed playing audio stream: {}", e.getMessage());
+            logger.debug("Failed playing media: {}", e.getMessage());
         }
     }
 
