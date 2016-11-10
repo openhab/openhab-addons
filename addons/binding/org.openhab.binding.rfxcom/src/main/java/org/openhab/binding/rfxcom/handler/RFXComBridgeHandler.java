@@ -325,7 +325,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             connector.sendMessage(data);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            throw new RFXComException(e);
+            throw new RFXComException("Send failed, reason: " + e.getMessage(), e);
         }
 
         try {
