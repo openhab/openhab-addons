@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ivtheatpump"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Manage IVT Heat Pump over IP -->
+    <thing-type id="ipRego6xx">
+        <label>IVTHeatPump over IP</label>
+        <description>Manage IVT Heat Pump over IP</description>
+
+        <channels>
+            <channel id="radiatorReturnGT1" typeId="radiatorReturnGT1"/>
+            <channel id="outdoorGT2" typeId="outdoorGT2"/>
+            <channel id="hotWaterGT3" typeId="hotWaterGT3"/>
+            <channel id="shuntGT4" typeId="shuntGT4"/>
+        </channels>
+    </thing-type>
+
+    <channel-type id="radiatorReturnGT1">
+        <item-type>Number</item-type>
+        <label>Radiator return [GT1]</label>
+        <description>Radiator return [GT1] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="outdoorGT2">
+        <item-type>Number</item-type>
+        <label>Outdoor [GT2]</label>
+        <description>Outdoor [GT2] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="hotWaterGT3">
+        <item-type>Number</item-type>
+        <label>Hot Water [GT3]</label>
+        <description>Hot Water [GT3] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="shuntGT4">
+        <item-type>Number</item-type>
+        <label>Shunt, flow [GT4]</label>
+        <description>Shunt, flow [GT4] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+</thing:thing-descriptions>
