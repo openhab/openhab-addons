@@ -25,7 +25,8 @@ public class OnkyoBindingConstants {
     public static final String BINDING_ID = "onkyo";
 
     // Extend this set with all successfully tested models
-    public final static Set<String> SUPPORTED_DEVICE_MODELS = ImmutableSet.of("TX-NR535", "TX-NR646");
+    public final static Set<String> SUPPORTED_DEVICE_MODELS = ImmutableSet.of("TX-NR509", "TX-NR535", "TX-NR555",
+            "TX-NR646");
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_ONKYOAV = new ThingTypeUID(BINDING_ID, "onkyoAVR");
