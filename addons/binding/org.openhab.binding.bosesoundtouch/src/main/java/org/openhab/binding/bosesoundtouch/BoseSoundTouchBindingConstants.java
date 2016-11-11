@@ -42,9 +42,7 @@ public class BoseSoundTouchBindingConstants {
     public static final String CHANNEL_RADIO_STATION = "radioStation";
     public static final String CHANNEL_PLAYER_CONTROL = "playerControl";
     public static final String CHANNEL_ZONE = "zone";
-
     public static final String CHANNEL_KEY_CODE = "keyCode";
-
     public static final String CHANNEL_NOW_PLAYING_ALBUM = "nowPlayingAlbum";
     public static final String CHANNEL_NOW_PLAYING_ARTWORK = "nowPlayingArtwork";
     public static final String CHANNEL_NOW_PLAYING_ARTIST = "nowPlayingArtist";
@@ -59,6 +57,7 @@ public class BoseSoundTouchBindingConstants {
     public static final String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
     public static final String DEVICE_PARAMETER_PORT = "DEVICE_PORT";
     public static final String DEVICE_PARAMETER_MAC = "DEVICE_MAC";
+    public static final String DEVICE_PARAMETER_DEFAULT_RADIO_STATION = "DEFAULT_RADIO_STATION";
 
     public static final String DEVICE_INFO_NAME = "INFO_NAME";
     public static final String DEVICE_INFO_TYPE = "INFO_TYPE";

@@ -40,13 +40,16 @@
             </parameter>
             <parameter name="DEVICE_HOST" type="text" required="true">
                 <label>Host Address</label>
-                <description>The Host / IP Address used for communication to this device.
-                </description>
+                <description>The Host / IP Address used for communication to this device</description>
             </parameter>
             <parameter name="DEVICE_PORT" type="integer" required="true" min="1" max="65335">
                 <label>Port</label>
-                <description>Port for communication on this device.
-                </description>
+                <description>Port for communication on this device</description>
+            </parameter>
+            <parameter name="DEFAULT_RADIO_STATION" type="text" required="true">
+                <label>Default Radio Station</label>
+                <description>When turning on INTERNET_RADIO this PRESET will be selected</description>
+                <default>PRESET_1</default>
             </parameter>
         </config-description>
     </thing-type>

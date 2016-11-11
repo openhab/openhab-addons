@@ -3,19 +3,11 @@ package org.openhab.binding.bosesoundtouch.internal.items;
 import org.openhab.binding.bosesoundtouch.types.RadioStationType;
 
 public class Preset {
-    public int pos;
-    public ContentItem contentItem;
+    private int pos;
+    private ContentItem contentItem;
 
     public boolean posIsValid() {
         return (getPos() >= 1 && getPos() <= 6);
-    }
-
-    public int getPos() {
-        return pos;
-    }
-
-    public void setPos(int pos) {
-        this.pos = pos;
     }
 
     public RadioStationType getRadioStation() {
@@ -35,6 +27,22 @@ public class Preset {
             default:
                 return RadioStationType.UNKNOWN;
         }
+    }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
+    public ContentItem getContentItem() {
+        return contentItem;
+    }
+
+    public void setContentItem(ContentItem contentItem) {
+        this.contentItem = contentItem;
     }
 
 }

@@ -148,10 +148,30 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelNowPlayingTrackUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOW_PLAYING_TRACK);
         channelZoneUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE);
 
-        defaultRadioStation = RadioStationType.PRESET_2;// TODO fetch from PAPER UI
+        if (getConfig().get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_DEFAULT_RADIO_STATION) != null) {
+            String defaultRadioStationString = (String) getConfig()
+                    .get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_DEFAULT_RADIO_STATION);
+            if (defaultRadioStationString.equals("PRESET_1")) {
+                defaultRadioStation = RadioStationType.PRESET_1;
+            } else if (defaultRadioStationString.equals("PRESET_2")) {
+                defaultRadioStation = RadioStationType.PRESET_2;
+            } else if (defaultRadioStationString.equals("PRESET_3")) {
+                defaultRadioStation = RadioStationType.PRESET_3;
+            } else if (defaultRadioStationString.equals("PRESET_4")) {
+                defaultRadioStation = RadioStationType.PRESET_4;
+            } else if (defaultRadioStationString.equals("PRESET_5")) {
+                defaultRadioStation = RadioStationType.PRESET_5;
+            } else if (defaultRadioStationString.equals("PRESET_6")) {
+                defaultRadioStation = RadioStationType.PRESET_6;
+            } else {
+                defaultRadioStation = RadioStationType.UNKNOWN;
+            }
+        }
 
         allSoundTouchDevices.put(macAddress, this);
+
         openConnection();
+
     }
 
     private ChannelUID getChannelUID(String channelId) {
@@ -539,18 +559,18 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void onClose(int code, String reason) {
         logger.debug("onClose(" + code + ", \"" + reason + "\")");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        this.operationMode = OperationModeType.OFFLINE;
-        this.currentContentItem = null;
-        this.checkOperationMode();
+        operationMode = OperationModeType.OFFLINE;
+        currentContentItem = null;
+        checkOperationMode();
     }
 
     @Override
     public void onFailure(IOException e, Response response) {
         logger.error(thing + ": Error during websocket communication: ", e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        this.operationMode = OperationModeType.OFFLINE;
-        this.currentContentItem = null;
-        this.checkOperationMode();
+        operationMode = OperationModeType.OFFLINE;
+        currentContentItem = null;
+        checkOperationMode();
         try {
             socket.close(1011, "Failure: " + e.getMessage());
         } catch (IOException e1) {
@@ -578,7 +598,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void onOpen(WebSocket socket, Response resp) {
         logger.debug("onOpen(\"" + resp + "\")");
         this.socket = socket;
-        this.socketRequestId = 0;
+        socketRequestId = 0;
         updateStatus(ThingStatus.ONLINE);
         // socket.newMessageSink(PayloadType.TEXT);
         sendRequestInWebSocket("info");
@@ -833,8 +853,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     if ("preset".equals(localName)) {
                         state = State.Preset;
                         String id = attributes.getValue("id");
-                        this.preset = new Preset();
-                        this.preset.pos = Integer.parseInt(id);
+                        preset = new Preset();
+                        preset.setPos(Integer.parseInt(id));
                     } else {
                         logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                         state = State.Unprocessed;
@@ -895,23 +915,23 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 String source = attributes.getValue("source");
                 if (source.equals("INTERNET_RADIO")) {
                     contentItem.radioStation = handler.defaultRadioStation;
-                    contentItem.operationMode = OperationModeType.INTERNET_RADIO;
+                    contentItem.setOperationMode(OperationModeType.INTERNET_RADIO);
                 } else if (source.equals("STANDBY")) {
                     contentItem = new ContentItem();
-                    contentItem.operationMode = OperationModeType.STANDBY;
+                    contentItem.setOperationMode(OperationModeType.STANDBY);
                 } else if (source.equals("AUX")) {
                     contentItem = new ContentItem();
-                    contentItem.operationMode = OperationModeType.AUX;
+                    contentItem.setOperationMode(OperationModeType.AUX);
                 } else if (source.equals("BLUETOOTH")) {
                     contentItem = new ContentItem();
-                    contentItem.operationMode = OperationModeType.BLUETOOTH;
+                    contentItem.setOperationMode(OperationModeType.BLUETOOTH);
                 } else {
                     contentItem = new ContentItem();
-                    contentItem.operationMode = OperationModeType.OTHER;
+                    contentItem.setOperationMode(OperationModeType.OTHER);
                     logger.error(handler.thing + ": Unknown SourceType: " + source + " - needs to be defined!");
                 }
-                contentItem.location = attributes.getValue("location");
-                contentItem.sourceAccount = attributes.getValue("sourceAccount");
+                contentItem.setLocation(attributes.getValue("location"));
+                contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
             }
             if (state == State.Presets) {
                 handler.presets.clear();
@@ -987,7 +1007,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             new StringType(new String(ch, start, length)));
                     break;
                 case ContentItemItemName:
-                    contentItem.itemName = new String(ch, start, length);
+                    contentItem.setItemName(new String(ch, start, length));
                     break;
                 case NowPlayingDescription:
                     handler.updateState(handler.channelNowPlayingDescriptionUID,
@@ -1041,18 +1061,18 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             }
             if (prevState == State.ContentItem && state == State.NowPlaying) {
                 // update now playing name...
-                if (contentItem.itemName == null) {
-                    contentItem.itemName = ""; // null values cause exceptions in openhab...
+                if (contentItem.getItemName() == null) {
+                    contentItem.setItemName(""); // null values cause exceptions in openhab...
                 }
-                handler.updateState(handler.channelNowPlayingItemNameUID, new StringType(contentItem.itemName));
+                handler.updateState(handler.channelNowPlayingItemNameUID, new StringType(contentItem.getItemName()));
                 handler.currentContentItem = contentItem;
                 handler.checkOperationMode();
             }
             if (prevState == State.ContentItem && state == State.Preset) {
-                preset.contentItem = contentItem;
+                preset.setContentItem(contentItem);
             }
             if (prevState == State.Preset && state == State.Presets) {
-                handler.presets.put(preset.pos, preset);
+                handler.presets.put(preset.getPos(), preset);
                 handler.checkOperationMode();
             }
             if (prevState == State.Volume) {
@@ -1082,24 +1102,23 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             if (currentContentItem != null) {
                 om = null;
                 for (Preset ps : presets.values()) {
-                    if (ps.contentItem.equals(currentContentItem)) {
+                    if (ps.getContentItem().equals(currentContentItem)) {
                         if (ps.posIsValid()) {
                             om = OperationModeType.INTERNET_RADIO;
                             rs = ps.getRadioStation();
                         } else {
-                            logger.warn(thing + ": Invalid preset active: " + ps.pos);
+                            logger.warn(thing + ": Invalid preset active: " + ps.getPos());
                         }
                     }
                 }
                 if (om == null) {
                     om = OperationModeType.OTHER;
-                    switch (currentContentItem.operationMode) {
+                    switch (currentContentItem.getOperationMode()) {
                         case STANDBY:
                             om = OperationModeType.STANDBY;
                             break;
                         case INTERNET_RADIO:
                             om = OperationModeType.INTERNET_RADIO;
-                            checkSourceType();
                             break;
                         case BLUETOOTH:
                             om = OperationModeType.BLUETOOTH;
@@ -1129,26 +1148,5 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             updateState(channelRadioStationUID, new StringType(rs.name()));
             radioStation = rs;
         }
-    }
-
-    protected void checkSourceType() {
-        // RadioStationType newRadioStationType = RadioStationType.UNKNOWN;
-        // if (thing.getStatus() == ThingStatus.ONLINE) {
-        // if (currentContentItem != null) {
-        // for (Preset ps : presets.values()) {
-        // if ((ps != null) && (ps.contentItem.radioStation.equals(radioStation))) {
-        // newRadioStationType = ps.contentItem.radioStation;
-        // }
-        // }
-        // } else {
-        // newRadioStationType = RadioStationType.UNKNOWN;
-        // }
-        // } else {
-        // newRadioStationType = RadioStationType.UNKNOWN;
-        // }
-        // if (currentContentItem.radioStation != newRadioStationType) {
-        // updateState(channelRadioStationUID, new StringType(newRadioStationType.name()));
-        // radioStation = newRadioStationType;
-        // }
     }
 }
