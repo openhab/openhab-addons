@@ -342,12 +342,10 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
             } else {
                 logger.debug("Received unknown status update from Onkyo Receiver @{}: data={}",
                         connection.getConnectionName(), data);
-
             }
         } catch (Exception ex) {
             logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
                     connection.getConnectionName(), ex.getMessage(), data);
-
         }
     }
 
