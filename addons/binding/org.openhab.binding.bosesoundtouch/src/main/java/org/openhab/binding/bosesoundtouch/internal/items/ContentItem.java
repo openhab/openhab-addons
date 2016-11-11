@@ -1,15 +1,12 @@
 package org.openhab.binding.bosesoundtouch.internal.items;
 
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
-import org.openhab.binding.bosesoundtouch.types.RadioStationType;
 
 public class ContentItem {
     private OperationModeType operationMode;
     private String location;
     private String sourceAccount;
     private String itemName;
-
-    public RadioStationType radioStation;
 
     private boolean isEqual(String s1, String s2) {
         if (s1 == s2) {
@@ -25,9 +22,6 @@ public class ContentItem {
     public boolean equals(Object obj) {
         if (obj instanceof ContentItem) {
             ContentItem other = (ContentItem) obj;
-            if (other.radioStation != this.radioStation) {
-                return false;
-            }
             if (!isEqual(other.location, this.location)) {
                 return false;
             }

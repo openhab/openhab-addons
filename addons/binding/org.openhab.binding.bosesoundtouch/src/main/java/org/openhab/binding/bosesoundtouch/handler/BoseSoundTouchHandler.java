@@ -164,7 +164,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             } else if (defaultRadioStationString.equals("PRESET_6")) {
                 defaultRadioStation = RadioStationType.PRESET_6;
             } else {
-                defaultRadioStation = RadioStationType.UNKNOWN;
+                defaultRadioStation = RadioStationType.PRESET_1;
+                logger.warn("Error reading default radio station. PRESET_1 is selected");
             }
         }
 
@@ -914,19 +915,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 contentItem = new ContentItem();
                 String source = attributes.getValue("source");
                 if (source.equals("INTERNET_RADIO")) {
-                    contentItem.radioStation = handler.defaultRadioStation;
                     contentItem.setOperationMode(OperationModeType.INTERNET_RADIO);
                 } else if (source.equals("STANDBY")) {
-                    contentItem = new ContentItem();
                     contentItem.setOperationMode(OperationModeType.STANDBY);
                 } else if (source.equals("AUX")) {
-                    contentItem = new ContentItem();
                     contentItem.setOperationMode(OperationModeType.AUX);
                 } else if (source.equals("BLUETOOTH")) {
-                    contentItem = new ContentItem();
                     contentItem.setOperationMode(OperationModeType.BLUETOOTH);
                 } else {
-                    contentItem = new ContentItem();
                     contentItem.setOperationMode(OperationModeType.OTHER);
                     logger.error(handler.thing + ": Unknown SourceType: " + source + " - needs to be defined!");
                 }
