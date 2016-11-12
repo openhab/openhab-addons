@@ -66,9 +66,32 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
 	 */
 	private static Set<Locale> getSupportedLocales() {
 		Set<Locale> locales = new HashSet<Locale>();
-		locales.add(Locale.forLanguageTag("en-us"));
-		locales.add(Locale.forLanguageTag("en-gb"));
+		locales.add(Locale.forLanguageTag("ca-es"));
+		locales.add(Locale.forLanguageTag("da-dk"));
 		locales.add(Locale.forLanguageTag("de-de"));
+		locales.add(Locale.forLanguageTag("en-au"));
+		locales.add(Locale.forLanguageTag("en-ca"));
+		locales.add(Locale.forLanguageTag("en-gb"));
+		locales.add(Locale.forLanguageTag("en-in"));
+		locales.add(Locale.forLanguageTag("en-us"));
+		locales.add(Locale.forLanguageTag("es-es"));
+		locales.add(Locale.forLanguageTag("es-mx"));
+		locales.add(Locale.forLanguageTag("fi-fi"));
+		locales.add(Locale.forLanguageTag("fr-ca"));
+		locales.add(Locale.forLanguageTag("fr-fr"));
+		locales.add(Locale.forLanguageTag("it-it"));
+		locales.add(Locale.forLanguageTag("ja-jp"));
+		locales.add(Locale.forLanguageTag("ko-kr"));
+		locales.add(Locale.forLanguageTag("nb-no"));
+		locales.add(Locale.forLanguageTag("nl-nl"));
+		locales.add(Locale.forLanguageTag("pl-pl"));
+		locales.add(Locale.forLanguageTag("pt-br"));
+		locales.add(Locale.forLanguageTag("pt-pt"));
+		locales.add(Locale.forLanguageTag("ru-ru"));
+		locales.add(Locale.forLanguageTag("sv-se"));
+		locales.add(Locale.forLanguageTag("zh-cn"));
+		locales.add(Locale.forLanguageTag("zh-hk"));
+		locales.add(Locale.forLanguageTag("zh-tw"));
 		return locales;
 	}
 
