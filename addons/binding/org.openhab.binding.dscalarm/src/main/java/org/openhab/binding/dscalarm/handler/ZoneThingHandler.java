@@ -109,10 +109,12 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
             switch (channelUID.getId()) {
                 case ZONE_BYPASS_MODE:
                     if (command == OnOffType.OFF) {
-                        String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber()) + "#";
+                        String data = String.valueOf(getPartitionNumber()) + "*1"
+                                + String.format("%02d", getZoneNumber()) + "#";
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
                     } else if (command == OnOffType.ON) {
-                        String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber()) + "#";
+                        String data = String.valueOf(getPartitionNumber()) + "*1"
+                                + String.format("%02d", getZoneNumber()) + "#";
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
                     }
                     break;
@@ -143,7 +145,8 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                 DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
                 ChannelUID channelUID = null;
-                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                        .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
                 logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 int state = 0;
