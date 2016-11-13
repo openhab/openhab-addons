@@ -31,6 +31,9 @@ public class HomekitAccessoryFactory {
             case DIMMABLE_LIGHTBULB:
                 return new HomekitDimmableLightbulbImpl(taggedItem, itemRegistry, updater);
 
+            case COLORFUL_LIGHTBULB:
+                return new HomekitColorfulLightbulbImpl(taggedItem, itemRegistry, updater);
+
             case THERMOSTAT:
                 return new HomekitThermostatImpl(taggedItem, itemRegistry, updater, settings);
 
