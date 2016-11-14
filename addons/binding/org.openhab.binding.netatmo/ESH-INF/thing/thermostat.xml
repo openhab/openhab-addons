@@ -17,12 +17,13 @@
             <!--  Common to all devices -->
             <channel id="LastStatusStore" typeId="lastStatusStore" />
             <channel id="WifiStatus" typeId="system.signal-strength" />
-            <channel id="Location" typeId="location" />      
+            <channel id="Location" typeId="location" />
+            <!--  Global configuration channels -->
+            <channel id="Unit" typeId="unit" />      
         </channels>
         
         <properties>
              <property name="signalLevels">86,71,56</property>
-             <property name="actualApp">app_thermostat</property>
         </properties>             
        
         <config-description-ref uri="thing-type:netatmo:device" />
@@ -39,7 +40,7 @@
         
         <channels>           
             <channel id="Temperature" typeId="temperature" />
-            <channel id="SetpointTemperature" typeId="setpointTemp" />
+            <channel id="Sp_Temperature" typeId="setpointTemp" />
             <channel id="BoilerOn" typeId="boilerOn" />
             <channel id="BoilerOff" typeId="boilerOff" />
             <channel id="SetpointMode" typeId="setpointMode" />
@@ -62,10 +63,9 @@
              <property name="batteryLow">3300</property>
              <property name="batteryMax">4500</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_thermostat</property>
         </properties>        
                 
-        <config-description-ref uri="thing-type:netatmo:module" />
+        <config-description-ref uri="thing-type:netatmo:natherm1" />
     </thing-type>    
     
 </thing:thing-descriptions>

@@ -27,12 +27,15 @@
             <!--  Common to all devices -->
             <channel id="LastStatusStore" typeId="lastStatusStore" />
             <channel id="WifiStatus" typeId="system.signal-strength" />
-            <channel id="Location" typeId="location" />                     
+            <channel id="Location" typeId="location" />     
+            <!--  Global configuration channels -->
+            <channel id="Unit" typeId="unit" />
+            <channel id="WindUnit" typeId="windUnit" />
+            <channel id="PressureUnit" typeId="pressureUnit" />
         </channels>
-        
+                           
         <properties>
              <property name="signalLevels">86,71,56</property>
-             <property name="actualApp">app_station</property>
         </properties>         
         
         <config-description-ref uri="thing-type:netatmo:device" />        
@@ -66,7 +69,6 @@
              <property name="batteryLow">4500</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties> 
        
         <config-description-ref uri="thing-type:netatmo:module" />
@@ -98,7 +100,6 @@
              <property name="batteryLow">4770</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties>         
        
         <config-description-ref uri="thing-type:netatmo:module" />
@@ -127,7 +128,6 @@
              <property name="batteryLow">4500</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties>           
         
         <config-description-ref uri="thing-type:netatmo:module" />
@@ -162,7 +162,6 @@
              <property name="batteryLow">4920</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties>          
         
         <config-description-ref uri="thing-type:netatmo:module" />

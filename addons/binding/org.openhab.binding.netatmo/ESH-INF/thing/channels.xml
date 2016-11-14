@@ -71,7 +71,7 @@
     <channel-type id="timeUtc" advanced="true">
         <item-type>DateTime</item-type>
         <label>Measurement Time</label>
-        <description>Timestamp when last data was measured</description>
+        <description>Timestamp when data was measured</description>
         <state readOnly="true"/>
     </channel-type>      
     
