@@ -110,13 +110,13 @@ The following channels are currently supported.
 | sensorMotion              | Switch    | Motion        | SensorBinary - general_purpose, motion |
 | switchPowerOutlet         | Switch    | PowerOutlet   | SwitchBinary - *Special case:* no probe type for power outlet available - icon *switch* acts as selection criterion
 | switchColorTemperature    | Dimmer    | ColorLight    | SwitchMultilevel - switchColor_soft_white, switchColor_cold_white |
+| thermostatMode            | Switch    | Temperature   | SwitchBinary - thermostat_mode |
 
 Currently unsupported Z-Way probe types:
 
 - SwitchMultilevel: motor (selection criterion for rollershutter - will be implemented soon)
 - SensorBinary: cooling, all alarm types (resulting from Z-Wave command class AlarmSensor(deprecated) and Alarm)
 - SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
-- SwitchBinary: thermostat_mode
 
 ### Universial channels for the devices
 
@@ -131,9 +131,10 @@ The following channels represent universial channels if no further device inform
 | switchBinary      | Switch | Switch       | SwitchBinary |
 | switchMultilevel  | Number | -            | SwitchMultilevel |
 | switchColor       | Color  | ColorLight   | SwitchRGBW |
-| switchControl     | Switch | Switch       | SwitchControl ||
+| switchControl     | Switch | Switch       | SwitchControl |
+| thermostat        | Number | Temperature  | Thermostat |
 
-Currently unsupported Z-Way device types: SwitchToggle, Thermostat, ToggleButton.
+Currently unsupported Z-Way device types: SwitchToggle, ToggleButton.
 
 ### Channels for the Z-Way Server (Bridge)
 

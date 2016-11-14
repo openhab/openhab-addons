@@ -46,6 +46,9 @@ public class ZWayBindingConstants {
     // switch multilevel (color)
     public final static String SWITCH_COLOR_CHANNEL = "switchColor";
     public final static String SWITCH_COLOR_TEMPERATURE_CHANNEL = "switchColorTemperature";
+    // thermostat
+    public final static String THERMOSTAT_MODE_CHANNEL = "thermostatMode";
+    public final static String THERMOSTAT_SET_POINT_CHANNEL = "thermostatSetPoint";
     // sensor multilevel
     public final static String SENSOR_TEMPERATURE_CHANNEL = "sensorTemperature";
     public final static String SENSOR_LUMINOSITY_CHANNEL = "sensorLuminosity";

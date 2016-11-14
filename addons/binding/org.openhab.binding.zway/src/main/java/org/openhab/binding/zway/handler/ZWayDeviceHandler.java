@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,13 +35,11 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.zway.ZWayBindingConstants;
+import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.fh_zwickau.informatik.sensor.model.devices.Color;
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceCommand;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
@@ -308,37 +305,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 return;
             }
 
-            // Store level locally
-            String level = device.getMetrics().getLevel();
-
-            // Set item state to level depending on device type
-            if (device instanceof Battery) {
-                updateState(channel.getUID(), getMultilevelState(level));
-            } else if (device instanceof Doorlock) {
-                updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
-            } else if (device instanceof SensorBinary) {
-                if (channel.getAcceptedItemType().equals("Contact")) {
-                    updateState(channel.getUID(), getDoorlockState(level.toLowerCase()));
-                } else {
-                    updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
-                }
-            } else if (device instanceof SensorMultilevel) {
-                updateState(channel.getUID(), getMultilevelState(level));
-            } else if (device instanceof SwitchBinary) {
-                updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
-            } else if (device instanceof SwitchMultilevel) {
-                updateState(channel.getUID(), getMultilevelState(level));
-            } else if (device instanceof SwitchRGBW) {
-                updateState(channel.getUID(), getColorState(device.getMetrics().getColor()));
-            } else if (device instanceof SwitchToggle) {
-                // ?
-            } else if (device instanceof Thermostat) {
-                // TODO
-            } else if (device instanceof SwitchControl) {
-                updateState(channel.getUID(), getBinaryState(level.toLowerCase()));
-            } else if (device instanceof ToggleButton) {
-                // TODO
-            }
+            updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
 
             // 2.) Trigger update function, soon as the value has been updated, openHAB will be notified
             device.update();
@@ -535,8 +502,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     } else if (device instanceof SwitchToggle) {
                         // possible commands: ?
                     } else if (device instanceof Thermostat) {
-                        // possible commands: setMode(mode), setTemp(temp)
-                        // TODO
+                        if (command instanceof DecimalType) {
+                            logger.debug("Handle command: DecimalType");
+
+                            device.exact(command.toString());
+                        }
+
                     } else if (device instanceof SwitchControl) {
                         // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(), downstop()
                         if (command instanceof OnOffType) {
@@ -559,74 +530,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         } else {
             logger.warn("Devices not loaded");
         }
-    }
-
-    /**
-     * Transforms an value in an openHAB type.
-     *
-     * @param multilevel sensor value
-     * @return transformed openHAB state
-     */
-    private State getMultilevelState(String multilevelSensorValue) {
-        if (multilevelSensorValue != null) {
-            return new DecimalType(multilevelSensorValue);
-        }
-        return UnDefType.UNDEF;
-    }
-
-    /**
-     * Transforms an value in an openHAB type.
-     *
-     * @param binary switch value
-     * @return transformed openHAB state
-     */
-    private State getBinaryState(String binarySwitchState) {
-        if (binarySwitchState != null) {
-            if (binarySwitchState.equals("on")) {
-                return OnOffType.ON;
-            } else if (binarySwitchState.equals("off")) {
-                return OnOffType.OFF;
-            }
-        }
-        return UnDefType.UNDEF;
-    }
-
-    /**
-     * Transforms an value in an openHAB type.
-     * - ON to OPEN
-     * - OFF to CLOSED
-     *
-     * @param binary sensor state
-     * @return
-     */
-    private State getDoorlockState(String binarySensorState) {
-        if (binarySensorState != null) {
-            if (binarySensorState.equals("on")) {
-                return OpenClosedType.OPEN;
-            } else if (binarySensorState.equals("off")) {
-                return OpenClosedType.CLOSED;
-            }
-        }
-        return UnDefType.UNDEF;
-    }
-
-    /**
-     * Transforms an value in an openHAB type.
-     *
-     * @param Z-Way color value
-     * @return transformed openHAB state
-     */
-    private State getColorState(Color colorSwitchState) {
-        if (colorSwitchState != null && colorSwitchState.getRed() != null && colorSwitchState.getGreen() != null
-                && colorSwitchState.getBlue() != null) {
-
-            HSBType hsbType = HSBType.fromRGB(colorSwitchState.getRed(), colorSwitchState.getGreen(),
-                    colorSwitchState.getBlue());
-
-            return hsbType;
-        }
-
-        return UnDefType.UNDEF;
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
@@ -674,7 +577,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 id = SWITCH_COLOR_CHANNEL;
                 acceptedItemType = "Color";
             } else if (device instanceof Thermostat) {
-                // TODO
+                id = THERMOSTAT_SET_POINT_CHANNEL;
+                acceptedItemType = "Number";
             } else if (device instanceof SwitchControl) {
                 id = SWITCH_CONTROL_CHANNEL;
                 acceptedItemType = "Switch";
@@ -768,6 +672,15 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                         case PROBE_TYPE_SWITCH_COLOR_SOFT_WHITE:
                             id = SWITCH_COLOR_TEMPERATURE_CHANNEL;
                             acceptedItemType = "Dimmer";
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (device instanceof SwitchBinary) {
+                    switch (device.getProbeType()) {
+                        case PROBE_TYPE_THERMOSTAT_MODE:
+                            id = THERMOSTAT_MODE_CHANNEL;
+                            acceptedItemType = "Switch";
                             break;
                         default:
                             break;

@@ -177,7 +177,20 @@
             
     <!-- TODO: SwitchToggle ? -->    
     
-    <!-- TODO: Thermostat -->
+    <channel-type id="thermostatMode">
+        <item-type>Switch</item-type>
+        <label>Thermostat mode</label>
+        <description>The channel allows the control or display of a thermostat (mode). A thermostat can have up to three states (modes): off, heating and cooling. The state of heating and cooling is alternately set at the state on.</description>
+        <category>Temperature</category>
+        <state readOnly="false" />
+    </channel-type>
+    
+    <channel-type id="thermostatSetPoint">
+        <item-type>Number</item-type>
+        <label>Thermostat set point</label>
+        <category>Temperature</category>
+        <state readOnly="false" />
+    </channel-type>
     
     <channel-type id="switchControl">
         <item-type>Switch</item-type>
