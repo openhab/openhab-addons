@@ -59,6 +59,12 @@ abstract class AbstractNetatmoWelcomeHandler extends BaseThingHandler {
         return welcomeHomes.get(homeID);
     }
 
+    @Override
+    public void initialize() {
+        super.initialize();
+        updateStatus(ThingStatus.UNINITIALIZED);
+    }
+
     protected void setWelcomeHomes(String homeID, NAWelcomeHomes welcomeHomes) {
         AbstractNetatmoWelcomeHandler.welcomeHomes.put(homeID, welcomeHomes);
 

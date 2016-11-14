@@ -26,6 +26,7 @@ import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
 
 import io.swagger.client.CollectionFormats.CSVParams;
+import io.swagger.client.api.ThermostatApi;
 import io.swagger.client.model.NAThermostat;
 
 /**
@@ -44,8 +45,13 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
 
     @Override
     public void updateChannels(NetatmoBridgeHandler bridgeHandler, NAModuleAdapter module) {
-        measures = bridgeHandler.getThermostatApi().getmeasure(configuration.getParentId(), "max",
-                new CSVParams(measuredChannels), module.getId(), null, null, 1, true, true);
+        if (measuredChannels.size() > 0) {
+            ThermostatApi thermostatApi = bridgeHandler.getThermostatApi();
+            String parentId = getConfiguration().getParentId();
+            String moduleId = module.getId();
+            CSVParams csvParams = new CSVParams(measuredChannels);
+            measures = thermostatApi.getmeasure(parentId, "max", csvParams, moduleId, null, null, 1, true, true);
+        }
         super.updateChannels(bridgeHandler, module);
     }
 
@@ -74,18 +80,18 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
         NetatmoBridgeHandler bridgeHandler = (NetatmoBridgeHandler) getBridge().getHandler();
         try {
             if (command == RefreshType.REFRESH) {
-                updateChannels(configuration.getParentId());
+                updateChannels(getConfiguration().getParentId());
             } else {
                 switch (channelUID.getId()) {
                     case CHANNEL_SETPOINT_MODE:
-                        bridgeHandler.getThermostatApi().setthermpoint(configuration.getParentId(),
-                                configuration.getEquipmentId(), command.toString(), null, null);
+                        bridgeHandler.getThermostatApi().setthermpoint(getConfiguration().getParentId(),
+                                getConfiguration().getEquipmentId(), command.toString(), null, null);
                         break;
                     case CHANNEL_SETPOINT_TEMP:
                         Calendar cal = Calendar.getInstance();
-                        cal.add(Calendar.MINUTE, configuration.setpointDefaultDuration);
-                        bridgeHandler.getThermostatApi().setthermpoint(configuration.getParentId(),
-                                configuration.getEquipmentId(), "manual", (int) (cal.getTimeInMillis() / 1000),
+                        cal.add(Calendar.MINUTE, getConfiguration().setpointDefaultDuration);
+                        bridgeHandler.getThermostatApi().setthermpoint(getConfiguration().getParentId(),
+                                getConfiguration().getEquipmentId(), "manual", (int) (cal.getTimeInMillis() / 1000),
                                 Float.parseFloat(command.toString()));
                         break;
 

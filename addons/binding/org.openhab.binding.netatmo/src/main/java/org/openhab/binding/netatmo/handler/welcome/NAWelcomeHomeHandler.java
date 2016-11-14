@@ -13,19 +13,23 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.config.NetatmoWelcomeConfiguration;
+import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.client.model.NAWelcomeEvents;
 import io.swagger.client.model.NAWelcomeHomeData;
@@ -40,8 +44,10 @@ import io.swagger.client.model.NAWelcomePersons;
  */
 
 public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
+    private static Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+
     private NetatmoWelcomeConfiguration configuration;
-    private boolean bScheduler = false;
+    private ScheduledFuture<?> refreshJob;
 
     private int iPerson = -1;
     private int iUnknown = -1;
@@ -49,7 +55,34 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
 
     public NAWelcomeHomeHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
         this.configuration = this.getConfigAs(NetatmoWelcomeConfiguration.class);
+
+        refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                updateChannels();
+            }
+        }, 60000, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+
+    }
+
+    @Override
+    public void dispose() {
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
     }
 
     public String getId() {
@@ -57,23 +90,10 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
     }
 
     @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        super.bridgeHandlerInitialized(thingHandler, bridge);
-
-        if (!bScheduler) {
-            bScheduler = true;
-            scheduler.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    updateChannels();
-                }
-            }, 1, configuration.refreshInterval, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    @Override
     protected void updateChannels() {
         try {
+            updateStatus(ThingStatus.INITIALIZING);
+
             NAWelcomeHomeData myHomeDate = bridgeHandler.getWelcomeApi().gethomedata(getId(), null).getBody();
             for (NAWelcomeHomes myHome : myHomeDate.getHomes()) {
                 if (myHome.getId().equalsIgnoreCase(getId())) {
@@ -94,7 +114,7 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
 
                     setWelcomeHomes(myHome.getId(), myHome);
 
-                    // Check if somebody ist at home
+                    // Check if somebody is at home
                     iPerson = 0;
                     iUnknown = 0;
                     bSomebodyAtHome = false;
@@ -123,7 +143,11 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
                     break;
                 }
             }
-        } catch (Exception e) {
+
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+
+        } catch (Throwable e) {
+            logger.error("Exception when trying to update channels: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }

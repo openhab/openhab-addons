@@ -40,7 +40,11 @@ public class NAMainHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
     @Override
     protected NADeviceAdapter<?> updateReadings(NetatmoBridgeHandler bridgeHandler, String equipmentId) {
         NAStationDataBody stationDataBody = bridgeHandler.getStationsDataBody(equipmentId);
-        return new NAStationAdapter(stationDataBody);
+        if (stationDataBody != null) {
+            return new NAStationAdapter(stationDataBody);
+        } else {
+            return null;
+        }
     }
 
     @Override

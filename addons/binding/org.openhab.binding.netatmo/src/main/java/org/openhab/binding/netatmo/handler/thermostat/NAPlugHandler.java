@@ -32,7 +32,11 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NetatmoDeviceConfigurati
     @Override
     protected NADeviceAdapter<?> updateReadings(NetatmoBridgeHandler bridgeHandler, String equipmentId) {
         NAThermostatDataBody thermostatDataBody = bridgeHandler.getThermostatsDataBody(equipmentId);
-        return new NAPlugAdapter(thermostatDataBody);
+        if (thermostatDataBody != null) {
+            return new NAPlugAdapter(thermostatDataBody);
+        } else {
+            return null;
+        }
     }
 
 }

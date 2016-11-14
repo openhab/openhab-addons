@@ -36,6 +36,12 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
 
     protected NetatmoModuleHandler(Thing thing, Class<X> configurationClass) {
         super(thing, configurationClass);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
         try {
             this.batteryMax = Integer.parseInt(getProperty(PROPERTY_BATTERY_MAX));
             this.batteryMin = Integer.parseInt(getProperty(PROPERTY_BATTERY_MIN));
@@ -70,7 +76,7 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
 
     public void updateChannels(NetatmoBridgeHandler bridgeHandler, NAModuleAdapter module) {
         this.module = module;
-        super.updateChannels(configuration.getParentId());
+        super.updateChannels(getConfiguration().getParentId());
     }
 
 }

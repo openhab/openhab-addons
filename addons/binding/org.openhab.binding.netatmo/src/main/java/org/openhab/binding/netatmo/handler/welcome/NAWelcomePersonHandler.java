@@ -55,6 +55,8 @@ public class NAWelcomePersonHandler extends AbstractNetatmoWelcomeHandler {
     @Override
     protected void updateChannels() {
         try {
+            updateStatus(ThingStatus.INITIALIZING);
+
             for (Thing handler : bridgeHandler.getThing().getThings()) {
                 ThingHandler thingHandler = handler.getHandler();
                 if (thingHandler instanceof NAWelcomeHomeHandler) {

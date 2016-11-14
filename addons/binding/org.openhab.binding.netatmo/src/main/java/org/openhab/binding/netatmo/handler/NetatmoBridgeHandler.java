@@ -72,7 +72,6 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         apiClient.getTokenEndPoint().setScope(getApiScope());
         apiClient.getAdapterBuilder().setLogLevel(LogLevel.NONE);
         super.initialize();
-
     }
 
     private String getApiScope() {
@@ -119,6 +118,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }
         return thermostatApi;
     }
+
     public NAStationDataBody getStationsDataBody(String equipmentId) {
         if (getStationApi() != null) {
             try {

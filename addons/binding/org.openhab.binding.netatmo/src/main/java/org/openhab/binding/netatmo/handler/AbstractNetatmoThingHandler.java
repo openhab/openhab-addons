@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -48,17 +47,28 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
     protected NAMeasureResponse measures = null;
 
     final Class<X> configurationClass;
-    protected X configuration;
+    private X configuration = null;
 
     AbstractNetatmoThingHandler(Thing thing, Class<X> configurationClass) {
         super(thing);
         this.configurationClass = configurationClass;
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
         String signalLevels = getProperty(PROPERTY_SIGNAL_LEVELS);
         if (signalLevels != null) {
             List<String> thresholds = Arrays.asList(signalLevels.split(","));
             for (String threshold : thresholds) {
                 signalThresholds.add(Integer.parseInt(threshold));
             }
+        }
+
+        List<Channel> channels = getThing().getChannels();
+        for (Channel channel : channels) {
+            addChannelToMeasures(channel.getUID());
         }
     }
 
@@ -92,12 +102,11 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
         }
     }
 
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+    protected X getConfiguration() {
+        if (configuration == null) {
             configuration = this.getConfigAs(configurationClass);
         }
+        return configuration;
     }
 
     protected void updateChannels(String equipmentId) {
@@ -145,8 +154,16 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        addChannelToMeasures(channelUID);
+    }
+
+    /*
+     * If this channel value is provided as a measure, then add it
+     * in the getMeasure parameter list
+     */
+    protected void addChannelToMeasures(ChannelUID channelUID) {
         String channel = channelUID.getId();
-        if (MEASURE_CHANNELS.contains(channel)) {
+        if (MEASURABLE_CHANNELS.contains(channel)) {
             if (measuredChannels.indexOf(channel) == -1) {
                 measuredChannels.add(channel);
             }
@@ -156,7 +173,7 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         String channel = channelUID.getId();
-        if (MEASURE_CHANNELS.contains(channel)) {
+        if (MEASURABLE_CHANNELS.contains(channel)) {
             if (measuredChannels.indexOf(channel) != -1) {
                 measuredChannels.remove(channel);
             }

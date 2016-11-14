@@ -187,6 +187,6 @@ public class NetatmoBindingConstants {
             THERM1_THING_TYPE, WELCOME_HOME_THING_TYPE, WELCOME_CAMERA_THING_TYPE, WELCOME_PERSON_THING_TYPE,
             WELCOME_EVENT_THING_TYPE, APIBRIDGE_THING_TYPE);
 
-    public final static Set<String> MEASURE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
+    public final static Set<String> MEASURABLE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
 
 }

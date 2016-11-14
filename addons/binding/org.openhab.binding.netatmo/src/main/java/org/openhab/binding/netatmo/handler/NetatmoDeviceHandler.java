@@ -10,6 +10,7 @@ package org.openhab.binding.netatmo.handler;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -23,6 +24,8 @@ import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
 import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.client.model.NAPlace;
 
@@ -37,6 +40,8 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
         extends AbstractNetatmoThingHandler<X> {
 
     protected NADeviceAdapter<?> device;
+    private static Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+    private ScheduledFuture<?> refreshJob;
 
     public NetatmoDeviceHandler(Thing thing, Class<X> configurationClass) {
         super(thing, configurationClass);
@@ -46,12 +51,20 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            scheduler.scheduleAtFixedRate(new Runnable() {
+            refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    updateChannels(configuration.getEquipmentId());
+                    updateChannels(getConfiguration().getEquipmentId());
                 }
-            }, 1, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+            }, 1, getConfiguration().refreshInterval, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
         }
     }
 
@@ -60,10 +73,14 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
     @Override
     protected void updateChannels(String equipmentId) {
         NetatmoBridgeHandler bridgeHandler = (NetatmoBridgeHandler) getBridge().getHandler();
-        device = updateReadings(bridgeHandler, equipmentId);
-        if (device != null) {
-            super.updateChannels(equipmentId);
-            updateChildModules(bridgeHandler, equipmentId);
+        try {
+            device = updateReadings(bridgeHandler, equipmentId);
+            if (device != null) {
+                super.updateChannels(equipmentId);
+                updateChildModules(bridgeHandler, equipmentId);
+            }
+        } catch (Exception e) {
+            logger.error("Exception when trying to update channels: {}", e.getMessage());
         }
     }
 
@@ -92,9 +109,10 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
             if (thingHandler instanceof NetatmoModuleHandler) {
                 @SuppressWarnings("unchecked")
                 NetatmoModuleHandler<NetatmoModuleConfiguration> moduleHandler = (NetatmoModuleHandler<NetatmoModuleConfiguration>) thingHandler;
-                String parentId = moduleHandler.configuration.getParentId();
+                NetatmoModuleConfiguration moduleConfiguration = moduleHandler.getConfiguration();
+                String parentId = moduleConfiguration.getParentId();
                 if (equipmentId.equalsIgnoreCase(parentId)) {
-                    String childId = moduleHandler.configuration.getEquipmentId();
+                    String childId = moduleHandler.getConfiguration().getEquipmentId();
                     NAModuleAdapter module = device.getModules().get(childId);
                     moduleHandler.updateChannels(bridgeHandler, module);
                 }
