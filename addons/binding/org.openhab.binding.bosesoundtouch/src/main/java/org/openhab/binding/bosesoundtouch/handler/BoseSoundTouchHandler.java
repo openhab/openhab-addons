@@ -75,6 +75,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private String attrDeviceId; // deviceID attribute for XML building...
 
+    private ChannelUID channelPowerUID;
     private ChannelUID channelOperationModeUID;
     private ChannelUID channelVolumeUID;
     private ChannelUID channelMuteUID;
@@ -129,6 +130,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         operationMode = OperationModeType.OFFLINE;
         presets = new HashMap<>();
         currentSource = null;
+        channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
         channelOperationModeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_OPERATION_MODE);
         channelVolumeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
         channelMuteUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_MUTE);
@@ -204,6 +206,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 sendRequestInWebSocket("volume", null,
                         "<volume " + attrDeviceId + ">" + ((PercentType) command).intValue() + "</volume>");
             }
+        } else if (channelUID.equals(channelPowerUID)) {
+            OnOffType onOffType = (OnOffType) command;
+            if (operationMode == OperationModeType.STANDBY && onOffType == OnOffType.ON) {
+                simulateRemoteKey(RemoteKey.POWER);
+            }
+            if (operationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
+                simulateRemoteKey(RemoteKey.POWER);
+            }
         } else if (channelUID.equals(channelOperationModeUID)) {
             // try to parse string command...
             String cmd = command.toString();
@@ -226,6 +236,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     simulateRemoteKey(RemoteKey.PRESET_6);
                 }
             } else if (cmd.equals("BLUETOOTH")) {
+                // TODO MAX 10 VERSUCHE
                 while (operationMode != OperationModeType.BLUETOOTH) {
                     simulateRemoteKey(RemoteKey.AUX_INPUT);
                     try {

@@ -10,6 +10,7 @@
         <description>The represents a Bose SoundTouch device like the SoundTouch 10, 20, 30, etc</description>
 
         <channels>
+            <channel id="power" typeId="power" />
             <channel id="operationMode" typeId="operationMode" />
             <channel id="volume" typeId="volume" />
             <channel id="mute" typeId="mute" />
@@ -30,10 +31,6 @@
             <channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
         </channels>
         <config-description>
-            <parameter name="room" type="text" required="false">
-                <label>Room</label>
-                <description>The room name.</description>
-            </parameter>
             <parameter name="serialNumber" type="text" required="false">
                 <label>Serial Number</label>
                 <description>The Serial Number identifies one specific device.</description>
@@ -55,6 +52,11 @@
     </thing-type>
 
     <!-- Sample Channel Type -->
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>SoundTouch power state. In real this switches between standby and operational</description>
+    </channel-type>
     <channel-type id="operationMode">
         <item-type>String</item-type>
         <label>Operation Mode</label>
@@ -77,7 +79,7 @@
     <channel-type id="mute">
         <item-type>Switch</item-type>
         <label>Volume Mute</label>
-        <description>Mute state of the Thing.</description>
+        <description>Mute state of the Thing</description>
     </channel-type>
     <channel-type id="radioStation">
         <item-type>String</item-type>

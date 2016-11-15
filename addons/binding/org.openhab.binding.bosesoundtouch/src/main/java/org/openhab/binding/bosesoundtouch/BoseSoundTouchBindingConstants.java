@@ -36,6 +36,7 @@ public class BoseSoundTouchBindingConstants {
             Arrays.asList(THING_TYPE_DEVICE));
 
     // List of all Channel ids
+    public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_OPERATION_MODE = "operationMode";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
