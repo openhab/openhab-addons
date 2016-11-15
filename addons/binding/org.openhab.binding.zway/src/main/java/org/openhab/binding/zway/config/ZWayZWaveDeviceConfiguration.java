@@ -18,14 +18,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayZWaveDeviceConfiguration {
-    private Integer mNodeId;
+    private Integer nodeId;
 
     public Integer getNodeId() {
-        return mNodeId;
+        return nodeId;
     }
 
     public void setNodeId(Integer nodeId) {
-        this.mNodeId = nodeId;
+        this.nodeId = nodeId;
     }
 
     @Override

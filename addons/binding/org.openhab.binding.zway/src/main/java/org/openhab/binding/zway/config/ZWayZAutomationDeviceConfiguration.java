@@ -18,14 +18,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayZAutomationDeviceConfiguration {
-    private String mDeviceId;
+    private String deviceId;
 
     public String getDeviceId() {
-        return mDeviceId;
+        return deviceId;
     }
 
     public void setDeviceId(String deviceId) {
-        this.mDeviceId = deviceId;
+        this.deviceId = deviceId;
     }
 
     @Override

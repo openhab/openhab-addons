@@ -8,14 +8,12 @@
  */
 package org.openhab.binding.zway.handler;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.*;
+import static org.openhab.binding.zway.ZWayBindingConstants.THING_TYPE_DEVICE;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -134,7 +132,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                 "Checking configuration and bridge...");
 
         // Configuration - thing status update with a error message
-        mConfig = loadAndCheckConfiguration(getConfig());
+        mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
             logger.debug("Configuration complete: {}", mConfig);
@@ -143,8 +141,8 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
             // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
             scheduler.schedule(new Initializer(), 2, TimeUnit.SECONDS);
         } else {
-            logger.warn("Initializing Z-Way device handler failed (device id is null): {}", getThing().getLabel());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Z-Way device id required!");
+            logger.warn("Initializing Z-Way device handler failed (node id is null): {}", getThing().getLabel());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Z-Way node id required!");
         }
     }
 
@@ -152,18 +150,10 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         super.initialize(); // starts polling job and register all linked items
     }
 
-    private ZWayZWaveDeviceConfiguration loadAndCheckConfiguration(Configuration thingConfig) {
-        ZWayZWaveDeviceConfiguration config = new ZWayZWaveDeviceConfiguration();
+    private ZWayZWaveDeviceConfiguration loadAndCheckConfiguration() {
+        ZWayZWaveDeviceConfiguration config = getConfigAs(ZWayZWaveDeviceConfiguration.class);
 
-        if (StringUtils.isNotBlank(thingConfig.get(DEVICE_CONFIG_NODE_ID).toString())) {
-            try {
-                config.setNodeId(Integer.parseInt(thingConfig.get(DEVICE_CONFIG_NODE_ID).toString()));
-            } catch (NumberFormatException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Node id have to be a number.");
-                return null;
-            }
-        } else {
+        if (config.getNodeId() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Z-Wave device couldn't create, because the node id is missing.");
             return null;

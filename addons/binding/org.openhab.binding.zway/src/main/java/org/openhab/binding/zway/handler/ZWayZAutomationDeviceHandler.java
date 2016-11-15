@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.zway.handler;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.*;
+import static org.openhab.binding.zway.ZWayBindingConstants.THING_TYPE_VIRTUAL_DEVICE;
 
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -117,7 +116,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                 "Checking configuration and bridge...");
 
         // Configuration - thing status update with a error message
-        mConfig = loadAndCheckConfiguration(getConfig());
+        mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
             logger.debug("Configuration complete: {}", mConfig);
@@ -135,12 +134,10 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
         super.initialize(); // starts polling job and register all linked items
     }
 
-    private ZWayZAutomationDeviceConfiguration loadAndCheckConfiguration(Configuration thingConfig) {
-        ZWayZAutomationDeviceConfiguration config = new ZWayZAutomationDeviceConfiguration();
+    private ZWayZAutomationDeviceConfiguration loadAndCheckConfiguration() {
+        ZWayZAutomationDeviceConfiguration config = getConfigAs(ZWayZAutomationDeviceConfiguration.class);
 
-        if (StringUtils.isNotBlank((String) thingConfig.get(DEVICE_CONFIG_VIRTUAL_DEVICE_ID))) {
-            config.setDeviceId(thingConfig.get(DEVICE_CONFIG_VIRTUAL_DEVICE_ID).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getDeviceId()) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Z-Wave device couldn't create, because the device id is missing.");
             return null;

@@ -13,7 +13,7 @@
     service z-way-server restart
     ```
 
-3. Instantiate the app once (under Configuration - Apps - Local Apps). It is not necessary to make the configuration manually.
+3. Instantiate the app once (under Configuration - Apps - Local Apps). Important: Change the selection from "Featured Apps" to "All Apps" to make the app visible. It is not necessary to make the configuration manually.
 
 # Prepare openHAB
 
@@ -24,7 +24,7 @@
 
     ```shell
     cd /opt/openhab2/addons
-    sudo wget https://github.com/openhab/openhab2-addons/files/517565/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
+    sudo wget https://github.com/openhab/openhab2-addons/files/631345/org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     sudo unzip org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     sudo rm org.openhab.binding.zway-2.0.0-SNAPSHOT.zip
     ```

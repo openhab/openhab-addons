@@ -254,7 +254,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
         // Configuration - thing status update with a error message
-        mConfig = loadAndCheckConfiguration(getConfig());
+        mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
             // Check if openHAB alias already set
@@ -490,44 +490,30 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         return mConfig;
     }
 
-    private ZWayBridgeConfiguration loadAndCheckConfiguration(Configuration thingConfig) {
-        ZWayBridgeConfiguration config = new ZWayBridgeConfiguration();
+    private ZWayBridgeConfiguration loadAndCheckConfiguration() {
+        ZWayBridgeConfiguration config = getConfigAs(ZWayBridgeConfiguration.class);
 
         /***********************************
          ****** openHAB configuration ******
          **********************************/
 
         // openHab Alias
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_OPENHAB_ALIAS))) {
-            config.setOpenHabAlias(thingConfig.get(BRIDGE_CONFIG_OPENHAB_ALIAS).toString());
-        }
+        // not required
 
         // openHab IP address
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_OPENHAB_IP_ADDRESS))) {
-            config.setOpenHabIpAddress(thingConfig.get(BRIDGE_CONFIG_OPENHAB_IP_ADDRESS).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getOpenHabIpAddress()) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the openHAB host address is missing. Please set a openHAB host address.");
             return null;
         }
 
         // openHab Port
-        if (StringUtils.isNotBlank(thingConfig.get(BRIDGE_CONFIG_OPENHAB_PORT).toString())) {
-            try {
-                config.setOpenHabPort(Integer.parseInt(thingConfig.get(BRIDGE_CONFIG_OPENHAB_PORT).toString()));
-            } catch (NumberFormatException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "OpenHAB Port have to be a number.");
-                return null;
-            }
-        } else {
-            config.setOpenHabPort(8083);
+        if (config.getOpenHabPort() == null) {
+            config.setOpenHabPort(8080);
         }
 
         // openHab Protocol
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_OPENHAB_PROTOCOL))) {
-            config.setOpenHabProtocol(thingConfig.get(BRIDGE_CONFIG_OPENHAB_PROTOCOL).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getOpenHabProtocol()) == null) {
             config.setOpenHabProtocol("http");
         }
 
@@ -536,47 +522,31 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
          ****************************************/
 
         // Z-Way IP address
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS))) {
-            config.setZWayIpAddress(thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getZWayIpAddress()) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way host address is missing. Please set a Z-Way host address.");
             return null;
         }
 
         // Z-Way Port
-        if (StringUtils.isNotBlank(thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_PORT).toString())) {
-            try {
-                config.setZWayPort(Integer.parseInt(thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_PORT).toString()));
-            } catch (NumberFormatException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Z-Way port have to be a number.");
-                return null;
-            }
-        } else {
+        if (config.getZWayPort() == null) {
             config.setZWayPort(8083);
         }
 
         // Z-Way Protocol
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL))) {
-            config.setZWayProtocol(thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getZWayProtocol()) == null) {
             config.setZWayProtocol("http");
         }
 
         // Z-Way Password
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_PASSWORD))) {
-            config.setZWayPassword(thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_PASSWORD).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getZWayPassword()) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way password is missing. Please set a Z-Way password.");
             return null;
         }
 
         // Z-Way Username
-        if (StringUtils.isNotBlank((String) thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_USERNAME))) {
-            config.setZWayUsername(thingConfig.get(BRIDGE_CONFIG_ZWAY_SERVER_USERNAME).toString());
-        } else {
+        if (StringUtils.trimToNull(config.getZWayUsername()) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way username is missing. Please set a Z-Way username.");
             return null;
@@ -587,22 +557,12 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
          **********************************/
 
         // Polling interval
-        if (StringUtils.isNotBlank(thingConfig.get(BRIDGE_CONFIG_POLLING_INTERVAL).toString())) {
-            try {
-                config.setPollingInterval(Integer.parseInt(thingConfig.get(BRIDGE_CONFIG_POLLING_INTERVAL).toString()));
-            } catch (NumberFormatException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Polling interval have to be a number.");
-                return null;
-            }
-        } else {
+        if (config.getPollingInterval() == null) {
             config.setPollingInterval(3600);
         }
 
         // Observer mechanism enabled
-        if (thingConfig.get(BRIDGE_CONFIG_OBSERVER_MECHANISM_ENABLED) != null) {
-            config.setObserverMechanismEnabled((Boolean) thingConfig.get(BRIDGE_CONFIG_OBSERVER_MECHANISM_ENABLED));
-        } else {
+        if (config.getObserverMechanismEnabled() == null) {
             config.setObserverMechanismEnabled(true);
         }
 

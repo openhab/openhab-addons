@@ -18,108 +18,108 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayBridgeConfiguration {
-    private String mOpenHabAlias;
+    private String openHabAlias;
 
-    private String mOpenHabIpAddress;
-    private Integer mOpenHabPort;
-    private String mOpenHabProtocol;
+    private String openHabIpAddress;
+    private Integer openHabPort;
+    private String openHabProtocol;
 
-    private String mZWayIpAddress;
-    private Integer mZWayPort;
-    private String mZWayProtocol;
+    private String zwayServerIpAddress;
+    private Integer zwayServerPort;
+    private String zwayServerProtocol;
 
-    private String mZWayUsername;
-    private String mZWayPassword;
+    private String zwayServerUsername;
+    private String zwayServerPassword;
 
-    private Integer mPollingInterval;
-    private Boolean mObserverMechanismEnabled;
+    private Integer pollingInterval;
+    private Boolean observerMechanismEnabled;
 
     public String getOpenHabAlias() {
-        return mOpenHabAlias;
+        return openHabAlias;
     }
 
     public void setOpenHabAlias(String openHabAlias) {
-        this.mOpenHabAlias = openHabAlias;
+        this.openHabAlias = openHabAlias;
     }
 
     public String getOpenHabIpAddress() {
-        return mOpenHabIpAddress;
+        return openHabIpAddress;
     }
 
     public void setOpenHabIpAddress(String ipAddress) {
-        this.mOpenHabIpAddress = ipAddress;
+        this.openHabIpAddress = ipAddress;
     }
 
     public Integer getOpenHabPort() {
-        return mOpenHabPort;
+        return openHabPort;
     }
 
     public void setOpenHabPort(Integer port) {
-        this.mOpenHabPort = port;
+        this.openHabPort = port;
     }
 
     public String getOpenHabProtocol() {
-        return mOpenHabProtocol;
+        return openHabProtocol;
     }
 
     public void setOpenHabProtocol(String protocol) {
-        this.mOpenHabProtocol = protocol;
+        this.openHabProtocol = protocol;
     }
 
     public String getZWayIpAddress() {
-        return mZWayIpAddress;
+        return zwayServerIpAddress;
     }
 
     public void setZWayIpAddress(String ipAddress) {
-        this.mZWayIpAddress = ipAddress;
+        this.zwayServerIpAddress = ipAddress;
     }
 
     public Integer getZWayPort() {
-        return mZWayPort;
+        return zwayServerPort;
     }
 
     public void setZWayPort(Integer port) {
-        this.mZWayPort = port;
+        this.zwayServerPort = port;
     }
 
     public String getZWayProtocol() {
-        return mZWayProtocol;
+        return zwayServerProtocol;
     }
 
     public void setZWayProtocol(String protocol) {
-        this.mZWayProtocol = protocol;
+        this.zwayServerProtocol = protocol;
     }
 
     public String getZWayUsername() {
-        return mZWayUsername;
+        return zwayServerUsername;
     }
 
     public void setZWayUsername(String username) {
-        this.mZWayUsername = username;
+        this.zwayServerUsername = username;
     }
 
     public String getZWayPassword() {
-        return mZWayPassword;
+        return zwayServerPassword;
     }
 
     public void setZWayPassword(String password) {
-        this.mZWayPassword = password;
+        this.zwayServerPassword = password;
     }
 
     public Integer getPollingInterval() {
-        return mPollingInterval;
+        return pollingInterval;
     }
 
     public void setPollingInterval(Integer pollingInterval) {
-        this.mPollingInterval = pollingInterval;
+        this.pollingInterval = pollingInterval;
     }
 
     public Boolean getObserverMechanismEnabled() {
-        return mObserverMechanismEnabled;
+        return observerMechanismEnabled;
     }
 
     public void setObserverMechanismEnabled(Boolean observerMechanismEnabled) {
-        this.mObserverMechanismEnabled = observerMechanismEnabled;
+        this.observerMechanismEnabled = observerMechanismEnabled;
     }
 
     @Override
