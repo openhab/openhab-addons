@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -103,8 +104,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                         if (isLinked(channel.getUID().getId())) {
                             String deviceId = channel.getProperties().get("deviceId");
 
-                            Set<String> items = linkRegistry.getLinkedItems(channel.getUID());
-                            for (String item : items) {
+                            Set<Item> items = linkRegistry.getLinkedItems(channel.getUID());
+                            for (Item item : items) {
                                 logger.debug("Linked item found - starting register command for openHAB item: {}",
                                         item);
                                 zwayRegisterOpenHabItem(item, deviceId);
@@ -150,8 +151,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
                 for (Channel channel : getThing().getChannels()) {
                     if (isLinked(channel.getUID().getId())) {
-                        Set<String> items = linkRegistry.getLinkedItems(channel.getUID());
-                        for (String item : items) {
+                        Set<Item> items = linkRegistry.getLinkedItems(channel.getUID());
+                        for (Item item : items) {
                             logger.debug("Linked item found - starting remove command for openHAB item: {}", item);
                             zwayUnsubscribeOpenHabItem(item);
                         }
@@ -211,18 +212,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         scheduler.execute(new Disposer());
 
         // super.handleRemoval() called in every case in scheduled task ...
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Z-Way bridge handler initialized.");
-
-        // Not used: Initialization of bridge is partly in another thread and at this point not complete
-    }
-
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Z-Way bridge handler disposed.");
     }
 
     @Override
@@ -331,8 +320,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             Channel channel = thing.getChannel(channelUID.getId());
             String deviceId = channel.getProperties().get("deviceId");
 
-            Set<String> items = linkRegistry.getLinkedItems(channelUID);
-            for (String item : items) {
+            Set<Item> items = linkRegistry.getLinkedItems(channelUID);
+            for (Item item : items) {
                 logger.debug("Linked item found - starting register command for openHAB item: {}", item);
                 zwayRegisterOpenHabItem(item, deviceId);
             }
@@ -354,8 +343,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
             // TODO no items for this channel available at this point!
             // before method called by system the item removed
-            Set<String> items = linkRegistry.getLinkedItems(channelUID);
-            for (String item : items) {
+            Set<Item> items = linkRegistry.getLinkedItems(channelUID);
+            for (Item item : items) {
                 logger.debug("Linked item found - starting remove command for openHAB item: {}", item);
                 zwayUnsubscribeOpenHabItem(item);
             }
@@ -364,7 +353,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         super.channelUnlinked(channelUID);
     }
 
-    private void zwayRegisterOpenHabItem(String openHABItemName, String deviceId) {
+    private void zwayRegisterOpenHabItem(Item openHABItem, String deviceId) {
         ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
         if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             logger.debug("Z-Way bridge handler not found or not ONLINE.");
@@ -374,7 +363,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Preconditions are OK, starting registration ...
         Map<String, String> params = new HashMap<String, String>();
         params.put("openHabAlias", zwayBridgeHandler.getZWayBridgeConfiguration().getOpenHabAlias());
-        params.put("openHabItemName", openHABItemName);
+        params.put("openHabItemName", openHABItem.getName());
         params.put("vDevName", deviceId);
         DeviceCommand command = new DeviceCommand("OpenHabConnector", "registerOpenHabItem", params);
 
@@ -386,7 +375,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private void zwayUnsubscribeOpenHabItem(String openHABItemName) {
+    private void zwayUnsubscribeOpenHabItem(Item openHABItem) {
         ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
         if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             logger.debug("Z-Way bridge handler not found or not ONLINE.");
@@ -396,7 +385,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Preconditions are OK, starting unsubscribing ...
         Map<String, String> params = new HashMap<String, String>();
         params.put("openHabAlias", zwayBridgeHandler.getZWayBridgeConfiguration().getOpenHabAlias());
-        params.put("openHabItemName", openHABItemName);
+        params.put("openHabItemName", openHABItem.getName());
         DeviceCommand command = new DeviceCommand("OpenHabConnector", "removeOpenHabItem", params);
 
         String message = zwayBridgeHandler.getZWayApi().getDeviceCommand(command);
