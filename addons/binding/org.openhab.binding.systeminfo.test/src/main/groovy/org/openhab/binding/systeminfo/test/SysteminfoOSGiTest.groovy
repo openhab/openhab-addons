@@ -153,10 +153,10 @@ class SysteminfoOSGiTest extends OSGiTest{
 
         println systemInfoThing.getStatus()
         println systemInfoThing.getStatusInfo().statusDetail
-        waitForAssert({
+        waitForAssert{
             assertThat "Thing is not initilized, before an Item is created", systemInfoThing.getStatus(),
                     anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE))
-        },DEFAULT_THING_INITIALIZE_MAX_TIME)
+        }
 
         intializeItem(channelUID,DEFAULT_TEST_ITEM_NAME,acceptedItemType)
     }

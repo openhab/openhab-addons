@@ -6,10 +6,9 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- lib/oshi-core-2.5.jar,
- lib/javax.json-1.0.4.jar,
- lib/jna-platform-4.2.1.jar,
- lib/jna-4.2.1.jar
+ lib/oshi-core-3.2.jar,
+ lib/jna-platform-4.2.2.jar,
+ lib/jna-4.2.2.jar
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.lang,
