@@ -32,8 +32,10 @@ import org.eclipse.smarthome.core.thing.ThingProvider
 import org.eclipse.smarthome.core.thing.ThingRegistry
 import org.eclipse.smarthome.core.thing.ThingStatus
 import org.eclipse.smarthome.core.thing.ThingStatusDetail
+import org.eclipse.smarthome.core.thing.ThingTypeMigrationService
 import org.eclipse.smarthome.core.thing.ThingUID
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider
@@ -46,6 +48,7 @@ import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.openhab.binding.feed.FeedBindingConstants
 import org.openhab.binding.feed.handler.FeedHandler
+import org.openhab.binding.feed.internal.FeedHandlerFactory
 import org.osgi.service.http.HttpService
 
 /**
@@ -191,7 +194,7 @@ public class FeedHandlerTest extends OSGiTest {
 
         //wait for FeedHandler to be registered
         waitForAssert({
-            feedHandler = getService(ThingHandler, FeedHandler)
+            feedHandler = getThingHandler(ThingHandler.class)
             assertThat "FeedHandler is not registered",feedHandler, is(notNullValue())
         },  DEFAULT_MAX_WAIT_TIME)
 
@@ -403,8 +406,37 @@ public class FeedHandlerTest extends OSGiTest {
 
         // wait for FeedHandler to be unregistered
         waitForAssert({
-            feedHandler = getService(ThingHandler, FeedHandler)
+            feedHandler = getThingHandler(ThingHandler.class)
             assertThat feedHandler, is(nullValue())
         }, DEFAULT_MAX_WAIT_TIME)
+    }
+
+    /**
+     * Gets a thing handler of a specific type.
+     *
+     * @param clazz type of thing handler
+     *
+     * @return the thing handler
+     */
+    protected <T extends ThingHandler> T getThingHandler(Class<T> clazz){
+        FeedHandlerFactory factory
+        waitForAssert{
+            factory = getService(ThingHandlerFactory, FeedHandlerFactory)
+            assertThat factory, is(notNullValue())
+        }
+        def handlers = getThingHandlers(factory)
+
+        for(ThingHandler handler : handlers) {
+            if(clazz.isInstance(handler)) {
+                return handler
+            }
+        }
+        return null
+    }
+
+    private Set<ThingHandler> getThingHandlers(FeedHandlerFactory factory) {
+        def thingManager = getService(ThingTypeMigrationService.class, { "org.eclipse.smarthome.core.thing.internal.ThingManager" } )
+        assertThat thingManager, not(null)
+        thingManager.thingHandlersByFactory.get(factory)
     }
 }
