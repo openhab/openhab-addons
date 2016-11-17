@@ -10,12 +10,12 @@ package org.openhab.binding.netatmo.handler;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
@@ -34,22 +34,30 @@ import io.swagger.client.model.NAPlace;
 public abstract class NetatmoDeviceHandler extends AbstractNetatmoThingHandler {
     protected NADevice device;
     private NetatmoDeviceConfiguration configuration;
+    private ScheduledFuture<?> refreshJob;
 
     public NetatmoDeviceHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        super.bridgeHandlerInitialized(thingHandler, bridge);
+    public void initialize() {
         this.configuration = this.getConfigAs(NetatmoDeviceConfiguration.class);
 
-        scheduler.scheduleAtFixedRate(new Runnable() {
+        refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 updateChannels();
             }
         }, 1, configuration.refreshInterval, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
     }
 
     @Override

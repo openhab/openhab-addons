@@ -16,6 +16,7 @@ This binding supports only one thing: The Onkyo AV Receiver
 This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
 
 * TX-NR535
+* TX-NR646
 
 ## Binding Configuration
 
@@ -42,16 +43,20 @@ The Onkyo AVR supports the following channels:
 
 | Channel Type ID         | Item Type    | Description  |
 |-------------------------|--------------|--------------|
-| power                   | Switch       | Power on/off your device |
-| mute                    | Switch       | Mute/unmute your device |
-| input                   | Number       | The input for the AVR    |
-| volume                  | Dimmer       | Volume of your device |
-| control                 | Player       | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind (available if playing from Network or USB)|
-| title                   | String       | Title of the current song (available if playing from Network or USB)|
-| album                   | String       | Album name of the current song (available if playing from Network or USB)|
-| artist                  | String       | Artist name of the current song (available if playing from Network or USB)|
-| currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
-| listenmode              | Number       | Current listening mode e.g. Stero, 5.1ch Surround,..|
+| zone1#power                    | Switch       | Power on/off your device |
+| zone1#mute                     | Switch       | Mute/unmute zone 1 |
+| zone1#input                    | Number       | The input for zone 1    |
+| zone1#volume                   | Dimmer       | Volume of zone 1 |
+| zone2#power                    | Switch       | Power on/off zone 2 |
+| zone2#mute                     | Switch       | Mute/unmute zone 2 |
+| zone2#input                    | Number       | The input for zone 2    |
+| zone2#volume                   | Dimmer       | Volume of zone 2 |
+| player#control                 | Player       | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind (available if playing from Network or USB)|
+| player#title                   | String       | Title of the current song (available if playing from Network or USB)|
+| player#album                   | String       | Album name of the current song (available if playing from Network or USB)|
+| player#artist                  | String       | Artist name of the current song (available if playing from Network or USB)|
+| player#currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
+| player#listenmode              | Number       | Current listening mode e.g. Stero, 5.1ch Surround,..|
 
 ##Input Source Mapping
 

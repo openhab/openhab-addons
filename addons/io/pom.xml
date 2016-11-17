@@ -19,10 +19,12 @@
     <module>org.openhab.io.myopenhab</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.transport.feed</module>
+    <module>org.openhab.io.imperihome</module>
   </modules>
 
   <profiles>
     <profile>
+      <id>jdk8</id>
       <activation>
         <jdk>[1.8,)</jdk>
       </activation>

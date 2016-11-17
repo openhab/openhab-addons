@@ -325,7 +325,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             connector.sendMessage(data);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            throw new RFXComException(e);
+            throw new RFXComException("Send failed, reason: " + e.getMessage(), e);
         }
 
         try {
@@ -401,7 +401,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             } catch (RFXComNotImpException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));
             } catch (RFXComException e) {
-                logger.error("Error occured during packet receiving, data: {}",
+                logger.error("Error occured during packet receiving, data: {}, cause: {}",
                         DatatypeConverter.printHexBinary(packet), e.getMessage());
             }
 

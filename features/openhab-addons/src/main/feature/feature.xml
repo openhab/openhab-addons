@@ -25,6 +25,7 @@
 
     <feature name="openhab-binding-autelis" description="Autelis Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.autelis/${project.version}</bundle>
     </feature>
 
@@ -271,12 +272,19 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-misc-imperihome" description="ImperiHome Integration" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>esh-model-item</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.imperihome/${project.version}</bundle>
+    </feature>
+
     <!-- voice -->
 
-    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
+<!--    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
     </feature>
+-->
 
     <feature name="openhab-voice-marytts" description="Mary Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -286,6 +294,7 @@
     <feature name="openhab-voice-voicerss" description="VoiceRSS Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.voicerss/${project.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/voicerss.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/voicerss</configfile>
     </feature>
 
     <!-- ui -->
