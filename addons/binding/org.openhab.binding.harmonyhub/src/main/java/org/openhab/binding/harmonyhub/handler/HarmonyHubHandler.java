@@ -131,7 +131,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         int discoTime = config.discoveryTimeout > 0 ? config.discoveryTimeout : DISCO_TIME;
         heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
 
-        final HarmonyHubDiscovery disco = new HarmonyHubDiscovery(discoTime);
+        final HarmonyHubDiscovery disco = new HarmonyHubDiscovery(discoTime, config.network_address);
         disco.addListener(new HarmonyHubDiscoveryListener() {
             @Override
             public void hubDiscoveryFinished() {

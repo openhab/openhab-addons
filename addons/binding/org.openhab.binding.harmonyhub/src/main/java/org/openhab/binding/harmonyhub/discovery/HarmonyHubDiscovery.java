@@ -60,6 +60,7 @@ public class HarmonyHubDiscovery {
     private HarmonyServer server;
     private int timeout;
     private boolean running;
+    private String network_address;
 
     private List<HarmonyHubDiscoveryListener> listeners = new CopyOnWriteArrayList<HarmonyHubDiscoveryListener>();
 
@@ -68,10 +69,11 @@ public class HarmonyHubDiscovery {
      * @param timeout
      *            how long we discover for
      */
-    public HarmonyHubDiscovery(int timeout) {
+    public HarmonyHubDiscovery(int timeout, String network_address) {
         this.timeout = timeout;
         running = false;
         listeners = new LinkedList<HarmonyHubDiscoveryListener>();
+        this.network_address = network_address;
     }
 
     /**
@@ -173,10 +175,11 @@ public class HarmonyHubDiscovery {
                     continue;
                 }
                 for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress[] broadcast = new InetAddress[3];
+                    InetAddress[] broadcast = new InetAddress[4];
                     broadcast[0] = InetAddress.getByName("224.0.0.1");
-                    broadcast[1] = InetAddress.getByName("255.255.255.255");
-                    broadcast[2] = interfaceAddress.getBroadcast();
+                    broadcast[1] = InetAddress.getByName(network_address);
+                    broadcast[2] = InetAddress.getByName("255.255.255.255");
+                    broadcast[3] = interfaceAddress.getBroadcast();
                     for (InetAddress bc : broadcast) {
                         // Send the broadcast package!
                         if (bc != null) {
