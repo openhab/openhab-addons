@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
@@ -38,7 +38,7 @@ import rx.subscriptions.CompositeSubscription;
  *
  * @author Mattias Markehed - Initial contribution
  */
-public class MinecraftServerHandler extends BaseThingHandler {
+public class MinecraftServerHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(MinecraftServerHandler.class);
 
@@ -47,8 +47,8 @@ public class MinecraftServerHandler extends BaseThingHandler {
     private Observable<ServerConnection> serverConnectionRX;
     private Subscription subscription;
 
-    public MinecraftServerHandler(Thing thing) {
-        super(thing);
+    public MinecraftServerHandler(Bridge bridge) {
+        super(bridge);
     }
 
     @Override
