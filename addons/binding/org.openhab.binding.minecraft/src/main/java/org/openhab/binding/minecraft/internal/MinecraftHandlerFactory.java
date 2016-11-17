@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -56,7 +57,7 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(MinecraftBindingConstants.THING_TYPE_SERVER)) {
-            MinecraftServerHandler serverHandler = new MinecraftServerHandler(thing);
+            MinecraftServerHandler serverHandler = new MinecraftServerHandler((Bridge) thing);
             minecraftServers.add(serverHandler);
             return serverHandler;
         } else if (thingTypeUID.equals(MinecraftBindingConstants.THING_TYPE_PLAYER)) {
