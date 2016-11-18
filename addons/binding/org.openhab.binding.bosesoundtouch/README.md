@@ -56,9 +56,9 @@ A few samples for the channels (for the CLI):
 smarthome send Bose1_Volume "10"
 
 smarthome send Bose1_KeyCode "PRESET_1"
-smarthome send Bose1_ZoneControl "zone add <devicename>” e.g.
-smarthome send Bose1_ZoneControl "zone add livingroom"
-smarthome send Bose1_ZoneControl "zone add <device-mac-address>” e.g.
+smarthome send Bose1_ZoneControl "add <devicename>” e.g.
+smarthome send Bose1_ZoneControl "add livingroom"
+smarthome send Bose1_ZoneControl "add <device-mac-address>” e.g.
 ```
 this also can be done through rules:
 
@@ -69,7 +69,7 @@ when
         Item Bose1_power changed
 then
         if (Bose1_power.state == ON) {
-                sendCommand(Bose1_ZoneControl, "zone add kitchen")
+                sendCommand(Bose1_ZoneControl, "add kitchen")
        }
 end
 
