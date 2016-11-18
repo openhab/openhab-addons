@@ -164,23 +164,30 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             openConnection(); // try to reconnect....
         }
         if (channelUID.equals(channelPowerUID)) {
-            OnOffType onOffType = (OnOffType) command;
-            if (operationMode == OperationModeType.STANDBY && onOffType == OnOffType.ON) {
-                simulateRemoteKey(RemoteKey.POWER);
-            }
-            if (operationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
-                simulateRemoteKey(RemoteKey.POWER);
+            if (command instanceof OnOffType) {
+                OnOffType onOffType = (OnOffType) command;
+                if (operationMode == OperationModeType.STANDBY && onOffType == OnOffType.ON) {
+                    simulateRemoteKey(RemoteKey.POWER);
+                }
+                if (operationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
+                    simulateRemoteKey(RemoteKey.POWER);
+                }
             }
         } else if (channelUID.equals(channelVolumeUID)) {
-            sendRequestInWebSocket("volume", null,
-                    "<volume " + attrDeviceId + ">" + ((PercentType) command).intValue() + "</volume>");
-        } else if (channelUID.equals(channelMuteUID)) {
-            OnOffType onOffType = (OnOffType) command;
-            if (muted && onOffType == OnOffType.OFF) {
-                simulateRemoteKey(RemoteKey.MUTE);
+            if (command instanceof PercentType) {
+                PercentType percentType = (PercentType) command;
+                sendRequestInWebSocket("volume", null,
+                        "<volume " + attrDeviceId + ">" + percentType.intValue() + "</volume>");
             }
-            if (!muted && onOffType == OnOffType.ON) {
-                simulateRemoteKey(RemoteKey.MUTE);
+        } else if (channelUID.equals(channelMuteUID)) {
+            if (command instanceof OnOffType) {
+                OnOffType onOffType = (OnOffType) command;
+                if (muted && onOffType == OnOffType.OFF) {
+                    simulateRemoteKey(RemoteKey.MUTE);
+                }
+                if (!muted && onOffType == OnOffType.ON) {
+                    simulateRemoteKey(RemoteKey.MUTE);
+                }
             }
         } else if (channelUID.equals(channelPlayerControlUID)) {
             if (command instanceof PlayPauseType) {
