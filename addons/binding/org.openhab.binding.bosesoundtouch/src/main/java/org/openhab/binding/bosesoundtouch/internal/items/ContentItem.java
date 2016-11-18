@@ -14,13 +14,13 @@ import org.openhab.binding.bosesoundtouch.types.OperationModeType;
  * @author Thomas Traunbauer
  */
 public class ContentItem {
-    public OperationModeType operationMode;
-    public String location;
-    public String sourceAccount;
-    public String itemName;
-    public boolean isPresetable;
+    private OperationModeType operationMode;
+    private String location;
+    private String sourceAccount;
+    private String itemName;
+    private boolean isPresetable;
 
-    private boolean se(String s1, String s2) {
+    private boolean isEqual(String s1, String s2) {
         if (s1 == s2) {
             return true;
         }
@@ -40,13 +40,13 @@ public class ContentItem {
             if (other.isPresetable != this.isPresetable) {
                 return false;
             }
-            if (!se(other.location, this.location)) {
+            if (!isEqual(other.location, this.location)) {
                 return false;
             }
-            if (!se(other.sourceAccount, this.sourceAccount)) {
+            if (!isEqual(other.sourceAccount, this.sourceAccount)) {
                 return false;
             }
-            if (!se(other.itemName, this.itemName)) {
+            if (!isEqual(other.itemName, this.itemName)) {
                 return false;
             }
             return true;

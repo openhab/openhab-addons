@@ -290,10 +290,10 @@ public class ResponseHandler extends DefaultHandler {
         }
         if (prevState == XMLHandlerState.ContentItem && state == XMLHandlerState.NowPlaying) {
             // update now playing name...
-            if (contentItem.itemName == null) {
-                contentItem.itemName = ""; // null values cause exceptions in openhab...
+            if (contentItem.getItemName() == null) {
+                contentItem.setItemName(""); // null values cause exceptions in openhab...
             }
-            boseSoundTouchHandler.updateNowPlayingItemName(new StringType(contentItem.itemName));
+            boseSoundTouchHandler.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
             boseSoundTouchHandler.setCurrentContentItem(contentItem);
             boseSoundTouchHandler.checkOperationMode();
         }
@@ -359,7 +359,7 @@ public class ResponseHandler extends DefaultHandler {
                 boseSoundTouchHandler.updateNowPlayingArtist(new StringType(new String(ch, start, length)));
                 break;
             case ContentItemItemName:
-                contentItem.itemName = new String(ch, start, length);
+                contentItem.setItemName(new String(ch, start, length));
                 break;
             case NowPlayingDescription:
                 boseSoundTouchHandler.updateNowPlayingDescription(new StringType(new String(ch, start, length)));

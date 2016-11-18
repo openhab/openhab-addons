@@ -113,7 +113,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         attrDeviceId = "deviceID=\"" + macAddress + "\"";
         operationMode = OperationModeType.OFFLINE;
         mapOfPresets = new HashMap<>();
-        currentSourceString = null;
+        currentSourceString = "";
 
         channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
         channelVolumeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
