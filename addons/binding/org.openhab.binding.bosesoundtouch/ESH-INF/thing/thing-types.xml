@@ -29,10 +29,6 @@
 			<channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
 		</channels>
         <config-description>
-            <parameter name="room" type="text" required="false">
-                <label>Room</label>
-                <description>The room name.</description>
-            </parameter>
             <parameter name="serialNumber" type="text" required="false">
                 <label>Serial Number</label>
                 <description>The Serial Number identifies one specific device.</description>
@@ -64,17 +60,17 @@
     </channel-type>
     <channel-type id="mute">
         <item-type>Switch</item-type>
-        <label>Mute</label>
-        <description>Mute state of the Thing.</description>
+        <label>Volume Mute</label>
+        <description>Mute state of the Bose SoundTouch</description>
     </channel-type>
     <channel-type id="operationMode">
         <item-type>String</item-type>
-        <label>Mode</label>
-        <description>Bose SoundTouch Mode Setting</description>
+        <label>Operation Mode</label>
+        <description>Bose SoundTouch current Operation Mode</description>
     </channel-type>
     <channel-type id="zoneInfo">
         <item-type>String</item-type>
-        <label>Zone info</label>
+        <label>Zone Info</label>
         <description>Shows information about the current zone setup</description>
         <state readOnly="true" />
     </channel-type>
@@ -87,7 +83,7 @@
     <channel-type id="zoneControl">
         <item-type>String</item-type>
         <label>Zone Control</label>
-        <description>Control the Player, e.g. play/pause/standby/preset[1-6]/bluetooth/next/previous/ffward/rewind</description>
+        <description>Control the Zones, e.g. "add kitchen"/"remove kitchen"</description>
     </channel-type>
     <channel-type id="keyCode">
         <item-type>String</item-type>

@@ -10,10 +10,8 @@ package org.openhab.binding.bosesoundtouch.handler;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -101,7 +99,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private int socketRequestId;
     private ZoneState zoneState;
     private BoseSoundTouchHandler masterZoneSoundTouchHandler;
-    private List<ZoneMember> zoneMembers;
+    private ArrayList<ZoneMember> zoneMembers;
 
     public BoseSoundTouchHandler(Thing thing) {
         super(thing);
@@ -228,72 +226,70 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 // try to parse string command...
                 String cmd = command.toString();
                 String cmdlc = cmd.toLowerCase();
-                if (cmdlc.startsWith("zone ")) {
-                    int sp = cmdlc.indexOf(' ', 5);
-                    if (sp > 0) {
-                        String action = cmdlc.substring(5, sp);
-                        String other = cmd.substring(sp + 1);
-                        BoseSoundTouchHandler oh = null;
-                        for (Entry<String, BoseSoundTouchHandler> e : mapOfAllSoundTouchDevices.entrySet()) {
-                            BoseSoundTouchHandler o = e.getValue();
-                            // try by mac id
-                            if (other.equalsIgnoreCase(e.getKey())) {
-                                oh = o;
-                                break;
-                            }
-                            // try by name
-                            if (other.equalsIgnoreCase(o.getDeviceName())) {
-                                oh = o;
-                                break;
-                            }
+                int sp = cmdlc.indexOf(' ');
+                if (sp > 0) {
+                    String action = cmdlc.split(" ")[0];
+                    String other = cmdlc.split(" ")[1];
+                    BoseSoundTouchHandler oh = null;
+                    for (Entry<String, BoseSoundTouchHandler> e : mapOfAllSoundTouchDevices.entrySet()) {
+                        BoseSoundTouchHandler o = e.getValue();
+                        // try by mac
+                        String mac = e.getKey();
+                        if (other.equalsIgnoreCase(mac)) {
+                            oh = o;
+                            break;
                         }
-                        if (oh == null) {
-                            logger.warn("Invalid / unknown device: \"" + other + "\" in command " + cmd);
-                        } else {
-                            if ("add".equals(action)) {
-                                boolean found = false;
-                                for (ZoneMember m : zoneMembers) {
-                                    if (oh.macAddress.equals(m.getMac())) {
-                                        logger.warn("Zone add: ID " + oh.macAddress + " is already member in zone!");
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    ZoneMember nm = new ZoneMember();
-                                    nm.setHandler(oh);
-                                    nm.setMac(oh.macAddress);
-                                    Map<String, Object> props = oh.thing.getConfiguration().getProperties();
-                                    String host = (String) props
-                                            .get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
-                                    nm.setIp(host);
-                                    zoneMembers.add(nm);
-                                    updateZones();
-                                }
-                            } else if ("remove".equals(action)) {
-                                boolean found = false;
-                                for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
-                                    ZoneMember m = mi.next();
-                                    if (oh.macAddress.equals(m.getMac())) {
-                                        mi.remove();
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    logger.warn("Zone remove: ID " + oh.macAddress + " is not a member in zone!");
-                                } else {
-                                    updateZones();
-                                }
-                            } else {
-                                logger.warn("Invalid zone command: " + cmd);
-                            }
+                        // try by name
+                        String devName = o.getDeviceName();
+                        if (other.equalsIgnoreCase(devName)) {
+                            oh = o;
+                            break;
                         }
+                    }
+                    if (oh == null) {
+                        logger.warn("Invalid / unknown device: \"" + other + "\" in command " + cmd);
                     } else {
-                        logger.warn("Invalid zone command: " + cmd);
+                        if ("add".equals(action)) {
+                            boolean found = false;
+                            for (ZoneMember m : zoneMembers) {
+                                if (oh.macAddress.equals(m.getMac())) {
+                                    logger.warn("Zone add: ID " + oh.macAddress + " is already member in zone!");
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                ZoneMember nm = new ZoneMember();
+                                nm.setHandler(oh);
+                                nm.setMac(oh.macAddress);
+                                Map<String, Object> props = oh.thing.getConfiguration().getProperties();
+                                String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
+                                nm.setIp(host);
+                                // zoneMembers.add(nm);
+                                addZoneMember(nm);
+                                updateZones();
+                            }
+                        } else if ("remove".equals(action)) {
+                            boolean found = false;
+                            for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
+                                ZoneMember m = mi.next();
+                                if (oh.macAddress.equals(m.getMac())) {
+                                    mi.remove();
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                logger.warn("Zone remove: ID " + oh.macAddress + " is not a member in zone!");
+                            } else {
+                                updateZones();
+                            }
+                        } else {
+                            logger.warn("Invalid zone command: " + cmd);
+                        }
                     }
                 } else {
-                    logger.warn("Invalid command: " + cmd);
+                    logger.warn("Invalid zone command: " + cmd);
                 }
             } else {
                 logger.warn("Invalid command type: " + command.getClass() + ": " + command);
@@ -383,7 +379,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     protected void openConnection() {
         zoneState = ZoneState.None;
         masterZoneSoundTouchHandler = null;
-        zoneMembers = Collections.emptyList();
+        zoneMembers = new ArrayList<ZoneMember>();
         updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
         OkHttpClient client = new OkHttpClient();
         // we need longer timeouts for websocket.
@@ -681,7 +677,17 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (zoneMembers == null) {
             zoneMembers = new ArrayList<ZoneMember>();
         }
-        zoneMembers.add(zoneMember);
+        boolean found = false;
+        for (ZoneMember m : zoneMembers) {
+            if (zoneMember.getHandler().macAddress.equals(m.getMac())) {
+                logger.warn("Zone add: ID " + zoneMember.getHandler().macAddress + " is already member in zone!");
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            zoneMembers.add(zoneMember);
+        }
     }
 
 }

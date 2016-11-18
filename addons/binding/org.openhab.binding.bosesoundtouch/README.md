@@ -8,13 +8,13 @@ After discovering and configuring the device through the web GUI I think you wan
 
 From the **items/bose.items** file:
 ```
-Switch  Bose1_power                      "Power: [%s]"          <switch>      { channel="bosesoundtouch:device:BOSEMACADDR:power" }
+Switch  Bose1_Power                      "Power: [%s]"          <switch>      { channel="bosesoundtouch:device:BOSEMACADDR:power" }
 Dimmer  Bose1_Volume                     "Volume: [%d %%]"      <volume>      { channel="bosesoundtouch:device:BOSEMACADDR:volume" }
-Switch  Bose1_mute                       "mute: [%s]"           <volume_mute> { channel="bosesoundtouch:device:BOSEMACADDR:mute" }
-String  Bose1_operationMode              "Mode: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationMode", autoupdate="false" }
-String  Bose1_zoneInfo                   "Zone: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneInfo", autoupdate="false" }
-String  Bose1_zoneControl                "Zone control: [%s]"   <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneControl" }
-String  Bose1_keyCode                    "Key Code: [%s]"       <text>        { channel="bosesoundtouch:device:BOSEMACADDR:keyCode" }
+Switch  Bose1_Mute                       "mute: [%s]"           <volume_mute> { channel="bosesoundtouch:device:BOSEMACADDR:mute" }
+String  Bose1_OperationMode              "Mode: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationMode" }
+String  Bose1_ZoneInfo                   "Zone: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneInfo", autoupdate="false" }
+String  Bose1_ZoneControl                "Zone control: [%s]"   <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneControl" }
+String  Bose1_KeyCode                    "Key Code: [%s]"       <text>        { channel="bosesoundtouch:device:BOSEMACADDR:keyCode" }
 String  Bose1_nowPlayingAlbum            "Album: [%s]"          <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingAlbum" }
 String  Bose1_nowPlayingArtist           "Artist: [%s]"         <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingArtist" }
 String  Bose1_nowPlayingArtwork          "Art: [%s]"            <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingArtwork" }
@@ -32,13 +32,13 @@ A simple sitemap **sitemaps/bose.sitemap**:
 sitemap demo label="Bose Test Items"
 {
 	Frame label="Bose 1" {
-        Switch item=Bose1_power
+        Switch item=Bose1_Power
 		Slider item=Bose1_Volume
-		Switch item=Bose1_mute
-		Text item=Bose1_operationMode
-		Text item=Bose1_zoneInfo
-		Text item=Bose1_zoneControl
-		Text item=Bose1_keyCode
+		Switch item=Bose1_Mute
+		Text item=Bose1_OperationMode
+		Text item=Bose1_ZoneInfo
+		Text item=Bose1_ZoneControl
+		Text item=Bose1_KeyCode
 		Text item=Bose1_nowPlayingAlbum
 		Text item=Bose1_nowPlayingArtist
 		Text item=Bose1_nowPlayingArtwork
@@ -51,16 +51,14 @@ sitemap demo label="Bose Test Items"
 }
 ```
 
-Currently there are not channels for every detail, like for the buttons *Preset1/2/…*. My idea is to control many things through a flexible *<>_control* channel. The *<>_control* channel is a "String" channel where commands can be sent to.
-
-A few samples for the *<>_control* channel (for the CLI):
+A few samples for the channels (for the CLI):
 ```
-smarthome send Bose1_control "volume 10"
+smarthome send Bose1_Volume "10"
 
-smarthome send Bose1_control "preset1"
-smarthome send Bose1_control "zone add <devicename>” e.g.
-smarthome send Bose1_control "zone add livingroom"
-smarthome send Bose1_control "zone add <device-mac-address>” e.g.
+smarthome send Bose1_KeyCode "PRESET_1"
+smarthome send Bose1_ZoneControl "zone add <devicename>” e.g.
+smarthome send Bose1_ZoneControl "zone add livingroom"
+smarthome send Bose1_ZoneControl "zone add <device-mac-address>” e.g.
 ```
 this also can be done through rules:
 
@@ -71,7 +69,7 @@ when
         Item Bose1_power changed
 then
         if (Bose1_power.state == ON) {
-                sendCommand(Bose1_control, "zone add kitchen")
+                sendCommand(Bose1_ZoneControl, "zone add kitchen")
        }
 end
 
@@ -79,9 +77,9 @@ rule "wake up"
 when
         Time cron "0 30 6 ? * MON,TUE,WED,THU,FRI”
 then
-       sendCommand(Bose1_control, “poser on")
-       sendCommand(Bose1_control, “volume 10")
-       sendCommand(Bose1_control, “preset1")
+       sendCommand(Bose1_Power, ON)
+       sendCommand(Bose1_Volume, 10)
+       sendCommand(Bose1_KeyCode, “PRESET_1")
 end
 ```
 
