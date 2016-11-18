@@ -45,7 +45,8 @@
             <label>Access Thermostat</label>
             <description>Read and Write thermostat's data.</description>
             <default>true</default>
-        </parameter>                                               
+        </parameter>
+                                                         
     </config-description>
 
     <config-description uri="thing-type:netatmo:device">
@@ -76,5 +77,26 @@
             <required>true</required>
         </parameter>     
     </config-description>     
+    
+    <config-description uri="thing-type:netatmo:natherm1">
+        <parameter name="equipmentId" type="text">
+            <label>Module ID</label>
+            <description>Id of the Module</description>
+            <required>true</required>
+        </parameter>
+        
+        <parameter name="parentId" type="text">
+            <label>Device ID</label>
+            <description>Id of the main device</description>
+            <required>true</required>
+        </parameter>   
+        
+        <parameter name="setpointDefaultDuration" type="integer" required="false">
+            <label>Setpoint duration</label>
+            <description>Default duration of thermostat change when force to max or manual.</description>
+            <default>60</default>
+            <advanced>true</advanced>
+        </parameter>   
+    </config-description>  
 
 </config-description:config-descriptions>

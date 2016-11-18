@@ -9,16 +9,18 @@
 package org.openhab.binding.netatmo.config;
 
 /**
- * The {@link NetatmoBridgeConfiguration} is responsible for holding
- * configuration informations needed to access Netatmo API
+ * The {@link NetatmoThingConfiguration} is the base class for configuration
+ * information held by devices and modules
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class NetatmoBridgeConfiguration {
-    public String clientId;
-    public String clientSecret;
-    public String username;
-    public String password;
-    public Boolean readStation;
-    public Boolean readThermostat;
+public class NetatmoThingConfiguration {
+
+    private String equipmentId;
+
+    public String getEquipmentId() {
+        // Bug #3891 : Netatmo API only works with lower case device/module ids
+        return equipmentId.toLowerCase();
+    }
+
 }
