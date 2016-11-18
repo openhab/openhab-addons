@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.bosesoundtouch.handler;
 
 import java.util.HashMap;
@@ -18,10 +25,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-// XML Handlers
 /**
  * @author marvin
- *
+ * @author Thomas Traunbauer
  */
 public class ResponseHandler extends DefaultHandler {
 

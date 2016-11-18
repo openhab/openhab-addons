@@ -62,6 +62,7 @@ import okio.Buffer;
  * sent to one of the channels.
  *
  * @author Christian Niessner - Initial contribution
+ * @author Thomas Traunbauer
  */
 public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocketListener {
 

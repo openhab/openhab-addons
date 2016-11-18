@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Christian Niessner - Initial contribution
+ * @author Thomas Traunbauer
  */
 public class BoseSoundTouchBindingConstants {
 
