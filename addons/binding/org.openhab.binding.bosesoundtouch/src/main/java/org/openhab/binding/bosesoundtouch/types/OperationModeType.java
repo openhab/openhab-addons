@@ -7,12 +7,6 @@ import org.eclipse.smarthome.core.types.State;
 public enum OperationModeType implements PrimitiveType, State, Command {
     OFFLINE,
     STANDBY,
-    PRESET1,
-    PRESET2,
-    PRESET3,
-    PRESET4,
-    PRESET5,
-    PRESET6,
     INTERNET_RADIO,
     BLUETOOTH,
     AUX,
@@ -21,8 +15,9 @@ public enum OperationModeType implements PrimitiveType, State, Command {
     PANDORA,
     DEEZER,
     SIRIUSXM,
-    OTHER,
-    GROUPMEMBER;
+    STORED_MUSIC,
+    GROUPMEMBER,
+    OTHER;
 
     @Override
     public String format(String pattern) {
@@ -31,6 +26,6 @@ public enum OperationModeType implements PrimitiveType, State, Command {
 
     @Override
     public String toFullString() {
-        return this.toString();
+        return super.toString();
     }
 }

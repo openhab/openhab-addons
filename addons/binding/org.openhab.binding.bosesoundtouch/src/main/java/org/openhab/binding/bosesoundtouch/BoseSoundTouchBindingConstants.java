@@ -37,28 +37,27 @@ public class BoseSoundTouchBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_OPERATION_MODE = "operationMode";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
-    public static final String CHANNEL_RADIO_STATION = "radioStation";
+    public static final String CHANNEL_OPERATIONMODE = "operationMode";
+    public static final String CHANNEL_ZONEINFO = "zoneInfo";
     public static final String CHANNEL_PLAYER_CONTROL = "playerControl";
-    public static final String CHANNEL_ZONE = "zone";
+    public static final String CHANNEL_ZONE_CONTROL = "zoneControl";
     public static final String CHANNEL_KEY_CODE = "keyCode";
-    public static final String CHANNEL_NOW_PLAYING_ALBUM = "nowPlayingAlbum";
-    public static final String CHANNEL_NOW_PLAYING_ARTWORK = "nowPlayingArtwork";
-    public static final String CHANNEL_NOW_PLAYING_ARTIST = "nowPlayingArtist";
-    public static final String CHANNEL_NOW_PLAYING_DESCRIPTION = "nowPlayingDescription";
-    public static final String CHANNEL_NOW_PLAYING_ITEMNAME = "nowPlayingItemName";
-    public static final String CHANNEL_NOW_PLAYING_STATION_LOCATION = "nowPlayingStationLocation";
-    public static final String CHANNEL_NOW_PLAYING_STATION_NAME = "nowPlayingStationName";
-    public static final String CHANNEL_NOW_PLAYING_PLAY_STATUS = "nowPlayingPlayStatus";
-    public static final String CHANNEL_NOW_PLAYING_TRACK = "nowPlayingTrack";
+    public static final String CHANNEL_NOWPLAYINGALBUM = "nowPlayingAlbum";
+    public static final String CHANNEL_NOWPLAYINGART = "nowPlayingArt";
+    public static final String CHANNEL_NOWPLAYINGARTIST = "nowPlayingArtist";
+    public static final String CHANNEL_NOWPLAYINGDESCRIPTION = "nowPlayingDescription";
+    public static final String CHANNEL_NOWPLAYINGITEMNAME = "nowPlayingItemName";
+    public static final String CHANNEL_NOWPLAYINGSTATIONLOCATION = "nowPlayingStationLocation";
+    public static final String CHANNEL_NOWPLAYINGSTATIONNAME = "nowPlayingStationName";
+    public static final String CHANNEL_NOWPLAYINGPLAYSTATUS = "nowPlayingPlayStatus";
+    public static final String CHANNEL_NOWPLAYINGTRACK = "nowPlayingTrack";
 
     // Device configuration parameters;
     public static final String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
     public static final String DEVICE_PARAMETER_PORT = "DEVICE_PORT";
     public static final String DEVICE_PARAMETER_MAC = "DEVICE_MAC";
-    public static final String DEVICE_PARAMETER_DEFAULT_RADIO_STATION = "DEFAULT_RADIO_STATION";
 
     public static final String DEVICE_INFO_NAME = "INFO_NAME";
     public static final String DEVICE_INFO_TYPE = "INFO_TYPE";

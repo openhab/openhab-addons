@@ -3,12 +3,13 @@ package org.openhab.binding.bosesoundtouch.internal.items;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 
 public class ContentItem {
-    private OperationModeType operationMode;
-    private String location;
-    private String sourceAccount;
-    private String itemName;
+    public OperationModeType operationMode;
+    public String location;
+    public String sourceAccount;
+    public String itemName;
+    public boolean isPresetable;
 
-    private boolean isEqual(String s1, String s2) {
+    private boolean se(String s1, String s2) {
         if (s1 == s2) {
             return true;
         }
@@ -22,13 +23,19 @@ public class ContentItem {
     public boolean equals(Object obj) {
         if (obj instanceof ContentItem) {
             ContentItem other = (ContentItem) obj;
-            if (!isEqual(other.location, this.location)) {
+            if (other.operationMode != this.operationMode) {
                 return false;
             }
-            if (!isEqual(other.sourceAccount, this.sourceAccount)) {
+            if (other.isPresetable != this.isPresetable) {
                 return false;
             }
-            if (!isEqual(other.itemName, this.itemName)) {
+            if (!se(other.location, this.location)) {
+                return false;
+            }
+            if (!se(other.sourceAccount, this.sourceAccount)) {
+                return false;
+            }
+            if (!se(other.itemName, this.itemName)) {
                 return false;
             }
             return true;

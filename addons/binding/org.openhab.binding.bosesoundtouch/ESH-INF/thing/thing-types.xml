@@ -1,74 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="bosesoundtouch"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="device">
-        <label>Bose SoundTouch</label>
-        <description>The represents a Bose SoundTouch device like the SoundTouch 10, 20, 30, etc</description>
+	<!-- Sample Thing Type -->
+	<thing-type id="device">
+		<label>Bose SoundTouch</label>
+		<description>The represents a Bose SoundTouch device like the SoundTouch 10, 20, 30, etc</description>
 
-        <channels>
-            <channel id="power" typeId="power" />
-            <channel id="operationMode" typeId="operationMode" />
-            <channel id="volume" typeId="volume" />
-            <channel id="mute" typeId="mute" />
-            <channel id="radioStation" typeId="radioStation" />
-            <channel id="playerControl" typeId="playerControl" />
-            <channel id="zone" typeId="zone" />
-            
-            <channel id="keyCode" typeId="keyCode" />
-            
-            <channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
-            <channel id="nowPlayingArtwork" typeId="nowPlayingArtwork" />
-            <channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
-            <channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
-            <channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
-            <channel id="nowPlayingStationLocation" typeId="nowPlayingStationLocation" />
-            <channel id="nowPlayingStationName" typeId="nowPlayingStationName" />
-            <channel id="nowPlayingPlayStatus" typeId="nowPlayingPlayStatus" />
-            <channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
-        </channels>
+		<channels>
+		    <channel id="power" typeId="power" />
+		    <channel id="volume" typeId="volume" />
+		    <channel id="mute" typeId="mute" />
+			<channel id="operationMode" typeId="operationMode" />
+			<channel id="zoneInfo" typeId="zoneInfo" />
+			<channel id="playerControl" typeId="playerControl" />
+			<channel id="zoneControl" typeId="zoneControl" />
+			<channel id="keyCode" typeId="keyCode" />
+			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
+			<channel id="nowPlayingArt" typeId="nowPlayingArt" />
+			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
+			<channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
+			<channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
+			<channel id="nowPlayingPlayStatus" typeId="nowPlayingPlayStatus" />
+			<channel id="nowPlayingStationLocation" typeId="nowPlayingStationLocation" />
+			<channel id="nowPlayingStationName" typeId="nowPlayingStationName" />
+			<channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
+		</channels>
         <config-description>
+            <parameter name="room" type="text" required="false">
+                <label>Room</label>
+                <description>The room name.</description>
+            </parameter>
             <parameter name="serialNumber" type="text" required="false">
                 <label>Serial Number</label>
                 <description>The Serial Number identifies one specific device.</description>
             </parameter>
             <parameter name="DEVICE_HOST" type="text" required="true">
                 <label>Host Address</label>
-                <description>The Host / IP Address used for communication to this device</description>
+                <description>The Host / IP Address used for communication to this device.
+                </description>
             </parameter>
             <parameter name="DEVICE_PORT" type="integer" required="true" min="1" max="65335">
                 <label>Port</label>
-                <description>Port for communication on this device</description>
-            </parameter>
-            <parameter name="DEFAULT_RADIO_STATION" type="text" required="true">
-                <label>Default Radio Station</label>
-                <description>When turning on INTERNET_RADIO this PRESET will be selected</description>
-                <default>PRESET_1</default>
+                <description>Port for communication on this device.
+                </description>
             </parameter>
         </config-description>
-    </thing-type>
+	</thing-type>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="power">
+	<!-- Sample Channel Type -->
+	<channel-type id="power">
         <item-type>Switch</item-type>
         <label>Power</label>
-        <description>SoundTouch power state. In real this switches between standby and operational</description>
-    </channel-type>
-    <channel-type id="operationMode">
-        <item-type>String</item-type>
-        <label>Operation Mode</label>
-        <description>The Players current Mode, e.g. STANDBY/INTERNET_RADIO/BLUETOOTH/AUX</description>
-        <state readOnly="false">
-            <options>
-                <option value="STANDBY">STANDBY</option>
-                <option value="INTERNET_RADIO">INTERNET_RADIO</option>
-                <option value="BLUETOOTH">BLUETOOTH</option>
-                <option value="AUX">AUX</option>
-            </options>
-        </state>
+        <description>SoundTouch power state</description>
     </channel-type>
     <channel-type id="volume">
         <item-type>Dimmer</item-type>
@@ -78,23 +64,19 @@
     </channel-type>
     <channel-type id="mute">
         <item-type>Switch</item-type>
-        <label>Volume Mute</label>
-        <description>Mute state of the Thing</description>
+        <label>Mute</label>
+        <description>Mute state of the Thing.</description>
     </channel-type>
-    <channel-type id="radioStation">
+    <channel-type id="operationMode">
         <item-type>String</item-type>
-        <label>Radio Station</label>
-        <description>If in Internet Radio mode, one of six stations can be selected</description>
-        <state readOnly="false">
-            <options>
-                <option value="PRESET_1">PRESET_1</option>
-                <option value="PRESET_2">PRESET_2</option>
-                <option value="PRESET_3">PRESET_3</option>
-                <option value="PRESET_4">PRESET_4</option>
-                <option value="PRESET_5">PRESET_5</option>
-                <option value="PRESET_6">PRESET_6</option>
-            </options>
-        </state>
+        <label>Mode</label>
+        <description>Bose SoundTouch Mode Setting</description>
+    </channel-type>
+    <channel-type id="zoneInfo">
+        <item-type>String</item-type>
+        <label>Zone info</label>
+        <description>Shows information about the current zone setup</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="playerControl">
         <item-type>Player</item-type>
@@ -102,12 +84,12 @@
         <description>Control the Player, e.g. play/pause/stop/next/previous</description>
         <category>Player</category>
     </channel-type>
-    <channel-type id="zone">
+    <channel-type id="zoneControl">
         <item-type>String</item-type>
-        <label>Zone</label>
-        <description>Current zone setup</description>
+        <label>Zone Control</label>
+        <description>Control the Player, e.g. play/pause/standby/preset[1-6]/bluetooth/next/previous/ffward/rewind</description>
     </channel-type>
-    <channel-type id="keyCode" advanced="true">
+    <channel-type id="keyCode">
         <item-type>String</item-type>
         <label>Remote Key Code</label>
         <description>Virtually push a remote button</description>
@@ -143,59 +125,59 @@
             </options>
         </state>
     </channel-type>
-    <channel-type id="nowPlayingAlbum" advanced="true">
-        <item-type>String</item-type>
-        <label>Album</label>
-        <description>Current playing album name</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingArtwork" advanced="true">
-        <item-type>String</item-type>
-        <label>Artwork</label>
-        <description>URL to image of artwork for the current playing song</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingArtist" advanced="true">
-        <item-type>String</item-type>
-        <label>Artist</label>
-        <description>Current playing artist name</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingDescription" advanced="true">
-        <item-type>String</item-type>
-        <label>Description</label>
-        <description>Description to current playing song</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingItemName" advanced="true">
-        <item-type>String</item-type>
-        <label>Item Name</label>
-        <description>Visible description shown in display</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingStationLocation" advanced="true">
-        <item-type>String</item-type>
-        <label>Station location</label>
-        <description>Location of current playing radio station</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingStationName" advanced="true">
-        <item-type>String</item-type>
-        <label>Station name</label>
-        <description>Name of current playing radio station</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingPlayStatus" advanced="true">
-        <item-type>String</item-type>
-        <label>PlayStatus</label>
-        <description>Play status (more detailed, read-only)</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="nowPlayingTrack" advanced="true">
-        <item-type>String</item-type>
-        <label>Track</label>
-        <description>Track currently playing</description>
-        <state readOnly="true" />
-    </channel-type>
+	<channel-type id="nowPlayingAlbum">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Current playing album name</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingArt">
+		<item-type>String</item-type>
+		<label>Art</label>
+		<description>URL to image of artwork for the current playing song</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingArtist">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Current playing artist name</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingDescription">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Description to current playing song</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingItemName">
+		<item-type>String</item-type>
+		<label>Item Name</label>
+		<description>Visible description shown in display</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingStationLocation">
+		<item-type>String</item-type>
+		<label>Station location</label>
+		<description>Location of current playing radio station</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingStationName">
+		<item-type>String</item-type>
+		<label>Station name</label>
+		<description>Name of current playing radio station</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingPlayStatus">
+		<item-type>String</item-type>
+		<label>PlayStatus</label>
+		<description>Play status (more detailed, read-only)</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nowPlayingTrack">
+		<item-type>String</item-type>
+		<label>Track</label>
+		<description>Track currently playing</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>
