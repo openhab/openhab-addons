@@ -82,13 +82,13 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private ChannelUID channelZoneControlUID;
     private ChannelUID channelKeyCodeUID;
     private ChannelUID channelNowPlayingAlbumUID;
-    private ChannelUID channelNowPlayingArtUID;
     private ChannelUID channelNowPlayingArtistUID;
+    private ChannelUID channelNowPlayingArtworkUID;
     private ChannelUID channelNowPlayingDescriptionUID;
     private ChannelUID channelNowPlayingItemNameUID;
+    private ChannelUID channelNowPlayingPlayStatusUID;
     private ChannelUID channelNowPlayingStationLocationUID;
     private ChannelUID channelNowPlayingStationNameUID;
-    private ChannelUID channelNowPlayingPlayStatusUID;
     private ChannelUID channelNowPlayingTrackUID;
 
     private String currentSourceString;
@@ -118,14 +118,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
         channelVolumeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
         channelMuteUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_MUTE);
+        channelOperationModeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_OPERATIONMODE);
         channelZoneInfoUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONEINFO);
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
 
         channelNowPlayingAlbumUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGALBUM);
+        channelNowPlayingArtworkUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTWORK);
         channelNowPlayingArtistUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTIST);
-        channelNowPlayingArtUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGART);
         channelNowPlayingDescriptionUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGDESCRIPTION);
         channelNowPlayingItemNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGITEMNAME);
         channelNowPlayingPlayStatusUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGPLAYSTATUS);
@@ -133,7 +134,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONLOCATION);
         channelNowPlayingStationNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONNAME);
         channelNowPlayingTrackUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGTRACK);
-        channelOperationModeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_OPERATIONMODE);
 
         mapOfAllSoundTouchDevices.put(macAddress, this);
         openConnection();
@@ -575,7 +575,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     public void updateNowPlayingArtwork(State state) {
-        updateState(channelNowPlayingArtUID, state);
+        updateState(channelNowPlayingArtworkUID, state);
     }
 
     public void updateNowPlayingArtist(State state) {

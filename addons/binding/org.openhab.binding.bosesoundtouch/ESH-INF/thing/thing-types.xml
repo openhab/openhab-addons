@@ -19,8 +19,8 @@
 			<channel id="zoneControl" typeId="zoneControl" />
 			<channel id="keyCode" typeId="keyCode" />
 			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
-			<channel id="nowPlayingArt" typeId="nowPlayingArt" />
 			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
+			<channel id="nowPlayingArtwork" typeId="nowPlayingArtwork" />
 			<channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
 			<channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
 			<channel id="nowPlayingPlayStatus" typeId="nowPlayingPlayStatus" />
@@ -131,16 +131,16 @@
 		<description>Current playing album name</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="nowPlayingArt">
-		<item-type>String</item-type>
-		<label>Art</label>
-		<description>URL to image of artwork for the current playing song</description>
-		<state readOnly="true" />
-	</channel-type>
 	<channel-type id="nowPlayingArtist">
+        <item-type>String</item-type>
+        <label>Artist</label>
+        <description>Current playing artist name</description>
+        <state readOnly="true" />
+    </channel-type>
+	<channel-type id="nowPlayingArtwork">
 		<item-type>String</item-type>
-		<label>Artist</label>
-		<description>Current playing artist name</description>
+		<label>Artwork</label>
+		<description>URL to image of artwork for the current playing song</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="nowPlayingDescription">
@@ -155,6 +155,12 @@
 		<description>Visible description shown in display</description>
 		<state readOnly="true" />
 	</channel-type>
+	<channel-type id="nowPlayingPlayStatus">
+        <item-type>String</item-type>
+        <label>PlayStatus</label>
+        <description>Play status (more detailed, read-only)</description>
+        <state readOnly="true" />
+    </channel-type>
 	<channel-type id="nowPlayingStationLocation">
 		<item-type>String</item-type>
 		<label>Station location</label>
@@ -165,12 +171,6 @@
 		<item-type>String</item-type>
 		<label>Station name</label>
 		<description>Name of current playing radio station</description>
-		<state readOnly="true" />
-	</channel-type>
-	<channel-type id="nowPlayingPlayStatus">
-		<item-type>String</item-type>
-		<label>PlayStatus</label>
-		<description>Play status (more detailed, read-only)</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="nowPlayingTrack">

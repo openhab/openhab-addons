@@ -8,23 +8,22 @@ After discovering and configuring the device through the web GUI I think you wan
 
 From the **items/bose.items** file:
 ```
+Switch  Bose1_power                      "Power: [%s]"          <switch>      { channel="bosesoundtouch:device:BOSEMACADDR:power" }
 Dimmer  Bose1_Volume                     "Volume: [%d %%]"      <volume>      { channel="bosesoundtouch:device:BOSEMACADDR:volume" }
-String  Bose1_control                    "control: [%s]"        <text>        { channel="bosesoundtouch:device:BOSEMACADDR:control" }
 Switch  Bose1_mute                       "mute: [%s]"           <volume_mute> { channel="bosesoundtouch:device:BOSEMACADDR:mute" }
+String  Bose1_operationMode              "Mode: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationMode", autoupdate="false" }
+String  Bose1_zoneInfo                   "Zone: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneInfo", autoupdate="false" }
+String  Bose1_zoneControl                "Zone control: [%s]"   <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneControl" }
+String  Bose1_keyCode                    "Key Code: [%s]"       <text>        { channel="bosesoundtouch:device:BOSEMACADDR:keyCode" }
 String  Bose1_nowPlayingAlbum            "Album: [%s]"          <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingAlbum" }
 String  Bose1_nowPlayingArtist           "Artist: [%s]"         <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingArtist" }
-String  Bose1_nowPlayingArt              "Art: [%s]"            <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingArt" }
+String  Bose1_nowPlayingArtwork          "Art: [%s]"            <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingArtwork" }
 String  Bose1_nowPlayingDescription      "Description: [%s]"    <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingDescription" }
 String  Bose1_nowPlayingItemName         "Playing: [%s]"        <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingItemName" }
 String  Bose1_nowPlayingPlayStatus       "Play state: [%s]"     <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingPlayStatus" }
-String  Bose1_nowPlayingSource           "Source: [%s]"         <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingSource" }
 String  Bose1_nowPlayingStationLocation  "Radio Location: [%s]" <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingStationLocation" }
 String  Bose1_nowPlayingStationName      "Radio Name: [%s]"     <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingStationName" }
 String  Bose1_nowPlayingTrack            "Track: [%s]"          <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingTrack" }
-Switch  Bose1_power                      "Power: [%s]"          <switch>      { channel="bosesoundtouch:device:BOSEMACADDR:power" }
-String  Bose1_operationMode              "Mode: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationMode", autoupdate="false" }
-Number  Bose1_operationModeNum           "Mode: [%i]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationModeNum", autoupdate="false" }
-String  Bose1_zoneInfo                   "Zone: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneInfo", autoupdate="false" }
 ```
 
 A simple sitemap **sitemaps/bose.sitemap**:
@@ -33,22 +32,21 @@ A simple sitemap **sitemaps/bose.sitemap**:
 sitemap demo label="Bose Test Items"
 {
 	Frame label="Bose 1" {
+        Switch item=Bose1_power
 		Slider item=Bose1_Volume
-		Text item=Bose1_operationMode
-		Text item=Bose1_control
-		Switch item=Bose1_power
 		Switch item=Bose1_mute
-		Text item=Bose1_nowPlayingPlayStatus
-		Text item=Bose1_nowPlayingSource
-		Text item=Bose1_nowPlayingArt
+		Text item=Bose1_operationMode
+		Text item=Bose1_zoneInfo
+		Text item=Bose1_zoneControl
+		Text item=Bose1_keyCode
+		Text item=Bose1_nowPlayingAlbum
+		Text item=Bose1_nowPlayingArtist
+		Text item=Bose1_nowPlayingArtwork
 		Text item=Bose1_nowPlayingDescription
 		Text item=Bose1_nowPlayingItemName
-		Text item=Bose1_nowPlayingArtist
-		Text item=Bose1_nowPlayingAlbum
-		Text item=Bose1_nowPlayingTrack
-		Text item=Bose1_nowPlayingStationName
+		Text item=Bose1_nowPlayingPlayStatus
 		Text item=Bose1_nowPlayingStationLocation
-		Text item=Bose1_zoneInfo
+		Text item=Bose1_nowPlayingTrack
 	}
 }
 ```
