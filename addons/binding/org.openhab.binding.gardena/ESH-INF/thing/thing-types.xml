@@ -42,7 +42,7 @@
 		<label>Battery Info</label>
 		<description>Informations about the rechargeable battery</description>
 		<channels>
-			<channel id="level" typeId="batteryLevel" />
+			<channel id="level" typeId="system.battery-level" />
 			<channel id="rechargable_battery_status" typeId="rechargableBatteryStatus" />
 			<channel id="charging" typeId="charging" />
 		</channels>
@@ -122,14 +122,6 @@
         <description>Last time the device was online</description>
         <state readOnly="true"/>
     </channel-type>
-
-	<channel-type id="batteryLevel">
-		<item-type>Number</item-type>
-		<label>Level</label>
-		<description>Battery Level</description>
-		<category>Battery</category>
-		<state pattern="%d %%" readOnly="true" />
-	</channel-type>
 
 	<channel-type id="rechargableBatteryStatus">
 		<item-type>String</item-type>
@@ -393,7 +385,7 @@
         <label>Battery Info</label>
         <description>Informations about the battery</description>
         <channels>
-            <channel id="level" typeId="batteryLevel" />
+            <channel id="level" typeId="system.battery-level" />
             <channel id="disposable_battery_status" typeId="disposableBatteryStatus" />
         </channels>
     </channel-group-type>
