@@ -13,20 +13,25 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import pl.grzeslowski.smarthome.proto.sensor.Sensor;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
-import pl.grzeslowski.smarthome.rpi.wifi.Rf24;
-import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
-import pl.grzeslowski.smarthome.rpi.wifi.help.rf24.Payload;
-import pl.grzeslowski.smarthome.rpi.wifi.help.rf24.Pins;
-import pl.grzeslowski.smarthome.rpi.wifi.help.rf24.Retry;
+import pl.grzeslowski.smarthome.rf24.BasicRf24;
+import pl.grzeslowski.smarthome.rf24.Rf24Adapter;
+import pl.grzeslowski.smarthome.rf24.helpers.ClockSpeed;
+import pl.grzeslowski.smarthome.rf24.helpers.Payload;
+import pl.grzeslowski.smarthome.rf24.helpers.Pins;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
+import pl.grzeslowski.smarthome.rf24.helpers.Retry;
 
 public class Rf24WiFi implements WiFi {
     private Logger logger = LoggerFactory.getLogger(Rf24WiFi.class);
     private static final ByteOrder ARDUINO_BYTE_ORDER = ByteOrder.LITTLE_ENDIAN;
 
-    private final pl.grzeslowski.smarthome.rpi.wifi.Wifi wifi;
+    private final BasicRf24 wifi;
+    private final Payload payload;
 
-    public Rf24WiFi(short ce, short cs, long spi, short delay, short number, short size) {
-        wifi = new Rf24(new Pins(ce, cs, spi), new Retry(delay, number), new Payload(size));
+    public Rf24WiFi(short ce, short cs, int spi, short delay, short number, short size) {
+        payload = new Payload(size);
+        wifi = new Rf24Adapter(new Pins(ce, cs, ClockSpeed.findClockSpeed(spi).get()), new Retry(delay, number),
+                payload);
     }
 
     @Override
@@ -50,7 +55,7 @@ public class Rf24WiFi implements WiFi {
     @Override
     public Optional<Sensor.SensorResponse> read(List<Pipe> pipes, ByteOrder byteOrder) {
         logger.info("Read RF24");
-        ByteBuffer buffer = ByteBuffer.allocate(wifi.getPayload().getSize());
+        ByteBuffer buffer = ByteBuffer.allocate(payload.getSize());
         buffer.order(byteOrder);
         final boolean read = wifi.read(pipes, buffer);
         if (read) {

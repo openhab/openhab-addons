@@ -22,7 +22,7 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffResponse;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshOnOffRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
-import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class OnOffChannel implements Channel {
     private final WiFi wifi;

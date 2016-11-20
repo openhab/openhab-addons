@@ -23,7 +23,7 @@ import pl.grzeslowski.smarthome.proto.common.Basic.BasicMessage;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.Dht11Response;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshDht11Request;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
-import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class Dht11Channel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);

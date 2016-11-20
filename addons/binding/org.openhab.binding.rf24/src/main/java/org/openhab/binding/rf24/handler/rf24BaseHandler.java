@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
-import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class rf24BaseHandler extends BaseThingHandler {
     private static final Logger logger = LoggerFactory.getLogger(rf24BaseHandler.class);
