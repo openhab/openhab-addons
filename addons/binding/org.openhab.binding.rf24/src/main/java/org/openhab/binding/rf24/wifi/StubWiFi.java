@@ -23,7 +23,7 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOff;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffResponse;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse.Builder;
-import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class StubWiFi implements WiFi {
     private static final Logger logger = LoggerFactory.getLogger(StubWiFi.class);

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import pl.grzeslowski.smarthome.proto.sensor.Sensor;
-import pl.grzeslowski.smarthome.rpi.wifi.help.Pipe;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public interface WiFi extends AutoCloseable {
     void init();
