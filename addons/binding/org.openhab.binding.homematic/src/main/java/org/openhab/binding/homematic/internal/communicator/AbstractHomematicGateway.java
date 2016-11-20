@@ -275,8 +275,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * {@inheritDoc}
      */
     @Override
-    public RpcClient getRpcClient(HmInterface hmInterface) {
-        return rpcClients.get(availableInterfaces.get(hmInterface));
+    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException {
+        RpcClient rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
+        if (rpcClient == null) {
+            throw new IOException("RPC client for interface " + hmInterface + " not available");
+        }
+        return rpcClient;
     }
 
     /**
@@ -765,7 +769,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         @Override
         public void run() {
             try {
-                getRpcClient(getDefaultInterface()).validateConnection(getDefaultInterface());
+                validateConnection();
                 if (connectionLost) {
                     connectionLost = false;
                     logger.info("Connection resumed on gateway '{}'", id);
@@ -781,6 +785,31 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 }
                 // temporary disable EventTrackerThread
                 lastEventTime = System.currentTimeMillis();
+            }
+        }
+
+        /**
+         * Validates the connection to the gateway, uses a new RPC client if connection is lost.
+         */
+        private void validateConnection() throws IOException {
+            try {
+                // normal validation
+                getRpcClient(getDefaultInterface()).validateConnection(getDefaultInterface());
+            } catch (IOException ex) {
+                // connection lost validation
+                RpcClient rpcClient = null;
+                try {
+                    if (config.getGatewayInfo().isHomegear() || config.getGatewayInfo().isCCU()) {
+                        rpcClient = new BinRpcClient(config);
+                    } else {
+                        rpcClient = new XmlRpcClient(config);
+                    }
+                    rpcClient.validateConnection(getDefaultInterface());
+                } finally {
+                    if (rpcClient != null) {
+                        rpcClient.dispose();
+                    }
+                }
             }
         }
     }
