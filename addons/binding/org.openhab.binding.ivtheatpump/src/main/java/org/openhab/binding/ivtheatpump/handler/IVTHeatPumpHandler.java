@@ -7,19 +7,22 @@
  */
 package org.openhab.binding.ivtheatpump.handler;
 
+import java.io.EOFException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.ivtheatpump.IVTHeatPumpBindingConstants;
 import org.openhab.binding.ivtheatpump.internal.protocol.CommandFactory;
 import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
+import org.openhab.binding.ivtheatpump.internal.protocol.ResponseParser;
+import org.openhab.binding.ivtheatpump.internal.protocol.ValueConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,69 +35,94 @@ import org.slf4j.LoggerFactory;
 public class IVTHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final IVRConnection connection;
+    private ExecutorService executor;
 
     public IVTHeatPumpHandler(Thing thing, IVRConnection connection) {
         super(thing);
-
         this.connection = connection;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        logger.debug("handleCommand for channel {} and command {}", channelUID, command);
-
-        CompletableFuture.supplyAsync(this::executeCommand, executor).thenAccept(temp -> {
-            updateState(IVTHeatPumpBindingConstants.CHANNEL_RADIATOR_RETURN_GT1, new DecimalType(temp));
-        });
-
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
+        readFromSystemRegister(channelUID.getId());
     }
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+        executor = Executors.newSingleThreadExecutor();
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        // Read rego version. When read successfully, set status to ONLINE.
+        readRegoVersion();
     }
 
     @Override
     public void dispose() {
         super.dispose();
 
+        executor.shutdownNow();
+        executor = null;
+
         connection.close();
     }
 
-    private double executeCommand() {
-        try {
-            if (connection.isConnected() == false) {
-                connection.connect();
+    private void onDisconnected() {
+        logger.info("Disconnected.");
+    }
+
+    private void readFromSystemRegister(String channelIID) {
+        executeCommand(CommandFactory.createReadFromSystemRegisterCmd((short) 0x1234),
+                ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm)
+                        .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> updateState(channelIID, state));
+    }
+
+    private void readRegoVersion() {
+        executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength)
+                .thenApply(ResponseParser::standardForm).thenApply(ValueConverter::ToShort).thenAccept(version -> {
+                    updateStatus(version == null ? ThingStatus.OFFLINE : ThingStatus.ONLINE);
+                    logger.info("Connected to Rego version {}.", version);
+                });
+    }
+
+    private CompletableFuture<byte[]> executeCommand(byte[] command, int length) {
+        return CompletableFuture.supplyAsync(() -> {
+
+            try {
+                if (connection.isConnected() == false) {
+                    connection.connect();
+                }
+
+                connection.write(command);
+
+                byte[] response = new byte[length];
+                for (int i = 0; i < length;) {
+                    int value = connection.read();
+
+                    if (value == -1) {
+                        throw new EOFException();
+                    }
+
+                    if (i == 0 && value != 0x01) {
+                        continue;
+                    }
+
+                    response[i] = (byte) value;
+                    ++i;
+                }
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Received {}", IntStream.range(0, length).map(i -> response[i])
+                            .mapToObj(i -> String.format("0x%02X", i)).collect(Collectors.joining(" ")));
+                }
+
+                return response;
+
+            } catch (Exception e) {
+                logger.warn("Command failed.", e);
+                onDisconnected();
+                return null;
             }
 
-            connection.write(CommandFactory.createReadFromSystemRegisterCmd((short) 0x020B));
-
-            int value;
-            while ((value = connection.read()) != -1) {
-                logger.debug("****** {}", Integer.toHexString(value));
-            }
-
-            return 34.1;
-        } catch (Exception e) {
-            return 0;
-        }
+        }, executor);
     }
 }
