@@ -2,13 +2,14 @@ package org.openhab.binding.ivtheatpump.internal.protocol;
 
 public class ResponseParser {
     public final static int StandardFormLength = 5;
+    public final static byte ComputerAddress = (byte) 0x01;
 
     public static byte[] standardForm(byte[] buffer) {
         if (buffer == null || buffer.length != 5) {
             return null;
         }
 
-        if (buffer[0] != 0x01) {
+        if (buffer[0] != ComputerAddress) {
             return null;
         }
 

@@ -19,8 +19,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.ivtheatpump.internal.protocol.CommandFactory;
 import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
+import org.openhab.binding.ivtheatpump.internal.protocol.RegoMapper;
 import org.openhab.binding.ivtheatpump.internal.protocol.ResponseParser;
 import org.openhab.binding.ivtheatpump.internal.protocol.ValueConverter;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
     private final IVRConnection connection;
     private ExecutorService executor;
+    private RegoMapper mapper;
 
     public IVTHeatPumpHandler(Thing thing, IVRConnection connection) {
         super(thing);
@@ -50,6 +53,8 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        mapper = new RegoMapper();
+
         executor = Executors.newSingleThreadExecutor();
 
         // Read rego version. When read successfully, set status to ONLINE.
@@ -68,10 +73,19 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
 
     private void onDisconnected() {
         logger.info("Disconnected.");
+
+        updateStatus(ThingStatus.OFFLINE);
+        mapper.channels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
     private void readFromSystemRegister(String channelIID) {
-        executeCommand(CommandFactory.createReadFromSystemRegisterCmd((short) 0x1234),
+        RegoMapper.Channel channel = mapper.map(channelIID);
+        if (channel == null) {
+            logger.warn("Unknown channel requested {}.", channelIID);
+            return;
+        }
+
+        executeCommand(CommandFactory.createReadFromSystemRegisterCmd(channel.address()),
                 ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm)
                         .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> updateState(channelIID, state));
     }
@@ -79,8 +93,10 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
     private void readRegoVersion() {
         executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength)
                 .thenApply(ResponseParser::standardForm).thenApply(ValueConverter::ToShort).thenAccept(version -> {
-                    updateStatus(version == null ? ThingStatus.OFFLINE : ThingStatus.ONLINE);
-                    logger.info("Connected to Rego version {}.", version);
+                    if (version != null) {
+                        updateStatus(ThingStatus.ONLINE);
+                        logger.info("Connected to Rego version {}.", version);
+                    }
                 });
     }
 
@@ -90,6 +106,10 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
             try {
                 if (connection.isConnected() == false) {
                     connection.connect();
+                }
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Sending {}", byteArrayToHex(command));
                 }
 
                 connection.write(command);
@@ -102,7 +122,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
                         throw new EOFException();
                     }
 
-                    if (i == 0 && value != 0x01) {
+                    if (i == 0 && value != ResponseParser.ComputerAddress) {
                         continue;
                     }
 
@@ -111,8 +131,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
                 }
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Received {}", IntStream.range(0, length).map(i -> response[i])
-                            .mapToObj(i -> String.format("0x%02X", i)).collect(Collectors.joining(" ")));
+                    logger.debug("Received {}", byteArrayToHex(response));
                 }
 
                 return response;
@@ -124,5 +143,10 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
             }
 
         }, executor);
+    }
+
+    private static String byteArrayToHex(byte[] buffer) {
+        return IntStream.range(0, buffer.length).map(i -> buffer[i]).mapToObj(i -> String.format("0x%02X", i))
+                .collect(Collectors.joining(" "));
     }
 }
