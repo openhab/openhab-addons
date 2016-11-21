@@ -13,7 +13,7 @@ import org.openhab.binding.rf24.handler.channel.Channel;
 import org.openhab.binding.rf24.handler.channel.ChannelGuard;
 import org.openhab.binding.rf24.handler.channel.Dht11Channel;
 import org.openhab.binding.rf24.handler.channel.OnOffChannel;
-import org.openhab.binding.rf24.wifi.X;
+import org.openhab.binding.rf24.wifi.WifiOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class rf24BaseHandler extends BaseThingHandler {
 
     private final List<Channel> channels = new ArrayList<>();
 
-    public rf24BaseHandler(Thing thing, X x, Pipe pipe) {
+    public rf24BaseHandler(Thing thing, WifiOperator x, Pipe pipe) {
         super(thing);
         channels.add(ChannelGuard.of(new OnOffChannel(x, MESSAGE_ID_SUPPLIER, pipe)));
         channels.add(ChannelGuard.of(new Dht11Channel(x, MESSAGE_ID_SUPPLIER, pipe)));
