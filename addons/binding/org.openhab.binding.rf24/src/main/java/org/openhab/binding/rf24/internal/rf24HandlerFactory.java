@@ -21,6 +21,7 @@ import org.openhab.binding.rf24.rf24BindingConstants;
 import org.openhab.binding.rf24.handler.PipeFactory;
 import org.openhab.binding.rf24.handler.rf24BaseHandler;
 import org.openhab.binding.rf24.wifi.Rf24;
+import org.openhab.binding.rf24.wifi.StubWiFi;
 import org.openhab.binding.rf24.wifi.WiFi;
 import org.openhab.binding.rf24.wifi.WifiOperator;
 import org.osgi.service.component.ComponentContext;
@@ -43,6 +44,8 @@ import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
  * @author Martin Grzeslowski - Initial contribution
  */
 public class rf24HandlerFactory extends BaseThingHandlerFactory {
+    private static final boolean RPI = false;
+
     private static final Logger logger = LoggerFactory.getLogger(rf24HandlerFactory.class);
     private static final IdUtils ID_UTILS = new IdUtils(Rf24Adapter.MAX_NUMBER_OF_READING_PIPES);
     private static final PipeFactory PIPE_FACTORY = new PipeFactory();
@@ -66,8 +69,16 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     private final List<WifiOperator> xs;
 
     public rf24HandlerFactory() {
-        WiFi wifi1 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
-        WiFi wifi2 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
+        final WiFi wifi1;
+        final WiFi wifi2;
+
+        if (RPI) {
+            wifi1 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
+            wifi2 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
+        } else {
+            wifi1 = new StubWiFi();
+            wifi2 = new StubWiFi();
+        }
 
         // @formatter:off
         xs = ImmutableList.of(
