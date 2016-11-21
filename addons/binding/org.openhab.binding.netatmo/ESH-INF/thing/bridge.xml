@@ -8,13 +8,7 @@
     <bridge-type id="netatmoapi">
         <label>Netatmo API</label>
         <description>This bridge represents the gateway to Netatmo API.</description>
-                
-       <channels>           
-            <channel id="Unit" typeId="unit" />
-            <channel id="WindUnit" typeId="windUnit" />
-            <channel id="PressureUnit" typeId="pressureUnit" />
-        </channels>
-        
+                        
         <config-description-ref uri="thing-type:netatmo:bridge" />
                 
     </bridge-type>

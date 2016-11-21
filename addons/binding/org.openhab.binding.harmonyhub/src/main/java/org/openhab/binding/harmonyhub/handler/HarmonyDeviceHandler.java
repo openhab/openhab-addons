@@ -17,21 +17,19 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -81,8 +79,13 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             return;
         }
 
+        if (command instanceof RefreshType) {
+            // nothing to refresh
+            return;
+        }
+
         if (!(command instanceof StringType)) {
-            logger.warn("Command {} is not a String type for channel {] for device {}", command, channelUID,
+            logger.warn("Command {} is not a String type for channel {} for device {}", command, channelUID,
                     getThing());
             return;
         }
@@ -109,35 +112,15 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         } else {
             logName = id > 0 ? String.valueOf(id) : name;
             logger.debug("initializing {}", logName);
-            updateDeviceStatus(getBridge().getStatus());
+            if (getBridge() != null) {
+                updateDeviceStatus(getBridge().getStatus());
+            }
         }
     };
 
     @Override
     public void dispose() {
         factory.removeChannelTypesForThing(getThing().getUID());
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        if (thingHandler instanceof HarmonyHubHandler) {
-            logger.trace("bridgeHandlerInitialized for device {}", logName);
-            this.bridge = (HarmonyHubHandler) thingHandler;
-        }
-    }
-
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("bridgeHandlerDisposed for device {}", logName);
-        this.bridge = null;
-        super.bridgeHandlerDisposed(thingHandler, bridge);
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo statusInfo) {
-        ThingStatus status = statusInfo.getStatus();
-        logger.debug("hubStatusChanged {}  {}", logName, status);
-        updateDeviceStatus(status);
     }
 
     /**

@@ -180,7 +180,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
 
         arpRequestTrackers.put(pcapNetworkInterface, arpRequestListener);
         final String interfaceName = pcapNetworkInterface.getName();
-        arpRequestListener.startCapturing(new ArpRequestHandler() {
+        final boolean capturingStarted = arpRequestListener.startCapturing(new ArpRequestHandler() {
 
             @Override
             public void handleArpRequest(ArpPacket arpPacket) {
@@ -207,7 +207,9 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
                 }
             }
         });
-        logger.debug("Started capturing for {}.", interfaceName);
+        if (capturingStarted) {
+            logger.debug("Started capturing for {}.", interfaceName);
+        }
     }
 
 }

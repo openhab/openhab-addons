@@ -64,31 +64,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
         super.updateStatus(status);
     }
 
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Bridge Handler for {} initialized", getThing().getUID().getId());
-
-        if (thingHandler instanceof VitotronicBridgeHandler) {
-            this.bridgeHandler = (VitotronicBridgeHandler) thingHandler;
-        } else {
-            logger.debug("No available ThingHandler handler found. Handler: {}", thingHandler.toString());
-            this.bridgeHandler = null;
-        }
-        registerVitotronicThingListener(this.bridgeHandler);
-    }
-
-    public void bridgeHandlerDispose(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Bridge Handler for {} disposed", getThing().getUID().getId());
-
-        if (thingHandler instanceof VitotronicBridgeHandler) {
-            this.bridgeHandler = (VitotronicBridgeHandler) thingHandler;
-        } else {
-            logger.debug("No available ThingHandler handler found. Handler: {}", thingHandler.toString());
-            this.bridgeHandler = null;
-        }
-        unregisterVitotronicThingListener(this.bridgeHandler);
-    }
-
     private synchronized VitotronicBridgeHandler getBridgeHandler() {
 
         Bridge bridge = getBridge();

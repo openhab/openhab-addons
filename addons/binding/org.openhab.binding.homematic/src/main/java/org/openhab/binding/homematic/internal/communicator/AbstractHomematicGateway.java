@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +89,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private ScheduledFuture<?> connectionTrackerThread;
     private ScheduledFuture<?> reconnectThread;
     private Map<String, HmDevice> devices = Collections.synchronizedMap(new HashMap<String, HmDevice>());
-    private Map<HmInterface, TransferMode> availableInterfaces = new HashMap<HmInterface, TransferMode>(4);
+    private Map<HmInterface, TransferMode> availableInterfaces = new TreeMap<HmInterface, TransferMode>();
     private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<VirtualDatapointHandler>();
     private boolean cancelLoadAllMetadata;
 
@@ -194,6 +195,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (RpcClient rpcClient : rpcClients.values()) {
             rpcClient.dispose();
         }
+        rpcClients.clear();
     }
 
     /**
@@ -228,6 +230,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         for (TransferMode mode : rpcServers.keySet()) {
             rpcServers.get(mode).shutdown();
         }
+        rpcServers.clear();
     }
 
     /**
@@ -273,8 +276,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * {@inheritDoc}
      */
     @Override
-    public RpcClient getRpcClient(HmInterface hmInterface) {
-        return rpcClients.get(availableInterfaces.get(hmInterface));
+    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException {
+        RpcClient rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
+        if (rpcClient == null) {
+            throw new IOException("RPC client for interface " + hmInterface + " not available");
+        }
+        return rpcClient;
     }
 
     /**
@@ -763,7 +770,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         @Override
         public void run() {
             try {
-                getRpcClient(getDefaultInterface()).validateConnection(getDefaultInterface());
+                validateConnection();
                 if (connectionLost) {
                     connectionLost = false;
                     logger.info("Connection resumed on gateway '{}'", id);
@@ -779,6 +786,31 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 }
                 // temporary disable EventTrackerThread
                 lastEventTime = System.currentTimeMillis();
+            }
+        }
+
+        /**
+         * Validates the connection to the gateway, uses a new RPC client if connection is lost.
+         */
+        private void validateConnection() throws IOException {
+            try {
+                // normal validation
+                getRpcClient(getDefaultInterface()).validateConnection(getDefaultInterface());
+            } catch (IOException ex) {
+                // connection lost validation
+                RpcClient rpcClient = null;
+                try {
+                    if (config.getGatewayInfo().isHomegear() || config.getGatewayInfo().isCCU()) {
+                        rpcClient = new BinRpcClient(config);
+                    } else {
+                        rpcClient = new XmlRpcClient(config);
+                    }
+                    rpcClient.validateConnection(getDefaultInterface());
+                } finally {
+                    if (rpcClient != null) {
+                        rpcClient.dispose();
+                    }
+                }
             }
         }
     }
