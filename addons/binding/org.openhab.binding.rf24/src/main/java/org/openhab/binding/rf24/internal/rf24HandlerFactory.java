@@ -48,7 +48,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(rf24HandlerFactory.class);
     private static final IdUtils ID_UTILS = new IdUtils(Rf24Adapter.MAX_NUMBER_OF_READING_PIPES);
-    private static final PipeFactory PIPE_FACTORY = new PipeFactory();
+    private static final PipeFactory PIPE_FACTORY = new PipeFactory(ID_UTILS);
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
     // @formatter:off
