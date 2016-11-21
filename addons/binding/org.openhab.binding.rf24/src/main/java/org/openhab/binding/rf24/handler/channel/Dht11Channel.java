@@ -2,7 +2,7 @@ package org.openhab.binding.rf24.handler.channel;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -27,7 +27,7 @@ public class Dht11Channel extends AbstractChannel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);
 
     public Dht11Channel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
-            AtomicInteger messageIdSupplier, Pipe pipe) {
+            Supplier<Integer> messageIdSupplier, Pipe pipe) {
         super(idUtils, wifiOperator, updatable, messageIdSupplier, pipe);
     }
 
