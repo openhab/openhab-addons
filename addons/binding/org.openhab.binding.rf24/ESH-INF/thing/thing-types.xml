@@ -14,7 +14,7 @@
         <config-description>
             <parameter name="reciverPipe" type="integer" min="1" required="true" readOnly="true">
                 <label>Receiver ID of this device.</label>
-                <description>Device should be listening on this pipe</description>
+                <description>Receiver ID is device sensitive</description>
             </parameter>
         </config-description>
 	</thing-type>
