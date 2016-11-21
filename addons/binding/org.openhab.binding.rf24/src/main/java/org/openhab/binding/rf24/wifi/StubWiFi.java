@@ -1,11 +1,10 @@
 package org.openhab.binding.rf24.wifi;
 
-import java.nio.ByteOrder;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
@@ -66,9 +65,9 @@ public class StubWiFi implements WiFi {
     }
 
     @Override
-    public synchronized Optional<Sensor.SensorResponse> read(List<Pipe> pipes, ByteOrder byteOrder) {
+    public synchronized Optional<Sensor.SensorResponse> read(Collection<Pipe> pipes) {
         checkInitialized();
-        logger.info("StubWiFi.read({}, {})", Joiner.on(",").join(pipes), byteOrder);
+        logger.info("StubWiFi.read({})", Joiner.on(",").join(pipes));
         for (Pipe pipe : pipes) {
             if (messages.containsKey(pipe)) {
                 Sensor.SensorRequest cmd = messages.get(pipe).poll();
@@ -127,12 +126,7 @@ public class StubWiFi implements WiFi {
 
     @Override
     public synchronized Optional<Sensor.SensorResponse> read(Pipe pipe) {
-        return read(Collections.singletonList(pipe), ByteOrder.LITTLE_ENDIAN);
-    }
-
-    @Override
-    public synchronized Optional<Sensor.SensorResponse> read(Pipe pipe, ByteOrder byteOrder) {
-        return read(Collections.singletonList(pipe), byteOrder);
+        return read(Collections.singletonList(pipe));
     }
 
     private void checkInitialized() {
