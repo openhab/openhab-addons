@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +89,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private ScheduledFuture<?> connectionTrackerThread;
     private ScheduledFuture<?> reconnectThread;
     private Map<String, HmDevice> devices = Collections.synchronizedMap(new HashMap<String, HmDevice>());
-    private Map<HmInterface, TransferMode> availableInterfaces = new HashMap<HmInterface, TransferMode>(4);
+    private Map<HmInterface, TransferMode> availableInterfaces = new TreeMap<HmInterface, TransferMode>();
     private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<VirtualDatapointHandler>();
     private boolean cancelLoadAllMetadata;
 
