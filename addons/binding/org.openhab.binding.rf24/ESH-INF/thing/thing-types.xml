@@ -12,8 +12,8 @@
             <channel id="dht11Humidity" typeId="dht11Humidity" />
 		</channels>
         <config-description>
-            <parameter name="reciverPipe" type="text" required="true" readOnly="true">
-                <label>Devices pipe number (BigInteger) that it is listening on.</label>
+            <parameter name="reciverPipe" type="integer" min="1" required="true" readOnly="true">
+                <label>Receiver ID of this device.</label>
                 <description>Device should be listening on this pipe</description>
             </parameter>
         </config-description>
