@@ -1,8 +1,6 @@
 package org.openhab.binding.rf24.handler.channel;
 
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -27,13 +25,11 @@ public class ChannelGuard implements Channel {
     }
 
     @Override
-    public Optional<Consumer<Updatable>> process(ChannelUID channelUID, Command command) {
+    public void process(ChannelUID channelUID, Command command) {
         Preconditions.checkNotNull(channelUID);
         Preconditions.checkNotNull(command);
         if (isGoodChannel(channelUID)) {
-            return channel.process(channelUID, command);
-        } else {
-            return Optional.empty();
+            channel.process(channelUID, command);
         }
     }
 
