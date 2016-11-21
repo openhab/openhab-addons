@@ -12,7 +12,7 @@ import pl.grzeslowski.smarthome.common.io.id.TransmitterId;
 
 public class WifiOperator implements AutoCloseable {
     private static final long INITIAL_DELAY = TimeUnit.SECONDS.toMillis(5);
-    private static final long DELAY = TimeUnit.SECONDS.toMillis(5);
+    private static final long DELAY = TimeUnit.MINUTES.toMillis(1);
 
     private final WiFi wifi;
     private final TransmitterId transmitterId;
