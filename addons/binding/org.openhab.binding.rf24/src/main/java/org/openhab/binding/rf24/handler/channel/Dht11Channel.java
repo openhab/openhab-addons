@@ -11,7 +11,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.wifi.X;
+import org.openhab.binding.rf24.wifi.WifiOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +28,11 @@ import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 public class Dht11Channel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);
 
-    private final X x;
+    private final WifiOperator x;
     private final AtomicInteger messageIdSupplier;
     private final Pipe pipe;
 
-    public Dht11Channel(X x, AtomicInteger messageIdSupplier, Pipe pipe) {
+    public Dht11Channel(WifiOperator x, AtomicInteger messageIdSupplier, Pipe pipe) {
         this.x = Preconditions.checkNotNull(x);
         this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
         this.pipe = Preconditions.checkNotNull(pipe);

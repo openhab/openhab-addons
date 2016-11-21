@@ -11,7 +11,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.wifi.X;
+import org.openhab.binding.rf24.wifi.WifiOperator;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -25,11 +25,11 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
 import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class OnOffChannel implements Channel {
-    private final X x;
+    private final WifiOperator x;
     private final AtomicInteger messageIdSupplier;
     private final Pipe pipe;
 
-    public OnOffChannel(X x, AtomicInteger messageIdSupplier, Pipe pipe) {
+    public OnOffChannel(WifiOperator x, AtomicInteger messageIdSupplier, Pipe pipe) {
         this.x = Preconditions.checkNotNull(x);
         this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
         this.pipe = Preconditions.checkNotNull(pipe);

@@ -22,7 +22,7 @@ import org.openhab.binding.rf24.handler.PipeFactory;
 import org.openhab.binding.rf24.handler.rf24BaseHandler;
 import org.openhab.binding.rf24.wifi.Rf24;
 import org.openhab.binding.rf24.wifi.WiFi;
-import org.openhab.binding.rf24.wifi.X;
+import org.openhab.binding.rf24.wifi.WifiOperator;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
         // @formatter:on
     }
 
-    private final List<X> xs;
+    private final List<WifiOperator> xs;
 
     public rf24HandlerFactory() {
         WiFi wifi1 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
@@ -71,8 +71,8 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
         // @formatter:off
         xs = ImmutableList.of(
-                new X(ID_UTILS, wifi1, new TransmitterId(1), EXECUTOR),
-                new X(ID_UTILS, wifi2, new TransmitterId(2), EXECUTOR)
+                new WifiOperator(ID_UTILS, wifi1, new TransmitterId(1), EXECUTOR),
+                new WifiOperator(ID_UTILS, wifi2, new TransmitterId(2), EXECUTOR)
         );
         // @formatter:on
 
@@ -81,7 +81,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         // @formatter:off
-        xs.stream().forEach(X::init);
+        xs.stream().forEach(WifiOperator::init);
         // @formatter:on
         super.activate(componentContext);
     }
@@ -90,7 +90,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
         // @formatter:off
-        xs.stream().forEach(X::close);
+        xs.stream().forEach(WifiOperator::close);
         // @formatter:on
     }
 
@@ -100,7 +100,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
         return new rf24BaseHandler(thing, findForPipe(pipe), pipe);
     }
 
-    private X findForPipe(Pipe pipe) {
+    private WifiOperator findForPipe(Pipe pipe) {
         // @formatter:off
         final TransmitterId transmitterId = Optional.of(pipe)
             .map(p -> p.getPipe())

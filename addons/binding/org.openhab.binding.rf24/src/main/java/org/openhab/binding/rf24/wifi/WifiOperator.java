@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.common.io.id.TransmitterId;
 
-public class X implements AutoCloseable {
+public class WifiOperator implements AutoCloseable {
     private static final long INITIAL_DELAY = TimeUnit.SECONDS.toMillis(5);
     private static final long DELAY = TimeUnit.SECONDS.toMillis(5);
 
@@ -17,7 +17,7 @@ public class X implements AutoCloseable {
     private final Rf24Thread rf24Thread;
     private ScheduledExecutorService executor;
 
-    public X(IdUtils idUtils, WiFi wifi, TransmitterId transmitterId, ScheduledExecutorService executor) {
+    public WifiOperator(IdUtils idUtils, WiFi wifi, TransmitterId transmitterId, ScheduledExecutorService executor) {
         this.wifi = Preconditions.checkNotNull(wifi);
         this.transmitterId = Preconditions.checkNotNull(transmitterId);
         this.executor = Preconditions.checkNotNull(executor);
