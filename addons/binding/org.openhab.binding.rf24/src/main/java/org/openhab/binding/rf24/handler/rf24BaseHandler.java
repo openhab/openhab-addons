@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,7 +28,14 @@ import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class rf24BaseHandler extends BaseThingHandler {
     private static final Logger logger = LoggerFactory.getLogger(rf24BaseHandler.class);
-    private static final AtomicInteger MESSAGE_ID_SUPPLIER = new AtomicInteger();
+    private static final Supplier<Integer> MESSAGE_ID_SUPPLIER = new Supplier<Integer>() {
+        private final AtomicInteger id = new AtomicInteger(1);
+
+        @Override
+        public Integer get() {
+            return id.getAndIncrement();
+        }
+    };
 
     private final List<Channel> channels = new ArrayList<>();
 

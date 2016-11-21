@@ -1,8 +1,7 @@
 package org.openhab.binding.rf24.handler.channel;
 
-import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -26,7 +25,7 @@ import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 public class OnOffChannel extends AbstractChannel implements Channel {
 
     public OnOffChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
-            AtomicInteger messageIdSupplier, Pipe pipe) {
+            Supplier<Integer> messageIdSupplier, Pipe pipe) {
         super(idUtils, wifiOperator, updatable, messageIdSupplier, pipe);
     }
 
@@ -71,14 +70,7 @@ public class OnOffChannel extends AbstractChannel implements Channel {
     }
 
     private SensorRequest build(OnOffType cmd) {
-        // @formatter:off
-        BasicMessage basic = BasicMessage
-                .newBuilder()
-                .setDeviceId((int) getTransmitterId().getId())
-                .setLinuxTimestamp(new Date().getTime())
-                .setMessageId(messageIdSupplier.incrementAndGet())
-                .build();
-        // @formatter:on
+        BasicMessage basic = buildBasicMessage();
 
         OnOff onOff;
         switch (cmd) {

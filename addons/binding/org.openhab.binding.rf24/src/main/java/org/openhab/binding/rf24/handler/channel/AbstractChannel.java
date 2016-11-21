@@ -3,7 +3,7 @@ package org.openhab.binding.rf24.handler.channel;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.binding.rf24.wifi.Rf24Thread.OnMessage;
@@ -27,15 +27,15 @@ public abstract class AbstractChannel implements Channel, OnMessage {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Updatable updatable;
-    protected final AtomicInteger messageIdSupplier;
-    protected final Pipe pipe;
 
     private final WifiOperator wifiOperator;
+    private final Supplier<Integer> messageIdSupplier;
+    private final Pipe pipe;
     private final Map<Integer, ChannelUID> corelationMap = new HashMap<>();
     private final IdUtils idUtils;
 
     public AbstractChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
-            AtomicInteger messageIdSupplier, Pipe pipe) {
+            Supplier<Integer> messageIdSupplier, Pipe pipe) {
         this.idUtils = Preconditions.checkNotNull(idUtils);
         this.wifiOperator = Preconditions.checkNotNull(wifiOperator);
         this.updatable = Preconditions.checkNotNull(updatable);
@@ -49,7 +49,7 @@ public abstract class AbstractChannel implements Channel, OnMessage {
                 .newBuilder()
                 .setDeviceId((int) wifiOperator.geTransmitterId().getId())
                 .setLinuxTimestamp(new Date().getTime())
-                .setMessageId(messageIdSupplier.incrementAndGet())
+                .setMessageId(messageIdSupplier.get())
                 .build();
         // @formatter:on
     }
