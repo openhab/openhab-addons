@@ -1,10 +1,8 @@
 package org.openhab.binding.rf24.handler.channel;
 
-import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -16,26 +14,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
-import pl.grzeslowski.smarthome.proto.common.Basic.BasicMessage;
+import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.Dht11Response;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshDht11Request;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
+import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
-public class Dht11Channel implements Channel {
+public class Dht11Channel extends AbstractChannel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);
 
-    private final WifiOperator x;
-    private final AtomicInteger messageIdSupplier;
-    private final Pipe pipe;
-
-    public Dht11Channel(WifiOperator x, AtomicInteger messageIdSupplier, Pipe pipe) {
-        this.x = Preconditions.checkNotNull(x);
-        this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
-        this.pipe = Preconditions.checkNotNull(pipe);
+    public Dht11Channel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
+            AtomicInteger messageIdSupplier, Pipe pipe) {
+        super(idUtils, wifiOperator, updatable, messageIdSupplier, pipe);
     }
 
     @Override
@@ -45,38 +38,28 @@ public class Dht11Channel implements Channel {
     }
 
     @Override
-    public Optional<Consumer<Updatable>> process(ChannelUID channelUID, Command command) {
+    public void process(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             // @formatter:off
-            BasicMessage basic = BasicMessage
-                    .newBuilder()
-                    .setDeviceId((int) x.geTransmitterId().getId())
-                    .setLinuxTimestamp(new Date().getTime())
-                    .setMessageId(messageIdSupplier.incrementAndGet())
-                    .build();
-            // @formatter:on
-
-            // @formatter:off
-            SensorRequest request = SensorRequest
-                    .newBuilder()
-                    .setBasic(basic)
+            SensorRequest request = newSensorRequest()
                     .setRefreshDht11Request(RefreshDht11Request.getDefaultInstance())
                     .build();
             // @formatter:on
 
-            x.getWiFi().write(pipe, request);
-            return Optional.of(updatable -> x.getWiFi().read(pipe).ifPresent(response -> {
-                if (response.hasDht11Response()) {
-                    findDecimalTypeForChannel(channelUID, response.getDht11Response())
-                            .ifPresent(decimalType -> updatable.updateState(channelUID, decimalType));
-                } else {
-                    logger.warn(String.format("SensorResponse for pipe %s should have Dht11Response! Response:%n%s",
-                            pipe, response));
-                }
-            }));
-        } else {
-            return Optional.empty();
+            write(request, channelUID);
         }
+    }
+
+    @Override
+    protected void processMessage(SensorResponse response) {
+        ChannelUID channelUID = findChannelUID(response);
+        Optional<DecimalType> decimalType = findDecimalTypeForChannel(channelUID, response.getDht11Response());
+        decimalType.ifPresent(d -> updatable.updateState(channelUID, d));
+    }
+
+    @Override
+    protected boolean canHandleResponse(SensorResponse response) {
+        return response.hasDht11Response();
     }
 
     private Optional<DecimalType> findDecimalTypeForChannel(ChannelUID channelUID, Dht11Response dht11) {
@@ -104,10 +87,5 @@ public class Dht11Channel implements Channel {
                     "I only support humidity channel (%s) and tempertature channel (%s). Got this channel ID %s. ",
                     rf24BindingConstants.DHT11_HUMIDITY_CHANNEL, rf24BindingConstants.DHT11_TEMPERATURE_CHANNEL, id));
         }
-    }
-
-    @Override
-    public String toString() {
-        return Dht11Channel.class.getSimpleName();
     }
 }

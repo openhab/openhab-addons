@@ -1,6 +1,5 @@
 package org.openhab.binding.rf24.handler.channel;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -18,7 +17,7 @@ public interface Channel {
 
     Set<String> whatChannelIdCanProcess();
 
-    Optional<Consumer<Updatable>> process(ChannelUID channelUID, Command command);
+    void process(ChannelUID channelUID, Command command);
 
     public interface Updatable {
         void updateState(ChannelUID channelUID, State state);
