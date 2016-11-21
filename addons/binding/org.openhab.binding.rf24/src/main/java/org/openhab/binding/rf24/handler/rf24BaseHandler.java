@@ -74,4 +74,10 @@ public class rf24BaseHandler extends BaseThingHandler {
         }
         // @formatter:on
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        channels.stream().forEach(channel -> channel.close());
+    }
 }

@@ -39,6 +39,11 @@ public class ChannelGuard implements Channel {
     }
 
     @Override
+    public void close() {
+        channel.close();
+    }
+
+    @Override
     public String toString() {
         return String.format("%s[%s]", ChannelGuard.class.getSimpleName(), channel.toString());
     }

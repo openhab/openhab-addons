@@ -52,4 +52,8 @@ public class WifiOperator implements AutoCloseable {
     public void addToNotify(OnMessage message) {
         rf24Thread.addToNotify(message);
     }
+
+    public void removeFromNotify(OnMessage message) {
+        rf24Thread.removeFromNotify(message);
+    }
 }
