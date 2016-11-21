@@ -100,11 +100,11 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     private X findForPipe(Pipe pipe) {
         // @formatter:off
         final TransmitterId transmitterId = Optional.of(pipe)
-            .map(Pipe::getPipe)
-            .map(HardwareId::new)
-            .map(HardwareId::toCommonId)
-            .map(cId -> ID_Utils.toReceiverId(cId))
-            .map(rId -> ID_Utils.findTransmitterId(rId))
+            .map(p -> p.getPipe())
+            .map(p -> new HardwareId(p))
+            .map(hId -> hId.toCommonId())
+            .map(cId -> ID_UTILS.toReceiverId(cId))
+            .map(rId -> ID_UTILS.findTransmitterId(rId))
             .orElseThrow((() ->
                     new IllegalArgumentException(String.format("Could not found transmitterId for pipe %s!", pipe.toString()))));
 
