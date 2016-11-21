@@ -2,7 +2,6 @@ package org.openhab.binding.rf24.wifi;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -54,14 +53,13 @@ public class Rf24Thread implements AutoCloseable, Runnable {
             return;
         }
 
-        Optional<SensorResponse> read = wifi.read(pipes);
-        if (read.isPresent()) {
-            SensorResponse response = read.get();
-
+        // @formatter:off
+        wifi.read(pipes).ifPresent(response -> {
             synchronized (notify) {
                 notify.stream().forEach(message -> message.onMessage(response));
             }
-        }
+        });
+        // @formatter:on
     }
 
     @Override
