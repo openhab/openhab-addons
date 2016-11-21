@@ -31,8 +31,12 @@ public class Rf24 implements WiFi {
 
     public Rf24(short ce, short cs, int spi, short delay, short number, short size) {
         payload = new Payload(size);
-        wifi = new Rf24Adapter(new Pins(ce, cs, ClockSpeed.findClockSpeed(spi).get()), new Retry(delay, number),
+        // @formatter:off
+        wifi = new Rf24Adapter(
+                new Pins(ce, cs, ClockSpeed.findClockSpeed(spi).get()),
+                new Retry(delay, number),
                 payload);
+        // @formatter:on
     }
 
     @Override

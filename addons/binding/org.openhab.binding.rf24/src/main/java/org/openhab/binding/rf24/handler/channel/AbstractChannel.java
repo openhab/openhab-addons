@@ -1,0 +1,107 @@
+package org.openhab.binding.rf24.handler.channel;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.openhab.binding.rf24.wifi.Rf24Thread.OnMessage;
+import org.openhab.binding.rf24.wifi.WifiOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+
+import pl.grzeslowski.smarthome.common.io.id.HardwareId;
+import pl.grzeslowski.smarthome.common.io.id.IdUtils;
+import pl.grzeslowski.smarthome.common.io.id.ReceiverId;
+import pl.grzeslowski.smarthome.common.io.id.TransmitterId;
+import pl.grzeslowski.smarthome.proto.common.Basic.BasicMessage;
+import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
+import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest.Builder;
+import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
+import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
+
+public abstract class AbstractChannel implements Channel, OnMessage {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Updatable updatable;
+    protected final AtomicInteger messageIdSupplier;
+    protected final Pipe pipe;
+
+    private final WifiOperator wifiOperator;
+    private final Map<Integer, ChannelUID> corelationMap = new HashMap<>();
+    private final IdUtils idUtils;
+
+    public AbstractChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
+            AtomicInteger messageIdSupplier, Pipe pipe) {
+        this.idUtils = Preconditions.checkNotNull(idUtils);
+        this.wifiOperator = Preconditions.checkNotNull(wifiOperator);
+        this.updatable = Preconditions.checkNotNull(updatable);
+        this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
+        this.pipe = Preconditions.checkNotNull(pipe);
+    }
+
+    protected BasicMessage buildBasicMessage() {
+        // @formatter:off
+        return BasicMessage
+                .newBuilder()
+                .setDeviceId((int) wifiOperator.geTransmitterId().getId())
+                .setLinuxTimestamp(new Date().getTime())
+                .setMessageId(messageIdSupplier.incrementAndGet())
+                .build();
+        // @formatter:on
+    }
+
+    protected Builder newSensorRequest() {
+        return SensorRequest.newBuilder().setBasic(buildBasicMessage());
+    }
+
+    protected void write(SensorRequest request, ChannelUID channelUID) {
+        boolean success = wifiOperator.getWiFi().write(pipe, request);
+        int messageId = request.getBasic().getMessageId();
+        if (success) {
+            synchronized (corelationMap) {
+                corelationMap.put(messageId, channelUID);
+            }
+        } else {
+            logger.warn("Sending message to {} with ID {} was not succesfull", pipe, messageId);
+        }
+    }
+
+    protected ChannelUID findChannelUID(SensorResponse response) {
+        Integer messageId = response.getBasic().getMessageId();
+        synchronized (corelationMap) {
+            if (corelationMap.containsKey(messageId)) {
+                return corelationMap.remove(messageId);
+            } else {
+                // should not ever happen!
+                throw new IllegalStateException(String
+                        .format("Correlation map should have inside ID %s! SensorResponse = %s.", messageId, response));
+            }
+        }
+    }
+
+    @Override
+    public void onMessage(SensorResponse response) {
+        ReceiverId deviceId = new ReceiverId(response.getBasic().getDeviceId());
+        HardwareId hardwareId = HardwareId.fromReceiverId(idUtils, deviceId);
+        if (hardwareId.getId() == pipe.getPipe() && canHandleResponse(response)) {
+            processMessage(response);
+        }
+    }
+
+    protected abstract void processMessage(SensorResponse response);
+
+    protected abstract boolean canHandleResponse(SensorResponse response);
+
+    protected TransmitterId getTransmitterId() {
+        return wifiOperator.geTransmitterId();
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
+}

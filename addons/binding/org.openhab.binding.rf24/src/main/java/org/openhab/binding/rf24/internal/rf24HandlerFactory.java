@@ -97,7 +97,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         Pipe pipe = PIPE_FACTORY.findPipe(thing);
-        return new rf24BaseHandler(thing, findForPipe(pipe), pipe);
+        return new rf24BaseHandler(thing, ID_UTILS, findForPipe(pipe), pipe);
     }
 
     private WifiOperator findForPipe(Pipe pipe) {

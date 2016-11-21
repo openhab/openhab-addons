@@ -3,6 +3,8 @@ package org.openhab.binding.rf24.wifi;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.rf24.wifi.Rf24Thread.OnMessage;
+
 import com.google.common.base.Preconditions;
 
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
@@ -45,5 +47,9 @@ public class WifiOperator implements AutoCloseable {
 
     public TransmitterId geTransmitterId() {
         return transmitterId;
+    }
+
+    public void addToNotify(OnMessage message) {
+        rf24Thread.addToNotify(message);
     }
 }
