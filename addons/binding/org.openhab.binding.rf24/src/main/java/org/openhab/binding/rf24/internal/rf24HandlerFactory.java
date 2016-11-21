@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.handler.PipeFactory;
+import org.openhab.binding.rf24.handler.HardwareIdFactory;
 import org.openhab.binding.rf24.handler.rf24BaseHandler;
 import org.openhab.binding.rf24.wifi.Rf24;
 import org.openhab.binding.rf24.wifi.StubWiFi;
@@ -35,7 +35,6 @@ import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.common.io.id.TransmitterId;
 import pl.grzeslowski.smarthome.rf24.Rf24Adapter;
-import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 /**
  * The {@link rf24HandlerFactory} is responsible for creating things and thing
@@ -48,7 +47,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(rf24HandlerFactory.class);
     private static final IdUtils ID_UTILS = new IdUtils(Rf24Adapter.MAX_NUMBER_OF_READING_PIPES);
-    private static final PipeFactory PIPE_FACTORY = new PipeFactory(ID_UTILS);
+    private static final HardwareIdFactory HARDWARE_ID_FACTORY = new HardwareIdFactory();
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
     // @formatter:off
@@ -106,26 +105,24 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        Pipe pipe = PIPE_FACTORY.findPipe(thing);
-        return new rf24BaseHandler(thing, ID_UTILS, findForPipe(pipe), pipe);
+        HardwareId hardwareId = HARDWARE_ID_FACTORY.findHardwareId(thing);
+        return new rf24BaseHandler(thing, ID_UTILS, findForPipe(hardwareId), hardwareId);
     }
 
-    private WifiOperator findForPipe(Pipe pipe) {
+    private WifiOperator findForPipe(HardwareId hardwareId) {
         // @formatter:off
-        final TransmitterId transmitterId = Optional.of(pipe)
-            .map(p -> p.getPipe())
-            .map(p -> new HardwareId(p))
+        final TransmitterId transmitterId = Optional.of(hardwareId)
             .map(hId -> hId.toCommonId())
             .map(cId -> ID_UTILS.toReceiverId(cId))
             .map(rId -> ID_UTILS.findTransmitterId(rId))
             .orElseThrow((() ->
-                    new IllegalArgumentException(String.format("Could not found transmitterId for pipe %s!", pipe.toString()))));
+                    new IllegalArgumentException(String.format("Could not found transmitterId for pipe %s!", hardwareId.toString()))));
 
         return xs.stream()
             .filter(x -> x.geTransmitterId().equals(transmitterId))
             .findAny()
             .orElseThrow(() ->
-                new IllegalArgumentException(String.format("Could not find wifi for pipe %s!", pipe.toString())));
+                new IllegalArgumentException(String.format("Could not find wifi for pipe %s!", hardwareId.toString())));
         // @formatter:on
     }
 }

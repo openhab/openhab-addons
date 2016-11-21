@@ -12,6 +12,7 @@ import org.openhab.binding.rf24.wifi.WifiOperator;
 
 import com.google.common.collect.Sets;
 
+import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.proto.common.Basic.BasicMessage;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOff;
@@ -20,13 +21,12 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.OnOffResponse;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshOnOffRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
-import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class OnOffChannel extends AbstractChannel implements Channel {
 
     public OnOffChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
-            Supplier<Integer> messageIdSupplier, Pipe pipe) {
-        super(idUtils, wifiOperator, updatable, messageIdSupplier, pipe);
+            Supplier<Integer> messageIdSupplier, HardwareId hardwareId) {
+        super(idUtils, wifiOperator, updatable, messageIdSupplier, hardwareId);
     }
 
     @Override

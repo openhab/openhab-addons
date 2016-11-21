@@ -16,19 +16,19 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 
+import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.Dht11Response;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.RefreshDht11Request;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
-import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class Dht11Channel extends AbstractChannel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);
 
     public Dht11Channel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
-            Supplier<Integer> messageIdSupplier, Pipe pipe) {
-        super(idUtils, wifiOperator, updatable, messageIdSupplier, pipe);
+            Supplier<Integer> messageIdSupplier, HardwareId hardwareId) {
+        super(idUtils, wifiOperator, updatable, messageIdSupplier, hardwareId);
     }
 
     @Override

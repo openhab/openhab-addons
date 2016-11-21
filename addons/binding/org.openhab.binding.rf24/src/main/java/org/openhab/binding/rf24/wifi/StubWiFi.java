@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,9 @@ public class StubWiFi implements WiFi {
     @Override
     public synchronized Optional<Sensor.SensorResponse> read(Collection<Pipe> pipes) {
         checkInitialized();
-        logger.info("StubWiFi.read({})", Joiner.on(",").join(pipes));
+        // @formatter:off
+        logger.info("StubWiFi.read({})", Joiner.on(",").join(pipes.stream().map(Pipe::getPipe).collect(Collectors.toList())));
+        // @formatter:on
         for (Pipe pipe : pipes) {
             if (messages.containsKey(pipe)) {
                 Sensor.SensorRequest cmd = messages.get(pipe).poll();

@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
+import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
-import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class rf24BaseHandler extends BaseThingHandler {
     private static final Logger logger = LoggerFactory.getLogger(rf24BaseHandler.class);
@@ -39,7 +39,7 @@ public class rf24BaseHandler extends BaseThingHandler {
 
     private final List<Channel> channels = new ArrayList<>();
 
-    public rf24BaseHandler(Thing thing, IdUtils idUtils, WifiOperator wifiOperator, Pipe pipe) {
+    public rf24BaseHandler(Thing thing, IdUtils idUtils, WifiOperator wifiOperator, HardwareId hardwareId) {
         super(thing);
 
         Updatable updatable = new Updatable() {
@@ -50,8 +50,8 @@ public class rf24BaseHandler extends BaseThingHandler {
             }
         };
 
-        addChannel(wifiOperator, new OnOffChannel(idUtils, wifiOperator, updatable, MESSAGE_ID_SUPPLIER, pipe));
-        addChannel(wifiOperator, new Dht11Channel(idUtils, wifiOperator, updatable, MESSAGE_ID_SUPPLIER, pipe));
+        addChannel(wifiOperator, new OnOffChannel(idUtils, wifiOperator, updatable, MESSAGE_ID_SUPPLIER, hardwareId));
+        addChannel(wifiOperator, new Dht11Channel(idUtils, wifiOperator, updatable, MESSAGE_ID_SUPPLIER, hardwareId));
     }
 
     private void addChannel(WifiOperator wifiOperator, AbstractChannel channel) {

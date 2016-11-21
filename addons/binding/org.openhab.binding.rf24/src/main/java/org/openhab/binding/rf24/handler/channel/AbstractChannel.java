@@ -30,17 +30,17 @@ public abstract class AbstractChannel implements Channel, OnMessage {
 
     private final WifiOperator wifiOperator;
     private final Supplier<Integer> messageIdSupplier;
-    private final Pipe pipe;
+    private final HardwareId hardwareId;
     private final Map<Integer, ChannelUID> corelationMap = new HashMap<>();
     private final IdUtils idUtils;
 
     public AbstractChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
-            Supplier<Integer> messageIdSupplier, Pipe pipe) {
+            Supplier<Integer> messageIdSupplier, HardwareId hardwareId) {
         this.idUtils = Preconditions.checkNotNull(idUtils);
         this.wifiOperator = Preconditions.checkNotNull(wifiOperator);
         this.updatable = Preconditions.checkNotNull(updatable);
         this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
-        this.pipe = Preconditions.checkNotNull(pipe);
+        this.hardwareId = Preconditions.checkNotNull(hardwareId);
 
         wifiOperator.addToNotify(this);
     }
@@ -61,14 +61,14 @@ public abstract class AbstractChannel implements Channel, OnMessage {
     }
 
     protected void write(SensorRequest request, ChannelUID channelUID) {
-        boolean success = wifiOperator.getWiFi().write(pipe, request);
+        boolean success = wifiOperator.getWiFi().write(new Pipe(hardwareId.getId()), request);
         int messageId = request.getBasic().getMessageId();
         if (success) {
             synchronized (corelationMap) {
                 corelationMap.put(messageId, channelUID);
             }
         } else {
-            logger.warn("Sending message to {} with ID {} was not succesfull", pipe, messageId);
+            logger.warn("Sending message to {} with ID {} was not succesfull", hardwareId, messageId);
         }
     }
 
@@ -89,7 +89,7 @@ public abstract class AbstractChannel implements Channel, OnMessage {
     public void onMessage(SensorResponse response) {
         ReceiverId deviceId = new ReceiverId(response.getBasic().getDeviceId());
         HardwareId hardwareId = HardwareId.fromReceiverId(idUtils, deviceId);
-        if (hardwareId.getId() == pipe.getPipe() && canHandleResponse(response)) {
+        if (this.hardwareId.equals(hardwareId) && canHandleResponse(response)) {
             processMessage(response);
         }
     }
