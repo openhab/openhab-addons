@@ -7,7 +7,9 @@
  */
 package org.openhab.binding.ivtheatpump.handler;
 
-import static org.openhab.binding.ivtheatpump.IVTHeatPumpBindingConstants.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -15,7 +17,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.ivtheatpump.IVTHeatPumpBindingConstants;
+import org.openhab.binding.ivtheatpump.internal.protocol.CommandFactory;
+import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,34 +31,24 @@ import org.slf4j.LoggerFactory;
  */
 public class IVTHeatPumpHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final IVRConnection connection;
 
-    public IVTHeatPumpHandler(Thing thing) {
+    public IVTHeatPumpHandler(Thing thing, IVRConnection connection) {
         super(thing);
+
+        this.connection = connection;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
 
-            switch (channelUID.getId()) {
-                case CHANNEL_RADIATOR_RETURN_GT1:
-                    updateState(channelUID, new DecimalType(23.1));
-                    break;
+        logger.debug("handleCommand for channel {} and command {}", channelUID, command);
 
-                case CHANNEL_OUTDOOR_GT2:
-                    updateState(channelUID, new DecimalType(23.2));
-                    break;
-
-                case CHANNEL_HOTWATER_GT3:
-                    updateState(channelUID, new DecimalType(23.3));
-                    break;
-
-                case CHANNEL_SHUNT_GT4:
-                    updateState(channelUID, new DecimalType(23.4));
-                    break;
-            }
-        }
+        CompletableFuture.supplyAsync(this::executeCommand, executor).thenAccept(temp -> {
+            updateState(IVTHeatPumpBindingConstants.CHANNEL_RADIATOR_RETURN_GT1, new DecimalType(temp));
+        });
 
         // TODO: handle command
 
@@ -76,5 +70,31 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        connection.close();
+    }
+
+    private double executeCommand() {
+        try {
+            if (connection.isConnected() == false) {
+                connection.connect();
+            }
+
+            connection.write(CommandFactory.createReadFromSystemRegisterCmd((short) 0x020B));
+
+            int value;
+            while ((value = connection.read()) != -1) {
+                logger.debug("****** {}", Integer.toHexString(value));
+            }
+
+            return 34.1;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
