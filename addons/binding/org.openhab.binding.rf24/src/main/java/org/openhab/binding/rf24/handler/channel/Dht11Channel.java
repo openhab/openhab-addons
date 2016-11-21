@@ -11,7 +11,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.wifi.WiFi;
+import org.openhab.binding.rf24.wifi.X;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,16 +28,14 @@ import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 public class Dht11Channel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);
 
-    private final WiFi wifi;
+    private final X x;
     private final AtomicInteger messageIdSupplier;
     private final Pipe pipe;
-    private int deviceId;
 
-    public Dht11Channel(WiFi wifi, AtomicInteger messageIdSupplier, int deviceId, Pipe pipe) {
-        this.wifi = Preconditions.checkNotNull(wifi);
+    public Dht11Channel(X x, AtomicInteger messageIdSupplier, Pipe pipe) {
+        this.x = Preconditions.checkNotNull(x);
         this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
         this.pipe = Preconditions.checkNotNull(pipe);
-        this.deviceId = deviceId;
     }
 
     @Override
@@ -49,14 +47,25 @@ public class Dht11Channel implements Channel {
     @Override
     public Optional<Consumer<Updatable>> process(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            BasicMessage basic = BasicMessage.newBuilder().setDeviceId(deviceId).setLinuxTimestamp(new Date().getTime())
-                    .setMessageId(messageIdSupplier.incrementAndGet()).build();
+            // @formatter:off
+            BasicMessage basic = BasicMessage
+                    .newBuilder()
+                    .setDeviceId((int) x.geTransmitterId().getId())
+                    .setLinuxTimestamp(new Date().getTime())
+                    .setMessageId(messageIdSupplier.incrementAndGet())
+                    .build();
+            // @formatter:on
 
-            SensorRequest request = SensorRequest.newBuilder().setBasic(basic)
-                    .setRefreshDht11Request(RefreshDht11Request.getDefaultInstance()).build();
+            // @formatter:off
+            SensorRequest request = SensorRequest
+                    .newBuilder()
+                    .setBasic(basic)
+                    .setRefreshDht11Request(RefreshDht11Request.getDefaultInstance())
+                    .build();
+            // @formatter:on
 
-            wifi.write(pipe, request);
-            return Optional.of(updatable -> wifi.read(pipe).ifPresent(response -> {
+            x.getWiFi().write(pipe, request);
+            return Optional.of(updatable -> x.getWiFi().read(pipe).ifPresent(response -> {
                 if (response.hasDht11Response()) {
                     findDecimalTypeForChannel(channelUID, response.getDht11Response())
                             .ifPresent(decimalType -> updatable.updateState(channelUID, decimalType));
@@ -76,16 +85,18 @@ public class Dht11Channel implements Channel {
             if (dht11.hasHumidity()) {
                 return Optional.of(new DecimalType(dht11.getHumidity()));
             } else {
-                logger.warn(String.format("Channel is for humidity, but there is no humidity in Dht11Response!%n%s",
-                        dht11));
+                // @formatter:off
+                logger.warn(String.format("Channel is for humidity, but there is no humidity in Dht11Response!%n%s", dht11));
+                // @formatter:on
                 return Optional.empty();
             }
         } else if (Objects.equal(id, rf24BindingConstants.DHT11_TEMPERATURE_CHANNEL)) {
             if (dht11.hasTemperature()) {
                 return Optional.of(new DecimalType(dht11.getTemperature()));
             } else {
-                logger.warn(String.format(
-                        "Channel is for temperature, but there is no temperature in Dht11Response!%n%s", dht11));
+                // @formatter:off
+                logger.warn(String.format("Channel is for temperature, but there is no temperature in Dht11Response!%n%s", dht11));
+                // @formatter:on
                 return Optional.empty();
             }
         } else {

@@ -1,7 +1,6 @@
 package org.openhab.binding.rf24.wifi;
 
-import java.nio.ByteOrder;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import pl.grzeslowski.smarthome.proto.sensor.Sensor;
@@ -15,9 +14,7 @@ public interface WiFi extends AutoCloseable {
 
     boolean write(Pipe pipe, Sensor.SensorRequest cmd);
 
-    Optional<Sensor.SensorResponse> read(List<Pipe> pipes, ByteOrder byteOrder);
+    Optional<Sensor.SensorResponse> read(Collection<Pipe> pipes);
 
     Optional<Sensor.SensorResponse> read(Pipe pipe);
-
-    Optional<Sensor.SensorResponse> read(Pipe pipe, ByteOrder byteOrder);
 }

@@ -2,8 +2,9 @@ package org.openhab.binding.rf24.wifi;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -21,14 +22,14 @@ import pl.grzeslowski.smarthome.rf24.helpers.Pins;
 import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 import pl.grzeslowski.smarthome.rf24.helpers.Retry;
 
-public class Rf24WiFi implements WiFi {
-    private Logger logger = LoggerFactory.getLogger(Rf24WiFi.class);
+public class Rf24 implements WiFi {
+    private Logger logger = LoggerFactory.getLogger(Rf24.class);
     private static final ByteOrder ARDUINO_BYTE_ORDER = ByteOrder.LITTLE_ENDIAN;
 
     private final BasicRf24 wifi;
     private final Payload payload;
 
-    public Rf24WiFi(short ce, short cs, int spi, short delay, short number, short size) {
+    public Rf24(short ce, short cs, int spi, short delay, short number, short size) {
         payload = new Payload(size);
         wifi = new Rf24Adapter(new Pins(ce, cs, ClockSpeed.findClockSpeed(spi).get()), new Retry(delay, number),
                 payload);
@@ -53,11 +54,11 @@ public class Rf24WiFi implements WiFi {
     }
 
     @Override
-    public Optional<Sensor.SensorResponse> read(List<Pipe> pipes, ByteOrder byteOrder) {
+    public Optional<Sensor.SensorResponse> read(Collection<Pipe> pipes) {
         logger.info("Read RF24");
         ByteBuffer buffer = ByteBuffer.allocate(payload.getSize());
-        buffer.order(byteOrder);
-        final boolean read = wifi.read(pipes, buffer);
+        buffer.order(ARDUINO_BYTE_ORDER);
+        final boolean read = wifi.read(new ArrayList<>(pipes), buffer);
         if (read) {
             byte[] data = new byte[buffer.remaining()];
             buffer.get(data);
@@ -78,11 +79,6 @@ public class Rf24WiFi implements WiFi {
 
     @Override
     public Optional<Sensor.SensorResponse> read(Pipe pipe) {
-        return read(Collections.singletonList(pipe), ARDUINO_BYTE_ORDER);
-    }
-
-    @Override
-    public Optional<Sensor.SensorResponse> read(Pipe pipe, ByteOrder byteOrder) {
-        return read(Collections.singletonList(pipe), byteOrder);
+        return read(Collections.singletonList(pipe));
     }
 }
