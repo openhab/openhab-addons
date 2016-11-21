@@ -10,6 +10,8 @@ package org.openhab.binding.rf24.internal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -44,6 +46,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     private static final Logger logger = LoggerFactory.getLogger(rf24HandlerFactory.class);
     private static final IdUtils ID_UTILS = new IdUtils(Rf24Adapter.MAX_NUMBER_OF_READING_PIPES);
     private static final PipeFactory PIPE_FACTORY = new PipeFactory();
+    private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
     // @formatter:off
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(rf24BindingConstants.RF24_RECIVER_THING_TYPE);
@@ -68,8 +71,8 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
 
         // @formatter:off
         xs = ImmutableList.of(
-                new X(wifi1, new TransmitterId(1)),
-                new X(wifi2, new TransmitterId(2))
+                new X(ID_UTILS, wifi1, new TransmitterId(1), EXECUTOR),
+                new X(ID_UTILS, wifi2, new TransmitterId(2), EXECUTOR)
         );
         // @formatter:on
 
