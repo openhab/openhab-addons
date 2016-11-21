@@ -74,10 +74,9 @@ public class MyOpenHABClient {
     private static final int HTTP_CLIENT_TIMEOUT = 30000;
 
     /*
-     * This variable holds base URL for my.openHAB cloud connections, has a default
-     * value but can be changed
+     * This variable holds base URL for my.openHAB cloud connections
      */
-    private String myOpenHABBaseUrl = "https://my.openhab.org/";
+    private String baseURL;
 
     /*
      * This variable holds openHAB's UUID for authenticating and connecting to my.openHAB cloud
@@ -128,9 +127,10 @@ public class MyOpenHABClient {
      * @param secret openHAB's Secret to connect to my.openHAB
      *
      */
-    public MyOpenHABClient(String uuid, String secret) {
+    public MyOpenHABClient(String uuid, String secret, String baseURL) {
         this.uuid = uuid;
         this.secret = secret;
+        this.baseURL = baseURL;
         runningRequests = new HashMap<Integer, Request>();
         jettyClient = new HttpClient();
         jettyClient.setMaxConnectionsPerDestination(HTTP_CLIENT_MAX_CONNECTIONS_PER_DEST);
@@ -143,7 +143,7 @@ public class MyOpenHABClient {
 
     public void connect() {
         try {
-            socket = IO.socket(myOpenHABBaseUrl);
+            socket = IO.socket(baseURL);
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
         }
@@ -295,8 +295,9 @@ public class MyOpenHABClient {
                 newPath += queryName;
                 newPath += "=";
                 newPath += URLEncoder.encode(requestQueryJson.getString(queryName), "UTF-8");
-                if (queryIterator.hasNext())
+                if (queryIterator.hasNext()) {
                     newPath += "&";
+                }
             }
             // Finally get the future request URI
             URI requestUri = new URI(newPath);
@@ -371,8 +372,9 @@ public class MyOpenHABClient {
     private void handleCommandEvent(JSONObject data) {
         try {
             logger.debug("Received command " + data.getString("command") + " for item " + data.getString("item"));
-            if (this.listener != null)
+            if (this.listener != null) {
                 this.listener.sendCommand(data.getString("item"), data.getString("command"));
+            }
         } catch (JSONException e) {
             logger.error(e.getMessage());
         }
@@ -522,28 +524,6 @@ public class MyOpenHABClient {
             logger.error(e.getMessage());
         }
         socket.disconnect();
-    }
-
-    /**
-     * Set base URL of my.openHAB cloud
-     *
-     * @param myOHBaseUrl base URL in http://host:port form
-     *
-     */
-
-    public void setMyOHBaseUrl(String myOHBaseUrl) {
-        myOpenHABBaseUrl = myOHBaseUrl;
-    }
-
-    /**
-     * Set base local URL of openHAB
-     *
-     * @param ohBaseUrl base local URL of openHAB in http://host:port form
-     *
-     */
-
-    public void setOHBaseUrl(String ohBaseUrl) {
-        this.localBaseUrl = ohBaseUrl;
     }
 
     public String getOpenHABVersion() {
