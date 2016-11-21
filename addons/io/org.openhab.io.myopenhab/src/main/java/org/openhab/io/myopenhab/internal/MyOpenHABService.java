@@ -314,7 +314,7 @@ public class MyOpenHABService implements PersistenceService, ActionService, MyOp
 
     @Override
     public void receive(Event event) {
-        if (persistenceEnabled) {
+        if (!persistenceEnabled) {
             ItemStateEvent ise = (ItemStateEvent) event;
             myOHClient.sendItemUpdate(ise.getItemName(), ise.getItemState().toString());
         }
