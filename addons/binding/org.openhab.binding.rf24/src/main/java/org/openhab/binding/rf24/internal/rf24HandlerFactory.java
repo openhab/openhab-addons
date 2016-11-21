@@ -86,7 +86,6 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
                 new WifiOperator(ID_UTILS, wifi2, new TransmitterId(2), EXECUTOR)
         );
         // @formatter:on
-
     }
 
     @Override
