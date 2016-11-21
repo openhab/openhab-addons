@@ -41,6 +41,8 @@ public abstract class AbstractChannel implements Channel, OnMessage {
         this.updatable = Preconditions.checkNotNull(updatable);
         this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
         this.pipe = Preconditions.checkNotNull(pipe);
+
+        wifiOperator.addToNotify(this);
     }
 
     protected BasicMessage buildBasicMessage() {
@@ -98,6 +100,11 @@ public abstract class AbstractChannel implements Channel, OnMessage {
 
     protected TransmitterId getTransmitterId() {
         return wifiOperator.geTransmitterId();
+    }
+
+    @Override
+    public void close() {
+        wifiOperator.removeFromNotify(this);
     }
 
     @Override

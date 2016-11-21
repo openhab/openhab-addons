@@ -7,7 +7,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
-public interface Channel {
+public interface Channel extends AutoCloseable {
     static final Consumer<Updatable> DOING_NOTHING_CONSUMER = new Consumer<Channel.Updatable>() {
 
         @Override
@@ -22,4 +22,7 @@ public interface Channel {
     public interface Updatable {
         void updateState(ChannelUID channelUID, State state);
     }
+
+    @Override
+    void close();
 }
