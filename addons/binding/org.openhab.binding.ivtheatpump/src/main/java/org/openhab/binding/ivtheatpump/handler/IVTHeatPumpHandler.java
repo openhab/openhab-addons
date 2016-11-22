@@ -8,10 +8,13 @@
 package org.openhab.binding.ivtheatpump.handler;
 
 import java.io.EOFException;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -64,8 +67,23 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        CompletableFuture.allOf(mapper.channels().stream().filter(this::isLinked).map(this::readFromSystemRegister)
-                .toArray(l -> new CompletableFuture[l])).thenRun(this::scheduleRefresh);
+        refresh(mapper.channels().stream().filter(this::isLinked)
+                .collect(Collectors.toCollection(() -> new ArrayDeque<String>())));
+    }
+
+    private void refresh(Queue<String> channels) {
+        String channelIID = channels.poll();
+        if (channelIID == null) {
+            scheduleRefresh();
+        } else {
+            readFromSystemRegister(channelIID).thenRun(() -> {
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    refresh(channels);
+                } else {
+                    scheduleRefresh();
+                }
+            });
+        }
     }
 
     @Override
@@ -83,8 +101,10 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
 
         connection.close();
 
-        updateStatus(ThingStatus.OFFLINE);
-        mapper.channels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE);
+            mapper.channels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
+        }
     }
 
     private CompletableFuture<Void> readFromSystemRegister(String channelIID) {
