@@ -11,6 +11,8 @@ package org.openhab.io.imperihome.internal.action;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.Item;
 import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract action, called through the API by ImperiHome clients.
@@ -18,6 +20,8 @@ import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
  * @author Pepijn de Geus - Initial contribution
  */
 public abstract class Action {
+
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     protected static final String COMMAND_SOURCE = "imperihome";
 
