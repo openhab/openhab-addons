@@ -30,4 +30,5 @@ public class IVTHeatPumpBindingConstants {
 
     public final static String HOST_PARAMETER = "address";
     public final static String TCP_PORT_PARAMETER = "port";
+    public final static String REFRESH_INTERVAL = "refreshInterval";
 }

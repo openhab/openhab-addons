@@ -33,6 +33,11 @@
                 <label>TCP Port</label>
                 <description>The TCP port number used to connect to the Rego.</description>
             </parameter>
+            <parameter name="refreshInterval" type="integer" max="65535" min="1" required="true">
+                <default>60</default>
+                <label>Refresh interval</label>
+                <description>Refresh interval in seconds.</description>
+            </parameter>
         </config-description>        
     </thing-type>
 

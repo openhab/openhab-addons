@@ -14,26 +14,24 @@ public class IpIVRConnection implements IVRConnection {
 
     private final String address;
     private final int port;
-    private Socket clientSocket;
+    private final Socket clientSocket;
 
     public IpIVRConnection(String address, int port) {
         this.address = address;
         this.port = port;
+
+        clientSocket = new Socket();
     }
 
     @Override
     public void connect() throws IOException {
-        if (clientSocket == null) {
-            clientSocket = new Socket();
-            clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
-        }
-
+        clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
         clientSocket.connect(new InetSocketAddress(address, port), CONNECTION_TIMEOUT);
     }
 
     @Override
     public boolean isConnected() {
-        return clientSocket != null && clientSocket.isConnected();
+        return clientSocket.isConnected();
     }
 
     @Override
@@ -44,8 +42,6 @@ public class IpIVRConnection implements IVRConnection {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        clientSocket = null;
     }
 
     @Override
@@ -59,5 +55,4 @@ public class IpIVRConnection implements IVRConnection {
     public int read() throws IOException {
         return clientSocket.getInputStream().read();
     }
-
 }

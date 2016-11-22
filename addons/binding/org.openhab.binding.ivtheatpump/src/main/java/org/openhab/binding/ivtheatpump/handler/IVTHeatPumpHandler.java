@@ -49,6 +49,8 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     protected abstract IVRConnection createConnection();
 
+    protected abstract int refreshInterval();
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         readFromSystemRegister(channelUID.getId());
@@ -56,7 +58,6 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        connection = createConnection();
         mapper = new RegoMapper();
         executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -65,7 +66,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private void scheduleRefresh() {
-        executor.schedule(this::refresh, 10, TimeUnit.SECONDS);
+        executor.schedule(this::refresh, refreshInterval(), TimeUnit.SECONDS);
     }
 
     private void refresh() {
@@ -95,13 +96,20 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         executor.shutdownNow();
         executor = null;
 
-        connection.close();
+        closeConnection();
+    }
+
+    private void closeConnection() {
+        if (connection != null) {
+            connection.close();
+            connection = null;
+        }
     }
 
     private void onDisconnected() {
         logger.info("Disconnected.");
 
-        connection.close();
+        closeConnection();
 
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE);
@@ -154,6 +162,10 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     private byte[] executeCommand(byte[] command, int length) {
         try {
+            if (connection == null) {
+                connection = createConnection();
+            }
+
             if (connection.isConnected() == false) {
                 connection.connect();
             }
