@@ -21,6 +21,19 @@
             <channel id="coldFluidInGT10" typeId="coldFluidInGT10"/>
             <channel id="coldFluidOutGT11" typeId="coldFluidOutGT11"/>
         </channels>
+        
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <context>network-address</context>
+                <label>Address</label>
+                <description>The address of the Rego to control.</description>
+            </parameter>
+            <parameter name="port" type="integer" max="65535" min="1" required="true">
+                <default>9265</default>
+                <label>TCP Port</label>
+                <description>The TCP port number used to connect to the Rego.</description>
+            </parameter>
+        </config-description>        
     </thing-type>
 
     <channel-type id="radiatorReturnGT1">

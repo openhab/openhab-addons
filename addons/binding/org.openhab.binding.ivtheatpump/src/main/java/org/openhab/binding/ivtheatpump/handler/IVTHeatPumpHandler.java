@@ -36,17 +36,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Boris Krivonog - Initial contribution
  */
-public class IVTHeatPumpHandler extends BaseThingHandler {
+public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
-    private final IVRConnection connection;
+    private IVRConnection connection;
     private ScheduledExecutorService executor;
     private RegoMapper mapper;
 
-    public IVTHeatPumpHandler(Thing thing, IVRConnection connection) {
+    protected IVTHeatPumpHandler(Thing thing) {
         super(thing);
-        this.connection = connection;
     }
+
+    protected abstract IVRConnection createConnection();
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -55,6 +56,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        connection = createConnection();
         mapper = new RegoMapper();
         executor = Executors.newSingleThreadScheduledExecutor();
 

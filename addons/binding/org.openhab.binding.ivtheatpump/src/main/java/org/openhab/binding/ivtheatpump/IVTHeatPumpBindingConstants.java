@@ -27,4 +27,7 @@ public class IVTHeatPumpBindingConstants {
     public final static String CHANNEL_OUTDOOR_GT2 = "outdoorGT2";
     public final static String CHANNEL_HOTWATER_GT3 = "hotWaterGT3";
     public final static String CHANNEL_SHUNT_GT4 = "shuntGT4";
+
+    public final static String HOST_PARAMETER = "address";
+    public final static String TCP_PORT_PARAMETER = "port";
 }

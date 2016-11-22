@@ -16,9 +16,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.ivtheatpump.handler.IVTHeatPumpHandler;
-import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
-import org.openhab.binding.ivtheatpump.internal.protocol.IpIVRConnection;
+import org.openhab.binding.ivtheatpump.handler.IpIVTHeatPumpHandler;
 
 /**
  * The {@link IVTHeatPumpHandlerFactory} is responsible for creating things and thing
@@ -41,14 +39,9 @@ public class IVTHeatPumpHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_IP_REGO6XX)) {
-            // TODO:
-            return new IVTHeatPumpHandler(thing, createIpConnection());
+            return new IpIVTHeatPumpHandler(thing);
         }
 
         return null;
-    }
-
-    private static IVRConnection createIpConnection() {
-        return new IpIVRConnection("localhost", 6666);
     }
 }
