@@ -49,6 +49,6 @@ public class IVTHeatPumpHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private static IVRConnection createIpConnection() {
-        return new IpIVRConnection("localhost", 6666);
+        return new IpIVRConnection("10.10.1.150", 6666);
     }
 }

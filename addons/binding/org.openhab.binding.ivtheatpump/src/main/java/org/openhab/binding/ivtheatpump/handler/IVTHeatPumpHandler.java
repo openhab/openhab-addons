@@ -55,9 +55,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
         mapper = new RegoMapper();
         executor = Executors.newSingleThreadScheduledExecutor();
 
-        // Read rego version. When read successfully, set status to ONLINE.
-        readRegoVersion();
-
+        CompletableFuture.supplyAsync(this::isValidRegoDevice, executor);
         scheduleRefresh();
     }
 
@@ -98,7 +96,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
 
         logger.debug("Reading from system register '{}' ...", channelIID);
 
-        return executeCommand(CommandFactory.createReadFromSystemRegisterCmd(channel.address()),
+        return executeCommandAsync(CommandFactory.createReadFromSystemRegisterCmd(channel.address()),
                 ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm)
                         .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> {
                             logger.debug("Got system register '{}' = {}", channelIID, state);
@@ -106,59 +104,71 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
                         });
     }
 
-    private void readRegoVersion() {
-        executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength)
-                .thenApply(ResponseParser::standardForm).thenApply(ValueConverter::ToShort).thenAccept(version -> {
-                    if (version != null) {
-                        updateStatus(ThingStatus.ONLINE);
-                        logger.info("Connected to Rego version {}.", version);
-                    }
-                });
+    private Boolean isValidRegoDevice() {
+        Short regoVersion = ValueConverter.ToShort(ResponseParser.standardForm(
+                executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength)));
+
+        if (regoVersion == null) {
+            return false;
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+        logger.info("Connected to Rego version {}.", regoVersion);
+
+        return true;
     }
 
-    private CompletableFuture<byte[]> executeCommand(byte[] command, int length) {
+    private CompletableFuture<byte[]> executeCommandAsync(byte[] command, int length) {
         return CompletableFuture.supplyAsync(() -> {
 
-            try {
-                if (connection.isConnected() == false) {
-                    connection.connect();
-                }
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Sending {}", byteArrayToHex(command));
-                }
-
-                connection.write(command);
-
-                byte[] response = new byte[length];
-                for (int i = 0; i < length;) {
-                    int value = connection.read();
-
-                    if (value == -1) {
-                        throw new EOFException();
-                    }
-
-                    if (i == 0 && value != ResponseParser.ComputerAddress) {
-                        continue;
-                    }
-
-                    response[i] = (byte) value;
-                    ++i;
-                }
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Received {}", byteArrayToHex(response));
-                }
-
-                return response;
-
-            } catch (Exception e) {
-                logger.warn("Command failed.", e);
-                onDisconnected();
+            if (getThing().getStatus() != ThingStatus.ONLINE && isValidRegoDevice() == false) {
                 return null;
             }
 
+            return executeCommand(command, length);
+
         }, executor);
+    }
+
+    private byte[] executeCommand(byte[] command, int length) {
+        try {
+            if (connection.isConnected() == false) {
+                connection.connect();
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sending {}", byteArrayToHex(command));
+            }
+
+            connection.write(command);
+
+            byte[] response = new byte[length];
+            for (int i = 0; i < length;) {
+                int value = connection.read();
+
+                if (value == -1) {
+                    throw new EOFException();
+                }
+
+                if (i == 0 && value != ResponseParser.ComputerAddress) {
+                    continue;
+                }
+
+                response[i] = (byte) value;
+                ++i;
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Received {}", byteArrayToHex(response));
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            logger.warn("Command failed.", e);
+            onDisconnected();
+            return null;
+        }
     }
 
     private static String byteArrayToHex(byte[] buffer) {

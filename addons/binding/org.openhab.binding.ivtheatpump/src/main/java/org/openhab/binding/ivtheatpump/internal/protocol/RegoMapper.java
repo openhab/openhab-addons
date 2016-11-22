@@ -38,6 +38,7 @@ public class RegoMapper {
         mappings.put("heatFluidInGT9", new Channel((short) 528));
         mappings.put("coldFluidInGT10", new Channel((short) 529));
         mappings.put("coldFluidOutGT11", new Channel((short) 530));
+        // mappings.put("GT3x External hot water", new Channel((short) 531));
 
         /*
          * ['GT3x External hot water', 531, TYPE_TEMP10], \
