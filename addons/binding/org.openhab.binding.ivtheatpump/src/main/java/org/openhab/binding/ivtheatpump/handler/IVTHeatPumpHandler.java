@@ -9,10 +9,9 @@ package org.openhab.binding.ivtheatpump.handler;
 
 import java.io.EOFException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -38,7 +37,7 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
     private final IVRConnection connection;
-    private ExecutorService executor;
+    private ScheduledExecutorService executor;
     private RegoMapper mapper;
 
     public IVTHeatPumpHandler(Thing thing, IVRConnection connection) {
@@ -54,11 +53,21 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         mapper = new RegoMapper();
-
-        executor = Executors.newSingleThreadExecutor();
+        executor = Executors.newSingleThreadScheduledExecutor();
 
         // Read rego version. When read successfully, set status to ONLINE.
         readRegoVersion();
+
+        scheduleRefresh();
+    }
+
+    private void scheduleRefresh() {
+        executor.schedule(this::refresh, 10, TimeUnit.SECONDS);
+    }
+
+    private void refresh() {
+        CompletableFuture.allOf(mapper.channels().stream().filter(this::isLinked).map(this::readFromSystemRegister)
+                .toArray(l -> new CompletableFuture[l])).thenRun(this::scheduleRefresh);
     }
 
     @Override
@@ -74,20 +83,27 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
     private void onDisconnected() {
         logger.info("Disconnected.");
 
+        connection.close();
+
         updateStatus(ThingStatus.OFFLINE);
         mapper.channels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
-    private void readFromSystemRegister(String channelIID) {
+    private CompletableFuture<Void> readFromSystemRegister(String channelIID) {
         RegoMapper.Channel channel = mapper.map(channelIID);
         if (channel == null) {
-            logger.warn("Unknown channel requested {}.", channelIID);
-            return;
+            logger.warn("Unknown channel requested '{}'.", channelIID);
+            return CompletableFuture.completedFuture(null);
         }
 
-        executeCommand(CommandFactory.createReadFromSystemRegisterCmd(channel.address()),
+        logger.debug("Reading from system register '{}' ...", channelIID);
+
+        return executeCommand(CommandFactory.createReadFromSystemRegisterCmd(channel.address()),
                 ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm)
-                        .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> updateState(channelIID, state));
+                        .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> {
+                            logger.debug("Got system register '{}' = {}", channelIID, state);
+                            updateState(channelIID, state);
+                        });
     }
 
     private void readRegoVersion() {
@@ -146,7 +162,10 @@ public class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private static String byteArrayToHex(byte[] buffer) {
-        return IntStream.range(0, buffer.length).map(i -> buffer[i]).mapToObj(i -> String.format("0x%02X", i))
-                .collect(Collectors.joining(" "));
+        StringBuilder builder = new StringBuilder();
+        for (byte b : buffer) {
+            builder.append(String.format("%02X ", b));
+        }
+        return builder.toString();
     }
 }

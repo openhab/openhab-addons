@@ -14,6 +14,12 @@
             <channel id="outdoorGT2" typeId="outdoorGT2"/>
             <channel id="hotWaterGT3" typeId="hotWaterGT3"/>
             <channel id="shuntGT4" typeId="shuntGT4"/>
+            <channel id="roomGT5" typeId="roomGT5"/>
+            <channel id="compressorGT6" typeId="compressorGT6"/>
+            <channel id="heatFluidOutGT8" typeId="heatFluidOutGT8"/>
+            <channel id="heatFluidInGT9" typeId="heatFluidInGT9"/>
+            <channel id="coldFluidInGT10" typeId="coldFluidInGT10"/>
+            <channel id="coldFluidOutGT11" typeId="coldFluidOutGT11"/>
         </channels>
     </thing-type>
 
@@ -45,6 +51,54 @@
         <item-type>Number</item-type>
         <label>Shunt, flow [GT4]</label>
         <description>Shunt, flow [GT4] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="roomGT5">
+        <item-type>Number</item-type>
+        <label>Room [GT5]</label>
+        <description>Room [GT5] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="compressorGT6">
+        <item-type>Number</item-type>
+        <label>Compressor [GT6]</label>
+        <description>Compressor [GT6] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="heatFluidOutGT8">
+        <item-type>Number</item-type>
+        <label>Heat Fluid Out [GT8]</label>
+        <description>Heat Fluid Out [GT8] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="heatFluidInGT9">
+        <item-type>Number</item-type>
+        <label>Heat Fluid In [GT9]</label>
+        <description>Heat Fluid In [GT9] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="coldFluidInGT10">
+        <item-type>Number</item-type>
+        <label>Cold Fluid In [GT10]</label>
+        <description>Cold Fluid In [GT10] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="coldFluidOutGT11">
+        <item-type>Number</item-type>
+        <label>Cold Fluid Out [GT11]</label>
+        <description>Cold Fluid Out [GT11] in degrees celsius</description>
         <category>Temperature</category>
         <state readOnly="true" />
     </channel-type>
