@@ -15,8 +15,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.imperihome.internal.model.param.NumericValueParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.processor.ItemProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Electricity device, containing current (Watt) and total (KWh) consumption.
@@ -24,8 +22,6 @@ import org.slf4j.LoggerFactory;
  * @author Pepijn de Geus - Initial contribution
  */
 public class ElectricityDevice extends AbstractNumericValueDevice {
-
-    private final Logger logger = LoggerFactory.getLogger(ElectricityDevice.class);
 
     private static final String LINK_WATTS = "watt";
     private static final String LINK_KWH = "kwh";

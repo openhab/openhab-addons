@@ -60,9 +60,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ItemProcessor implements ItemRegistryChangeListener {
 
-    private final Logger logger = LoggerFactory.getLogger(ItemProcessor.class);
-
     private static final String PREFIX_ISS = "iss:";
+
+    private final Logger logger = LoggerFactory.getLogger(ItemProcessor.class);
 
     private final ItemRegistry itemRegistry;
     private final DeviceRegistry deviceRegistry;

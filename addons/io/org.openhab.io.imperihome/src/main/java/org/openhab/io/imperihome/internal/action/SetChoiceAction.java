@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.items.events.ItemCommandEvent;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Action setting a choice from a selection list, e.g. MultiSwitch.
@@ -27,8 +25,6 @@ import org.slf4j.LoggerFactory;
  * @author Pepijn de Geus - Initial contribution
  */
 public class SetChoiceAction extends Action {
-
-    private final Logger logger = LoggerFactory.getLogger(SetChoiceAction.class);
 
     public SetChoiceAction(EventPublisher eventPublisher) {
         super(eventPublisher);
