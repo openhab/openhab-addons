@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <bridge-type id="tcp">
+        <label>Tcp Connection</label>
+        <description>Modbus Tcp connection</description>
+        <config-description>
+            <parameter name="ip" type="text" required="true">
+            <label>IP Address</label>
+            <description>Network address of the device</description>
+            <default>localhost</default>
+            </parameter>
+            <parameter name="port" type="integer">
+            <label>Port</label>
+            <description>Port of the slave</description>
+            <default>502</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+</thing:thing-descriptions>

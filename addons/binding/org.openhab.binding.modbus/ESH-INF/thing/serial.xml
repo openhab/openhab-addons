@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <bridge-type id="serial">
+        <label>Serial connection</label>
+        <description>Modbus Serial connection</description>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+            <label>Port name</label>
+            <description>Serial port name</description>
+            </parameter>
+            <parameter name="baud" type="integer">
+            <label>Baud rate</label>
+            <description>Serial port speed</description>
+            <default>9600</default>
+            </parameter>
+            <parameter name="databits" type="integer">
+            <label>Databits</label>
+            <description>Number of data bits</description>
+            <default>8</default>
+                        <options>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </options>
+            </parameter>
+            <parameter name="stopbits" type="decimal">
+            <label>Stopbits</label>
+            <description>Number of stop bits</description>
+            <default>1</default>
+                        <options>
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+            </options>
+            </parameter>
+            <parameter name="parity" type="text">
+            <label>Databits</label>
+            <description>Number of data bits</description>
+            <default>none</default>
+                        <options>
+                <option value="none">none</option>
+                <option value="even">even</option>
+                <option value="odd">odd</option>
+            </options>
+            </parameter>
+            <parameter name="encoding" type="text">
+            <label>Encoding</label>
+            <description>Data transfer encoding</description>
+            <default>ascii</default>
+                        <options>
+                <option value="ascii">ascii</option>
+                <option value="rtu">rtu</option>
+                <option value="bin">bin</option>
+            </options>
+            </parameter>
+            
+        </config-description>
+    </bridge-type>
+
+</thing:thing-descriptions>
