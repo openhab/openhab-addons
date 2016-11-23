@@ -53,9 +53,11 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
         super.initialize();
 
         if (getBridge() != null) {
-            logger.debug("Initializing Netatmo Devoce '{}'", configuration.getEquipmentId());
+            logger.debug("Initializing Netatmo Device '{}'", configuration.getEquipmentId());
             if (getBridge().getStatus() == ThingStatus.ONLINE) {
+            	logger.debug("setting device '{}' online", configuration.getEquipmentId() );
                 updateStatus(ThingStatus.ONLINE);
+                logger.debug("scheduling update channel thread to run every {} ms", configuration.refreshInterval);
                 refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
                     @Override
                     public void run() {
@@ -63,15 +65,18 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
                     }
                 }, 1, configuration.refreshInterval, TimeUnit.MILLISECONDS);
             } else {
+            	logger.debug("setting device '{}' offline (bridge or thing offline)", configuration.getEquipmentId());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
             }
         } else {
+        	logger.debug("setting device '{}' offline (bridge == null)", configuration.getEquipmentId());
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
     @Override
     public void dispose() {
+    	logger.debug("Running dispose()");
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             refreshJob = null;
@@ -82,9 +87,11 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
 
     @Override
     protected void updateChannels(String equipmentId) {
+    	logger.debug("Trying to update channels on device {}", equipmentId);
         try {
             NADeviceAdapter<?> tmpDevice = updateReadings(equipmentId);
             if (tmpDevice != null) {
+            	logger.debug("Successfully updated device readings! Now updating channels");
             	this.device = tmpDevice;
                 super.updateChannels(equipmentId);
                 updateChildModules(equipmentId);
@@ -114,6 +121,7 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
     }
 
     private void updateChildModules(String equipmentId) {
+    	logger.debug("Updating child modules of {}", equipmentId);
         for (Thing handler : getBridge().getThings()) {
             ThingHandler thingHandler = handler.getHandler();
             if (thingHandler instanceof NetatmoModuleHandler) {
@@ -124,6 +132,7 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
                 if (equipmentId.equalsIgnoreCase(parentId)) {
                     String childId = moduleHandler.configuration.getEquipmentId();
                     NAModuleAdapter module = device.getModules().get(childId);
+                    logger.debug("Updating child module {}", childId);
                     moduleHandler.updateChannels(module);
                 }
             }
