@@ -52,7 +52,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
-        callbackUrl = (String) properties.get("callbackUrl");
+        callbackUrl = properties.get("callbackUrl").toString();
     };
 
     @Override
@@ -68,10 +68,12 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_ONKYOAV) || thingTypeUID.equals(THING_TYPE_ONKYO_UNSUPPORTED)) {
             String callbackUrl = createCallbackUrl();
             OnkyoHandler handler = new OnkyoHandler(thing, upnpIOService, audioHTTPServer, callbackUrl);
-            @SuppressWarnings("unchecked")
-            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), handler, new Hashtable<String, Object>());
-            audioSinkRegistrations.put(thing.getUID().toString(), reg);
+            if (callbackUrl != null) {
+                @SuppressWarnings("unchecked")
+                ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                        .registerService(AudioSink.class.getName(), handler, new Hashtable<String, Object>());
+                audioSinkRegistrations.put(thing.getUID().toString(), reg);
+            }
             return handler;
         }
 

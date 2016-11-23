@@ -27,8 +27,7 @@
 			</parameter>
 			<parameter name="udn" type="text">
 				<label>Unique Device Name</label>
-				<description>The UDN identifies the Zone Player.</description>
-				<required>true</required>
+				<description>The UDN identifies the Onkyo AVR.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

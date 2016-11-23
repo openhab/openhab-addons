@@ -31,17 +31,21 @@ import org.openhab.binding.onkyo.OnkyoBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * * The {@link UpnpAudioSinkHandler} is a base class for ThingHandlers for devices which support UPnP playback. It
+ * implements the AudioSink interface.
+ * This will allow to register the derived ThingHandler to be registered as a AudioSink in the framework.
+ *
+ * @author pail
+ *
+ */
 public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements AudioSink, UpnpIOParticipant {
 
-    private static AudioFormat mp3 = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, null,
-            null, null);
-    private static AudioFormat wav = new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null,
-            null, null, null);
     private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
 
     static {
-        supportedFormats.add(wav);
-        supportedFormats.add(mp3);
+        supportedFormats.add(AudioFormat.WAV);
+        supportedFormats.add(AudioFormat.MP3);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
