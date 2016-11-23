@@ -7,7 +7,6 @@
  */
 package org.openhab.binding.kodi.internal;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -16,12 +15,13 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
-import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.kodi.handler.KodiHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This makes a Sonos speaker to serve as an {@link AudioSink}-
@@ -32,6 +32,8 @@ import org.openhab.binding.kodi.handler.KodiHandler;
  */
 public class KodiAudioSink implements AudioSink {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
 
     static {
@@ -41,10 +43,12 @@ public class KodiAudioSink implements AudioSink {
 
     private AudioHTTPServer audioHTTPServer;
     private KodiHandler handler;
+    private final String callbackUrl;
 
-    public KodiAudioSink(KodiHandler handler, AudioHTTPServer audioHTTPServer) {
+    public KodiAudioSink(KodiHandler handler, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         this.handler = handler;
         this.audioHTTPServer = audioHTTPServer;
+        this.callbackUrl = callbackUrl;
     }
 
     @Override
@@ -59,35 +63,23 @@ public class KodiAudioSink implements AudioSink {
 
     @Override
     public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
+        String url = null;
         if (audioStream instanceof URLAudioStream) {
             // it is an external URL, the speaker can access it itself and play it.
             URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
-            handler.playURI(new StringType(urlAudioStream.getURL()));
-            try {
-                audioStream.close();
-            } catch (IOException e) {
-            }
+            url = urlAudioStream.getURL();
         } else {
-            // we serve it on our own HTTP server and treat it as a notification
-            if (!(audioStream instanceof FixedLengthAudioStream)) {
-                // Note that we have to pass a FixedLengthAudioStream, since Sonos does multiple concurrent requests to
-                // the AudioServlet, so a one time serving won't work.
-                throw new UnsupportedAudioFormatException("Kodi can only handle FixedLengthAudioStreams.", null);
-                // TODO: Instead of throwing an exception, we could ourselves try to wrap it into a
-                // FixedLengthAudioStream, but this might be dangerous as we have no clue, how much data to expect from
-                // the stream.
+            if (callbackUrl != null) {
+                // we serve it on our own HTTP server
+                String relativeUrl = audioHTTPServer.serve(audioStream);
+                url = callbackUrl + relativeUrl;
             } else {
-                String url = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 10).toString();
-                AudioFormat format = audioStream.getFormat();
-                if (AudioFormat.WAV.isCompatible(format)) {
-                    handler.playNotificationSoundURI(new StringType(url + ".wav"));
-                } else if (AudioFormat.MP3.isCompatible(format)) {
-                    handler.playNotificationSoundURI(new StringType(url + ".mp3"));
-                } else {
-                    throw new UnsupportedAudioFormatException("Kodi only supports MP3 or WAV.", format);
-                }
+                logger.warn("We do not have any callback url, so kodi cannot play the audio stream!");
+                return;
             }
         }
+        handler.playURI(new StringType(url));
+
     }
 
     @Override

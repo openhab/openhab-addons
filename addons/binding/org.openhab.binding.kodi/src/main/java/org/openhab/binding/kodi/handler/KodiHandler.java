@@ -171,6 +171,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     connection.updatePlayerStatus();
                 }
                 break;
+            case CHANNEL_MEDIATYPE:
+                if (command.equals(RefreshType.REFRESH)) {
+                    connection.updatePlayerStatus();
+                }
+                break;
             default:
                 logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
                 break;
@@ -199,9 +204,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
         try {
 
-            connection.connect((String) this.getConfig().get(HOST_PARAMETER),
-                    getIntConfigParameter(PORT_PARAMETER, 9090), (String) this.getConfig().get(USERNAME_PARAMETER),
-                    (String) this.getConfig().get(PASSWORD_PARAMETER));
+            connection.connect(this.getConfig().get(HOST_PARAMETER).toString(),
+                    getIntConfigParameter(PORT_PARAMETER, 9090));
 
             // Start the connection checker
             Runnable connectionChecker = new Runnable() {
@@ -295,6 +299,12 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateArtist(String artist) {
         updateState(CHANNEL_ARTIST, new StringType(artist));
+    }
+
+    @Override
+    public void updateMediaType(String mediaType) {
+        updateState(CHANNEL_MEDIATYPE, new StringType(mediaType));
+
     }
 
 }

@@ -10,6 +10,7 @@ package org.openhab.binding.kodi.internal;
 
 import static org.openhab.binding.kodi.KodiBindingConstants.*;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.kodi.handler.KodiHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 
 /**
  * The {@link KodiHandlerFactory} is responsible for creating things and thing
@@ -33,7 +35,17 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
     private AudioHTTPServer audioHTTPServer;
 
+    // url (scheme+server+port) to use for playing notification sounds
+    private String callbackUrl = null;
+
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        callbackUrl = (String) properties.get("callbackUrl");
+    };
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,7 +61,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
             KodiHandler handler = new KodiHandler(thing);
 
             // register the kodi as an audio sink
-            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer);
+            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());

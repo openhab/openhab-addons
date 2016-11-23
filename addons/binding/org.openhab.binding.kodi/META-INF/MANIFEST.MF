@@ -5,14 +5,17 @@ Bundle-SymbolicName: org.openhab.binding.kodi;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,
- lib/async-http-client-1.9.39.jar,
- lib/netty-3.10.5.Final.jar
+Bundle-ClassPath: .
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
  com.google.gson,
  org.apache.commons.lang,
+ org.eclipse.jetty.util.component,
+ org.eclipse.jetty.websocket.api,
+ org.eclipse.jetty.websocket.api.annotations,
+ org.eclipse.jetty.websocket.client,
+ org.eclipse.jetty.websocket.common,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
@@ -32,3 +35,4 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.kodi,
  org.openhab.binding.kodi.handler
+

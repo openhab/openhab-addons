@@ -69,11 +69,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    public synchronized void connect(String hostName, int port, String userName, String password) {
+    public synchronized void connect(String hostName, int port) {
         try {
             wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
 
-            socket = new KodiClientSocket(this, wsUri, userName, password);
+            socket = new KodiClientSocket(this, wsUri);
 
             socket.open();
 
@@ -242,10 +242,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
             album = convertToText(item.get("album"));
         }
 
-        String type = item.get("type").getAsString();
+        String mediaType = item.get("type").getAsString();
 
         String artist = "";
-        if (type.equals("movie")) {
+        if (mediaType.equals("movie")) {
 
             artist = convertFromArray(item.get("director").getAsJsonArray());
         } else {
@@ -259,6 +259,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
                 listener.updateArtist(artist);
+                listener.updateMediaType(mediaType);
             }
 
         } catch (Exception e) {
@@ -308,6 +309,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     listener.updateAlbum("");
                     listener.updateArtist("");
                     listener.updateTitle("");
+                    listener.updateMediaType("");
                 }
             }
 
@@ -551,14 +553,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
          * if (currentState == KodiState.Play) {
          * wasPlaying = true;
          * int activePlayer = getActivePlayer();
-         * 
+         *
          * final String[] properties = { "all" };
-         * 
+         *
          * JsonObject params = new JsonObject();
          * params.addProperty("playerid", activePlayer);
          * params.add("properties", getJsonArray(properties));
          * JsonElement response = socket.callMethod("Player.GetItem", params);
-         * 
+         *
          * JsonObject item = ((JsonObject) response).get("item").getAsJsonObject();
          * }
          */

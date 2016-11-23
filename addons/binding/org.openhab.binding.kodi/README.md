@@ -7,7 +7,7 @@ This binding integrates the Kodi players (which used to be XBMC).
 
 ## Supported Things
 
-This binding supports only one thing: The Kodi player
+This binding supports only one thing: The Kodi player. All kodi devices are registered as an audio sink in the framework.
 
 
 ## Discovery
@@ -24,10 +24,16 @@ org.openhab.Kodi:enableAutoDiscovery=false
 
 This configuration parameter only controls the Kodi player auto-discovery process, not the openHAB auto-discovery. Moreover, if the openHAB auto-discovery is disabled, the Kodi player auto-discovery is disabled too.
 
+The binding has the following configuration option, which can be set for "binding:kodi":
+
+| Parameter | Name    | Description  | Required |
+|-----------------|------------------------|--------------|------------ |
+| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. http://192.168.0.2:8080 | no |
+
 
 ## Thing Configuration
 
-The Kodi player thing requires the ip address and the port to access it on. In addition, username and password to access kodi can be provided
+The Kodi player thing requires the ip address and the port to access it on. 
 In the thing file, this looks e.g. like
 ```
 Kodi:Kodi:myKodi [ipAddress="192.168.1.100", port="9090"]
@@ -35,7 +41,7 @@ Kodi:Kodi:myKodi [ipAddress="192.168.1.100", port="9090"]
 
 ##Channels
 
-The Kodi AVR supports the following channels:
+The Kodi thing supports the following channels:
 
 | Channel Type ID         | Item Type    | Description  |
 |-------------------------|--------------|--------------|
@@ -49,4 +55,10 @@ The Kodi AVR supports the following channels:
 | shownotification        | String       | Shows the provided notification message on the screen|
 | input                   | String       | Allows to navigate on the screen. Valid values are: Up, Down, Left, Right, Select, Back, Home, ContextMenu, Info, ShowCodec, ShowOSD|
 | inputtext               | String       | This channel emulates the keyboard entry|
+| mediatype               | String       | The media type of the current file. e.g. song, movie| 
 
+
+## Audio Support
+
+All supported kodi devices are registered as an audio sink in the framework.
+Audio streams are sent to the `playuri` channel.

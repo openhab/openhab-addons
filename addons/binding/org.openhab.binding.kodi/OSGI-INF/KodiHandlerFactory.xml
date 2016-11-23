@@ -8,10 +8,10 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" immediate="true" name="binding.kodi">
 
-   <implementation class="org.openhab.binding.kodi.internal.KodiHandlerFactory"/>
+    <implementation class="org.openhab.binding.kodi.internal.KodiHandlerFactory"/>
    
-   <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-   </service>
-   <reference bind="setAudioHTTPServer" cardinality="1..1" interface="org.eclipse.smarthome.core.audio.AudioHTTPServer" name="AudioHTTPServer" policy="static" unbind="unsetAudioHTTPServer"/> 
+    <service>
+        <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+    </service>
+    <reference bind="setAudioHTTPServer" cardinality="1..1" interface="org.eclipse.smarthome.core.audio.AudioHTTPServer" name="AudioHTTPServer" policy="static" unbind="unsetAudioHTTPServer"/>  
 </scr:component>

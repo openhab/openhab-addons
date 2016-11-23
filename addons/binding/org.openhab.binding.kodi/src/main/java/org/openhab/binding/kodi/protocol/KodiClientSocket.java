@@ -8,16 +8,19 @@
  */
 package org.openhab.binding.kodi.protocol;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +28,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.AsyncHttpClientConfig.Builder;
-import com.ning.http.client.Realm;
-import com.ning.http.client.Realm.AuthScheme;
-import com.ning.http.client.providers.netty.NettyAsyncHttpProvider;
-import com.ning.http.client.ws.WebSocket;
-import com.ning.http.client.ws.WebSocketTextListener;
-import com.ning.http.client.ws.WebSocketUpgradeHandler;
 
 public class KodiClientSocket {
     private static final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
@@ -45,113 +39,69 @@ public class KodiClientSocket {
     private JsonObject commandResponse = null;
     private int nextMessageId = 1;
 
-    private WebSocket webSocket;
-    private final AsyncHttpClient client;
-    private final WebSocketUpgradeHandler handler;
     private boolean connected = false;
 
     private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
     private URI uri;
-    private String userName;
-    private String password;
+    private Session session;
+    private WebSocketClient client;
 
     private final KodiClientSocketEventListener eventHandler;
 
-    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, String userName, String password) {
+    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri) {
         this.eventHandler = eventHandler;
         this.uri = uri;
-        this.userName = userName;
-        this.password = password;
-        this.client = new AsyncHttpClient(new NettyAsyncHttpProvider(createAsyncHttpClientConfig()));
-
-        this.handler = createWebSocketHandler();
     }
 
     /**
      * Attempts to create a connection to the kodi host and begin listening
      * for updates over the async http web socket
      *
-     * @throws ExecutionException
-     * @throws InterruptedException
-     * @throws IOException
+     * @throws Exception
      */
-    public synchronized void open() throws IOException, InterruptedException, ExecutionException {
+    public synchronized void open() throws Exception {
         if (isConnected()) {
             logger.warn("connect: connection is already open");
         }
-        webSocket = client.prepareGet(uri.toString()).execute(handler).get();
+        client = new WebSocketClient();
+        client.start();
+        KodiWebSocketListener socket = new KodiWebSocketListener();
+        ClientUpgradeRequest request = new ClientUpgradeRequest();
 
+        client.connect(socket, uri, request);
     }
-
-    private AsyncHttpClientConfig createAsyncHttpClientConfig() {
-        Builder builder = new AsyncHttpClientConfig.Builder();
-        builder.setRealm(createRealm());
-        builder.setRequestTimeout(REQUEST_TIMEOUT_MS);
-        return builder.build();
-    }
-
-    private Realm createRealm() {
-        Realm.RealmBuilder builder = new Realm.RealmBuilder();
-        builder.setPrincipal(userName);
-        builder.setPassword(password);
-        builder.setUsePreemptiveAuth(true);
-        builder.setScheme(AuthScheme.BASIC);
-        return builder.build();
-    }
-
-    private WebSocketUpgradeHandler createWebSocketHandler() {
-        WebSocketUpgradeHandler.Builder builder = new WebSocketUpgradeHandler.Builder();
-        builder.addWebSocketListener(new KodiWebSocketListener());
-        return builder.build();
-    }
-
-    /*
-     * private AsyncHttpClientConfig createAsyncHttpClientConfig() {
-     * Builder builder = new DefaultAsyncHttpClientConfig.Builder();
-     * // builder.setRealm(createRealm());
-     * builder.setRequestTimeout(REQUEST_TIMEOUT_MS);
-     * return builder.build();
-     * }
-     */
-
-    /*
-     * private WebSocketUpgradeHandler createWebSocketHandler() {
-     * WebSocketUpgradeHandler.Builder builder = new WebSocketUpgradeHandler.Builder();
-     * builder.addWebSocketListener(new KodiWebSocketListener());
-     * return builder.build();
-     * }
-     */
 
     /***
      * Close this connection to the kodi instance
      */
     public void close() {
         // if there is an old web socket then clean up and destroy
-        if (webSocket != null) {
+        if (session != null) {
             try {
-                webSocket.close();
+                session.close();
             } catch (Exception e) {
                 logger.error("Exception during closing the websocket ", e);
             }
-            webSocket = null;
+            session = null;
         }
     }
 
     public boolean isConnected() {
-        if (webSocket == null || !webSocket.isOpen()) {
+        if (session == null || !session.isOpen()) {
             return false;
         }
 
         return connected;
     }
 
-    class KodiWebSocketListener implements WebSocketTextListener {
+    @WebSocket
+    public class KodiWebSocketListener {
 
-        @Override
-        public void onOpen(WebSocket ws) {
+        @OnWebSocketConnect
+        public void onConnect(Session wssession) {
             logger.debug("Connected to server");
-            webSocket = ws;
+            session = wssession;
             connected = true;
             if (eventHandler != null) {
                 threadpool.execute(new Runnable() {
@@ -170,7 +120,7 @@ public class KodiClientSocket {
             }
         }
 
-        @Override
+        @OnWebSocketMessage
         public void onMessage(String message) {
             logger.debug("Message received from server:" + message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
@@ -209,22 +159,11 @@ public class KodiClientSocket {
             }
         }
 
-        @Override
-        public void onError(Throwable e) {
-            if (e instanceof ConnectException) {
-                logger.debug("[{}]: Websocket connection error '{}'", uri.toString(), e.getMessage());
-            } else if (e instanceof TimeoutException) {
-                logger.debug("[{}]: Websocket timeout error", uri.toString());
-            } else {
-                logger.error("[{}]: Websocket error: {}", uri.toString(), e.getMessage());
-            }
-        }
-
-        @Override
-        public void onClose(WebSocket webSocket) {
-            webSocket = null;
+        @OnWebSocketClose
+        public void onClose(int statusCode, String reason) {
+            session = null;
             connected = false;
-            logger.debug("Closing a WebSocket ");
+            logger.debug("Closing a WebSocket due to " + reason);
             threadpool.execute(new Runnable() {
 
                 @Override
@@ -245,7 +184,7 @@ public class KodiClientSocket {
     private void sendMessage(String str) throws Exception {
         if (isConnected()) {
             logger.debug("send message: " + str);
-            webSocket.sendMessage(str);
+            session.getRemote().sendString(str);
         } else {
             throw new Exception("socket not initialized");
         }
