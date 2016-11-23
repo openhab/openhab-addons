@@ -20,13 +20,13 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
-import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
+import org.openhab.binding.amazondashbutton.internal.capturing.PacketCapturingHandler;
+import org.openhab.binding.amazondashbutton.internal.capturing.PacketCapturingService;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.pcap4j.core.PcapNetworkInterface;
-import org.pcap4j.packet.ArpPacket;
+import org.pcap4j.util.MacAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +34,9 @@ import com.google.common.collect.Sets;
 
 /**
  * The {@link AmazonDashButtonDiscoveryService} is responsible for discovering Amazon Dash Buttons. It does so by
- * capturing ARP requests from all available network devices.
+ * capturing ARP and BOOTP requests from all available network devices.
  *
- * While scanning the user has to press the button in order to send an ARP request packet. The
+ * While scanning the user has to press the button in order to send an ARP and BOOTP request packet. The
  * {@link AmazonDashButtonDiscoveryService} captures this packet and checks the device's MAC address which sent the
  * request against a static list of vendor prefixes ({@link #vendorPrefixes}).
  *
@@ -84,7 +84,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
         return vendorPrefixes.contains(vendorPrefix);
     }
 
-    private final Map<PcapNetworkInterfaceWrapper, ArpRequestTracker> arpRequestTrackers = new ConcurrentHashMap<>();
+    private final Map<PcapNetworkInterfaceWrapper, PacketCapturingService> packetCapturingServices = new ConcurrentHashMap<>();
 
     private boolean explicitScanning = false;
     private boolean backgroundScanning = false;
@@ -141,7 +141,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
         } else {
             PcapNetworkInterfaceService.instance().unregisterListener(this);
             // Stop capturing for all network interfaces
-            final Set<PcapNetworkInterfaceWrapper> networkInterfaces = arpRequestTrackers.keySet();
+            final Set<PcapNetworkInterfaceWrapper> networkInterfaces = packetCapturingServices.keySet();
             for (PcapNetworkInterfaceWrapper pcapNetworkInterface : networkInterfaces) {
                 stopCapturing(pcapNetworkInterface);
             }
@@ -149,52 +149,52 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
     }
 
     /**
-     * Stops capturing for ARP requests for the given {@link PcapNetworkInterface}.
+     * Stops capturing for packets for the given {@link PcapNetworkInterface}.
      *
      * @param pcapNetworkInterface The {@link PcapNetworkInterface} the capturing should be stopped for.
      */
     private void stopCapturing(final PcapNetworkInterfaceWrapper pcapNetworkInterface) {
-        final ArpRequestTracker arpRequestTracker = arpRequestTrackers.remove(pcapNetworkInterface);
+        final PacketCapturingService packetCapturingService = packetCapturingServices.remove(pcapNetworkInterface);
         final String interfaceName = pcapNetworkInterface.getName();
-        if (arpRequestTracker != null) {
-            arpRequestTracker.stopCapturing();
+        if (packetCapturingService != null) {
+            packetCapturingService.stopCapturing();
             logger.debug("Stopped capturing for {}.", interfaceName);
         } else {
-            logger.warn("No active ARP Request Tracker registered for {}.", interfaceName);
+            logger.warn("No active PacketCapturingService registered for {}.", interfaceName);
         }
     }
 
     /**
-     * Starts capturing for ARP requests for the given {@link PcapNetworkInterface}. If the network interface is already
+     * Starts capturing for packets for the given {@link PcapNetworkInterface}. If the network interface is already
      * captured this method returns without doing anything.
      *
      * @param pcapNetworkInterface The {@link PcapNetworkInterface} to be captured
      */
     private void startCapturing(final PcapNetworkInterfaceWrapper pcapNetworkInterface) {
-        if (arpRequestTrackers.containsKey(pcapNetworkInterface)) {
+        if (packetCapturingServices.containsKey(pcapNetworkInterface)) {
             // We already have a tracker
             return;
         }
 
-        ArpRequestTracker arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
+        PacketCapturingService packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
 
-        arpRequestTrackers.put(pcapNetworkInterface, arpRequestListener);
+        packetCapturingServices.put(pcapNetworkInterface, packetCapturingService);
         final String interfaceName = pcapNetworkInterface.getName();
-        final boolean capturingStarted = arpRequestListener.startCapturing(new ArpRequestHandler() {
+        final boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
 
             @Override
-            public void handleArpRequest(ArpPacket arpPacket) {
-                String macAdress = arpPacket.getHeader().getSrcHardwareAddr().toString();
+            public void packetCaptured(MacAddress macAddress) {
+                String macAdressString = macAddress.toString();
 
-                if (isAmazonVendor(macAdress)) {
+                if (isAmazonVendor(macAdressString)) {
                     logger.debug("Captured a packet from {} which seems to be sent from an Amazon Dash Button device.",
-                            macAdress);
-                    ThingUID dashButtonThing = new ThingUID(DASH_BUTTON_THING_TYPE, macAdress.replace(":", "-"));
+                            macAdressString);
+                    ThingUID dashButtonThing = new ThingUID(DASH_BUTTON_THING_TYPE, macAdressString.replace(":", "-"));
                     // @formatter:off
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(dashButtonThing)
                             .withLabel("Dash Button")
-                            .withRepresentationProperty(macAdress)
-                            .withProperty(PROPERTY_MAC_ADDRESS, macAdress)
+                            .withRepresentationProperty(macAdressString)
+                            .withProperty(PROPERTY_MAC_ADDRESS, macAdressString)
                             .withProperty(PROPERTY_NETWORK_INTERFACE_NAME, interfaceName)
                             .withProperty(PROPERTY_PACKET_INTERVAL, BigDecimal.valueOf(5000))
                             .build();
@@ -203,7 +203,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
                 } else {
                     logger.trace(
                             "Captured a packet from {} which is ignored as it's not on the list of supported vendor prefixes.",
-                            macAdress);
+                            macAdressString);
                 }
             }
         });

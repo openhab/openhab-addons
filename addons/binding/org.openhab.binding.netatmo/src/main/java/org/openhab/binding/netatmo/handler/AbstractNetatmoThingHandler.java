@@ -123,6 +123,7 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
         addChannelToMeasures(channelUID);
     }
 

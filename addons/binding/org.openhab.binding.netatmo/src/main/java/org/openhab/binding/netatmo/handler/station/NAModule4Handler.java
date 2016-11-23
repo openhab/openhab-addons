@@ -35,6 +35,8 @@ public class NAModule4Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
     protected State getNAThingProperty(String channelId) {
         NADashboardData dashboardData = module.getDashboardData();
         switch (channelId) {
+            case CHANNEL_CO2:
+                return ChannelTypeUtils.toDecimalType(dashboardData.getCO2());
             case CHANNEL_TEMPERATURE:
                 return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
             case CHANNEL_TIMEUTC:

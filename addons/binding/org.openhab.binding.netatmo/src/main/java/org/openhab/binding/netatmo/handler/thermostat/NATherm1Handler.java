@@ -103,7 +103,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        super.handleCommand(channelUID, command);
         try {
             // To get sorted : if these commands consequencies are wider that the only source channel
             // then we must refresh the module and its parent device to correctly update all data
@@ -126,8 +126,6 @@ public class NATherm1Handler extends NetatmoModuleHandler<NATherm1Configuration>
                     break;
                 }
             }
-            super.handleCommand(channelUID, command);
-
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }

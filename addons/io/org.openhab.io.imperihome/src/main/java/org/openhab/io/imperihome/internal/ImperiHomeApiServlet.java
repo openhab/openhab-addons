@@ -54,8 +54,6 @@ public class ImperiHomeApiServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1966364789075448441L;
 
-    private final Logger logger = LoggerFactory.getLogger(ImperiHomeApiServlet.class);
-
     private static final String PATH = "/imperihome/iss";
 
     private static final String APPLICATION_JSON = "application/json";
@@ -68,6 +66,8 @@ public class ImperiHomeApiServlet extends HttpServlet {
             .compile(PATH + "/devices/(.+?)/action/(.+?)/(.*?)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN_DEVICE_HISTORY = Pattern
             .compile(PATH + "/devices/(.+?)/(.+?)/histo/(.+?)/(.+?)$", Pattern.CASE_INSENSITIVE);
+
+    private final Logger logger = LoggerFactory.getLogger(ImperiHomeApiServlet.class);
 
     private final Gson gson;
 
