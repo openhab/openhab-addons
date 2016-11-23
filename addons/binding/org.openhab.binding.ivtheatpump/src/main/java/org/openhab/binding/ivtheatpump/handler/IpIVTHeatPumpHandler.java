@@ -17,9 +17,4 @@ public class IpIVTHeatPumpHandler extends IVTHeatPumpHandler {
 
         return new IpIVRConnection(host, port);
     }
-
-    @Override
-    protected int refreshInterval() {
-        return ((Number) getConfig().get(IVTHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
-    }
 }

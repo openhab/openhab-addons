@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.ivtheatpump.IVTHeatPumpBindingConstants;
 import org.openhab.binding.ivtheatpump.internal.protocol.CommandFactory;
 import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
 import org.openhab.binding.ivtheatpump.internal.protocol.RegoMapper;
@@ -49,8 +50,6 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     protected abstract IVRConnection createConnection();
 
-    protected abstract int refreshInterval();
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         readFromSystemRegister(channelUID.getId());
@@ -58,6 +57,8 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
+
         mapper = new RegoMapper();
         executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -66,7 +67,8 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private void scheduleRefresh() {
-        executor.schedule(this::refresh, refreshInterval(), TimeUnit.SECONDS);
+        int refreshInterval = ((Number) getConfig().get(IVTHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
+        executor.schedule(this::refresh, refreshInterval, TimeUnit.SECONDS);
     }
 
     private void refresh() {
@@ -126,7 +128,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
         logger.debug("Reading from system register '{}' ...", channelIID);
 
-        return executeCommandAsync(CommandFactory.createReadFromSystemRegisterCmd(channel.address()),
+        return executeCommandAsync(CommandFactory.createReadFromSystemRegisterCommand(channel.address()),
                 ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm)
                         .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> {
                             logger.debug("Got system register '{}' = {}", channelIID, state);
@@ -135,8 +137,8 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private Boolean isValidRegoDevice() {
-        Short regoVersion = ValueConverter.ToShort(ResponseParser.standardForm(
-                executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength)));
+        Short regoVersion = ResponseParser.standardForm(
+                executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength));
 
         if (regoVersion == null) {
             return false;
@@ -181,7 +183,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
                 int value = connection.read();
 
                 if (value == -1) {
-                    throw new EOFException();
+                    throw new EOFException("Connection closed");
                 }
 
                 if (i == 0 && value != ResponseParser.ComputerAddress) {

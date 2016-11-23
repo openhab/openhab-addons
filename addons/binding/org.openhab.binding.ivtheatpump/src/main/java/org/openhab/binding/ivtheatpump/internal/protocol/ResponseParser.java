@@ -1,11 +1,22 @@
 package org.openhab.binding.ivtheatpump.internal.protocol;
 
+import java.util.function.Function;
+
 public class ResponseParser {
     public final static int StandardFormLength = 5;
+    public final static int LongFormLength = 42;
     public final static byte ComputerAddress = (byte) 0x01;
 
-    public static byte[] standardForm(byte[] buffer) {
-        if (buffer == null || buffer.length != 5) {
+    public static Short standardForm(byte[] buffer) {
+        return parse(buffer, StandardFormLength, b -> ValueConverter.sevenBitFormatToShort(b, 1));
+    }
+
+    public static String longForm(byte[] buffer) {
+        return parse(buffer, LongFormLength, b -> ValueConverter.stringFromBytes(b, 1));
+    }
+
+    private static <T> T parse(byte[] buffer, int responseLength, Function<byte[], T> provider) {
+        if (buffer == null || buffer.length != responseLength) {
             return null;
         }
 
@@ -13,11 +24,10 @@ public class ResponseParser {
             return null;
         }
 
-        byte[] dataBytes = new byte[] { buffer[1], buffer[2], buffer[3] };
-        if (Checksum.calculate(dataBytes) != buffer[4]) {
+        if (Checksum.calculate(buffer, 1, responseLength - 2) != buffer[responseLength - 1]) {
             return null;
         }
 
-        return dataBytes;
+        return provider.apply(buffer);
     }
 }
