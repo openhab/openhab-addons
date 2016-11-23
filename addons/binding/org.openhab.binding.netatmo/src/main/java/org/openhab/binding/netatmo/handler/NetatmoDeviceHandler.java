@@ -83,8 +83,9 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
     @Override
     protected void updateChannels(String equipmentId) {
         try {
-            device = updateReadings(equipmentId);
-            if (device != null) {
+            NADeviceAdapter<?> tmpDevice = updateReadings(equipmentId);
+            if (tmpDevice != null) {
+            	this.device = tmpDevice;
                 super.updateChannels(equipmentId);
                 updateChildModules(equipmentId);
             }
