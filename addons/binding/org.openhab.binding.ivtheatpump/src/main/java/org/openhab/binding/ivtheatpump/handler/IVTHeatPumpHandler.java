@@ -99,7 +99,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private CompletableFuture<Void> processChannelRequest(String channelIID) {
-        if (channelIID.startsWith(IVTHeatPumpBindingConstants.CHANNEL_GROUP_SENSORS)) {
+        if (channelIID.startsWith(IVTHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS)) {
             return readFromSystemRegister(channelIID);
         }
 
@@ -153,7 +153,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     private CompletableFuture<Void> readLastError(String channelIID) {
         return executeCommandAndUpdateStateAsync(channelIID, CommandFactory.createReadLastErrorCommand(),
-                ResponseParserFactory.String, StringType::new);
+                ResponseParserFactory.ErrorLine, StringType::new);
     }
 
     private CompletableFuture<Void> readFromSystemRegister(String channelIID) {

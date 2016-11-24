@@ -13,15 +13,16 @@ abstract class AbstractResponseParser<T> implements ResponseParser<T> {
         }
 
         if (buffer.length != responseLength()) {
-            throw new IllegalStateException("Expected size does not match: " + buffer.length + "!=" + responseLength());
+            throw new IllegalStateException(
+                    "Expected size does not match: " + buffer.length + " != " + responseLength());
         }
 
         if (buffer[0] != ComputerAddress) {
-            throw new IllegalStateException("Invalid header received " + buffer[0]);
+            throw new IllegalStateException("Invalid header " + buffer[0]);
         }
 
         if (Checksum.calculate(buffer, 1, responseLength() - 2) != buffer[responseLength() - 1]) {
-            throw new IllegalStateException("Invalid crc received.");
+            throw new IllegalStateException("Invalid crc.");
         }
 
         return convert(buffer);

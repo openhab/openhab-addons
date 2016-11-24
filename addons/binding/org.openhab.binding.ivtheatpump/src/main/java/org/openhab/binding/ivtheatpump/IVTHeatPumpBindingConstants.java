@@ -23,7 +23,7 @@ public class IVTHeatPumpBindingConstants {
     public final static ThingTypeUID THING_TYPE_IP_REGO6XX = new ThingTypeUID(BINDING_ID, "ipRego6xx");
 
     // List of all Channel ids
-    public final static String CHANNEL_GROUP_SENSORS = "sensors#";
+    public final static String CHANNEL_GROUP_REGISTERS = "registers#";
 
     public final static String HOST_PARAMETER = "address";
     public final static String TCP_PORT_PARAMETER = "port";

@@ -1,14 +1,11 @@
 package org.openhab.binding.ivtheatpump.internal.protocol;
 
-class StringResponseParser extends AbstractResponseParser<String> {
-
-    @Override
-    public int responseLength() {
-        return 42;
-    }
+class ErrorLineResponseParser extends StringResponseParser {
 
     @Override
     protected String convert(byte[] responseBytes) {
+        // TODO: when testing with real device implement support
+        // since currently I don't have any real data/packet.
         return ValueConverter.stringFromBytes(responseBytes, 1);
     }
 }
