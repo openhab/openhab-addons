@@ -18,9 +18,10 @@ public class ValueConverter {
     }
 
     public static String stringFromBytes(byte[] buffer, int offset) {
-        StringBuilder builder = new StringBuilder();
+        final int charCount = 20;
+        StringBuilder builder = new StringBuilder(charCount);
 
-        int length = offset + 40;
+        int length = offset + charCount * 2;
         for (int i = offset; i < length; i += 2) {
             builder.append((char) ((buffer[i] << 4) + buffer[i + 1]));
         }
