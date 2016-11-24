@@ -1,17 +1,8 @@
 package org.openhab.binding.ivtheatpump.internal.protocol;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-
 public class ValueConverter {
-    public static Double ToDouble(Short value) {
-        return value == null ? null : value / 10.0;
-    }
-
-    public static State ToDoubleState(Short value) {
-        Double doubleValue = ToDouble(value);
-        return doubleValue == null ? UnDefType.UNDEF : new DecimalType(doubleValue);
+    public static Double toDouble(short value) {
+        return value / 10.0;
     }
 
     public static byte[] shortToSevenBitFormat(short value) {
@@ -36,5 +27,4 @@ public class ValueConverter {
 
         return builder.toString();
     }
-
 }

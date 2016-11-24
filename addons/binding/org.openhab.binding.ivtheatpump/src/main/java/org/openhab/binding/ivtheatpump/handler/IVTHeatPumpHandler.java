@@ -8,6 +8,7 @@
 package org.openhab.binding.ivtheatpump.handler;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -66,7 +68,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         mapper = RegoRegisterMapper.rego600();
         executor = Executors.newSingleThreadScheduledExecutor();
 
-        CompletableFuture.supplyAsync(this::isValidRegoDevice, executor);
+        CompletableFuture.runAsync(this::checkRegoDevice, executor);
         scheduleRefresh();
     }
 
@@ -78,9 +80,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         executor = null;
 
         closeConnection();
-
         linkedChannels.clear();
-
         mapper = null;
     }
 
@@ -122,7 +122,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     private void refresh(Iterator<String> channels) {
         if (channels.hasNext()) {
             processChannelRequest(channels.next()).thenRun(() -> {
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                if (thing.getStatus() == ThingStatus.ONLINE) {
                     refresh(channels);
                 } else {
                     scheduleRefresh();
@@ -145,7 +145,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
         closeConnection();
 
-        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+        if (thing.getStatus() != ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE);
             mapper.channels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
         }
@@ -169,32 +169,28 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         logger.debug("Reading from system register '{}' ...", channelIID);
 
         return executeCommandAsync(CommandFactory.createReadFromSystemRegisterCommand(channel.address()),
-                ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm)
-                        .thenApply(ValueConverter::ToDoubleState).thenAccept(state -> {
-                            logger.debug("Got system register '{}' = {}", channelIID, state);
-                            updateState(channelIID, state);
-                        });
+                ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm).thenAccept(value -> {
+                    logger.debug("Got system register '{}' = {}", channelIID, value);
+                    updateState(channelIID, new DecimalType(ValueConverter.toDouble(value)));
+                }).exceptionally(th -> {
+                    updateState(channelIID, UnDefType.UNDEF);
+                    return null;
+                });
     }
 
-    private Boolean isValidRegoDevice() {
-        Short regoVersion = ResponseParser.standardForm(
+    private void checkRegoDevice() {
+        short regoVersion = ResponseParser.standardForm(
                 executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength));
-
-        if (regoVersion == null) {
-            return false;
-        }
 
         updateStatus(ThingStatus.ONLINE);
         logger.info("Connected to Rego version {}.", regoVersion);
-
-        return true;
     }
 
     private CompletableFuture<byte[]> executeCommandAsync(byte[] command, int length) {
         return CompletableFuture.supplyAsync(() -> {
 
-            if (getThing().getStatus() != ThingStatus.ONLINE && isValidRegoDevice() == false) {
-                return null;
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                checkRegoDevice();
             }
 
             return executeCommand(command, length);
@@ -240,10 +236,10 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
             return response;
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Command failed.", e);
             onDisconnected();
-            return null;
+            throw new IllegalStateException(e);
         }
     }
 
