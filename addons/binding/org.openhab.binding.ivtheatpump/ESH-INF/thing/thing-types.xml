@@ -11,6 +11,7 @@
         
         <channel-groups>
             <channel-group id="registers" typeId="registers" />
+            <channel-group id="frontPanel" typeId="frontPanel" />
             <channel-group id="status" typeId="status" />
         </channel-groups>
 
@@ -54,6 +55,15 @@
         <label>Sensor Values</label>
         <channels>
             <channel id="lastError" typeId="lastError"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="frontPanel">
+        <label>Front Panel Values</label>
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="waterHeaterLed" typeId="waterHeaterLed"/>
+            <channel id="alarmLed" typeId="alarmLed"/>
         </channels>
     </channel-group-type>
 
@@ -151,5 +161,26 @@
         <description>Last error information</description>
         <state readOnly="true" />
     </channel-type>
+    
+    <channel-type id="power">
+        <item-type>Number</item-type>
+        <label>Power Led on front panel</label>
+        <description>Power led (LED 1) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="waterHeaterLed">
+        <item-type>Number</item-type>
+        <label>Water Heater Led on front panel</label>
+        <description>Water Heater Led (LED 4) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="alarmLed">
+        <item-type>Number</item-type>
+        <label>Alarm Led on front panel</label>
+        <description>Alarm led (LED 5) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>    
 
 </thing:thing-descriptions>

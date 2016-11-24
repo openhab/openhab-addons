@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -99,12 +100,22 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     }
 
     private CompletableFuture<Void> processChannelRequest(String channelIID) {
-        if (channelIID.startsWith(IVTHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS)) {
-            return readFromSystemRegister(channelIID);
+        switch (channelIID) {
+            case IVTHeatPumpBindingConstants.CHANNEL_LAST_ERROR:
+                return readLastError(channelIID);
+
+            case IVTHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_POWER_LED:
+                return readFromFrontPanel(channelIID, (short) 0x0012);
+
+            case IVTHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
+                return readFromFrontPanel(channelIID, (short) 0x0015);
+
+            case IVTHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ALARM_LED:
+                return readFromFrontPanel(channelIID, (short) 0x0016);
         }
 
-        if (channelIID.startsWith("status")) {
-            return readLastError(channelIID);
+        if (channelIID.startsWith(IVTHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS)) {
+            return readFromSystemRegister(channelIID);
         }
 
         logger.error("Unable to handle unknown channel {}", channelIID);
@@ -154,6 +165,11 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
     private CompletableFuture<Void> readLastError(String channelIID) {
         return executeCommandAndUpdateStateAsync(channelIID, CommandFactory.createReadLastErrorCommand(),
                 ResponseParserFactory.ErrorLine, StringType::new);
+    }
+
+    private CompletableFuture<Void> readFromFrontPanel(String channelIID, short address) {
+        final byte[] command = CommandFactory.createReadFromFrontPanelCommand(address);
+        return executeCommandAndUpdateStateAsync(channelIID, command, ResponseParserFactory.Short, DecimalType::new);
     }
 
     private CompletableFuture<Void> readFromSystemRegister(String channelIID) {

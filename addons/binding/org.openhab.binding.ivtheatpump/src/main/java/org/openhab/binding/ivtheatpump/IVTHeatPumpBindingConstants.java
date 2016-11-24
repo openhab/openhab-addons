@@ -24,6 +24,10 @@ public class IVTHeatPumpBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_GROUP_REGISTERS = "registers#";
+    public final static String CHANNEL_LAST_ERROR = "status#lastError";
+    public final static String CHANNEL_FRONT_PANEL_POWER_LED = "frontPanel#power";
+    public final static String CHANNEL_FRONT_PANEL_WATER_HEATER_LED = "frontPanel#waterHeaterLed";
+    public final static String CHANNEL_FRONT_PANEL_ALARM_LED = "frontPanel#alarmLed";
 
     public final static String HOST_PARAMETER = "address";
     public final static String TCP_PORT_PARAMETER = "port";
