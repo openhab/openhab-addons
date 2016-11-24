@@ -105,7 +105,9 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
         ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(thing.getUID().toString());
-        reg.unregister();
+        if (reg != null) {
+            reg.unregister();
+        }
     }
 
     protected void setUpnpIOService(UpnpIOService upnpIOService) {
