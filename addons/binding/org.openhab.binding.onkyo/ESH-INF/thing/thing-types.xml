@@ -25,6 +25,10 @@
 				<description>Port of the Onkyo to control</description>
 				<default>60128</default>
 			</parameter>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Onkyo AVR.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -50,6 +54,11 @@
 				<description>Port of the Onkyo to control</description>
 				<default>60128</default>
 			</parameter>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Onkyo AVR.</description>
+				<required>true</required>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -72,6 +81,7 @@
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="listenmode" typeId="listenmode" />
+			<channel id="playuri" typeId="playuri" />
 		</channels>
 	</channel-group-type>
 
@@ -116,6 +126,7 @@
 				<option value="42">USB_BACK</option>
 				<option value="43">NETWORK</option>
 				<option value="45">AIRPLAY</option>
+				<option value="46">BLUETOOTH</option>
 				<option value="48">MULTICH</option>
 				<option value="50">SIRIUS</option>
 			</options>
@@ -172,6 +183,11 @@
 				<option value="166">Neural Digital DSX</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="playuri">
+		<item-type>String</item-type>
+		<label>Play URI</label>
+		<description>Plays a given URI</description>
 	</channel-type>
 
 	<!-- Onkyo variables -->
