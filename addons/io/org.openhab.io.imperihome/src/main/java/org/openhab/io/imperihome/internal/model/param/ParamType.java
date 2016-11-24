@@ -15,6 +15,7 @@ package org.openhab.io.imperihome.internal.model.param;
  */
 public enum ParamType {
 
+    DEFAULT_ICON("defaultIcon"),
     GENERIC_VALUE("Value"),
     TEMPERATURE_VALUE("Value"),
     TEMPERATURE_DUAL("temp"),
