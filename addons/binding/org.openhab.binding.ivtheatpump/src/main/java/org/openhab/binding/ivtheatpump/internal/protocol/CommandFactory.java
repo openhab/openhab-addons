@@ -15,6 +15,10 @@ public class CommandFactory {
         return createReadCommand((byte) 0x20, displayLine, (short) 0);
     }
 
+    public static byte[] createReadLastErrorCommand() {
+        return createReadCommand((byte) 0x40, (short) 0, (short) 0);
+    }
+
     private static byte[] createReadCommand(byte source, short address, short data) {
         final byte[] addressBytes = ValueConverter.shortToSevenBitFormat(address);
         final byte[] dataBytes = ValueConverter.shortToSevenBitFormat(data);

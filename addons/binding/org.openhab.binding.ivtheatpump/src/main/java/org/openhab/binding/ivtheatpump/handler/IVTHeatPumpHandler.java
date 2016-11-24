@@ -18,21 +18,23 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.ivtheatpump.IVTHeatPumpBindingConstants;
 import org.openhab.binding.ivtheatpump.internal.protocol.CommandFactory;
 import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
 import org.openhab.binding.ivtheatpump.internal.protocol.RegoRegisterMapper;
 import org.openhab.binding.ivtheatpump.internal.protocol.ResponseParser;
-import org.openhab.binding.ivtheatpump.internal.protocol.ValueConverter;
+import org.openhab.binding.ivtheatpump.internal.protocol.ResponseParserFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +104,7 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         }
 
         if (channelIID.startsWith("status")) {
-            return readLastError();
+            return readLastError(channelIID);
         }
 
         logger.error("Unable to handle unknown channel {}", channelIID);
@@ -140,23 +142,18 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private void onDisconnected() {
-        logger.info("Disconnected.");
+    private void onDisconnected(String message) {
+        logger.info("Disconnected due {}.", message);
 
         closeConnection();
 
-        if (thing.getStatus() != ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE);
-            mapper.channels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        new LinkedHashSet<>(linkedChannels).forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
-    private CompletableFuture<Void> readLastError() {
-        return executeCommandAsync(CommandFactory.createReadFromDisplayCommand((short) 0),
-                ResponseParser.LongFormLength).thenApply(ResponseParser::longForm).thenAccept(value -> {
-                    logger.debug("Got last error '{}'", value);
-                    updateState("status#lastError", new StringType(value));
-                });
+    private CompletableFuture<Void> readLastError(String channelIID) {
+        return executeCommandAndUpdateStateAsync(channelIID, CommandFactory.createReadLastErrorCommand(),
+                ResponseParserFactory.String, StringType::new);
     }
 
     private CompletableFuture<Void> readFromSystemRegister(String channelIID) {
@@ -166,39 +163,45 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
             return CompletableFuture.completedFuture(null);
         }
 
-        logger.debug("Reading from system register '{}' ...", channelIID);
+        final byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
+        return executeCommandAndUpdateStateAsync(channelIID, command, ResponseParserFactory.Short, channel::convert);
+    }
 
-        return executeCommandAsync(CommandFactory.createReadFromSystemRegisterCommand(channel.address()),
-                ResponseParser.StandardFormLength).thenApply(ResponseParser::standardForm).thenAccept(value -> {
-                    logger.debug("Got system register '{}' = {}", channelIID, value);
-                    updateState(channelIID, new DecimalType(ValueConverter.toDouble(value)));
-                }).exceptionally(th -> {
-                    updateState(channelIID, UnDefType.UNDEF);
-                    return null;
-                });
+    private <T> CompletableFuture<Void> executeCommandAndUpdateStateAsync(String channelIID, byte[] command,
+            ResponseParser<T> parser, Function<T, State> converter) {
+
+        logger.debug("Reading value for channel '{}' ...", channelIID);
+        return executeCommandAsync(command, parser).thenAccept(value -> {
+            logger.debug("Got value for '{}' = {}", channelIID, value);
+            updateState(channelIID, converter.apply(value));
+        }).exceptionally(th -> {
+            logger.debug("Accessing value for channel '{}' failed due {}", channelIID, th);
+            updateState(channelIID, UnDefType.UNDEF);
+            return null;
+        });
     }
 
     private void checkRegoDevice() {
-        short regoVersion = ResponseParser.standardForm(
-                executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParser.StandardFormLength));
+        logger.debug("Reading Rego device version...");
+        short regoVersion = executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParserFactory.Short);
 
         updateStatus(ThingStatus.ONLINE);
         logger.info("Connected to Rego version {}.", regoVersion);
     }
 
-    private CompletableFuture<byte[]> executeCommandAsync(byte[] command, int length) {
+    private <T> CompletableFuture<T> executeCommandAsync(byte[] command, ResponseParser<T> parser) {
         return CompletableFuture.supplyAsync(() -> {
 
             if (thing.getStatus() != ThingStatus.ONLINE) {
                 checkRegoDevice();
             }
 
-            return executeCommand(command, length);
+            return executeCommand(command, parser);
 
         }, executor);
     }
 
-    private byte[] executeCommand(byte[] command, int length) {
+    private <T> T executeCommand(byte[] command, ResponseParser<T> parser) {
         try {
             if (connection == null) {
                 connection = createConnection();
@@ -214,8 +217,8 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
             connection.write(command);
 
-            byte[] response = new byte[length];
-            for (int i = 0; i < length;) {
+            byte[] response = new byte[parser.responseLength()];
+            for (int i = 0; i < response.length;) {
                 int value = connection.read();
 
                 if (value == -1) {
@@ -234,11 +237,11 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
                 logger.debug("Received {}", byteArrayToHex(response));
             }
 
-            return response;
+            return parser.parse(response);
 
         } catch (IOException e) {
             logger.warn("Command failed.", e);
-            onDisconnected();
+            onDisconnected(e.getMessage());
             throw new IllegalStateException(e);
         }
     }
