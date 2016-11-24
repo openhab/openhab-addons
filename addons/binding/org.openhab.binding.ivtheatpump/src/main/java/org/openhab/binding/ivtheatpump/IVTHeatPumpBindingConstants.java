@@ -23,10 +23,7 @@ public class IVTHeatPumpBindingConstants {
     public final static ThingTypeUID THING_TYPE_IP_REGO6XX = new ThingTypeUID(BINDING_ID, "ipRego6xx");
 
     // List of all Channel ids
-    public final static String CHANNEL_RADIATOR_RETURN_GT1 = "radiatorReturnGT1";
-    public final static String CHANNEL_OUTDOOR_GT2 = "outdoorGT2";
-    public final static String CHANNEL_HOTWATER_GT3 = "hotWaterGT3";
-    public final static String CHANNEL_SHUNT_GT4 = "shuntGT4";
+    public final static String CHANNEL_GROUP_SENSORS = "sensors#";
 
     public final static String HOST_PARAMETER = "address";
     public final static String TCP_PORT_PARAMETER = "port";

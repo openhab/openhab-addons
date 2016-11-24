@@ -8,20 +8,12 @@
     <thing-type id="ipRego6xx">
         <label>IVTHeatPump over IP</label>
         <description>Manage IVT Heat Pump over IP</description>
-
-        <channels>
-            <channel id="radiatorReturnGT1" typeId="radiatorReturnGT1"/>
-            <channel id="outdoorGT2" typeId="outdoorGT2"/>
-            <channel id="hotWaterGT3" typeId="hotWaterGT3"/>
-            <channel id="shuntGT4" typeId="shuntGT4"/>
-            <channel id="roomGT5" typeId="roomGT5"/>
-            <channel id="compressorGT6" typeId="compressorGT6"/>
-            <channel id="heatFluidOutGT8" typeId="heatFluidOutGT8"/>
-            <channel id="heatFluidInGT9" typeId="heatFluidInGT9"/>
-            <channel id="coldFluidInGT10" typeId="coldFluidInGT10"/>
-            <channel id="coldFluidOutGT11" typeId="coldFluidOutGT11"/>
-        </channels>
         
+        <channel-groups>
+            <channel-group id="sensors" typeId="sensors" />
+            <channel-group id="status" typeId="status" />
+        </channel-groups>
+
         <config-description>
             <parameter name="address" type="text" required="true">
                 <context>network-address</context>
@@ -40,6 +32,29 @@
             </parameter>
         </config-description>        
     </thing-type>
+
+    <channel-group-type id="sensors">
+        <label>Sensor Values</label>
+        <channels>
+            <channel id="radiatorReturnGT1" typeId="radiatorReturnGT1"/>
+            <channel id="outdoorGT2" typeId="outdoorGT2"/>
+            <channel id="hotWaterGT3" typeId="hotWaterGT3"/>
+            <channel id="shuntGT4" typeId="shuntGT4"/>
+            <channel id="roomGT5" typeId="roomGT5"/>
+            <channel id="compressorGT6" typeId="compressorGT6"/>
+            <channel id="heatFluidOutGT8" typeId="heatFluidOutGT8"/>
+            <channel id="heatFluidInGT9" typeId="heatFluidInGT9"/>
+            <channel id="coldFluidInGT10" typeId="coldFluidInGT10"/>
+            <channel id="coldFluidOutGT11" typeId="coldFluidOutGT11"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="status">
+        <label>Sensor Values</label>
+        <channels>
+            <channel id="lastError" typeId="lastError"/>
+        </channels>
+    </channel-group-type>
 
     <channel-type id="radiatorReturnGT1">
         <item-type>Number</item-type>
@@ -118,6 +133,13 @@
         <label>Cold Fluid Out [GT11]</label>
         <description>Cold Fluid Out [GT11] in degrees celsius</description>
         <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="lastError">
+        <item-type>String</item-type>
+        <label>Last Error</label>
+        <description>Last error information</description>
         <state readOnly="true" />
     </channel-type>
 

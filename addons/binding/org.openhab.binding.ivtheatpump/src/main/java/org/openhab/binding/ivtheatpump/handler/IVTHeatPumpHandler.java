@@ -8,14 +8,17 @@
 package org.openhab.binding.ivtheatpump.handler;
 
 import java.io.EOFException;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -25,7 +28,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.ivtheatpump.IVTHeatPumpBindingConstants;
 import org.openhab.binding.ivtheatpump.internal.protocol.CommandFactory;
 import org.openhab.binding.ivtheatpump.internal.protocol.IVRConnection;
-import org.openhab.binding.ivtheatpump.internal.protocol.RegoMapper;
+import org.openhab.binding.ivtheatpump.internal.protocol.RegoRegisterMapper;
 import org.openhab.binding.ivtheatpump.internal.protocol.ResponseParser;
 import org.openhab.binding.ivtheatpump.internal.protocol.ValueConverter;
 import org.slf4j.Logger;
@@ -40,9 +43,10 @@ import org.slf4j.LoggerFactory;
 public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IVTHeatPumpHandler.class);
+    private final Collection<String> linkedChannels = Collections.synchronizedCollection(new LinkedList<String>());
     private IVRConnection connection;
     private ScheduledExecutorService executor;
-    private RegoMapper mapper;
+    private RegoRegisterMapper mapper;
 
     protected IVTHeatPumpHandler(Thing thing) {
         super(thing);
@@ -52,43 +56,18 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        readFromSystemRegister(channelUID.getId());
+        processChannelRequest(channelUID.getId());
     }
 
     @Override
     public void initialize() {
         super.initialize();
 
-        mapper = new RegoMapper();
+        mapper = RegoRegisterMapper.rego600();
         executor = Executors.newSingleThreadScheduledExecutor();
 
         CompletableFuture.supplyAsync(this::isValidRegoDevice, executor);
         scheduleRefresh();
-    }
-
-    private void scheduleRefresh() {
-        int refreshInterval = ((Number) getConfig().get(IVTHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
-        executor.schedule(this::refresh, refreshInterval, TimeUnit.SECONDS);
-    }
-
-    private void refresh() {
-        refresh(mapper.channels().stream().filter(this::isLinked)
-                .collect(Collectors.toCollection(() -> new ArrayDeque<String>())));
-    }
-
-    private void refresh(Queue<String> channels) {
-        String channelIID = channels.poll();
-        if (channelIID == null) {
-            scheduleRefresh();
-        } else {
-            readFromSystemRegister(channelIID).thenRun(() -> {
-                if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    refresh(channels);
-                } else {
-                    scheduleRefresh();
-                }
-            });
-        }
     }
 
     @Override
@@ -99,6 +78,59 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         executor = null;
 
         closeConnection();
+
+        linkedChannels.clear();
+
+        mapper = null;
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        linkedChannels.add(channelUID.getId());
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        linkedChannels.remove(channelUID.getId());
+    }
+
+    private CompletableFuture<Void> processChannelRequest(String channelIID) {
+        if (channelIID.startsWith(IVTHeatPumpBindingConstants.CHANNEL_GROUP_SENSORS)) {
+            return readFromSystemRegister(channelIID);
+        }
+
+        if (channelIID.startsWith("status")) {
+            return readLastError();
+        }
+
+        logger.error("Unable to handle unknown channel {}", channelIID);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private void scheduleRefresh() {
+        int refreshInterval = ((Number) getConfig().get(IVTHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
+        executor.schedule(this::refresh, refreshInterval, TimeUnit.SECONDS);
+    }
+
+    private void refresh() {
+        logger.debug("Refreshing channels {}", linkedChannels);
+        refresh(new LinkedHashSet<>(linkedChannels).iterator());
+    }
+
+    private void refresh(Iterator<String> channels) {
+        if (channels.hasNext()) {
+            processChannelRequest(channels.next()).thenRun(() -> {
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    refresh(channels);
+                } else {
+                    scheduleRefresh();
+                }
+            });
+        } else {
+            scheduleRefresh();
+        }
     }
 
     private void closeConnection() {
@@ -119,8 +151,16 @@ public abstract class IVTHeatPumpHandler extends BaseThingHandler {
         }
     }
 
+    private CompletableFuture<Void> readLastError() {
+        return executeCommandAsync(CommandFactory.createReadFromDisplayCommand((short) 0),
+                ResponseParser.LongFormLength).thenApply(ResponseParser::longForm).thenAccept(value -> {
+                    logger.debug("Got last error '{}'", value);
+                    updateState("status#lastError", new StringType(value));
+                });
+    }
+
     private CompletableFuture<Void> readFromSystemRegister(String channelIID) {
-        RegoMapper.Channel channel = mapper.map(channelIID);
+        RegoRegisterMapper.Channel channel = mapper.map(channelIID);
         if (channel == null) {
             logger.warn("Unknown channel requested '{}'.", channelIID);
             return CompletableFuture.completedFuture(null);
