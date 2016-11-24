@@ -10,6 +10,7 @@ Bundle-ClassPath: .,
  lib/api-v2-0.9.4-SNAPSHOT.jar
 Import-Package: 
  com.fasterxml.jackson.annotation,
+ javax.jmdns,
  org.apache.commons.lang,
  org.codehaus.jackson,
  org.codehaus.jackson.annotate,
@@ -25,6 +26,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.mdns.discovery,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.chromecast,
