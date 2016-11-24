@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="regoheatpump"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Manage Rego based Heat Pump over IP -->
+    <thing-type id="ipRego6xx">
+        <label>Rego based heat pump over IP</label>
+        <description>Manage Rego based heat pump over IP</description>
+        
+        <channel-groups>
+            <channel-group id="registers" typeId="registers" />
+            <channel-group id="frontPanel" typeId="frontPanel" />
+            <channel-group id="status" typeId="status" />
+        </channel-groups>
+
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <context>network-address</context>
+                <label>Address</label>
+                <description>The address of the Rego to control.</description>
+            </parameter>
+            <parameter name="port" type="integer" max="65535" min="1" required="true">
+                <default>9265</default>
+                <label>TCP Port</label>
+                <description>The TCP port number used to connect to the Rego.</description>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" max="65535" min="1" required="true">
+                <default>60</default>
+                <label>Refresh interval</label>
+                <description>Refresh interval in seconds.</description>
+            </parameter>
+        </config-description>        
+    </thing-type>
+
+    <channel-group-type id="registers">
+        <label>Register Values</label>
+        <channels>
+            <channel id="radiatorReturnGT1" typeId="radiatorReturnGT1"/>
+            <channel id="outdoorGT2" typeId="outdoorGT2"/>
+            <channel id="hotWaterGT3" typeId="hotWaterGT3"/>
+            <channel id="shuntGT4" typeId="shuntGT4"/>
+            <channel id="roomGT5" typeId="roomGT5"/>
+            <channel id="compressorGT6" typeId="compressorGT6"/>
+            <channel id="heatFluidOutGT8" typeId="heatFluidOutGT8"/>
+            <channel id="heatFluidInGT9" typeId="heatFluidInGT9"/>
+            <channel id="coldFluidInGT10" typeId="coldFluidInGT10"/>
+            <channel id="coldFluidOutGT11" typeId="coldFluidOutGT11"/>
+            <channel id="externalHotWaterGT3x" typeId="externalHotWaterGT3x"/>            
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="status">
+        <label>Sensor Values</label>
+        <channels>
+            <channel id="lastError" typeId="lastError"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="frontPanel">
+        <label>Front Panel Values</label>
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="waterHeaterLed" typeId="waterHeaterLed"/>
+            <channel id="alarmLed" typeId="alarmLed"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="radiatorReturnGT1">
+        <item-type>Number</item-type>
+        <label>Radiator return [GT1]</label>
+        <description>Radiator return [GT1] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="outdoorGT2">
+        <item-type>Number</item-type>
+        <label>Outdoor [GT2]</label>
+        <description>Outdoor [GT2] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="hotWaterGT3">
+        <item-type>Number</item-type>
+        <label>Hot Water [GT3]</label>
+        <description>Hot Water [GT3] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="shuntGT4">
+        <item-type>Number</item-type>
+        <label>Shunt, flow [GT4]</label>
+        <description>Shunt, flow [GT4] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="roomGT5">
+        <item-type>Number</item-type>
+        <label>Room [GT5]</label>
+        <description>Room [GT5] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="compressorGT6">
+        <item-type>Number</item-type>
+        <label>Compressor [GT6]</label>
+        <description>Compressor [GT6] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="heatFluidOutGT8">
+        <item-type>Number</item-type>
+        <label>Heat Fluid Out [GT8]</label>
+        <description>Heat Fluid Out [GT8] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="heatFluidInGT9">
+        <item-type>Number</item-type>
+        <label>Heat Fluid In [GT9]</label>
+        <description>Heat Fluid In [GT9] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="coldFluidInGT10">
+        <item-type>Number</item-type>
+        <label>Cold Fluid In [GT10]</label>
+        <description>Cold Fluid In [GT10] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="coldFluidOutGT11">
+        <item-type>Number</item-type>
+        <label>Cold Fluid Out [GT11]</label>
+        <description>Cold Fluid Out [GT11] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="externalHotWaterGT3x">
+        <item-type>Number</item-type>
+        <label>External Hot Water [GT3x]</label>
+        <description>External Hot Water [GT3x] in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="lastError">
+        <item-type>String</item-type>
+        <label>Last Error</label>
+        <description>Last error information</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="power">
+        <item-type>Number</item-type>
+        <label>Power Led on front panel</label>
+        <description>Power led (LED 1) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="waterHeaterLed">
+        <item-type>Number</item-type>
+        <label>Water Heater Led on front panel</label>
+        <description>Water Heater Led (LED 4) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="alarmLed">
+        <item-type>Number</item-type>
+        <label>Alarm Led on front panel</label>
+        <description>Alarm led (LED 5) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>    
+
+</thing:thing-descriptions>
