@@ -16,7 +16,7 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.glassfish.jersey.client.authentication,
+ org.glassfish.jersey.client,
  org.glassfish.jersey.media.sse,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
