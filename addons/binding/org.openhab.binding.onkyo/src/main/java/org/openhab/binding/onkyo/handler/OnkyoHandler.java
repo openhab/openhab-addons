@@ -10,10 +10,12 @@ package org.openhab.binding.onkyo.handler;
 
 import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
 
+import java.io.IOException;
 import java.util.EventObject;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -26,10 +28,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
@@ -43,18 +45,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
-public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener {
+public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
     private Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
     private OnkyoConnection connection;
     private ScheduledFuture<?> statusCheckerFuture;
     private int currentInput = -1;
+    private PercentType volume;
 
     private final int NET_USB_ID = 43;
 
-    public OnkyoHandler(Thing thing) {
-        super(thing);
+    public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl) {
+        super(thing, upnpIOService, audioHTTPServer, callbackUrl);
 
     }
 
@@ -140,19 +143,7 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                 }
                 break;
             case CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    sendCommand(EiscpCommandRef.VOLUME_SET, command);
-                } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                    sendCommand(EiscpCommandRef.VOLUME_UP);
-                } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
-                    sendCommand(EiscpCommandRef.VOLUME_DOWN);
-                } else if (command.equals(OnOffType.OFF)) {
-                    sendCommand(EiscpCommandRef.MUTE);
-                } else if (command.equals(OnOffType.ON)) {
-                    sendCommand(EiscpCommandRef.UNMUTE);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.VOLUME_QUERY);
-                }
+                handleVolume(command);
                 break;
             case CHANNEL_INPUT:
                 if (command instanceof DecimalType) {
@@ -183,6 +174,9 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
                 } else if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY);
                 }
+                break;
+            case CHANNEL_PLAY_URI:
+                handlePlayUri(command);
                 break;
             case CHANNEL_LISTENMODE:
                 if (command instanceof DecimalType) {
@@ -264,84 +258,93 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
 
         updateStatus(ThingStatus.ONLINE);
 
-        EiscpCommand receivedCommand = null;
-        for (EiscpCommand candidate : EiscpCommand.values()) {
-            String deviceCmd = candidate.getCommand();
-            if (data.startsWith(deviceCmd)) {
-                receivedCommand = candidate;
-                break;
+        try {
+            EiscpCommand receivedCommand = null;
+            for (EiscpCommand candidate : EiscpCommand.values()) {
+                String deviceCmd = candidate.getCommand();
+                if (data.startsWith(deviceCmd)) {
+                    receivedCommand = candidate;
+                    break;
+                }
             }
-        }
 
-        if (receivedCommand != null) {
-            switch (receivedCommand.getCommandRef()) {
-                case POWER_OFF:
-                    updateState(CHANNEL_POWER, OnOffType.OFF);
-                    break;
-                case POWER_ON:
-                    updateState(CHANNEL_POWER, OnOffType.ON);
-                    break;
-                case MUTE:
-                    updateState(CHANNEL_MUTE, OnOffType.ON);
-                    break;
-                case UNMUTE:
-                    updateState(CHANNEL_MUTE, OnOffType.OFF);
-                    break;
-                case VOLUME_SET:
-                    updateState(CHANNEL_VOLUME, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
-                    break;
-                case SOURCE_SET:
-                    int input = Integer.parseInt(data.substring(3, 5), 16);
-                    updateState(CHANNEL_INPUT, new DecimalType(input));
-                    onInputChanged(input);
-                    break;
-                case NETUSB_SONG_ARTIST_QUERY:
-                    updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_SONG_ALBUM_QUERY:
-                    updateState(CHANNEL_ALBUM, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_SONG_TITLE_QUERY:
-                    updateState(CHANNEL_TITLE, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_SONG_ELAPSEDTIME_QUERY:
-                    updateState(CHANNEL_CURRENTPLAYINGTIME, new StringType(data.substring(3, data.length())));
-                    break;
-                case NETUSB_PLAY_STATUS_QUERY:
-                    updateNetUsbPlayStatus(data.charAt(3));
-                    break;
-                case LISTEN_MODE_SET:
-                    int listenMode = Integer.parseInt(data.substring(3, 5), 16);
-                    updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
-                    break;
-                case ZONE2_POWER_SBY:
-                    updateState(CHANNEL_POWERZONE2, OnOffType.OFF);
-                    break;
-                case ZONE2_POWER_ON:
-                    updateState(CHANNEL_POWERZONE2, OnOffType.ON);
-                    break;
-                case ZONE2_MUTE:
-                    updateState(CHANNEL_MUTEZONE2, OnOffType.ON);
-                    break;
-                case ZONE2_UNMUTE:
-                    updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
-                    break;
-                case ZONE2_VOLUME_SET:
-                    updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
-                    break;
-                case ZONE2_SOURCE_SET:
-                    int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
-                    updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
-                    break;
-                default:
-                    logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
-                            connection.getConnectionName(), data);
+            if (receivedCommand != null) {
+                switch (receivedCommand.getCommandRef()) {
+                    case POWER_OFF:
+                        updateState(CHANNEL_POWER, OnOffType.OFF);
+                        break;
+                    case POWER_ON:
+                        updateState(CHANNEL_POWER, OnOffType.ON);
+                        break;
+                    case MUTE:
+                        updateState(CHANNEL_MUTE, OnOffType.ON);
+                        break;
+                    case UNMUTE:
+                        updateState(CHANNEL_MUTE, OnOffType.OFF);
+                        break;
+                    case VOLUME_SET:
+                        volume = new PercentType(Integer.parseInt(data.substring(3, 5), 16));
+                        updateState(CHANNEL_VOLUME, volume);
+                        break;
+                    case SOURCE_SET:
+                        int input = Integer.parseInt(data.substring(3, 5), 16);
+                        updateState(CHANNEL_INPUT, new DecimalType(input));
+                        onInputChanged(input);
+                        break;
+                    case NETUSB_SONG_ARTIST_QUERY:
+                        updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_SONG_ALBUM_QUERY:
+                        updateState(CHANNEL_ALBUM, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_SONG_TITLE_QUERY:
+                        updateState(CHANNEL_TITLE, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_SONG_ELAPSEDTIME_QUERY:
+                        updateState(CHANNEL_CURRENTPLAYINGTIME, new StringType(data.substring(3, data.length())));
+                        break;
+                    case NETUSB_PLAY_STATUS_QUERY:
+                        updateNetUsbPlayStatus(data.charAt(3));
+                        break;
+                    case LISTEN_MODE_SET:
+                        String listenModeStr = data.substring(3, 5);
+                        // update only when listen mode is supported
+                        if (listenModeStr != "N/") {
+                            int listenMode = Integer.parseInt(listenModeStr, 16);
+                            updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
+                        }
+                        break;
+                    case ZONE2_POWER_SBY:
+                        updateState(CHANNEL_POWERZONE2, OnOffType.OFF);
+                        break;
+                    case ZONE2_POWER_ON:
+                        updateState(CHANNEL_POWERZONE2, OnOffType.ON);
+                        break;
+                    case ZONE2_MUTE:
+                        updateState(CHANNEL_MUTEZONE2, OnOffType.ON);
+                        break;
+                    case ZONE2_UNMUTE:
+                        updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
+                        break;
+                    case ZONE2_VOLUME_SET:
+                        updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        break;
+                    case ZONE2_SOURCE_SET:
+                        int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
+                        updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
+                        break;
+                    default:
+                        logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
+                                connection.getConnectionName(), data);
 
+                }
+            } else {
+                logger.debug("Received unknown status update from Onkyo Receiver @{}: data={}",
+                        connection.getConnectionName(), data);
             }
-        } else {
-            logger.debug("Received unknown status update from Onkyo Receiver @{}: data={}",
-                    connection.getConnectionName(), data);
-
+        } catch (Exception ex) {
+            logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
+                    connection.getConnectionName(), ex.getMessage(), data);
         }
     }
 
@@ -438,6 +441,32 @@ public class OnkyoHandler extends BaseThingHandler implements OnkyoEventListener
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
+    }
+
+    private void handleVolume(final Command command) {
+        if (command instanceof PercentType) {
+            sendCommand(EiscpCommandRef.VOLUME_SET, command);
+        } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+            sendCommand(EiscpCommandRef.VOLUME_UP);
+        } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+            sendCommand(EiscpCommandRef.VOLUME_DOWN);
+        } else if (command.equals(OnOffType.OFF)) {
+            sendCommand(EiscpCommandRef.MUTE);
+        } else if (command.equals(OnOffType.ON)) {
+            sendCommand(EiscpCommandRef.UNMUTE);
+        } else if (command.equals(RefreshType.REFRESH)) {
+            sendCommand(EiscpCommandRef.VOLUME_QUERY);
+        }
+    }
+
+    @Override
+    public PercentType getVolume() throws IOException {
+        return volume;
+    }
+
+    @Override
+    public void setVolume(PercentType volume) throws IOException {
+        handleVolume(volume);
     }
 
 }

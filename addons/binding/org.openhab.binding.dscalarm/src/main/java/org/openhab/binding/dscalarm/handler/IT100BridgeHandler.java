@@ -105,7 +105,8 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
             serialPort = (SerialPort) commPort;
-            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
 
@@ -123,10 +124,12 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             logger.error("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
             setConnected(false);
         } catch (UnsupportedCommOperationException unsupportedCommOperationException) {
-            logger.error("openConnection(): Unsupported Comm Operation Exception: {}", unsupportedCommOperationException.getMessage());
+            logger.error("openConnection(): Unsupported Comm Operation Exception: {}",
+                    unsupportedCommOperationException.getMessage());
             setConnected(false);
         } catch (UnsupportedEncodingException unsupportedEncodingException) {
-            logger.error("openConnection(): Unsupported Encoding Exception: {}", unsupportedEncodingException.getMessage());
+            logger.error("openConnection(): Unsupported Encoding Exception: {}",
+                    unsupportedEncodingException.getMessage());
             setConnected(false);
         } catch (IOException ioException) {
             logger.error("openConnection(): IO Exception: {}", ioException.getMessage());
@@ -252,7 +255,8 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             serialPort.addEventListener(serialPortEventListenser);
             serialPort.notifyOnDataAvailable(true);
         } catch (TooManyListenersException tooManyListenersException) {
-            logger.error("setSerialEventHandler(): Too Many Listeners Exception: {}", tooManyListenersException.getMessage());
+            logger.error("setSerialEventHandler(): Too Many Listeners Exception: {}",
+                    tooManyListenersException.getMessage());
         }
     }
 }

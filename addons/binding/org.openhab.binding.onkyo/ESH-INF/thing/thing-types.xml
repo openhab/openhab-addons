@@ -8,11 +8,11 @@
 		<label>Onkyo AV Receiver</label>
 		<description>Network enabled Onkyo AV Receivers</description>
 
-        <channel-groups>
-            <channel-group typeId="zone1Controls" id="zone1" />
-            <channel-group typeId="playerControls" id="player" />
-            <channel-group typeId="zone2Controls" id="zone2" />
-        </channel-groups>
+		<channel-groups>
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="playerControls" id="player" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+		</channel-groups>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -24,6 +24,10 @@
 				<label>Port</label>
 				<description>Port of the Onkyo to control</description>
 				<default>60128</default>
+			</parameter>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Onkyo AVR.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -38,7 +42,7 @@
 			<channel-group typeId="playerControls" id="player" />
 			<channel-group typeId="zone2Controls" id="zone2" />
 		</channel-groups>
-		
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
@@ -49,6 +53,11 @@
 				<label>Port</label>
 				<description>Port of the Onkyo to control</description>
 				<default>60128</default>
+			</parameter>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the Onkyo AVR.</description>
+				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -72,6 +81,7 @@
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="artist" />
 			<channel id="listenmode" typeId="listenmode" />
+			<channel id="playuri" typeId="playuri" />
 		</channels>
 	</channel-group-type>
 
@@ -106,9 +116,9 @@
 				<option value="32">TAPE1</option>
 				<option value="33">TAPE2</option>
 				<option value="34">PHONO</option>
-				<option value="35">CD</option>
-				<option value="36">FM</option>
-				<option value="37">AM</option>
+				<option value="35">CD/TV</option>
+				<option value="36">TUNER FM</option>
+				<option value="37">TUNER AM</option>
 				<option value="38">TUNER</option>
 				<option value="39">MUSICSERVER</option>
 				<option value="40">INTERETRADIO</option>
@@ -116,6 +126,7 @@
 				<option value="42">USB_BACK</option>
 				<option value="43">NETWORK</option>
 				<option value="45">AIRPLAY</option>
+				<option value="46">BLUETOOTH</option>
 				<option value="48">MULTICH</option>
 				<option value="50">SIRIUS</option>
 			</options>
@@ -146,11 +157,23 @@
 		<state>
 			<options>
 				<option value="00">Stereo</option>
+				<option value="03">Game RPG</option>
+				<option value="05">Game Action</option>
+				<option value="06">Game Rock</option>
+				<option value="08">Orchestra</option>
+				<option value="09">unplugged</option>
+				<option value="10">Studio Mix</option>
+				<option value="11">TV Logic</option>
 				<option value="12">All Channel Stereo</option>
+				<option value="12">Theater Dimensional</option>
+				<option value="17">Pure Audio</option>
+				<option value="19">Mono</option>
 				<option value="22">Audyssey DSX</option>
 				<option value="64">5.1ch Surround</option>
 				<option value="128">PLII/PLIIx Movie</option>
 				<option value="129">PLII/PLIIx Music</option>
+				<option value="131">Neo:6 Music</option>
+				<option value="134">PLII/PLIIx Game</option>
 				<option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
 				<option value="161">PLIIx/PLII Music + Audyssey DSX</option>
 				<option value="162">PLIIx/PLII Game + Audyssey DSX</option>
@@ -160,6 +183,11 @@
 				<option value="166">Neural Digital DSX</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="playuri">
+		<item-type>String</item-type>
+		<label>Play URI</label>
+		<description>Plays a given URI</description>
 	</channel-type>
 
 	<!-- Onkyo variables -->

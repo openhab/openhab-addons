@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceActionHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(DeviceActionHandler.class);
-
     private static final String CHARSET = "UTF-8";
+
+    private final Logger logger = LoggerFactory.getLogger(DeviceActionHandler.class);
 
     private final DeviceRegistry deviceRegistry;
 
