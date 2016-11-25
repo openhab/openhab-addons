@@ -16,7 +16,6 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 import pl.grzeslowski.smarthome.rf24.BasicRf24;
 import pl.grzeslowski.smarthome.rf24.Rf24Adapter;
-import pl.grzeslowski.smarthome.rf24.helpers.ClockSpeed;
 import pl.grzeslowski.smarthome.rf24.helpers.Payload;
 import pl.grzeslowski.smarthome.rf24.helpers.Pins;
 import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
@@ -29,14 +28,9 @@ public class Rf24 implements WiFi {
     private final BasicRf24 wifi;
     private final Payload payload;
 
-    public Rf24(short ce, short cs, int spi, short delay, short number, short size) {
-        payload = new Payload(size);
-        // @formatter:off
-        wifi = new Rf24Adapter(
-                new Pins(ce, cs, ClockSpeed.findClockSpeed(spi).get()),
-                new Retry(delay, number),
-                payload);
-        // @formatter:on
+    public Rf24(Pins pins, Retry retry, Payload payload) {
+        this.payload = payload;
+        wifi = new Rf24Adapter(pins, retry, payload);
     }
 
     @Override
@@ -84,5 +78,10 @@ public class Rf24 implements WiFi {
     @Override
     public Optional<Sensor.SensorResponse> read(Pipe pipe) {
         return read(Collections.singletonList(pipe));
+    }
+
+    @Override
+    public String toString() {
+        return wifi.toString();
     }
 }

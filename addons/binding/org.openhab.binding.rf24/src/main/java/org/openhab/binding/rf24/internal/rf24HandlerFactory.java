@@ -7,11 +7,14 @@
  */
 package org.openhab.binding.rf24.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,13 +31,16 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.common.io.id.TransmitterId;
 import pl.grzeslowski.smarthome.rf24.Rf24Adapter;
+import pl.grzeslowski.smarthome.rf24.helpers.ClockSpeed;
+import pl.grzeslowski.smarthome.rf24.helpers.Payload;
+import pl.grzeslowski.smarthome.rf24.helpers.Pins;
+import pl.grzeslowski.smarthome.rf24.helpers.Retry;
 
 /**
  * The {@link rf24HandlerFactory} is responsible for creating things and thing
@@ -43,7 +49,7 @@ import pl.grzeslowski.smarthome.rf24.Rf24Adapter;
  * @author Martin Grzeslowski - Initial contribution
  */
 public class rf24HandlerFactory extends BaseThingHandlerFactory {
-    private static final boolean RPI = false;
+    private static final boolean RPI = "RPi".equals(System.getenv().get("system"));
 
     private static final Logger logger = LoggerFactory.getLogger(rf24HandlerFactory.class);
     private static final IdUtils ID_UTILS = new IdUtils(Rf24Adapter.MAX_NUMBER_OF_READING_PIPES);
@@ -68,22 +74,26 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     private final List<WifiOperator> xs;
 
     public rf24HandlerFactory() {
-        final WiFi wifi1;
-        final WiFi wifi2;
-
+        final List<WiFi> wifis = new ArrayList<>();
         if (RPI) {
-            wifi1 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
-            wifi2 = new Rf24((short) 1, (short) 2, 3, (short) 4, (short) 5, (short) 6); // TODO valid params
+            // @formatter:off
+            Rf24 wifi = new Rf24(
+                    new Pins((short) 22, (short) 8, ClockSpeed.BCM2835_SPI_SPEED_8MHZ),
+                    new Retry((short)15, (short)15),
+                    new Payload((short)128));
+            // @formatter:on
+            wifis.add(wifi);
+            logger.info("I'm working on RPi! Wifi: {}.", wifi);
         } else {
-            wifi1 = new StubWiFi();
-            wifi2 = new StubWiFi();
+            wifis.add(new StubWiFi());
+            wifis.add(new StubWiFi());
         }
 
+        final AtomicLong transmitterId = new AtomicLong(1);
         // @formatter:off
-        xs = ImmutableList.of(
-                new WifiOperator(ID_UTILS, wifi1, new TransmitterId(1), EXECUTOR),
-                new WifiOperator(ID_UTILS, wifi2, new TransmitterId(2), EXECUTOR)
-        );
+        xs = wifis.stream()
+            .map(wifi -> new WifiOperator(ID_UTILS, wifi, new TransmitterId(transmitterId.getAndIncrement()), EXECUTOR))
+            .collect(Collectors.toList());
         // @formatter:on
     }
 
