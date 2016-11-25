@@ -1,11 +1,15 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
-class ErrorLineResponseParser extends StringResponseParser {
+class ErrorLineResponseParser extends AbstractLongResponseParser<ErrorLine> {
 
     @Override
-    protected String convert(byte[] responseBytes) {
-        // TODO: when testing with real device implement support
-        // since currently I don't have any real data/packet.
-        return ValueConverter.stringFromBytes(responseBytes, 1);
+    protected ErrorLine convert(byte[] responseBytes) {
+        // 255 marks no error.
+        if (responseBytes[1] == 255) {
+            return null;
+        }
+
+        return new ErrorLine(responseBytes[1], ValueConverter.stringFromBytes(responseBytes, 2, 15), responseBytes[32],
+                responseBytes[33], responseBytes[34], responseBytes[35]);
     }
 }

@@ -17,8 +17,7 @@ public class ValueConverter {
         return (short) (buffer[offset] << 14 | buffer[offset + 1] << 7 | buffer[offset + 2]);
     }
 
-    public static String stringFromBytes(byte[] buffer, int offset) {
-        final int charCount = 20;
+    public static String stringFromBytes(byte[] buffer, int offset, int charCount) {
         StringBuilder builder = new StringBuilder(charCount);
 
         int length = offset + charCount * 2;

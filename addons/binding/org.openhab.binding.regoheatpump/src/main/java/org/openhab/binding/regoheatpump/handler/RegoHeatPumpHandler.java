@@ -163,7 +163,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private CompletableFuture<Void> readLastError(String channelIID) {
         return executeCommandAndUpdateStateAsync(channelIID, CommandFactory.createReadLastErrorCommand(),
-                ResponseParserFactory.ErrorLine, StringType::new);
+                ResponseParserFactory.ErrorLine, e -> {
+                    return new StringType(e == null ? "NA" : e.toString());
+                });
     }
 
     private CompletableFuture<Void> readFromFrontPanel(String channelIID, short address) {
