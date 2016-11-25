@@ -20,3 +20,4 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.regoheatpump,
  org.openhab.binding.regoheatpump.handler
+Bundle-ActivationPolicy: lazy

@@ -83,7 +83,6 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         executor = null;
 
         closeConnection();
-        linkedChannels.clear();
         mapper = null;
     }
 
