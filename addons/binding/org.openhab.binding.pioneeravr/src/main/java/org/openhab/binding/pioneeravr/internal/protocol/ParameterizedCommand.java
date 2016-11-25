@@ -14,7 +14,7 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
 
 /**
  * A command which accept a parameter.
- * 
+ *
  * @author Antoine Besnard
  *
  */
@@ -22,26 +22,26 @@ public class ParameterizedCommand extends SimpleCommand {
 
     /**
      * List of the commands with a parameter.
-     * 
+     *
      * @author Antoine Besnard
      *
      */
     public enum ParameterizedCommandType implements AvrCommand.CommandType {
 
-        VOLUME_SET("VL", "[0-9]{3}"),
-        INPUT_CHANNEL_SET("FN", "[0-9]{2}");
+        VOLUME_SET("[0-9]{3}", "VL", "ZV", "YV"),
+        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT");
 
-        private String command;
+        private String[] zoneCommands;
         private String parameterPattern;
 
-        private ParameterizedCommandType(String command, String parameterPattern) {
-            this.command = command;
+        private ParameterizedCommandType(String parameterPattern, String... zoneCommands) {
+            this.zoneCommands = zoneCommands;
             this.parameterPattern = parameterPattern;
         }
 
         @Override
-        public String getCommand() {
-            return command;
+        public String getCommand(int zone) {
+            return zoneCommands[zone - 1];
         }
 
         public String getParameterPattern() {
@@ -53,14 +53,14 @@ public class ParameterizedCommand extends SimpleCommand {
 
     private String parameterPattern;
 
-    protected ParameterizedCommand(ParameterizedCommandType command) {
-        super(command);
+    protected ParameterizedCommand(ParameterizedCommandType command, int zone) {
+        super(command, zone);
         this.parameterPattern = command.getParameterPattern();
     }
 
     /**
      * Return the command to send to the AVR with the parameter value configured.
-     * 
+     *
      * throws {@link AvrConnectionException} if the parameter is null, empty or has a bad format.
      */
     @Override
