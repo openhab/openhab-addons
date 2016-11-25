@@ -25,8 +25,8 @@ public class OnkyoBindingConstants {
     public static final String BINDING_ID = "onkyo";
 
     // Extend this set with all successfully tested models
-    public final static Set<String> SUPPORTED_DEVICE_MODELS = ImmutableSet.of("TX-NR509", "TX-NR535", "TX-NR555",
-            "TX-NR646");
+    public final static Set<String> SUPPORTED_DEVICE_MODELS = ImmutableSet.of("TX-NR509", "TX-NR515", "TX-NR525",
+            "TX-NR535", "TX-NR555", "TX-NR626", "TX-NR646", "TX-NR656");
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_ONKYOAV = new ThingTypeUID(BINDING_ID, "onkyoAVR");
@@ -37,6 +37,7 @@ public class OnkyoBindingConstants {
     // List of thing parameters names
     public final static String HOST_PARAMETER = "ipAddress";
     public final static String TCP_PORT_PARAMETER = "port";
+    public final static String UDN_PARAMETER = "udn";
 
     // List of all Channel ids
     public final static String CHANNEL_POWER = "zone1#power";
@@ -49,6 +50,7 @@ public class OnkyoBindingConstants {
     public final static String CHANNEL_TITLE = "player#title";
     public final static String CHANNEL_ALBUM = "player#album";
     public final static String CHANNEL_LISTENMODE = "player#listenmode";
+    public static final String CHANNEL_PLAY_URI = "player#playuri";
     public final static String CHANNEL_POWERZONE2 = "zone2#power";
     public final static String CHANNEL_INPUTZONE2 = "zone2#input";
     public final static String CHANNEL_MUTEZONE2 = "zone2#mute";

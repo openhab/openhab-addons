@@ -49,6 +49,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dscalarm/${project.version}</bundle>
     </feature>
     
+    <feature name="openhab-binding-exec" description="Exec Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.exec/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-feed" description="Feed Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-feed</feature>
@@ -307,7 +312,6 @@
 
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <feature>esh-model-item</feature>
         <feature>esh-model-sitemap</feature>
         <feature>esh-ui-icon</feature>
@@ -325,13 +329,11 @@
     
     <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-ui-habpanel" description="HABPanel" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habpanel/${project.version}</bundle>
     </feature>
     
