@@ -15,8 +15,8 @@
 		<description>A Rain device.</description>
 
 		<channels>
-			<channel id="rainRate" typeId="rainrate" />
-			<channel id="rainTotal" typeId="raintotal" />
+			<channel id="rainRate" typeId="rainRate" />
+			<channel id="rainTotal" typeId="rainTotal" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
