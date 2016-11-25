@@ -103,14 +103,15 @@
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
+		<category>Temperature</category>		
 		<description>Current temperature in degree Celsius</description>
-		<category>Temperature</category>
 		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
+		<category>Humidity</category>
 		<description>Relative humidity level in percentages</description>
 		<category>Humidity</category>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
