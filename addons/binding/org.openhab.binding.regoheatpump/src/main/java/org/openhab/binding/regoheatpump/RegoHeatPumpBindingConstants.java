@@ -26,6 +26,8 @@ public class RegoHeatPumpBindingConstants {
     public final static String CHANNEL_GROUP_REGISTERS = "registers#";
     public final static String CHANNEL_LAST_ERROR = "status#lastError";
     public final static String CHANNEL_FRONT_PANEL_POWER_LED = "frontPanel#power";
+    public final static String CHANNEL_FRONT_PANEL_PUMP_LED = "frontPanel#pumpLed";
+    public final static String CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED = "frontPanel#additionalHeatingLed";
     public final static String CHANNEL_FRONT_PANEL_WATER_HEATER_LED = "frontPanel#waterHeaterLed";
     public final static String CHANNEL_FRONT_PANEL_ALARM_LED = "frontPanel#alarmLed";
 

@@ -106,6 +106,12 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_POWER_LED:
                 return readFromFrontPanel(channelIID, (short) 0x0012);
 
+            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_PUMP_LED:
+                return readFromFrontPanel(channelIID, (short) 0x0013);
+
+            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
+                return readFromFrontPanel(channelIID, (short) 0x0014);
+
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
                 return readFromFrontPanel(channelIID, (short) 0x0015);
 
@@ -164,7 +170,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     private CompletableFuture<Void> readLastError(String channelIID) {
         return executeCommandAndUpdateStateAsync(channelIID, CommandFactory.createReadLastErrorCommand(),
                 ResponseParserFactory.ErrorLine, e -> {
-                    return new StringType(e == null ? "NA" : e.toString());
+                    return e == null ? UnDefType.NULL : new StringType(e.toString());
                 });
     }
 

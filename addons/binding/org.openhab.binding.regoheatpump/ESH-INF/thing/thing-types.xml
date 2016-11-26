@@ -62,6 +62,8 @@
         <label>Front Panel Values</label>
         <channels>
             <channel id="power" typeId="power"/>
+            <channel id="pumpLed" typeId="pumpLed"/>
+            <channel id="additionalHeatingLed" typeId="additionalHeatingLed"/>
             <channel id="waterHeaterLed" typeId="waterHeaterLed"/>
             <channel id="alarmLed" typeId="alarmLed"/>
         </channels>
@@ -166,6 +168,20 @@
         <item-type>Number</item-type>
         <label>Power Led on front panel</label>
         <description>Power led (LED 1) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="pumpLed">
+        <item-type>Number</item-type>
+        <label>Heat Pump Led on front panel</label>
+        <description>Heat pump led (LED 2) on front panel</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="additionalHeatingLed">
+        <item-type>Number</item-type>
+        <label>Additional Heating Led on front panel</label>
+        <description>Additional heating led (LED 3) on front panel</description>
         <state readOnly="true" />
     </channel-type>
 

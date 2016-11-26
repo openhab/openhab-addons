@@ -5,7 +5,7 @@ class ErrorLineResponseParser extends AbstractLongResponseParser<ErrorLine> {
     @Override
     protected ErrorLine convert(byte[] responseBytes) {
         // 255 marks no error.
-        if (responseBytes[1] == 255) {
+        if (responseBytes[1] == (byte) 255) {
             return null;
         }
 
