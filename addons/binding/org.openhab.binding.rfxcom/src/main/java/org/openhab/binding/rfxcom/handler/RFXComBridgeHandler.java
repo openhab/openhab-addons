@@ -214,7 +214,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         } catch (NoSuchPortException e) {
             logger.error("Connection to RFXCOM transceiver failed: invalid port");
         } catch (IOException e) {
-            logger.error("Connection to RFXCOM transceiver failed, reason ", e);
+            logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
             if ("device not opened (3)".equalsIgnoreCase(e.getMessage())) {
                 if (connector instanceof RFXComJD2XXConnector) {
                     logger.info("Automatically Discovered RFXCOM bridges use FTDI chip driver (D2XX)."
@@ -225,7 +225,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("Connection to RFXCOM transceiver failed, reason ", e);
+            logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
         } catch (UnsatisfiedLinkError e) {
             logger.error("Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
