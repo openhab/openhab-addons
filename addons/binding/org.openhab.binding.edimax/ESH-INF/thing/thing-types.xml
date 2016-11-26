@@ -1,24 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="edimax"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="edimax" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>Edimax Binding Thing</label>
-        <description>Sample thing for Edimax Binding</description>
+	<thing-type id="sp2101w">
+		<label>SP-2101W</label>
+		<description>Edimax SP-2101W Binding</description>
 
-        <channels>
-            <channel id="channel1" typeId="sample-channel"/>
-        </channels>
-    </thing-type>
+		<channels>
+			<channel id="switch-channel" typeId="switch" />
+		</channels>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>edimaxItem</item-type>
-        <label>Edimax Binding Channel</label>
-        <description>Sample channel for Edimax Binding</description>
-    </channel-type>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The IP address of the Edimax Plug</description>
+			</parameter>
+			<parameter name="username" type="text" required="false">
+				<context>username</context>
+				<label>Username</label>
+				<description>Username to access the Ediamx Plug.</description>
+				<default>admin</default>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the Edimax Plug.</description>
+				<default>1234</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="sp1101w">
+		<label>SP-1101W</label>
+		<description>Edimax SP-1101W Binding</description>
+
+		<channels>
+			<channel typeId="switch-channel" id="switch" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The IP address of the Edimax Plug</description>
+			</parameter>
+			<parameter name="username" type="text" required="false">
+				<context>username</context>
+				<label>Username</label>
+				<description>Username to access the Ediamx Plug.</description>
+				<default>admin</default>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the Edimax Plug.</description>
+				<default>1234</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switched outlet</description>
+		<state readOnly="false" />
+	</channel-type>
 
 </thing:thing-descriptions>
