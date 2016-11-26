@@ -52,7 +52,7 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
-        callbackUrl = properties.get("callbackUrl").toString();
+        callbackUrl = (String) properties.get("callbackUrl");
     };
 
     @Override
