@@ -4,7 +4,7 @@ The Amazon Dash Button is a very cheap device in order to integrate it in your h
 
 ## Prerequisites
 
-The binding uses pcap4j (https://www.pcap4j.org/) in order to capture ARP requests send by the Amazon Dash Button. The code is inspired by https://github.com/hortinstein/node-dash-button.
+The binding uses pcap4j (https://www.pcap4j.org/) in order to capture ARP and BOOTP requests send by the Amazon Dash Button. The code is inspired by https://github.com/hortinstein/node-dash-button.
 
 
 ## Install Native Library

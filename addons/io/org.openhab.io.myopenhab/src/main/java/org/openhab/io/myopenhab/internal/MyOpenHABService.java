@@ -61,10 +61,11 @@ public class MyOpenHABService implements PersistenceService, ActionService, MyOp
     private Logger logger = LoggerFactory.getLogger(MyOpenHABService.class);
 
     private static final String SECRET_FILE_NAME = "myopenhab" + File.separator + "secret";
-
+    private static final String DEFAULT_URL = "https://my.openhab.org/";
     public static String myohVersion = null;
     private MyOpenHABClient myOHClient;
     private boolean persistenceEnabled = false;
+    private String myOpenHABBaseUrl = null;
     protected ItemRegistry itemRegistry = null;
     protected EventPublisher eventPublisher = null;
 
@@ -138,8 +139,20 @@ public class MyOpenHABService implements PersistenceService, ActionService, MyOp
         } else {
             logger.debug("config is null");
         }
+
+        if (config.get("baseURL") != null) {
+            myOpenHABBaseUrl = (String) config.get("baseURL");
+        } else {
+            myOpenHABBaseUrl = DEFAULT_URL;
+        }
+
         logger.debug("UUID = " + InstanceUUID.get() + ", secret = " + getSecret());
-        myOHClient = new MyOpenHABClient(InstanceUUID.get(), getSecret());
+
+        if (myOHClient != null) {
+            myOHClient.shutdown();
+        }
+
+        myOHClient = new MyOpenHABClient(InstanceUUID.get(), getSecret(), myOpenHABBaseUrl);
         myOHClient.setOpenHABVersion(OpenHAB.getVersion());
         myOHClient.connect();
         myOHClient.setListener(this);

@@ -13,9 +13,8 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.events.ItemCommandEvent;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Items setting RGB color value.
@@ -23,8 +22,6 @@ import org.slf4j.LoggerFactory;
  * @author Pepijn de Geus - Initial contribution
  */
 public class SetColorAction extends Action {
-
-    private final Logger logger = LoggerFactory.getLogger(SetColorAction.class);
 
     public SetColorAction(EventPublisher eventPublisher) {
         super(eventPublisher);
@@ -46,9 +43,14 @@ public class SetColorAction extends Action {
         int g = Integer.parseInt(value.substring(4, 6), 16);
         int b = Integer.parseInt(value.substring(6, 8), 16);
 
-        HSBType hsbValue = HSBType.fromRGB(r, g, b);
+        ItemCommandEvent event;
+        if (r == 0 && g == 0 && b == 0) {
+            event = ItemEventFactory.createCommandEvent(item.getName(), OnOffType.OFF, COMMAND_SOURCE);
+        } else {
+            HSBType hsbValue = HSBType.fromRGB(r, g, b);
+            event = ItemEventFactory.createCommandEvent(item.getName(), hsbValue, COMMAND_SOURCE);
+        }
 
-        ItemCommandEvent event = ItemEventFactory.createCommandEvent(item.getName(), hsbValue, COMMAND_SOURCE);
         eventPublisher.post(event);
     }
 

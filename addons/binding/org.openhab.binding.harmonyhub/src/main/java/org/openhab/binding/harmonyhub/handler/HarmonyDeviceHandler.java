@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -78,8 +79,13 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             return;
         }
 
+        if (command instanceof RefreshType) {
+            // nothing to refresh
+            return;
+        }
+
         if (!(command instanceof StringType)) {
-            logger.warn("Command {} is not a String type for channel {] for device {}", command, channelUID,
+            logger.warn("Command {} is not a String type for channel {} for device {}", command, channelUID,
                     getThing());
             return;
         }
@@ -106,7 +112,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         } else {
             logName = id > 0 ? String.valueOf(id) : name;
             logger.debug("initializing {}", logName);
-            updateDeviceStatus(getBridge().getStatus());
+            if (getBridge() != null) {
+                updateDeviceStatus(getBridge().getStatus());
+            }
         }
     };
 
