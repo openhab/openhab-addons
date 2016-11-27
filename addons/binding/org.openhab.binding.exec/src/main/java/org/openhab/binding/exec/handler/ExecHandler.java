@@ -140,7 +140,7 @@ public class ExecHandler extends BaseThingHandler {
                 StringBuilder outputBuilder = new StringBuilder();
                 StringBuilder errorBuilder = new StringBuilder();
 
-                try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
                         BufferedReader br = new BufferedReader(isr);) {
                     String line = null;
                     while ((line = br.readLine()) != null) {
@@ -182,6 +182,8 @@ public class ExecHandler extends BaseThingHandler {
 
                 updateState(ExecBindingConstants.RUN, OnOffType.OFF);
                 updateState(ExecBindingConstants.EXIT, new DecimalType(proc.exitValue()));
+
+                outputBuilder.append(errorBuilder.toString());
 
                 String transformedResponse = StringUtils.chomp(outputBuilder.toString());
                 String transformation = (String) getConfig().get(TRANSFORM);
