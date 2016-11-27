@@ -32,25 +32,32 @@ import retrofit.RestAdapter.LogLevel;
  * {@link NetatmoBridgeHandler} to request informations about their status
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
-public class NetatmoBridgeHandler extends BaseBridgeHandler {
+public class NetatmoBridgeHandler<X extends NetatmoBridgeConfiguration> extends BaseBridgeHandler {
     private static Logger logger = LoggerFactory.getLogger(NetatmoBridgeHandler.class);
-    private NetatmoBridgeConfiguration configuration;
-    private ApiClient apiClient;
+    protected static ApiClient apiClient;
+
     private StationApi stationApi = null;
     private ThermostatApi thermostatApi = null;
 
-    public NetatmoBridgeHandler(Bridge bridge) {
+    final Class<X> configurationClass;
+    protected X configuration = null;
+
+    public NetatmoBridgeHandler(Bridge bridge, Class<X> configurationClass) {
         super(bridge);
+        this.configurationClass = configurationClass;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Netatmo API bridge handler.");
 
-        configuration = getConfigAs(NetatmoBridgeConfiguration.class);
-        initializeApiClient();
+        configuration = this.getConfigAs(configurationClass);
+        if (configurationClass == NetatmoBridgeConfiguration.class) {
+            initializeApiClient();
+        }
 
         super.initialize();
     }
@@ -83,6 +90,10 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
         if (configuration.readThermostat) {
             stringBuilder.append("read_thermostat write_thermostat ");
+        }
+
+        if (configuration.readWelcome) {
+            stringBuilder.append("read_camera write_camera access_camera");
         }
 
         return stringBuilder.toString().trim();

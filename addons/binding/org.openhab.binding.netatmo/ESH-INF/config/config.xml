@@ -1,102 +1,187 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="thing-type:netatmo:bridge">                         
-        <parameter name="clientId" type="text">
-            <label>Client ID</label>
-            <description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
-            <required>true</required>
-            <advanced>false</advanced>
+	<config-description uri="thing-type:netatmo:bridge">
+		<parameter name="clientId" type="text">
+			<label>Client ID</label>
+			<description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+
+		<parameter name="clientSecret" type="text">
+			<label>Client Secret</label>
+			<description>Client Secret provided for the application you created</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+
+		<parameter name="username" type="text">
+			<label>Username</label>
+			<description>Your Netatmo API username (email)</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+
+		<parameter name="password" type="text">
+			<label>Password</label>
+			<description>Your Netatmo API password</description>
+			<required>true</required>
+			<advanced>false</advanced>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="readStation" type="boolean" required="true">
+			<label>Access Weather Station</label>
+			<description>Read weather station's data.</description>
+			<default>true</default>
+		</parameter>
+
+		<parameter name="readThermostat" type="boolean" required="true">
+			<label>Access Thermostat</label>
+			<description>Read and Write thermostat's data.</description>
+			<default>true</default>
+		</parameter>
+
+		<parameter name="readWelcome" type="boolean" required="true">
+			<label>Access Welcome camera</label>
+			<description>Read, Access and write welcome camera's data.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+    <config-description uri="thing-type:netatmo:welcomebridge">
+        <parameter name="welcomeEventThings" type="integer" required="false">
+            <label>Generate Thing Events</label>
+            <description>How many things for events should be generated.</description>
+            <default>5</default>
+            <advanced>true</advanced>
         </parameter>
-            
-        <parameter name="clientSecret" type="text">
-            <label>Client Secret</label>
-            <description>Client Secret provided for the application you created</description>
-            <required>true</required>
-            <advanced>false</advanced>
+
+        <parameter name="welcomeUnknownPersonThings" type="integer" required="false">
+            <label>Generate Thing Unknown Persons</label>
+            <description>How many things for unknown Persons should be generated</description>
+            <default>3</default>
+            <advanced>true</advanced>
         </parameter>
-            
-        <parameter name="username" type="text">
-            <label>Username</label>
-            <description>Your Netatmo API username (email)</description>
-            <required>true</required>
-            <advanced>false</advanced>
-        </parameter>
-            
-        <parameter name="password" type="text">
-            <label>Password</label>
-            <description>Your Netatmo API password</description>
-            <required>true</required>
-            <advanced>false</advanced>
-            <context>password</context>
-        </parameter>            
-                       
-        <parameter name="readStation" type="boolean" required="true">
-            <label>Access Weather Station</label>
-            <description>Read weather station's data.</description>
-            <default>true</default>
-        </parameter>
-            
-        <parameter name="readThermostat" type="boolean" required="true">
-            <label>Access Thermostat</label>
-            <description>Read and Write thermostat's data.</description>
-            <default>true</default>
-        </parameter>
-                                                         
     </config-description>
 
-    <config-description uri="thing-type:netatmo:device">
-        <parameter name="equipmentId" type="text">
-            <label>Equipment ID</label>
-            <description>Id of the Device (mac address)</description>
-            <required>true</required>
-        </parameter>
-    
-        <parameter name="refreshInterval" type="integer" required="false">
-            <label>Refresh Interval</label>
-            <description>The refresh interval to poll Netatmo API (in ms).</description>
-            <default>600000</default>
-            <advanced>true</advanced>
-        </parameter>
-    </config-description>                 
-    
-    <config-description uri="thing-type:netatmo:module">
-        <parameter name="equipmentId" type="text">
-            <label>Module ID</label>
-            <description>Id of the Module</description>
-            <required>true</required>
-        </parameter>
         
-        <parameter name="parentId" type="text">
-            <label>Device ID</label>
-            <description>Id of the main device</description>
-            <required>true</required>
-        </parameter>     
-    </config-description>     
-    
-    <config-description uri="thing-type:netatmo:natherm1">
-        <parameter name="equipmentId" type="text">
-            <label>Module ID</label>
-            <description>Id of the Module</description>
-            <required>true</required>
-        </parameter>
-        
-        <parameter name="parentId" type="text">
-            <label>Device ID</label>
-            <description>Id of the main device</description>
-            <required>true</required>
-        </parameter>   
-        
-        <parameter name="setpointDefaultDuration" type="integer" required="false">
-            <label>Setpoint duration</label>
-            <description>Default duration of thermostat change when force to max or manual.</description>
-            <default>60</default>
-            <advanced>true</advanced>
-        </parameter>   
-    </config-description>  
+	<config-description uri="thing-type:netatmo:device">
+		<parameter name="equipmentId" type="text">
+			<label>Equipment ID</label>
+			<description>Id of the Device (mac address)</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="refreshInterval" type="integer" required="false">
+			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Netatmo API (in ms).</description>
+			<default>600000</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:netatmo:module">
+		<parameter name="equipmentId" type="text">
+			<label>Module ID</label>
+			<description>Id of the Module</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="parentId" type="text">
+			<label>Device ID</label>
+			<description>Id of the main device</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:netatmo:natherm1">
+		<parameter name="equipmentId" type="text">
+			<label>Module ID</label>
+			<description>Id of the Module</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="parentId" type="text">
+			<label>Device ID</label>
+			<description>Id of the main device</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="setpointDefaultDuration" type="integer" required="false">
+			<label>Setpoint duration</label>
+			<description>Default duration of thermostat change when force to max or manual.</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:netatmo:welcomehome">
+		<parameter name="welcomeHomeId" type="text" required="true">
+			<label>Home ID</label>
+			<description>Id of the home</description>
+		</parameter>
+
+		<parameter name="welcomeEventThings" type="integer" required="false">
+			<label>Generate Thing Events</label>
+			<description>How many things for events should be generated.</description>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="welcomeUnknownPersonThings" type="integer" required="false">
+			<label>Generate Thing Unknown Persons</label>
+			<description>How many things for unknown Persons should be generated</description>
+			<default>3</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="refreshInterval" type="integer" required="false">
+			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Netatmo API (in ms).</description>
+			<default>300000</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:netatmo:welcomecamera">
+		<parameter name="welcomeHomeId" type="text" required="true">
+			<label>Home ID</label>
+			<description>Id of the home</description>
+		</parameter>
+
+		<parameter name="welcomeCameraId" type="text" required="true">
+			<label>Camera ID</label>
+			<description>Id of the camera</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:netatmo:welcomeevent">
+		<parameter name="welcomeHomeId" type="text" required="true">
+			<label>Home ID</label>
+			<description>Id of the home</description>
+		</parameter>
+
+		<parameter name="welcomeEventId" type="text" required="true">
+			<label>Event ID</label>
+			<description>Id of the event</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:netatmo:welcomeperson">
+		<parameter name="welcomeHomeId" type="text" required="true">
+			<label>Home ID</label>
+			<description>Id of the home</description>
+		</parameter>
+
+		<parameter name="welcomePersonId" type="text" required="true">
+			<label>Person ID</label>
+			<description>Id of the person</description>
+		</parameter>
+	</config-description>
 
 </config-description:config-descriptions>

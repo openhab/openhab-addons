@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.config;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class NetatmoModuleConfiguration extends NetatmoThingConfiguration {
+public class NetatmoModuleConfiguration extends AbstractNetatmoClimateThingConfiguration {
     private String parentId;
 
     public String getParentId() {

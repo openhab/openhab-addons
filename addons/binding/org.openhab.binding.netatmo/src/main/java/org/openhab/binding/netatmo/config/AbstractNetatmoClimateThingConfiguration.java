@@ -9,18 +9,23 @@
 package org.openhab.binding.netatmo.config;
 
 /**
- * The {@link NetatmoThingConfiguration} is the base class for configuration
+ * The {@link AbstractNetatmoClimateThingConfiguration} is the base class for configuration
  * information held by devices and modules
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class NetatmoThingConfiguration {
+public abstract class AbstractNetatmoClimateThingConfiguration extends AbstractNetatmoThingConfiguration {
 
     private String equipmentId;
 
     public String getEquipmentId() {
         // Bug #3891 : Netatmo API only works with lower case device/module ids
         return equipmentId.toLowerCase();
+    }
+
+    @Override
+    public String getId() {
+        return getEquipmentId();
     }
 
 }

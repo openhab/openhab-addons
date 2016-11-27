@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Netatmo Welcome Bridge -->
+	<bridge-type id="NAWelcomeBridge">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
+
+		<label>Netatmo Welcome Bridge</label>
+		<description>This bridge represents the gateway for the Netatmo Welcome home.</description>
+
+		<config-description-ref uri="thing-type:netatmo:welcomebridge" />
+
+	</bridge-type>
+
+</thing:thing-descriptions>

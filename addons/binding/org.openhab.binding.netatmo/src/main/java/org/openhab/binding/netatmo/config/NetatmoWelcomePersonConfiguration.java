@@ -9,16 +9,21 @@
 package org.openhab.binding.netatmo.config;
 
 /**
- * The {@link NetatmoDeviceConfiguration} is responsible for holding configuration
- * informations needed to access a Netatmo Device
+ * The {@link NetatmoWelcomePersonConfiguration} is responsible for holding configuration
+ * informations needed to access a Netatmo Welcome Camera
  *
- * @author Gaël L'hopital - Initial contribution
+ * @author Ing. Peter Weiss - Initial contribution
  */
-public class NetatmoDeviceConfiguration extends AbstractNetatmoClimateThingConfiguration {
-    public Integer refreshInterval;
+public class NetatmoWelcomePersonConfiguration extends NetatmoWelcomeHomeConfiguration {
+
+    @Override
+    public String getId() {
+        return getWelcomePersonId();
+    }
 
     @Override
     public String getParentId() {
-        return null;
+        return getWelcomeHomeId();
     }
+
 }

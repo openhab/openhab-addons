@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
-        extends AbstractNetatmoThingHandler<X> {
+        extends AbstractNetatmoClimateThingHandler<X> {
     private static Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
     // Initialize with default values to avoid div 0 if properties not correctly loaded
     private int batteryMin = 0;

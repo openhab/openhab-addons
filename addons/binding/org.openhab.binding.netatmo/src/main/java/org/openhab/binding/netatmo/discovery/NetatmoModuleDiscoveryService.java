@@ -10,6 +10,7 @@ package org.openhab.binding.netatmo.discovery;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,10 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingFactory;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
@@ -39,9 +42,11 @@ import io.swagger.client.model.NAThermostatDataBody;
  */
 public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
     private final static int SEARCH_TIME = 2;
-    private NetatmoBridgeHandler netatmoBridgeHandler;
+    private static ThingUID welcomeBridgeUID = null;
 
-    public NetatmoModuleDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
+    private NetatmoBridgeHandler<?> netatmoBridgeHandler;
+
+    public NetatmoModuleDiscoveryService(NetatmoBridgeHandler<?> netatmoBridgeHandler) {
         super(SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
         this.netatmoBridgeHandler = netatmoBridgeHandler;
     }
@@ -76,6 +81,10 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
                 screenModules(deviceAdapter);
             }
         }
+
+        ThingUID thingUID = findBridgeUID("NAWelcomeBridge");
+        Map<String, Object> properties = new HashMap<>(0);
+        addDiscoveredThing(thingUID, properties, "Welcome bridge");
 
         stopScan();
     }
@@ -114,6 +123,34 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
 
                 return new ThingUID(supportedThingTypeUID, netatmoBridgeHandler.getThing().getUID(),
                         thingId.replaceAll("[^a-zA-Z0-9_]", ""));
+            }
+        }
+
+        throw new IllegalArgumentException("Unsupported device type discovered :" + thingType);
+    }
+
+    private ThingUID findBridgeUID(String thingType) throws IllegalArgumentException {
+        for (ThingTypeUID myThingTypeUID : getSupportedThingTypes()) {
+            String uid = myThingTypeUID.getId();
+
+            if (uid.equalsIgnoreCase(thingType)) {
+                for (Thing myThing : netatmoBridgeHandler.getThing().getThings()) {
+                    if (myThingTypeUID.equals(myThing.getThingTypeUID())) {
+                        welcomeBridgeUID = myThing.getUID();
+                    }
+                }
+
+                if (welcomeBridgeUID == null) {
+                    ArrayList<ThingTypeUID> thingTypUIDs = new ArrayList<ThingTypeUID>(1);
+                    thingTypUIDs.add(myThingTypeUID);
+                    removeOlderResults(getTimestampOfLastScan(), thingTypUIDs);
+
+                    ThingUID thingUID = ThingFactory.generateRandomThingUID(myThingTypeUID);
+                    welcomeBridgeUID = new ThingUID(myThingTypeUID, netatmoBridgeHandler.getThing().getUID(),
+                            thingUID.getId().replaceAll("[^a-zA-Z0-9_]", ""));
+                }
+
+                return welcomeBridgeUID;
             }
         }
 

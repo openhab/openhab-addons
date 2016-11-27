@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="NAWelcomeCamera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="NAWelcomeBridge" />
+		</supported-bridge-type-refs>
+
+		<label>Welcome Camera</label>
+		<description>This represents a welcome camera at home</description>
+
+		<channels>
+		<!--
+			<channel id="welcomeCameraId" typeId="id"></channel>
+        -->
+			<channel id="welcomeCameraType" typeId="type"></channel>
+			<channel id="welcomeCameraStatus" typeId="status"></channel>
+			<channel id="welcomeCameraSdStatus" typeId="sd_status"></channel>
+			<channel id="welcomeCameraAlimStatus" typeId="alim_status"></channel>
+			<channel id="welcomeCameraName" typeId="name"></channel>
+			<channel id="welcomeCameraVpnUrl" typeId="vpn_url"></channel>
+			<channel id="welcomeCameraIsLocal" typeId="is_locale"></channel>
+			<channel id="welcomeCameraLivePictureUrl" typeId="live_picture_url"></channel>
+			<channel id="welcomeCameraLiveVideoPoorUrl" typeId="live_video_poor_url"></channel>
+			<channel id="welcomeCameraLiveVideoLowUrl" typeId="live_video_low_url"></channel>
+			<channel id="welcomeCameraLiveVideoMediumUrl" typeId="live_video_medium_url"></channel>
+			<channel id="welcomeCameraLiveVideoHighUrl" typeId="live_video_high_url"></channel>
+		</channels>
+
+		<properties>
+			<property name="actualApp">app_welcomecamera</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:netatmo:welcomecamera" />		  
+
+	</thing-type>
+
+
+	<channel-type id="id">
+		<item-type>String</item-type>
+		<label>Id</label>
+		<description>ID of the camera</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>Type of the camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State of the camera</description>
+		<state readOnly="true">
+			<options>
+				<option value="on">on</option>
+				<option value="off">off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sd_status">
+		<item-type>Switch</item-type>
+		<label>SD State</label>
+		<description>State of the SD card</description>
+		<state readOnly="true">
+			<options>
+				<option value="on">on</option>
+				<option value="off">off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="alim_status">
+		<item-type>Switch</item-type>
+		<label>Alim State</label>
+		<description>State of the power connector</description>
+		<state readOnly="true">
+			<options>
+				<option value="on">on</option>
+				<option value="off">off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Camera name</label>
+		<description>Name of the camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="vpn_url" advanced="true">
+		<item-type>String</item-type>
+		<label>VPN Url</label>
+		<description>Only for scope access_camera. Address of the camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="is_locale" advanced="true">
+		<item-type>String</item-type>
+		<label>Is local</label>
+		<description>Only for scope access_camera. If Camera and application requesting the information are on the same IP (true/false)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="live_picture_url">
+		<item-type>String</item-type>
+		<label>Live snapshot</label>
+		<description>Url of the live snapshot for this camera (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="live_video_poor_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Live stream poor quality</label>
+		<description>Url of the live stream for this camera bandwith:64000 Size:640x360 (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="live_video_low_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Live stream low quality</label>
+		<description>Url of the live stream for this camera bandwith:500000 Size:640x360 (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="live_video_medium_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Live stream medium quality</label>
+		<description>Url of the live stream for this camera bandwith:1000000 Size:1280x720(need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="live_video_high_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Live stream high quality</label>
+		<description>Url of the live stream for this camera bandwith:3000000 Size:1920x1080 (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+
+</thing:thing-descriptions>
