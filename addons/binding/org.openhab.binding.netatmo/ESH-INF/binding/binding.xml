@@ -6,6 +6,6 @@
 
     <name>Netatmo Binding</name>
     <description>The Netatmo binding integrates the Weather Station with companion modules as well as Thermostat Plug.</description>
-    <author>Gaël L'hopital</author>
-
+    <author>Gaël L'hopital and Ing. Peter Weiss</author>
+    
 </binding:binding>

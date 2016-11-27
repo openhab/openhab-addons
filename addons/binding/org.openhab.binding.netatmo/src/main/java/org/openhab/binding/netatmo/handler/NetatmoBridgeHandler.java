@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import io.swagger.client.ApiClient;
 import io.swagger.client.api.StationApi;
 import io.swagger.client.api.ThermostatApi;
+import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.auth.OAuth;
 import io.swagger.client.auth.OAuthFlow;
 import io.swagger.client.model.NAStationDataBody;
@@ -32,6 +33,7 @@ import retrofit.RestAdapter.LogLevel;
  * {@link NetatmoBridgeHandler} to request informations about their status
  *
  * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
 public class NetatmoBridgeHandler extends BaseBridgeHandler {
@@ -40,9 +42,11 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private ApiClient apiClient;
     private StationApi stationApi = null;
     private ThermostatApi thermostatApi = null;
+    private WelcomeApi welcomeApi = null;
 
     public NetatmoBridgeHandler(Bridge bridge) {
         super(bridge);
+        configuration = getConfigAs(NetatmoBridgeConfiguration.class);
     }
 
     @Override
@@ -83,6 +87,18 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
         if (configuration.readThermostat) {
             stringBuilder.append("read_thermostat write_thermostat ");
+        }
+
+        if (configuration.readWelcome) {
+            stringBuilder.append("read_camera ");
+        }
+
+        if (configuration.accessWelcome) {
+            stringBuilder.append("access_camera ");
+        }
+
+        if (configuration.writeWelcome) {
+            stringBuilder.append("write_camera ");
         }
 
         return stringBuilder.toString().trim();
@@ -128,5 +144,19 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }
         return null;
     }
+    
+    public WelcomeApi getWelcomeApi() {
+        if (configuration.readWelcome && welcomeApi == null) {
+            welcomeApi = apiClient.createService(WelcomeApi.class);
+        }
+        return welcomeApi;
+    }
 
+    public int getWelcomeEventThings() {
+        return configuration.welcomeEventThings;
+    }
+
+    public int getWelcomeUnknownPersonThings() {
+        return configuration.welcomeUnknownPersonThings;
+    }
 }

@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.netatmo.discovery.NetatmoModuleDiscoveryService;
+import org.openhab.binding.netatmo.discovery.NetatmoWelcomeDiscoveryService;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.station.NAMainHandler;
 import org.openhab.binding.netatmo.handler.station.NAModule1Handler;
@@ -27,6 +28,10 @@ import org.openhab.binding.netatmo.handler.station.NAModule3Handler;
 import org.openhab.binding.netatmo.handler.station.NAModule4Handler;
 import org.openhab.binding.netatmo.handler.thermostat.NAPlugHandler;
 import org.openhab.binding.netatmo.handler.thermostat.NATherm1Handler;
+import org.openhab.binding.netatmo.handler.welcome.NAWelcomeCameraHandler;
+import org.openhab.binding.netatmo.handler.welcome.NAWelcomeEventHandler;
+import org.openhab.binding.netatmo.handler.welcome.NAWelcomeHomeHandler;
+import org.openhab.binding.netatmo.handler.welcome.NAWelcomePersonHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +41,12 @@ import org.slf4j.LoggerFactory;
  * thing handlers.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Ing. Peter Weiss - Welcome camera implementation
  */
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
     private ServiceRegistration<?> discoveryServiceReg;
+    private ServiceRegistration<?> discoveryServiceWelcomeReg;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -67,6 +74,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAPlugHandler(thing);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
             return new NATherm1Handler(thing);
+        } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
+            return new NAWelcomeHomeHandler(thing);
+        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
+            return new NAWelcomeCameraHandler(thing);
+        } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
+            return new NAWelcomePersonHandler(thing);
+        } else if (thingTypeUID.equals(WELCOME_EVENT_THING_TYPE)) {
+            return new NAWelcomeEventHandler(thing);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
             return null;
@@ -77,6 +92,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
         discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<String, Object>());
+
+        NetatmoWelcomeDiscoveryService welcomeDiscoveryService = new NetatmoWelcomeDiscoveryService(
+                netatmoBridgeHandler);
+        discoveryServiceWelcomeReg = bundleContext.registerService(DiscoveryService.class.getName(),
+                welcomeDiscoveryService, new Hashtable<String, Object>());
+
     }
 
     @Override
@@ -85,6 +106,13 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             discoveryServiceReg.unregister();
             discoveryServiceReg = null;
         }
+
+        if (discoveryServiceWelcomeReg != null
+                && thingHandler.getThing().getThingTypeUID().equals(APIBRIDGE_THING_TYPE)) {
+            discoveryServiceWelcomeReg.unregister();
+            discoveryServiceWelcomeReg = null;
+        }
+
         super.removeHandler(thingHandler);
     }
 
