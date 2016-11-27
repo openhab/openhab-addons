@@ -8,23 +8,20 @@
 		<description>Edimax SP-2101W Binding</description>
 
 		<channels>
-			<channel id="switch-channel" typeId="switch" />
+			<channel id="switch" typeId="switch" />
 		</channels>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
 				<label>IP address</label>
 				<description>The IP address of the Edimax Plug</description>
 			</parameter>
-			<parameter name="username" type="text" required="false">
-				<context>username</context>
+			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<description>Username to access the Ediamx Plug.</description>
 				<default>admin</default>
 			</parameter>
-			<parameter name="password" type="text" required="false">
-				<context>password</context>
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<description>Password to access the Edimax Plug.</description>
 				<default>1234</default>
@@ -37,23 +34,20 @@
 		<description>Edimax SP-1101W Binding</description>
 
 		<channels>
-			<channel typeId="switch-channel" id="switch" />
+			<channel typeId="switch" id="switch" />
 		</channels>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
 				<label>IP address</label>
 				<description>The IP address of the Edimax Plug</description>
 			</parameter>
-			<parameter name="username" type="text" required="false">
-				<context>username</context>
+			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>Username to access the Ediamx Plug.</description>
+				<description>Username to access the Edimax Plug.</description>
 				<default>admin</default>
 			</parameter>
-			<parameter name="password" type="text" required="false">
-				<context>password</context>
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<description>Password to access the Edimax Plug.</description>
 				<default>1234</default>
@@ -61,12 +55,11 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="switch">
-		<item-type>Switch</item-type>
+		<item-type>switch</item-type>
 		<label>Switch</label>
-		<description>Switched outlet</description>
-		<state readOnly="false" />
+		<description>On/Off Switch</description>
+		<category>switch</category>
 	</channel-type>
 
 </thing:thing-descriptions>

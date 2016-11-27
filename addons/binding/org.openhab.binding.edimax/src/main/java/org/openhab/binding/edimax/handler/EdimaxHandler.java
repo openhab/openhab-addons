@@ -7,14 +7,21 @@
  */
 package org.openhab.binding.edimax.handler;
 
-import static org.openhab.binding.edimax.EdimaxBindingConstants.SWITCH_CHANNEL;
+import java.io.IOException;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.edimax.EdimaxBindingConstants;
 import org.openhab.binding.edimax.configuration.EdimaxConfiguration;
+import org.openhab.binding.edimax.internal.ConnectionInformation;
+import org.openhab.binding.edimax.internal.commands.GetState;
+import org.openhab.binding.edimax.internal.commands.SetState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +33,11 @@ import org.slf4j.LoggerFactory;
  */
 public class EdimaxHandler extends BaseThingHandler {
 
+    private static final int PORT = 10000;
+
     private Logger logger = LoggerFactory.getLogger(EdimaxHandler.class);
+
+    private ConnectionInformation ci;
 
     public EdimaxHandler(Thing thing) {
         super(thing);
@@ -34,15 +45,63 @@ public class EdimaxHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(SWITCH_CHANNEL)) {
-            logger.debug("Switch channel");
+        logger.debug("command for " + channelUID.getAsString() + ": " + command.toString());
+        try {
+            if (channelUID.getId().equals(EdimaxBindingConstants.SWITCH)) {
+                if (command instanceof RefreshType) {
+                    logger.debug("State: " + getState().toString());
+                    if (getState()) {
+                        updateState(channelUID, OnOffType.ON);
+                    } else {
+                        updateState(channelUID, OnOffType.OFF);
+                    }
+                }
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        switchState(Boolean.TRUE);
+                    } else {
+                        switchState(Boolean.FALSE);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Things");
-        this.getConfigAs(EdimaxConfiguration.class);
+        final EdimaxConfiguration configuration = this.getConfigAs(EdimaxConfiguration.class);
+        final String completeUrl = completeURL(configuration.getIpAddress());
+        ci = new ConnectionInformation(configuration.getUsername(), configuration.getPassword(), completeUrl, PORT);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    private static String completeURL(String anIp) {
+        return "http://" + anIp;
+    }
+
+    /**
+     * Returns state for device with given IP.
+     *
+     * @return
+     * @throws IOException
+     */
+    private Boolean getState() throws IOException {
+        GetState getS = new GetState();
+        return getS.executeCommand(ci);
+    }
+
+    /**
+     * Switch to.
+     *
+     * @param newState
+     * @return
+     * @throws IOException
+     */
+    public Boolean switchState(Boolean newState) throws IOException {
+        SetState setS = new SetState(newState);
+        return setS.executeCommand(ci);
     }
 }

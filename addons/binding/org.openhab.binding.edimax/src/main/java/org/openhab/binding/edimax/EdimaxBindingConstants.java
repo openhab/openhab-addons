@@ -24,6 +24,6 @@ public class EdimaxBindingConstants {
     public final static ThingTypeUID THING_TYPE_SP2101W = new ThingTypeUID(BINDING_ID, "sp2101w");
 
     // List of all Channel ids
-    public final static String SWITCH_CHANNEL = "switch-channel";
+    public final static String SWITCH = "switch";
 
 }
