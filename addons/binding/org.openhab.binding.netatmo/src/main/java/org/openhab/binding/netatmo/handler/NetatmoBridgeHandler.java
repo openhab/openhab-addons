@@ -25,6 +25,7 @@ import io.swagger.client.auth.OAuth;
 import io.swagger.client.auth.OAuthFlow;
 import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAThermostatDataBody;
+import io.swagger.client.model.NAWelcomeHomeData;
 import retrofit.RestAdapter.LogLevel;
 
 /**
@@ -116,6 +117,13 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         return stationApi;
     }
 
+    private WelcomeApi getWelcomeApi() {
+        if (configuration.readWelcome && welcomeApi == null) {
+            welcomeApi = apiClient.createService(WelcomeApi.class);
+        }
+        return welcomeApi;
+    }
+
     public ThermostatApi getThermostatApi() {
         if (configuration.readThermostat && thermostatApi == null) {
             thermostatApi = apiClient.createService(ThermostatApi.class);
@@ -144,12 +152,16 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }
         return null;
     }
-    
-    public WelcomeApi getWelcomeApi() {
-        if (configuration.readWelcome && welcomeApi == null) {
-            welcomeApi = apiClient.createService(WelcomeApi.class);
+
+    public NAWelcomeHomeData getWelcomeDataBody(String homeId) {
+        if (getWelcomeApi() != null) {
+            try {
+                return getWelcomeApi().gethomedata(homeId, null).getBody();
+            } catch (Exception e) {
+                logger.warn("An error occured while calling welcome API : {}", e.getMessage());
+            }
         }
-        return welcomeApi;
+        return null;
     }
 
     public int getWelcomeEventThings() {

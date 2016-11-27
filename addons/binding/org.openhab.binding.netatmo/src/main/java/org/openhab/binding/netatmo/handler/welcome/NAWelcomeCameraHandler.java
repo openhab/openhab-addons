@@ -51,7 +51,7 @@ public class NAWelcomeCameraHandler extends AbstractNetatmoWelcomeHandler {
         try {
             updateStatus(ThingStatus.INITIALIZING);
 
-            for (Thing handler : bridgeHandler.getThing().getThings()) {
+            for (Thing handler : getBridgeHandler().getThing().getThings()) {
                 ThingHandler thingHandler = handler.getHandler();
                 if (thingHandler instanceof NAWelcomeHomeHandler) {
                     NAWelcomeHomeHandler welcomeHomeHandler = (NAWelcomeHomeHandler) thingHandler;

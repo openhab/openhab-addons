@@ -12,7 +12,6 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import java.util.List;
 
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -23,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.config.NetatmoWelcomeConfiguration;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 
 import io.swagger.client.model.NAWelcomeEvents;
 import io.swagger.client.model.NAWelcomePersons;
@@ -57,7 +57,7 @@ public class NAWelcomePersonHandler extends AbstractNetatmoWelcomeHandler {
         try {
             updateStatus(ThingStatus.INITIALIZING);
 
-            for (Thing handler : bridgeHandler.getThing().getThings()) {
+            for (Thing handler : getBridgeHandler().getThing().getThings()) {
                 ThingHandler thingHandler = handler.getHandler();
                 if (thingHandler instanceof NAWelcomeHomeHandler) {
                     NAWelcomeHomeHandler welcomeHomeHandler = (NAWelcomeHomeHandler) thingHandler;
@@ -128,7 +128,7 @@ public class NAWelcomePersonHandler extends AbstractNetatmoWelcomeHandler {
                 case CHANNEL_WELCOME_PERSON_ID:
                     return person.getId() != null ? new StringType(person.getId()) : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_PERSON_LASTSEEN:
-                    return person.getId() != null ? new DateTimeType(timestampToCalendar(person.getLastSeen()))
+                    return person.getId() != null ? ChannelTypeUtils.toDateTimeType(person.getLastSeen())
                             : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_PERSON_OUTOFSIGHT:
                     return person.getOutOfSight() != null ? (person.getOutOfSight() ? OnOffType.ON : OnOffType.OFF)
@@ -152,8 +152,7 @@ public class NAWelcomePersonHandler extends AbstractNetatmoWelcomeHandler {
                 case CHANNEL_WELCOME_PERSON_LASTMESSAGE:
                     return event.getMessage() != null ? new StringType(event.getMessage()) : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_PERSON_LASTTIME:
-                    return event.getTime() != null ? new DateTimeType(timestampToCalendar(event.getTime()))
-                            : UnDefType.UNDEF;
+                    return event.getTime() != null ? ChannelTypeUtils.toDateTimeType(event.getTime()) : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_PERSON_AVATARPICTURE_URL:
                     return person.getFace() != null ? getPictureUrl(person.getFace().getId(), person.getFace().getKey())
                             : UnDefType.UNDEF;

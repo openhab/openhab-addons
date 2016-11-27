@@ -10,7 +10,6 @@ package org.openhab.binding.netatmo.handler.welcome;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -21,6 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.config.NetatmoWelcomeConfiguration;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 
 import io.swagger.client.model.NAWelcomeEvents;
 
@@ -53,7 +53,7 @@ public class NAWelcomeEventHandler extends AbstractNetatmoWelcomeHandler {
         try {
             updateStatus(ThingStatus.INITIALIZING);
 
-            for (Thing handler : bridgeHandler.getThing().getThings()) {
+            for (Thing handler : getBridgeHandler().getThing().getThings()) {
                 ThingHandler thingHandler = handler.getHandler();
                 if (thingHandler instanceof NAWelcomeHomeHandler) {
                     NAWelcomeHomeHandler welcomeHomeHandler = (NAWelcomeHomeHandler) thingHandler;
@@ -81,8 +81,7 @@ public class NAWelcomeEventHandler extends AbstractNetatmoWelcomeHandler {
                 case CHANNEL_WELCOME_EVENT_TYPE:
                     return event.getType() != null ? new StringType(event.getType()) : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_EVENT_TIME:
-                    return event.getTime() != null ? new DateTimeType(timestampToCalendar(event.getTime()))
-                            : UnDefType.UNDEF;
+                    return event.getTime() != null ? ChannelTypeUtils.toDateTimeType(event.getTime()) : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_EVENT_CAMERAID:
                     return event.getCameraId() != null ? new StringType(event.getCameraId()) : UnDefType.UNDEF;
                 case CHANNEL_WELCOME_EVENT_PERSONID:

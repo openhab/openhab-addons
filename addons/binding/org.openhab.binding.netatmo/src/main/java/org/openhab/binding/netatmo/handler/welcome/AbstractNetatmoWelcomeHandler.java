@@ -11,11 +11,8 @@ package org.openhab.binding.netatmo.handler.welcome;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.HashMap;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -51,7 +48,6 @@ import io.swagger.client.model.NAWelcomeHomes;
 abstract class AbstractNetatmoWelcomeHandler extends BaseThingHandler {
     private static Logger logger = LoggerFactory.getLogger(AbstractNetatmoWelcomeHandler.class);
 
-    protected NetatmoBridgeHandler bridgeHandler;
     private static HashMap<String, NAWelcomeHomes> welcomeHomes = new HashMap<String, NAWelcomeHomes>();
     private static HashMap<String, String> videoUrl = new HashMap<String, String>();
 
@@ -87,10 +83,13 @@ abstract class AbstractNetatmoWelcomeHandler extends BaseThingHandler {
         super(thing);
     }
 
+    protected NetatmoBridgeHandler getBridgeHandler() {
+        return (NetatmoBridgeHandler) getBridge().getHandler();
+    }
+
     @Override
     public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
         super.bridgeHandlerInitialized(thingHandler, bridge);
-        bridgeHandler = (NetatmoBridgeHandler) thingHandler;
     }
 
     protected State getNAThingProperty(String chanelId) {
@@ -109,22 +108,6 @@ abstract class AbstractNetatmoWelcomeHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    protected Calendar timestampToCalendar(Integer netatmoTS) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(netatmoTS * 1000L);
-        return calendar;
-    }
-
-    protected DecimalType toDecimalType(float value) {
-        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
-        return new DecimalType(decimal);
-    }
-
-    protected DecimalType toDecimalType(double value) {
-        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
-        return new DecimalType(decimal);
     }
 
     @Override

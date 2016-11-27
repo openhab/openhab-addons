@@ -21,11 +21,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 
-import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.model.NAWelcomeCameras;
 import io.swagger.client.model.NAWelcomeEvents;
 import io.swagger.client.model.NAWelcomeHomeData;
-import io.swagger.client.model.NAWelcomeHomeDataResponse;
 import io.swagger.client.model.NAWelcomeHomes;
 import io.swagger.client.model.NAWelcomePersons;
 
@@ -47,70 +45,67 @@ public class NetatmoWelcomeDiscoveryService extends AbstractDiscoveryService {
         this.netatmoBridgeHandler = netatmoBridgeHandler;
     }
 
-    private void screenWelcomeHomes(NAWelcomeHomeDataResponse myHomeResponse) {
+    private void screenWelcomeHomes(NAWelcomeHomeData welcomeHomeDate) {
 
         if (netatmoBridgeHandler != null) {
             unknownCount = netatmoBridgeHandler.getWelcomeUnknownPersonThings();
             eventCount = netatmoBridgeHandler.getWelcomeEventThings();
         }
 
-        if (myHomeResponse != null) {
-            NAWelcomeHomeData myHomeDate = myHomeResponse.getBody();
-            if (myHomeDate != null) {
-                List<NAWelcomeHomes> myHomes = myHomeDate.getHomes();
-                if (myHomes != null) {
-                    for (NAWelcomeHomes myHome : myHomes) {
+        if (welcomeHomeDate != null) {
+            List<NAWelcomeHomes> myHomes = welcomeHomeDate.getHomes();
+            if (myHomes != null) {
+                for (NAWelcomeHomes myHome : myHomes) {
 
-                        onWelcomeHomeAddedInternal(myHome);
+                    onWelcomeHomeAddedInternal(myHome);
 
-                        List<NAWelcomeCameras> myCameras = myHome.getCameras();
-                        for (NAWelcomeCameras myCamera : myCameras) {
-                            onWelcomeCamereAddedInternal(myHome, myCamera);
-                        }
-
-                        List<NAWelcomePersons> myPersons = myHome.getPersons();
-                        Collections.sort(myPersons, new Comparator<NAWelcomePersons>() {
-                            @Override
-                            public int compare(NAWelcomePersons s1, NAWelcomePersons s2) {
-                                return s2.getLastSeen().compareTo(s1.getLastSeen());
-                            }
-                        });
-                        int iPerson = 1;
-                        for (NAWelcomePersons myPerson : myPersons) {
-                            if (myPerson.getPseudo() != null) {
-                                onWelcomePersonAddedInternal(myHome, myPerson);
-                            } else if (iPerson <= unknownCount) {
-                                onWelcomePersonAddedInternal(myHome, myPerson, iPerson++);
-                            }
-                        }
-
-                        List<NAWelcomeEvents> myEvents = myHome.getEvents();
-                        Collections.sort(myEvents, new Comparator<NAWelcomeEvents>() {
-                            @Override
-                            public int compare(NAWelcomeEvents s1, NAWelcomeEvents s2) {
-                                return s2.getTime().compareTo(s1.getTime());
-                            }
-                        });
-                        int iEvent = 1;
-                        for (NAWelcomeEvents myEvent : myEvents) {
-                            if (iEvent <= eventCount) {
-                                onWelcomeEventAddedInternal(myHome, myEvent, iEvent++);
-                            }
-                        }
-
+                    List<NAWelcomeCameras> myCameras = myHome.getCameras();
+                    for (NAWelcomeCameras myCamera : myCameras) {
+                        onWelcomeCamereAddedInternal(myHome, myCamera);
                     }
+
+                    List<NAWelcomePersons> myPersons = myHome.getPersons();
+                    Collections.sort(myPersons, new Comparator<NAWelcomePersons>() {
+                        @Override
+                        public int compare(NAWelcomePersons s1, NAWelcomePersons s2) {
+                            return s2.getLastSeen().compareTo(s1.getLastSeen());
+                        }
+                    });
+                    int iPerson = 1;
+                    for (NAWelcomePersons myPerson : myPersons) {
+                        if (myPerson.getPseudo() != null) {
+                            onWelcomePersonAddedInternal(myHome, myPerson);
+                        } else if (iPerson <= unknownCount) {
+                            onWelcomePersonAddedInternal(myHome, myPerson, iPerson++);
+                        }
+                    }
+
+                    List<NAWelcomeEvents> myEvents = myHome.getEvents();
+                    Collections.sort(myEvents, new Comparator<NAWelcomeEvents>() {
+                        @Override
+                        public int compare(NAWelcomeEvents s1, NAWelcomeEvents s2) {
+                            return s2.getTime().compareTo(s1.getTime());
+                        }
+                    });
+                    int iEvent = 1;
+                    for (NAWelcomeEvents myEvent : myEvents) {
+                        if (iEvent <= eventCount) {
+                            onWelcomeEventAddedInternal(myHome, myEvent, iEvent++);
+                        }
+                    }
+
                 }
             }
         }
+
     }
 
     @Override
     public void startScan() {
 
-        WelcomeApi welcomeApi = netatmoBridgeHandler.getWelcomeApi();
-        if (welcomeApi != null) {
-            NAWelcomeHomeDataResponse myHomeResponse = welcomeApi.gethomedata(null, null);
-            screenWelcomeHomes(myHomeResponse);
+        NAWelcomeHomeData welcomeHomeDate = netatmoBridgeHandler.getWelcomeDataBody(null);
+        if (welcomeHomeDate != null) {
+            screenWelcomeHomes(welcomeHomeDate);
         }
 
         stopScan();

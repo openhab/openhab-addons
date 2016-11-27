@@ -22,12 +22,10 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.config.NetatmoWelcomeConfiguration;
-import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +42,10 @@ import io.swagger.client.model.NAWelcomePersons;
  */
 
 public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
-    private static Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
 
     private NetatmoWelcomeConfiguration configuration;
+    private ScheduledFuture<?> bridgeHandlerJob;
     private ScheduledFuture<?> refreshJob;
 
     private int iPerson = -1;
@@ -58,27 +57,59 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-    }
-
-    @Override
     public void initialize() {
         super.initialize();
 
         this.configuration = this.getConfigAs(NetatmoWelcomeConfiguration.class);
+        initBridgeScheduler();
+    }
 
+    private void initBridgeScheduler() {
+        logger.debug("scheduling bridge thread to run every {} ms", 60000);
+        bridgeHandlerJob = scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                if (getBridge() != null) {
+                    logger.debug("Initializing Netatmo Welcome Home");
+                    if (getBridge().getStatus() == ThingStatus.ONLINE) {
+                        logger.debug("setting Welcome Home online");
+                        updateStatus(ThingStatus.ONLINE);
+
+                        bridgeHandlerJob.cancel(true);
+                        bridgeHandlerJob = null;
+
+                        initWelcomeScheduler();
+
+                    } else {
+                        logger.debug("setting Welcome Home '{}' offline (bridge or thing offline)",
+                                configuration.getWelcomeHomeId());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
+                    }
+                } else {
+                    logger.debug("setting Welcome Home offline (bridge == null)");
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+            }
+        }, 1, 60000, TimeUnit.MILLISECONDS);
+    }
+
+    private void initWelcomeScheduler() {
+        logger.debug("scheduling update channel thread to run every {} ms", configuration.refreshInterval);
         refreshJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 updateChannels();
             }
-        }, 60000, configuration.refreshInterval, TimeUnit.MILLISECONDS);
-
+        }, 1, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void dispose() {
+        logger.debug("Running dispose()");
+        if (bridgeHandlerJob != null && !bridgeHandlerJob.isCancelled()) {
+            bridgeHandlerJob.cancel(true);
+            bridgeHandlerJob = null;
+        }
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             refreshJob = null;
@@ -91,13 +122,17 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
 
     @Override
     protected void updateChannels() {
+        logger.debug("Trying to update channels on Welcome Home");
         try {
             updateStatus(ThingStatus.INITIALIZING);
 
-            NAWelcomeHomeData myHomeDate = bridgeHandler.getWelcomeApi().gethomedata(getId(), null).getBody();
+            logger.debug("Welcome Home bridge Handler {}", getBridgeHandler());
+            NAWelcomeHomeData myHomeDate = getBridgeHandler().getWelcomeDataBody(getId());
             for (NAWelcomeHomes myHome : myHomeDate.getHomes()) {
                 if (myHome.getId().equalsIgnoreCase(getId())) {
+                    logger.debug("Successfully read data for welcome home '{}'", myHome.getId());
 
+                    logger.debug("welcome home '{}' sort events", myHome.getId());
                     Collections.sort(myHome.getEvents(), new Comparator<NAWelcomeEvents>() {
                         @Override
                         public int compare(NAWelcomeEvents s1, NAWelcomeEvents s2) {
@@ -105,6 +140,7 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
                         }
                     });
 
+                    logger.debug("welcome home '{}' sort persons", myHome.getId());
                     Collections.sort(myHome.getPersons(), new Comparator<NAWelcomePersons>() {
                         @Override
                         public int compare(NAWelcomePersons s1, NAWelcomePersons s2) {
@@ -120,6 +156,8 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
                     bSomebodyAtHome = false;
                     HashMap<String, NAWelcomePersons> foundPerson = new HashMap<String, NAWelcomePersons>();
                     myHome.getPersons();
+
+                    logger.debug("welcome home '{}' calculate Persons at home count", myHome.getId());
                     for (NAWelcomePersons person : myHome.getPersons()) {
                         if (foundPerson.get(person.getId()) == null) {
                             foundPerson.put(person.getId(), person);
@@ -139,16 +177,15 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
                     }
 
                     super.updateChannels();
+
+                    logger.debug("welcome home '{}' update child things", myHome.getId());
                     updateWelcomeThings();
                     break;
                 }
             }
 
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Exception when trying to update channels: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 
@@ -187,18 +224,20 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
     }
 
     private void updateWelcomeThings() {
-        for (Thing handler : bridgeHandler.getThing().getThings()) {
+        for (Thing handler : getBridgeHandler().getThing().getThings()) {
             ThingHandler thingHandler = handler.getHandler();
             if (thingHandler instanceof NAWelcomeCameraHandler) {
                 NAWelcomeCameraHandler welcomeHandler = (NAWelcomeCameraHandler) thingHandler;
                 String parentId = welcomeHandler.getParentId();
                 if (parentId != null && parentId.equals(getId())) {
+                    logger.debug("Updating welcome camera {}", welcomeHandler.getId());
                     welcomeHandler.updateChannels();
                 }
             } else if (thingHandler instanceof NAWelcomePersonHandler) {
                 NAWelcomePersonHandler welcomeHandler = (NAWelcomePersonHandler) thingHandler;
                 String parentId = welcomeHandler.getParentId();
                 if (parentId != null && parentId.equals(getId())) {
+                    logger.debug("Updating welcome person {}", welcomeHandler.getId());
                     welcomeHandler.updateChannels();
                 }
             }
@@ -206,6 +245,7 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
                 NAWelcomeEventHandler welcomeHandler = (NAWelcomeEventHandler) thingHandler;
                 String parentId = welcomeHandler.getParentId();
                 if (parentId != null && parentId.equals(getId())) {
+                    logger.debug("Updating welcome event {}", welcomeHandler.getId());
                     welcomeHandler.updateChannels();
                 }
             }
