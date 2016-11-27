@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -555,6 +556,22 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
      *
      * @param device
      */
+    /* (non-Javadoc)
+     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeStatusChanged(org.eclipse.smarthome.core.thing.ThingStatusInfo)
+     */
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus().toString(),
+                getThing().getUID().toString());
+        getMaxCubeBridgeHandler();
+        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+            // No action
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            forceRefresh = true;
+        }
+    }
 
     private void setDeviceConfiguration(Device device) {
         try {
