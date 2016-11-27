@@ -551,20 +551,13 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
-    /**
-     * Set the Configurable properties for this device
-     *
-     * @param device
-     */
     /* (non-Javadoc)
      * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeStatusChanged(org.eclipse.smarthome.core.thing.ThingStatusInfo)
      */
-
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus().toString(),
                 getThing().getUID().toString());
-        getMaxCubeBridgeHandler();
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             // No action
         } else {
@@ -573,6 +566,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
+    /**
+     * Set the Configurable properties for this device
+     *
+     * @param device
+     */
     private void setDeviceConfiguration(Device device) {
         try {
             logger.debug("MAX! {} {} configuration update", device.getType().toString(), device.getSerialNumber());
