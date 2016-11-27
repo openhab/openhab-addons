@@ -109,8 +109,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Initialized MAX! device missing serialNumber configuration");
             }
-            // until we get an update put the Thing offline
-            updateStatus(ThingStatus.OFFLINE);
             propertiesSet = false;
             configSet = false;
             forceRefresh = true;
