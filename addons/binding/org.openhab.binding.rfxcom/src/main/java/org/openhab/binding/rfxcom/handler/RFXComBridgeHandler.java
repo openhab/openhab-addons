@@ -143,20 +143,15 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connecting to RFXCOM transceiver");
 
         try {
-            String deviceName = null;
-
             if (configuration.serialPort != null) {
-                deviceName = configuration.serialPort;
                 if (connector == null) {
                     connector = new RFXComSerialConnector();
                 }
             } else if (configuration.bridgeId != null) {
-                deviceName = configuration.bridgeId;
                 if (connector == null) {
                     connector = new RFXComJD2XXConnector();
                 }
             } else if (configuration.host != null) {
-                deviceName = configuration.host;
                 if (connector == null) {
                     connector = new RFXComTcpConnector();
                 }
@@ -218,8 +213,19 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             }
         } catch (NoSuchPortException e) {
             logger.error("Connection to RFXCOM transceiver failed: invalid port");
+        } catch (IOException e) {
+            logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
+            if ("device not opened (3)".equalsIgnoreCase(e.getMessage())) {
+                if (connector instanceof RFXComJD2XXConnector) {
+                    logger.info("Automatically Discovered RFXCOM bridges use FTDI chip driver (D2XX)."
+                            + " Reason for this error normally is related to operating system native FTDI drivers,"
+                            + " which prevent D2XX driver to open device."
+                            + " To solve this problem, uninstall OS FTDI native drivers or add manually universal bridge 'RFXCOM USB Transceiver',"
+                            + " which use normal serial port driver rather than D2XX.");
+                }
+            }
         } catch (Exception e) {
-            logger.error("Connection to RFXCOM transceiver failed", e);
+            logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
         } catch (UnsatisfiedLinkError e) {
             logger.error("Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
