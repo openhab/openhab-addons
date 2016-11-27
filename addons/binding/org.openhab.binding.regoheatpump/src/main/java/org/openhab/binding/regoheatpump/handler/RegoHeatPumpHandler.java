@@ -66,8 +66,6 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
-
         mapper = RegoRegisterMapper.rego600();
         executor = Executors.newSingleThreadScheduledExecutor();
 
