@@ -37,7 +37,7 @@ public class EdimaxHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(EdimaxHandler.class);
 
-    private ConnectionInformation ci;
+    protected ConnectionInformation ci;
 
     public EdimaxHandler(Thing thing) {
         super(thing);
@@ -64,6 +64,7 @@ public class EdimaxHandler extends BaseThingHandler {
                     }
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -89,7 +90,7 @@ public class EdimaxHandler extends BaseThingHandler {
      * @throws IOException
      */
     private Boolean getState() throws IOException {
-        GetState getS = new GetState();
+        final GetState getS = new GetState();
         return getS.executeCommand(ci);
     }
 
@@ -101,7 +102,7 @@ public class EdimaxHandler extends BaseThingHandler {
      * @throws IOException
      */
     public Boolean switchState(Boolean newState) throws IOException {
-        SetState setS = new SetState(newState);
+        final SetState setS = new SetState(newState);
         return setS.executeCommand(ci);
     }
 }

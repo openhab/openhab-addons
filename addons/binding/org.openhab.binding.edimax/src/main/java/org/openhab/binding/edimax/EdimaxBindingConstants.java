@@ -25,5 +25,7 @@ public class EdimaxBindingConstants {
 
     // List of all Channel ids
     public final static String SWITCH = "switch";
+    public final static String CURRENT = "current";
+    public final static String POWER = "power";
 
 }
