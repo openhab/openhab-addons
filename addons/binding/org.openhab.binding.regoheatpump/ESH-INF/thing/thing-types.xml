@@ -66,7 +66,7 @@
             <channel id="radiatorPumpP1" typeId="shortValue"/>
             <channel id="heatFluidPumpP2" typeId="shortValue"/>
             <channel id="threeWayValve" typeId="shortValue"/>
-            <channel id="alarm" typeId="alarm"/>
+            <channel id="alarm" typeId="shortValue"/>
             <!-- Settings -->
             <channel id="heatCurve" typeId="temperature"/>
             <channel id="heatCurveFineAdj" typeId="temperature"/>

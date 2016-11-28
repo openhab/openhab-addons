@@ -10,18 +10,17 @@ package org.openhab.binding.regoheatpump.handler;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -48,7 +47,6 @@ import org.slf4j.LoggerFactory;
 public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RegoHeatPumpHandler.class);
-    private final Collection<String> linkedChannels = Collections.synchronizedCollection(new LinkedList<String>());
     private RegoConnection connection;
     private ScheduledExecutorService executor;
     private RegoRegisterMapper mapper;
@@ -82,18 +80,6 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         closeConnection();
         mapper = null;
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-        linkedChannels.add(channelUID.getId());
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-        linkedChannels.remove(channelUID.getId());
     }
 
     private CompletableFuture<Void> processChannelRequest(String channelIID) {
@@ -130,9 +116,13 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         executor.schedule(this::refresh, refreshInterval, TimeUnit.SECONDS);
     }
 
+    private Collection<String> linkedChannels() {
+        return thing.getChannels().stream().map(Channel::getUID).map(ChannelUID::getId).filter(this::isLinked)
+                .collect(Collectors.toList());
+    }
+
     private void refresh() {
-        logger.debug("Refreshing channels {}", linkedChannels);
-        refresh(new LinkedHashSet<>(linkedChannels).iterator());
+        refresh(linkedChannels().iterator());
     }
 
     private void refresh(Iterator<String> channels) {
@@ -162,7 +152,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         closeConnection();
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-        new LinkedHashSet<>(linkedChannels).forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
+        linkedChannels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
     private CompletableFuture<Void> readLastError(String channelIID) {
