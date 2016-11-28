@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.exec.handler;
 
+import static org.openhab.binding.exec.ExecBindingConstants.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.IllegalFormatException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -32,7 +35,6 @@ import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.exec.ExecBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +53,13 @@ public class ExecHandler extends BaseThingHandler {
     public static final String TIME_OUT = "timeout";
     public static final String COMMAND = "command";
     public static final String TRANSFORM = "transform";
+    public static final String AUTORUN = "autorun";
 
     // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
 
     private ScheduledFuture<?> executionJob;
+    private String lastInput;
 
     private static Runtime rt = Runtime.getRuntime();
 
@@ -69,10 +73,23 @@ public class ExecHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             // Placeholder for later refinement
         } else {
-            if (channelUID.getId().equals(ExecBindingConstants.RUN)) {
+            if (channelUID.getId().equals(RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
                         scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
+                    }
+                }
+            } else if (channelUID.getId().equals(INPUT)) {
+                if (command instanceof StringType) {
+                    String previousInput = lastInput;
+                    lastInput = command.toString();
+                    if (lastInput != null && !lastInput.equals(previousInput)) {
+                        if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN)).booleanValue()) {
+                            lastInput = command.toString();
+                            logger.trace("Executing command '{}' after a change of the input channel to '{}'",
+                                    getConfig().get(COMMAND), command.toString());
+                            scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
+                        }
                     }
                 }
             }
@@ -115,7 +132,7 @@ public class ExecHandler extends BaseThingHandler {
 
             if (commandLine != null && !commandLine.isEmpty()) {
 
-                updateState(ExecBindingConstants.RUN, OnOffType.ON);
+                updateState(RUN, OnOffType.ON);
 
                 // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
                 // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
@@ -126,14 +143,30 @@ public class ExecHandler extends BaseThingHandler {
                 // problem for external commands that generate a lot of output, but this will be dependent on the limits
                 // of the underlying operating system.
 
+                try {
+                    if (lastInput != null) {
+                        commandLine = String.format(commandLine, Calendar.getInstance().getTime(), lastInput);
+                    } else {
+                        commandLine = String.format(commandLine, Calendar.getInstance().getTime());
+                    }
+                } catch (IllegalFormatException e) {
+                    logger.error(
+                            "An exception occurred while formatting the command line with the current time and input values : '{}'",
+                            e.getMessage());
+                    updateState(RUN, OnOffType.OFF);
+                    return;
+                }
+
+                logger.trace("The command to be executed will be '{}'", commandLine);
+
                 Process proc = null;
                 try {
                     proc = rt.exec(commandLine.toString());
                 } catch (Exception e) {
                     logger.error("An exception occured while executing '{}' : '{}'",
                             new Object[] { commandLine.toString(), e.getMessage() });
-                    updateState(ExecBindingConstants.RUN, OnOffType.OFF);
-                    updateState(ExecBindingConstants.OUTPUT, new StringType(e.getMessage()));
+                    updateState(RUN, OnOffType.OFF);
+                    updateState(OUTPUT, new StringType(e.getMessage()));
                     return;
                 }
 
@@ -180,8 +213,10 @@ public class ExecHandler extends BaseThingHandler {
                     proc.destroyForcibly();
                 }
 
-                updateState(ExecBindingConstants.RUN, OnOffType.OFF);
-                updateState(ExecBindingConstants.EXIT, new DecimalType(proc.exitValue()));
+                updateState(RUN, OnOffType.OFF);
+                updateState(EXIT, new DecimalType(proc.exitValue()));
+
+                outputBuilder.append(errorBuilder.toString());
 
                 outputBuilder.append(errorBuilder.toString());
 
@@ -192,10 +227,10 @@ public class ExecHandler extends BaseThingHandler {
                     transformedResponse = transformResponse(transformedResponse, transformation);
                 }
 
-                updateState(ExecBindingConstants.OUTPUT, new StringType(transformedResponse));
+                updateState(OUTPUT, new StringType(transformedResponse));
 
                 DateTimeType stampType = new DateTimeType(Calendar.getInstance());
-                updateState(ExecBindingConstants.LAST_EXECUTION, stampType);
+                updateState(LAST_EXECUTION, stampType);
 
             }
         }
