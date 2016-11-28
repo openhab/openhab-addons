@@ -102,9 +102,9 @@ public class RegoRegisterMapper {
             mappings.put(CHANNEL_GROUP_REGISTERS + "heatCurve", new TemperatureChannel((short) 0));
             mappings.put(CHANNEL_GROUP_REGISTERS + "heatCurveFineAdj", new TemperatureChannel((short) 1));
             mappings.put(CHANNEL_GROUP_REGISTERS + "indoorTempSetting", new TemperatureChannel((short) 0x0021));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "curveInflByInTemp.", new TemperatureChannel((short) 0x0022));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt20Out", new TemperatureChannel((short) 0x001e));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt15Out", new TemperatureChannel((short) 0x001c));
+            mappings.put(CHANNEL_GROUP_REGISTERS + "curveInflByInTemp", new TemperatureChannel((short) 0x0022));
+            mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt20", new TemperatureChannel((short) 0x001e));
+            mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt15", new TemperatureChannel((short) 0x001c));
             mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt10", new TemperatureChannel((short) 0x001a));
             mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt5", new TemperatureChannel((short) 0x0018));
             mappings.put(CHANNEL_GROUP_REGISTERS + "adjCurveAt0", new TemperatureChannel((short) 0x0016));
