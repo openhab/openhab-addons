@@ -222,6 +222,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerUpdate(int activePlayer) {
+        requestPlayerUpdate(activePlayer, true);
+    }
+
+    private void requestPlayerUpdate(int activePlayer, boolean updateMediaType) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
                 "streamdetails" };
 
@@ -259,7 +263,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
                 listener.updateArtist(artist);
-                listener.updateMediaType(mediaType);
+                if (updateMediaType) {
+                    listener.updateMediaType(mediaType);
+                }
             }
 
         } catch (Exception e) {
@@ -338,7 +344,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             } else if (method.startsWith("GUI.OnScreensaver")) {
                 processScreensaverStateChanged(method, params);
             } else {
-                logger.warn("Received unknown method: {}", method);
+                logger.debug("Received unknown method: {}", method);
             }
         }
     }
@@ -353,7 +359,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             updateState(KodiState.Play);
 
-            requestPlayerUpdate(playerId);
+            if (data.has("item")) {
+                JsonObject item = data.get("item").getAsJsonObject();
+                String mediaType = item.get("type").getAsString();
+                for (KodiEventListener listener : eventListeners) {
+                    listener.updateMediaType(mediaType);
+                }
+            }
+            requestPlayerUpdate(playerId, false);
         } else if ("Player.OnPause".equals(method)) {
             updateState(KodiState.Pause);
         } else if ("Player.OnStop".equals(method)) {
@@ -547,25 +560,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public void playNotificationSoundURI(String uri) {
-        // TODO: implement this as notification sound and do not overwrite the currently played song.
-        /*
-         * boolean wasPlaying = false;
-         * if (currentState == KodiState.Play) {
-         * wasPlaying = true;
-         * int activePlayer = getActivePlayer();
-         *
-         * final String[] properties = { "all" };
-         *
-         * JsonObject params = new JsonObject();
-         * params.addProperty("playerid", activePlayer);
-         * params.add("properties", getJsonArray(properties));
-         * JsonElement response = socket.callMethod("Player.GetItem", params);
-         *
-         * JsonObject item = ((JsonObject) response).get("item").getAsJsonObject();
-         * }
-         */
-
         playURI(uri);
 
     }
+
 }

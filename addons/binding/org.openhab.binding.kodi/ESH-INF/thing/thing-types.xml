@@ -82,7 +82,7 @@
 				<option value="Select">Select</option>
 				<option value="Back">Back</option>
 				<option value="Home">Home</option>
-				<option value="ContextMenu">Conext Menu</option>
+				<option value="ContextMenu">Context Menu</option>
 				<option value="Info">Info</option>
 				<option value="ShowCodec">Show Codec</option>
 				<option value="ShowOSD">Show OSD</option>
