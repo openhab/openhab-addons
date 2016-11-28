@@ -14,13 +14,11 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -87,12 +85,7 @@ abstract class AbstractNetatmoWelcomeHandler extends BaseThingHandler {
         return (NetatmoBridgeHandler) getBridge().getHandler();
     }
 
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        super.bridgeHandlerInitialized(thingHandler, bridge);
-    }
-
-    protected State getNAThingProperty(String chanelId) {
+    protected State getNAThingProperty(String channelId) {
         return null;
     }
 
@@ -100,8 +93,8 @@ abstract class AbstractNetatmoWelcomeHandler extends BaseThingHandler {
         logger.debug("Updating device channels");
 
         for (Channel channel : getThing().getChannels()) {
-            String chanelId = channel.getUID().getId();
-            State state = getNAThingProperty(chanelId);
+            String channelId = channel.getUID().getId();
+            State state = getNAThingProperty(channelId);
             if (state != null) {
                 updateState(channel.getUID(), state);
             }

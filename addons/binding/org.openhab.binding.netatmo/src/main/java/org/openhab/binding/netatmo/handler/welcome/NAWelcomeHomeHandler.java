@@ -59,7 +59,6 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
     @Override
     public void initialize() {
         super.initialize();
-
         this.configuration = this.getConfigAs(NetatmoWelcomeConfiguration.class);
         initBridgeScheduler();
     }
@@ -124,8 +123,6 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
     protected void updateChannels() {
         logger.debug("Trying to update channels on Welcome Home");
         try {
-            updateStatus(ThingStatus.INITIALIZING);
-
             logger.debug("Welcome Home bridge Handler {}", getBridgeHandler());
             NAWelcomeHomeData myHomeDate = getBridgeHandler().getWelcomeDataBody(getId());
             for (NAWelcomeHomes myHome : myHomeDate.getHomes()) {
@@ -224,8 +221,8 @@ public class NAWelcomeHomeHandler extends AbstractNetatmoWelcomeHandler {
     }
 
     private void updateWelcomeThings() {
-        for (Thing handler : getBridgeHandler().getThing().getThings()) {
-            ThingHandler thingHandler = handler.getHandler();
+        for (Thing thing : getBridgeHandler().getThing().getThings()) {
+            ThingHandler thingHandler = thing.getHandler();
             if (thingHandler instanceof NAWelcomeCameraHandler) {
                 NAWelcomeCameraHandler welcomeHandler = (NAWelcomeCameraHandler) thingHandler;
                 String parentId = welcomeHandler.getParentId();

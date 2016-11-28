@@ -47,7 +47,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     public NetatmoBridgeHandler(Bridge bridge) {
         super(bridge);
-        configuration = getConfigAs(NetatmoBridgeConfiguration.class);
+        // configuration = getConfigAs(NetatmoBridgeConfiguration.class);
     }
 
     @Override

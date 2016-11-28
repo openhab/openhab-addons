@@ -1,169 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="netatmo"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-      
-    <thing-type id="NAWelcomeEvent">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="netatmoapi" />
-        </supported-bridge-type-refs>
-        
-        <label>Welcome Camera Event</label>
-        <description>This represents a event at home</description>
+<thing:thing-descriptions bindingId="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-        <channels>
-            <channel id="welcomeEventId" typeId="id"></channel>
-        	<channel id="welcomeEventType" typeId="type"></channel>
-            <channel id="welcomeEventTime" typeId="time"></channel>
-           	<channel id="welcomeEventCameraId" typeId="camera_id"></channel>
-        	<channel id="welcomeEventPersonId" typeId="person_id"></channel>
-        	<channel id="welcomeEventSnapshotId" typeId="snapshot_id"></channel>
-            <channel id="welcomeEventSnapshotVersion" typeId="snapshot_version"></channel>
-            <channel id="welcomeEventSnapshotKey" typeId="snapshot_key"></channel>
-            <channel id="welcomeEventVideoID" typeId="video_id"></channel>
-            <channel id="welcomeEventVideoStatus" typeId="video_status"></channel>
-            <channel id="welcomeEventIsArrival" typeId="is_arrival"></channel>
-            <channel id="welcomeEventMessage" typeId="message"></channel>
-            <channel id="welcomeEventSubType" typeId="sub_type"></channel>
-            <channel id="welcomeEventPictureUrl" typeId="event_picture_url"></channel>
-            <channel id="welcomeEventVideoPoorUrl" typeId="event_video_poor_url"></channel>                                   
-            <channel id="welcomeEventVideoLowUrl" typeId="event_video_low_url"></channel>                                   
-            <channel id="welcomeEventVideoMediumUrl" typeId="event_video_medium_url"></channel>                                   
-            <channel id="welcomeEventVideoHighUrl" typeId="event_video_high_url"></channel>    
-                                                     
-        </channels>
-              
-        <properties>
-             <property name="actualApp">app_welcomecamera</property>
-        </properties>         
-        
-        <config-description>
-            <parameter name="welcomeHomeId" type="text" required="true" readOnly="true">
-            	<label>Home ID</label>
-            	<description>Id of the home</description>
-            </parameter>
+	<thing-type id="NAWelcomeEvent">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="netatmoapi" />
+		</supported-bridge-type-refs>
 
-            <parameter name="welcomeEventId" type="text" required="true" readOnly="true">
-            	<label>Event ID</label>
-            	<description>Id of the event</description>
-            </parameter>
+		<label>Welcome Camera Event</label>
+		<description>This represents a event at home</description>
 
-        </config-description>      
-	                          
-    </thing-type>
+		<channels>
+			<channel id="welcomeEventId" typeId="id"></channel>
+			<channel id="welcomeEventType" typeId="type"></channel>
+			<channel id="welcomeEventTime" typeId="time"></channel>
+			<channel id="welcomeEventCameraId" typeId="camera_id"></channel>
+			<channel id="welcomeEventPersonId" typeId="person_id"></channel>
+			<channel id="welcomeEventSnapshotId" typeId="snapshot_id"></channel>
+			<channel id="welcomeEventSnapshotVersion" typeId="snapshot_version"></channel>
+			<channel id="welcomeEventSnapshotKey" typeId="snapshot_key"></channel>
+			<channel id="welcomeEventVideoID" typeId="video_id"></channel>
+			<channel id="welcomeEventVideoStatus" typeId="video_status"></channel>
+			<channel id="welcomeEventIsArrival" typeId="is_arrival"></channel>
+			<channel id="welcomeEventMessage" typeId="message"></channel>
+			<channel id="welcomeEventSubType" typeId="sub_type"></channel>
+			<channel id="welcomeEventPictureUrl" typeId="event_picture_url"></channel>
+			<channel id="welcomeEventVideoPoorUrl" typeId="event_video_poor_url"></channel>
+			<channel id="welcomeEventVideoLowUrl" typeId="event_video_low_url"></channel>
+			<channel id="welcomeEventVideoMediumUrl" typeId="event_video_medium_url"></channel>
+			<channel id="welcomeEventVideoHighUrl" typeId="event_video_high_url"></channel>
 
-              
-    <channel-type id="id">
-        <item-type>String</item-type>
-        <label>Id</label>
-        <description>Identifier of the event</description>
-        <state readOnly="true">
-        </state>
-    </channel-type>
-    <channel-type id="type">
-        <item-type>String</item-type>
-        <label>Type</label>
-        <description>Type of events. Go to the Welcome page for further details.</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="time">
-        <item-type>DateTime</item-type>
-        <label>Time</label>
-        <description>Time of occurence of event</description>
-        <state readOnly="true"></state>       
-    </channel-type>
-    <channel-type id="camera_id">
-        <item-type>String</item-type>
-        <label>Camera ID</label>
-        <description>Camera that detected the event</description>
-        <state readOnly="true"></state>   
-    </channel-type>
-    <channel-type id="person_id">
-        <item-type>String</item-type>
-        <label>Person ID</label>
-        <description>Id of the person the event is about (if any)</description>
-        <state readOnly="true"></state>   
-    </channel-type>
-    <channel-type id="snapshot_id" advanced="true">
-        <item-type>String</item-type>
-        <label>Snapshot ID</label>
-        <description>Snapshot id. (Used in Getcamerapicture)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="snapshot_version" advanced="true">
-        <item-type>String</item-type>
-        <label>Snapshot version</label>
-        <description>Snapshot version. (Used in Getcamerapicture)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="snapshot_key" advanced="true">
-        <item-type>String</item-type>
-        <label>Snapshot Key</label>
-        <description>Snapshot key. (Used in Getcamerapicture)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="video_id" advanced="true">
-        <item-type>String</item-type>
-        <label>Video ID</label>
-        <description>Identifier of the video</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="video_status">
-        <item-type>String</item-type>
-        <label>Video status</label>
-        <description>Status of the video (recording, deleted or available)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-        <channel-type id="is_arrival">
-        <item-type>Boolean</item-type>
-        <label>Is arrival</label>
-        <description>If person was considered "away" before being seen during this event</description>
-        <state readOnly="true"></state>
-    </channel-type>
-        <channel-type id="message">
-        <item-type>String</item-type>
-        <label>Message</label>
-        <description>User facing event description</description>
-        <state readOnly="true"></state>
-    </channel-type>
-        <channel-type id="sub_type" advanced="true">
-        <item-type>String</item-type>
-        <label>Sub Type</label>
-        <description>Subtypes of SD and Alim events. Go to Welcome page for further details.</description>
-        <state readOnly="true"></state>
-    </channel-type>     
-    <channel-type id="event_picture_url">
-        <item-type>String</item-type>
-        <label>Picture from the person</label>
-        <description>Url of the picture from the person for this event (need scope access_camera)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="event_video_poor_url" advanced="true">
-        <item-type>String</item-type>
-        <label>Video from the event poor quality</label>
-        <description>Url of the video from this event bandwith:64000 Size:640x360 (need scope access_camera)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="event_video_low_url" advanced="true">
-        <item-type>String</item-type>
-        <label>Video from the event low quality</label>
-        <description>Url of the video from this event bandwith:500000 Size:640x360 (need scope access_camera)</description>
-        <state readOnly="true"></state>
-    </channel-type>    
-    <channel-type id="event_video_medium_url" advanced="true">
-        <item-type>String</item-type>
-        <label>Video from the event medium quality</label>
-        <description>Url of the video from this event bandwith:1000000 Size:1280x720(need scope access_camera)</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="event_video_high_url" advanced="true">
-    	<item-type>String</item-type>
-    	<label>Video from the event high quality</label>
-    	<description>
+		</channels>
+
+		<config-description>
+			<parameter name="welcomeHomeId" type="text" required="true" readOnly="true">
+				<label>Home ID</label>
+				<description>Id of the home</description>
+			</parameter>
+
+			<parameter name="welcomeEventId" type="text" required="true" readOnly="true">
+				<label>Event ID</label>
+				<description>Id of the event</description>
+			</parameter>
+
+		</config-description>
+
+	</thing-type>
+
+
+	<channel-type id="id">
+		<item-type>String</item-type>
+		<label>Id</label>
+		<description>Identifier of the event</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>Type of events. Go to the Welcome page for further details.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time of occurence of event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="camera_id">
+		<item-type>String</item-type>
+		<label>Camera ID</label>
+		<description>Camera that detected the event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="person_id">
+		<item-type>String</item-type>
+		<label>Person ID</label>
+		<description>Id of the person the event is about (if any)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot_id" advanced="true">
+		<item-type>String</item-type>
+		<label>Snapshot ID</label>
+		<description>Snapshot id. (Used in Getcamerapicture)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot_version" advanced="true">
+		<item-type>String</item-type>
+		<label>Snapshot version</label>
+		<description>Snapshot version. (Used in Getcamerapicture)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot_key" advanced="true">
+		<item-type>String</item-type>
+		<label>Snapshot Key</label>
+		<description>Snapshot key. (Used in Getcamerapicture)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="video_id" advanced="true">
+		<item-type>String</item-type>
+		<label>Video ID</label>
+		<description>Identifier of the video</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="video_status">
+		<item-type>String</item-type>
+		<label>Video status</label>
+		<description>Status of the video (recording, deleted or available)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="is_arrival">
+		<item-type>Switch</item-type>
+		<label>Is arrival</label>
+		<description>If person was considered "away" before being seen during this event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="message">
+		<item-type>String</item-type>
+		<label>Message</label>
+		<description>User facing event description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="sub_type" advanced="true">
+		<item-type>String</item-type>
+		<label>Sub Type</label>
+		<description>Subtypes of SD and Alim events. Go to Welcome page for further details.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="event_picture_url">
+		<item-type>String</item-type>
+		<label>Picture from the person</label>
+		<description>Url of the picture from the person for this event (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="event_video_poor_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Video from the event poor quality</label>
+		<description>Url of the video from this event bandwith:64000 Size:640x360 (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="event_video_low_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Video from the event low quality</label>
+		<description>Url of the video from this event bandwith:500000 Size:640x360 (need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="event_video_medium_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Video from the event medium quality</label>
+		<description>Url of the video from this event bandwith:1000000 Size:1280x720(need scope access_camera)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="event_video_high_url" advanced="true">
+		<item-type>String</item-type>
+		<label>Video from the event high quality</label>
+		<description>
     		Url of the video from this event bandwith:3000000 Size:1920x1080 (need scope access_camera)
     	</description>
-    	<state readOnly="true"></state>
-    </channel-type>
+		<state readOnly="true"></state>
+	</channel-type>
 
 </thing:thing-descriptions>

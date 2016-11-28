@@ -35,6 +35,11 @@ public class NAWelcomeCameraHandler extends AbstractNetatmoWelcomeHandler {
 
     public NAWelcomeCameraHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
         this.configuration = this.getConfigAs(NetatmoWelcomeConfiguration.class);
     }
 
@@ -49,10 +54,8 @@ public class NAWelcomeCameraHandler extends AbstractNetatmoWelcomeHandler {
     @Override
     protected void updateChannels() {
         try {
-            updateStatus(ThingStatus.INITIALIZING);
-
-            for (Thing handler : getBridgeHandler().getThing().getThings()) {
-                ThingHandler thingHandler = handler.getHandler();
+            for (Thing thing : getBridgeHandler().getThing().getThings()) {
+                ThingHandler thingHandler = thing.getHandler();
                 if (thingHandler instanceof NAWelcomeHomeHandler) {
                     NAWelcomeHomeHandler welcomeHomeHandler = (NAWelcomeHomeHandler) thingHandler;
                     String parentId = welcomeHomeHandler.getId();
@@ -164,7 +167,6 @@ public class NAWelcomeCameraHandler extends AbstractNetatmoWelcomeHandler {
                         break;
                     case HIGH:
                         sUrl += WELCOME_LIVE_VIDEO_HIGH;
-
                         break;
                     default:
                         sUrl = null;

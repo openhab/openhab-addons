@@ -41,6 +41,11 @@ public class NAWelcomePersonHandler extends AbstractNetatmoWelcomeHandler {
 
     public NAWelcomePersonHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
         this.configuration = this.getConfigAs(NetatmoWelcomeConfiguration.class);
     }
 
@@ -55,10 +60,8 @@ public class NAWelcomePersonHandler extends AbstractNetatmoWelcomeHandler {
     @Override
     protected void updateChannels() {
         try {
-            updateStatus(ThingStatus.INITIALIZING);
-
-            for (Thing handler : getBridgeHandler().getThing().getThings()) {
-                ThingHandler thingHandler = handler.getHandler();
+            for (Thing thing : getBridgeHandler().getThing().getThings()) {
+                ThingHandler thingHandler = thing.getHandler();
                 if (thingHandler instanceof NAWelcomeHomeHandler) {
                     NAWelcomeHomeHandler welcomeHomeHandler = (NAWelcomeHomeHandler) thingHandler;
                     String parentId = welcomeHomeHandler.getId();
