@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -164,7 +164,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private CompletableFuture<Void> readFromFrontPanel(String channelIID, short address) {
         final byte[] command = CommandFactory.createReadFromFrontPanelCommand(address);
-        return executeCommandAndUpdateStateAsync(channelIID, command, ResponseParserFactory.Short, DecimalType::new);
+        return executeCommandAndUpdateStateAsync(channelIID, command, ResponseParserFactory.Short, v -> {
+            return v == 0 ? OnOffType.OFF : OnOffType.ON;
+        });
     }
 
     private CompletableFuture<Void> readFromSystemRegister(String channelIID) {

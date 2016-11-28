@@ -132,6 +132,6 @@
         <item-type>Number</item-type>
         <label>Led</label>
         <description>Led on front panel</description>
-        <state readOnly="true" />
+        <state readOnly="true" pattern="%s"/>
     </channel-type>
 </thing:thing-descriptions>
