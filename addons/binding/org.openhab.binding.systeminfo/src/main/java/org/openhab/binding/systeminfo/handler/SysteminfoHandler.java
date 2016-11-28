@@ -556,7 +556,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
         }
 
-        if (thingIsInitialized() && isChannelConfigChanged) {
+        if (isInitialized() && isChannelConfigChanged) {
             updateChannelConfiguration();
         } else {
             super.thingUpdated(thing);
