@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
@@ -18,7 +18,7 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
 public class Rf24Thread implements AutoCloseable, Runnable {
-    private Logger logger = LoggerFactory.getLogger(Rf24Thread.class);
+    private static final Logger logger = LoggerFactory.getLogger(Rf24Thread.class);
 
     private final AtomicBoolean exit = new AtomicBoolean(false);
     private final WiFi wifi;
@@ -29,14 +29,17 @@ public class Rf24Thread implements AutoCloseable, Runnable {
         this.wifi = Preconditions.checkNotNull(wifi);
         Preconditions.checkNotNull(transmitterId);
         // @formatter:off
-        this.pipes = idUtils.findReceiversForTransmitter(transmitterId)
-                .stream()
-                .map(idUtils::toCommonId)
-                .map(HardwareId::fromCommonId)
-                .map(HardwareId::getId)
-                .map(id -> new Pipe(id))
-                .collect(Collectors.toList());
+//        this.pipes = idUtils.findReceiversForTransmitter(transmitterId)
+//                .stream()
+//                .map(idUtils::toCommonId)
+//                .map(HardwareId::fromCommonId)
+//                .map(HardwareId::getId)
+//                .map(id -> new Pipe(id))
+//                .collect(Collectors.toList());
         // @formatter:on
+        HardwareId h = HardwareId.fromTransmitterId(idUtils, transmitterId);
+        Pipe pipe = new Pipe(h.getId());
+        pipes = Lists.newArrayList(pipe);
     }
 
     @Override
@@ -53,13 +56,20 @@ public class Rf24Thread implements AutoCloseable, Runnable {
             return;
         }
 
-        // @formatter:off
-        wifi.read(pipes).ifPresent(response -> {
-            synchronized (notify) {
-                notify.stream().forEach(message -> message.onMessage(response));
+        while (!exit.get()) {
+            try {
+                // @formatter:off
+                wifi.read(pipes).ifPresent(response -> {
+                    logger.info("got some msg");
+                    synchronized (notify) {
+                        notify.stream().forEach(message -> message.onMessage(response));
+                    }
+                });
+                // @formatter:on
+            } catch (Exception e) {
+                logger.error("Some problem with reading", e);
             }
-        });
-        // @formatter:on
+        }
     }
 
     @Override

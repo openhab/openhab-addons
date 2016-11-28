@@ -49,7 +49,7 @@ public abstract class AbstractChannel implements Channel, OnMessage {
         // @formatter:off
         return BasicMessage
                 .newBuilder()
-                .setDeviceId((int) wifiOperator.geTransmitterId().getId())
+                .setDeviceId((int) wifiOperator.getTransmitterId().getId())
                 .setLinuxTimestamp(new Date().getTime())
                 .setMessageId(messageIdSupplier.get())
                 .build();
@@ -99,7 +99,7 @@ public abstract class AbstractChannel implements Channel, OnMessage {
     protected abstract boolean canHandleResponse(SensorResponse response);
 
     protected TransmitterId getTransmitterId() {
-        return wifiOperator.geTransmitterId();
+        return wifiOperator.getTransmitterId();
     }
 
     @Override
