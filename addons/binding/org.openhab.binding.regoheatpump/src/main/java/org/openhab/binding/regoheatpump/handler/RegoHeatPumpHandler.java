@@ -10,8 +10,6 @@ package org.openhab.binding.regoheatpump.handler;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +57,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        processChannelRequest(channelUID.getId());
+        executor.submit(() -> {
+            processChannelRequest(channelUID.getId());
+        });
     }
 
     @Override
@@ -67,8 +67,18 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         mapper = RegoRegisterMapper.rego600();
         executor = Executors.newSingleThreadScheduledExecutor();
 
-        CompletableFuture.runAsync(this::checkRegoDevice, executor);
-        scheduleRefresh();
+        // Check if we have a valid rego device we can connect to.
+        executor.execute(() -> {
+            try {
+                checkRegoDevice();
+            } catch (IOException e) {
+                // If checking rego version failed than error and status
+                // are already handled and nothing left for us here.
+            }
+        });
+
+        int refreshInterval = ((Number) getConfig().get(RegoHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
+        executor.scheduleWithFixedDelay(this::refresh, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
@@ -82,38 +92,40 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         mapper = null;
     }
 
-    private CompletableFuture<Void> processChannelRequest(String channelIID) {
+    private void processChannelRequest(String channelIID) {
         switch (channelIID) {
             case RegoHeatPumpBindingConstants.CHANNEL_LAST_ERROR:
-                return readLastError(channelIID);
+                readLastError(channelIID);
+                break;
 
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_POWER_LED:
-                return readFromFrontPanel(channelIID, (short) 0x0012);
+                readFromFrontPanel(channelIID, (short) 0x0012);
+                break;
 
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_PUMP_LED:
-                return readFromFrontPanel(channelIID, (short) 0x0013);
+                readFromFrontPanel(channelIID, (short) 0x0013);
+                break;
 
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
-                return readFromFrontPanel(channelIID, (short) 0x0014);
+                readFromFrontPanel(channelIID, (short) 0x0014);
+                break;
 
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
-                return readFromFrontPanel(channelIID, (short) 0x0015);
+                readFromFrontPanel(channelIID, (short) 0x0015);
+                break;
 
             case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ALARM_LED:
-                return readFromFrontPanel(channelIID, (short) 0x0016);
+                readFromFrontPanel(channelIID, (short) 0x0016);
+                break;
+
+            default:
+                if (channelIID.startsWith(RegoHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS)) {
+                    readFromSystemRegister(channelIID);
+                } else {
+                    logger.error("Unable to handle unknown channel {}", channelIID);
+                }
+                break;
         }
-
-        if (channelIID.startsWith(RegoHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS)) {
-            return readFromSystemRegister(channelIID);
-        }
-
-        logger.error("Unable to handle unknown channel {}", channelIID);
-        return CompletableFuture.completedFuture(null);
-    }
-
-    private void scheduleRefresh() {
-        int refreshInterval = ((Number) getConfig().get(RegoHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
-        executor.schedule(this::refresh, refreshInterval, TimeUnit.SECONDS);
     }
 
     private Collection<String> linkedChannels() {
@@ -122,20 +134,11 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        refresh(linkedChannels().iterator());
-    }
-
-    private void refresh(Iterator<String> channels) {
-        if (channels.hasNext()) {
-            processChannelRequest(channels.next()).thenRun(() -> {
-                if (thing.getStatus() == ThingStatus.ONLINE) {
-                    refresh(channels);
-                } else {
-                    scheduleRefresh();
-                }
-            });
-        } else {
-            scheduleRefresh();
+        for (String channelIID : linkedChannels()) {
+            processChannelRequest(channelIID);
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                break;
+            }
         }
     }
 
@@ -155,46 +158,51 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         linkedChannels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
-    private CompletableFuture<Void> readLastError(String channelIID) {
-        return executeCommandAndUpdateStateAsync(channelIID, CommandFactory.createReadLastErrorCommand(),
+    private void readLastError(String channelIID) {
+        executeCommandAndUpdateState(channelIID, CommandFactory.createReadLastErrorCommand(),
                 ResponseParserFactory.ErrorLine, e -> {
                     return e == null ? UnDefType.NULL : new StringType(e.toString());
                 });
     }
 
-    private CompletableFuture<Void> readFromFrontPanel(String channelIID, short address) {
+    private void readFromFrontPanel(String channelIID, short address) {
         final byte[] command = CommandFactory.createReadFromFrontPanelCommand(address);
-        return executeCommandAndUpdateStateAsync(channelIID, command, ResponseParserFactory.Short, v -> {
+        executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, v -> {
             return v == 0 ? OnOffType.OFF : OnOffType.ON;
         });
     }
 
-    private CompletableFuture<Void> readFromSystemRegister(String channelIID) {
+    private void readFromSystemRegister(String channelIID) {
         RegoRegisterMapper.Channel channel = mapper.map(channelIID);
         if (channel == null) {
             logger.warn("Unknown channel requested '{}'.", channelIID);
-            return CompletableFuture.completedFuture(null);
+        } else {
+            final byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
+            executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, channel::convert);
         }
-
-        final byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
-        return executeCommandAndUpdateStateAsync(channelIID, command, ResponseParserFactory.Short, channel::convert);
     }
 
-    private <T> CompletableFuture<Void> executeCommandAndUpdateStateAsync(String channelIID, byte[] command,
-            ResponseParser<T> parser, Function<T, State> converter) {
+    private <T> void executeCommandAndUpdateState(String channelIID, byte[] command, ResponseParser<T> parser,
+            Function<T, State> converter) {
 
-        logger.debug("Reading value for channel '{}' ...", channelIID);
-        return executeCommandAsync(command, parser).thenAccept(value -> {
-            logger.debug("Got value for '{}' = {}", channelIID, value);
-            updateState(channelIID, converter.apply(value));
-        }).exceptionally(th -> {
-            logger.debug("Accessing value for channel '{}' failed due {}", channelIID, th);
+        try {
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                checkRegoDevice();
+            }
+
+            logger.debug("Reading value for channel '{}' ...", channelIID);
+            T result = executeCommand(command, parser);
+
+            logger.debug("Got value for '{}' = {}", channelIID, result);
+            updateState(channelIID, converter.apply(result));
+
+        } catch (IOException e) {
+            logger.debug("Accessing value for channel '{}' failed due {}", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
-            return null;
-        });
+        }
     }
 
-    private void checkRegoDevice() {
+    private void checkRegoDevice() throws IOException {
         logger.debug("Reading Rego device version...");
         short regoVersion = executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParserFactory.Short);
 
@@ -202,19 +210,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         logger.info("Connected to Rego version {}.", regoVersion);
     }
 
-    private <T> CompletableFuture<T> executeCommandAsync(byte[] command, ResponseParser<T> parser) {
-        return CompletableFuture.supplyAsync(() -> {
-
-            if (thing.getStatus() != ThingStatus.ONLINE) {
-                checkRegoDevice();
-            }
-
-            return executeCommand(command, parser);
-
-        }, executor);
-    }
-
-    private <T> T executeCommand(byte[] command, ResponseParser<T> parser) {
+    private <T> T executeCommand(byte[] command, ResponseParser<T> parser) throws IOException {
         try {
             if (connection == null) {
                 connection = createConnection();
@@ -255,7 +251,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         } catch (IOException e) {
             logger.warn("Command failed.", e);
             onDisconnected(e.getMessage());
-            throw new IllegalStateException(e);
+            throw e;
         }
     }
 
