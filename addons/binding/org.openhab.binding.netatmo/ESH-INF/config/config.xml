@@ -46,7 +46,41 @@
             <description>Read and Write thermostat's data.</description>
             <default>true</default>
         </parameter>
-                                                         
+               
+        <parameter name="accessWelcome" type="boolean" required="true">
+            <label>Access Welcome camera</label>
+            <description>Access welcome camera's data.</description>
+            <default>false</default>
+        </parameter>
+        
+        <parameter name="readWelcome" type="boolean" required="true">
+            <label>Read Welcome camera</label>
+            <description>Read welcome camera's data.</description>
+            <default>false</default>
+            <advanced>true</advanced>
+        </parameter>
+        
+        <parameter name="writeWelcome" type="boolean" required="true">
+            <label>Write Welcome camera</label>
+            <description>Write welcome camera's data.</description>
+            <default>false</default>
+            <advanced>true</advanced>
+        </parameter>
+        
+        <parameter name="welcomeEventThings" type="integer" required="false">
+            <label>Generate Thing Events</label>
+            <description>How many things for events should be generated.</description>
+            <default>5</default>
+            <advanced>true</advanced>
+        </parameter>
+        
+        <parameter name="welcomeUnknownPersonThings" type="integer" required="false">
+            <label>Generate Thing Unknown Persons</label>
+            <description>How many things for unknown Persons should be generated</description>
+            <default>2</default>
+            <advanced>true</advanced>
+        </parameter>
+                                                       
     </config-description>
 
     <config-description uri="thing-type:netatmo:device">
