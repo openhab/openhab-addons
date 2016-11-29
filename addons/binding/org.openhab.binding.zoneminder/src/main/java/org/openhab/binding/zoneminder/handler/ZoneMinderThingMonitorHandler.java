@@ -109,7 +109,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                         BigDecimal eventTimeout = getConfigValueAsBigDecimal(
                                 ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT);
 
-                        ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) getZoneMinderBridgeHandler();
+                        ZoneMinderServerBridgeHandler bridge = getZoneMinderBridgeHandler();
                         if (bridge == null) {
                             logger.warn("'handleCommand()': Bridge is 'null'!");
                         }
