@@ -9,7 +9,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.wifi.WifiOperator;
+import org.openhab.binding.rf24.internal.serial.ArduinoSerial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +26,9 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 public class Dht11Channel extends AbstractChannel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(Dht11Channel.class);
 
-    public Dht11Channel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
+    public Dht11Channel(IdUtils idUtils, ArduinoSerial arduinoSerial, Updatable updatable,
             Supplier<Integer> messageIdSupplier, HardwareId hardwareId) {
-        super(idUtils, wifiOperator, updatable, messageIdSupplier, hardwareId);
+        super(idUtils, arduinoSerial, updatable, messageIdSupplier, hardwareId);
     }
 
     @Override

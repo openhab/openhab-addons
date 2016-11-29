@@ -8,7 +8,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.rf24.rf24BindingConstants;
-import org.openhab.binding.rf24.wifi.WifiOperator;
+import org.openhab.binding.rf24.internal.serial.ArduinoSerial;
 
 import com.google.common.collect.Sets;
 
@@ -24,9 +24,9 @@ import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
 
 public class OnOffChannel extends AbstractChannel implements Channel {
 
-    public OnOffChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
+    public OnOffChannel(IdUtils idUtils, ArduinoSerial arduinoSerial, Updatable updatable,
             Supplier<Integer> messageIdSupplier, HardwareId hardwareId) {
-        super(idUtils, wifiOperator, updatable, messageIdSupplier, hardwareId);
+        super(idUtils, arduinoSerial, updatable, messageIdSupplier, hardwareId);
     }
 
     @Override

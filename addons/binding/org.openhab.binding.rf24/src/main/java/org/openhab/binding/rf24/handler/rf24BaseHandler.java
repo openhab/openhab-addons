@@ -14,10 +14,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.rf24.handler.channel.AbstractChannel;
 import org.openhab.binding.rf24.handler.channel.Channel;
 import org.openhab.binding.rf24.handler.channel.Channel.Updatable;
+import org.openhab.binding.rf24.internal.serial.ArduinoSerial;
 import org.openhab.binding.rf24.handler.channel.ChannelGuard;
 import org.openhab.binding.rf24.handler.channel.Dht11Channel;
 import org.openhab.binding.rf24.handler.channel.OnOffChannel;
-import org.openhab.binding.rf24.wifi.WifiOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class rf24BaseHandler extends BaseThingHandler {
 
     private final List<Channel> channels = new ArrayList<>();
 
-    public rf24BaseHandler(Thing thing, IdUtils idUtils, WifiOperator wifiOperator, HardwareId hardwareId) {
+    public rf24BaseHandler(Thing thing, IdUtils idUtils, ArduinoSerial arduinoSerial, HardwareId hardwareId) {
         super(thing);
 
         Updatable updatable = new Updatable() {
@@ -50,12 +50,12 @@ public class rf24BaseHandler extends BaseThingHandler {
             }
         };
 
-        addChannel(wifiOperator, new OnOffChannel(idUtils, wifiOperator, updatable, MESSAGE_ID_SUPPLIER, hardwareId));
-        addChannel(wifiOperator, new Dht11Channel(idUtils, wifiOperator, updatable, MESSAGE_ID_SUPPLIER, hardwareId));
+        addChannel(arduinoSerial, new OnOffChannel(idUtils, arduinoSerial, updatable, MESSAGE_ID_SUPPLIER, hardwareId));
+        addChannel(arduinoSerial, new Dht11Channel(idUtils, arduinoSerial, updatable, MESSAGE_ID_SUPPLIER, hardwareId));
     }
 
-    private void addChannel(WifiOperator wifiOperator, AbstractChannel channel) {
-        wifiOperator.addToNotify(channel);
+    private void addChannel(ArduinoSerial arduinoSerial, AbstractChannel channel) {
+        arduinoSerial.addListener(channel);
         channels.add(ChannelGuard.of(channel));
     }
 

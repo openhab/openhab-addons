@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.openhab.binding.rf24.wifi.Rf24Thread.OnMessage;
-import org.openhab.binding.rf24.wifi.WifiOperator;
+import org.openhab.binding.rf24.internal.serial.ArduinoSerial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,35 +21,32 @@ import pl.grzeslowski.smarthome.proto.common.Basic.BasicMessage;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorRequest.Builder;
 import pl.grzeslowski.smarthome.proto.sensor.Sensor.SensorResponse;
-import pl.grzeslowski.smarthome.rf24.helpers.Pipe;
 
-public abstract class AbstractChannel implements Channel, OnMessage {
+public abstract class AbstractChannel implements Channel, ArduinoSerial.OnSerialMessageListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Updatable updatable;
 
-    private final WifiOperator wifiOperator;
+    private final ArduinoSerial arduinoSerial;
     private final Supplier<Integer> messageIdSupplier;
     private final HardwareId hardwareId;
     private final Map<Integer, ChannelUID> corelationMap = new HashMap<>();
     private final IdUtils idUtils;
 
-    public AbstractChannel(IdUtils idUtils, WifiOperator wifiOperator, Updatable updatable,
+    public AbstractChannel(IdUtils idUtils, ArduinoSerial arduinoSerial, Updatable updatable,
             Supplier<Integer> messageIdSupplier, HardwareId hardwareId) {
         this.idUtils = Preconditions.checkNotNull(idUtils);
-        this.wifiOperator = Preconditions.checkNotNull(wifiOperator);
+        this.arduinoSerial = Preconditions.checkNotNull(arduinoSerial);
         this.updatable = Preconditions.checkNotNull(updatable);
         this.messageIdSupplier = Preconditions.checkNotNull(messageIdSupplier);
         this.hardwareId = Preconditions.checkNotNull(hardwareId);
-
-        wifiOperator.addToNotify(this);
     }
 
     protected BasicMessage buildBasicMessage() {
         // @formatter:off
         return BasicMessage
                 .newBuilder()
-                .setDeviceId((int) wifiOperator.getTransmitterId().getId())
+                .setDeviceId((int) arduinoSerial.getTransmitterId().getId())
                 .setLinuxTimestamp(new Date().getTime())
                 .setMessageId(messageIdSupplier.get())
                 .build();
@@ -62,7 +58,7 @@ public abstract class AbstractChannel implements Channel, OnMessage {
     }
 
     protected void write(SensorRequest request, ChannelUID channelUID) {
-        boolean success = wifiOperator.getWiFi().write(new Pipe(hardwareId.getId()), request);
+        boolean success = arduinoSerial.write(request);
         int messageId = request.getBasic().getMessageId();
         if (success) {
             synchronized (corelationMap) {
@@ -106,7 +102,7 @@ public abstract class AbstractChannel implements Channel, OnMessage {
     }
 
     @Override
-    public void onMessage(SensorResponse response) {
+    public void onMessage(ArduinoSerial serial, SensorResponse response) {
         ReceiverId deviceId = new ReceiverId(response.getBasic().getDeviceId());
         HardwareId hardwareId = HardwareId.fromReceiverId(idUtils, deviceId);
         if (this.hardwareId.equals(hardwareId) && canHandleResponse(response)) {
@@ -114,17 +110,23 @@ public abstract class AbstractChannel implements Channel, OnMessage {
         }
     }
 
+    @Override
+    public void onMessage(ArduinoSerial serial, SensorRequest request) {
+        logger.warn("I do not suppert sensor request! {}", request);
+    }
+
     protected abstract void processMessage(SensorResponse response);
 
     protected abstract boolean canHandleResponse(SensorResponse response);
 
     protected TransmitterId getTransmitterId() {
-        return wifiOperator.getTransmitterId();
+        return arduinoSerial.getTransmitterId();
     }
 
     @Override
     public void close() {
-        wifiOperator.removeFromNotify(this);
+        // TODO dodac usueanie z powiadomein
+        // wifiOperator.removeFromNotify(this);
     }
 
     @Override
