@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -33,15 +34,13 @@ import org.openhab.binding.chromecast.ChromecastBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.maggu2810.shk.chromecast_api.Application;
-import de.maggu2810.shk.chromecast_api.ChromeCast;
-import de.maggu2810.shk.chromecast_api.ChromeCastConnectionEvent;
-import de.maggu2810.shk.chromecast_api.ChromeCastConnectionEventListener;
-import de.maggu2810.shk.chromecast_api.ChromeCastMessageEvent;
-import de.maggu2810.shk.chromecast_api.ChromeCastMessageEventListener;
-import de.maggu2810.shk.chromecast_api.MediaStatus;
-import de.maggu2810.shk.chromecast_api.Status;
-import de.maggu2810.shk.chromecast_api.Volume;
+import su.litvak.chromecast.api.v2.Application;
+import su.litvak.chromecast.api.v2.ChromeCast;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
+import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEventListener;
+import su.litvak.chromecast.api.v2.MediaStatus;
+import su.litvak.chromecast.api.v2.Status;
+import su.litvak.chromecast.api.v2.Volume;
 
 /**
  * The {@link ChromecastHandler} is responsible for handling commands, which are
@@ -49,10 +48,10 @@ import de.maggu2810.shk.chromecast_api.Volume;
  *
  * @author Markus Rathgeb - Original author
  * @author Kai Kreuzer - Initial contribution as openHAB add-on
+ * @author Daniel Walters - Online status fix, handle playuri channel and refactor play media code
  *
  */
-public class ChromecastHandler extends BaseThingHandler
-        implements ChromeCastConnectionEventListener, ChromeCastMessageEventListener, AudioSink {
+public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpontaneousEventListener, AudioSink {
 
     private static final String MEDIA_PLAYER = "CC1AD845";
 
@@ -91,16 +90,14 @@ public class ChromecastHandler extends BaseThingHandler
     private void createChromecast(final String address) {
         try {
             chromecast = new ChromeCast(address);
-            chromecast.registerConnectionListener(this);
-            chromecast.registerMessageListener(this);
+            chromecast.registerListener(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void destroyChromecast() {
-        chromecast.unregisterMessageListener(this);
-        chromecast.unregisterConnectionListener(this);
+        chromecast.unregisterListener(this);
         try {
             chromecast.disconnect();
         } catch (final IOException ex) {
@@ -118,6 +115,8 @@ public class ChromecastHandler extends BaseThingHandler
         futureConnect = scheduler.schedule(() -> {
             try {
                 chromecast.connect();
+                // assume device is online as we no longer get notified
+                updateStatus(ThingStatus.ONLINE);
             } catch (final Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 scheduleConnect(false);
@@ -170,9 +169,18 @@ public class ChromecastHandler extends BaseThingHandler
             case ChromecastBindingConstants.CHANNEL_VOLUME:
                 handleVolume(command);
                 break;
+            case ChromecastBindingConstants.CHANNEL_PLAY_URI:
+                handlePlayUri(command);
+                break;
             default:
                 logger.debug("Received command {} for unknown channel: {}", command, channelUID);
                 break;
+        }
+    }
+
+    private void handlePlayUri(Command command) {
+        if (command instanceof StringType) {
+            playMedia(null, null, command.toString(), null);
         }
     }
 
@@ -203,20 +211,6 @@ public class ChromecastHandler extends BaseThingHandler
         }
     }
 
-    private void handleCcConnected() {
-        updateStatus(ThingStatus.ONLINE);
-        try {
-            handleCcStatus(chromecast.getStatus());
-        } catch (final IOException ex) {
-            logger.debug("Cannot fetch status.", ex);
-        }
-    }
-
-    private void handleCcDisconnected() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Connection has been closed.");
-        scheduleConnect(false);
-    }
-
     private void handleCcStatus(final Status status) {
         handleCcVolume(status.volume);
     }
@@ -245,7 +239,7 @@ public class ChromecastHandler extends BaseThingHandler
     }
 
     @Override
-    public void messageEventReceived(final ChromeCastMessageEvent event) {
+    public void spontaneousEventReceived(final ChromeCastSpontaneousEvent event) {
         switch (event.getType()) {
             case MEDIA_STATUS:
                 final MediaStatus mediaStatus = event.getData(MediaStatus.class);
@@ -262,15 +256,6 @@ public class ChromecastHandler extends BaseThingHandler
                 logger.debug("Unhandled event type: {}", event.getData());
                 break;
 
-        }
-    }
-
-    @Override
-    public void connectionEventReceived(final ChromeCastConnectionEvent event) {
-        if (event.isConnected()) {
-            handleCcConnected();
-        } else {
-            handleCcDisconnected();
         }
     }
 
@@ -301,26 +286,25 @@ public class ChromecastHandler extends BaseThingHandler
                 return;
             }
         }
+        String mimeType = audioStream.getFormat().getCodec() == AudioFormat.CODEC_MP3 ? "audio/mpeg" : "audio/wav";
+        playMedia("Notification", null, url, mimeType);
+    }
+
+    private void playMedia(String title, String imgUrl, String url, String mimeType) {
         try {
-            final Status status = chromecast.getStatus();
             if (chromecast.isAppAvailable(MEDIA_PLAYER)) {
-                if (!status.isAppRunning(MEDIA_PLAYER)) {
+                if (!chromecast.isAppRunning(MEDIA_PLAYER)) {
                     final Application app = chromecast.launchApp(MEDIA_PLAYER);
                     logger.debug("Application launched: {}", app);
                 }
-                if (url == null) {
-                    // stop whatever stream is currently playing
-                    chromecast.pause();
-                } else {
-                    String mimeType = audioStream.getFormat().getCodec() == AudioFormat.CODEC_MP3 ? "audio/mpeg"
-                            : "audio/wav";
-                    chromecast.load("Notification", null, url.toString(), mimeType);
+                if (url != null) {
+                    chromecast.load(title, imgUrl, url, mimeType);
                 }
             } else {
-                logger.error("Missing media player app - cannot process audio stream.");
+                logger.error("Missing media player app - cannot process media.");
             }
         } catch (final IOException e) {
-            logger.debug("Failed playing audio stream: {}", e.getMessage());
+            logger.debug("Failed playing media: {}", e.getMessage());
         }
     }
 

@@ -22,6 +22,7 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.dscalarm</module>
+    <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
     <module>org.openhab.binding.freebox</module>
@@ -38,6 +39,7 @@
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.milight</module>
+    <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.oceanic</module>

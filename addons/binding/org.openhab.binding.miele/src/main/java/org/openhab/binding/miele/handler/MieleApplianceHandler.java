@@ -257,18 +257,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         }
     }
 
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        if (getMieleBridgeHandler() == null) {
-            if (thingHandler instanceof MieleBridgeHandler) {
-                this.bridgeHandler = (MieleBridgeHandler) thingHandler;
-                this.bridgeHandler.registerApplianceStatusListener(this);
-            }
-        }
-        ThingStatusInfo statusInfo = getBridge().getStatusInfo();
-        updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
-    }
-
     private synchronized MieleBridgeHandler getMieleBridgeHandler() {
         if (this.bridgeHandler == null) {
             Bridge bridge = getBridge();

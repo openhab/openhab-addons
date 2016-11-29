@@ -8,7 +8,7 @@ Binding should be compatible with Onkyo AV receivers which support ISCP (Integra
 
 ## Supported Things
 
-This binding supports only one thing: The Onkyo AV Receiver
+This binding supports only one thing: The Onkyo AV Receiver.  All supported Onkyo devices are registered as an audio sink in the framework.
 
 
 ## Discovery
@@ -28,6 +28,12 @@ org.openhab.onkyo:enableAutoDiscovery=false
 
 This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery. Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
 
+
+The binding has the following configuration options, which can be set for "binding:onkyo":
+
+| Parameter | Name    | Description  | Required |
+|-----------------|------------------------|--------------|------------ |
+| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. http://192.168.0.2:8080 | no |
 
 ## Thing Configuration
 
@@ -57,6 +63,7 @@ The Onkyo AVR supports the following channels:
 | player#artist                  | String       | Artist name of the current song (available if playing from Network or USB)|
 | player#currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
 | player#listenmode              | Number       | Current listening mode e.g. Stero, 5.1ch Surround,..|
+| player#playuri                 | String       | Plays the URI provided to the channel |
 
 ##Input Source Mapping
 
@@ -77,7 +84,7 @@ Here after are the ID values of the input sources:
 * 37: AM
 * 38: TUNER
 * 39: MUSICSERVER
-* 40: INTERETRADIO
+* 40: INTERNETRADIO
 * 41: USB
 * 42: USB_BACK
 * 43: NETWORK
@@ -85,3 +92,7 @@ Here after are the ID values of the input sources:
 * 48: MULTICH
 * 50: SIRIUS
 
+## Audio Support
++
++All supported Onkyo AVRs are registered as an audio sink in the framework.
++Audio streams are sent to the `playuri` channel.

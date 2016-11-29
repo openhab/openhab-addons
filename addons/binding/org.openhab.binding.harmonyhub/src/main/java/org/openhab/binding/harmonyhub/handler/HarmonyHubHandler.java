@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
@@ -59,7 +60,7 @@ import net.whistlingfish.harmony.protocol.LoginToken;
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class HarmonyHubHandler extends BaseBridgeHandler {
+public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDiscoveryListener, HarmonyHubListener {
 
     private Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
@@ -81,6 +82,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
     private HarmonyConfig cachedConfig;
 
+    private HarmonyHubDiscovery discovery;
+
     private Date cacheConfigExpireDate;
 
     private HarmonyHubHandlerFactory factory;
@@ -91,6 +94,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
     private int heartBeatInterval;
 
+    private int discoTime;
+
     public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
         this.factory = factory;
@@ -98,7 +103,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof StringType) {
+        if (command instanceof RefreshType) {
+            updateState(client.getCurrentActivity());
+        } else if (command instanceof StringType) {
             try {
                 try {
                     int actId = Integer.parseInt(command.toString());
@@ -122,45 +129,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.INITIALIZING);
-
-        disconnectFromHub();
-
-        final HarmonyHubConfig config = getConfig().as(HarmonyHubConfig.class);
-
-        int discoTime = config.discoveryTimeout > 0 ? config.discoveryTimeout : DISCO_TIME;
-        heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
-
-        final HarmonyHubDiscovery disco = new HarmonyHubDiscovery(discoTime);
-        disco.addListener(new HarmonyHubDiscoveryListener() {
-            @Override
-            public void hubDiscoveryFinished() {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "No Harmony Hub found with name" + config.name);
-                retryJob = scheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        initialize();
-                    }
-                }, RETRY_TIME, TimeUnit.SECONDS);
-            }
-
-            @Override
-            public void hubDiscovered(HarmonyHubDiscoveryResult result) {
-                logger.debug("Found hub with name {}", result.getFriendlyName());
-                if (result.getFriendlyName().equalsIgnoreCase(config.name)) {
-                    // remove our listener so HubDiscoveryFinished can not be called while we connect
-                    disco.removeListener(this);
-                    disco.stopDiscovery();
-                    getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_ACCOUNTID, result.getAccountId());
-                    getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_SESSIONID, result.getSessionID());
-                    getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_HOST, result.getHost());
-                    getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_ID, result.getId());
-                    connectToHub();
-                }
-            }
-        });
-        disco.startDiscovery();
+        connect();
     }
 
     @Override
@@ -186,9 +155,68 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
+    public void hubDiscoveryFinished() {
+        // if we get here then no hubs were found as we remove the listener if one was found.
+        setOfflineAndReconnect("No hubs found for hub name");
+    }
+
+    @Override
+    public void hubDiscovered(HarmonyHubDiscoveryResult result) {
+        logger.debug("Found hub with name {}", result.getFriendlyName());
+        HarmonyHubConfig config = getConfig().as(HarmonyHubConfig.class);
+        if (result.getFriendlyName().equalsIgnoreCase(config.name)) {
+            // remove our listener so HubDiscoveryFinished can not be called while we connect
+            discovery.removeListener(this);
+            discovery.stopDiscovery();
+            getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_ACCOUNTID, result.getAccountId());
+            getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_SESSIONID, result.getSessionID());
+            getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_HOST, result.getHost());
+            getThing().setProperty(HarmonyHubBindingConstants.HUB_PROPERTY_ID, result.getId());
+            connectToHub();
+        }
+    }
+
+    /**
+     * HarmonyHubListener interface
+     */
+    @Override
+    public void removeFrom(HarmonyClient hc) {
+        // we have been removed from listening
+    }
+
+    /**
+     * HarmonyHubListener interface
+     */
+    @Override
+    public void addTo(HarmonyClient hc) {
+        hc.addListener(new ActivityChangeListener() {
+            @Override
+            public void activityStarted(Activity activity) {
+                updateState(activity);
+            }
+        });
+    }
+
+    /**
+     * Starts the connection process
+     */
+    private synchronized void connect() {
+        updateStatus(ThingStatus.INITIALIZING);
+
+        disconnectFromHub();
+
+        HarmonyHubConfig config = getConfig().as(HarmonyHubConfig.class);
+        discoTime = config.discoveryTimeout > 0 ? config.discoveryTimeout : DISCO_TIME;
+        heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
+
+        discovery = new HarmonyHubDiscovery(discoTime);
+        discovery.addListener(this);
+        discovery.startDiscovery();
+    }
+
     /**
      * Connects to a Harmony Hub using credentials obtained through network discovery
-     * x
      */
     private synchronized void connectToHub() {
         disconnectFromHub();
@@ -199,26 +227,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         if (host == null || accountId == null || sessionId == null) {
             logger.error("Can not connect to hub with host {}, accountId {} and sessionId {}", host, accountId,
                     sessionId);
+            setOfflineAndReconnect("Could not retrieve required properties");
             return;
         }
 
         client = HarmonyClient.getInstance();
-        client.addListener(new HarmonyHubListener() {
-            @Override
-            public void removeFrom(HarmonyClient hc) {
-                // we have been removed from listening
-            }
-
-            @Override
-            public void addTo(HarmonyClient hc) {
-                hc.addListener(new ActivityChangeListener() {
-                    @Override
-                    public void activityStarted(Activity activity) {
-                        updateState(activity);
-                    }
-                });
-            }
-        });
+        client.addListener(this);
 
         try {
             logger.debug("Connecting: host {} sessionId {} accountId {}", host, sessionId, accountId);
@@ -231,7 +245,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                         client.sendPing();
                     } catch (Exception e) {
                         logger.error("heartbeat failed for HarmonyHub at " + host, e);
-                        setOfflineAndReconnect();
+                        setOfflineAndReconnect("Hearbeat failed");
                     }
                 }
             }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
@@ -239,11 +253,17 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             buildChannel();
         } catch (Exception e) {
             logger.error("Could not connect to HarmonyHub at " + host, e);
-            setOfflineAndReconnect();
+            setOfflineAndReconnect("Could not connect: " + e.getMessage());
         }
     }
 
     private void disconnectFromHub() {
+
+        if (discovery != null) {
+            discovery.removeListener(this);
+            discovery.stopDiscovery();
+            discovery = null;
+        }
 
         if (retryJob != null && !retryJob.isDone()) {
             retryJob.cancel(true);
@@ -253,20 +273,22 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             heartBeatJob.cancel(true);
         }
 
-        if (getClient() != null) {
-            getClient().disconnect();
+        if (client != null) {
+            client.removeListener(this);
+            client.disconnect();
+            client = null;
         }
     }
 
-    private void setOfflineAndReconnect() {
+    private void setOfflineAndReconnect(String error) {
         disconnectFromHub();
         retryJob = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                initialize();
+                connect();
             }
         }, RETRY_TIME, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
     }
 
     private void updateState(Activity activity) {

@@ -25,6 +25,7 @@
 
     <feature name="openhab-binding-autelis" description="Autelis Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.autelis/${project.version}</bundle>
     </feature>
 
@@ -46,6 +47,11 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dscalarm/${project.version}</bundle>
+    </feature>
+    
+    <feature name="openhab-binding-exec" description="Exec Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.exec/${project.version}</bundle>
     </feature>
     
     <feature name="openhab-binding-feed" description="Feed Binding" version="${project.version}">
@@ -128,6 +134,12 @@
     <feature name="openhab-binding-milight" description="Milight Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.milight/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-minecraft" description="Minecraft Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.minecraft/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-network" description="Network Binding" version="${project.version}">
@@ -284,10 +296,11 @@
 
     <!-- voice -->
 
-    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
+<!--    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
     </feature>
+-->
 
     <feature name="openhab-voice-marytts" description="Mary Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -297,13 +310,13 @@
     <feature name="openhab-voice-voicerss" description="VoiceRSS Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.voicerss/${project.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/voicerss.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/voicerss</configfile>
     </feature>
 
     <!-- ui -->
 
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <feature>esh-model-item</feature>
         <feature>esh-model-sitemap</feature>
         <feature>esh-ui-icon</feature>
@@ -321,13 +334,11 @@
     
     <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-ui-habpanel" description="HABPanel" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habpanel/${project.version}</bundle>
     </feature>
     

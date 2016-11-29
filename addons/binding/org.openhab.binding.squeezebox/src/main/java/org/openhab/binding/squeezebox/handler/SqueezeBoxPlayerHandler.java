@@ -27,14 +27,13 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -108,50 +107,26 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public void initialize() {
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
-
-        SqueezeBoxServerHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            logger.debug("updating player status to match server status of {}", bridgeHandler.getThing().getStatus());
-            updateStatus(bridgeHandler.getThing().getStatus());
-        }
-    }
-
-    private SqueezeBoxServerHandler getBridgeHandler() {
-        SqueezeBoxServerHandler bridgeHandler = null;
-        Thing bridge = getBridge();
-        if (bridge != null) {
-            bridgeHandler = (SqueezeBoxServerHandler) bridge.getHandler();
-        }
-        return bridgeHandler;
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        if (thingHandler instanceof SqueezeBoxServerHandler) {
-            this.squeezeBoxServerHandler = (SqueezeBoxServerHandler) thingHandler;
-            updateStatus(ThingStatus.ONLINE);
-            logger.debug("bridgeHandlerInitialized: updating status of player {} to ONLINE", mac);
-        }
-    }
-
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        // Mark the player OFFLINE
-        updateStatus(ThingStatus.OFFLINE);
-        this.squeezeBoxServerHandler = null;
-        logger.debug("bridgeHandlerDisposed: updating status of player {} to OFFLINE", mac);
+        updateBridgeStatus();
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        // Change player status to match the server status
-        updateStatus(bridgeStatusInfo.getStatus());
-        logger.debug("bridgeStatusChanged: updating status of player {} to {}", mac, bridgeStatusInfo.getStatus());
+        updateBridgeStatus();
+    }
+
+    private void updateBridgeStatus() {
+        ThingStatus bridgeStatus = getBridge().getStatus();
+        if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            squeezeBoxServerHandler = (SqueezeBoxServerHandler) getBridge().getHandler();
+        } else if (bridgeStatus == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
     public void dispose() {
-
         // stop our duration counter
         if (timeCounterJob != null && !timeCounterJob.isCancelled()) {
             timeCounterJob.cancel(true);

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDevice implements StateChangeListener {
 
-    protected transient final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private String id;
     private String name;
