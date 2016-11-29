@@ -8,9 +8,13 @@
  */
 package org.openhab.binding.netatmo.handler;
 
+import java.io.IOException;
+
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.netatmo.config.NetatmoBridgeConfiguration;
@@ -18,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.client.ApiClient;
+import io.swagger.client.api.PartnerApi;
 import io.swagger.client.api.StationApi;
 import io.swagger.client.api.ThermostatApi;
 import io.swagger.client.auth.OAuth;
@@ -25,6 +30,7 @@ import io.swagger.client.auth.OAuthFlow;
 import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAThermostatDataBody;
 import retrofit.RestAdapter.LogLevel;
+import retrofit.RetrofitError;
 
 /**
  * {@link NetatmoBridgeHandler} is the handler for a Netatmo API and connects it
@@ -40,6 +46,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private ApiClient apiClient;
     private StationApi stationApi = null;
     private ThermostatApi thermostatApi = null;
+    private PartnerApi partnerApi = null;
 
     public NetatmoBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -52,14 +59,25 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         configuration = getConfigAs(NetatmoBridgeConfiguration.class);
         initializeApiClient();
 
+        // Test connection to Netatmo API using PartnerAPI. This can cause authentication error
+        // or an error if there is no partner station. In the former case, it is not an issue.
+        try {
+            getPartnerApi().partnerdevices();
+        } catch (RetrofitError e) {
+            if (e.getCause() instanceof IOException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Unable to connect Netatmo API : " + e.getMessage());
+                return;
+            }
+        }
         super.initialize();
     }
 
-    private void initializeApiClient() {
+    // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
+    // not trusted by default java certificate control mechanism
+    private void initializeApiClient() throws RetrofitError {
         apiClient = new ApiClient();
 
-        // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
-        // not trusted by default java certificate control mechanism
         OAuth auth = new OAuth(new TrustingOkHttpClient(),
                 OAuthClientRequest.tokenLocation("https://api.netatmo.net/oauth2/token"));
         auth.setFlow(OAuthFlow.password);
@@ -107,12 +125,19 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         return thermostatApi;
     }
 
+    public PartnerApi getPartnerApi() {
+        if (partnerApi == null) {
+            partnerApi = apiClient.createService(PartnerApi.class);
+        }
+        return partnerApi;
+    }
+
     public NAStationDataBody getStationsDataBody(String equipmentId) {
         if (getStationApi() != null) {
             try {
                 return getStationApi().getstationsdata(equipmentId).getBody();
             } catch (Exception e) {
-                logger.warn("An error occured while calling station API : {}", e.getMessage());
+                logger.error("An error occured while calling station API : {}", e.getMessage());
             }
         }
         return null;
@@ -123,7 +148,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             try {
                 return getThermostatApi().getthermostatsdata(equipmentId).getBody();
             } catch (Exception e) {
-                logger.warn("An error occured while calling thermostat API : {}", e.getMessage());
+                logger.error("An error occured while calling thermostat API : {}", e.getMessage());
             }
         }
         return null;
