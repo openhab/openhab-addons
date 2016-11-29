@@ -830,6 +830,39 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
+    @Test
+    public void 'test thing handles channel priority change' () {
+        def priorityKey = "priority"
+        def pidKey = "pid"
+        def initialPriority = DEFAULT_CHANNEL_TEST_PRIORITY // Evaluates to High
+        def newPriority = "Low"
+
+        String acceptedItemType = "Number"
+        initializeThingWithChannel(DEFAULT_TEST_CHANNEL_ID,acceptedItemType)
+
+
+        Channel channel = systemInfoThing.getChannel(DEFAULT_TEST_CHANNEL_ID)
+
+        waitForAssert {
+            assertThat "The initial priority of channel ${channel.getUID()} is not as expected.", channel.getConfiguration().get(priorityKey), is (equalTo(initialPriority))
+            assertThat systemInfoThing.getHandler().highPriorityChannels.contains(channel.getUID()), is (true)
+        }
+
+        //Change the priority of a channel, keep the pid
+        Configuration updatedConfig = new Configuration()
+        updatedConfig.put(priorityKey, newPriority)
+        updatedConfig.put(pidKey, channel.getConfiguration().get(pidKey))
+        Channel updatedChannel = new Channel (channel.getUID(),channel.getChannelTypeUID(),channel.getAcceptedItemType(),channel.getKind(),updatedConfig,new HashSet(),new HashMap(),null,null)
+        Thing updatedThing = ThingBuilder.create(systemInfoThing.getThingTypeUID(),systemInfoThing.getUID()).withConfiguration(systemInfoThing.getConfiguration()).withChannel(updatedChannel).build();
+
+        systemInfoThing.getHandler().thingUpdated(updatedThing)
+
+        waitForAssert {
+            assertThat "The prority of the channel was not updated: ", channel.getConfiguration().get(priorityKey), is (equalTo(newPriority))
+            assertThat systemInfoThing.getHandler().lowPriorityChannels.contains(channel.getUID()), is (true)
+        }
+    }
+
     @After
     public void tearDown () {
 
