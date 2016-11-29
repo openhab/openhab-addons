@@ -55,6 +55,8 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
     private static final OsChecker OS_CHECKER = new OsChecker();
 
     static {
+        SystemOutToSlf4j.enableForClass(Rf24.class);
+
         if (OS_CHECKER.isRpi()) {
             try {
                 Rf24Adapter.loadLibrary();
@@ -109,7 +111,7 @@ public class rf24HandlerFactory extends BaseThingHandlerFactory {
                     new Payload((short)32));
             // @formatter:on
             wifis.add(wifi);
-            logger.info("I'm working on RPi! Wifi: {}.", wifi);
+            logger.info("I'm working on RPi!");
         } else {
             wifis.add(new StubWiFi());
             wifis.add(new StubWiFi());

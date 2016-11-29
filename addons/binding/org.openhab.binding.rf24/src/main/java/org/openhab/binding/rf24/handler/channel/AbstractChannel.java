@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
+import pl.grzeslowski.smarthome.common.io.id.CommonId;
 import pl.grzeslowski.smarthome.common.io.id.HardwareId;
 import pl.grzeslowski.smarthome.common.io.id.IdUtils;
 import pl.grzeslowski.smarthome.common.io.id.ReceiverId;
@@ -67,6 +68,25 @@ public abstract class AbstractChannel implements Channel, OnMessage {
             synchronized (corelationMap) {
                 corelationMap.put(messageId, channelUID);
             }
+
+            CommonId commonId = hardwareId.toCommonId();
+            ReceiverId receiverId = idUtils.toReceiverId(commonId);
+            TransmitterId transmitterId = idUtils.findTransmitterId(receiverId);
+            HardwareId transmitterHardwareId = HardwareId.fromTransmitterId(idUtils, transmitterId);
+
+            // logger.info("Looking on tID {} hID {}", transmitterId.getId(), transmitterHardwareId.getId());
+            // Optional<SensorResponse> read = Optional.empty();
+            // long start = new Date().getTime();
+            // long delay = TimeUnit.SECONDS.toMillis(1);
+            // while (!read.isPresent() && start + delay >= new Date().getTime()) {
+            // read = wifiOperator.getWiFi().read(new Pipe(transmitterHardwareId.getId()));
+            // }
+            //
+            // if(read.isPresent()) {
+            // logger.info("Got response = {}", read.get());
+            // } else {
+            // logger.info("didnt get response msg ID = {}", messageId);
+            // }
         } else {
             logger.warn("Sending message to {} with ID {} was not succesfull", hardwareId, messageId);
         }

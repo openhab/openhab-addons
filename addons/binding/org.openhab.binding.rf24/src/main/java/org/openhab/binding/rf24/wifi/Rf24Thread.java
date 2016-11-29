@@ -59,12 +59,12 @@ public class Rf24Thread implements AutoCloseable, Runnable {
         while (!exit.get()) {
             try {
                 // @formatter:off
-                wifi.read(pipes).ifPresent(response -> {
-                    logger.info("got some msg");
-                    synchronized (notify) {
-                        notify.stream().forEach(message -> message.onMessage(response));
-                    }
-                });
+//                wifi.read(pipes).ifPresent(response -> {
+//                    logger.info("[thread] got some msg");
+//                    synchronized (notify) {
+//                        notify.stream().forEach(message -> message.onMessage(response));
+//                    }
+//                });
                 // @formatter:on
             } catch (Exception e) {
                 logger.error("Some problem with reading", e);
