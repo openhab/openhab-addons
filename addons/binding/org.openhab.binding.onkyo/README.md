@@ -84,7 +84,7 @@ Here after are the ID values of the input sources:
 * 37: AM
 * 38: TUNER
 * 39: MUSICSERVER
-* 40: INTERETRADIO
+* 40: INTERNETRADIO
 * 41: USB
 * 42: USB_BACK
 * 43: NETWORK
