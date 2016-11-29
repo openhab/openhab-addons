@@ -42,7 +42,9 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
     @Override
     public void initialize() {
         super.initialize();
+    }
 
+    private void initializeBatteryLevels() {
         try {
             this.batteryMax = Integer.parseInt(getProperty(PROPERTY_BATTERY_MAX));
             this.batteryMin = Integer.parseInt(getProperty(PROPERTY_BATTERY_MIN));
@@ -52,8 +54,12 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
         }
     }
 
+    // when batteries are freshly changed, API may return a value superior to batteryMax !
     private int getBatteryPercent() {
-        // when batteries are freshly changed, API may return a value superior to batteryMax !
+        if (batteryMax == 1) {
+            initializeBatteryLevels();
+        }
+
         int correctedVp = Math.min(module.getBatteryVp(), batteryMax);
         return (100 * (correctedVp - batteryMin) / (batteryMax - batteryMin));
     }
