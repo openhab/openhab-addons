@@ -50,7 +50,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     private Logger logger = LoggerFactory.getLogger(ZoneMinderBaseThingHandler.class);
 
     /** Bridge Handler for the Thing. */
-    public ZoneMinderBaseBridgeHandler zoneMinderBridgeHandler = null;
+    public ZoneMinderServerBridgeHandler zoneMinderBridgeHandler = null;
 
     /** This refresh status. */
     private boolean thingRefreshed = false;
@@ -164,7 +164,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      *
      * @return zoneMinderBridgeHandler
      */
-    public synchronized ZoneMinderBaseBridgeHandler getZoneMinderBridgeHandler() {
+    public synchronized ZoneMinderServerBridgeHandler getZoneMinderBridgeHandler() {
 
         if (this.zoneMinderBridgeHandler == null) {
 
@@ -179,8 +179,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
 
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof ZoneMinderBaseBridgeHandler) {
-                this.zoneMinderBridgeHandler = (ZoneMinderBaseBridgeHandler) handler;
+            if (handler instanceof ZoneMinderServerBridgeHandler) {
+                this.zoneMinderBridgeHandler = (ZoneMinderServerBridgeHandler) handler;
             } else {
                 logger.debug("getZoneMinderBridgeHandler(): Unable to get bridge handler!");
             }
@@ -231,7 +231,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void onBridgeConnected(ZoneMinderBaseBridgeHandler bridge) {
+    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge) {
         logger.debug("onBridgeConnected(): Bridge '{}' is connected", bridge.getThing().getUID());
 
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
@@ -242,7 +242,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void onBridgeDisconnected(ZoneMinderBaseBridgeHandler bridge) {
+    public void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge) {
         logger.debug("onBridgeDisconnected(): Bridge '{}' disconnected", bridge.getThing().getUID());
 
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
@@ -344,4 +344,5 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         }
         return null;
     }
+
 }

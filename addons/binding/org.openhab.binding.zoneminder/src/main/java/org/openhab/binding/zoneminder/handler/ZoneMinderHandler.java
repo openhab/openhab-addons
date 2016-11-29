@@ -22,8 +22,8 @@ public interface ZoneMinderHandler {
 
     void updateChannel(ChannelUID channel);
 
-    void onBridgeConnected(ZoneMinderBaseBridgeHandler bridge);
+    void onBridgeConnected(ZoneMinderServerBridgeHandler bridge);
 
-    void onBridgeDisconnected(ZoneMinderBaseBridgeHandler bridge);
+    void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge);
 
 }
