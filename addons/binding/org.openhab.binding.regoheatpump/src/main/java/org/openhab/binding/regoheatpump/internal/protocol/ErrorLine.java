@@ -11,6 +11,11 @@ public class ErrorLine {
         this.timestamp = timestamp;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%d @ %s", error, timestamp);
+    }
+
     public int error() {
         return error;
     }
