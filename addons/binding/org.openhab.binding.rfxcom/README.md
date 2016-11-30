@@ -76,6 +76,14 @@ Bridge rfxcom:bridge:usb0 [ serialPort="/dev/tty.usbserial-06VVEG1Y" ] {
 }
 ```
 
+A TCP bridge, for use with socat on a remote host, can be configured like this:
+
+```
+Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
+    Thing lighting2 100001_1 [deviceId="100001.1", subType="AC"]
+}
+```
+
 ## Channels
 
 This binding currently supports following channels:
