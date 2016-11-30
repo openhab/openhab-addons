@@ -33,6 +33,7 @@ import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoRegisterMapper;
 import org.openhab.binding.regoheatpump.internal.protocol.ResponseParser;
 import org.openhab.binding.regoheatpump.internal.protocol.ResponseParserFactory;
+import org.openhab.binding.regoheatpump.internal.utils.QueueHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RegoHeatPumpHandler.class);
+    private final QueueHashSet<String> pending = new QueueHashSet<String>();
     private RegoConnection connection;
     private ScheduledExecutorService executor;
     private RegoRegisterMapper mapper;
@@ -57,9 +59,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        executor.submit(() -> {
-            processChannelRequest(channelUID.getId());
-        });
+        pending.push(channelUID.getId());
+        executor.submit(this::processQueue);
     }
 
     @Override
@@ -89,7 +90,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         executor = null;
 
         closeConnection();
+
         mapper = null;
+        pending.clear();
     }
 
     private void processChannelRequest(String channelIID) {
@@ -134,9 +137,22 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        for (String channelIID : linkedChannels()) {
+        linkedChannels().forEach(pending::push);
+        processQueue();
+    }
+
+    private void processQueue() {
+        while (Thread.interrupted() == false) {
+            final String channelIID = pending.peek();
+            if (channelIID == null) {
+                break;
+            }
+
             processChannelRequest(channelIID);
-            if (Thread.interrupted() || thing.getStatus() != ThingStatus.ONLINE) {
+            pending.poll();
+
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                pending.clear();
                 break;
             }
         }
