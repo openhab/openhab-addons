@@ -51,28 +51,32 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
         } catch (IOException e) {
             logger.warn("Can't get latitude and longitude for the current location: {}", e);
         }
-        String lat = StringUtils.trim(StringUtils.substringBetween(result, "\"lat\":", ","));
-        String lon = StringUtils.trim(StringUtils.substringBetween(result, "\"lon\":", "}"));
 
-        try {
-            Double latitude = Double.parseDouble(lat);
-            Double longitude = Double.parseDouble(lon);
+        if (result != null) {
 
-            logger.info("Evaluated Astro geolocation: latitude: {}, longitude: {}", latitude, longitude);
+            String lat = StringUtils.trim(StringUtils.substringBetween(result, "\"lat\":", ","));
+            String lon = StringUtils.trim(StringUtils.substringBetween(result, "\"lon\":", "}"));
 
-            ThingTypeUID sunType = new ThingTypeUID(BINDING_ID, SUN);
-            ThingTypeUID moonType = new ThingTypeUID(BINDING_ID, MOON);
+            try {
+                Double latitude = Double.parseDouble(lat);
+                Double longitude = Double.parseDouble(lon);
 
-            ThingUID sunThing = new ThingUID(sunType, LOCAL);
-            ThingUID moonThing = new ThingUID(moonType, LOCAL);
+                logger.info("Evaluated Astro geolocation: latitude: {}, longitude: {}", latitude, longitude);
 
-            String propGeolocation = String.format("%s,%s", latitude, longitude);
-            thingDiscovered(DiscoveryResultBuilder.create(sunThing).withLabel("Local Sun")
-                    .withProperty("geolocation", propGeolocation).build());
-            thingDiscovered(DiscoveryResultBuilder.create(moonThing).withLabel("Local Moon")
-                    .withProperty("geolocation", propGeolocation).build());
-        } catch (Exception ex) {
-            logger.warn("Can't discover Astro geolocation");
+                ThingTypeUID sunType = new ThingTypeUID(BINDING_ID, SUN);
+                ThingTypeUID moonType = new ThingTypeUID(BINDING_ID, MOON);
+
+                ThingUID sunThing = new ThingUID(sunType, LOCAL);
+                ThingUID moonThing = new ThingUID(moonType, LOCAL);
+
+                String propGeolocation = String.format("%s,%s", latitude, longitude);
+                thingDiscovered(DiscoveryResultBuilder.create(sunThing).withLabel("Local Sun")
+                        .withProperty("geolocation", propGeolocation).build());
+                thingDiscovered(DiscoveryResultBuilder.create(moonThing).withLabel("Local Moon")
+                        .withProperty("geolocation", propGeolocation).build());
+            } catch (Exception ex) {
+                logger.warn("Can't discover Astro geolocation");
+            }
         }
     }
 }
