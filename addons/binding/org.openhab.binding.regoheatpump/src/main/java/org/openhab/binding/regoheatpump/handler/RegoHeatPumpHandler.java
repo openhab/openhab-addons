@@ -136,7 +136,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     private void refresh() {
         for (String channelIID : linkedChannels()) {
             processChannelRequest(channelIID);
-            if (thing.getStatus() != ThingStatus.ONLINE) {
+            if (Thread.interrupted() || thing.getStatus() != ThingStatus.ONLINE) {
                 break;
             }
         }

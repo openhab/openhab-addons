@@ -123,8 +123,8 @@
 
     <channel-type id="error">
         <item-type>String</item-type>
-        <label>Last Error</label>
-        <description>Last error information</description>
+        <label>Error</label>
+        <description>Textual error information including error code, date and time</description>
         <state readOnly="true" pattern="%s" />
     </channel-type>
     
