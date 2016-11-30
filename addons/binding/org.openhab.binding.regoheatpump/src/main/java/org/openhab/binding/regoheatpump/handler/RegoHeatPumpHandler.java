@@ -7,6 +7,8 @@
  */
 package org.openhab.binding.regoheatpump.handler;
 
+import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Collection;
@@ -16,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -27,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants;
 import org.openhab.binding.regoheatpump.internal.protocol.CommandFactory;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoRegisterMapper;
@@ -59,7 +61,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        pending.push(channelUID.getId());
+        addPendingChannel(channelUID.getId());
         executor.submit(this::processQueue);
     }
 
@@ -78,7 +80,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             }
         });
 
-        int refreshInterval = ((Number) getConfig().get(RegoHeatPumpBindingConstants.REFRESH_INTERVAL)).intValue();
+        int refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
         executor.scheduleWithFixedDelay(this::refresh, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
 
@@ -97,32 +99,32 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private void processChannelRequest(String channelIID) {
         switch (channelIID) {
-            case RegoHeatPumpBindingConstants.CHANNEL_LAST_ERROR:
-                readLastError(channelIID);
+            case CHANNEL_LAST_ERROR:
+                readLastError();
                 break;
 
-            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_POWER_LED:
+            case CHANNEL_FRONT_PANEL_POWER_LED:
                 readFromFrontPanel(channelIID, (short) 0x0012);
                 break;
 
-            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_PUMP_LED:
+            case CHANNEL_FRONT_PANEL_PUMP_LED:
                 readFromFrontPanel(channelIID, (short) 0x0013);
                 break;
 
-            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
+            case CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
                 readFromFrontPanel(channelIID, (short) 0x0014);
                 break;
 
-            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
+            case CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
                 readFromFrontPanel(channelIID, (short) 0x0015);
                 break;
 
-            case RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ALARM_LED:
+            case CHANNEL_FRONT_PANEL_ALARM_LED:
                 readFromFrontPanel(channelIID, (short) 0x0016);
                 break;
 
             default:
-                if (channelIID.startsWith(RegoHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS)) {
+                if (channelIID.startsWith(CHANNEL_GROUP_REGISTERS)) {
                     readFromSystemRegister(channelIID);
                 } else {
                     logger.error("Unable to handle unknown channel {}", channelIID);
@@ -136,8 +138,18 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 .collect(Collectors.toList());
     }
 
+    private void addPendingChannel(String channelIID) {
+        // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
+        // register. To prevent accessing same register twice when both channels are linked,
+        // use same name for both so only a single fetch will be triggered.
+        if (CHANNEL_LAST_ERROR_CODE.equals(channelIID) || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) {
+            channelIID = CHANNEL_LAST_ERROR;
+        }
+        pending.push(channelIID);
+    }
+
     private void refresh() {
-        linkedChannels().forEach(pending::push);
+        linkedChannels().forEach(this::addPendingChannel);
         processQueue();
     }
 
@@ -174,10 +186,23 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         linkedChannels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
-    private void readLastError(String channelIID) {
-        executeCommandAndUpdateState(channelIID, CommandFactory.createReadLastErrorCommand(),
+    private void readLastError() {
+        executeCommandAndUpdateState(CHANNEL_LAST_ERROR_CODE, CommandFactory.createReadLastErrorCommand(),
                 ResponseParserFactory.ErrorLine, e -> {
-                    return e == null ? UnDefType.NULL : new StringType(e.toString());
+                    if (e == null) {
+                        updateState(CHANNEL_LAST_ERROR_TIMESTAMP, UnDefType.NULL);
+                        return UnDefType.NULL;
+                    }
+
+                    try {
+                        updateState(CHANNEL_LAST_ERROR_TIMESTAMP, new DateTimeType(e.timestamp()));
+                    } catch (RuntimeException ex) {
+                        logger.warn("Unable to convert timestamp '{}' to DateTimeType due {}", e.timestampAsString(),
+                                ex);
+                        updateState(CHANNEL_LAST_ERROR_TIMESTAMP, UnDefType.UNDEF);
+                    }
+
+                    return new StringType(e.errorSource());
                 });
     }
 
@@ -251,6 +276,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 }
 
                 if (i == 0 && value != ResponseParser.ComputerAddress) {
+                    logger.debug("Ignoring unexpected byte received {}", value);
                     continue;
                 }
 

@@ -91,7 +91,8 @@
     <channel-group-type id="status">
         <label>Sensor Values</label>
         <channels>
-            <channel id="lastError" typeId="error"/>
+            <channel id="lastErrorTimestamp" typeId="errorTimestamp"/>
+            <channel id="lastErrorCode" typeId="errorCode"/>
         </channels>
     </channel-group-type>
 
@@ -121,13 +122,20 @@
         <state readOnly="true" pattern="%s"/>
     </channel-type>
 
-    <channel-type id="error">
+    <channel-type id="errorCode">
         <item-type>String</item-type>
-        <label>Error</label>
-        <description>Textual error information including error code, date and time</description>
+        <label>Error code</label>
+        <description>Information about the error that happened</description>
         <state readOnly="true" pattern="%s" />
     </channel-type>
     
+    <channel-type id="errorTimestamp">
+        <item-type>Number</item-type>
+        <label>Error time and date</label>
+        <description>Date and time of the error</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+
     <channel-type id="led">
         <item-type>Number</item-type>
         <label>Led</label>

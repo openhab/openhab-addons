@@ -1,45 +1,39 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
-public class ErrorLine {
-    private final int error;
-    private final String timestamp;
-    private final int value1;
-    private final int value2;
-    private final int value3;
-    private final int value4;
+import java.util.Calendar;
 
-    public ErrorLine(int error, String timestamp, int v1, int v2, int v3, int v4) {
+public class ErrorLine {
+    private final byte error;
+    private final String timestamp;
+
+    public ErrorLine(byte error, String timestamp) {
         this.error = error;
         this.timestamp = timestamp;
-        value1 = v1;
-        value2 = v2;
-        value3 = v3;
-        value4 = v4;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s @ %s", errorSource(), timestamp);
+    public int error() {
+        return error;
     }
 
-    public String timestamp() {
+    public String timestampAsString() {
         return timestamp;
     }
 
-    public int value1() {
-        return value1;
-    }
+    public Calendar timestamp() {
+        Calendar cal = Calendar.getInstance();
 
-    public int value2() {
-        return value2;
-    }
+        int year = Integer.parseInt(timestamp.substring(0, 2)) + 1000;
+        if (year < 1950) {
+            year += 1000;
+        }
+        int month = Integer.parseInt(timestamp.substring(2, 4));
+        int day = Integer.parseInt(timestamp.substring(4, 6));
+        int hour = Integer.parseInt(timestamp.substring(7, 9));
+        int min = Integer.parseInt(timestamp.substring(10, 12));
+        int sec = Integer.parseInt(timestamp.substring(13, 15));
+        cal.set(year, month - 1, day, hour, min, sec);
 
-    public int value3() {
-        return value3;
-    }
-
-    public int value4() {
-        return value4;
+        return cal;
     }
 
     public String errorSource() {

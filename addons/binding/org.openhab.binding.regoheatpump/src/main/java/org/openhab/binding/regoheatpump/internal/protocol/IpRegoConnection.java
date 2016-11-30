@@ -29,7 +29,7 @@ public class IpRegoConnection implements RegoConnection {
 
     @Override
     public void connect() throws IOException {
-        logger.debug("Connecting to '{}', port = {}.", address, port);
+        logger.info("Connecting to '{}', port = {}.", address, port);
         clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
         clientSocket.connect(new InetSocketAddress(address, port), CONNECTION_TIMEOUT);
         logger.debug("Connected to '{}', port = {}.", address, port);
