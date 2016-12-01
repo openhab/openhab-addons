@@ -1,6 +1,6 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
-public class ValueConverter {
+class ValueConverter {
     public static Double toDouble(short value) {
         return value / 10.0;
     }
