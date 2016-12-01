@@ -2,16 +2,16 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
+	<parent>
     <artifactId>pom</artifactId>
     <groupId>org.openhab.addons</groupId>
     <version>2.4.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.binding</groupId>
-  <artifactId>pom</artifactId>
+	<groupId>org.openhab.binding</groupId>
+	<artifactId>pom</artifactId>
 
-  <packaging>pom</packaging>
+	<packaging>pom</packaging>
 
   <name>openHAB Bindings</name>
 
@@ -50,10 +50,10 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.innogysmarthome</module>
-    <module>org.openhab.binding.ipp</module>
+		<module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
-    <module>org.openhab.binding.jeelink</module>
-    <module>org.openhab.binding.keba</module>
+		<module>org.openhab.binding.jeelink</module>
+		<module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.knx</module>
     <module>org.openhab.binding.knx.test</module>
     <module>org.openhab.binding.kodi</module>
