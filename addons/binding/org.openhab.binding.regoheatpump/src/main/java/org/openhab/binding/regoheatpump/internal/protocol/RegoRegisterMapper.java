@@ -4,42 +4,36 @@ import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.CHAN
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;;
 
 public class RegoRegisterMapper {
-    private final Map<String, Channel> mappings;
+    public static interface Channel {
+        public short address();
 
-    private RegoRegisterMapper(Map<String, Channel> mappings) {
-        this.mappings = mappings;
+        public State convert(Short value);
     }
 
-    public Channel map(String channelIID) {
-        return mappings.get(channelIID);
-    }
-
-    public Set<String> channels() {
-        return mappings.keySet();
-    }
-
-    public static abstract class Channel {
+    private static class Int16Channel implements Channel {
         private final short address;
 
-        private Channel(short address) {
+        private Int16Channel(short address) {
             this.address = address;
         }
 
+        @Override
         public short address() {
             return address;
         }
 
-        public abstract State convert(Short value);
+        @Override
+        public State convert(Short value) {
+            return new DecimalType(value);
+        }
     }
 
-    public static class TemperatureChannel extends Channel {
-
+    private static class TemperatureChannel extends Int16Channel {
         private TemperatureChannel(short address) {
             super(address);
         }
@@ -50,16 +44,14 @@ public class RegoRegisterMapper {
         }
     }
 
-    public static class Int16Channel extends Channel {
+    private final Map<String, Channel> mappings;
 
-        private Int16Channel(short address) {
-            super(address);
-        }
+    private RegoRegisterMapper(Map<String, Channel> mappings) {
+        this.mappings = mappings;
+    }
 
-        @Override
-        public State convert(Short value) {
-            return new DecimalType(value);
-        }
+    public Channel map(String channelIID) {
+        return mappings.get(channelIID);
     }
 
     public static RegoRegisterMapper rego600() {
