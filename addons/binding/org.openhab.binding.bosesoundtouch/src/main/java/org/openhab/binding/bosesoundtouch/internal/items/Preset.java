@@ -35,4 +35,12 @@ public class Preset {
         return (getPos() >= 1 && getPos() <= 6);
     }
 
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("PRESET_");
+        buffer.append(getPos());
+        return buffer.toString();
+    }
+
 }

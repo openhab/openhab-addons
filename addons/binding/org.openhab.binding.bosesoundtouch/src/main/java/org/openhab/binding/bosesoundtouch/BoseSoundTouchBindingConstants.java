@@ -44,6 +44,7 @@ public class BoseSoundTouchBindingConstants {
     public static final String CHANNEL_ZONEINFO = "zoneInfo";
     public static final String CHANNEL_PLAYER_CONTROL = "playerControl";
     public static final String CHANNEL_ZONE_CONTROL = "zoneControl";
+    public static final String CHANNEL_PRESET = "preset";
     public static final String CHANNEL_KEY_CODE = "keyCode";
     public static final String CHANNEL_NOWPLAYINGALBUM = "nowPlayingAlbum";
     public static final String CHANNEL_NOWPLAYINGARTWORK = "nowPlayingArtwork";

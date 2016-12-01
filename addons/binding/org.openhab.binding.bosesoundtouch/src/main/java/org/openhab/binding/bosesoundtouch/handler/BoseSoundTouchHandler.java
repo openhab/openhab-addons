@@ -78,6 +78,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private ChannelUID channelZoneInfoUID;
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelZoneControlUID;
+    private ChannelUID channelPresetUID;
     private ChannelUID channelKeyCodeUID;
     private ChannelUID channelNowPlayingAlbumUID;
     private ChannelUID channelNowPlayingArtistUID;
@@ -120,6 +121,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelZoneInfoUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONEINFO);
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
+        channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
 
         channelNowPlayingAlbumUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGALBUM);
@@ -271,7 +273,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             }
                         } else if ("remove".equals(action)) {
                             boolean found = false;
-                            for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
+                            for (Iterator< ZoneMember>mi = zoneMembers.iterator(); mi.hasNext();) {
                                 ZoneMember m = mi.next();
                                 if (oh.macAddress.equals(m.getMac())) {
                                     mi.remove();
@@ -293,6 +295,25 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 }
             } else {
                 logger.warn("Invalid command type: " + command.getClass() + ": " + command);
+            }
+        } else if (channelUID.equals(channelPresetUID)) {
+            if (command instanceof StringType) {
+                String cmd = command.toString();
+                if (cmd.equals("PRESET_1")) {
+                    simulateRemoteKey(RemoteKey.PRESET_1);
+                } else if (cmd.equals("PRESET_2")) {
+                    simulateRemoteKey(RemoteKey.PRESET_2);
+                } else if (cmd.equals("PRESET_3")) {
+                    simulateRemoteKey(RemoteKey.PRESET_3);
+                } else if (cmd.equals("PRESET_4")) {
+                    simulateRemoteKey(RemoteKey.PRESET_4);
+                } else if (cmd.equals("PRESET_5")) {
+                    simulateRemoteKey(RemoteKey.PRESET_5);
+                } else if (cmd.equals("PRESET_6")) {
+                    simulateRemoteKey(RemoteKey.PRESET_6);
+                } else {
+                    logger.warn("Invalid preset: " + cmd);
+                }
             }
         } else if (channelUID.equals(channelKeyCodeUID)) {
             if (command instanceof StringType) {
@@ -352,7 +373,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 } else if (cmd.equals("REMOVE_FAVORITE")) {
                     simulateRemoteKey(RemoteKey.REMOVE_FAVORITE);
                 } else {
-                    logger.warn("Invalid preset: " + cmd);
+                    logger.warn("Invalid remote key: " + cmd);
                 }
             }
         } else {
@@ -537,6 +558,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     if (ps.getContentItem().equals(currentContentItem)) {
                         if (ps.posIsValid()) {
                             om = OperationModeType.INTERNET_RADIO;
+                            updateState(channelPresetUID, new StringType(ps.toString()));
                         } else {
                             logger.warn(thing + ": Invalid preset active: " + ps.getPos());
                         }

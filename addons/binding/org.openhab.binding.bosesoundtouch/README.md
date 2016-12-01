@@ -14,6 +14,7 @@ Switch  Bose1_Mute                       "mute: [%s]"           <volume_mute> { 
 String  Bose1_OperationMode              "Mode: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationMode" }
 String  Bose1_ZoneInfo                   "Zone: [%s]"           <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneInfo", autoupdate="false" }
 String  Bose1_ZoneControl                "Zone control: [%s]"   <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneControl" }
+String  Bose1_Preset                     "Preset: [%s]"         <text>        { channel="bosesoundtouch:device:BOSEMACADDR:preset" }
 String  Bose1_KeyCode                    "Key Code: [%s]"       <text>        { channel="bosesoundtouch:device:BOSEMACADDR:keyCode" }
 String  Bose1_nowPlayingAlbum            "Album: [%s]"          <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingAlbum" }
 String  Bose1_nowPlayingArtist           "Artist: [%s]"         <text>        { channel="bosesoundtouch:device:BOSEMACADDR:nowPlayingArtist" }
@@ -38,6 +39,7 @@ sitemap demo label="Bose Test Items"
 		Text item=Bose1_OperationMode
 		Text item=Bose1_ZoneInfo
 		Text item=Bose1_ZoneControl
+		Text item=Bose1_Preset
 		Text item=Bose1_KeyCode
 		Text item=Bose1_nowPlayingAlbum
 		Text item=Bose1_nowPlayingArtist

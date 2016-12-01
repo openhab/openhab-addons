@@ -17,6 +17,7 @@
 			<channel id="zoneInfo" typeId="zoneInfo" />
 			<channel id="playerControl" typeId="playerControl" />
 			<channel id="zoneControl" typeId="zoneControl" />
+			<channel id="preset" typeId="preset" />
 			<channel id="keyCode" typeId="keyCode" />
 			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
 			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
@@ -84,6 +85,11 @@
         <item-type>String</item-type>
         <label>Zone Control</label>
         <description>Control the Zones, e.g. "add kitchen"/"remove kitchen"</description>
+    </channel-type>
+    <channel-type id="preset">
+        <item-type>String</item-type>
+        <label>Preset</label>
+        <description>Control Preset, e.g. "PRESET_1"/.../"PRESET_6"</description>
     </channel-type>
     <channel-type id="keyCode">
         <item-type>String</item-type>
