@@ -67,13 +67,15 @@
 	<channel-type id="current">
 	   <item-type>Number</item-type>
 	   <label>Current</label>
-	   <description>Current of the Switch</description>
+	   <description>Current of the Switch in ampere</description>
+	   <state readOnly="true" pattern="%.3f A"/>
 	</channel-type>
 	
 	<channel-type id="power">
 	   <item-type>Number</item-type>
 	   <label>Power</label>
-	   <description>Power of the Switch</description>
+	   <description>Power of the Switch in watt</description>
+	   <state readOnly="true" pattern="%.2f W"/>
 	</channel-type>
 
 </thing:thing-descriptions>

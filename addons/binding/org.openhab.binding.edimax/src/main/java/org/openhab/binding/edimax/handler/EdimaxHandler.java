@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +9,8 @@
 package org.openhab.binding.edimax.handler;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,23 +36,33 @@ import org.slf4j.LoggerFactory;
  */
 public class EdimaxHandler extends BaseThingHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdimaxHandler.class);
+
     private static final int PORT = 10000;
 
-    private Logger logger = LoggerFactory.getLogger(EdimaxHandler.class);
-
+    /**
+     * Connection Information to the device.
+     */
     protected ConnectionInformation ci;
 
+    private ScheduledFuture<?> pollingJob;
+
+    /**
+     * Constructor for the edimax things.
+     *
+     * @param thing The thing
+     */
     public EdimaxHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("command for " + channelUID.getAsString() + ": " + command.toString());
+        LOGGER.debug("command for " + channelUID.getAsString() + ": " + command.toString());
         try {
             if (channelUID.getId().equals(EdimaxBindingConstants.SWITCH)) {
                 if (command instanceof RefreshType) {
-                    logger.debug("State: " + getState().toString());
+                    LOGGER.debug("State: " + getState().toString());
                     if (getState()) {
                         updateState(channelUID, OnOffType.ON);
                     } else {
@@ -72,11 +85,20 @@ public class EdimaxHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Things");
+        LOGGER.debug("Initializing Things");
         final EdimaxConfiguration configuration = this.getConfigAs(EdimaxConfiguration.class);
         final String completeUrl = completeURL(configuration.getIpAddress());
         ci = new ConnectionInformation(configuration.getUsername(), configuration.getPassword(), completeUrl, PORT);
         updateStatus(ThingStatus.ONLINE);
+
+        final Runnable runnable = () -> handleCommand(getThing().getChannel(EdimaxBindingConstants.SWITCH).getUID(),
+                RefreshType.REFRESH);
+        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 30, 30, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        pollingJob.cancel(true);
     }
 
     private static String completeURL(String anIp) {
@@ -84,10 +106,10 @@ public class EdimaxHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns state for device with given IP.
+     * Returns state for device.
      *
-     * @return
-     * @throws IOException
+     * @return The on/off state of the thing
+     * @throws IOException if the communication fails
      */
     private Boolean getState() throws IOException {
         final GetState getS = new GetState();
@@ -97,9 +119,9 @@ public class EdimaxHandler extends BaseThingHandler {
     /**
      * Switch to.
      *
-     * @param newState
-     * @return
-     * @throws IOException
+     * @param newState new state for the thing
+     * @return True if device is turned on. Otherwise false.
+     * @throws IOException if the communication fails
      */
     public Boolean switchState(Boolean newState) throws IOException {
         final SetState setS = new SetState(newState);
