@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class YeelightStripeHandler extends YeelightHandlerBase {
 
     private final Logger logger = LoggerFactory.getLogger(YeelightStripeHandler.class);
-    
+
     public YeelightStripeHandler(Thing thing) {
         super(thing);
     }

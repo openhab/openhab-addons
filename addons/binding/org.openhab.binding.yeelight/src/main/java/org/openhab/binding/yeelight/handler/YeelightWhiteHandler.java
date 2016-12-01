@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class YeelightWhiteHandler extends YeelightHandlerBase {
 
     private final Logger logger = LoggerFactory.getLogger(YeelightWhiteHandler.class);
-    
+
     public YeelightWhiteHandler(Thing thing) {
         super(thing);
     }

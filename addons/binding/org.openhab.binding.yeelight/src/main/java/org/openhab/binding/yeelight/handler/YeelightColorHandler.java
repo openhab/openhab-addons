@@ -27,14 +27,14 @@ import org.slf4j.LoggerFactory;
 public class YeelightColorHandler extends YeelightHandlerBase {
 
     private final Logger logger = LoggerFactory.getLogger(YeelightColorHandler.class);
-    
+
     public YeelightColorHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        
+
         logger.debug("Handle Color Command {}", command);
 
         // if device is disconnect, start discover to reconnect.
