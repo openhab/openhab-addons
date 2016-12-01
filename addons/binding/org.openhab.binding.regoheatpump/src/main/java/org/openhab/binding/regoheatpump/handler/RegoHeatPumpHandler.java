@@ -202,7 +202,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                         updateState(CHANNEL_LAST_ERROR_TIMESTAMP, UnDefType.UNDEF);
                     }
 
-                    return new StringType(e.errorSource());
+                    return new StringType(Byte.toString(e.error()));
                 });
     }
 

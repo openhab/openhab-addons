@@ -126,14 +126,40 @@
         <item-type>String</item-type>
         <label>Error code</label>
         <description>Information about the error that happened</description>
-        <state readOnly="true" pattern="%s" />
+        <state readOnly="true" pattern="%s">
+            <options>
+                <option value="0">Sensor radiator return (GT1)</option>
+                <option value="1">Outdoor sensor (GT2)</option>
+                <option value="2">Sensor hot water (GT3)</option>
+                <option value="3">Mixing valve sensor (GT4)</option>
+                <option value="4">Room sensor (GT5)</option>
+                <option value="5">Sensor compressor (GT6)</option>
+                <option value="6">Sensor heat transfer fluid out (GT8)</option>
+                <option value="7">Sensor heat transfer fluid in (GT9)</option>
+                <option value="8">Sensor cold transfer fluid in (GT10)</option>
+                <option value="9">Sensor cold transfer fluid in (GT11)</option>
+                <option value="10">Compressor circuit switch</option>
+                <option value="11">Electrical cassette</option>
+                <option value="12">HTF C=pump switch (MB2)</option>
+                <option value="13">Low pressure switch (LP)</option>
+                <option value="14">High pressure switch (HP)</option>
+                <option value="15">High return HP (GT9)</option>
+                <option value="16">HTF out max (GT8)</option>
+                <option value="17">HTF in under limit (GT10)</option>
+                <option value="18">HTF out under limit (GT11)</option>
+                <option value="19">Compressor superheat (GT6)</option>
+                <option value="20">Three phase incorrect order</option>
+                <option value="21">Power failure</option>
+                <option value="22">High delta GT8/GT9</option>
+            </options>
+        </state>
     </channel-type>
     
     <channel-type id="errorTimestamp">
         <item-type>Number</item-type>
         <label>Error time and date</label>
         <description>Date and time of the error</description>
-        <state readOnly="true" pattern="%s" />
+        <state readOnly="true" pattern="%tc"/>
     </channel-type>
 
     <channel-type id="led">
