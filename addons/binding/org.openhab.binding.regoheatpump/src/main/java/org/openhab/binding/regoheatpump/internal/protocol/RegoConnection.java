@@ -22,14 +22,14 @@ public interface RegoConnection {
     public void close();
 
     /**
-     * TODO
+     * Writes data bytes through the channel.
      *
      * @return
      */
     public void write(byte[] data) throws IOException;
 
     /**
-     * TODO
+     * Reads a single byte from channel.
      *
      * @return
      */
