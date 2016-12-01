@@ -237,7 +237,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             logger.debug("Got value for '{}' = {}", channelIID, result);
             updateState(channelIID, converter.apply(result));
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.debug("Accessing value for channel '{}' failed due {}", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
         }
@@ -273,11 +273,6 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
                 if (value == -1) {
                     throw new EOFException("Connection closed");
-                }
-
-                if (i == 0 && value != ResponseParser.ComputerAddress) {
-                    logger.debug("Ignoring unexpected byte received {}", value);
-                    continue;
                 }
 
                 response[i] = (byte) value;
