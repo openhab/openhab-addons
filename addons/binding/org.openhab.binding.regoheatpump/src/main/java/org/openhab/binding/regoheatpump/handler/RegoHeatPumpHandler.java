@@ -62,7 +62,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         addPendingChannel(channelUID.getId());
-        executor.submit(this::processQueue);
+        executor.execute(this::processQueue);
     }
 
     @Override
@@ -231,14 +231,20 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 checkRegoDevice();
             }
 
-            logger.debug("Reading value for channel '{}' ...", channelIID);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Reading value for channel '{}' ...", channelIID);
+            }
+
             T result = executeCommand(command, parser);
 
-            logger.debug("Got value for '{}' = {}", channelIID, result);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Got value for '{}' = {}", channelIID, result);
+            }
+
             updateState(channelIID, converter.apply(result));
 
         } catch (Exception e) {
-            logger.debug("Accessing value for channel '{}' failed due {}", channelIID, e);
+            logger.warn("Accessing value for channel '{}' failed due {}", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
         }
     }
