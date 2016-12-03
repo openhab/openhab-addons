@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="astro"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="astro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -18,7 +17,7 @@
 			<channel-group id="apogee" typeId="distance" />
 			<channel-group id="position" typeId="position" />
 			<channel-group id="zodiac" typeId="moonZodiac" />
-            <channel-group id="event" typeId="moonEvents" />
+			<channel-group id="event" typeId="moonEvents" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:astro:config" />
 	</thing-type>
