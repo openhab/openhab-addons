@@ -24,10 +24,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.astro.internal.config.AstroThingConfig;
+import org.openhab.binding.astro.internal.job.AbstractBaseJob;
 import org.openhab.binding.astro.internal.job.DailyJob;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
@@ -143,7 +145,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     protected void publishPlanet() {
         logger.debug("Publishing planet {} for thing {}", getPlanet().getClass().getSimpleName(), getThing().getUID());
         for (Channel channel : getThing().getChannels()) {
-            publishChannelIfLinked(channel.getUID());
+            if (channel.getKind() != ChannelKind.TRIGGER) {
+                publishChannelIfLinked(channel.getUID());
+            }
         }
     }
 
@@ -185,7 +189,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         if (getThing().getStatus() == ThingStatus.ONLINE) {
                             String thingUid = getThing().getUID().toString();
                             JobDataMap jobDataMap = new JobDataMap();
-                            jobDataMap.put("thingUid", thingUid);
+                            jobDataMap.put(AbstractBaseJob.KEY_THING_UID, thingUid);
 
                             // dailyJob
                             String jobIdentity = DailyJob.class.getSimpleName();
@@ -235,7 +239,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 try {
                     String thingUid = getThing().getUID().toString();
                     for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
-                        logger.info("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
+                        logger.debug("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
                         quartzScheduler.deleteJob(jobKey);
                     }
                 } catch (SchedulerException ex) {
@@ -286,6 +290,20 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * Emits an event for the given channel.
+     */
+    public void triggerEvent(String channelId, String event) {
+        triggerChannel(getThing().getChannel(channelId).getUID(), event);
+    }
+
+    /**
+     * Returns the scheduler for the astro jobs.
+     */
+    public Scheduler getScheduler() {
+        return quartzScheduler;
     }
 
     /**

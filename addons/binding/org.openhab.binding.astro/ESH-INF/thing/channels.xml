@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="astro"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="astro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -99,7 +98,7 @@
 				<option value="AQUARIUS">Aquarius</option>
 				<option value="PISCES">Pisces</option>
 			</options>
- 		</state>
+		</state>
 	</channel-type>
 
 	<!-- season -->
@@ -125,7 +124,7 @@
 				<option value="SUMMER">Summer</option>
 				<option value="AUTUMN">Autumn</option>
 				<option value="WINTER">Winter</option>
-        	</options>
+			</options>
 		</state>
 	</channel-type>
 
@@ -168,7 +167,7 @@
 			<channel id="ring" typeId="ring" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-type id="total">
 		<item-type>DateTime</item-type>
 		<label>Total eclipse</label>
@@ -189,7 +188,7 @@
 		<description>The DateTime of the next ring eclipse</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
-	
+
 	<!-- moonphase -->
 	<channel-group-type id="moonPhase">
 		<label>Moonphases</label>
@@ -261,8 +260,8 @@
 				<option value="WANING_GIBBOUS">Wanning gibbous</option>
 				<option value="THIRD_QUARTER">Third quarter</option>
 				<option value="WANING_CRESCENT">Waning crescent</option>
-        	</options>
- 		</state>
+			</options>
+		</state>
 	</channel-type>
 
 	<!-- moon eclipse -->
@@ -304,7 +303,7 @@
 		<item-type>Number</item-type>
 		<label>Kilometer</label>
 		<description>The distance in kilometers</description>
-		<state readOnly="true" pattern="%d km"/>
+		<state readOnly="true" pattern="%d km" />
 	</channel-type>
 
 	<!-- moonZodiac -->
@@ -315,5 +314,110 @@
 			<channel id="sign" typeId="sign" />
 		</channels>
 	</channel-group-type>
+
+	<!-- moonEvents -->
+	<channel-group-type id="moonEvents">
+		<label>Moon events</label>
+		<description>Moon events</description>
+		<channels>
+			<channel id="event" typeId="moonEvent" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="moonEvent">
+		<kind>trigger</kind>
+		<label>Moon event</label>
+		<description>Moon event</description>
+		<event>
+			<options>
+				<option value="RISE_START">rise start</option>
+				<option value="SET_END">set end</option>
+				<option value="FIRST_QUARTER">first quarter</option>
+				<option value="THIRD_QUARTER">third quarter</option>
+				<option value="FULL">full moon</option>
+				<option value="NEW">new moon</option>
+				<option value="TOTAL_ECLIPSE">total eclipse</option>
+				<option value="PARTIAL_ECLIPSE">partial eclipse</option>
+				<option value="PERIGEE">perigee</option>
+				<option value="APOGEE">apogee</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<!-- sunEvents -->
+	<channel-group-type id="sunEvents">
+		<label>Sun events</label>
+		<description>Sun events</description>
+		<channels>
+			<channel id="event" typeId="sunEvent" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sunEvent">
+		<kind>trigger</kind>
+		<label>Sun event</label>
+		<description>Sun event</description>
+		<event>
+			<options>
+				<option value="RISE_START">rise start</option>
+				<option value="RISE_END">rise end</option>
+				<option value="SET_START">set start</option>
+				<option value="SET_END">set end</option>
+				<option value="NOON_START">noon start</option>
+				<option value="NOON_END">noon end</option>
+				<option value="NIGHT_START">night start</option>
+				<option value="NIGHT_END">night end</option>
+				<option value="MORNING_NIGHT_START">morning night start</option>
+				<option value="MORNING_NIGHT_END">morning night end</option>
+				<option value="ASTRO_DAWN_START">astro dawn start</option>
+				<option value="ASTRO_DAWN_END">astro dawn end</option>
+				<option value="NAUTIC_DAWN_START">nautic dawn start</option>
+				<option value="NAUTIC_DAWN_END">nautic dawn end</option>
+				<option value="CIVIL_DAWN_START">civil dawn start</option>
+				<option value="CIVIL_DAWN_END">civil dawn end</option>
+				<option value="ASTRO_DUSK_START">astro dusk start</option>
+				<option value="ASTRO_DUSK_END">astro dusk end</option>
+				<option value="NAUTIC_DUSK_START">nautic dusk start</option>
+				<option value="NAUTIC_DUSK_END">nautic dusk end</option>
+				<option value="CIVIL_DUSK_START">civil dusk start</option>
+				<option value="CIVIL_DUSK_END">civil dusk end</option>
+				<option value="EVENING_NIGHT_START">evening night start</option>
+				<option value="EVENING_NIGHT_END">evening night end</option>
+				<option value="DAYLIGHT_START">daylight start</option>
+				<option value="DAYLIGHT_END">daylight end</option>
+				<option value="TOTAL_ECLIPSE">total eclipse</option>
+				<option value="PARTIAL_ECLIPSE">partial eclipse</option>
+				<option value="RING_ECLIPSE">ring eclipse</option>
+				<option value="ZODIAC_ARIES_START">zodac aries start</option>
+				<option value="ZODIAC_ARIES_END">zodac aries end</option>
+				<option value="ZODIAC_TAURUS_START">zodac taurus start</option>
+				<option value="ZODIAC_TAURUS_END">zodac taurus end</option>
+				<option value="ZODIAC_GEMINI_START">zodac gemini start</option>
+				<option value="ZODIAC_GEMINI_END">zodac gemini end</option>
+				<option value="ZODIAC_CANCER_START">zodac cancer start</option>
+				<option value="ZODIAC_CANCER_END">zodac cancer end</option>
+				<option value="ZODIAC_LEO_START">zodac leo start</option>
+				<option value="ZODIAC_LEO_END">zodac leo end</option>
+				<option value="ZODIAC_VIRGO_START">zodac virgo start</option>
+				<option value="ZODIAC_VIRGO_END">zodac virgo end</option>
+				<option value="ZODIAC_LIBRA_START">zodac libra start</option>
+				<option value="ZODIAC_LIBRA_END">zodac libra end</option>
+				<option value="ZODIAC_SCORPIO_START">zodac scorpio start</option>
+				<option value="ZODIAC_SCORPIO_END">zodac scorpio end</option>
+				<option value="ZODIAC_SAGITTARIUS_START">zodac sagittarius start</option>
+				<option value="ZODIAC_SAGITTARIUS_END">zodac sagittarius end</option>
+				<option value="ZODIAC_CAPRICORN_START">zodac capricorn start</option>
+				<option value="ZODIAC_CAPRICORN_END">zodac capricorn end</option>
+				<option value="ZODIAC_AQUARIUS_START">zodac aquarius start</option>
+				<option value="ZODIAC_AQUARIUS_END">zodac aquarius end</option>
+				<option value="ZODIAC_PISCES_START">zodac pisces start</option>
+				<option value="ZODIAC_PISCES_END">zodac pisces end</option>
+				<option value="SEASON_SPRING">season spring</option>
+				<option value="SEASON_SUMMER">season summer</option>
+				<option value="SEASON_AUTUMN">season autumn</option>
+				<option value="SEASON_WINTER">season winter</option>
+			</options>
+		</event>
+	</channel-type>
 
 </thing:thing-descriptions>

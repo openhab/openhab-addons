@@ -18,6 +18,7 @@
 			<channel-group id="apogee" typeId="distance" />
 			<channel-group id="position" typeId="position" />
 			<channel-group id="zodiac" typeId="moonZodiac" />
+            <channel-group id="event" typeId="moonEvents" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:astro:config" />
 	</thing-type>

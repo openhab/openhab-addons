@@ -8,22 +8,30 @@
  */
 package org.openhab.binding.astro.internal.job;
 
+import static org.openhab.binding.astro.AstroBindingConstants.EVENT_CHANNEL_ID;
+
 import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.quartz.JobDataMap;
 
 /**
- * Calculates and publishes astro positional data.
+ * Job to trigger a event.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class PositionalJob extends AbstractBaseJob {
+public class EventJob extends AbstractBaseJob {
+    public static final String KEY_EVENT = "event";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void executeJob(String thingUid, JobDataMap jobDataMap) {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(thingUid);
         if (astroHandler != null) {
-            astroHandler.publishPositionalInfo();
+            String event = jobDataMap.getString(KEY_EVENT);
+            astroHandler.triggerEvent(EVENT_CHANNEL_ID, event);
         }
     }
+
 }

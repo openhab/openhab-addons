@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.astro.internal.job;
 
+import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -17,27 +18,31 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Baseclass for all jobs with common methods.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AbstractBaseJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(AbstractBaseJob.class);
+    public static final String KEY_THING_UID = "thingUid";
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         JobDataMap jobDataMap = jobContext.getJobDetail().getJobDataMap();
 
-        String thingUid = jobDataMap.getString("thingUid");
+        String thingUid = jobDataMap.getString(KEY_THING_UID);
+        String event = jobDataMap.getString(EventJob.KEY_EVENT);
+        boolean isEvent = StringUtils.isNotEmpty(event);
         if (logger.isDebugEnabled()) {
-            logger.debug("Starting astro {} for thing {}", this.getClass().getSimpleName(), thingUid);
+            logger.debug("Starting astro {} for thing {}{}", this.getClass().getSimpleName(), thingUid,
+                    isEvent ? " and event " + event : "");
         }
 
-        executeJob(thingUid);
+        executeJob(thingUid, jobDataMap);
     }
 
     /**
      * Method to override by the different jobs to be executed.
      */
-    protected abstract void executeJob(String thingUid);
+    protected abstract void executeJob(String thingUid, JobDataMap jobDataMap);
 
 }
