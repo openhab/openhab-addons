@@ -29,6 +29,9 @@ import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -104,26 +107,26 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public void initialize() {
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
-
-        SqueezeBoxServerHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            logger.debug("updating player status to match server status of {}", bridgeHandler.getThing().getStatus());
-            updateStatus(bridgeHandler.getThing().getStatus());
-        }
+        updateBridgeStatus();
     }
 
-    private SqueezeBoxServerHandler getBridgeHandler() {
-        SqueezeBoxServerHandler bridgeHandler = null;
-        Thing bridge = getBridge();
-        if (bridge != null) {
-            bridgeHandler = (SqueezeBoxServerHandler) bridge.getHandler();
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        updateBridgeStatus();
+    }
+
+    private void updateBridgeStatus() {
+        ThingStatus bridgeStatus = getBridge().getStatus();
+        if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            squeezeBoxServerHandler = (SqueezeBoxServerHandler) getBridge().getHandler();
+        } else if (bridgeStatus == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-        return bridgeHandler;
     }
 
     @Override
     public void dispose() {
-
         // stop our duration counter
         if (timeCounterJob != null && !timeCounterJob.isCancelled()) {
             timeCounterJob.cancel(true);

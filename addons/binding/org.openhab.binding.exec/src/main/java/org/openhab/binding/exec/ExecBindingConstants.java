@@ -25,6 +25,7 @@ public class ExecBindingConstants {
 
     // List of all Channel ids
     public final static String OUTPUT = "output";
+    public final static String INPUT = "input";
     public final static String EXIT = "exit";
     public final static String RUN = "run";
     public final static String LAST_EXECUTION = "lastexecution";
