@@ -267,13 +267,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 }
             }
-            if (receivedCommand == null) {
-                logger.warn("Could not create COMMAND from status update from Onkyo Receiver @{}: data={}",
-                        connection.getConnectionName(), data);
-            } else {
-                logger.info("Received {} - {} - from {}", receivedCommand.getCommandRef().toString(),
-                        receivedCommand.getCommand().toString(), data);
-            }
 
             if (receivedCommand != null) {
                 switch (receivedCommand.getCommandRef()) {
