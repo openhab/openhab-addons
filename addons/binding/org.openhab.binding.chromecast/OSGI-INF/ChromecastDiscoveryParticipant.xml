@@ -2,6 +2,6 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.chromecast">
    <implementation class="org.openhab.binding.chromecast.internal.ChromecastDiscoveryParticipant"/>
    <service>
-      <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
+      <provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant"/>
    </service>
 </scr:component>

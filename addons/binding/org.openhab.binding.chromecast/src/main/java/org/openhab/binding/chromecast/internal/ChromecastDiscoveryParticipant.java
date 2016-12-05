@@ -11,25 +11,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jmdns.ServiceInfo;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.jupnp.model.meta.DeviceDetails;
-import org.jupnp.model.meta.ManufacturerDetails;
-import org.jupnp.model.meta.ModelDetails;
-import org.jupnp.model.meta.RemoteDevice;
-import org.jupnp.model.meta.RemoteDeviceIdentity;
+import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.chromecast.ChromecastBindingConstants;
 
 /**
  * The {@link ChromecastDiscoveryParticipant} is responsible for discovering Chromecast devices through UPnP.
  *
  * @author Kai Kreuzer - Initial contribution
+ * @author Daniel Walters - Change discovery protocol to mDNS
  *
  */
-public class ChromecastDiscoveryParticipant implements UpnpDiscoveryParticipant {
+public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
+
+    private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -37,53 +37,51 @@ public class ChromecastDiscoveryParticipant implements UpnpDiscoveryParticipant 
     }
 
     @Override
-    public DiscoveryResult createResult(final RemoteDevice device) {
-        final ThingUID uid = getThingUID(device);
+    public String getServiceType() {
+        return SERVICE_TYPE;
+    }
+
+    @Override
+    public DiscoveryResult createResult(ServiceInfo service) {
+
+        final ThingUID uid = getThingUID(service);
         if (uid == null) {
             return null;
         }
 
         final Map<String, Object> properties = new HashMap<>(2);
-        properties.put(ChromecastBindingConstants.HOST, device.getDetails().getBaseURL().getHost());
-        properties.put(ChromecastBindingConstants.SERIAL_NUMBER, device.getDetails().getSerialNumber());
+        String host = service.getHostAddresses()[0];
+        properties.put(ChromecastBindingConstants.HOST, host);
 
-        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(device))
-                .withProperties(properties).withLabel(device.getDetails().getFriendlyName())
-                .withRepresentationProperty(ChromecastBindingConstants.SERIAL_NUMBER).build();
+        String friendlyName = service.getPropertyString("fn"); // friendly name;
+
+        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
+                .withProperties(properties).withLabel(friendlyName).build();
+
         return result;
     }
 
-    @Override
-    public ThingUID getThingUID(final RemoteDevice device) {
-        final RemoteDeviceIdentity identity = device.getIdentity();
-        final DeviceDetails deviceDetails = device.getDetails();
-        final ManufacturerDetails manufacturerDetails = deviceDetails.getManufacturerDetails();
-
-        if (manufacturerDetails == null || !manufacturerDetails.getManufacturer().equals("Google Inc.")) {
+    private ThingTypeUID getThingType(final ServiceInfo service) {
+        String model = service.getPropertyString("md"); // model
+        if (model == null) {
             return null;
         }
-
-        ThingTypeUID thingTypeUID = getThingType(device);
-        if (thingTypeUID != null) {
-            return new ThingUID(thingTypeUID, identity.getUdn().getIdentifierString());
+        if (model.equals("Chromecast Audio")) {
+            return ChromecastBindingConstants.THING_TYPE_AUDIO;
         } else {
-            return null;
+            return ChromecastBindingConstants.THING_TYPE_CHROMECAST;
         }
     }
 
-    private ThingTypeUID getThingType(final RemoteDevice device) {
-        final DeviceDetails deviceDetails = device.getDetails();
-        if (deviceDetails != null) {
-            final ModelDetails modelDetails = deviceDetails.getModelDetails();
-            if (modelDetails != null) {
-                if (modelDetails.getModelName().equals("Chromecast Audio")) {
-                    return ChromecastBindingConstants.THING_TYPE_AUDIO;
-                } else if (modelDetails.getModelName().equals("Eureka Dongle")) {
-                    return ChromecastBindingConstants.THING_TYPE_CHROMECAST;
-                }
-            }
+    @Override
+    public ThingUID getThingUID(ServiceInfo service) {
+        ThingTypeUID thingTypeUID = getThingType(service);
+        if (thingTypeUID != null) {
+            String id = service.getPropertyString("id"); // device id
+            return new ThingUID(thingTypeUID, id);
+        } else {
+            return null;
         }
-        return null;
     }
 
 }
