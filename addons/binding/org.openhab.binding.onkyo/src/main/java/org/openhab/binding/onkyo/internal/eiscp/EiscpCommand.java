@@ -172,6 +172,7 @@ public enum EiscpCommand {
     ZONE2_SOURCE_QUERY("SLZQSTN", EiscpCommandRef.ZONE2_SOURCE_QUERY),
     ZONE2_SOURCE_SET("SLZ%02X", EiscpCommandRef.ZONE2_SOURCE_SET),
     ZONE2_SET_SOURCE("SLZ%02X", EiscpCommandRef.ZONE2_SOURCE_SET),
+    ZONE2_SOURCE("SLZ", EiscpCommandRef.ZONE2_SOURCE_SET),
 
     /*
      * Zone 3

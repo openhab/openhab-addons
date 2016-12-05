@@ -267,6 +267,13 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 }
             }
+            if (receivedCommand == null) {
+                logger.warn("Could not create COMMAND from status update from Onkyo Receiver @{}: data={}",
+                        connection.getConnectionName(), data);
+            } else {
+                logger.info("Received {} - {} - from {}", receivedCommand.getCommandRef().toString(),
+                        receivedCommand.getCommand().toString(), data);
+            }
 
             if (receivedCommand != null) {
                 switch (receivedCommand.getCommandRef()) {
@@ -311,7 +318,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     case LISTEN_MODE_SET:
                         String listenModeStr = data.substring(3, 5);
                         // update only when listen mode is supported
-                        if (listenModeStr != "N/") {
+                        if (!listenModeStr.equals("N/")) {
                             int listenMode = Integer.parseInt(listenModeStr, 16);
                             updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
                         }
