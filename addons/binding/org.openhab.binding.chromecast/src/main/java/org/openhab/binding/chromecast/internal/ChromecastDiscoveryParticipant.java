@@ -56,8 +56,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         String friendlyName = service.getPropertyString("fn"); // friendly name;
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                .withProperties(properties).withLabel(friendlyName)
-                .withRepresentationProperty(ChromecastBindingConstants.SERIAL_NUMBER).build();
+                .withProperties(properties).withLabel(friendlyName).build();
 
         return result;
     }
