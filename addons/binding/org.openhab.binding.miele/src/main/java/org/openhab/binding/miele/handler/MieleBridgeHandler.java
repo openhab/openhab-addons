@@ -212,7 +212,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 for (HomeDevice phd : previousHomeDevices) {
                                     if (phd.UID.equals(hd.UID)) {
                                         isExisting = true;
-                                        continue;
+                                        break;
                                     }
                                 }
                                 if (!isExisting) {
@@ -228,7 +228,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 for (HomeDevice chd : currentHomeDevices) {
                                     if (chd.UID.equals(hd.UID)) {
                                         isCurrent = true;
-                                        continue;
+                                        break;
                                     }
                                 }
                                 if (!isCurrent) {
@@ -500,7 +500,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
             out.write(data.getBytes());
             out.flush();
-            out.close();
 
             int statusCode = connection.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
