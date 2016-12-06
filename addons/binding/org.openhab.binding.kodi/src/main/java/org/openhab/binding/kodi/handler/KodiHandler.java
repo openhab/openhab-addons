@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
-import org.openhab.binding.kodi.protocol.KodiConnection;
+import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     public KodiHandler(Thing thing) {
         super(thing);
         connection = new KodiConnection();
-
         connection.addEventListener(this);
     }
 
@@ -201,30 +200,32 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void initialize() {
-
         try {
+            String host = this.getConfig().get(HOST_PARAMETER).toString();
+            if (host == null || host.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "No network address specified");
+            } else {
+                connection.connect(host, getIntConfigParameter(PORT_PARAMETER, 9090));
 
-            connection.connect(this.getConfig().get(HOST_PARAMETER).toString(),
-                    getIntConfigParameter(PORT_PARAMETER, 9090));
+                // Start the connection checker
+                Runnable connectionChecker = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            connection.checkConnection();
+                        } catch (Exception ex) {
+                            logger.warn("Exception in check connection to @{}. Cause: {}",
+                                    connection.getConnectionName(), ex.getMessage());
 
-            // Start the connection checker
-            Runnable connectionChecker = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        connection.checkConnection();
-                    } catch (Exception ex) {
-                        logger.warn("Exception in check connection to @{}. Cause: {}", connection.getConnectionName(),
-                                ex.getMessage());
-
+                        }
                     }
-                }
-            };
-            connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
-
+                };
+                connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
+            }
         } catch (Exception e) {
-            logger.error("error during opening connection: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.debug("error during opening connection: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -271,9 +272,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case Rewind:
                 updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
                 break;
-
         }
-
     }
 
     @Override
@@ -288,7 +287,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateTitle(String title) {
         updateState(CHANNEL_TITLE, new StringType(title));
-
     }
 
     @Override
@@ -304,7 +302,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateMediaType(String mediaType) {
         updateState(CHANNEL_MEDIATYPE, new StringType(mediaType));
-
     }
 
 }

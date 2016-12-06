@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
+import org.eclipse.smarthome.core.net.HttpServiceUtil;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -24,6 +26,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.kodi.handler.KodiHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link KodiHandlerFactory} is responsible for creating things and thing
@@ -32,6 +36,8 @@ import org.osgi.service.component.ComponentContext;
  * @author Paul Frank - Initial contribution
  */
 public class KodiHandlerFactory extends BaseThingHandlerFactory {
+
+    private Logger logger = LoggerFactory.getLogger(KodiHandlerFactory.class);
 
     private AudioHTTPServer audioHTTPServer;
 
@@ -61,7 +67,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
             KodiHandler handler = new KodiHandler(thing);
 
             // register the kodi as an audio sink
-            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, callbackUrl);
+            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, createCallbackUrl());
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
@@ -71,6 +77,27 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    private String createCallbackUrl() {
+        if (callbackUrl != null) {
+            return callbackUrl;
+        } else {
+            final String ipAddress = NetUtil.getLocalIpv4HostAddress();
+            if (ipAddress == null) {
+                logger.warn("No network interface could be found.");
+                return null;
+            }
+
+            // we do not use SSL as it can cause certificate validation issues.
+            final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+            if (port == -1) {
+                logger.warn("Cannot find port of the http service.");
+                return null;
+            }
+
+            return "http://" + ipAddress + ":" + port;
+        }
     }
 
     @Override

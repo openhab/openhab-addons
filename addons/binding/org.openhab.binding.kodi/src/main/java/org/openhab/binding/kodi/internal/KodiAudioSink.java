@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes a Sonos speaker to serve as an {@link AudioSink}-
+ * This makes kodi to serve as an {@link AudioSink}-
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Paul Frank - Adapted for kodi

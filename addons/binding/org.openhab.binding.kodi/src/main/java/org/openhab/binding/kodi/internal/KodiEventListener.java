@@ -10,6 +10,14 @@ package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
 
+import org.openhab.binding.kodi.internal.protocol.KodiConnection;
+
+/**
+ * Interface which has to be implemented by a class in order to get status updates from a {@link KodiConnection}
+ *
+ * @author Paul Frank
+ *
+ */
 public interface KodiEventListener extends EventListener {
     public enum KodiState {
         Play,
