@@ -18,36 +18,41 @@ public class IpRegoConnection implements RegoConnection {
     private final Logger logger = LoggerFactory.getLogger(IpRegoConnection.class);
     private final String address;
     private final int port;
-    private final Socket clientSocket;
+    private Socket clientSocket;
 
     public IpRegoConnection(String address, int port) {
         this.address = address;
         this.port = port;
-
-        clientSocket = new Socket();
     }
 
     @Override
     public void connect() throws IOException {
         logger.info("Connecting to '{}', port = {}.", address, port);
-        clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
+        if (clientSocket == null) {
+            clientSocket = new Socket();
+            clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
+        }
         clientSocket.connect(new InetSocketAddress(address, port), CONNECTION_TIMEOUT);
         logger.debug("Connected to '{}', port = {}.", address, port);
     }
 
     @Override
     public boolean isConnected() {
-        return clientSocket.isConnected();
+        return clientSocket != null && clientSocket.isConnected();
     }
 
     @Override
     public void close() {
         try {
-            clientSocket.close();
+            if (clientSocket != null) {
+                clientSocket.close();
+            }
         } catch (IOException e) {
             // There is really not much we can do here, ignore the error and continue execution.
             logger.warn("Closing socket failed", e);
         }
+
+        clientSocket = null;
     }
 
     @Override

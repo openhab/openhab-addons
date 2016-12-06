@@ -11,12 +11,16 @@ import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Queue;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -35,7 +39,6 @@ import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoRegisterMapper;
 import org.openhab.binding.regoheatpump.internal.protocol.ResponseParser;
 import org.openhab.binding.regoheatpump.internal.protocol.ResponseParserFactory;
-import org.openhab.binding.regoheatpump.internal.utils.QueueHashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +51,12 @@ import org.slf4j.LoggerFactory;
 public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RegoHeatPumpHandler.class);
-    private final QueueHashSet<String> pending = new QueueHashSet<String>();
+    private final Queue<String> pending = new ArrayDeque<>();
+    private Short regoVersion;
     private RegoConnection connection;
-    private ScheduledExecutorService executor;
     private RegoRegisterMapper mapper;
+    private ScheduledFuture<?> scheduledRefreshFuture;
+    private Future<?> active;
 
     protected RegoHeatPumpHandler(Thing thing) {
         super(thing);
@@ -60,44 +65,87 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     protected abstract RegoConnection createConnection();
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        addPendingChannel(channelUID.getId());
-        executor.execute(this::processQueue);
-    }
-
-    @Override
     public void initialize() {
         mapper = RegoRegisterMapper.rego600();
-        executor = Executors.newSingleThreadScheduledExecutor();
+        connection = createConnection();
 
-        // Check if we have a valid rego device we can connect to.
-        executor.execute(() -> {
-            try {
-                checkRegoDevice();
-            } catch (IOException e) {
-                // If checking rego version failed than error and status
-                // are already handled and nothing left for us here.
-            }
-        });
+        super.initialize();
 
         int refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
-        executor.scheduleWithFixedDelay(this::refresh, refreshInterval, refreshInterval, TimeUnit.SECONDS);
+        scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, refreshInterval, refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         super.dispose();
 
-        executor.shutdownNow();
-        executor = null;
+        scheduledRefreshFuture.cancel(true);
+        scheduledRefreshFuture = null;
 
-        closeConnection();
+        synchronized (pending) {
+            pending.clear();
+            if (active != null) {
+                active.cancel(true);
+                active = null;
+            }
+        }
+
+        connection.close();
+        connection = null;
 
         mapper = null;
-        pending.clear();
+        regoVersion = null;
     }
 
-    private void processChannelRequest(String channelIID) {
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        refreshChannelAsync(channelUID.getId());
+    }
+
+    private void refreshChannelAsync(String channelIID) {
+        // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
+        // register. To prevent accessing same register twice when both channels are linked,
+        // use same name for both so only a single fetch will be triggered.
+        if (CHANNEL_LAST_ERROR_CODE.equals(channelIID) || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) {
+            channelIID = CHANNEL_LAST_ERROR;
+        }
+
+        synchronized (pending) {
+            pending.add(channelIID);
+            if (active == null) {
+                processNextChannel();
+            }
+        }
+    }
+
+    private void processNextChannel() {
+        synchronized (pending) {
+            final String channelIID = pending.poll();
+            logger.debug("processNextChannel - {}", channelIID);
+            if (channelIID != null && Thread.interrupted() == false) {
+                active = scheduler.submit(() -> {
+                    try {
+                        if (checkRegoDevice()) {
+                            processChannelRequest(channelIID);
+                        } else {
+                            synchronized (pending) {
+                                pending.clear();
+                                active = null;
+                            }
+                        }
+
+                    } finally {
+                        processNextChannel();
+                    }
+                });
+            } else {
+                active = null;
+            }
+        }
+    }
+
+    private void processChannelRequest(final String channelIID) {
         switch (channelIID) {
             case CHANNEL_LAST_ERROR:
                 readLastError();
@@ -138,52 +186,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 .collect(Collectors.toList());
     }
 
-    private void addPendingChannel(String channelIID) {
-        // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
-        // register. To prevent accessing same register twice when both channels are linked,
-        // use same name for both so only a single fetch will be triggered.
-        if (CHANNEL_LAST_ERROR_CODE.equals(channelIID) || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) {
-            channelIID = CHANNEL_LAST_ERROR;
-        }
-        pending.push(channelIID);
-    }
-
     private void refresh() {
-        linkedChannels().forEach(this::addPendingChannel);
-        processQueue();
-    }
-
-    private void processQueue() {
-        while (Thread.interrupted() == false) {
-            final String channelIID = pending.peek();
-            if (channelIID == null) {
-                break;
-            }
-
-            processChannelRequest(channelIID);
-            pending.poll();
-
-            if (thing.getStatus() != ThingStatus.ONLINE) {
-                pending.clear();
-                break;
-            }
+        synchronized (pending) {
+            linkedChannels().forEach(this::refreshChannelAsync);
         }
-    }
-
-    private void closeConnection() {
-        if (connection != null) {
-            connection.close();
-            connection = null;
-        }
-    }
-
-    private void onDisconnected(String message) {
-        logger.info("Disconnected due {}.", message);
-
-        closeConnection();
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-        linkedChannels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
     }
 
     private void readLastError() {
@@ -206,14 +212,14 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 });
     }
 
-    private void readFromFrontPanel(String channelIID, short address) {
+    private void readFromFrontPanel(final String channelIID, short address) {
         final byte[] command = CommandFactory.createReadFromFrontPanelCommand(address);
         executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, v -> {
             return v == 0 ? OnOffType.OFF : OnOffType.ON;
         });
     }
 
-    private void readFromSystemRegister(String channelIID) {
+    private void readFromSystemRegister(final String channelIID) {
         RegoRegisterMapper.Channel channel = mapper.map(channelIID);
         if (channel == null) {
             logger.warn("Unknown channel requested '{}'.", channelIID);
@@ -223,14 +229,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private <T> void executeCommandAndUpdateState(String channelIID, byte[] command, ResponseParser<T> parser,
-            Function<T, State> converter) {
+    private <T> void executeCommandAndUpdateState(final String channelIID, final byte[] command,
+            final ResponseParser<T> parser, Function<T, State> converter) {
 
         try {
-            if (thing.getStatus() != ThingStatus.ONLINE) {
-                checkRegoDevice();
-            }
-
             if (logger.isDebugEnabled()) {
                 logger.debug("Reading value for channel '{}' ...", channelIID);
             }
@@ -249,26 +251,31 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private void checkRegoDevice() throws IOException {
-        logger.debug("Reading Rego device version...");
-        short regoVersion = executeCommand(CommandFactory.createReadRegoVersionCommand(), ResponseParserFactory.Short);
+    private boolean checkRegoDevice() {
+        if (regoVersion == null) {
+            try {
+                logger.debug("Reading Rego device version...");
+                regoVersion = executeCommand(CommandFactory.createReadRegoVersionCommand(),
+                        ResponseParserFactory.Short);
 
-        updateStatus(ThingStatus.ONLINE);
-        logger.info("Connected to Rego version {}.", regoVersion);
+                updateStatus(ThingStatus.ONLINE);
+                logger.info("Connected to Rego version {}.", regoVersion);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    private <T> T executeCommand(byte[] command, ResponseParser<T> parser) throws IOException {
+    private <T> T executeCommand(final byte[] command, final ResponseParser<T> parser) throws IOException {
         try {
-            if (connection == null) {
-                connection = createConnection();
-            }
-
             if (connection.isConnected() == false) {
                 connection.connect();
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Sending {}", byteArrayToHex(command));
+                logger.debug("Sending {}", DatatypeConverter.printHexBinary(command));
             }
 
             connection.write(command);
@@ -286,23 +293,21 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Received {}", byteArrayToHex(response));
+                logger.debug("Received {}", DatatypeConverter.printHexBinary(response));
             }
 
             return parser.parse(response);
 
         } catch (IOException e) {
             logger.warn("Command failed.", e);
-            onDisconnected(e.getMessage());
+
+            connection.close();
+
+            regoVersion = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            linkedChannels().forEach(channelIID -> updateState(channelIID, UnDefType.UNDEF));
+
             throw e;
         }
-    }
-
-    private static String byteArrayToHex(byte[] buffer) {
-        StringBuilder builder = new StringBuilder();
-        for (byte b : buffer) {
-            builder.append(String.format("%02X ", b));
-        }
-        return builder.toString();
     }
 }
