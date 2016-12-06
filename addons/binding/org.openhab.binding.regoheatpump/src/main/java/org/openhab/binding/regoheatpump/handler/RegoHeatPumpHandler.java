@@ -100,7 +100,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        refreshChannelAsync(channelUID.getId());
+        final String channelIID = channelUID.getId();
+        if (isLinked(channelIID)) {
+            refreshChannelAsync(channelIID);
+        }
     }
 
     private void refreshChannelAsync(String channelIID) {
@@ -122,7 +125,6 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     private void processNextChannel() {
         synchronized (pending) {
             final String channelIID = pending.poll();
-            logger.debug("processNextChannel - {}", channelIID);
             if (channelIID != null && Thread.interrupted() == false) {
                 active = scheduler.submit(() -> {
                     try {
