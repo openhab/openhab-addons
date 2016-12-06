@@ -55,6 +55,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchRGBW;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchToggle;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Thermostat;
 import de.fh_zwickau.informatik.sensor.model.devices.types.ToggleButton;
+import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 
 /**
  * The {@link ZWayDeviceHandler} is responsible for handling commands, which are
@@ -103,13 +104,15 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     for (Channel channel : getThing().getChannels()) {
                         if (isLinked(channel.getUID().getId())) {
                             String deviceId = channel.getProperties().get("deviceId");
-
-                            Set<Item> items = linkRegistry.getLinkedItems(channel.getUID());
-                            for (Item item : items) {
-                                logger.debug("Linked item found - starting register command for openHAB item: {}",
-                                        item);
-                                zwayRegisterOpenHabItem(item, deviceId);
-                            }
+                            if (deviceId != null) {
+                                Set<Item> items = linkRegistry.getLinkedItems(channel.getUID());
+                                for (Item item : items) {
+                                    logger.debug("Linked item found - starting register command for openHAB item: {}",
+                                            item);
+                                    zwayRegisterOpenHabItem(item, deviceId);
+                                }
+                            } // else - no channel for virtual device, channels for command classes can't register as
+                              // observer
                         }
                     }
                 }
@@ -240,7 +243,25 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     if (isLinked(channel.getUID().getId())) {
                         logger.debug("Refresh items that linked with channel: {}", channel.getLabel());
 
-                        refreshChannel(channel);
+                        // https://community.openhab.org/t/oh2-major-bug-with-scheduled-jobs/12350/11
+                        // If any execution of the task encounters an exception, subsequent executions are
+                        // suppressed. Otherwise, the task will only terminate via cancellation or
+                        // termination of the executor.
+                        try {
+                            refreshChannel(channel);
+                        } catch (Throwable t) {
+                            if (t instanceof Exception) {
+                                logger.error("Error occurred when performing polling:" + ((Exception) t).getMessage());
+                            } else if (t instanceof Error) {
+                                logger.error("Error occurred when performing polling: " + ((Error) t).getMessage());
+                            } else {
+                                logger.error("Error occurred when performing polling: Unexpected error");
+                            }
+                            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                                        "Error occurred when performing polling.");
+                            }
+                        }
                     } else {
                         logger.debug("Polling for device: {} not possible (channel {} not linked", thing.getLabel(),
                                 channel.getLabel());
@@ -269,7 +290,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         scheduler.execute(new DevicePolling());
     }
 
-    private void refreshChannel(final Channel channel) {
+    private void refreshChannel(Channel channel) {
         // Check Z-Way bridge handler
         ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
         if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
@@ -278,28 +299,43 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         }
 
         // Check device id associated with channel
-        final String deviceId = channel.getProperties().get("deviceId");
-        if (deviceId == null) {
-            logger.debug("ZAutomation device id not found.");
-            return;
-        }
+        String deviceId = channel.getProperties().get("deviceId");
+        if (deviceId != null) {
+            // Load and check device from Z-Way server
+            DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
+            if (deviceList != null) {
+                // 1.) Load only the current value from Z-Way server
+                Device device = deviceList.getDeviceById(deviceId);
+                if (device == null) {
+                    logger.debug("ZAutomation device not found.");
+                    return;
+                }
 
-        // Load and check device from Z-Way server
-        DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
-        if (deviceList != null) {
-            // 1.) Load only the current value from Z-Way server
-            Device device = deviceList.getDeviceById(deviceId);
-            if (device == null) {
-                logger.debug("ZAutomation device not found.");
-                return;
+                updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
+
+                // 2.) Trigger update function, soon as the value has been updated, openHAB will be notified
+                try {
+                    device.update();
+                } catch (Exception e) {
+                    logger.debug(device.getMetrics().getTitle()
+                            + " doesn't support update (triggered during refresh channel)");
+                }
+            } else {
+                logger.warn("Devices not loaded");
             }
-
-            updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
-
-            // 2.) Trigger update function, soon as the value has been updated, openHAB will be notified
-            device.update();
         } else {
-            logger.warn("Devices not loaded");
+            // Check channel for command classes
+            // Channel thermostat mode
+            if (channel.getUID().equals(new ChannelUID(getThing().getUID(), THERMOSTAT_MODE_CC_CHANNEL))) {
+                // Load physical device
+                Integer nodeId = Integer.parseInt(channel.getProperties().get("nodeId"));
+                ZWaveDevice physicalDevice = zwayBridgeHandler.getZWayApi().getZWaveDevice(nodeId);
+
+                if (physicalDevice != null) {
+                    updateState(channel.getUID(), new DecimalType(physicalDevice.getInstances().get0()
+                            .getCommandClasses().get64().getData().getMode().getValue()));
+                }
+            }
         }
     }
 
@@ -320,11 +356,13 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             Channel channel = thing.getChannel(channelUID.getId());
             String deviceId = channel.getProperties().get("deviceId");
 
-            Set<Item> items = linkRegistry.getLinkedItems(channelUID);
-            for (Item item : items) {
-                logger.debug("Linked item found - starting register command for openHAB item: {}", item);
-                zwayRegisterOpenHabItem(item, deviceId);
-            }
+            if (deviceId != null) {
+                Set<Item> items = linkRegistry.getLinkedItems(channelUID);
+                for (Item item : items) {
+                    logger.debug("Linked item found - starting register command for openHAB item: {}", item);
+                    zwayRegisterOpenHabItem(item, deviceId);
+                }
+            } // else - no channel for virtual device, channels for command classes can't register as observer
         }
 
         super.channelLinked(channelUID); // performs a refresh command
@@ -341,13 +379,19 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         }
 
         if (zwayBridgeHandler.getZWayBridgeConfiguration().getObserverMechanismEnabled()) {
-            // TODO no items for this channel available at this point!
-            // before method called by system the item removed
-            Set<Item> items = linkRegistry.getLinkedItems(channelUID);
-            for (Item item : items) {
-                logger.debug("Linked item found - starting remove command for openHAB item: {}", item);
-                zwayUnsubscribeOpenHabItem(item);
-            }
+            // Load device id from channel's properties for the compatibility of ZAutomation and ZWave devices
+            Channel channel = thing.getChannel(channelUID.getId());
+            String deviceId = channel.getProperties().get("deviceId");
+
+            if (deviceId != null) {
+                // TODO no items for this channel available at this point!
+                // before method called by system the item removed
+                Set<Item> items = linkRegistry.getLinkedItems(channelUID);
+                for (Item item : items) {
+                    logger.debug("Linked item found - starting remove command for openHAB item: {}", item);
+                    zwayUnsubscribeOpenHabItem(item);
+                }
+            } // else - no channel for virtual device, channels for command classes can't register as observer
         }
 
         super.channelUnlinked(channelUID);
@@ -411,113 +455,126 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         final Channel channel = getThing().getChannel(channelUID.getId());
         final String deviceId = channel.getProperties().get("deviceId");
 
-        if (deviceId == null) {
-            logger.debug("ZAutomation device id not found.");
-            return;
-        }
-
-        DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
-        if (deviceList != null) {
-            Device device = deviceList.getDeviceById(deviceId);
-            if (device == null) {
-                logger.debug("ZAutomation device not found.");
-                return;
-            }
-
-            try {
-                if (command instanceof RefreshType) {
-                    logger.debug("Handle command: RefreshType");
-
-                    refreshChannel(channel);
-                } else {
-                    if (device instanceof Battery) {
-                        // possible commands: update()
-                    } else if (device instanceof Doorlock) {
-                        // possible commands: open(), close()
-                        if (command instanceof OnOffType) {
-                            logger.debug("Handle command: OnOffType");
-                            if (command.equals(OnOffType.ON)) {
-                                device.open();
-                            } else if (command.equals(OnOffType.OFF)) {
-                                device.close();
-                            }
-                        }
-                    } else if (device instanceof SensorBinary) {
-                        // possible commands: update()
-                    } else if (device instanceof SensorMultilevel) {
-                        // possible commands: update()
-                    } else if (device instanceof SwitchBinary) {
-                        // possible commands: update(), on(), off()
-                        if (command instanceof OnOffType) {
-                            logger.debug("Handle command: OnOffType");
-
-                            if (command.equals(OnOffType.ON)) {
-                                device.on();
-                            } else if (command.equals(OnOffType.OFF)) {
-                                device.off();
-                            }
-                        }
-                    } else if (device instanceof SwitchMultilevel) {
-                        // possible commands: update(), on(), up(), off(), down(), min(), max(), upMax(), increase(),
-                        // decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(), startDown()
-                        if (command instanceof DecimalType) {
-                            logger.debug("Handle command: DecimalType");
-
-                            device.exact(command.toString());
-                        }
-                    } else if (device instanceof SwitchRGBW) {
-                        // possible commands: on(), off(), exact(red, green, blue)
-                        if (command instanceof HSBType) {
-                            logger.debug("Handle command: HSBType");
-
-                            HSBType hsb = (HSBType) command;
-
-                            // first set on/off
-                            if (hsb.getBrightness().intValue() > 0) {
-                                if (device.getMetrics().getLevel().toLowerCase().equals("off")) {
-                                    device.on();
-                                }
-
-                                // then set color
-                                int red = (int) Math.round(255 * (hsb.getRed().doubleValue() / 100));
-                                int green = (int) Math.round(255 * (hsb.getGreen().doubleValue() / 100));
-                                int blue = (int) Math.round(255 * (hsb.getBlue().doubleValue() / 100));
-
-                                device.exact(red, green, blue);
-                            } else {
-                                device.off();
-                            }
-                        }
-                    } else if (device instanceof SwitchToggle) {
-                        // possible commands: ?
-                    } else if (device instanceof Thermostat) {
-                        if (command instanceof DecimalType) {
-                            logger.debug("Handle command: DecimalType");
-
-                            device.exact(command.toString());
-                        }
-
-                    } else if (device instanceof SwitchControl) {
-                        // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(), downstop()
-                        if (command instanceof OnOffType) {
-                            logger.debug("Handle command: OnOffType");
-
-                            if (command.equals(OnOffType.ON)) {
-                                device.on();
-                            } else if (command.equals(OnOffType.OFF)) {
-                                device.off();
-                            }
-                        }
-                    } else if (device instanceof ToggleButton) {
-                        // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(), downstop()
-                        // TODO
-                    }
+        if (deviceId != null) {
+            DeviceList deviceList = zwayBridgeHandler.getZWayApi().getDevices();
+            if (deviceList != null) {
+                Device device = deviceList.getDeviceById(deviceId);
+                if (device == null) {
+                    logger.debug("ZAutomation device not found.");
+                    return;
                 }
-            } catch (UnsupportedOperationException e) {
-                logger.warn("Unknown command: {}", e.getMessage());
+
+                try {
+                    if (command instanceof RefreshType) {
+                        logger.debug("Handle command: RefreshType");
+
+                        refreshChannel(channel);
+                    } else {
+                        if (device instanceof Battery) {
+                            // possible commands: update()
+                        } else if (device instanceof Doorlock) {
+                            // possible commands: open(), close()
+                            if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+                                if (command.equals(OnOffType.ON)) {
+                                    device.open();
+                                } else if (command.equals(OnOffType.OFF)) {
+                                    device.close();
+                                }
+                            }
+                        } else if (device instanceof SensorBinary) {
+                            // possible commands: update()
+                        } else if (device instanceof SensorMultilevel) {
+                            // possible commands: update()
+                        } else if (device instanceof SwitchBinary) {
+                            // possible commands: update(), on(), off()
+                            if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } else if (command.equals(OnOffType.OFF)) {
+                                    device.off();
+                                }
+                            }
+                        } else if (device instanceof SwitchMultilevel) {
+                            // possible commands: update(), on(), up(), off(), down(), min(), max(), upMax(),
+                            // increase(),
+                            // decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(), startDown()
+                            if (command instanceof DecimalType) {
+                                logger.debug("Handle command: DecimalType");
+
+                                device.exact(command.toString());
+                            }
+                        } else if (device instanceof SwitchRGBW) {
+                            // possible commands: on(), off(), exact(red, green, blue)
+                            if (command instanceof HSBType) {
+                                logger.debug("Handle command: HSBType");
+
+                                HSBType hsb = (HSBType) command;
+
+                                // first set on/off
+                                if (hsb.getBrightness().intValue() > 0) {
+                                    if (device.getMetrics().getLevel().toLowerCase().equals("off")) {
+                                        device.on();
+                                    }
+
+                                    // then set color
+                                    int red = (int) Math.round(255 * (hsb.getRed().doubleValue() / 100));
+                                    int green = (int) Math.round(255 * (hsb.getGreen().doubleValue() / 100));
+                                    int blue = (int) Math.round(255 * (hsb.getBlue().doubleValue() / 100));
+
+                                    device.exact(red, green, blue);
+                                } else {
+                                    device.off();
+                                }
+                            }
+                        } else if (device instanceof SwitchToggle) {
+                            // possible commands: ?
+                        } else if (device instanceof Thermostat) {
+                            if (command instanceof DecimalType) {
+                                logger.debug("Handle command: DecimalType");
+
+                                device.exact(command.toString());
+                            }
+
+                        } else if (device instanceof SwitchControl) {
+                            // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(),
+                            // downstop()
+                            if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } else if (command.equals(OnOffType.OFF)) {
+                                    device.off();
+                                }
+                            }
+                        } else if (device instanceof ToggleButton) {
+                            // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(),
+                            // downstop()
+                            // TODO
+                        }
+                    }
+                } catch (UnsupportedOperationException e) {
+                    logger.warn("Unknown command: {}", e.getMessage());
+                }
+            } else {
+                logger.warn("Devices not loaded");
             }
-        } else {
-            logger.warn("Devices not loaded");
+        } else if (channel.getUID().equals(new ChannelUID(getThing().getUID(), THERMOSTAT_MODE_CC_CHANNEL))) {
+            // Load physical device
+            Integer nodeId = Integer.parseInt(channel.getProperties().get("nodeId"));
+            if (command instanceof DecimalType) {
+                logger.debug("Handle command: DecimalType");
+
+                zwayBridgeHandler.getZWayApi().getZWaveDeviceThermostatModeSet(nodeId,
+                        Integer.parseInt(command.toString()));
+            } else if (command instanceof RefreshType) {
+                logger.debug("Handle command: RefreshType");
+
+                refreshChannel(channel);
+            }
         }
     }
 
@@ -723,7 +780,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // thing. That's why not check the existence of channel type.
         List<Channel> channels = getThing().getChannels();
         for (Channel channel : channels) {
-            if (channel.getProperties().get("deviceId").equals(properties.get("deviceId"))) {
+            if (channel.getProperties().get("deviceId") != null
+                    && channel.getProperties().get("deviceId").equals(properties.get("deviceId"))) {
                 channelExists = true;
             }
         }
@@ -735,6 +793,42 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     .create(new ChannelUID(getThing().getUID(), id + "-" + properties.get("deviceId")),
                             acceptedItemType)
                     .withType(channelTypeUID).withLabel(label).withProperties(properties).build();
+            thingBuilder.withChannel(channel);
+            thingBuilder.withLabel(thing.getLabel());
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    protected synchronized void addCommandClassThermostatModeAsChannel(Map<Integer, String> modes, Integer nodeId) {
+        logger.debug("Add command class thermostat mode as channel");
+
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), THERMOSTAT_MODE_CC_CHANNEL);
+
+        boolean channelExists = false;
+
+        // Check if a channel for this virtual device exist. Attention: same channel type could multiple assigned to a
+        // thing. That's why not check the existence of channel type.
+        List<Channel> channels = getThing().getChannels();
+        for (Channel channel : channels) {
+            if (channel.getUID().equals(channelUID)) {
+                channelExists = true;
+            }
+        }
+
+        if (!channelExists) {
+            // Prepare properties (convert modes map)
+            HashMap<String, String> properties = new HashMap<String, String>();
+
+            // Add node id (for refresh and command handling)
+            properties.put("nodeId", nodeId.toString());
+
+            // Add channel
+            ThingBuilder thingBuilder = editThing();
+
+            Channel channel = ChannelBuilder.create(channelUID, "Number")
+                    .withType(new ChannelTypeUID(BINDING_ID, THERMOSTAT_MODE_CC_CHANNEL))
+                    .withLabel("Thermostat mode (Command Class)").withDescription("Possible modes: " + modes.toString())
+                    .withProperties(properties).build();
             thingBuilder.withChannel(channel);
             thingBuilder.withLabel(thing.getLabel());
             updateThing(thingBuilder.build());

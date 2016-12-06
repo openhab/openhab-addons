@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
+import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 
 /**
  * The {@link ZWayZWaveDeviceHandler} is responsible for handling commands, which are
@@ -63,6 +64,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                     // suppressed. Otherwise, the task will only terminate via cancellation or
                     // termination of the executor.
                     try {
+                        // physical device means all virtual devices grouped by physical device
                         Map<Integer, List<Device>> physicalDevice = deviceList.getDevicesByNodeId(mConfig.getNodeId());
                         if (physicalDevice != null) {
                             logger.debug("Z-Wave device with node id {} found with {} virtual devices",
@@ -89,6 +91,21 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                                     getThing().getLabel());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                     "Z-Way physical device with node id " + mConfig.getNodeId() + " not found.");
+                        }
+
+                        // Check command classes (only for ThermostatMode)
+                        ZWaveDevice zwaveDevice = getZWayBridgeHandler().getZWayApi()
+                                .getZWaveDevice(mConfig.getNodeId());
+                        if (!zwaveDevice.getInstances().get0().getCommandClasses().get64().getName().equals("")) {
+                            // Load available thermostat modes
+                            Map<Integer, String> modes = zwaveDevice.getInstances().get0().getCommandClasses().get64()
+                                    .getThermostatModes();
+
+                            logger.debug(
+                                    "Z-Wave device implements command class ThermostatMode with the following modes: {}",
+                                    modes.toString());
+
+                            addCommandClassThermostatModeAsChannel(modes, mConfig.getNodeId());
                         }
 
                         // starts polling job and register all linked items

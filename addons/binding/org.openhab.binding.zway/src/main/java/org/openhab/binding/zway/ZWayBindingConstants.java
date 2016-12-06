@@ -49,6 +49,9 @@ public class ZWayBindingConstants {
     // thermostat
     public final static String THERMOSTAT_MODE_CHANNEL = "thermostatMode";
     public final static String THERMOSTAT_SET_POINT_CHANNEL = "thermostatSetPoint";
+
+    public final static String THERMOSTAT_MODE_CC_CHANNEL = "thermostatModeCC";
+
     // sensor multilevel
     public final static String SENSOR_TEMPERATURE_CHANNEL = "sensorTemperature";
     public final static String SENSOR_LUMINOSITY_CHANNEL = "sensorLuminosity";

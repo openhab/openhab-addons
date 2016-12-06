@@ -202,6 +202,14 @@
     
     <!-- TODO: ToggleButton -->
     
+    <channel-type id="thermostatModeCC">
+        <item-type>Number</item-type>
+        <label>Thermostat mode (Command Class)</label>
+        <description>The channel allows the control or display of a thermostat (mode) from command class. The modes differ from device to device.</description>
+        <category>Temperature</category>
+        <state readOnly="false" />
+    </channel-type>
+    
     <!-- Special channel types -->
     
     <channel-type id="actions">
