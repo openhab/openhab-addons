@@ -246,7 +246,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateScreenSaverState(boolean screenSaveActive) {
-        // TODO Auto-generated method stub
 
     }
 
