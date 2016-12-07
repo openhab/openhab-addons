@@ -173,6 +173,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     }
                 } else if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY);
+                } else if (command instanceof StringType) {
+                    final String cmdName = command.toString();
+                    handlePlayerCommand(cmdName);
                 }
                 break;
             case CHANNEL_PLAY_URI:
@@ -393,6 +396,24 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             connection.send(deviceCommand.getCommand());
         } else {
             logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");
+        }
+    }
+
+    private void handlePlayerCommand(String cmdName) {
+        if ("Play".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_PLAY);
+        } else if ("Pause".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_PAUSE);
+        } else if ("Next".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_TRACKUP);
+        } else if ("Previous".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_TRACKDWN);
+        } else if ("Rewind".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_REW);
+        } else if ("FastForward".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_FF);
+        } else {
+            logger.debug("Received unknown playercommand " + cmdName);
         }
     }
 
