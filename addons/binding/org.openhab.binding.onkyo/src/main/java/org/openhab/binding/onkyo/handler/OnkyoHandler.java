@@ -173,9 +173,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     }
                 } else if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY);
-                } else if (command instanceof StringType) {
-                    final String cmdName = command.toString();
-                    handlePlayerCommand(cmdName);
                 }
                 break;
             case CHANNEL_PLAY_URI:
@@ -317,7 +314,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     case LISTEN_MODE_SET:
                         String listenModeStr = data.substring(3, 5);
                         // update only when listen mode is supported
-                        if (!"N/".equals(listenModeStr)) {
+                        if (listenModeStr != "N/") {
                             int listenMode = Integer.parseInt(listenModeStr, 16);
                             updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
                         }
@@ -414,24 +411,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         updateState(CHANNEL_NET_MENU7, new StringType("-"));
         updateState(CHANNEL_NET_MENU8, new StringType("-"));
         updateState(CHANNEL_NET_MENU9, new StringType("-"));
-    }
-
-    private void handlePlayerCommand(String cmdName) {
-        if ("Play".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_PLAY);
-        } else if ("Pause".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_PAUSE);
-        } else if ("Next".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_TRACKUP);
-        } else if ("Previous".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_TRACKDWN);
-        } else if ("Rewind".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_REW);
-        } else if ("FastForward".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_FF);
-        } else {
-            logger.debug("Received unknown playercommand " + cmdName);
-        }
     }
 
     private void handleNetMenuCommand(String cmdName) {

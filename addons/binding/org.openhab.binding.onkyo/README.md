@@ -16,6 +16,7 @@ This binding supports only one thing: The Onkyo AV Receiver.  All supported Onky
 This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
 
 * TX-NR535
+* TX-NR626
 * TX-NR646
 
 ## Binding Configuration
@@ -64,6 +65,18 @@ The Onkyo AVR supports the following channels:
 | player#currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
 | player#listenmode              | Number       | Current listening mode e.g. Stero, 5.1ch Surround,..|
 | player#playuri                 | String       | Plays the URI provided to the channel |
+| netmenu#control                | String       | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9] 
+| netmenu#selection              | Number       | The number of the currently selected USB/Net Menu entry (0-9) 
+| netmenu#item0                  | String       | The text of USB/Net Menu entry 0
+| netmenu#item1                  | String       | The text of USB/Net Menu entry 1
+| netmenu#item2                  | String       | The text of USB/Net Menu entry 2 
+| netmenu#item3                  | String       | The text of USB/Net Menu entry 3 
+| netmenu#item4                  | String       | The text of USB/Net Menu entry 4 
+| netmenu#item5                  | String       | The text of USB/Net Menu entry 5 
+| netmenu#item6                  | String       | The text of USB/Net Menu entry 6 
+| netmenu#item7                  | String       | The text of USB/Net Menu entry 7 
+| netmenu#item8                  | String       | The text of USB/Net Menu entry 8 
+| netmenu#item9                  | String       | The text of USB/Net Menu entry 9 
 
 ##Input Source Mapping
 
