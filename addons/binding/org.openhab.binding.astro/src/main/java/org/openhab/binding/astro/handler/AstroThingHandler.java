@@ -142,7 +142,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Iterates all channels of the thing and updates their states.
      */
-    protected void publishPlanet() {
+    public void publishPlanet() {
         logger.debug("Publishing planet {} for thing {}", getPlanet().getClass().getSimpleName(), getThing().getUID());
         for (Channel channel : getThing().getChannels()) {
             if (channel.getKind() != ChannelKind.TRIGGER) {
@@ -190,34 +190,37 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                             String thingUid = getThing().getUID().toString();
                             JobDataMap jobDataMap = new JobDataMap();
                             jobDataMap.put(AbstractBaseJob.KEY_THING_UID, thingUid);
+                            jobDataMap.put(AbstractBaseJob.KEY_JOB_NAME, "job-daily");
 
                             // dailyJob
-                            String jobIdentity = DailyJob.class.getSimpleName();
-                            Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
+                            Trigger trigger = newTrigger().withIdentity("trigger-daily", thingUid)
                                     .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
-                            JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
+                            JobDetail jobDetail = newJob(DailyJob.class).withIdentity("job-daily", thingUid)
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
-                            logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
+                            logger.info("Scheduled astro job-daily at midnight for thing {}", thingUid);
 
                             // startupJob
-                            trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
-                            jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
+                            trigger = newTrigger().withIdentity("trigger-daily-startup", thingUid).startNow().build();
+                            jobDetail = newJob(DailyJob.class).withIdentity("job-daily-startup", thingUid)
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
 
                             if (isPositionalChannelLinked()) {
                                 // positional intervalJob
-                                jobIdentity = PositionalJob.class.getSimpleName();
+                                jobDataMap = new JobDataMap();
+                                jobDataMap.put(AbstractBaseJob.KEY_THING_UID, thingUid);
+                                jobDataMap.put(AbstractBaseJob.KEY_JOB_NAME, "job-positional");
+
                                 Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
-                                trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
+                                trigger = newTrigger().withIdentity("trigger-positional", thingUid).startAt(start)
                                         .withSchedule(simpleSchedule().repeatForever()
                                                 .withIntervalInSeconds(thingConfig.getInterval()))
                                         .build();
-                                jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
+                                jobDetail = newJob(PositionalJob.class).withIdentity("job-positional", thingUid)
                                         .usingJobData(jobDataMap).build();
                                 quartzScheduler.scheduleJob(jobDetail, trigger);
-                                logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
+                                logger.info("Scheduled astro job-positional with interval of {} seconds for thing {}",
                                         thingConfig.getInterval(), thingUid);
                             }
                         }

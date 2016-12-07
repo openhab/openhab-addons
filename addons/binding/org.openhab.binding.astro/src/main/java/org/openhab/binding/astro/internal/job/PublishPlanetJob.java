@@ -13,12 +13,11 @@ import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.quartz.JobDataMap;
 
 /**
- * Job to trigger a event.
+ * Simple job that publishes the daily info for a planet.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class EventJob extends AbstractBaseJob {
-    public static final String KEY_EVENT = "event";
+public class PublishPlanetJob extends AbstractBaseJob {
 
     /**
      * {@inheritDoc}
@@ -27,9 +26,7 @@ public class EventJob extends AbstractBaseJob {
     protected void executeJob(String thingUid, JobDataMap jobDataMap) {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(thingUid);
         if (astroHandler != null) {
-            String event = jobDataMap.getString(KEY_EVENT);
-            String channelId = jobDataMap.getString(KEY_CHANNEL_ID);
-            astroHandler.triggerEvent(channelId, event);
+            astroHandler.publishDailyInfo();
         }
     }
 

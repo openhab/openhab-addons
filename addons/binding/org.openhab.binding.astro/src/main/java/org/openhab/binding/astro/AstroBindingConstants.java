@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.astro;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -32,57 +29,38 @@ public class AstroBindingConstants {
     public static final ThingTypeUID THING_TYPE_MOON = new ThingTypeUID(BINDING_ID, MOON);
 
     // events
-    public static final Map<String, String> MOON_EVENTS = new HashMap<String, String>();
-    public static final Map<String, String> SUN_EVENTS = new HashMap<String, String>();
+    public static final String EVENT_START = "START";
+    public static final String EVENT_END = "END";
 
-    public static final String EVENT_CHANNEL_ID = "event#event";
+    public static final String EVENT_PHASE_FIRST_QUARTER = "FIRST_QUARTER";
+    public static final String EVENT_PHASE_THIRD_QUARTER = "THIRD_QUARTER";
+    public static final String EVENT_PHASE_FULL = "FULL";
+    public static final String EVENT_PHASE_NEW = "NEW";
 
-    static {
-        MOON_EVENTS.put("rise#start", "RISE_START");
-        MOON_EVENTS.put("set#end", "SET_END");
-        MOON_EVENTS.put("phase#firstQuarter", "FIRST_QUARTER");
-        MOON_EVENTS.put("phase#thirdQuarter", "THIRD_QUARTER");
-        MOON_EVENTS.put("phase#full", "FULL");
-        MOON_EVENTS.put("phase#new", "NEW");
-        MOON_EVENTS.put("eclipse#total", "TOTAL_ECLIPSE");
-        MOON_EVENTS.put("eclipse#partial", "PARTIAL_ECLIPSE");
-        MOON_EVENTS.put("perigee#date", "PERIGEE");
-        MOON_EVENTS.put("apogee#date", "APOGEE");
+    public static final String EVENT_ECLIPSE_PARTIAL = "PARTIAL";
+    public static final String EVENT_ECLIPSE_TOTAL = "TOTAL";
+    public static final String EVENT_ECLIPSE_RING = "RING";
 
-        SUN_EVENTS.put("rise#start", "RISE_START");
-        SUN_EVENTS.put("rise#end", "RISE_END");
-        SUN_EVENTS.put("set#start", "SET_START");
-        SUN_EVENTS.put("set#end", "SET_END");
-        SUN_EVENTS.put("noon#start", "NOON_START");
-        SUN_EVENTS.put("noon#end", "NOON_END");
-        SUN_EVENTS.put("night#start", "NIGHT_START");
-        SUN_EVENTS.put("night#end", "NIGHT_END");
-        SUN_EVENTS.put("morningNight#start", "MORNING_NIGHT_START");
-        SUN_EVENTS.put("morningNight#end", "MORNING_NIGHT_END");
-        SUN_EVENTS.put("astroDawn#start", "ASTRO_DAWN_START");
-        SUN_EVENTS.put("astroDawn#end", "ASTRO_DAWN_END");
-        SUN_EVENTS.put("nauticDawn#start", "NAUTIC_DAWN_START");
-        SUN_EVENTS.put("nauticDawn#end", "NAUTIC_DAWN_END");
-        SUN_EVENTS.put("civilDawn#start", "CIVIL_DAWN_START");
-        SUN_EVENTS.put("civilDawn#end", "CIVIL_DAWN_END");
-        SUN_EVENTS.put("astroDusk#start", "ASTRO_DUSK_START");
-        SUN_EVENTS.put("astroDusk#end", "ASTRO_DUSK_END");
-        SUN_EVENTS.put("nauticDusk#start", "NAUTIC_DUSK_START");
-        SUN_EVENTS.put("nauticDusk#end", "NAUTIC_DUSK_END");
-        SUN_EVENTS.put("civilDusk#start", "CIVIL_DUSK_START");
-        SUN_EVENTS.put("civilDusk#end", "CIVIL_DUSK_END");
-        SUN_EVENTS.put("eveningNight#start", "EVENING_NIGHT_START");
-        SUN_EVENTS.put("eveningNight#end", "EVENING_NIGHT_END");
-        SUN_EVENTS.put("daylight#start", "DAYLIGHT_START");
-        SUN_EVENTS.put("daylight#end", "DAYLIGHT_END");
-        SUN_EVENTS.put("eclipse#total", "TOTAL_ECLIPSE");
-        SUN_EVENTS.put("eclipse#partial", "PARTIAL_ECLIPSE");
-        SUN_EVENTS.put("eclipse#ring", "RING_ECLIPSE");
-        SUN_EVENTS.put("zodiac#start", "ZODIAC_{}_START");
-        SUN_EVENTS.put("zodiac#end", "ZODIAC_{}_END");
-        SUN_EVENTS.put("season#spring", "SEASON_SPRING");
-        SUN_EVENTS.put("season#summer", "SEASON_SUMMER");
-        SUN_EVENTS.put("season#autumn", "SEASON_AUTUMN");
-        SUN_EVENTS.put("season#winter", "SEASON_WINTER");
-    }
+    public static final String EVENT_PERIGEE = "PERIGEE";
+    public static final String EVENT_APOGEE = "APOGEE";
+
+    // event channelIds
+    public static final String EVENT_CHANNEL_ID_MOON_PHASE = "phase#event";
+    public static final String EVENT_CHANNEL_ID_ECLIPSE = "eclipse#event";
+    public static final String EVENT_CHANNEL_ID_PERIGEE = "perigee#event";
+    public static final String EVENT_CHANNEL_ID_APOGEE = "apogee#event";
+
+    public static final String EVENT_CHANNEL_ID_RISE = "rise#event";
+    public static final String EVENT_CHANNEL_ID_SET = "set#event";
+    public static final String EVENT_CHANNEL_ID_NOON = "noon#event";
+    public static final String EVENT_CHANNEL_ID_NIGHT = "night#event";
+    public static final String EVENT_CHANNEL_ID_MORNING_NIGHT = "morningNight#event";
+    public static final String EVENT_CHANNEL_ID_ASTRO_DAWN = "astroDawn#event";
+    public static final String EVENT_CHANNEL_ID_NAUTIC_DAWN = "nauticDawn#event";
+    public static final String EVENT_CHANNEL_ID_CIVIL_DAWN = "civilDawn#event";
+    public static final String EVENT_CHANNEL_ID_ASTRO_DUSK = "astroDusk#event";
+    public static final String EVENT_CHANNEL_ID_NAUTIC_DUSK = "nauticDusk#event";
+    public static final String EVENT_CHANNEL_ID_CIVIL_DUSK = "civilDusk#event";
+    public static final String EVENT_CHANNEL_ID_EVENING_NIGHT = "eveningNight#event";
+    public static final String EVENT_CHANNEL_ID_DAYLIGHT = "daylight#event";
 }

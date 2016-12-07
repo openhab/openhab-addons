@@ -73,7 +73,7 @@ Events:
 ```
 rule "example trigger rule"
 when
-    Channel 'astro:sun:home:event#event' triggered RISE_START 
+    Channel 'astro:sun:home:rise#event' triggered START 
 then
     ...
 end
@@ -81,9 +81,23 @@ end
 
 Available events:
 * **thing** `sun`
-    * `RISE_START, RISE_END, SET_START, SET_END, NOON_START, NOON_END, NIGHT_START, NIGHT_END, MORNING_NIGHT_START, MORNING_NIGHT_END, ASTRO_DAWN_START, ASTRO_DAWN_END, NAUTIC_DAWN_START, NAUTIC_DAWN_END, CIVIL_DAWN_START, CIVIL_DAWN_END, ASTRO_DUSK_START, ASTRO_DUSK_END, NAUTIC_DUSK_START, NAUTIC_DUSK_END, CIVIL_DUSK_START, CIVIL_DUSK_END, EVENING_NIGHT_START, EVENING_NIGHT_END, DAYLIGHT_START, DAYLIGHT_END, TOTAL_ECLIPSE, PARTIAL_ECLIPSE, RING_ECLIPSE, ZODIAC_ARIES_START, ZODIAC_ARIES_END, ZODIAC_TAURUS_START, ZODIAC_TAURUS_END, ZODIAC_GEMINI_START, ZODIAC_GEMINI_END, ZODIAC_CANCER_START, ZODIAC_CANCER_END, ZODIAC_LEO_START, ZODIAC_LEO_END, ZODIAC_VIRGO_START, ZODIAC_VIRGO_END, ZODIAC_LIBRA_START, ZODIAC_LIBRA_END, ZODIAC_SCORPIO_START, ZODIAC_SCORPIO_END, ZODIAC_SAGITTARIUS_START, ZODIAC_SAGITTARIUS_END, ZODIAC_CAPRICORN_START, ZODIAC_CAPRICORN_END, ZODIAC_AQUARIUS_START, ZODIAC_AQUARIUS_END, ZODIAC_PISCES_START, ZODIAC_PISCES_END, SEASON_SPRING, SEASON_SUMMER, SEASON_AUTUMN, SEASON_WINTER`
+    * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
+        * **event** `START, END`
+    * **group** `eclipse`
+        * **event**: `TOTAL, PARTIAL, RING`
 * **thing** `moon`
-    * `RISE_START, SET_END, FIRST_QUARTER, THIRD_QUARTER, FULL, NEW, TOTAL_ECLIPSE, PARTIAL_ECLIPSE, PERIGEE, APOGEE`
+    * **group** `rise`
+        * **event** `START`
+    * **group** `set`
+        * **event** `END`
+    * **group** `phase`
+        * **event**: `FIRST_QUARTER, THIRD_QUARTER, FULL, NEW`
+    * **group** `eclipse`
+        * **event**: `TOTAL, PARTIAL`
+    * **group** `perigee`
+        * **event**: `PERIGEE`
+    * **group** `apogee`
+        * **event**: `APOGEE`
 
-**note**: delayed events not available, currently not supported by the openHab 2 framework
+**Note**: delayed events not available, currently not supported by the openHab 2 framework
 
