@@ -106,13 +106,15 @@
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
-				<option value="00">DVR/VCR</option>
-				<option value="01">SATELLITE/CABLE</option>
-				<option value="02">GAME</option>
-				<option value="03">AUX</option>
-				<option value="04">GAME</option>
-				<option value="05">PC</option>
+				<option value="0">DVR/VCR</option>
+				<option value="1">SATELLITE/CABLE</option>
+				<option value="2">GAME</option>
+				<option value="3">AUX</option>
+				<option value="4">GAME2</option>
+				<option value="5">PC</option>
 				<option value="16">BLURAY/DVD</option>
+				<option value="17">STRM BOX</option>
+				<option value="18">TV</option>
 				<option value="32">TAPE1</option>
 				<option value="33">TAPE2</option>
 				<option value="34">PHONO</option>
@@ -125,10 +127,12 @@
 				<option value="41">USB</option>
 				<option value="42">USB_BACK</option>
 				<option value="43">NETWORK</option>
+				<option value="44">USB_TOGGLE</option>
 				<option value="45">AIRPLAY</option>
 				<option value="46">BLUETOOTH</option>
 				<option value="48">MULTICH</option>
 				<option value="50">SIRIUS</option>
+				<option value="128">SOURCE</option>
 			</options>
 		</state>
 	</channel-type>
@@ -156,23 +160,27 @@
 		<description>Listen mode</description>
 		<state>
 			<options>
-				<option value="00">Stereo</option>
-				<option value="03">Game RPG</option>
-				<option value="05">Game Action</option>
-				<option value="06">Game Rock</option>
-				<option value="08">Orchestra</option>
-				<option value="09">unplugged</option>
+				<option value="0">Stereo</option>
+				<option value="1">Direct</option>
+				<option value="3">Game RPG</option>
+				<option value="5">Game Action</option>
+				<option value="6">Game Rock</option>
+				<option value="8">Orchestra</option>
+				<option value="9">unplugged</option>
 				<option value="10">Studio Mix</option>
 				<option value="11">TV Logic</option>
 				<option value="12">All Channel Stereo</option>
-				<option value="12">Theater Dimensional</option>
+				<option value="13">Theater Dimensional</option>
+				<option value="14">Game-Sports</option>
+				<option value="15">Mono</option>
 				<option value="17">Pure Audio</option>
-				<option value="19">Mono</option>
+				<option value="19">Full Mono</option>
 				<option value="22">Audyssey DSX</option>
 				<option value="64">5.1ch Surround</option>
 				<option value="128">PLII/PLIIx Movie</option>
 				<option value="129">PLII/PLIIx Music</option>
-				<option value="131">Neo:6 Music</option>
+				<option value="130">Neo 6/Neo:X Cinema + DTS:X/Neural:X</option>
+				<option value="131">Neo 6/Neo:X Music</option>
 				<option value="134">PLII/PLIIx Game</option>
 				<option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
 				<option value="161">PLIIx/PLII Music + Audyssey DSX</option>
