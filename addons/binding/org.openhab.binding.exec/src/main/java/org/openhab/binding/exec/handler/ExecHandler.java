@@ -100,7 +100,7 @@ public class ExecHandler extends BaseThingHandler {
     public void initialize() {
 
         if (executionJob == null || executionJob.isCancelled()) {
-            if (((BigDecimal) getConfig().get(INTERVAL)) != null) {
+            if (((BigDecimal) getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int polling_interval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
                 executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, polling_interval,
                         TimeUnit.SECONDS);
