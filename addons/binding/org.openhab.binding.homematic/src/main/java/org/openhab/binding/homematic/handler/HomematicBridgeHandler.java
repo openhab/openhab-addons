@@ -128,18 +128,20 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * Registers the DeviceDiscoveryService.
      */
     private void registerDeviceDiscoveryService() {
-        logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
-        discoveryService = new HomematicDeviceDiscoveryService(this);
-        discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
-        discoveryService.activate();
+        if (bundleContext != null) {
+            logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
+            discoveryService = new HomematicDeviceDiscoveryService(this);
+            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+                    discoveryService, new Hashtable<String, Object>());
+            discoveryService.activate();
+        }
     }
 
     /**
      * Unregisters the DeviceDisoveryService.
      */
     private void unregisterDeviceDiscoveryService() {
-        if (discoveryServiceRegistration != null) {
+        if (discoveryServiceRegistration != null && bundleContext != null) {
             HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
             service.deactivate();
