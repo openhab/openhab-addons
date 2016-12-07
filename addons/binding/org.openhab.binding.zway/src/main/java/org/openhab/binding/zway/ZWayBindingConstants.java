@@ -72,6 +72,8 @@ public class ZWayBindingConstants {
     public final static String SENSOR_MOTION_CHANNEL = "sensorMotion";
     // switch binary
     public final static String SWITCH_POWER_OUTLET_CHANNEL = "switchPowerOutlet";
+    // switch multilevel
+    public final static String SWITCH_ROLLERSHUTTER_CHANNEL = "switchColorTemperature";
     // special channels
     public final static String ACTIONS_CHANNEL = "actions";
     public final static String SECURE_INCLUSION_CHANNEL = "secureInclusion";

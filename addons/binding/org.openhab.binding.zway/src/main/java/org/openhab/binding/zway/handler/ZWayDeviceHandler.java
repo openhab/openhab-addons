@@ -22,6 +22,8 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -505,7 +507,24 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                 logger.debug("Handle command: DecimalType");
 
                                 device.exact(command.toString());
+                            } else if (command instanceof UpDownType) {
+                                if (command.equals(UpDownType.UP)) {
+                                    logger.debug("Handle command: UpDownType.Up");
+
+                                    device.startUp();
+                                } else if (command.equals(UpDownType.DOWN)) {
+                                    logger.debug("Handle command: UpDownType.Down");
+
+                                    device.startDown();
+                                }
+                            } else {
+                                if (command instanceof StopMoveType) {
+                                    logger.debug("Handle command: StopMoveType");
+
+                                    device.stop();
+                                }
                             }
+
                         } else if (device instanceof SwitchRGBW) {
                             // possible commands: on(), off(), exact(red, green, blue)
                             if (command instanceof HSBType) {
@@ -719,6 +738,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             id = SWITCH_COLOR_TEMPERATURE_CHANNEL;
                             acceptedItemType = "Dimmer";
                             break;
+                        case PROBE_TYPE_MOTOR:
+                            id = SWITCH_ROLLERSHUTTER_CHANNEL;
+                            acceptedItemType = "Rollershutter";
                         default:
                             break;
                     }

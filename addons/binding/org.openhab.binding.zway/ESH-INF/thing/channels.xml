@@ -122,6 +122,13 @@
         <state readOnly="false" />
     </channel-type>
     
+    <channel-type id="switchBlinds">
+        <item-type>Rollershutter</item-type>
+        <label>Rollshutter</label>
+        <category>Blinds</category>
+        <state readOnly="false" />
+    </channel-type>
+    
     <!-- Channel types without further information -->
     
     <channel-type id="battery">
