@@ -1,7 +1,8 @@
 # Hyperion Binding
 
-This binding integrates the Hyperion software with openHAB.
+This binding integrates the Hyperion ambient lighting software with openHAB.
 It currently allows you to send commands to set brightness, color and effect, as well as clearing priorities.
+Further details on the Hyperion project can be found [here.](https://hyperion-project.org/)
 
 ## Supported Things
 

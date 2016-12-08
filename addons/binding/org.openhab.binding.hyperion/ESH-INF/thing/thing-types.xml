@@ -3,7 +3,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="server">
 		<label>Hyperion Server</label>
 		<description>This is a Hyperion server</description>
@@ -18,6 +17,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host address</label>
+				<context>network_address</context>
 				<description>The host address of the Hyperion server.</description>
 				<required>true</required>
 			</parameter>
@@ -43,7 +43,6 @@
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
@@ -61,13 +60,13 @@
 		<description>Sets the effect of the LEDs</description>
 	</channel-type>
 
-	<channel-type id="clear">
+	<channel-type id="clear" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear priority</label>
 		<description>Clears the priority using the thing's priority setting</description>
 	</channel-type>
 
-	<channel-type id="clear_all">
+	<channel-type id="clear_all" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear all priorities</label>
 		<description>Clears all priorities settings</description>
