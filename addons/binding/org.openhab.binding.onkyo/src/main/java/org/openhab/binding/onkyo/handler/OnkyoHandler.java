@@ -287,9 +287,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                         updateState(CHANNEL_VOLUME, volume);
                         break;
                     case SOURCE_SET:
-                        int input = Integer.parseInt(data.substring(3, 5), 16);
-                        updateState(CHANNEL_INPUT, new DecimalType(input));
-                        onInputChanged(input);
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            int input = Integer.parseInt(data.substring(3, 5), 16);
+                            updateState(CHANNEL_INPUT, new DecimalType(input));
+                            onInputChanged(input);
+                        }
                         break;
                     case NETUSB_SONG_ARTIST_QUERY:
                         updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
@@ -309,7 +311,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     case LISTEN_MODE_SET:
                         String listenModeStr = data.substring(3, 5);
                         // update only when listen mode is supported
-                        if (listenModeStr != "N/") {
+                        if (!listenModeStr.equals("N/")) {
                             int listenMode = Integer.parseInt(listenModeStr, 16);
                             updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
                         }
@@ -330,8 +332,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                         updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
                         break;
                     case ZONE2_SOURCE_SET:
-                        int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
-                        updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
+                            updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
+                        }
                         break;
                     default:
                         logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",

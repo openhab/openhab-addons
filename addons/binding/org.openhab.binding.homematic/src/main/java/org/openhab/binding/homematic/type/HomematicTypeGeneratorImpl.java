@@ -108,49 +108,53 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      */
     @Override
     public void generate(HmDevice device) {
-        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
-        ThingType tt = thingTypeProvider.getThingType(thingTypeUID, Locale.getDefault());
-        if (tt == null || device.isGatewayExtras()) {
-            logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
-                    device.getDatapointCount());
+        if (thingTypeProvider != null) {
+            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
+            ThingType tt = thingTypeProvider.getThingType(thingTypeUID, Locale.getDefault());
+            if (tt == null || device.isGatewayExtras()) {
+                logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
+                        device.getDatapointCount());
 
-            List<ChannelGroupType> groupTypes = new ArrayList<ChannelGroupType>();
-            for (HmChannel channel : device.getChannels()) {
-                List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
-                // generate channel
-                for (HmDatapoint dp : channel.getDatapoints().values()) {
-                    if (!isStatusDatapoint(dp) && !isIgnoredDatapoint(dp)) {
-                        if (dp.getParamsetType() == HmParamsetType.VALUES) {
-                            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                            ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
-                                    Locale.getDefault());
-                            if (channelType == null) {
-                                channelType = createChannelType(dp, channelTypeUID);
-                                channelTypeProvider.addChannelType(channelType);
+                List<ChannelGroupType> groupTypes = new ArrayList<ChannelGroupType>();
+                for (HmChannel channel : device.getChannels()) {
+                    List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
+                    // generate channel
+                    for (HmDatapoint dp : channel.getDatapoints().values()) {
+                        if (!isStatusDatapoint(dp) && !isIgnoredDatapoint(dp)) {
+                            if (dp.getParamsetType() == HmParamsetType.VALUES) {
+                                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
+                                        Locale.getDefault());
+                                if (channelType == null) {
+                                    channelType = createChannelType(dp, channelTypeUID);
+                                    channelTypeProvider.addChannelType(channelType);
+                                }
+
+                                ChannelDefinition channelDef = new ChannelDefinition(dp.getName(),
+                                        channelType.getUID());
+                                channelDefinitions.add(channelDef);
                             }
-
-                            ChannelDefinition channelDef = new ChannelDefinition(dp.getName(), channelType.getUID());
-                            channelDefinitions.add(channelDef);
                         }
                     }
-                }
 
-                // generate group
-                ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
-                ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID, Locale.getDefault());
-                if (groupType == null || device.isGatewayExtras()) {
-                    String groupLabel = String.format("%s",
-                            WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
-                    groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
-                    channelTypeProvider.addChannelGroupType(groupType);
-                    groupTypes.add(groupType);
-                }
+                    // generate group
+                    ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
+                    ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID,
+                            Locale.getDefault());
+                    if (groupType == null || device.isGatewayExtras()) {
+                        String groupLabel = String.format("%s",
+                                WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
+                        groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
+                        channelTypeProvider.addChannelGroupType(groupType);
+                        groupTypes.add(groupType);
+                    }
 
+                }
+                tt = createThingType(device, groupTypes);
+                thingTypeProvider.addThingType(tt);
             }
-            tt = createThingType(device, groupTypes);
-            thingTypeProvider.addThingType(tt);
+            addFirmware(device);
         }
-        addFirmware(device);
     }
 
     /**
