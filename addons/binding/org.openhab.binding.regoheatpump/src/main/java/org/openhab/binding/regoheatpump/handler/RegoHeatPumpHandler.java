@@ -13,6 +13,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -50,8 +53,26 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
+    private static final class ChannelDescriptor {
+        private Date lastUpdate;
+
+        public boolean isDirty(int refreshTime) {
+            return lastUpdate == null || (lastUpdate.getTime() + refreshTime * 900 < new Date().getTime());
+        }
+
+        public void clearDirtyFlag() {
+            lastUpdate = new Date();
+        }
+
+        public void markDirty() {
+            lastUpdate = null;
+        }
+    }
+
     private final Logger logger = LoggerFactory.getLogger(RegoHeatPumpHandler.class);
-    private final Queue<String> pending = new ArrayDeque<>();
+    private final Queue<String> pendingUpdates = new ArrayDeque<>();
+    private final Map<String, ChannelDescriptor> channelDescriptors = new HashMap<>();
+    private int refreshInterval;
     private Short regoVersion;
     private RegoConnection connection;
     private RegoRegisterMapper mapper;
@@ -68,42 +89,42 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     public void initialize() {
         mapper = RegoRegisterMapper.rego600();
         connection = createConnection();
+        refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
 
         super.initialize();
 
-        int refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
-        scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, refreshInterval, refreshInterval,
-                TimeUnit.SECONDS);
+        scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 1, refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         super.dispose();
 
+        connection.close();
+
         scheduledRefreshFuture.cancel(true);
         scheduledRefreshFuture = null;
 
-        synchronized (pending) {
-            pending.clear();
+        synchronized (pendingUpdates) {
+            pendingUpdates.clear();
             if (active != null) {
                 active.cancel(true);
                 active = null;
             }
         }
 
-        connection.close();
-        connection = null;
+        synchronized (channelDescriptors) {
+            channelDescriptors.clear();
+        }
 
+        connection = null;
         mapper = null;
         regoVersion = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        final String channelIID = channelUID.getId();
-        if (isLinked(channelIID)) {
-            refreshChannelAsync(channelIID);
-        }
+        refreshChannelAsync(channelUID.getId());
     }
 
     private void refreshChannelAsync(String channelIID) {
@@ -114,8 +135,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             channelIID = CHANNEL_LAST_ERROR;
         }
 
-        synchronized (pending) {
-            pending.add(channelIID);
+        synchronized (pendingUpdates) {
+            pendingUpdates.add(channelIID);
             if (active == null) {
                 processNextChannel();
             }
@@ -123,16 +144,16 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     }
 
     private void processNextChannel() {
-        synchronized (pending) {
-            final String channelIID = pending.poll();
+        synchronized (pendingUpdates) {
+            final String channelIID = pendingUpdates.poll();
             if (channelIID != null && Thread.interrupted() == false) {
                 active = scheduler.submit(() -> {
                     try {
                         if (checkRegoDevice()) {
                             processChannelRequest(channelIID);
                         } else {
-                            synchronized (pending) {
-                                pending.clear();
+                            synchronized (pendingUpdates) {
+                                pendingUpdates.clear();
                                 active = null;
                             }
                         }
@@ -147,39 +168,63 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
+    private ChannelDescriptor channelDescriptorForChannel(final String channelIID) {
+        synchronized (channelDescriptors) {
+            ChannelDescriptor descriptor = channelDescriptors.get(channelIID);
+            if (descriptor == null) {
+                descriptor = new ChannelDescriptor();
+                channelDescriptors.put(channelIID, descriptor);
+            }
+            return descriptor;
+        }
+    }
+
     private void processChannelRequest(final String channelIID) {
-        switch (channelIID) {
-            case CHANNEL_LAST_ERROR:
-                readLastError();
-                break;
+        final ChannelDescriptor descriptor = channelDescriptorForChannel(channelIID);
+        if (descriptor.isDirty(refreshInterval) == false) {
+            logger.debug("Not refreshing {} since it is up to date", channelIID);
+            return;
+        }
 
-            case CHANNEL_FRONT_PANEL_POWER_LED:
-                readFromFrontPanel(channelIID, (short) 0x0012);
-                break;
+        try {
+            switch (channelIID) {
+                case CHANNEL_LAST_ERROR:
+                    readLastError();
+                    break;
 
-            case CHANNEL_FRONT_PANEL_PUMP_LED:
-                readFromFrontPanel(channelIID, (short) 0x0013);
-                break;
+                case CHANNEL_FRONT_PANEL_POWER_LED:
+                    readFromFrontPanel(channelIID, (short) 0x0012);
+                    break;
 
-            case CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
-                readFromFrontPanel(channelIID, (short) 0x0014);
-                break;
+                case CHANNEL_FRONT_PANEL_PUMP_LED:
+                    readFromFrontPanel(channelIID, (short) 0x0013);
+                    break;
 
-            case CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
-                readFromFrontPanel(channelIID, (short) 0x0015);
-                break;
+                case CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
+                    readFromFrontPanel(channelIID, (short) 0x0014);
+                    break;
 
-            case CHANNEL_FRONT_PANEL_ALARM_LED:
-                readFromFrontPanel(channelIID, (short) 0x0016);
-                break;
+                case CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
+                    readFromFrontPanel(channelIID, (short) 0x0015);
+                    break;
 
-            default:
-                if (channelIID.startsWith(CHANNEL_GROUP_REGISTERS)) {
-                    readFromSystemRegister(channelIID);
-                } else {
-                    logger.error("Unable to handle unknown channel {}", channelIID);
-                }
-                break;
+                case CHANNEL_FRONT_PANEL_ALARM_LED:
+                    readFromFrontPanel(channelIID, (short) 0x0016);
+                    break;
+
+                default:
+                    if (channelIID.startsWith(CHANNEL_GROUP_REGISTERS)) {
+                        readFromSystemRegister(channelIID);
+                    } else {
+                        logger.error("Unable to handle unknown channel {}", channelIID);
+                    }
+                    break;
+            }
+
+            descriptor.clearDirtyFlag();
+
+        } catch (Exception e) {
+            descriptor.markDirty();
         }
     }
 
@@ -189,7 +234,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        synchronized (pending) {
+        synchronized (pendingUpdates) {
             linkedChannels().forEach(this::refreshChannelAsync);
         }
     }
@@ -250,6 +295,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.warn("Accessing value for channel '{}' failed due {}", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -263,6 +309,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 logger.info("Connected to Rego version {}.", regoVersion);
             } catch (Exception e) {
+                logger.warn("Reading rego version failed", e);
                 return false;
             }
         }
@@ -304,6 +351,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             logger.warn("Command failed.", e);
 
             connection.close();
+
+            synchronized (channelDescriptors) {
+                channelDescriptors.clear();
+            }
 
             regoVersion = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
