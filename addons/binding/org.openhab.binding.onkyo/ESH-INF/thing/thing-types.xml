@@ -91,16 +91,46 @@
 		<label>Net/USB Menu</label>
 		<channels>
             <channel id="control" typeId="netControl"/>
-			<channel id="item0" typeId="menu0"/>
-			<channel id="item1" typeId="menu1"/>
-			<channel id="item2" typeId="menu2"/>
-			<channel id="item3" typeId="menu3"/>
-			<channel id="item4" typeId="menu4"/>
-			<channel id="item5" typeId="menu5"/>
-			<channel id="item6" typeId="menu6"/>
-			<channel id="item7" typeId="menu7"/>
-			<channel id="item8" typeId="menu8"/>
-			<channel id="item9" typeId="menu9"/>
+			<channel id="item0" typeId="menuItem">
+                <label>Menu item 0</label>
+                <description>Net/USB menu item at position 0</description>
+			</channel>
+			<channel id="item1" typeId="menuItem">
+                <label>Menu item 1</label>
+                <description>Net/USB menu item at position 1</description>
+            </channel>
+			<channel id="item2" typeId="menuItem">
+                <label>Menu item 2</label>
+                <description>Net/USB menu item at position 2</description>
+            </channel>
+			<channel id="item3" typeId="menuItem">
+                <label>Menu item 3</label>
+                <description>Net/USB menu item at position 3</description>
+            </channel>
+			<channel id="item4" typeId="menuItem">
+                <label>Menu item 4</label>
+                <description>Net/USB menu item at position 4</description>
+            </channel>
+			<channel id="item5" typeId="menuItem">
+                <label>Menu item 5</label>
+                <description>Net/USB menu item at position 5</description>
+            </channel>
+			<channel id="item6" typeId="menuItem">
+                <label>Menu item 6</label>
+                <description>Net/USB menu item at position 6</description>
+            </channel>
+			<channel id="item7" typeId="menuItem">
+                <label>Menu item 7</label>
+                <description>Net/USB menu item at position 7</description>
+            </channel>
+			<channel id="item8" typeId="menuItem">
+                <label>Menu item 8</label>
+                <description>Net/USB menu item at position 8</description>
+            </channel>
+			<channel id="item9" typeId="menuItem">
+                <label>Menu item 9</label>
+                <description>Net/USB menu item at position 9</description>
+            </channel>
 			<channel id="selection" typeId="menuSelection"/>
 		</channels>
 	</channel-group-type>
@@ -268,64 +298,10 @@
 		<description>Artist name of the current song</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
-    <channel-type id="menu0">
+    <channel-type id="menuItem">
         <item-type>String</item-type>
-        <label>Menu item 0</label>
-        <description>Menu item 0 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu1">
-        <item-type>String</item-type>
-        <label>Menu item 1</label>
-        <description>Menu item 1 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu2">
-        <item-type>String</item-type>
-        <label>Menu item 2</label>
-        <description>Menu item 2 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu3">
-        <item-type>String</item-type>
-        <label>Menu item 3</label>
-        <description>Menu item 3 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu4">
-        <item-type>String</item-type>
-        <label>Menu item 4</label>
-        <description>Menu item 4 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu5">
-        <item-type>String</item-type>
-        <label>Menu item 5</label>
-        <description>Menu item 5 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu6">
-        <item-type>String</item-type>
-        <label>Menu item 6</label>
-        <description>Menu item 6 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu7">
-        <item-type>String</item-type>
-        <label>Menu item 7</label>
-        <description>Menu item 7 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu8">
-        <item-type>String</item-type>
-        <label>Menu item 8</label>
-        <description>Menu item 8 of the Net/USB menu</description>
-        <state readOnly="true" pattern="%s"></state>
-    </channel-type>
-    <channel-type id="menu9">
-        <item-type>String</item-type>
-        <label>Menu item 9</label>
-        <description>Menu item 9 of the Net/USB menu</description>
+        <label>Menu item</label>
+        <description>Net/USB menu item</description>
         <state readOnly="true" pattern="%s"></state>
     </channel-type>
     <channel-type id="menuSelection">
