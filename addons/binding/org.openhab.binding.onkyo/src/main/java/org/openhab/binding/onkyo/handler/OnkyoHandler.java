@@ -413,7 +413,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         } else if ("FastForward".equals(cmdName)) {
             sendCommand(EiscpCommandRef.NETUSB_OP_FF);
         } else {
-            logger.debug("Received unknown playercommand " + cmdName);
+            logger.debug("Received unknown playercommand {}", cmdName);
         }
     }
 
