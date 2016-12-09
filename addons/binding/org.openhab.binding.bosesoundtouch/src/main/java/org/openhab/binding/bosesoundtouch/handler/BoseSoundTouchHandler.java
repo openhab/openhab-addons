@@ -401,7 +401,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         zoneState = ZoneState.None;
         masterZoneSoundTouchHandler = null;
         zoneMembers = new ArrayList<ZoneMember>();
-        updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
+        // updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
         OkHttpClient client = new OkHttpClient();
         // we need longer timeouts for websocket.
         client.setReadTimeout(300, TimeUnit.SECONDS);
