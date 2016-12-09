@@ -381,7 +381,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                             // pos already is -1
                         }
 
-                        logger.debug("Updating menu " + txt.charAt(1) + " : " + pos);
+                        logger.debug("Updating menu {} : {}", txt.charAt(1), pos);
 
                         if (txt.endsWith("P")) {
                             resetNetMenu();
@@ -434,7 +434,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             int pos = Integer.parseInt(cmdName.substring(6));
             sendCommand(EiscpCommandRef.NETUSB_MENU_SELECT, new DecimalType(pos));
         } else {
-            logger.debug("Received unknown menucommand " + cmdName);
+            logger.debug("Received unknown menucommand {}", cmdName);
         }
     }
 
@@ -504,7 +504,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
             }
 
-            logger.debug("Sending command to onkyo receiver: " + deviceCmd);
+            logger.debug("Sending command to onkyo receiver: {}", deviceCmd);
             connection.send(deviceCmd);
         } else {
             logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");

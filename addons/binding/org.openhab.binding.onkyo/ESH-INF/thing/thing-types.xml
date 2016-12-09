@@ -221,6 +221,26 @@
         <item-type>String</item-type>
         <label>Control</label>
         <description>Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9]</description>
+        <state>
+            <options>
+                <option value="Up">Selection Up</option>
+                <option value="Down">Selection Down</option>
+                <option value="Select">Select Entry</option>
+                <option value="Back">Go Back</option>
+                <option value="PageUp">Scroll Page Up</option>
+                <option value="PageDown">Scroll Page Down</option>
+                <option value="Select0">Select Entry 0</option>
+                <option value="Select1">Select Entry 1</option>
+                <option value="Select2">Select Entry 2</option>
+                <option value="Select3">Select Entry 3</option>
+                <option value="Select4">Select Entry 4</option>
+                <option value="Select5">Select Entry 5</option>
+                <option value="Select6">Select Entry 6</option>
+                <option value="Select7">Select Entry 7</option>
+                <option value="Select8">Select Entry 8</option>
+                <option value="Select9">Select Entry 9</option>
+            </options>
+        </state>
     </channel-type>
 
 	<!-- Onkyo variables -->
