@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vallox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+
+	<thing-type id="kwl90se">
+		<label>Vallox KWL 90SE central venting unit</label>
+		<description>Gives access to all sensor values, internal status and control over fans.</description>
+		<channels>
+			<channel id="FanSpeed" typeId="FanSpeed" />
+			<channel id="FanSpeedMax" typeId="FanSpeedMax" />
+			<channel id="FanSpeedMin" typeId="FanSpeedMin" />
+			<channel id="TempInside" typeId="TempInside" />
+			<channel id="TempOutside" typeId="TempOutside" />
+			<channel id="TempExhaust" typeId="TempExhaust" />
+			<channel id="TempIncomming" typeId="TempIncomming" />
+			<channel id="InEfficiency" typeId="InEfficiency" />
+			<channel id="OutEfficiency" typeId="OutEfficiency" />
+			<channel id="AverageEfficiency" typeId="AverageEfficiency" />
+			<channel id="PowerState" typeId="PowerState" />
+			<channel id="DCFanInputAdjustment" typeId="DCFanInputAdjustment" />
+			<channel id="DCFanOutputAdjustment" typeId="DCFanOutputAdjustment" />
+			<channel id="HrcBypassThreshold" typeId="HrcBypassThreshold" />
+			<channel id="InputFanStopThreshold" typeId="InputFanStopThreshold" />
+			<channel id="HeatingSetPoint" typeId="HeatingSetPoint" />
+			<channel id="PreHeatingSetPoint" typeId="PreHeatingSetPoint" />
+			<channel id="CellDefrostingThreshold" typeId="CellDefrostingThreshold" />
+			<channel id="CO2AdjustState" typeId="CO2AdjustState" />
+			<channel id="HumidityAdjustState" typeId="HumidityAdjustState" />
+			<channel id="HeatingState" typeId="HeatingState" />
+			<channel id="FilterGuardIndicator" typeId="FilterGuardIndicator" />
+			<channel id="HeatingIndicator" typeId="HeatingIndicator" />
+			<channel id="FaultIndicator" typeId="FaultIndicator" />
+			<channel id="ServiceReminderIndicator" typeId="ServiceReminderIndicator" />
+			<channel id="Humidity" typeId="Humidity" />
+			<channel id="BasicHumidityLevel" typeId="BasicHumidityLevel" />
+			<channel id="HumiditySensor1" typeId="HumiditySensor1" />
+			<channel id="HumiditySensor2" typeId="HumiditySensor2" />
+			<channel id="CO2High" typeId="CO2High" />
+			<channel id="CO2Low" typeId="CO2Low" />
+			<channel id="CO2SetPointHigh" typeId="CO2SetPointHigh" />
+			<channel id="CO2SetPointLow" typeId="CO2SetPointLow" />
+			<channel id="AdjustmentIntervalMinutes" typeId="AdjustmentIntervalMinutes" />
+			<channel id="AutomaticHumidityLevelSeekerState" typeId="AutomaticHumidityLevelSeekerState" />
+			<channel id="BoostSwitchMode" typeId="BoostSwitchMode" />
+			<channel id="RadiatorType" typeId="RadiatorType" />
+			<channel id="CascadeAdjust" typeId="CascadeAdjust" />
+			<channel id="MaxSpeedLimitMode" typeId="MaxSpeedLimitMode" />
+			<channel id="ServiceReminder" typeId="ServiceReminder" />
+			<channel id="PostHeatingOn" typeId="PostHeatingOn" />
+			<channel id="DamperMotorPosition" typeId="DamperMotorPosition" />
+			<channel id="FaultSignalRelayClosed" typeId="FaultSignalRelayClosed" />
+			<channel id="SupplyFanOff" typeId="SupplyFanOff" />
+			<channel id="PreHeatingOn" typeId="PreHeatingOn" />
+			<channel id="ExhaustFanOff" typeId="ExhaustFanOff" />
+			<channel id="FirePlaceBoosterClosed" typeId="FirePlaceBoosterClosed" />
+			<channel id="IncommingCurrent" typeId="IncommingCurrent" />
+			<channel id="LastErrorNumber" typeId="LastErrorNumber" />
+		</channels>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Host name or IP address of RS485-to-Ethernet gateway. The gateway needs to
+            be configured as TCP server and the serial connection to the vallox with 9600 baud, 8-N-1.
+            </description>
+				<default>lwip</default>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>TCP Port that the RS485-to-Ethernet Gateway listens to.</description>
+				<default>26</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="FanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>Speed of the fan, an integer value of 1 to 8</description>
+		<category>Fan</category>
+		<state min="1" max="8" step="1" pattern="%d" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="FanSpeedMax">
+		<item-type>Number</item-type>
+		<label>FanSpeedMax</label>
+		<category>Fan</category>
+		<state min="1" max="8" step="1" pattern="%d" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="FanSpeedMin">
+		<item-type>Number</item-type>
+		<label>FanSpeedMin</label>
+		<category>Fan</category>
+		<state min="1" max="8" step="1" pattern="%d" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="TempInside">
+		<item-type>Number</item-type>
+		<label>Temp Inside</label>
+		<description>Current temperature inside the building.</description>
+		<category>Temperature</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="TempOutside">
+		<item-type>Number</item-type>
+		<label>Temp Outside</label>
+		<description>Current temperature outside the building.</description>
+		<category>Temperature</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="TempExhaust">
+		<item-type>Number</item-type>
+		<label>Temp Exhaust</label>
+		<description>Current temperature of the air flow exhausting the building.</description>
+		<category>Temperature</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="TempIncomming">
+		<item-type>Number</item-type>
+		<label>Temp Incomming</label>
+		<description>Current temperature of the air flow incomming to the building.</description>
+		<category>Temperature</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="InEfficiency">
+		<item-type>Number</item-type>
+		<label>InEfficiency</label>
+		<state min="0" max="100" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="OutEfficiency">
+		<item-type>Number</item-type>
+		<label>OutEfficiency</label>
+		<state min="0" max="100" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AverageEfficiency">
+		<item-type>Number</item-type>
+		<label>AverageEfficiency</label>
+		<state min="0" max="100" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="PowerState">
+		<item-type>Switch</item-type>
+		<label>Power State</label>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="CO2AdjustState">
+		<item-type>Switch</item-type>
+		<label>CO2 Adjust State</label>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="HumidityAdjustState">
+		<item-type>Switch</item-type>
+		<label>Humidity Adjust State</label>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="HeatingState">
+		<item-type>Switch</item-type>
+		<label>Heating State</label>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<!-- ADVANCED ================================================================ -->
+
+	<channel-type id="DCFanInputAdjustment" advanced="true">
+		<item-type>Number</item-type>
+		<label>DCFanInputAdjustment</label>
+		<description>0-100%</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="DCFanOutputAdjustment" advanced="true">
+		<item-type>Number</item-type>
+		<label>DCFanOutputAdjustment</label>
+		<description>0-100%</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="HrcBypassThreshold" advanced="true">
+		<item-type>Number</item-type>
+		<label>HrcBypassThreshold</label>
+		<description>Heat recovery cell bypass setpoint temp</description>
+		<category>TEMPERATURE</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="InputFanStopThreshold" advanced="true">
+		<item-type>Number</item-type>
+		<label>InputFanStopThreshold</label>
+		<description>Temp threshold: fan stops if input temp falls below this temp.</description>
+		<category>TEMPERATURE</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="HeatingSetPoint" advanced="true">
+		<item-type>Number</item-type>
+		<label>HeatingSetPoint</label>
+		<category>TEMPERATURE</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="PreHeatingSetPoint" advanced="true">
+		<item-type>Number</item-type>
+		<label>PreHeatingSetPoint</label>
+		<category>TEMPERATURE</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="CellDefrostingThreshold" advanced="true">
+		<item-type>Number</item-type>
+		<label>CellDefrostingThreshold</label>
+		<description>Defrosting starts when exhaust air drops below this setpoint temp (Hysteresis 4)</description>
+		<category>TEMPERATURE</category>
+		<state min="-20" max="40" step="0.1" pattern="%.1f °C" readOnly="false"></state>
+	</channel-type>
+
+	<!-- READONLY ================================================================ -->
+
+	<channel-type id="FilterGuardIndicator" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Filter Guard Indicator</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="HeatingIndicator" advanced="true">
+		<item-type>Switch</item-type>
+		<label>HeatingIndicator</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="FaultIndicator" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FaultIndicator</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ServiceReminderIndicator" advanced="true">
+		<item-type>Switch</item-type>
+		<label>ServiceReminderIndicator</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="Humidity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Higher measured relative humidity from sensor 1 and sensor 2. Translating Formula (x-51)/2.04; 33H = 0%, FFH = 100%</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="BasicHumidityLevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>BasicHumidityLevel</label>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="HumiditySensor1" advanced="true">
+		<item-type>Number</item-type>
+		<label>HumiditySensor1</label>
+		<description>Relative Humidity measured from sensor 1. Translating Formula (x-51)/2.04; 33H = 0%, FFH = 100%</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="HumiditySensor2" advanced="true">
+		<item-type>Number</item-type>
+		<label>HumiditySensor2</label>
+		<description>Relative Humidity measured from sensor 2. Translating Formula (x-51)/2.04; 33H = 0%, FFH = 100%</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CO2High" advanced="true">
+		<item-type>Number</item-type>
+		<label>CO2High</label>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CO2Low" advanced="true">
+		<item-type>Number</item-type>
+		<label>CO2Low</label>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CO2SetPointHigh" advanced="true">
+		<item-type>Number</item-type>
+		<label>CO2SetPointHigh</label>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CO2SetPointLow" advanced="true">
+		<item-type>Number</item-type>
+		<label>CO2SetPointLow</label>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AdjustmentIntervalMinutes" advanced="true">
+		<item-type>Number</item-type>
+		<label>AdjustmentIntervalMinutes</label>
+		<description>set adjustment interval of CO2 and %RH in minutes (Regelinterval)</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="AutomaticHumidityLevelSeekerState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>AutomaticHumidityLevelSeekerState</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="BoostSwitchMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>BoostSwitchMode</label>
+		<description>boost switch mode (ON=boost, OFF = fireplace)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="RadiatorType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RadiatorType</label>
+		<description>radiator type (0 electric, 1 water)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="CascadeAdjust" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CascadeAdjust</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="MaxSpeedLimitMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>MaxSpeedLimitMode</label>
+		<description>Function of max speed limit (0 = with adjustment, 1 = always)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ServiceReminder" advanced="true">
+		<item-type>Number</item-type>
+		<label>ServiceReminder</label>
+		<description>Service Reminder in months; informs about the next maintenance alarm time: remaining months, descending.</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="PostHeatingOn" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PostHeatingOn</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="DamperMotorPosition" advanced="true">
+		<item-type>Switch</item-type>
+		<label>DamperMotorPosition</label>
+		<description>Damper Motor Position - OFF=winter ON=season</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="FaultSignalRelayClosed" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FaultSignalRelayClosed</label>
+		<description>fault signal relay closed - OFF=open ON=closed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="SupplyFanOff" advanced="true">
+		<item-type>Switch</item-type>
+		<label>SupplyFanOff</label>
+		<description>supply fan off - OFF=on ON=off</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="PreHeatingOn" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PreHeatingOn</label>
+		<description>pre-heating - OFF=off ON=on</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ExhaustFanOff" advanced="true">
+		<item-type>Switch</item-type>
+		<label>ExhaustFanOff</label>
+		<description>exhaust-fan off - OFF=on ON=off</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="FirePlaceBoosterClosed" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FirePlaceBoosterClosed</label>
+		<description>fireplace-booster closed - OFF=open ON=closed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="IncommingCurrent" advanced="true">
+		<item-type>Number</item-type>
+		<label>IncommingCurrent</label>
+		<description>Current/Voltage in mA incomming on machine</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="LastErrorNumber" advanced="true">
+		<item-type>Number</item-type>
+		<label>LastErrorNumber</label>
+		<description>  5: Supply air temperature sensor fault; 6: Carbon dioxide alarm; 7: Outdoor air sensor fault;
+		8: Extract air sensor fault; 9: Water radiator danger of freezing; 10: Exhaust air sensor fault</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

@@ -87,6 +87,7 @@
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
+    <module>org.openhab.binding.vallox</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
@@ -94,4 +95,5 @@
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
   </modules>
+  
 </project>
