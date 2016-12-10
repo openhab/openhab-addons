@@ -124,7 +124,26 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             logger.warn("openHAB Cloud connector not started, since no local HTTP port could be determined");
         } else {
             logger.debug("openHAB Cloud connector activated");
+            checkJavaVersion();
             modified(config);
+        }
+    }
+
+    private void checkJavaVersion() {
+        String version = System.getProperty("java.version");
+        if (version.charAt(2) == '8') {
+            // we are on Java 8, let's check the update
+            String update = version.substring(version.indexOf('_') + 1);
+            try {
+                Integer uVersion = Integer.valueOf(update);
+                if (uVersion < 101) {
+                    logger.warn(
+                            "You are running Java {} - the openhab Cloud connection requires at least Java 1.8.0_101, if your cloud server uses Let's Encrypt certificates!",
+                            version);
+                }
+            } catch (NumberFormatException e) {
+                logger.debug("Could not determine update version of java {}", version);
+            }
         }
     }
 
