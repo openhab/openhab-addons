@@ -1,7 +1,6 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
 abstract class AbstractResponseParser<T> implements ResponseParser<T> {
-    final static byte ComputerAddress = (byte) 0x01;
 
     @Override
     public abstract int responseLength();

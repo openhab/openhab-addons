@@ -91,7 +91,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         connection = createConnection();
         refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
 
-        super.initialize();
+        updateStatus(ThingStatus.UNKNOWN);
 
         scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 1, refreshInterval, TimeUnit.SECONDS);
     }
@@ -335,6 +335,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
                 if (value == -1) {
                     throw new EOFException("Connection closed");
+                }
+
+                if (i == 0 && value != ResponseParser.ComputerAddress) {
+                    continue;
                 }
 
                 response[i] = (byte) value;
