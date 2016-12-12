@@ -283,8 +283,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                         updateState(CHANNEL_MUTE, OnOffType.OFF);
                         break;
                     case VOLUME_SET:
-                        volume = new PercentType(Integer.parseInt(data.substring(3, 5), 16));
-                        updateState(CHANNEL_VOLUME, volume);
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            volume = new PercentType(Integer.parseInt(data.substring(3, 5), 16));
+                            updateState(CHANNEL_VOLUME, volume);
+                        }
                         break;
                     case SOURCE_SET:
                         if (!data.substring(3, 5).contentEquals("N/")) {
@@ -329,7 +331,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                         updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
                         break;
                     case ZONE2_VOLUME_SET:
-                        updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            updateState(CHANNEL_VOLUMEZONE2,
+                                    new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        }
                         break;
                     case ZONE2_SOURCE_SET:
                         if (!data.substring(3, 5).contentEquals("N/")) {
