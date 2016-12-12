@@ -16,4 +16,3 @@ Import-Package: org.slf4j,
  org.openhab.binding.rfxcom,
  org.osgi.service.device
 Require-Bundle: org.junit;bundle-version="4.11.0"
-Export-Package: org.openhab.binding.rfxcom.test

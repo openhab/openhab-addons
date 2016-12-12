@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
-
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC;
+
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 
 /**
  * Test for RFXCom-binding
