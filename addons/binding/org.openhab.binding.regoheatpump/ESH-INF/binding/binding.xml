@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>RegoHeatPump Binding</name>
-    <description>This is the binding for Rego based heat pumps.</description>
+    <description>The Rego controller based heat pumps binding.</description>
     <author>Boris Krivonog</author>
 
 </binding:binding>

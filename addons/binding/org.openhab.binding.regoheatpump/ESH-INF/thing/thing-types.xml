@@ -6,10 +6,11 @@
 
     <!-- Manage Rego based Heat Pump over IP -->
     <thing-type id="ipRego6xx">
-        <label>Rego based heat pump over IP</label>
-        <description>Manage Rego based heat pump over IP</description>
+        <label>Rego based heat pump over TCP/IP</label>
+        <description>Manage Rego based heat pump over TCP/IP</description>
         
         <channel-groups>
+            <channel-group id="sensors" typeId="sensors" />
             <channel-group id="registers" typeId="registers" />
             <channel-group id="frontPanel" typeId="frontPanel" />
             <channel-group id="status" typeId="status" />
@@ -19,12 +20,12 @@
             <parameter name="address" type="text" required="true">
                 <context>network-address</context>
                 <label>Address</label>
-                <description>The address of the Rego to control.</description>
+                <description>The IP address of the Rego to control.</description>
             </parameter>
             <parameter name="port" type="integer" max="65535" min="1" required="true">
                 <default>9265</default>
                 <label>TCP Port</label>
-                <description>The TCP port number used to connect to the Rego.</description>
+                <description>The TCP port number used to connect to the Rego controller.</description>
             </parameter>
             <parameter name="refreshInterval" type="integer" max="65535" min="10" required="true">
                 <default>60</default>
@@ -33,22 +34,27 @@
             </parameter>
         </config-description>        
     </thing-type>
-
+    
+    <channel-group-type id="sensors">
+        <label>Sensors</label>
+        <channels>
+            <channel id="radiatorReturn" typeId="radiatorReturn"/>
+            <channel id="outdoor" typeId="outdoor"/>
+            <channel id="hotWater" typeId="hotWater"/>
+            <channel id="shunt" typeId="shunt"/>
+            <channel id="room" typeId="room"/>
+            <channel id="compressor" typeId="compressor"/>
+            <channel id="heatFluidOut" typeId="heatFluidOut"/>
+            <channel id="heatFluidIn" typeId="heatFluidIn"/>
+            <channel id="coldFluidIn" typeId="coldFluidIn"/>
+            <channel id="coldFluidOut" typeId="coldFluidOut"/>
+            <channel id="externalHotWater" typeId="externalHotWater"/>
+        </channels>
+    </channel-group-type>
+    
     <channel-group-type id="registers">
         <label>Register Values</label>
         <channels>
-            <!-- Sensor values -->
-            <channel id="radiatorReturnGT1" typeId="temperature"/>
-            <channel id="outdoorGT2" typeId="temperature"/>
-            <channel id="hotWaterGT3" typeId="temperature"/>
-            <channel id="shuntGT4" typeId="temperature"/>
-            <channel id="roomGT5" typeId="temperature"/>
-            <channel id="compressorGT6" typeId="temperature"/>
-            <channel id="heatFluidOutGT8" typeId="temperature"/>
-            <channel id="heatFluidInGT9" typeId="temperature"/>
-            <channel id="coldFluidInGT10" typeId="temperature"/>
-            <channel id="coldFluidOutGT11" typeId="temperature"/>
-            <channel id="externalHotWaterGT3x" typeId="temperature"/>
             <!-- Control data -->
             <channel id="targetValueGT1" typeId="temperature"/>
             <channel id="onValueGT1" typeId="temperature"/>
@@ -89,25 +95,25 @@
     </channel-group-type>
 
     <channel-group-type id="status">
-        <label>Sensor Values</label>
+        <label>Status</label>
         <channels>
-            <channel id="lastErrorTimestamp" typeId="errorTimestamp"/>
-            <channel id="lastErrorCode" typeId="errorCode"/>
+            <channel id="lastErrorTimestamp" typeId="lastErrorTimestamp"/>
+            <channel id="lastErrorCode" typeId="lastErrorCode"/>
         </channels>
     </channel-group-type>
 
     <channel-group-type id="frontPanel">
-        <label>Front Panel Values</label>
+        <label>Front Panel</label>
         <channels>
-            <channel id="power" typeId="led"/>
-            <channel id="pumpLed" typeId="led"/>
-            <channel id="additionalHeatingLed" typeId="led"/>
-            <channel id="waterHeaterLed" typeId="led"/>
-            <channel id="alarmLed" typeId="led"/>
+            <channel id="powerLed" typeId="powerLed"/>
+            <channel id="heatPumpLed" typeId="heatPumpLed"/>
+            <channel id="additionalHeatingLed" typeId="additionalHeatingLed"/>
+            <channel id="hotWaterLed" typeId="hotWaterLed"/>
+            <channel id="alarmLed" typeId="alarmLed"/>
         </channels>
     </channel-group-type>
 
-    <channel-type id="temperature">
+    <channel-type id="temperature" advanced="true">
         <item-type>Number</item-type>
         <label>Temperature</label>
         <description>Temperature value in degrees celsius</description>
@@ -115,16 +121,93 @@
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
 
-    <channel-type id="shortValue">
+    <channel-type id="radiatorReturn">
+        <item-type>Number</item-type>
+        <label>Radiator return</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="outdoor">
+        <item-type>Number</item-type>
+        <label>Outdoor</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="hotWater">
+        <item-type>Number</item-type>
+        <label>Hot water</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="shunt" advanced="true">
+        <item-type>Number</item-type>
+        <label>Shunt, flow</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="room" advanced="true">
+        <item-type>Number</item-type>
+        <label>Room</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="compressor">
+        <item-type>Number</item-type>
+        <label>Compressor</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="heatFluidOut">
+        <item-type>Number</item-type>
+        <label>Heat fluid out</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="heatFluidIn">
+        <item-type>Number</item-type>
+        <label>Heat fluid in</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="coldFluidIn">
+        <item-type>Number</item-type>
+        <label>Cold fluid in</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="coldFluidOut">
+        <item-type>Number</item-type>
+        <label>Cold fluid out</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="externalHotWater" advanced="true">
+        <item-type>Number</item-type>
+        <label>External hot water</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="shortValue" advanced="true">
         <item-type>Number</item-type>
         <label>Numeric value</label>
         <description>16 bit numeric value</description>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
 
-    <channel-type id="errorCode">
+    <channel-type id="lastErrorCode">
         <item-type>String</item-type>
-        <label>Error code</label>
+        <label>Last error code</label>
         <description>Information about the error that happened</description>
         <state readOnly="true" pattern="%s">
             <options>
@@ -155,17 +238,41 @@
         </state>
     </channel-type>
     
-    <channel-type id="errorTimestamp">
-        <item-type>Number</item-type>
-        <label>Error time and date</label>
-        <description>Date and time of the error</description>
+    <channel-type id="lastErrorTimestamp">
+        <item-type>DateTime</item-type>
+        <label>Last error timestamp</label>
+        <description>Date and time of the last error</description>
         <state readOnly="true" pattern="%tc"/>
     </channel-type>
 
-    <channel-type id="led">
-        <item-type>Number</item-type>
-        <label>Led</label>
-        <description>Led on front panel</description>
+    <channel-type id="powerLed" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Power led</label>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
+    
+    <channel-type id="heatPumpLed">
+        <item-type>Switch</item-type>
+        <label>Heat pump led</label>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
+
+    <channel-type id="additionalHeatingLed">
+        <item-type>Switch</item-type>
+        <label>Additional heating led</label>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
+    
+    <channel-type id="hotWaterLed">
+        <item-type>Switch</item-type>
+        <label>Hot water led</label>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
+    
+    <channel-type id="alarmLed">
+        <item-type>Switch</item-type>
+        <label>Alarm led</label>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
+
 </thing:thing-descriptions>

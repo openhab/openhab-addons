@@ -1,6 +1,6 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
-import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.CHANNEL_GROUP_REGISTERS;
+import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,17 +58,17 @@ public class RegoRegisterMapper {
         final Map<String, Channel> mappings = new HashMap<String, Channel>();
         {
             // Sensor values
-            mappings.put(CHANNEL_GROUP_REGISTERS + "radiatorReturnGT1", new TemperatureChannel((short) 521));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "outdoorGT2", new TemperatureChannel((short) 522));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "hotWaterGT3", new TemperatureChannel((short) 523));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "shuntGT4", new TemperatureChannel((short) 524));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "roomGT5", new TemperatureChannel((short) 525));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "compressorGT6", new TemperatureChannel((short) 526));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "heatFluidOutGT8", new TemperatureChannel((short) 527));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "heatFluidInGT9", new TemperatureChannel((short) 528));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "coldFluidInGT10", new TemperatureChannel((short) 529));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "coldFluidOutGT11", new TemperatureChannel((short) 530));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "externalHotWaterGT3x", new TemperatureChannel((short) 531));
+            mappings.put(CHANNEL_GROUP_SENSORS + "radiatorReturn", new TemperatureChannel((short) 521));
+            mappings.put(CHANNEL_GROUP_SENSORS + "outdoor", new TemperatureChannel((short) 522));
+            mappings.put(CHANNEL_GROUP_SENSORS + "hotWater", new TemperatureChannel((short) 523));
+            mappings.put(CHANNEL_GROUP_SENSORS + "shunt", new TemperatureChannel((short) 524));
+            mappings.put(CHANNEL_GROUP_SENSORS + "room", new TemperatureChannel((short) 525));
+            mappings.put(CHANNEL_GROUP_SENSORS + "compressor", new TemperatureChannel((short) 526));
+            mappings.put(CHANNEL_GROUP_SENSORS + "heatFluidOut", new TemperatureChannel((short) 527));
+            mappings.put(CHANNEL_GROUP_SENSORS + "heatFluidIn", new TemperatureChannel((short) 528));
+            mappings.put(CHANNEL_GROUP_SENSORS + "coldFluidIn", new TemperatureChannel((short) 529));
+            mappings.put(CHANNEL_GROUP_SENSORS + "coldFluidOut", new TemperatureChannel((short) 530));
+            mappings.put(CHANNEL_GROUP_SENSORS + "externalHotWater", new TemperatureChannel((short) 531));
 
             // Control data
             mappings.put(CHANNEL_GROUP_REGISTERS + "targetValueGT1", new TemperatureChannel((short) 110));

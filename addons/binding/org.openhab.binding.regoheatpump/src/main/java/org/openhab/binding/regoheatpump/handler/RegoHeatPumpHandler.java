@@ -213,9 +213,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                     break;
 
                 default:
-                    if (channelIID.startsWith(CHANNEL_GROUP_REGISTERS)) {
-                        readFromSystemRegister(channelIID);
-                    } else {
+                    if (readFromSystemRegister(channelIID) == false) {
                         logger.error("Unable to handle unknown channel {}", channelIID);
                     }
                     break;
@@ -266,14 +264,16 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         });
     }
 
-    private void readFromSystemRegister(final String channelIID) {
+    private boolean readFromSystemRegister(final String channelIID) {
         RegoRegisterMapper.Channel channel = mapper.map(channelIID);
         if (channel == null) {
-            logger.warn("Unknown channel requested '{}'.", channelIID);
-        } else {
-            final byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
-            executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, channel::convert);
+            return false;
         }
+
+        final byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
+        executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, channel::convert);
+
+        return true;
     }
 
     private <T> void executeCommandAndUpdateState(final String channelIID, final byte[] command,
