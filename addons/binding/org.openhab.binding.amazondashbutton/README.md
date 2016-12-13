@@ -9,12 +9,27 @@ The binding uses pcap4j (https://www.pcap4j.org/) in order to capture ARP and BO
 
 ## Install Native Library
 
-Let’s start with installing libpcap (for Mac/Linux/UNIX) or WinPcap (for Windows) on your computer. They are native libraries that powers the core functionalities of Pcap4J.
+Let’s start with installing libpcap (for Mac/Linux/UNIX) or WinPcap (for Windows) on your computer. They are native libraries that powers the core functionalities of Pcap4J. Pcap4J needs administrator/root privileges.
 
-### Ubuntu
+Source: [https://www.pcap4j.org/](https://www.pcap4j.org/)
+
+### Debian/Ubuntu
 
 ```
 apt-get install libpcap-dev
+```
+
+Note: You can run Pcap4J with a non-root user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
+to your java command by the following command: 
+
+```
+sudo setcap cap_net_raw,cap_net_admin=eip `realpath /usr/bin/java`
+```
+
+Be aware of other capabilities which are set by setcap. **These capabilities will be overwritten!** If you need more capabilities (like "cap_net_bind_service" for the Network binding), you have to add them like this :
+
+```
+sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' `realpath /usr/bin/java`
 ```
 
 ### CentOs
@@ -34,25 +49,6 @@ brew install libpcap
 ```
 choco install winpcap
 ```
-
-
-Pcap4J needs administrator/root privileges.
-Or, if on Linux, you can run Pcap4J with a non-root user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
-to your java command by the following command: 
-
-```
-sudo setcap cap_net_raw,cap_net_admin=eip `realpath /usr/bin/java`
-```
-
-Be aware of other capabilities which are set by setcap. **These capabilities will be overwritten!**
-
-If you need more capabilities (like cap_net_bind_service), you have to add them like this :
-```
-sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' `realpath /usr/bin/java`
-```
-
-
-Source: [https://www.pcap4j.org/](https://www.pcap4j.org/)
 
 ## Setup Dash Button
 
