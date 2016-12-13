@@ -61,8 +61,8 @@ public class RegoRegisterMapper {
             mappings.put(CHANNEL_GROUP_SENSORS + "radiatorReturn", new TemperatureChannel((short) 521));
             mappings.put(CHANNEL_GROUP_SENSORS + "outdoor", new TemperatureChannel((short) 522));
             mappings.put(CHANNEL_GROUP_SENSORS + "hotWater", new TemperatureChannel((short) 523));
-            mappings.put(CHANNEL_GROUP_SENSORS + "shunt", new TemperatureChannel((short) 524));
-            mappings.put(CHANNEL_GROUP_SENSORS + "room", new TemperatureChannel((short) 525));
+            mappings.put(CHANNEL_GROUP_SENSORS + "radiatorForward", new TemperatureChannel((short) 524));
+            mappings.put(CHANNEL_GROUP_SENSORS + "indoor", new TemperatureChannel((short) 525));
             mappings.put(CHANNEL_GROUP_SENSORS + "compressor", new TemperatureChannel((short) 526));
             mappings.put(CHANNEL_GROUP_SENSORS + "heatFluidOut", new TemperatureChannel((short) 527));
             mappings.put(CHANNEL_GROUP_SENSORS + "heatFluidIn", new TemperatureChannel((short) 528));

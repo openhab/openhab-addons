@@ -38,17 +38,17 @@
     <channel-group-type id="sensors">
         <label>Sensors</label>
         <channels>
-            <channel id="radiatorReturn" typeId="radiatorReturn"/>
-            <channel id="outdoor" typeId="outdoor"/>
-            <channel id="hotWater" typeId="hotWater"/>
-            <channel id="shunt" typeId="shunt"/>
-            <channel id="room" typeId="room"/>
-            <channel id="compressor" typeId="compressor"/>
-            <channel id="heatFluidOut" typeId="heatFluidOut"/>
-            <channel id="heatFluidIn" typeId="heatFluidIn"/>
-            <channel id="coldFluidIn" typeId="coldFluidIn"/>
-            <channel id="coldFluidOut" typeId="coldFluidOut"/>
-            <channel id="externalHotWater" typeId="externalHotWater"/>
+            <channel id="radiatorReturn" typeId="radiatorReturnTemp"/>
+            <channel id="outdoor" typeId="outdoorTemp"/>
+            <channel id="hotWater" typeId="hotWaterTemp"/>
+            <channel id="radiatorForward" typeId="radiatorForwardTemp"/>
+            <channel id="indoor" typeId="indoorTemp"/>
+            <channel id="compressor" typeId="compressorTemp"/>
+            <channel id="heatFluidOut" typeId="heatFluidOutTemp"/>
+            <channel id="heatFluidIn" typeId="heatFluidInTemp"/>
+            <channel id="coldFluidIn" typeId="coldFluidInTemp"/>
+            <channel id="coldFluidOut" typeId="coldFluidOutTemp"/>
+            <channel id="externalHotWater" typeId="externalHotWaterTemp"/>
         </channels>
     </channel-group-type>
     
@@ -121,77 +121,77 @@
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
 
-    <channel-type id="radiatorReturn">
+    <channel-type id="radiatorReturnTemp">
         <item-type>Number</item-type>
         <label>Radiator return</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="outdoor">
+    <channel-type id="outdoorTemp">
         <item-type>Number</item-type>
         <label>Outdoor</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="hotWater">
+    <channel-type id="hotWaterTemp">
         <item-type>Number</item-type>
         <label>Hot water</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
 
-    <channel-type id="shunt" advanced="true">
+    <channel-type id="radiatorForwardTemp" advanced="true">
         <item-type>Number</item-type>
-        <label>Shunt, flow</label>
+        <label>Radiator forward</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
 
-    <channel-type id="room" advanced="true">
+    <channel-type id="indoorTemp" advanced="true">
         <item-type>Number</item-type>
-        <label>Room</label>
+        <label>Indoor</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="compressor">
+    <channel-type id="compressorTemp">
         <item-type>Number</item-type>
         <label>Compressor</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="heatFluidOut">
+    <channel-type id="heatFluidOutTemp">
         <item-type>Number</item-type>
         <label>Heat fluid out</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="heatFluidIn">
+    <channel-type id="heatFluidInTemp">
         <item-type>Number</item-type>
         <label>Heat fluid in</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="coldFluidIn">
+    <channel-type id="coldFluidInTemp">
         <item-type>Number</item-type>
         <label>Cold fluid in</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="coldFluidOut">
+    <channel-type id="coldFluidOutTemp">
         <item-type>Number</item-type>
         <label>Cold fluid out</label>
         <category>Temperature</category>
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
 
-    <channel-type id="externalHotWater" advanced="true">
+    <channel-type id="externalHotWaterTemp" advanced="true">
         <item-type>Number</item-type>
         <label>External hot water</label>
         <category>Temperature</category>
