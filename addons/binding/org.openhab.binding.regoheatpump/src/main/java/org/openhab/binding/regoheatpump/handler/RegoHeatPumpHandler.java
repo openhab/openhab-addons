@@ -94,7 +94,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 1, refreshInterval, TimeUnit.SECONDS);
+        synchronized (pendingUpdates) {
+            scheduledRefreshFuture = scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -103,10 +105,11 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         connection.close();
 
-        scheduledRefreshFuture.cancel(true);
-        scheduledRefreshFuture = null;
-
         synchronized (pendingUpdates) {
+            if (scheduledRefreshFuture != null) {
+                scheduledRefreshFuture.cancel(true);
+                scheduledRefreshFuture = null;
+            }
             pendingUpdates.clear();
             if (active != null) {
                 active.cancel(true);
@@ -150,8 +153,12 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private void processNextChannel() {
         synchronized (pendingUpdates) {
+            if (Thread.interrupted()) {
+                return;
+            }
+
             final String channelIID = pendingUpdates.poll();
-            if (channelIID != null && Thread.interrupted() == false) {
+            if (channelIID != null) {
                 active = scheduler.submit(() -> {
                     try {
                         if (checkRegoDevice()) {
@@ -169,6 +176,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 });
             } else {
                 active = null;
+
+                if (scheduledRefreshFuture == null) {
+                    scheduledRefreshFuture = scheduler.schedule(this::refresh, refreshInterval, TimeUnit.SECONDS);
+                }
             }
         }
     }
@@ -238,7 +249,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private void refresh() {
         synchronized (pendingUpdates) {
-            linkedChannels().forEach(this::refreshChannelAsync);
+            scheduledRefreshFuture = null;
+            if (Thread.interrupted() == false) {
+                linkedChannels().forEach(this::refreshChannelAsync);
+            }
         }
     }
 
