@@ -210,7 +210,8 @@ public class HomematicThingHandler extends BaseThingHandler {
         try {
             if (HomematicTypeGeneratorImpl.isStatusDatapoint(dp)) {
                 updateStatus(dp.getChannel().getDevice());
-            } else if (dp.getParamsetType() == HmParamsetType.MASTER) {
+            }
+            if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
                 Configuration config = editConfiguration();
                 config.put(MetadataUtils.getParameterName(dp), dp.getValue());
