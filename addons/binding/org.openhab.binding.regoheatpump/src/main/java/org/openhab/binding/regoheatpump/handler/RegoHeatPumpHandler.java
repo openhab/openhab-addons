@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.regoheatpump.internal.protocol.CommandFactory;
@@ -124,7 +125,11 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        refreshChannelAsync(channelUID.getId());
+        if (command instanceof RefreshType) {
+            refreshChannelAsync(channelUID.getId());
+        } else {
+            logger.debug("Unsupported command {}! Supported commands: REFRESH", command);
+        }
     }
 
     private void refreshChannelAsync(String channelIID) {
