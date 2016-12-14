@@ -10,8 +10,7 @@ package org.openhab.binding.kodi.internal.protocol;
 
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -39,7 +38,7 @@ import com.google.gson.JsonParser;
 public class KodiClientSocket {
     private static final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
 
-    private static final ExecutorService threadpool = Executors.newFixedThreadPool(3);
+    private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;
 
     private CountDownLatch commandLatch = null;
@@ -56,10 +55,11 @@ public class KodiClientSocket {
 
     private final KodiClientSocketEventListener eventHandler;
 
-    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri) {
+    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler) {
         this.eventHandler = eventHandler;
         this.uri = uri;
         client = new WebSocketClient();
+        this.scheduler = scheduler;
     }
 
     /**
@@ -118,7 +118,7 @@ public class KodiClientSocket {
             session = wssession;
             connected = true;
             if (eventHandler != null) {
-                threadpool.execute(new Runnable() {
+                scheduler.submit(new Runnable() {
 
                     @Override
                     public void run() {
@@ -149,7 +149,7 @@ public class KodiClientSocket {
                 logger.debug("Event received from server: {}", json.toString());
                 try {
                     if (eventHandler != null) {
-                        threadpool.execute(new Runnable() {
+                        scheduler.submit(new Runnable() {
 
                             @Override
                             public void run() {
@@ -175,7 +175,7 @@ public class KodiClientSocket {
             session = null;
             connected = false;
             logger.debug("Closing a WebSocket due to {}", reason);
-            threadpool.execute(new Runnable() {
+            scheduler.submit(new Runnable() {
 
                 @Override
                 public void run() {

@@ -206,7 +206,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "No network address specified");
             } else {
-                connection.connect(host, getIntConfigParameter(PORT_PARAMETER, 9090));
+                connection.connect(host, getIntConfigParameter(PORT_PARAMETER, 9090), scheduler);
 
                 // Start the connection checker
                 Runnable connectionChecker = new Runnable() {

@@ -11,6 +11,7 @@ package org.openhab.binding.kodi.internal.protocol;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
@@ -74,10 +75,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    public synchronized void connect(String hostName, int port) {
+    public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler) {
         try {
             wsUri = new URI(String.format("ws://%s:%d/jsonrpc", hostName, port));
-            socket = new KodiClientSocket(this, wsUri);
+            socket = new KodiClientSocket(this, wsUri, scheduler);
             socket.open();
         } catch (Throwable t) {
             logger.error("exception during connect to {}", wsUri.toString(), t);
