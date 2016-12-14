@@ -120,7 +120,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
                     // generate channel
                     for (HmDatapoint dp : channel.getDatapoints().values()) {
-                        if (!isStatusDatapoint(dp) && !isIgnoredDatapoint(dp)) {
+                        if (!isIgnoredDatapoint(dp)) {
                             if (dp.getParamsetType() == HmParamsetType.VALUES) {
                                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
                                 ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
@@ -329,7 +329,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Returns true, if the given datapoint can be ignored for metadata generation.
      */
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
-        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1 || isStatusDatapoint(dp);
+        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
     }
 
 }
