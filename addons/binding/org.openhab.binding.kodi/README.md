@@ -4,6 +4,7 @@ This binding integrates the Kodi players (which used to be XBMC).
 
 ## Introduction
 
+This binding allows to control a kodi media player instance. In order to allow this binding to control kodi, you need to enable "remote control form applications" in your kodi application. (Settings -> Service Settings -> Control -> Allow remote control from applications on other systems)
 
 ## Supported Things
 
