@@ -56,6 +56,19 @@ public class OnkyoBindingConstants {
     public final static String CHANNEL_MUTEZONE2 = "zone2#mute";
     public final static String CHANNEL_VOLUMEZONE2 = "zone2#volume";
 
+    public final static String CHANNEL_NET_MENU_CONTROL = "netmenu#control";
+    public final static String CHANNEL_NET_MENU_SELECTION = "netmenu#selection";
+    public final static String CHANNEL_NET_MENU0 = "netmenu#item0";
+    public final static String CHANNEL_NET_MENU1 = "netmenu#item1";
+    public final static String CHANNEL_NET_MENU2 = "netmenu#item2";
+    public final static String CHANNEL_NET_MENU3 = "netmenu#item3";
+    public final static String CHANNEL_NET_MENU4 = "netmenu#item4";
+    public final static String CHANNEL_NET_MENU5 = "netmenu#item5";
+    public final static String CHANNEL_NET_MENU6 = "netmenu#item6";
+    public final static String CHANNEL_NET_MENU7 = "netmenu#item7";
+    public final static String CHANNEL_NET_MENU8 = "netmenu#item8";
+    public final static String CHANNEL_NET_MENU9 = "netmenu#item9";
+
     // Used for Discovery service
     public final static String MANUFACTURER = "ONKYO";
     public final static String UPNP_DEVICE_TYPE = "MediaRenderer";
