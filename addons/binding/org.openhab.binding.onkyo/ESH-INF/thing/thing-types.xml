@@ -11,6 +11,7 @@
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1" />
 			<channel-group typeId="playerControls" id="player" />
+			<channel-group typeId="netMenuControls" id="netmenu" />
 			<channel-group typeId="zone2Controls" id="zone2" />
 		</channel-groups>
 
@@ -40,6 +41,7 @@
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1" />
 			<channel-group typeId="playerControls" id="player" />
+			<channel-group typeId="netMenuControls" id="netmenu" />
 			<channel-group typeId="zone2Controls" id="zone2" />
 		</channel-groups>
 
@@ -82,6 +84,54 @@
 			<channel id="artist" typeId="artist" />
 			<channel id="listenmode" typeId="listenmode" />
 			<channel id="playuri" typeId="playuri" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="netMenuControls">
+		<label>Net/USB Menu</label>
+		<channels>
+			<channel id="control" typeId="netControl" />
+			<channel id="item0" typeId="menuItem">
+				<label>Menu item 0</label>
+				<description>Net/USB menu item at position 0</description>
+			</channel>
+			<channel id="item1" typeId="menuItem">
+				<label>Menu item 1</label>
+				<description>Net/USB menu item at position 1</description>
+			</channel>
+			<channel id="item2" typeId="menuItem">
+				<label>Menu item 2</label>
+				<description>Net/USB menu item at position 2</description>
+			</channel>
+			<channel id="item3" typeId="menuItem">
+				<label>Menu item 3</label>
+				<description>Net/USB menu item at position 3</description>
+			</channel>
+			<channel id="item4" typeId="menuItem">
+				<label>Menu item 4</label>
+				<description>Net/USB menu item at position 4</description>
+			</channel>
+			<channel id="item5" typeId="menuItem">
+				<label>Menu item 5</label>
+				<description>Net/USB menu item at position 5</description>
+			</channel>
+			<channel id="item6" typeId="menuItem">
+				<label>Menu item 6</label>
+				<description>Net/USB menu item at position 6</description>
+			</channel>
+			<channel id="item7" typeId="menuItem">
+				<label>Menu item 7</label>
+				<description>Net/USB menu item at position 7</description>
+			</channel>
+			<channel id="item8" typeId="menuItem">
+				<label>Menu item 8</label>
+				<description>Net/USB menu item at position 8</description>
+			</channel>
+			<channel id="item9" typeId="menuItem">
+				<label>Menu item 9</label>
+				<description>Net/USB menu item at position 9</description>
+			</channel>
+			<channel id="selection" typeId="menuSelection" />
 		</channels>
 	</channel-group-type>
 
@@ -197,6 +247,31 @@
 		<label>Play URI</label>
 		<description>Plays a given URI</description>
 	</channel-type>
+	<channel-type id="netControl">
+		<item-type>String</item-type>
+		<label>Control</label>
+		<description>Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9]</description>
+		<state>
+			<options>
+				<option value="Up">Selection Up</option>
+				<option value="Down">Selection Down</option>
+				<option value="Select">Select Entry</option>
+				<option value="Back">Go Back</option>
+				<option value="PageUp">Scroll Page Up</option>
+				<option value="PageDown">Scroll Page Down</option>
+				<option value="Select0">Select Entry 0</option>
+				<option value="Select1">Select Entry 1</option>
+				<option value="Select2">Select Entry 2</option>
+				<option value="Select3">Select Entry 3</option>
+				<option value="Select4">Select Entry 4</option>
+				<option value="Select5">Select Entry 5</option>
+				<option value="Select6">Select Entry 6</option>
+				<option value="Select7">Select Entry 7</option>
+				<option value="Select8">Select Entry 8</option>
+				<option value="Select9">Select Entry 9</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<!-- Onkyo variables -->
 	<channel-type id="currentPlayingTime">
@@ -221,6 +296,18 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist name of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="menuItem">
+		<item-type>String</item-type>
+		<label>Menu item</label>
+		<description>Net/USB menu item</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="menuSelection">
+		<item-type>Number</item-type>
+		<label>Selected Item</label>
+		<description>Position of the currently selected menu item</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 </thing:thing-descriptions>

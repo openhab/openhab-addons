@@ -203,7 +203,23 @@ public enum EiscpCommandRef {
      * <LI>s -> Shuffle Status: "-": Off, "S": All , "A": Album, "F": Folder</LI>
      * </UL>
      **/
-    NETUSB_PLAY_STATUS_QUERY(0);
+    NETUSB_PLAY_STATUS_QUERY(0),
+
+    /**
+     * NET/USB Menu items
+     */
+    NETUSB_MENU0(165),
+    NETUSB_MENU1(166),
+    NETUSB_MENU2(167),
+    NETUSB_MENU3(168),
+    NETUSB_MENU4(169),
+    NETUSB_MENU5(170),
+    NETUSB_MENU6(171),
+    NETUSB_MENU7(172),
+    NETUSB_MENU8(173),
+    NETUSB_MENU9(174),
+    NETUSB_MENU_SELECT(175),
+    NETUSB_MENU_POSITION(176);
 
     private int command;
 
