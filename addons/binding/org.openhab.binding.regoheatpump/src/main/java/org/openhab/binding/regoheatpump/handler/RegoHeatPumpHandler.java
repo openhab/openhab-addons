@@ -53,13 +53,19 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private static final class ChannelDescriptor {
         private Date lastUpdate;
+        private State state;
 
-        public boolean isDirty(int refreshTime) {
-            return lastUpdate == null || (lastUpdate.getTime() + refreshTime * 900 < new Date().getTime());
+        public State stateIfNotExpired(int refreshTime) {
+            if (lastUpdate == null || (lastUpdate.getTime() + refreshTime * 900 < new Date().getTime())) {
+                return null;
+            }
+
+            return state;
         }
 
-        public void clearDirtyFlag() {
+        public void setState(State state) {
             lastUpdate = new Date();
+            this.state = state;
         }
     }
 
@@ -233,8 +239,13 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) ? CHANNEL_LAST_ERROR : channelIID;
 
         final ChannelDescriptor descriptor = channelDescriptorForChannel(mappedChannelIID);
-        if (descriptor.isDirty(refreshInterval) == false) {
-            logger.debug("Not refreshing {} since it is up to date", mappedChannelIID);
+        final State lastState = descriptor.stateIfNotExpired(refreshInterval);
+
+        if (lastState != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache did not yet expire, using cached value for {}", mappedChannelIID);
+            }
+            updateState(channelIID, lastState);
             return;
         }
 
@@ -247,9 +258,10 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 logger.debug("Got value for '{}' = {}", channelIID, result);
             }
 
-            updateState(channelIID, converter.apply(result));
+            final State newState = converter.apply(result);
+            updateState(channelIID, newState);
 
-            descriptor.clearDirtyFlag();
+            descriptor.setState(newState);
 
         } catch (IOException e) {
 
