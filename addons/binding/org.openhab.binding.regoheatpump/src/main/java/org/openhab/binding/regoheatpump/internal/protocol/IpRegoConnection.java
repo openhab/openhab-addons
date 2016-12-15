@@ -31,6 +31,7 @@ public class IpRegoConnection implements RegoConnection {
         if (clientSocket == null) {
             clientSocket = new Socket();
             clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
+            clientSocket.setKeepAlive(true);
         }
         clientSocket.connect(new InetSocketAddress(address, port), CONNECTION_TIMEOUT);
         logger.debug("Connected to '{}', port = {}.", address, port);

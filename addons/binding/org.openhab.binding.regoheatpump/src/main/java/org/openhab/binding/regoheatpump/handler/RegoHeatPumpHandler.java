@@ -253,7 +253,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         } catch (IOException e) {
 
-            logger.debug("Accessing value for channel '{}' failed due {}", channelIID, e);
+            logger.warn("Accessing value for channel '{}' failed due {}", channelIID, e);
 
             connection.close();
 
@@ -266,7 +266,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         } catch (Exception e) {
 
-            logger.debug("Accessing value for channel '{}' failed due {}", channelIID, e);
+            logger.warn("Accessing value for channel '{}' failed due {}", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
         }
     }
