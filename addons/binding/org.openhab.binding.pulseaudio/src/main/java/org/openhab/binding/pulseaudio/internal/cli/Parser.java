@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.2.0
  */
 public class Parser {
-    private static final Logger logger = LoggerFactory.getLogger(Parser.class);
+    private final static Logger logger = LoggerFactory.getLogger(Parser.class);
 
     private static final Pattern pattern = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
     private static final Pattern volumePattern = Pattern.compile(
@@ -50,7 +50,6 @@ public class Parser {
      */
     public static List<Module> parseModules(String raw) {
         List<Module> modules = new ArrayList<Module>();
-        // System.out.println(raw);
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return modules;
@@ -73,7 +72,6 @@ public class Parser {
             for (int j = 1; j < lines.length; j++) {
                 Matcher matcher = pattern.matcher(lines[j]);
                 if (matcher.find()) {
-                    // System.out.println(matcher.group(1).trim()+": "+matcher.group(2).trim());
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
             }
@@ -97,7 +95,6 @@ public class Parser {
      */
     public static Collection<Sink> parseSinks(String raw, PulseaudioClient client) {
         Hashtable<String, Sink> sinks = new Hashtable<String, Sink>();
-        // System.out.println(raw);
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return sinks.values();
@@ -121,7 +118,6 @@ public class Parser {
             for (int j = 1; j < lines.length; j++) {
                 Matcher matcher = pattern.matcher(lines[j]);
                 if (matcher.find()) {
-                    // System.out.println(matcher.group(1).trim()+": "+matcher.group(2).trim());
                     properties.put(matcher.group(1).trim(), matcher.group(2).trim());
                 }
             }
@@ -132,7 +128,7 @@ public class Parser {
                     try {
                         sink.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state " + properties.get("state") + " in sink item #" + id);
+                        logger.error("unhandled state {} in sink item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -142,9 +138,7 @@ public class Parser {
                     sink.setVolume(Integer.valueOf(parseVolume(properties.get("volume"))));
                 }
                 if (properties.containsKey("combine.slaves")) {
-                    // this is a combined sink, the combined sink object
-                    // should
-                    // be
+                    // this is a combined sink, the combined sink object should be
                     for (String sinkName : properties.get("combine.slaves").replace("\"", "").split(",")) {
                         sink.addCombinedSinkName(sinkName);
                     }
@@ -202,7 +196,7 @@ public class Parser {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state " + properties.get("state") + " in sink-input item #" + id);
+                        logger.error("unhandled state {} in sink-input item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -229,7 +223,6 @@ public class Parser {
      */
     public static List<Source> parseSources(String raw, PulseaudioClient client) {
         List<Source> sources = new ArrayList<Source>();
-        // System.out.println(raw);
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return sources;
@@ -262,7 +255,7 @@ public class Parser {
                     try {
                         source.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state " + properties.get("state") + " in source item #" + id);
+                        logger.error("unhandled state {} in source item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
@@ -289,7 +282,6 @@ public class Parser {
      */
     public static List<SourceOutput> parseSourceOutputs(String raw, PulseaudioClient client) {
         List<SourceOutput> items = new ArrayList<SourceOutput>();
-        System.out.println(raw);
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return items;
@@ -322,7 +314,7 @@ public class Parser {
                     try {
                         item.setState(AbstractAudioDeviceConfig.State.valueOf(properties.get("state")));
                     } catch (IllegalArgumentException e) {
-                        logger.error("unhandled state " + properties.get("state") + " in source-output item #" + id);
+                        logger.error("unhandled state {} in source-output item #{}", properties.get("state"), id);
                     }
                 }
                 if (properties.containsKey("muted")) {
