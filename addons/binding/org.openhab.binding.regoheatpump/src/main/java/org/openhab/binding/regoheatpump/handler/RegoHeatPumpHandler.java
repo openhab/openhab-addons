@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.regoheatpump.internal.protocol.CommandFactory;
+import org.openhab.binding.regoheatpump.internal.protocol.ErrorLine;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoRegisterMapper;
 import org.openhab.binding.regoheatpump.internal.protocol.ResponseParser;
@@ -53,19 +54,19 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private static final class ChannelDescriptor {
         private Date lastUpdate;
-        private State state;
+        private byte[] cachedValue;
 
-        public State stateIfNotExpired(int refreshTime) {
+        public byte[] cachedValueIfNotExpired(int refreshTime) {
             if (lastUpdate == null || (lastUpdate.getTime() + refreshTime * 900 < new Date().getTime())) {
                 return null;
             }
 
-            return state;
+            return cachedValue;
         }
 
-        public void setState(State state) {
+        public void setValue(byte[] value) {
             lastUpdate = new Date();
-            this.state = state;
+            cachedValue = value;
         }
     }
 
@@ -121,22 +122,14 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private ChannelDescriptor channelDescriptorForChannel(final String channelIID) {
-        synchronized (channelDescriptors) {
-            ChannelDescriptor descriptor = channelDescriptors.get(channelIID);
-            if (descriptor == null) {
-                descriptor = new ChannelDescriptor();
-                channelDescriptors.put(channelIID, descriptor);
-            }
-            return descriptor;
-        }
-    }
-
     private void processChannelRequest(final String channelIID) {
         switch (channelIID) {
             case CHANNEL_LAST_ERROR_CODE:
+                readLastErrorCode();
+                break;
+
             case CHANNEL_LAST_ERROR_TIMESTAMP:
-                readLastError();
+                readLastErrorTimestamp();
                 break;
 
             case CHANNEL_FRONT_PANEL_POWER_LED:
@@ -186,23 +179,18 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private void readLastError() {
-        executeCommandAndUpdateState(CHANNEL_LAST_ERROR_CODE, CommandFactory.createReadLastErrorCommand(),
+    private void readLastErrorCode() {
+        readLastError(CHANNEL_LAST_ERROR_CODE, e -> new StringType(Byte.toString(e.error())));
+    }
+
+    private void readLastErrorTimestamp() {
+        readLastError(CHANNEL_LAST_ERROR_TIMESTAMP, e -> new DateTimeType(e.timestamp()));
+    }
+
+    private void readLastError(final String channelIID, final Function<ErrorLine, State> converter) {
+        executeCommandAndUpdateState(channelIID, CommandFactory.createReadLastErrorCommand(),
                 ResponseParserFactory.ErrorLine, e -> {
-                    if (e == null) {
-                        updateState(CHANNEL_LAST_ERROR_TIMESTAMP, UnDefType.NULL);
-                        return UnDefType.NULL;
-                    }
-
-                    try {
-                        updateState(CHANNEL_LAST_ERROR_TIMESTAMP, new DateTimeType(e.timestamp()));
-                    } catch (RuntimeException ex) {
-                        logger.warn("Unable to convert timestamp '{}' to DateTimeType due {}", e.timestampAsString(),
-                                ex);
-                        updateState(CHANNEL_LAST_ERROR_TIMESTAMP, UnDefType.UNDEF);
-                    }
-
-                    return new StringType(Byte.toString(e.error()));
+                    return e == null ? UnDefType.NULL : converter.apply(e);
                 });
     }
 
@@ -232,42 +220,24 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             logger.debug("Reading value for channel '{}' ...", channelIID);
         }
 
-        // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
-        // register. To prevent accessing same register twice when both channels are linked,
-        // use same name for both so only a single fetch will be triggered.
-        final String mappedChannelIID = (CHANNEL_LAST_ERROR_CODE.equals(channelIID)
-                || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) ? CHANNEL_LAST_ERROR : channelIID;
-
-        final ChannelDescriptor descriptor = channelDescriptorForChannel(mappedChannelIID);
-        final State lastState = descriptor.stateIfNotExpired(refreshInterval);
-
-        if (lastState != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Cache did not yet expire, using cached value for {}", mappedChannelIID);
-            }
-            updateState(channelIID, lastState);
-            return;
-        }
-
         try {
             checkRegoDevice();
 
-            T result = executeCommand(command, parser);
+            final T result = executeCommand(channelIID, command, parser);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Got value for '{}' = {}", channelIID, result);
             }
 
-            final State newState = converter.apply(result);
-            updateState(channelIID, newState);
-
-            descriptor.setState(newState);
+            updateState(channelIID, converter.apply(result));
 
         } catch (IOException e) {
 
-            logger.warn("Accessing value for channel '{}' failed due {}", channelIID, e);
+            logger.warn("Accessing value for channel '" + channelIID + "' failed.", e);
 
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
 
             synchronized (channelDescriptors) {
                 channelDescriptors.clear();
@@ -278,7 +248,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         } catch (Exception e) {
 
-            logger.warn("Accessing value for channel '{}' failed due {}", channelIID, e);
+            logger.warn("Accessing value for channel '" + channelIID + "' failed.", e);
             updateState(channelIID, UnDefType.UNDEF);
         }
     }
@@ -286,7 +256,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     private void checkRegoDevice() throws IOException {
         if (thing.getStatus() != ThingStatus.ONLINE) {
             logger.debug("Reading Rego device version...");
-            final Short regoVersion = executeCommand(CommandFactory.createReadRegoVersionCommand(),
+            final Short regoVersion = executeCommand(null, CommandFactory.createReadRegoVersionCommand(),
                     ResponseParserFactory.Short);
 
             updateStatus(ThingStatus.ONLINE);
@@ -294,9 +264,40 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private <T> T executeCommand(final byte[] command, final ResponseParser<T> parser) throws IOException {
-        final RegoConnection connection = this.connection;
+    private ChannelDescriptor channelDescriptorForChannel(final String channelIID) {
+        synchronized (channelDescriptors) {
+            ChannelDescriptor descriptor = channelDescriptors.get(channelIID);
+            if (descriptor == null) {
+                descriptor = new ChannelDescriptor();
+                channelDescriptors.put(channelIID, descriptor);
+            }
+            return descriptor;
+        }
+    }
 
+    private <T> T executeCommand(final String channelIID, final byte[] command, final ResponseParser<T> parser)
+            throws IOException {
+
+        // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
+        // register. To prevent accessing same register twice when both channels are linked,
+        // use same name for both so only a single fetch will be triggered.
+        final String mappedChannelIID = (CHANNEL_LAST_ERROR_CODE.equals(channelIID)
+                || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) ? CHANNEL_LAST_ERROR : channelIID;
+
+        // Use transient channel descriptor for null (not cached) channels.
+        final ChannelDescriptor descriptor = channelIID == null ? new ChannelDescriptor()
+                : channelDescriptorForChannel(mappedChannelIID);
+
+        final byte[] cachedValue = descriptor.cachedValueIfNotExpired(refreshInterval);
+        if (cachedValue != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Cache did not yet expire, using cached value for {}", mappedChannelIID);
+            }
+
+            return parser.parse(cachedValue);
+        }
+
+        // Send command to device and wait for response.
         if (connection.isConnected() == false) {
             connection.connect();
         }
@@ -307,7 +308,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         connection.write(command);
 
-        byte[] response = new byte[parser.responseLength()];
+        final byte[] response = new byte[parser.responseLength()];
         for (int i = 0; i < response.length;) {
             int value = connection.read();
 
@@ -316,6 +317,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             }
 
             if (i == 0 && value != ResponseParser.ComputerAddress) {
+                logger.debug("Ignoring unexpected byte received {}", value);
                 continue;
             }
 
@@ -327,6 +329,11 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             logger.debug("Received {}", DatatypeConverter.printHexBinary(response));
         }
 
-        return parser.parse(response);
+        final T result = parser.parse(response);
+
+        // If reading/parsing was done successfully, cache response payload.
+        descriptor.setValue(response);
+
+        return result;
     }
 }
