@@ -147,6 +147,8 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             updateChannel();
         } else if (bridgeStatus == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (bridgeStatus == ThingStatus.UNKNOWN) {
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
