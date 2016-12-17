@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.astro.internal.config.AstroThingConfig;
 import org.openhab.binding.astro.internal.job.AbstractBaseJob;
-import org.openhab.binding.astro.internal.job.DailyJob;
+import org.openhab.binding.astro.internal.job.AbstractDailyJob;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
@@ -188,21 +188,23 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
                         if (getThing().getStatus() == ThingStatus.ONLINE) {
                             String thingUid = getThing().getUID().toString();
+                            String typeId = getThing().getThingTypeUID().getId();
                             JobDataMap jobDataMap = new JobDataMap();
                             jobDataMap.put(AbstractBaseJob.KEY_THING_UID, thingUid);
                             jobDataMap.put(AbstractBaseJob.KEY_JOB_NAME, "job-daily");
 
                             // dailyJob
-                            Trigger trigger = newTrigger().withIdentity("trigger-daily", thingUid)
+                            Trigger trigger = newTrigger().withIdentity("trigger-daily-" + typeId, thingUid)
                                     .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
-                            JobDetail jobDetail = newJob(DailyJob.class).withIdentity("job-daily", thingUid)
-                                    .usingJobData(jobDataMap).build();
+                            JobDetail jobDetail = newJob(getDailyJobClass())
+                                    .withIdentity("job-daily-" + typeId, thingUid).usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
-                            logger.info("Scheduled astro job-daily at midnight for thing {}", thingUid);
+                            logger.info("Scheduled astro job-daily-{} at midnight for thing {}", typeId, thingUid);
 
                             // startupJob
-                            trigger = newTrigger().withIdentity("trigger-daily-startup", thingUid).startNow().build();
-                            jobDetail = newJob(DailyJob.class).withIdentity("job-daily-startup", thingUid)
+                            trigger = newTrigger().withIdentity("trigger-daily-startup-" + typeId, thingUid).startNow()
+                                    .build();
+                            jobDetail = newJob(getDailyJobClass()).withIdentity("job-daily-startup-" + typeId, thingUid)
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
 
@@ -328,4 +330,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns the channelIds for positional calculation.
      */
     protected abstract String[] getPositionalChannelIds();
+
+    /**
+     * Returns the class for the daily calculation job.
+     */
+    protected abstract Class<? extends AbstractDailyJob> getDailyJobClass();
 }
