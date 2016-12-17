@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Milight Binding
+Bundle-Name: openHAB Milight Binding
 Bundle-SymbolicName: org.openhab.binding.milight;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier

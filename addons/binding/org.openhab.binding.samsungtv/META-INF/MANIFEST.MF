@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Samsung Tv Binding
+Bundle-Name: openHAB Samsung Tv Binding
 Bundle-SymbolicName: org.openhab.binding.samsungtv;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier

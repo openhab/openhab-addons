@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Homematic Binding
+Bundle-Name: openHAB Homematic Binding
 Bundle-SymbolicName: org.openhab.binding.homematic;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier

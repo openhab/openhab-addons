@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Hunter Douglas PowerView Binding
+Bundle-Name: openHAB Hunter Douglas PowerView Binding
 Bundle-SymbolicName: org.openhab.binding.hdpowerview;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
