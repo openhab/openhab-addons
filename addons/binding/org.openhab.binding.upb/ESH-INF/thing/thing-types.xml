@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Hue Bridge -->
+    <bridge-type id="bridge">
+        <label>UPB Modem</label>
+        <description>Represents a UPB modem.</description>
+        
+        <config-description>
+            <parameter name="serialPort" type="text">
+                <label>Serial Port</label>
+                <description>The serial port the modem is connected to.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="network" type="integer" min="1" max="254" step="1">
+                <label>UPB Network</label>
+                <description>The UPB network identifier used by the modem.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <!-- Switch Thing Type -->
+    <thing-type id="switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>Switch</label>
+        <description>A switch that can be turned on or off.</description>
+
+        <channels>
+            <channel id="switch" typeId="switch" />
+        </channels>
+
+        <config-description>
+            <parameter name="id" type="integer" min="1" max="254" step="1">
+                <label>UPB Identifier</label>
+                <description>The UPB identifier for this device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Dimmer Thing Type -->
+    <thing-type id="dimmer">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>Dimmer</label>
+        <description>A switch that can be dimmed.</description>
+
+        <channels>
+            <channel id="brightness" typeId="brightness" />
+        </channels>
+
+        <config-description>
+            <parameter name="id" type="integer" min="1" max="254" step="1">
+                <label>UPB Identifier</label>
+                <description>The UPB identifier for this device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Link Thing Type -->
+    <thing-type id="link">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>Link</label>
+        <description>A UPB link that controls multiple switches.</description>
+
+        <channels>
+            <channel id="brightness" typeId="brightness" />
+        </channels>
+
+        <config-description>
+            <parameter name="id" type="integer" min="1" max="254" step="1">
+                <label>UPB Identifier</label>
+                <description>The UPB identifier for this link.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="duplicateTimeout" type="integer" min="0" step="1"  >
+                <label>Duplicate Timeout</label>
+                <description>Time in milliseconds for which duplicate status updates will be ignored.</description>
+                <required>true</required>
+                <default>0</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+	<!-- Switch Channel Type -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Allows a switch to be turned off and on.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+    <!-- Brightness Channel Type -->
+    <channel-type id="brightness">
+        <item-type>Dimmer</item-type>
+        <label>Brightness</label>
+        <description>Controls the brightness of a light.</description>
+        <category>DimmableLight</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+    </channel-type>
+
+</thing:thing-descriptions>
