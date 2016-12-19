@@ -76,8 +76,8 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_LOW_BATTERY = "lowBattery";
     public final static String CHANNEL_PRESSURE = "pressure";
     public final static String CHANNEL_FORECAST = "forecast";
-    public final static String CHANNEL_RAIN_RATE = "rainrate";
-    public final static String CHANNEL_RAIN_TOTAL = "raintotal";
+    public final static String CHANNEL_RAIN_RATE = "rainRate";
+    public final static String CHANNEL_RAIN_TOTAL = "rainTotal";
     public final static String CHANNEL_WIND_DIRECTION = "windDirection";
     public final static String CHANNEL_WIND_SPEED = "windSpeed";
     public final static String CHANNEL_GUST = "gust";
