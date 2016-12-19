@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunEclipse;
@@ -27,6 +28,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  */
 public class SunCalc {
     private static final double J2000 = 2451545.0;
+    private static final double SC = 1367; // Solar constant in W/m²
     public static final double DEG2RAD = Math.PI / 180;
     public static final double RAD2DEG = 180. / Math.PI;
 
@@ -56,7 +58,7 @@ public class SunCalc {
     /**
      * Calculates the sun position (azimuth and elevation).
      */
-    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Sun sun) {
+    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Integer altitude, Sun sun) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
 
@@ -74,16 +76,47 @@ public class SunCalc {
         Position position = sun.getPosition();
         position.setAzimuth(azimuth + 180);
         position.setElevation(elevation);
+
+        setRadiationInfo(calendar, elevation, altitude, sun);
+    }
+
+    /**
+     * Calculates sun radiation data.
+     */
+    public void setRadiationInfo(Calendar calendar, double elevation, Integer altitude, Sun sun) {
+        double sinAlpha = Math.sin(DEG2RAD * elevation);
+
+        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
+
+        // Direct Solar Radiation (in W/m²) at the atmosphere entry
+        // At sunrise/sunset - calculations limits are reached
+        double rOut = (elevation > 3) ? SC * (0.034 * Math.cos(DEG2RAD * (360 * dayOfYear / daysInYear)) + 1) : 0;
+        double altitudeRatio = (altitude != null) ? 1 / Math.pow((1 - 6.5 / 288 * altitude / 1000), 5.256) : 1;
+        double M = Math.sqrt(1229 + Math.pow(614 * sinAlpha, 2)) - 614 * sinAlpha * altitudeRatio;
+
+        // Direct radiation after atmospheric layer
+        // 0.6 = Coefficient de transmissivité
+        double rDir = rOut * Math.pow(0.6, M) * sinAlpha;
+
+        // Diffuse Radiation
+        double rDiff = rOut * (0.271 - 0.294 * Math.pow(0.6, M)) * sinAlpha;
+        double rTot = rDir + rDiff;
+
+        Radiation radiation = sun.getRadiation();
+        radiation.setDirect(rDir);
+        radiation.setDiffuse(rDiff);
+        radiation.setTotal(rTot);
     }
 
     /**
      * Returns true, if the sun is up all day (no rise and set).
      */
-    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude) {
+    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, Integer altitude) {
         Calendar cal = DateTimeUtils.truncateToMidnight(calendar);
         Sun sun = new Sun();
         for (int minutes = 0; minutes <= MINUTES_PER_DAY; minutes += CURVE_TIME_INTERVAL) {
-            setPositionalInfo(cal, latitude, longitude, sun);
+            setPositionalInfo(cal, latitude, longitude, altitude, sun);
             if (sun.getPosition().getElevation() < SUN_ANGLE) {
                 return false;
             }
@@ -95,11 +128,11 @@ public class SunCalc {
     /**
      * Calculates all sun rise and sets at the specified coordinates.
      */
-    public Sun getSunInfo(Calendar calendar, double latitude, double longitude) {
-        return getSunInfo(calendar, latitude, longitude, false);
+    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Integer altitude) {
+        return getSunInfo(calendar, latitude, longitude, altitude, false);
     }
 
-    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, boolean onlyAstro) {
+    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Integer altitude, boolean onlyAstro) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
         double j = DateTimeUtils.midnightDateToJulianDate(calendar) + 0.5;
@@ -146,7 +179,7 @@ public class SunCalc {
         sun.setNauticDawn(new Range(DateTimeUtils.toCalendar(jnau2), DateTimeUtils.toCalendar(Jciv2)));
         sun.setNauticDusk(new Range(DateTimeUtils.toCalendar(jnau), DateTimeUtils.toCalendar(jastro)));
 
-        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude);
+        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude, altitude);
 
         // daylight
         Range daylightRange = new Range();
@@ -161,7 +194,7 @@ public class SunCalc {
         sun.setDaylight(daylightRange);
 
         // morning night
-        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, true);
+        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true);
         Range morningNightRange = null;
         if (sunYesterday.getAstroDusk().getEnd() != null
                 && DateUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
@@ -187,7 +220,7 @@ public class SunCalc {
         if (isSunUpAllDay) {
             sun.setNight(new Range());
         } else {
-            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, true);
+            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true);
             sun.setNight(new Range(sun.getAstroDusk().getEnd(), sunTomorrow.getAstroDawn().getStart()));
         }
 
@@ -217,6 +250,7 @@ public class SunCalc {
                 }
             }
         }
+
         return sun;
     }
 

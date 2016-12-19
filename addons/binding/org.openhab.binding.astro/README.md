@@ -1,6 +1,8 @@
 # Astro Binding
 
-The Astro binding is used for calculating many DateTime and positional values for sun and moon.
+The Astro binding is used for calculating 
+    * many DateTime and positional values for sun and moon.
+    * Radiation levels (direct, diffuse and total) of the sun during the day
 
 ## Supported Things
 
@@ -18,6 +20,7 @@ No binding configuration required.
 
 A thing requires the geolocation (latitude, longitude) for which the calculation is done.
 Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
+An complementary altitude (optional) configuration item can also be specified to sharpen results provided by Radiation group.
 
 ## Channels
 
@@ -29,6 +32,9 @@ Optionally, a refresh interval (in seconds) can be defined to also calculate pos
     * **group** `position`
         * **channel** 
             * `azimuth, elevation` (Number)
+    * **group** `radiation`
+        * **channel** 
+            * `direct, diffuse, total` (Number)
     * **group** `zodiac`
         * **channel** 
             * `start, end` (DateTime) 
@@ -104,14 +110,14 @@ The minimum allowed offset is -1440 and the maximum allowed offset is 1440.
 Things:
 
 ```
-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ]
 astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 ```
 
 or optionally with an offset
 
 ```
-astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ] {
+astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] {
     Channels:
         Type rangeEvent : rise#event [
             offset=-30
@@ -123,11 +129,13 @@ astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 Items:
 
 ```
-DateTime Sunrise_Time  "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
-DateTime Sunset_Time   "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
-Number   Azimuth       "Azimuth [%.1f °]"       { channel="astro:sun:home:position#azimuth" }
-Number   Elevation     "Elevation [%.1f °]"     { channel="astro:sun:home:position#elevation" }
-String   MoonPhase     "Moon Phase [%s]"        { channel="astro:moon:home:phase#name" }
+DateTime Sunrise_Time       "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
+DateTime Sunset_Time        "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
+Number   Azimuth            "Azimuth"                { channel="astro:sun:home:position#azimuth" }
+Number   Elevation          "Elevation"              { channel="astro:sun:home:position#elevation" }
+String   MoonPhase          "MoonPhase"              { channel="astro:moon:home:phase#name" }
+Number   Total_Radiation    "Radiation"              { channel="astro:sun:home:radiation#total" }
+Number   Total_Radiation    "Radiation"              { channel="astro:sun:home:radiation#total" }
 ```
 
 Events:
