@@ -258,7 +258,7 @@
 				<option value="FIRST_QUARTER">First quarter</option>
 				<option value="WAXING_GIBBOUS">Waxing gibbous</option>
 				<option value="FULL">Full moon</option>
-				<option value="WANING_GIBBOUS">Wanning gibbous</option>
+				<option value="WANING_GIBBOUS">Waning gibbous</option>
 				<option value="THIRD_QUARTER">Third quarter</option>
 				<option value="WANING_CRESCENT">Waning crescent</option>
         	</options>
