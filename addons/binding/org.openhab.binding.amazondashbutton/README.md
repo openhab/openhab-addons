@@ -64,7 +64,10 @@ There is one supported thing:
 
 ## Discovery
 
-Background discovery is supported. Just press the button in order to put it into your inbox.
+Background discovery is not supported as it is not possible to distinguish Dash buttons and other Amazon devices like Kindle, Fire TV or Echo.
+You can start the discovery process explicitly for Dash button devices. While scanning just press the button in order to put it into your inbox.
+
+__ Caution:__  You have to be aware that other Amazon devices might pop up in your inbox if they send an ARP request while scanning for dash buttons. You can ignore that devices in your inbox.
 
 ## Thing Configuration
 
