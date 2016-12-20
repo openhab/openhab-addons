@@ -90,7 +90,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
     private boolean backgroundScanning = false;
 
     public AmazonDashButtonDiscoveryService() {
-        super(Collections.singleton(DASH_BUTTON_THING_TYPE), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Collections.singleton(DASH_BUTTON_THING_TYPE), DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
