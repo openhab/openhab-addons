@@ -17,12 +17,16 @@ class ValueConverter {
         return (short) (buffer[offset] << 14 | buffer[offset + 1] << 7 | buffer[offset + 2]);
     }
 
+    public static byte arrayToByte(byte[] buffer, int offset) {
+        return (byte) (buffer[offset] << 4 | buffer[offset + 1]);
+    }
+
     public static String stringFromBytes(byte[] buffer, int offset, int charCount) {
         StringBuilder builder = new StringBuilder(charCount);
 
         int length = offset + charCount * 2;
         for (int i = offset; i < length; i += 2) {
-            builder.append((char) ((buffer[i] << 4) + buffer[i + 1]));
+            builder.append((char) arrayToByte(buffer, i));
         }
 
         return builder.toString();

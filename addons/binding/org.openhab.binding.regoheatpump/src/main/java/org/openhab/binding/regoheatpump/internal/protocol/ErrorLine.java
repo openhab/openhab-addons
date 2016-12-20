@@ -25,7 +25,7 @@ public class ErrorLine {
     }
 
     public Calendar timestamp() {
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
 
         int year = Integer.parseInt(timestamp.substring(0, 2)) + 1000;
         if (year < 1950) {
@@ -37,6 +37,7 @@ public class ErrorLine {
         int min = Integer.parseInt(timestamp.substring(10, 12));
         int sec = Integer.parseInt(timestamp.substring(13, 15));
         cal.set(year, month - 1, day, hour, min, sec);
+        cal.set(Calendar.MILLISECOND, 0);
 
         return cal;
     }

@@ -313,6 +313,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             int value = connection.read();
 
             if (value == -1) {
+                if (logger.isDebugEnabled() && i > 0) {
+                    logger.debug("End of stream, read {} bytes => {}", i, response);
+                }
                 throw new EOFException("Connection closed");
             }
 

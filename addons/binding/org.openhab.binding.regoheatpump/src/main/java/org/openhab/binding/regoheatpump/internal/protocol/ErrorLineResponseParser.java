@@ -9,6 +9,7 @@ class ErrorLineResponseParser extends AbstractLongResponseParser<ErrorLine> {
             return null;
         }
 
-        return new ErrorLine(responseBytes[1], ValueConverter.stringFromBytes(responseBytes, 2, 15));
+        return new ErrorLine(ValueConverter.arrayToByte(responseBytes, 1),
+                ValueConverter.stringFromBytes(responseBytes, 3, 15));
     }
 }
