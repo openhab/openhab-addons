@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -20,6 +17,9 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * RFXCOM data class for lighting4 message.
@@ -51,6 +51,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
     public enum SubType {
         PT2262(0),
+
         UNKNOWN(255);
 
         private final int subType;
@@ -65,6 +66,16 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
         }
     }
 
@@ -90,6 +101,15 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) command;
         }
+
+        public static Commands fromByte(int input) {
+            for (Commands c : Commands.values()) {
+                if (c.command == input) {
+                    return c;
+                }
+            }
+            return Commands.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
@@ -98,9 +118,9 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.COMMAND);
 
-    public SubType subType = SubType.PT2262;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
-    public Commands command = Commands.OFF;
+    public Commands command = Commands.UNKNOWN;
     public int pulse = 0;
     public byte signalLevel = 0;
 
@@ -130,23 +150,13 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF) >>> 4;
 
         int commandID = (data[6] & 0x0F); // 4 OFF - 1 ON
+        command = Commands.fromByte(commandID);
 
         pulse = (data[7] & 0xFF) << 8 | (data[8] & 0xFF) << 0;
-
-        try {
-            command = Commands.values()[commandID];
-        } catch (Exception e) {
-            command = Commands.UNKNOWN;
-        }
 
         signalLevel = (byte) ((data[9] & 0xF0) >> 4);
     }
@@ -156,7 +166,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
         byte[] data = new byte[11];
 
-        data[0] = 0x09;
+        data[0] = 0x0A;
         data[1] = RFXComBaseMessage.PacketType.LIGHTING4.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
@@ -168,7 +178,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
         // PULSE
         data[7] = (byte) ((pulse >> 8) & 0xFF);
-        data[8] = (byte) ((pulse >> 0) & 0xFF);
+        data[8] = (byte) (pulse & 0xFF);
 
         // SIGNAL
         data[9] = 0;
