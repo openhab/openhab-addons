@@ -178,6 +178,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             for (String itemName : Arrays.asList((value).split(","))) {
                 exposedItems.add(itemName.trim());
             }
+        } else if (expCfg instanceof Iterable) {
+            exposedItems = new HashSet<>();
+            for (Object entry : ((Iterable<?>) expCfg)) {
+                exposedItems.add(entry.toString());
+            }
         } else {
             exposedItems = null;
         }

@@ -10,19 +10,24 @@ package org.openhab.binding.astro.internal.job;
 
 import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
+import org.quartz.JobDataMap;
 
 /**
- * Calculates and publishes the Sun data.
- * 
+ * Simple job that publishes the daily info for a planet.
+ *
  * @author Gerhard Riegler - Initial contribution
  */
-public class DailyJob extends AbstractBaseJob {
+public class PublishPlanetJob extends AbstractBaseJob {
 
-	@Override
-	protected void executeJob(String thingUid) {
-	    AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(thingUid);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void executeJob(String thingUid, JobDataMap jobDataMap) {
+        AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(thingUid);
         if (astroHandler != null) {
             astroHandler.publishDailyInfo();
         }
-	}
+    }
+
 }

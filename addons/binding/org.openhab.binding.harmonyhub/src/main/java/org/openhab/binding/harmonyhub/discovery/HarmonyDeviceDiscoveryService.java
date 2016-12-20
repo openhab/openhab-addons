@@ -76,7 +76,7 @@ public class HarmonyDeviceDiscoveryService extends AbstractDiscoveryService impl
      */
     private void discoverDevices() {
         if (bridge.getClient() == null) {
-            logger.warn("Harmony client not connected, scanning postponed.");
+            logger.debug("Harmony client not connected, scanning postponed.");
             return;
         }
         logger.debug("getting devices on {}", bridge.getThing().getUID().getId());
