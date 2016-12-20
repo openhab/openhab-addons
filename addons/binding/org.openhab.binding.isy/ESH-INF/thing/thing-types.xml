@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="isy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="isyBridge">
+		<label>Isy IP Access Point</label>
+		<description>Ethernet access point to Isy control system</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Isy Device</description>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<label>User Name</label>
+				<description>The user name to log in to the Isy</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The user password to log in to the Isy</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="motion">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>Motion Sensor</label>
+		<description>Motion Sensor</description>
+
+		<channels>
+			<channel id="motion" typeId="motion_sensor" />
+			<channel id="dusk_dawn" typeId="dusk_sensor" />
+			<channel id="low_battery" typeId="low_battery_sensor" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Address of motion detector.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Light Dimmer</label>
+		<description>Controls dimmable loads</description>
+
+		<channels>
+			<channel id="lightlevel" typeId="lightDimmer" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="leakdetector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Leak Detector</label>
+		<description>Provide Leak Detection</description>
+
+		<channels>
+			<channel id="dry" typeId="dry_sensor" />
+			<channel id="wet" typeId="wet_sensor" />
+			<channel id="heartbeat" typeId="heartbeat" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>Load Switch</label>
+		<description>Controls non-dimmable loads</description>
+		<channels>
+			<channel id="state" typeId="switchState" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="inlinelincswitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>Load Relay</label>
+		<description>Controls non-dimmable loads</description>
+		<channels>
+			<channel id="state" typeId="switchState" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="garage">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>Garage Door Control</label>
+		<description>Relay and Sensor to open/close garage doors.</description>
+		<channels>
+			<channel id="relay" typeId="switchState" />
+			<channel id="contactSensor" typeId="contact_sensor" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="keypadlinc6">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>KeyPadLinc Dimmer 6</label>
+		<description>KeyPadLinc Dimmer 6</description>
+		<channels>
+			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="button_a" typeId="keylinc_btn_a" />
+			<channel id="button_b" typeId="keylinc_btn_b" />
+			<channel id="button_c" typeId="keylinc_btn_c" />
+			<channel id="button_d" typeId="keylinc_btn_d" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="keypadlinc5">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>KeyPadLinc Dimmer 5</label>
+		<description>KeyPadLinc Dimmer 5</description>
+		<channels>
+			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="button_a" typeId="keylinc_btn_a" />
+			<channel id="button_b" typeId="keylinc_btn_b" />
+			<channel id="button_c" typeId="keylinc_btn_c" />
+			<channel id="button_d" typeId="keylinc_btn_d" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="remotelinc8">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>RemoteLinc 8</label>
+		<description>RemoteLinc 8</description>
+		<channels>
+			<channel id="button_a" typeId="remotelinc_btn_a" />
+			<channel id="button_b" typeId="remotelinc_btn_b" />
+			<channel id="button_c" typeId="remotelinc_btn_c" />
+			<channel id="button_d" typeId="remotelinc_btn_d" />
+			<channel id="button_e" typeId="remotelinc_btn_e" />
+			<channel id="button_f" typeId="remotelinc_btn_f" />
+			<channel id="button_g" typeId="remotelinc_btn_g" />
+			<channel id="button_h" typeId="remotelinc_btn_h" />
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Insteon Address</label>
+				<description>Insteon Address of device.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="contact_sensor">
+		<item-type>Switch</item-type>
+		<label>Contact Sensor</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>Contact Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="OnOff_Sensor">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="motion_sensor">
+		<item-type>Switch</item-type>
+		<label>Motion</label>
+		<description>Indicates if motion sensed
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="dusk_sensor">
+		<item-type>Switch</item-type>
+		<label>Dusk/Dawn</label>
+		<description>Status light sensor.
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="low_battery_sensor">
+		<item-type>Switch</item-type>
+		<label>Low Battery</label>
+		<description>Indicates if battery charge is low.
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="dry_sensor">
+		<item-type>Switch</item-type>
+		<label>Dry Sensor</label>
+		<description>Dry Sensor
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="wet_sensor">
+		<item-type>Switch</item-type>
+		<label>Wet Sensor</label>
+		<description>>Wet Sensor
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="heartbeat">
+		<item-type>Switch</item-type>
+		<label>Heartbeat</label>
+		<description>Triggers every so often to know still working
+        </description>
+		<category>Sensor</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="lightDimmer">
+		<item-type>Dimmer</item-type>
+		<label>Load Level</label>
+		<description>Increase/decrease the load level</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" pattern="%d %%" />
+	</channel-type>
+	<channel-type id="rampRate">
+		<item-type>RampRate</item-type>
+		<label>Ramp Rate</label>
+		<description>Speed that level changes</description>
+		<category>Dimmer</category>
+		<state min="0" max="100" pattern="%d %%" />
+	</channel-type>
+	<channel-type id="switchState">
+		<item-type>Switch</item-type>
+		<label>Off/On</label>
+		<description>On/off status of the switch</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_a">
+		<item-type>Switch</item-type>
+		<label>Button A</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_b">
+		<item-type>Switch</item-type>
+		<label>Button B</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_c">
+		<item-type>Switch</item-type>
+		<label>Button C</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_d">
+		<item-type>Switch</item-type>
+		<label>Button D</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_e">
+		<item-type>Switch</item-type>
+		<label>Button E</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_f">
+		<item-type>Switch</item-type>
+		<label>Button F</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_g">
+		<item-type>Switch</item-type>
+		<label>Button G</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+	<channel-type id="keylinc_btn_h">
+		<item-type>Switch</item-type>
+		<label>Button H</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>KeyLinc Button</category>
+	</channel-type>
+
+	<channel-type id="remotelinc_btn_a">
+		<item-type>Switch</item-type>
+		<label>Button A</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_b">
+		<item-type>Switch</item-type>
+		<label>Button B</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_c">
+		<item-type>Switch</item-type>
+		<label>Button C</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_d">
+		<item-type>Switch</item-type>
+		<label>Button D</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_e">
+		<item-type>Switch</item-type>
+		<label>Button E</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_f">
+		<item-type>Switch</item-type>
+		<label>Button F</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_g">
+		<item-type>Switch</item-type>
+		<label>Button G</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remotelinc_btn_h">
+		<item-type>Switch</item-type>
+		<label>Button H</label>
+		<description>Indicates if switch is on or off.
+        </description>
+		<category>RemoteLinc Button</category>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
