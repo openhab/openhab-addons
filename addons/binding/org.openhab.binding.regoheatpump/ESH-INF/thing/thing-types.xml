@@ -4,10 +4,10 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Manage Rego based Heat Pump over IP -->
+    <!-- Manage Rego 6xx based Heat Pump over IP -->
     <thing-type id="ipRego6xx">
-        <label>Rego based heat pump over TCP/IP</label>
-        <description>Manage Rego based heat pump over TCP/IP</description>
+        <label>Rego 6xx based heat pump over TCP/IP</label>
+        <description>Manage Rego 6xx based heat pump over TCP/IP</description>
         
         <channel-groups>
             <channel-group id="sensors" typeId="sensors" />
@@ -22,7 +22,7 @@
                 <label>Address</label>
                 <description>The IP address of the Rego to control.</description>
             </parameter>
-            <parameter name="port" type="integer" max="65535" min="1" required="true">
+            <parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
                 <default>9265</default>
                 <label>TCP Port</label>
                 <description>The TCP port number used to connect to the Rego controller.</description>
@@ -35,6 +35,31 @@
         </config-description>        
     </thing-type>
     
+    <!-- Manage Rego 6xx based Heat Pump over serial -->
+    <thing-type id="serialRego6xx">
+        <label>Rego 6xx based heat pump over serial port</label>
+        <description>Manage Rego 6xx based heat pump over serial port</description>
+        
+        <channel-groups>
+            <channel-group id="sensors" typeId="sensors" />
+            <channel-group id="registers" typeId="registers" />
+            <channel-group id="frontPanel" typeId="frontPanel" />
+            <channel-group id="status" typeId="status" />
+        </channel-groups>
+
+        <config-description>
+            <parameter name="portName" type="text" required="true">
+                <label>Port</label>
+                <description>The serial port used to connect to the Rego controller.</description>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" max="65535" min="10" required="true">
+                <default>60</default>
+                <label>Refresh interval</label>
+                <description>Refresh interval in seconds.</description>
+            </parameter>
+        </config-description>        
+    </thing-type>
+
     <channel-group-type id="sensors">
         <label>Sensors</label>
         <channels>
@@ -135,7 +160,7 @@
         <state readOnly="true" pattern="%.1f °C"/>
     </channel-type>
     
-    <channel-type id="hotWaterTemp">
+    <channel-type id="hotWaterTemp" advanced="true">
         <item-type>Number</item-type>
         <label>Hot water</label>
         <category>Temperature</category>
@@ -207,8 +232,7 @@
 
     <channel-type id="lastErrorCode">
         <item-type>String</item-type>
-        <label>Last error code</label>
-        <description>Information about the error that happened</description>
+        <label>Last error information</label>
         <state readOnly="true" pattern="%s">
             <options>
                 <option value="0">Sensor radiator return (GT1)</option>

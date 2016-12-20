@@ -7,16 +7,19 @@
  */
 package org.openhab.binding.regoheatpump.internal;
 
-import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.THING_TYPE_IP_REGO6XX;
+import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.regoheatpump.handler.IpRegoHeatPumpHandler;
+import org.openhab.binding.regoheatpump.handler.SerialRegoHeatPumpHandler;
 
 /**
  * The {@link RegoHeatPumpHandlerFactory} is responsible for creating things and thing
@@ -26,7 +29,8 @@ import org.openhab.binding.regoheatpump.handler.IpRegoHeatPumpHandler;
  */
 public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_IP_REGO6XX);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_IP_REGO6XX, THING_TYPE_SERIAL_REGO6XX).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -40,6 +44,10 @@ public class RegoHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_IP_REGO6XX)) {
             return new IpRegoHeatPumpHandler(thing);
+        }
+
+        if (thingTypeUID.equals(THING_TYPE_SERIAL_REGO6XX)) {
+            return new SerialRegoHeatPumpHandler(thing);
         }
 
         return null;

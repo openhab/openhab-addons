@@ -21,6 +21,7 @@ public class RegoHeatPumpBindingConstants {
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_IP_REGO6XX = new ThingTypeUID(BINDING_ID, "ipRego6xx");
+    public final static ThingTypeUID THING_TYPE_SERIAL_REGO6XX = new ThingTypeUID(BINDING_ID, "serialRego6xx");
 
     // List of all Channel ids
     public final static String CHANNEL_GROUP_SENSORS = "sensors#";
@@ -34,7 +35,12 @@ public class RegoHeatPumpBindingConstants {
     public final static String CHANNEL_FRONT_PANEL_WATER_HEATER_LED = "frontPanel#hotWaterLed";
     public final static String CHANNEL_FRONT_PANEL_ALARM_LED = "frontPanel#alarmLed";
 
-    public final static String HOST_PARAMETER = "address";
-    public final static String TCP_PORT_PARAMETER = "port";
     public final static String REFRESH_INTERVAL = "refreshInterval";
+
+    // TCP/IP thing
+    public final static String HOST_PARAMETER = "address";
+    public final static String TCP_PORT_PARAMETER = "tcpPort";
+
+    // Serial thing
+    public final static String PORT_NAME = "portName";
 }
