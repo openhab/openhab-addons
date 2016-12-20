@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -21,6 +18,9 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * RFXCOM data class for temperature and humidity message.
  *
@@ -29,7 +29,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
 
     public enum SubType {
-        UNDEF(0),
         TH1(1),
         TH2(2),
         TH3(3),
@@ -59,6 +58,16 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
+        }
     }
 
     public enum HumidityStatus {
@@ -82,6 +91,16 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) humidityStatus;
         }
+
+        public static HumidityStatus fromByte(int input) {
+            for (HumidityStatus status : HumidityStatus.values()) {
+                if (status.humidityStatus == input) {
+                    return status;
+                }
+            }
+
+            return HumidityStatus.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
@@ -90,11 +109,11 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.UNDEF;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
     public double temperature = 0;
     public byte humidity = 0;
-    public HumidityStatus humidityStatus = HumidityStatus.NORMAL;
+    public HumidityStatus humidityStatus = HumidityStatus.UNKNOWN;
     public byte signalLevel = 0;
     public byte batteryLevel = 0;
 
@@ -127,11 +146,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         temperature = (short) ((data[6] & 0x7F) << 8 | (data[7] & 0xFF)) * 0.1;
@@ -140,12 +155,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
         }
 
         humidity = data[8];
-
-        try {
-            humidityStatus = HumidityStatus.values()[data[9]];
-        } catch (Exception e) {
-            humidityStatus = HumidityStatus.UNKNOWN;
-        }
+        humidityStatus = HumidityStatus.fromByte(data[9]);
 
         signalLevel = (byte) ((data[10] & 0xF0) >> 4);
         batteryLevel = (byte) (data[10] & 0x0F);
