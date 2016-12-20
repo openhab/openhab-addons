@@ -12,7 +12,7 @@
             <channel id="output" typeId="output"/>
             <channel id="input" typeId="input"/>
             <channel id="exit" typeId="exit"/>
-            <channel id="run" typeId="running"/>
+            <channel id="run" typeId="run"/>
             <channel id="lastexecution" typeId="lastexecution" />
         </channels>
         
