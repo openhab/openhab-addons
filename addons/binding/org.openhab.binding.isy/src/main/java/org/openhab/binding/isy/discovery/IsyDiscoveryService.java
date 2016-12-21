@@ -52,6 +52,7 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("startScan called for Isy");
         Map<String, Object> properties = null;
+        logger.debug("retrieving insteon client");
         InsteonClient insteon = this.bridgeHandler.getInsteonClient();
         logger.debug("Insteon client =" + insteon);
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
