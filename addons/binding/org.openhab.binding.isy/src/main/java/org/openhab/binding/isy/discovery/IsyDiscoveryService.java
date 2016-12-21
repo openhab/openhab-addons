@@ -139,11 +139,8 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
                 }
             }
 
-        } catch (NoDeviceException e)
-
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (NoDeviceException e) {
+            logger.error("No device exception", e);
         }
 
     }
