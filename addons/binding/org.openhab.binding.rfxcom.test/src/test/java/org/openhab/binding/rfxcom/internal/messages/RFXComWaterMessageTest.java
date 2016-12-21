@@ -9,7 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 /**
@@ -20,7 +20,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
  */
 public class RFXComWaterMessageTest {
 
-    @Test(expected = RFXComNotImpException.class)
+    @Test(expected = RFXComMessageNotImplementedException.class)
     public void checkNotImplemented() throws Exception {
         RFXComMessageFactory.createMessage(PacketType.WATER);
     }
