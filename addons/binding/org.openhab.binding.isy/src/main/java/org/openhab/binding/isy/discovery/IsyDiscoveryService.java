@@ -56,8 +56,9 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         try {
             Hashtable<String, UDNode> nodes = insteon.getNodes();
-            logger.debug("found nodes: ");
+
             Collection<UDNode> theNodes = nodes.values();
+            logger.debug("found nodes(#): " + nodes.size());
             for (UDNode node : theNodes) {
                 boolean supportedDevice = true;
                 String name = node.name;
