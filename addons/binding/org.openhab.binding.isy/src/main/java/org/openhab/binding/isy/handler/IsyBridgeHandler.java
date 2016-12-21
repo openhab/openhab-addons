@@ -47,6 +47,7 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
     @Override
     public void initialize() {
         super.initialize();
+        logger.debug("initialize called for bridge handler");
         IsyBridgeConfiguration config = getThing().getConfiguration().as(IsyBridgeConfiguration.class);
         insteonClient = new InsteonClient(config.getUser(), config.getPassword(), new ISYModelChangeListener() {
 
@@ -69,9 +70,9 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
                 // }
             }
         });
-
+        logger.debug("starting insteon client");
         this.insteonClient.start();
-
+        logger.debug("insteon client was started");
     }
 
     public void registerDiscoveryService(IsyDiscoveryService isyBridgeDiscoveryService) {
