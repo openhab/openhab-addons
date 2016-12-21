@@ -52,8 +52,8 @@
         <kat.version>1.4.1</kat.version>
         <ohc.version>2.0.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.0.0.x</ohcp2.version>
-        <ohdr.version>1.0.6</ohdr.version>
-        <karaf.version>4.0.4</karaf.version>
+        <ohdr.version>1.0.9</ohdr.version>
+        <karaf.version>4.0.8</karaf.version>
         <jackson.version>1.9.13</jackson.version>
         <tycho-version>0.24.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
