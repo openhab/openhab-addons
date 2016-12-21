@@ -49,8 +49,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     public KodiHandler(Thing thing) {
         super(thing);
-        connection = new KodiConnection();
-        connection.addEventListener(this);
+        connection = new KodiConnection(this);
     }
 
     @Override
@@ -60,7 +59,6 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             connectionCheckerFuture.cancel(true);
         }
         if (connection != null) {
-            connection.removeEventListener(this);
             connection.close();
         }
     }
@@ -213,7 +211,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     @Override
                     public void run() {
                         try {
-                            connection.checkConnection();
+                            if (!connection.checkConnection()) {
+                                updateStatus(ThingStatus.OFFLINE);
+                            }
                         } catch (Exception ex) {
                             logger.warn("Exception in check connection to @{}. Cause: {}",
                                     connection.getConnectionName(), ex.getMessage());

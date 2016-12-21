@@ -9,8 +9,6 @@
 package org.openhab.binding.kodi.internal.protocol;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.openhab.binding.kodi.internal.KodiEventListener;
@@ -41,38 +39,20 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private int volume = 0;
     private KodiState currentState = KodiState.Stop;
 
-    private List<KodiEventListener> eventListeners = new ArrayList<KodiEventListener>();
+    private final KodiEventListener listener;
 
-    public KodiConnection() {
-    }
-
-    /**
-     * Add event listener, which will be invoked when status update is received
-     * from receiver.
-     **/
-    public synchronized void addEventListener(KodiEventListener listener) {
-        eventListeners.add(listener);
-    }
-
-    /**
-     * Remove event listener.
-     **/
-    public synchronized void removeEventListener(KodiEventListener listener) {
-        eventListeners.remove(listener);
+    public KodiConnection(KodiEventListener listener) {
+        this.listener = listener;
     }
 
     @Override
     public synchronized void onConnectionClosed() {
-        for (KodiEventListener listener : eventListeners) {
-            listener.updateConnectionState(false);
-        }
+        listener.updateConnectionState(false);
     }
 
     @Override
     public synchronized void onConnectionOpened() {
-        for (KodiEventListener listener : eventListeners) {
-            listener.updateConnectionState(true);
-        }
+        listener.updateConnectionState(true);
     }
 
     public synchronized void connect(String hostName, int port, ScheduledExecutorService scheduler) {
@@ -258,13 +238,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
 
         try {
-            for (KodiEventListener listener : eventListeners) {
-                listener.updateAlbum(album);
-                listener.updateTitle(title);
-                listener.updateArtist(artist);
-                if (updateMediaType) {
-                    listener.updateMediaType(mediaType);
-                }
+            listener.updateAlbum(album);
+            listener.updateTitle(title);
+            listener.updateArtist(artist);
+            if (updateMediaType) {
+                listener.updateMediaType(mediaType);
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
@@ -306,15 +284,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             return;
         }
         try {
-            for (KodiEventListener listener : eventListeners) {
-                listener.updatePlayerState(state);
-                // if this is a Stop then clear everything else
-                if (state == KodiState.Stop) {
-                    listener.updateAlbum("");
-                    listener.updateArtist("");
-                    listener.updateTitle("");
-                    listener.updateMediaType("");
-                }
+            listener.updatePlayerState(state);
+            // if this is a Stop then clear everything else
+            if (state == KodiState.Stop) {
+                listener.updateAlbum("");
+                listener.updateArtist("");
+                listener.updateTitle("");
+                listener.updateMediaType("");
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
@@ -358,9 +334,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (data.has("item")) {
                 JsonObject item = data.get("item").getAsJsonObject();
                 String mediaType = item.get("type").getAsString();
-                for (KodiEventListener listener : eventListeners) {
-                    listener.updateMediaType(mediaType);
-                }
+                listener.updateMediaType(mediaType);
             }
             requestPlayerUpdate(playerId, false);
         } else if ("Player.OnPause".equals(method)) {
@@ -399,10 +373,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             int volume = data.get("volume").getAsInt();
             boolean muted = data.get("muted").getAsBoolean();
             try {
-                for (KodiEventListener listener : eventListeners) {
-                    listener.updateVolume(volume);
-                    listener.updateMuted(muted);
-                }
+                listener.updateVolume(volume);
+                listener.updateMuted(muted);
             } catch (Exception e) {
                 logger.error("Event listener invoking error", e);
             }
@@ -416,9 +388,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private void processSystemStateChanged(String method, JsonObject json) {
         if ("System.OnQuit".equals(method) || "System.OnSleep".equals(method) || "System.OnRestart".equals(method)) {
             try {
-                for (KodiEventListener listener : eventListeners) {
-                    listener.updateConnectionState(false);
-                }
+                listener.updateConnectionState(false);
             } catch (Exception e) {
                 logger.error("Event listener invoking error", e);
             }
@@ -435,18 +405,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void updateScreenSaverStatus(boolean screenSaverActive) {
         try {
-            for (KodiEventListener listener : eventListeners) {
-                listener.updateScreenSaverState(screenSaverActive);
-            }
+            listener.updateScreenSaverState(screenSaverActive);
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
         }
     }
 
     public synchronized void close() {
-        for (KodiEventListener listener : eventListeners) {
-            listener.updateConnectionState(true);
-        }
+        listener.updateConnectionState(false);
         socket = null;
     }
 
@@ -463,23 +429,17 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 JsonObject result = (JsonObject) response;
                 if (result.has("volume")) {
                     volume = result.get("volume").getAsInt();
-                    for (KodiEventListener listener : eventListeners) {
-                        listener.updateVolume(volume);
-                    }
+                    listener.updateVolume(volume);
                 }
                 if (result.has("muted")) {
                     boolean muted = result.get("muted").getAsBoolean();
-                    for (KodiEventListener listener : eventListeners) {
-                        listener.updateMuted(muted);
-                    }
+                    listener.updateMuted(muted);
                 }
 
             }
         } else {
-            for (KodiEventListener listener : eventListeners) {
-                listener.updateMuted(false);
-                listener.updateVolume(100);
-            }
+            listener.updateMuted(false);
+            listener.updateVolume(100);
         }
     }
 
@@ -499,18 +459,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("GUI.ShowNotification", params);
     }
 
-    public void checkConnection() {
+    public boolean checkConnection() {
         if (!socket.isConnected()) {
             logger.debug("checkConnection: try to connect to kodi {}", wsUri.toString());
             try {
                 socket.open();
+                return socket.isConnected();
             } catch (Throwable t) {
                 logger.error("exception during connect to {}", wsUri.toString(), t);
                 try {
                     socket.close();
                 } catch (Exception e) {
                 }
+                return false;
             }
+        } else {
+            return true;
         }
     }
 
