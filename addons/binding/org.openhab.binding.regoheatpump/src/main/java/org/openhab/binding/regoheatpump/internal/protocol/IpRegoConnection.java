@@ -13,7 +13,7 @@ public class IpRegoConnection implements RegoConnection {
     private static final int CONNECTION_TIMEOUT = 3000;
 
     /** Socket read timeout in milliseconds **/
-    private static final int SOCKET_READ_TIMEOUT = 2000;
+    private static final int SOCKET_READ_TIMEOUT = 1000;
 
     private final Logger logger = LoggerFactory.getLogger(IpRegoConnection.class);
     private final String address;

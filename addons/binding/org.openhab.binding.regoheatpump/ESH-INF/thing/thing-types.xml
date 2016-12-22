@@ -233,6 +233,7 @@
     <channel-type id="lastErrorCode">
         <item-type>String</item-type>
         <label>Last error information</label>
+        <category>Error</category>
         <state readOnly="true" pattern="%s">
             <options>
                 <option value="0">Sensor radiator return (GT1)</option>
@@ -266,36 +267,42 @@
         <item-type>DateTime</item-type>
         <label>Last error timestamp</label>
         <description>Date and time of the last error</description>
+        <category>Clock</category>
         <state readOnly="true" pattern="%tc"/>
     </channel-type>
 
     <channel-type id="powerLed" advanced="true">
         <item-type>Switch</item-type>
         <label>Power led</label>
+        <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
     <channel-type id="heatPumpLed">
         <item-type>Switch</item-type>
         <label>Heat pump led</label>
+        <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
 
     <channel-type id="additionalHeatingLed">
         <item-type>Switch</item-type>
         <label>Additional heating led</label>
+        <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
     <channel-type id="hotWaterLed">
         <item-type>Switch</item-type>
         <label>Hot water led</label>
+        <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
     <channel-type id="alarmLed">
         <item-type>Switch</item-type>
         <label>Alarm led</label>
+        <category>Siren</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
 
