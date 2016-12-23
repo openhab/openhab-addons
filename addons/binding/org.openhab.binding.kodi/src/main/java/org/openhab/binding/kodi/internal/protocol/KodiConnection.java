@@ -206,7 +206,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerUpdate(int activePlayer, boolean updateMediaType) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "streamdetails" };
+                "showtitle", "streamdetails" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -218,6 +218,18 @@ public class KodiConnection implements KodiClientSocketEventListener {
         String title = "";
         if (item.has("title")) {
             title = convertToText(item.get("title"));
+        }
+
+        String showTitle = "";
+        if (item.has("showtitle")) {
+            showTitle = convertToText(item.get("showtitle"));
+            if (!showTitle.isEmpty()) {
+                if (title.isEmpty()) {
+                    title = showTitle;
+                } else {
+                    title = title + " - " + showTitle;
+                }
+            }
         }
 
         String album = "";
