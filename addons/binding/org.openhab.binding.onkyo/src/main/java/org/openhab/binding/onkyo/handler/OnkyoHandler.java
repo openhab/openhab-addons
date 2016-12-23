@@ -245,7 +245,12 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     sendCommand(EiscpCommandRef.ZONE2_SOURCE_QUERY);
                 }
                 break;
-
+            case CHANNEL_NET_MENU_CONTROL:
+                if (command instanceof StringType) {
+                    final String cmdName = command.toString();
+                    handleNetMenuCommand(cmdName);
+                }
+                break;
             default:
                 logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                 break;
@@ -283,13 +288,17 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                         updateState(CHANNEL_MUTE, OnOffType.OFF);
                         break;
                     case VOLUME_SET:
-                        volume = new PercentType(Integer.parseInt(data.substring(3, 5), 16));
-                        updateState(CHANNEL_VOLUME, volume);
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            volume = new PercentType(Integer.parseInt(data.substring(3, 5), 16));
+                            updateState(CHANNEL_VOLUME, volume);
+                        }
                         break;
                     case SOURCE_SET:
-                        int input = Integer.parseInt(data.substring(3, 5), 16);
-                        updateState(CHANNEL_INPUT, new DecimalType(input));
-                        onInputChanged(input);
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            int input = Integer.parseInt(data.substring(3, 5), 16);
+                            updateState(CHANNEL_INPUT, new DecimalType(input));
+                            onInputChanged(input);
+                        }
                         break;
                     case NETUSB_SONG_ARTIST_QUERY:
                         updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
@@ -309,7 +318,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     case LISTEN_MODE_SET:
                         String listenModeStr = data.substring(3, 5);
                         // update only when listen mode is supported
-                        if (listenModeStr != "N/") {
+                        if (!listenModeStr.equals("N/")) {
                             int listenMode = Integer.parseInt(listenModeStr, 16);
                             updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
                         }
@@ -327,11 +336,63 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                         updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
                         break;
                     case ZONE2_VOLUME_SET:
-                        updateState(CHANNEL_VOLUMEZONE2, new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            updateState(CHANNEL_VOLUMEZONE2,
+                                    new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
+                        }
                         break;
                     case ZONE2_SOURCE_SET:
-                        int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
-                        updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
+                        if (!data.substring(3, 5).contentEquals("N/")) {
+                            int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
+                            updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
+                        }
+                        break;
+                    case NETUSB_MENU0:
+                        updateState(CHANNEL_NET_MENU0, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU1:
+                        updateState(CHANNEL_NET_MENU1, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU2:
+                        updateState(CHANNEL_NET_MENU2, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU3:
+                        updateState(CHANNEL_NET_MENU3, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU4:
+                        updateState(CHANNEL_NET_MENU4, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU5:
+                        updateState(CHANNEL_NET_MENU5, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU6:
+                        updateState(CHANNEL_NET_MENU6, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU7:
+                        updateState(CHANNEL_NET_MENU7, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU8:
+                        updateState(CHANNEL_NET_MENU8, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU9:
+                        updateState(CHANNEL_NET_MENU9, new StringType(data.substring(6)));
+                        break;
+                    case NETUSB_MENU_POSITION:
+                        String txt = data.substring(4);
+                        int pos = -1;
+                        try {
+                            pos = Integer.parseInt(txt.substring(0, 1));
+                        } catch (NumberFormatException nfe) {
+                            // pos already is -1
+                        }
+
+                        logger.debug("Updating menu {} : {}", txt.charAt(1), pos);
+
+                        if (txt.endsWith("P")) {
+                            resetNetMenu();
+                        }
+
+                        updateState(CHANNEL_NET_MENU_SELECTION, new DecimalType(pos));
                         break;
                     default:
                         logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
@@ -348,6 +409,40 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         }
     }
 
+    private void resetNetMenu() {
+        updateState(CHANNEL_NET_MENU0, new StringType("-"));
+        updateState(CHANNEL_NET_MENU1, new StringType("-"));
+        updateState(CHANNEL_NET_MENU2, new StringType("-"));
+        updateState(CHANNEL_NET_MENU3, new StringType("-"));
+        updateState(CHANNEL_NET_MENU4, new StringType("-"));
+        updateState(CHANNEL_NET_MENU5, new StringType("-"));
+        updateState(CHANNEL_NET_MENU6, new StringType("-"));
+        updateState(CHANNEL_NET_MENU7, new StringType("-"));
+        updateState(CHANNEL_NET_MENU8, new StringType("-"));
+        updateState(CHANNEL_NET_MENU9, new StringType("-"));
+    }
+
+    private void handleNetMenuCommand(String cmdName) {
+        if ("Up".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_UP);
+        } else if ("Down".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_DOWN);
+        } else if ("Select".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_SELECT);
+        } else if ("PageUp".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_LEFT);
+        } else if ("PageDown".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_RIGHT);
+        } else if ("Back".equals(cmdName)) {
+            sendCommand(EiscpCommandRef.NETUSB_OP_RETURN);
+        } else if (cmdName.matches("Select[0-9]")) {
+            int pos = Integer.parseInt(cmdName.substring(6));
+            sendCommand(EiscpCommandRef.NETUSB_MENU_SELECT, new DecimalType(pos));
+        } else {
+            logger.debug("Received unknown menucommand {}", cmdName);
+        }
+    }
+
     private void selectInput(int inputId) {
         sendCommand(EiscpCommandRef.SOURCE_SET, new DecimalType(inputId));
         currentInput = inputId;
@@ -355,13 +450,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     private void onInputChanged(int newInput) {
         currentInput = newInput;
+
         if (newInput != NET_USB_ID) {
+            resetNetMenu();
+
             updateState(CHANNEL_ARTIST, UnDefType.UNDEF);
             updateState(CHANNEL_ALBUM, UnDefType.UNDEF);
             updateState(CHANNEL_TITLE, UnDefType.UNDEF);
             updateState(CHANNEL_CURRENTPLAYINGTIME, UnDefType.UNDEF);
         }
-
     }
 
     private void updateNetUsbPlayStatus(char c) {
@@ -412,6 +509,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
             }
 
+            logger.debug("Sending command to onkyo receiver: {}", deviceCmd);
             connection.send(deviceCmd);
         } else {
             logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");

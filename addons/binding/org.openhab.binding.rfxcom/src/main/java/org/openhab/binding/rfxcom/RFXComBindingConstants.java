@@ -76,8 +76,8 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_LOW_BATTERY = "lowBattery";
     public final static String CHANNEL_PRESSURE = "pressure";
     public final static String CHANNEL_FORECAST = "forecast";
-    public final static String CHANNEL_RAIN_RATE = "rainrate";
-    public final static String CHANNEL_RAIN_TOTAL = "raintotal";
+    public final static String CHANNEL_RAIN_RATE = "rainRate";
+    public final static String CHANNEL_RAIN_TOTAL = "rainTotal";
     public final static String CHANNEL_WIND_DIRECTION = "windDirection";
     public final static String CHANNEL_WIND_SPEED = "windSpeed";
     public final static String CHANNEL_GUST = "gust";
@@ -152,7 +152,7 @@ public class RFXComBindingConstants {
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
     public final static Map<PacketType, ThingTypeUID> packetTypeThingMap = ImmutableMap
-            .<PacketType, ThingTypeUID> builder()
+            .<PacketType, ThingTypeUID>builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
             .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
             .put(PacketType.BLINDS1, RFXComBindingConstants.THING_TYPE_BLINDS1)

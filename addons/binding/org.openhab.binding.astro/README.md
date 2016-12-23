@@ -67,3 +67,37 @@ Number   Azimuth       "Azimuth"                { channel="astro:sun:home:positi
 Number   Elevation     "Elevation"              { channel="astro:sun:home:position#elevation" }
 String   MoonPhase     "MoonPhase"              { channel="astro:moon:home:phase#name" }
 ```
+
+Events:
+
+```
+rule "example trigger rule"
+when
+    Channel 'astro:sun:home:rise#event' triggered START 
+then
+    ...
+end
+```
+
+Available events:
+* **thing** `sun`
+    * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
+        * **event** `START, END`
+    * **group** `eclipse`
+        * **event**: `TOTAL, PARTIAL, RING`
+* **thing** `moon`
+    * **group** `rise`
+        * **event** `START`
+    * **group** `set`
+        * **event** `END`
+    * **group** `phase`
+        * **event**: `FIRST_QUARTER, THIRD_QUARTER, FULL, NEW`
+    * **group** `eclipse`
+        * **event**: `TOTAL, PARTIAL`
+    * **group** `perigee`
+        * **event**: `PERIGEE`
+    * **group** `apogee`
+        * **event**: `APOGEE`
+
+**Note**: delayed events not available, currently not supported by the openHab 2 framework
+
