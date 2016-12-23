@@ -17,6 +17,8 @@
             <channel id="volume" typeId="volume"/>
             <channel id="volumeDB" typeId="volumeDB"/>
             <channel id="mute" typeId="mute"/>
+            <channel id="netradiostation" typeId="netradiostation" />
+            <channel id="netradiosong" typeId="netradiosong" />
         </channels>
         
         <config-description>
@@ -57,6 +59,20 @@
         <item-type>Number</item-type>
         <label>NetRadio Channel</label>
         <description>Select the net radio channel of the AVR</description>
+    </channel-type>
+
+    <channel-type id="netradiostation">
+        <item-type>String</item-type>
+        <label>NetRadio Station</label>
+        <description>Selected NetRadio station name</description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+
+    <channel-type id="netradiosong">
+        <item-type>String</item-type>
+        <label>NetRadio Song</label>
+        <description>Song played on selected NetRadio station</description>
+        <state readOnly="true" pattern="%s"></state>
     </channel-type>
     
     <channel-type id="surroundProgram">

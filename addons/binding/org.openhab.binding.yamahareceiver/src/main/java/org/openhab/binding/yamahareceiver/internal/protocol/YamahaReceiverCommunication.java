@@ -21,6 +21,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,6 +36,7 @@ import org.xml.sax.InputSource;
  * @author David Gräff <david.graeff@tu-dortmund.de>
  * @author Eric Thill
  * @author Ben Jones
+ * @author Martin Herbst <mail@mherbst.de>
  * @since 1.6.0
  */
 public class YamahaReceiverCommunication {
@@ -48,6 +51,8 @@ public class YamahaReceiverCommunication {
         Zone_3,
         Zone_4;
     }
+
+    private Logger logger = LoggerFactory.getLogger(YamahaReceiverCommunication.class);
 
     /**
      * The volume min and max is the same for all supported devices.
@@ -208,6 +213,26 @@ public class YamahaReceiverCommunication {
         node = getNode(basicStatus, "Input/Input_Sel_Item_Info/Src_Number");
         value = node != null ? node.getTextContent() : "0";
         state.netRadioChannel = Integer.parseInt(value);
+
+        // Net Radio provides additional informaton like station name and currently played song
+        if ("NET RADIO".equals(state.input)) {
+            try {
+                Document docNet = postAndGetXmlResponse(
+                        "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\">"
+                                + "<NET_RADIO><Play_Info>GetParam</Play_Info></NET_RADIO></YAMAHA_AV>");
+                Node nodeNetInfo = getNode(docNet.getFirstChild(), "NET_RADIO/Play_Info/Meta_Info");
+                node = getNode(nodeNetInfo, "Station");
+                state.netRadioStation = node != null ? node.getTextContent() : "";
+                node = getNode(nodeNetInfo, "Song");
+                state.netRadioSong = node != null ? node.getTextContent() : "";
+            } catch (IOException e) {
+                // Issue a warning if XML request is not supported by the receiver
+                logger.warn("Request to get additional Net Radio information failed: " + e.getMessage());
+            }
+        } else {
+            state.netRadioStation = "";
+            state.netRadioSong = "";
+        }
     }
 
     public void updateInputsList(YamahaReceiverState state) throws IOException {
