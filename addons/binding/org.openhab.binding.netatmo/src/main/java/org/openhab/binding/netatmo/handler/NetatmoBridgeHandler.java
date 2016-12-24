@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,12 +8,10 @@
  */
 package org.openhab.binding.netatmo.handler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import java.io.IOException;
 
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -23,13 +22,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.client.ApiClient;
+import io.swagger.client.api.PartnerApi;
 import io.swagger.client.api.StationApi;
 import io.swagger.client.api.ThermostatApi;
 import io.swagger.client.auth.OAuth;
 import io.swagger.client.auth.OAuthFlow;
-import io.swagger.client.model.NAUserAdministrative;
-import io.swagger.client.model.NAUserResponse;
+import io.swagger.client.model.NAStationDataBody;
+import io.swagger.client.model.NAThermostatDataBody;
 import retrofit.RestAdapter.LogLevel;
+import retrofit.RetrofitError;
 
 /**
  * {@link NetatmoBridgeHandler} is the handler for a Netatmo API and connects it
@@ -45,6 +46,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     private ApiClient apiClient;
     private StationApi stationApi = null;
     private ThermostatApi thermostatApi = null;
+    private PartnerApi partnerApi = null;
 
     public NetatmoBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -55,11 +57,27 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing Netatmo API bridge handler.");
 
         configuration = getConfigAs(NetatmoBridgeConfiguration.class);
+        initializeApiClient();
 
+        // Test connection to Netatmo API using PartnerAPI. This can cause authentication error
+        // or an error if there is no partner station. In the former case, it is not an issue.
+        try {
+            getPartnerApi().partnerdevices();
+        } catch (RetrofitError e) {
+            if (e.getCause() instanceof IOException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Unable to connect Netatmo API : " + e.getMessage());
+                return;
+            }
+        }
+        super.initialize();
+    }
+
+    // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
+    // not trusted by default java certificate control mechanism
+    private void initializeApiClient() throws RetrofitError {
         apiClient = new ApiClient();
 
-        // We'll use TrustingOkHttpClient because Netatmo certificate is a StartTTLS
-        // not trusted by default java certificate control mechanism
         OAuth auth = new OAuth(new TrustingOkHttpClient(),
                 OAuthClientRequest.tokenLocation("https://api.netatmo.net/oauth2/token"));
         auth.setFlow(OAuthFlow.password);
@@ -71,49 +89,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
         apiClient.configureFromOkclient(new TrustingOkHttpClient());
         apiClient.getTokenEndPoint().setScope(getApiScope());
-        apiClient.getAdapterBuilder().setLogLevel(LogLevel.NONE);
-
-        updateChannels();
-
-    }
-
-    private void updateChannels() {
-        NAUserResponse user = null;
-
-        getStationApi();
-        if (stationApi != null) {
-            user = stationApi.getuser();
-        } else {
-            getThermostatApi();
-            if (thermostatApi != null) {
-                user = thermostatApi.getuser();
-            }
-        }
-
-        if (user != null) {
-            NAUserAdministrative admin = user.getBody().getAdministrative();
-            for (Channel channel : getThing().getChannels()) {
-                String chanelId = channel.getUID().getId();
-                switch (chanelId) {
-                    case CHANNEL_UNIT: {
-                        updateState(channel.getUID(), new DecimalType(admin.getUnit()));
-                        break;
-                    }
-                    case CHANNEL_WIND_UNIT: {
-                        updateState(channel.getUID(), new DecimalType(admin.getWindunit()));
-                        break;
-                    }
-                    case CHANNEL_PRESSURE_UNIT: {
-                        updateState(channel.getUID(), new DecimalType(admin.getPressureunit()));
-                        break;
-                    }
-                }
-            }
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Unable to initialize Netatmo API connection (check credentials)");
-        }
+        apiClient.getAdapterBuilder().setLogLevel(logger.isDebugEnabled() ? LogLevel.FULL : LogLevel.NONE);
     }
 
     private String getApiScope() {
@@ -135,7 +111,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.warn("This Bridge is read-only and does not handle commands");
     }
 
-    public StationApi getStationApi() {
+    private StationApi getStationApi() {
         if (configuration.readStation && stationApi == null) {
             stationApi = apiClient.createService(StationApi.class);
         }
@@ -147,6 +123,35 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             thermostatApi = apiClient.createService(ThermostatApi.class);
         }
         return thermostatApi;
+    }
+
+    public PartnerApi getPartnerApi() {
+        if (partnerApi == null) {
+            partnerApi = apiClient.createService(PartnerApi.class);
+        }
+        return partnerApi;
+    }
+
+    public NAStationDataBody getStationsDataBody(String equipmentId) {
+        if (getStationApi() != null) {
+            try {
+                return getStationApi().getstationsdata(equipmentId).getBody();
+            } catch (Exception e) {
+                logger.error("An error occured while calling station API : {}", e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    public NAThermostatDataBody getThermostatsDataBody(String equipmentId) {
+        if (getThermostatApi() != null) {
+            try {
+                return getThermostatApi().getthermostatsdata(equipmentId).getBody();
+            } catch (Exception e) {
+                logger.error("An error occured while calling thermostat API : {}", e.getMessage());
+            }
+        }
+        return null;
     }
 
 }

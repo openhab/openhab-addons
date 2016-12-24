@@ -107,17 +107,23 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                 case PARTITION_ARM_MODE:
                     int partitionNumber = getPartitionNumber();
                     if (command.toString().equals("0")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl, String.valueOf(partitionNumber));
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl,
+                                String.valueOf(partitionNumber));
                     } else if (command.toString().equals("1")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway, String.valueOf(partitionNumber));
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway,
+                                String.valueOf(partitionNumber));
                     } else if (command.toString().equals("2")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay, String.valueOf(partitionNumber));
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay,
+                                String.valueOf(partitionNumber));
                     } else if (command.toString().equals("3")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay, String.valueOf(partitionNumber));
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
+                                String.valueOf(partitionNumber));
                     } else if (command.toString().equals("4")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay, String.valueOf(partitionNumber));
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
+                                String.valueOf(partitionNumber));
                     } else if (command.toString().equals("5")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode, String.valueOf(partitionNumber));
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode,
+                                String.valueOf(partitionNumber));
                     }
                     break;
                 default:
@@ -143,7 +149,8 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
     private void partitionOpenCloseModeEventHandler(EventObject event) {
         DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
         DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
-        DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
         ChannelUID channelUID = null;
         int state = 0; /*
                         * 0=None, 1=User Closing, 2=Special Closing, 3=Partial Closing, 4=User Opening, 5=Special
@@ -189,7 +196,8 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                 DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
                 ChannelUID channelUID = null;
-                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                        .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
                 String dscAlarmMessageName = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.NAME);
                 String dscAlarmMessageMode = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.MODE);
 

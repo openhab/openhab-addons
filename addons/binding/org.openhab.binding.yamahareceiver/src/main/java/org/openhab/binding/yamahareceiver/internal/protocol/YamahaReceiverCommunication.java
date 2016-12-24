@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -109,20 +109,20 @@ public class YamahaReceiverCommunication {
             state.additional_zones.clear();
 
             node = getNode(basicStatus, "Feature_Existence");
-            {
+            if (node != null) {
                 Node subnode;
                 subnode = getNode(node, "Zone_2");
-                value = node != null ? subnode.getTextContent() : null;
+                value = subnode != null ? subnode.getTextContent() : null;
                 if (value != null && (value.equals("1") || value.equals("Available"))) {
                     state.additional_zones.add(Zone.Zone_2);
                 }
                 subnode = getNode(node, "Zone_3");
-                value = node != null ? subnode.getTextContent() : null;
+                value = subnode != null ? subnode.getTextContent() : null;
                 if (value != null && (value.equals("1") || value.equals("Available"))) {
                     state.additional_zones.add(Zone.Zone_3);
                 }
                 subnode = getNode(node, "Zone_4");
-                value = node != null ? subnode.getTextContent() : null;
+                value = subnode != null ? subnode.getTextContent() : null;
                 if (value != null && (value.equals("1") || value.equals("Available"))) {
                     state.additional_zones.add(Zone.Zone_4);
                 }

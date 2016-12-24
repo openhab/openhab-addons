@@ -9,6 +9,7 @@ package org.openhab.binding.systeminfo.test
 
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
+import static org.junit.matchers.JUnitMatchers.*
 
 import org.eclipse.smarthome.config.core.Configuration
 import org.eclipse.smarthome.config.discovery.DiscoveryResult
@@ -29,9 +30,11 @@ import org.eclipse.smarthome.core.thing.ThingProvider
 import org.eclipse.smarthome.core.thing.ThingRegistry
 import org.eclipse.smarthome.core.thing.ThingStatus
 import org.eclipse.smarthome.core.thing.ThingStatusDetail
+import org.eclipse.smarthome.core.thing.ThingTypeMigrationService
 import org.eclipse.smarthome.core.thing.ThingTypeUID
 import org.eclipse.smarthome.core.thing.ThingUID
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider
@@ -49,6 +52,7 @@ import org.junit.experimental.categories.Category
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
 import org.openhab.binding.systeminfo.discovery.SysteminfoDiscoveryService
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
+import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory
 /**
  * OSGi tests for the {@link SysteminfoHandler}
  *
@@ -62,7 +66,7 @@ class SysteminfoOSGiTest extends OSGiTest{
     def DEFAULT_CHANNEL_TEST_PRIORITY = "High"
     def DEFAULT_CHANNEL_PID = -1
     def DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD
-    def DEFAULT_THING_INITIALIZE_MAX_TIME = 4000
+    def DEFAULT_THING_INITIALIZE_MAX_TIME = 10000
 
     Thing systemInfoThing
     GenericItem testItem
@@ -146,17 +150,17 @@ class SysteminfoOSGiTest extends OSGiTest{
 
         managedThingProvider.add(systemInfoThing)
 
-        waitForAssert({
-            SysteminfoHandler thingHandler = getService(ThingHandler,SysteminfoHandler)
+        waitForAssert{
+            SysteminfoHandler thingHandler = getThingHandler(SysteminfoHandler.class)
             assertThat thingHandler, is(notNullValue())
-        },2000)
+        }
 
         println systemInfoThing.getStatus()
         println systemInfoThing.getStatusInfo().statusDetail
-        waitForAssert({
+        waitForAssert{
             assertThat "Thing is not initilized, before an Item is created", systemInfoThing.getStatus(),
                     anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE))
-        },DEFAULT_THING_INITIALIZE_MAX_TIME)
+        }
 
         intializeItem(channelUID,DEFAULT_TEST_ITEM_NAME,acceptedItemType)
     }
@@ -826,6 +830,39 @@ class SysteminfoOSGiTest extends OSGiTest{
         testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
+    @Test
+    public void 'test thing handles channel priority change' () {
+        def priorityKey = "priority"
+        def pidKey = "pid"
+        def initialPriority = DEFAULT_CHANNEL_TEST_PRIORITY // Evaluates to High
+        def newPriority = "Low"
+
+        String acceptedItemType = "Number"
+        initializeThingWithChannel(DEFAULT_TEST_CHANNEL_ID,acceptedItemType)
+
+
+        Channel channel = systemInfoThing.getChannel(DEFAULT_TEST_CHANNEL_ID)
+
+        waitForAssert {
+            assertThat "The initial priority of channel ${channel.getUID()} is not as expected.", channel.getConfiguration().get(priorityKey), is (equalTo(initialPriority))
+            assertThat systemInfoThing.getHandler().highPriorityChannels.contains(channel.getUID()), is (true)
+        }
+
+        //Change the priority of a channel, keep the pid
+        Configuration updatedConfig = new Configuration()
+        updatedConfig.put(priorityKey, newPriority)
+        updatedConfig.put(pidKey, channel.getConfiguration().get(pidKey))
+        Channel updatedChannel = new Channel (channel.getUID(),channel.getChannelTypeUID(),channel.getAcceptedItemType(),channel.getKind(),updatedConfig,new HashSet(),new HashMap(),null,null)
+        Thing updatedThing = ThingBuilder.create(systemInfoThing.getThingTypeUID(),systemInfoThing.getUID()).withConfiguration(systemInfoThing.getConfiguration()).withChannel(updatedChannel).build();
+
+        systemInfoThing.getHandler().thingUpdated(updatedThing)
+
+        waitForAssert {
+            assertThat "The prority of the channel was not updated: ", channel.getConfiguration().get(priorityKey), is (equalTo(newPriority))
+            assertThat systemInfoThing.getHandler().lowPriorityChannels.contains(channel.getUID()), is (true)
+        }
+    }
+
     @After
     public void tearDown () {
 
@@ -835,11 +872,40 @@ class SysteminfoOSGiTest extends OSGiTest{
             assertThat("The systeminfo thing cannot be deleted",removedThing,is(notNullValue()))
         }
         waitForAssert({
-            assertThat getService(ThingHandler, SysteminfoHandler), is(nullValue())
+            assertThat getThingHandler(SysteminfoHandler.class), is(nullValue())
         })
 
         if(testItem != null) {
             itemRegistry.remove(DEFAULT_TEST_ITEM_NAME)
         }
+    }
+
+    /**
+     * Gets a thing handler of a specific type.
+     *
+     * @param clazz type of thing handler
+     *
+     * @return the thing handler
+     */
+    protected <T extends ThingHandler> T getThingHandler(Class<T> clazz){
+        SysteminfoHandlerFactory factory
+        waitForAssert{
+            factory = getService(ThingHandlerFactory, SysteminfoHandlerFactory)
+            assertThat factory, is(notNullValue())
+        }
+        def handlers = getThingHandlers(factory)
+
+        for(ThingHandler handler : handlers) {
+            if(clazz.isInstance(handler)) {
+                return handler
+            }
+        }
+        return null
+    }
+
+    private Set<ThingHandler> getThingHandlers(SysteminfoHandlerFactory factory) {
+        def thingManager = getService(ThingTypeMigrationService.class, { "org.eclipse.smarthome.core.thing.internal.ThingManager" } )
+        assertThat thingManager, not(null)
+        thingManager.thingHandlersByFactory.get(factory)
     }
 }

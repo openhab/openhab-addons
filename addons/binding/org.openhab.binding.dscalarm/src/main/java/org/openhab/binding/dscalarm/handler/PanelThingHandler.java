@@ -76,7 +76,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     try {
                         date = sdfReceived.parse(description);
                     } catch (ParseException e) {
-                        logger.error("updateChannel(): Parse Exception occured while trying to parse date string: {}. ", e.getMessage());
+                        logger.error("updateChannel(): Parse Exception occured while trying to parse date string: {}. ",
+                                e.getMessage());
                     }
 
                     if (date != null) {
@@ -382,7 +383,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     private void verboseTroubleStatusHandler(EventObject event) {
         DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
         DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
-        String[] channelTypes = { PANEL_SERVICE_REQUIRED, PANEL_AC_TROUBLE, PANEL_TELEPHONE_TROUBLE, PANEL_FTC_TROUBLE, PANEL_ZONE_FAULT, PANEL_ZONE_TAMPER, PANEL_ZONE_LOW_BATTERY, PANEL_TIME_LOSS };
+        String[] channelTypes = { PANEL_SERVICE_REQUIRED, PANEL_AC_TROUBLE, PANEL_TELEPHONE_TROUBLE, PANEL_FTC_TROUBLE,
+                PANEL_ZONE_FAULT, PANEL_ZONE_TAMPER, PANEL_ZONE_LOW_BATTERY, PANEL_TIME_LOSS };
 
         String channel;
         ChannelUID channelUID = null;
@@ -418,7 +420,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
             if (getThing() == thing) {
                 ChannelUID channelUID = null;
-                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                        .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
                 logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 int state = 0;
@@ -529,7 +532,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     case HomeAutomationTrouble: /* 831 */
                     case KeybusFault: /* 896 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_MESSAGE);
-                        updateChannel(channelUID, 0, dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DESCRIPTION));
+                        updateChannel(channelUID, 0,
+                                dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DESCRIPTION));
                         break;
                     case PanelBatteryTroubleRestore: /* 801 */
                     case PanelACRestore: /* 803 */

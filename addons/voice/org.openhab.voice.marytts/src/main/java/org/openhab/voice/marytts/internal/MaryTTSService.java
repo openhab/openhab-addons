@@ -15,6 +15,7 @@ package org.openhab.voice.marytts.internal;
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -102,12 +103,12 @@ public class MaryTTSService implements TTSService {
          * However, the TTSService interface allows the AudioFormat and
          * the Voice to vary independently. Thus, an external user does
          * not know about the requirement that a given voice is paired
-         * with a given AudioFormat. The test below inforces this.
+         * with a given AudioFormat. The test below enforces this.
          *
          * However, this leads to a problem. The user has no way to
          * know which AudioFormat is apropos for a give Voice. Thus,
          * throwing a TTSException for the wrong AudioFormat makes
-         * the user guess the right AudioFormat, a apinful process.
+         * the user guess the right AudioFormat, a painful process.
          * Alternatively, we can get the right AudioFormat for the
          * Voice and ignore what the user requests, also wrong.
          *
@@ -133,7 +134,7 @@ public class MaryTTSService implements TTSService {
             try {
                 AudioInputStream audioInputStream = marytts.generateAudio(text);
                 audioStream = new MaryTTSAudioStream(audioInputStream, maryTTSVoiceAudioFormat);
-            } catch (SynthesisException e) {
+            } catch (SynthesisException | IOException e) {
                 throw new TTSException("Error generating an AudioStream", e);
             }
 
