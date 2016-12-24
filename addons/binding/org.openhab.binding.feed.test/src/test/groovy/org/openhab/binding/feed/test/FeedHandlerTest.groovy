@@ -257,7 +257,7 @@ public class FeedHandlerTest extends OSGiTest {
         }
 
         waitForAssert({
-            assertThat "Error occured while trying to connect to server. Content is not dowloaded!",
+            assertThat "Error occurred while trying to connect to server. Content is not downloaded!",
                     feedThing.getStatus(),is(equalTo(ThingStatus.ONLINE))
         }, DEFAULT_MAX_WAIT_TIME)
 
