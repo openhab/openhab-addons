@@ -65,6 +65,8 @@ The Onkyo AVR supports the following channels:
 | player#currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
 | player#listenmode              | Number       | Current listening mode e.g. Stero, 5.1ch Surround,..|
 | player#playuri                 | String       | Plays the URI provided to the channel |
+| player#albumArt                | String       | Title of the current NET service |
+| netmenu#title                  | String       | Control the USB/Net Menu, e.g. 
 | netmenu#control                | String       | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9] 
 | netmenu#selection              | Number       | The number of the currently selected USB/Net Menu entry (0-9) 
 | netmenu#item0                  | String       | The text of USB/Net Menu entry 0
@@ -77,6 +79,7 @@ The Onkyo AVR supports the following channels:
 | netmenu#item7                  | String       | The text of USB/Net Menu entry 7 
 | netmenu#item8                  | String       | The text of USB/Net Menu entry 8 
 | netmenu#item9                  | String       | The text of USB/Net Menu entry 9 
+
 
 ##Input Source Mapping
 
