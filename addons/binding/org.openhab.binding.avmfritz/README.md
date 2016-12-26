@@ -13,6 +13,10 @@ The well known FRITZ!Boxes are supported as bridge for accessing other AHA devic
 
 This [switchable outlet](http://avm.de/produkte/fritzdect/fritzdect-200/) has to be connected to a FRITZ!Box by DECT protocol. It supports switching the outlet, current power and accumulated energy consumption and temperature readings.
 
+### FRITZ!DECT Repeater 100
+
+This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol. It only supports temperature readings.
+
 ### FRITZ!Powerline 546E
 
 This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in standalone mode. It supports switching the outlet and current power and energy consumption readings. This device does not contain a temperature sensor.
@@ -55,7 +59,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 |-------------|--------|-----------------------------|------------------------------------|
-| temperature | Number | Actual measured temperature | FRITZ!DECT 200 |
+| temperature | Number | Actual measured temperature | FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
 | energy | Number | Accumulated energy consumption | FRITZ!DECT 200, FRITZ!Powerline 546E |
 | power | Number | Current power consumption | FRITZ!DECT 200, FRITZ!Powerline 546E |
 | outlet | Switch | Switchable outlet | FRITZ!DECT 200, FRITZ!Powerline 546E |
