@@ -130,6 +130,7 @@ public enum EiscpCommand {
     NETUSB_MENU9("NLSU9-", EiscpCommandRef.NETUSB_MENU9),
     NETUSB_MENU_SELECT("NLSL%X", EiscpCommandRef.NETUSB_MENU_SELECT),
     NETUSB_TITLE("NLT", EiscpCommandRef.NETUSB_TITLE),
+    NETUSB_TITLE_QUERY("NLTQSTN", EiscpCommandRef.NETUSB_TITLE_QUERY),
 
     /*
      * Zone 2

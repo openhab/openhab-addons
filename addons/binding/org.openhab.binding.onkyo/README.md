@@ -23,9 +23,7 @@ This binding can discover the supported Onkyo AV Receivers. At the moment only t
 
 The binding can auto-discover the Onkyo AVRs present on your local network. The auto-discovery is enabled by default. To disable it, you can create a file in the services directory called onkyo.cfg with the following content:
 
-```
-org.openhab.onkyo:enableAutoDiscovery=false
-```
+`org.openhab.onkyo:enableAutoDiscovery=false`
 
 This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery. Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
 
@@ -40,11 +38,13 @@ The binding has the following configuration options, which can be set for "bindi
 
 The Onkyo AVR thing requires the ip address and the port to access it on.
 In the thing file, this looks e.g. like
-```
-onkyo:onkyoAV:myOnkyo [ipAddress="192.168.1.100", port="60128"]
 
+`onkyo:onkyoAV:myOnkyo [ipAddress="192.168.1.100", port="60128"]`
 
-##Channels
+Optionally you can specify the refresh interval
+`onkyo:onkyoAV:myOnkyo [ipAddress="192.168.1.100", port="60128", refreshInterval=30]`
+
+## Channels
 
 The Onkyo AVR supports the following channels:
 
@@ -81,7 +81,7 @@ The Onkyo AVR supports the following channels:
 | netmenu#item9                  | String       | The text of USB/Net Menu entry 9 
 
 
-##Input Source Mapping
+## Input Source Mapping
 
 Here after are the ID values of the input sources:
 

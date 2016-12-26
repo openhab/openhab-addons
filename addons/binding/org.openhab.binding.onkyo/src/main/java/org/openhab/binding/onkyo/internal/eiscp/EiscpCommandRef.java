@@ -223,9 +223,10 @@ public enum EiscpCommandRef {
     NETUSB_ALBUM_ART_REQ(177),
     NETUSB_ALBUM_ART(178),
     NETUSB_TITLE(179),
+    NETUSB_TITLE_QUERY(180),
 
-    RECEIVER_INFO_QUERY(180),
-    RECEIVER_INFO(181);
+    RECEIVER_INFO_QUERY(181),
+    RECEIVER_INFO(182);
 
     private int command;
 

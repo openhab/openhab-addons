@@ -11,6 +11,7 @@ package org.openhab.binding.onkyo.handler;
 import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.EventObject;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -81,6 +82,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 }
             }
 
+            long refreshInterval;
+            try {
+                refreshInterval = ((BigDecimal) this.getConfig().get(REFRESH_INTERVAL)).longValue();
+            } catch (Exception e) {
+                refreshInterval = 60;
+                logger.warn("No refresh Interval defined using {}s", refreshInterval);
+            }
+            logger.warn("No refresh Interval defined using {}s", refreshInterval);
+
             connection = new OnkyoConnection(host, port);
             connection.addEventListener(this);
 
@@ -103,7 +113,12 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     }
                 }
             };
-            statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, 60, TimeUnit.SECONDS);
+            if (refreshInterval > 0) {
+                statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, refreshInterval,
+                        TimeUnit.SECONDS);
+            } else {
+                statusCheckerFuture = scheduler.schedule(statusChecker, 1, TimeUnit.SECONDS);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to receiver. IP address not set.");
@@ -205,6 +220,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             case CHANNEL_TITLE:
                 if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommandRef.NETUSB_SONG_TITLE_QUERY);
+                }
+                break;
+            case CHANNEL_NET_MENU_TITLE:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_TITLE_QUERY);
                 }
                 break;
             case CHANNEL_CURRENTPLAYINGTIME:
@@ -555,7 +575,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         sendCommand(EiscpCommandRef.ZONE2_VOLUME_QUERY);
         sendCommand(EiscpCommandRef.ZONE2_SOURCE_QUERY);
         sendCommand(EiscpCommandRef.ZONE2_MUTE_QUERY);
-
+        sendCommand(EiscpCommandRef.NETUSB_TITLE_QUERY);
         sendCommand(EiscpCommandRef.LISTEN_MODE_QUERY);
 
         if (connection != null && connection.isConnected()) {

@@ -38,6 +38,7 @@ public class OnkyoBindingConstants {
     public final static String HOST_PARAMETER = "ipAddress";
     public final static String TCP_PORT_PARAMETER = "port";
     public final static String UDN_PARAMETER = "udn";
+    public final static String REFRESH_INTERVAL = "refreshInterval";
 
     // List of all Channel ids
     public final static String CHANNEL_POWER = "zone1#power";
