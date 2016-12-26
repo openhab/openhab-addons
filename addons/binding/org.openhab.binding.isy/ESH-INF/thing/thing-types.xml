@@ -8,11 +8,6 @@
 		<description>Ethernet access point to Isy control system</description>
 
 		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>IP or Host Name</label>
-				<description>The IP or host name of the Isy Device</description>
-			</parameter>
 			<parameter name="user" type="text" required="true">
 				<label>User Name</label>
 				<description>The user name to log in to the Isy</description>
@@ -21,6 +16,15 @@
 				<context>password</context>
 				<label>Password</label>
 				<description>The user password to log in to the Isy</description>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="false">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Isy Device</description>
+			</parameter>
+			<parameter name="uuid" type="text" required="false">
+				<label>UUID</label>
+				<description>The Isy UUID</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

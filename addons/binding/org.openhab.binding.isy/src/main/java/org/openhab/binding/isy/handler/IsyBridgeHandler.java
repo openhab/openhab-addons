@@ -3,6 +3,7 @@ package org.openhab.binding.isy.handler;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.isy.config.IsyBridgeConfiguration;
@@ -18,7 +19,7 @@ import com.universaldevices.device.model.UDControl;
 import com.universaldevices.device.model.UDNode;
 
 public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClientProvider {
-    private Logger logger = LoggerFactory.getLogger(BaseBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(IsyBridgeHandler.class);
 
     InsteonClient insteonClient;
 
@@ -46,7 +47,7 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
 
     @Override
     public void initialize() {
-
+        // super.initialize();
         logger.debug("initialize called for bridge handler");
         IsyBridgeConfiguration config = getThing().getConfiguration().as(IsyBridgeConfiguration.class);
         insteonClient = new InsteonClient(config.getUser(), config.getPassword(), new ISYModelChangeListener() {
@@ -69,11 +70,29 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
                 }
                 // }
             }
+
+            @Override
+            public void onDeviceOnLine() {
+                updateStatus(ThingStatus.ONLINE);
+            }
+
+            @Override
+            public void onDeviceOffLine() {
+                updateStatus(ThingStatus.OFFLINE);
+
+            }
         });
         logger.debug("starting insteon client");
-        this.insteonClient.start();
-        logger.debug("insteon client was started");
-        super.initialize();
+        if (config.getUuid() != null) {
+            try {
+                this.insteonClient.start("uuid:" + config.getUuid(), config.getIpAddress());
+            } catch (Exception e) {
+                logger.error("error connecting", e);
+                e.printStackTrace();
+            }
+        } else {
+            this.insteonClient.start();
+        }
     }
 
     public void registerDiscoveryService(IsyDiscoveryService isyBridgeDiscoveryService) {

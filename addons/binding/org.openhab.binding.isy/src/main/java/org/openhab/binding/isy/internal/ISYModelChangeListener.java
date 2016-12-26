@@ -18,4 +18,8 @@ import com.universaldevices.device.model.UDNode;
 public interface ISYModelChangeListener {
     public void onModelChanged(final UDControl control, final Object action, final UDNode node);
 
+    public void onDeviceOnLine();
+
+    public void onDeviceOffLine();
+
 }

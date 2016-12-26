@@ -136,6 +136,7 @@ public class InsteonClient extends ISYInsteonClient {
     @Override
     public void onDeviceOffLine() {
         this.logger.info("ISY is now offline");
+        listener.onDeviceOffLine();
     }
 
     /**
@@ -192,6 +193,7 @@ public class InsteonClient extends ISYInsteonClient {
         } else {
             device.subscribeToEvents(true);
         }
+        listener.onDeviceOnLine();
     }
 
     /**

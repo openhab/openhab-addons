@@ -5,6 +5,11 @@ public class IsyBridgeConfiguration {
     private String user;
     private String password;
     private String ipAddress;
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
 
     public String getUser() {
         return user;
