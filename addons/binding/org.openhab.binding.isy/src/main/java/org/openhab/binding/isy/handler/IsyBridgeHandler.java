@@ -54,21 +54,13 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
 
             @Override
             public void onModelChanged(UDControl control, Object action, UDNode node) {
-                // if ("ST".equals(control.name)) {
-
-                logger.debug("isy model changed");
+                // logger.debug("isy model changed event: control: {}, action: {}, node: {}", control.name, action,
+                // node);
                 IsyHandler handler = getThingHandler(node.address);
                 if (handler != null) {
                     logger.debug("  we have handler");
-                    // if (IsyBindingConstants.CHANNEL_ONOFFSENSOR.equals(control.name)) {
-                    // TODO should we pass sub device (last number of address) so handler can determine which channel
-                    // this message is for. this is applicable for things like motion, leak sensors, and also for 6
-                    // button dimmer/switches
                     handler.handleUpdate(control.name, action, node.address);
-                    // handler.handleUpdate(channelUID, newState);
-                    // }
                 }
-                // }
             }
 
             @Override

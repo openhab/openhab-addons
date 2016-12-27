@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.isy.internal;
+package org.openhab.binding.isy.handler;
 
 import static org.openhab.binding.isy.IsyBindingConstants.*;
 
@@ -22,8 +22,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.isy.discovery.IsyDiscoveryService;
-import org.openhab.binding.isy.handler.IsyBridgeHandler;
-import org.openhab.binding.isy.handler.IsyHandlerBuilder;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +44,6 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
-    private InsteonClientProvider bridgeHandler = null;
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -57,7 +53,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
+        // TODO: can we figure this out from the things-types.xml, it's really duplicate work.
         if (thingTypeUID.equals(MOTION_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).forChannel(CHANNEL_MOTION_MOTION, 1)
                     .forChannel(CHANNEL_MOTION_DUSK, 2).forChannel(CHANNEL_MOTION_BATTERY, 3).build();
@@ -86,7 +82,6 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
                     .forChannel(CHANNEL_KEYPAD_LINC_G, 8).forChannel(CHANNEL_KEYPAD_LINC_H, 7).build();
         } else if (thingTypeUID.equals(THING_TYPE_ISYBRIDGE)) {
             IsyBridgeHandler handler = new IsyBridgeHandler((Bridge) thing);
-            this.bridgeHandler = handler;
             registerIsyBridgeDiscoveryService(handler);
             return handler;
         }

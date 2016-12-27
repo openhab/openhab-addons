@@ -62,7 +62,7 @@ public class IsyHandler extends BaseThingHandler {
         return (IsyBridgeHandler) getBridge().getHandler();
     }
 
-    public IsyHandler(Thing thing) {
+    protected IsyHandler(Thing thing) {
         super(thing);
     }
 

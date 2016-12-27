@@ -36,13 +36,15 @@ public class IsyBindingConstants {
     // List of all Channel ids
     // public final static String CHANNEL_ONOFFSENSOR = "OL";
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
+
     public final static String CHANNEL_SWITCH = "state";
+    // motion
     public final static String CHANNEL_MOTION_MOTION = "motion";
     public final static String CHANNEL_MOTION_DUSK = "dusk_dawn";
     public final static String CHANNEL_MOTION_BATTERY = "low_battery";
+    // garage
     public final static String CHANNEL_GARAGE_CONTACT = "relay";
     public final static String CHANNEL_GARAGE_SENSOR = "contactSensor";
-
     // leak
     public final static String CHANNEL_LEAK_DRY = "dry";
     public final static String CHANNEL_LEAK_WET = "wet";

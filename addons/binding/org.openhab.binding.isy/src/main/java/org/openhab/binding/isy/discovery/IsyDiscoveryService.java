@@ -82,10 +82,10 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
                 properties.put(IsyInsteonDeviceConfiguration.NAME, node.name);
 
                 if (insteonAddress.getDeviceId() == 1) {
-                    ThingTypeUID theThingUid = mMapDeviceTypeThingType.get(node.typeReadable);
-                    if (theThingUid != null) {
+                    ThingTypeUID theThingTypeUid = mMapDeviceTypeThingType.get(node.typeReadable);
+                    if (theThingTypeUid != null) {
                         String thingID = node.name.replace(" ", "").replaceAll("\\.", "");
-                        ThingUID thingUID = new ThingUID(theThingUid, bridgeUID, thingID);
+                        ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                                 .withProperties(properties).withBridge(bridgeUID).withLabel(node.name).build();
                         thingDiscovered(discoveryResult);
