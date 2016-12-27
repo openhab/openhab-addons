@@ -24,7 +24,7 @@ On/Off Relay Switch<br /><h1>Overview</h1><p>Also marketed as GE / Jasco 12722.<
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">GE</property>
-      <property name="model">ZW4005, 12722</property>
+      <property name="modelId">ZW4005, 12722</property>
       <property name="manufacturerId">0063</property>
       <property name="manufacturerRef">4952:3032</property>
     </properties>

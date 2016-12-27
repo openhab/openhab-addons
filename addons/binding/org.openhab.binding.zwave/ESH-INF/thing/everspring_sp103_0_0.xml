@@ -11,11 +11,6 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
@@ -28,12 +23,17 @@
           <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">SP103</property>
+      <property name="modelId">SP103</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0101:0001</property>
       <property name="defaultAssociations">1</property>

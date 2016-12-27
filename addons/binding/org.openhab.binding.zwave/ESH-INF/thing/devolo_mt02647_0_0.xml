@@ -11,21 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
+      <channel id="sensor_binary" typeId="sensor_binary">
+        <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM,BASIC</property>
-        </properties>
-      </channel>
-      <channel id="lock_door" typeId="lock_door">
-        <label></label>
-        <properties>
-          <property name="binding:*:OnOffType">DOOR_LOCK</property>
-        </properties>
-      </channel>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
         </properties>
       </channel>
       <channel id="sensor_luminance" typeId="sensor_luminance">
@@ -40,10 +29,21 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=TEMPERATURE</property>
         </properties>
       </channel>
-      <channel id="sensor_binary" typeId="sensor_binary">
-        <label>Binary Sensor</label>
+      <channel id="lock_door" typeId="lock_door">
+        <label></label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">DOOR_LOCK</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM,BASIC</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
@@ -51,7 +51,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Devolo</property>
-      <property name="model">MT02647</property>
+      <property name="modelId">MT02647</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0002:000D</property>
       <property name="defaultAssociations">1</property>

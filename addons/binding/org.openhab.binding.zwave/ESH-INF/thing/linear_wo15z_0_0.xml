@@ -28,7 +28,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Linear</property>
-      <property name="model">WO15Z</property>
+      <property name="modelId">WO15Z</property>
       <property name="manufacturerId">014F</property>
       <property name="manufacturerRef">5252:3530</property>
     </properties>

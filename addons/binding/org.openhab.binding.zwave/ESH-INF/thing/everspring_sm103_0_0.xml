@@ -14,7 +14,7 @@
       <channel id="sensor_binary" typeId="sensor_binary">
         <label>Binary Sensor</label>
         <properties>
-          <property name="binding:*:OnOffType">SENSOR_BINARY</property>
+          <property name="binding:*:OnOffType">SENSOR_BINARY,BASIC</property>
         </properties>
       </channel>
       <channel id="alarm_general" typeId="alarm_general">
@@ -33,7 +33,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Everspring</property>
-      <property name="model">SM103</property>
+      <property name="modelId">SM103</property>
       <property name="manufacturerId">0060</property>
       <property name="manufacturerRef">0002:0001</property>
       <property name="defaultAssociations">1,2</property>

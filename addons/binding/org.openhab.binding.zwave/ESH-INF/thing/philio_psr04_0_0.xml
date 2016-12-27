@@ -7,19 +7,21 @@
 
   <thing-type id="philio_psr04_00_000" listed="false">
     <label>PSR04 Smart Color Button</label>
-    <description>Smart Color Button</description>
+    <description><![CDATA[
+Smart Color Button<br /><h2>Wakeup Information</h2><p>By default, this device only wakes up every 86400 seconds (24 hours). To manually wake this device up:</p> <ol><li>Hold the device vertically, or against a wall (this will not work if the device is horizontal).</li> <li>Rotate the wheel so that the pointer is at the top of the device.</li> <li>Wait at least three seconds.</li> <li>Rotate the wheel clockwise through 180 degrees to the bottom of the device.</li> <li>Immediately press the centre button once.</li> </ol><p>This activates the wakeup for 10 seconds, during which time you will be able to identify the device correctly.</p>
+    ]]></description>
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="scene_number" typeId="scene_number">
         <label>Scene Number</label>
         <properties>
           <property name="binding:*:DecimalType">CENTRAL_SCENE</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
@@ -27,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Philio Technology Corporation</property>
-      <property name="model">PSR04</property>
+      <property name="modelId">PSR04</property>
       <property name="manufacturerId">013C</property>
       <property name="manufacturerRef">0009:0022</property>
       <property name="defaultAssociations">1</property>

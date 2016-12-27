@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">ZWave.me</property>
-      <property name="model">ZME_06443</property>
+      <property name="modelId">ZME_06443</property>
       <property name="manufacturerId">0115</property>
       <property name="manufacturerRef">0400:0004,1000:0004</property>
     </properties>

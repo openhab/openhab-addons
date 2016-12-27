@@ -25,5 +25,5 @@ public class FileRegexParserBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_GROUPCOUNT = "groupCount";
-
+	
 }

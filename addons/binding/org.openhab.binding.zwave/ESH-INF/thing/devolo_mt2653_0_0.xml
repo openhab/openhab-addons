@@ -11,15 +11,15 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="battery-level" typeId="system.battery-level">
-        <properties>
-          <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
       <channel id="scene_number" typeId="scene_number">
         <label>Scene Number</label>
         <properties>
           <property name="binding:*:DecimalType">CENTRAL_SCENE,BASIC</property>
+        </properties>
+      </channel>
+      <channel id="battery-level" typeId="system.battery-level">
+        <properties>
+          <property name="binding:*:PercentType">BATTERY</property>
         </properties>
       </channel>
     </channels>
@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Devolo</property>
-      <property name="model">MT2653</property>
+      <property name="modelId">MT2653</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0100:0102</property>
       <property name="defaultAssociations">1</property>

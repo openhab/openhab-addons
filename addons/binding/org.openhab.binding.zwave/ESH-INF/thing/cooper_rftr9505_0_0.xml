@@ -11,16 +11,16 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
-        <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
-        </properties>
-      </channel>
       <channel id="switch_binary" typeId="switch_binary">
         <label>Switch</label>
         <properties>
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
+        </properties>
+      </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM</property>
         </properties>
       </channel>
     </channels>
@@ -28,7 +28,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Cooper Wiring Devices</property>
-      <property name="model">RFTR9505</property>
+      <property name="modelId">RFTR9505</property>
       <property name="manufacturerId">001A</property>
       <property name="manufacturerRef">5244:0000</property>
     </properties>

@@ -196,7 +196,7 @@ public class FileRegexParserHandler extends BaseThingHandler {
             configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
         }
 
-        if (thingIsInitialized()) {
+        if (isInitialized()) {
             // persist new configuration and reinitialize handler
             dispose();
             updateConfiguration(configuration);

@@ -29,7 +29,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Leviton</property>
-      <property name="model">DZPD3</property>
+      <property name="modelId">DZPD3</property>
       <property name="manufacturerId">001D</property>
       <property name="manufacturerRef">1902:0334</property>
     </properties>

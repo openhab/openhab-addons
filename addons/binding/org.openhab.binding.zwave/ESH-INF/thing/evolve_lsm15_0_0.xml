@@ -17,12 +17,6 @@
           <property name="binding:*:OnOffType">SWITCH_BINARY</property>
         </properties>
       </channel>
-      <channel id="scene_number" typeId="scene_number">
-        <label>Scene Number</label>
-        <properties>
-          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
-        </properties>
-      </channel>
       <channel id="switch_dimmer" typeId="switch_dimmer">
         <label>Dimmer</label>
         <properties>
@@ -30,12 +24,18 @@
           <property name="binding:Command:OnOffType">SWITCH_MULTILEVEL</property>
         </properties>
       </channel>
+      <channel id="scene_number" typeId="scene_number">
+        <label>Scene Number</label>
+        <properties>
+          <property name="binding:*:DecimalType">SCENE_ACTIVATION</property>
+        </properties>
+      </channel>
     </channels>
 
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Evolve</property>
-      <property name="model">LSM-15</property>
+      <property name="modelId">LSM-15</property>
       <property name="manufacturerId">0113</property>
       <property name="manufacturerRef">5257:3533</property>
     </properties>

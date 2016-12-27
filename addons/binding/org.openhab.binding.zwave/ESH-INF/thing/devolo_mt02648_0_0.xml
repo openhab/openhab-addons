@@ -11,10 +11,10 @@
 
     <!-- CHANNEL DEFINITIONS -->
     <channels>
-      <channel id="alarm_general" typeId="alarm_general">
-        <label>Alarm</label>
+      <channel id="sensor_door" typeId="sensor_door">
+        <label>Door / Window Status</label>
         <properties>
-          <property name="binding:*:OnOffType">ALARM</property>
+          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
         </properties>
       </channel>
       <channel id="sensor_temperature" typeId="sensor_temperature">
@@ -29,15 +29,15 @@
           <property name="binding:*:DecimalType">SENSOR_MULTILEVEL;type=LUMINANCE</property>
         </properties>
       </channel>
+      <channel id="alarm_general" typeId="alarm_general">
+        <label>Alarm</label>
+        <properties>
+          <property name="binding:*:OnOffType">ALARM</property>
+        </properties>
+      </channel>
       <channel id="battery-level" typeId="system.battery-level">
         <properties>
           <property name="binding:*:PercentType">BATTERY</property>
-        </properties>
-      </channel>
-      <channel id="sensor_door" typeId="sensor_door">
-        <label>Door / Window Status</label>
-        <properties>
-          <property name="binding:*:OpenClosedType">SENSOR_BINARY</property>
         </properties>
       </channel>
     </channels>
@@ -45,7 +45,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Devolo</property>
-      <property name="model">MT02648</property>
+      <property name="modelId">MT02648</property>
       <property name="manufacturerId">0175</property>
       <property name="manufacturerRef">0002:000E</property>
       <property name="defaultAssociations">1</property>

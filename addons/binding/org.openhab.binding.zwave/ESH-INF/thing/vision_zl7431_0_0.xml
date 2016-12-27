@@ -22,7 +22,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Vision Security</property>
-      <property name="model">ZL7431</property>
+      <property name="modelId">ZL7431</property>
       <property name="manufacturerId">0109</property>
       <property name="manufacturerRef">2016:1616,200C:0C02</property>
       <property name="defaultAssociations">1</property>

@@ -27,7 +27,7 @@
     <!-- DEVICE PROPERTY DEFINITIONS -->
     <properties>
       <property name="vendor">Remotec</property>
-      <property name="model">ZRC-90</property>
+      <property name="modelId">ZRC-90</property>
       <property name="manufacturerId">5254</property>
       <property name="manufacturerRef">0001:8510</property>
       <property name="defaultAssociations">1</property>
