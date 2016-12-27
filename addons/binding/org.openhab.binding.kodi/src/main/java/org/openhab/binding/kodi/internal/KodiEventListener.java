@@ -40,6 +40,8 @@ public interface KodiEventListener extends EventListener {
 
     void updateTitle(String title);
 
+    void updateShowTitle(String title);
+
     void updateAlbum(String album);
 
     void updateArtist(String artist);

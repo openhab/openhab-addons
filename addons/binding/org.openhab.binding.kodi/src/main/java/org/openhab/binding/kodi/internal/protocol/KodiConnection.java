@@ -204,6 +204,27 @@ public class KodiConnection implements KodiClientSocketEventListener {
         requestPlayerUpdate(activePlayer, true);
     }
 
+    private void updateFanartUrl(String imagePath) {
+        if (imagePath == null || imagePath.isEmpty()) {
+            return;
+        }
+
+        /*
+         * try {
+         * 
+         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8");
+         * String decodedURL = URLDecoder.decode(imagePath, "UTF-8");
+         * 
+         * JsonObject params = new JsonObject();
+         * params.addProperty("path", "");
+         * JsonElement response = socket.callMethod("Files.PrepareDownload", params);
+         * 
+         * } catch (Exception e) {
+         * logger.error("updateFanartUrl error", e);
+         * }
+         */
+    }
+
     private void requestPlayerUpdate(int activePlayer, boolean updateMediaType) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
                 "showtitle", "streamdetails" };
@@ -223,13 +244,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
         String showTitle = "";
         if (item.has("showtitle")) {
             showTitle = convertToText(item.get("showtitle"));
-            if (!showTitle.isEmpty()) {
-                if (title.isEmpty()) {
-                    title = showTitle;
-                } else {
-                    title = title + " - " + showTitle;
-                }
-            }
         }
 
         String album = "";
@@ -252,12 +266,17 @@ public class KodiConnection implements KodiClientSocketEventListener {
         try {
             listener.updateAlbum(album);
             listener.updateTitle(title);
+            listener.updateShowTitle(showTitle);
             listener.updateArtist(artist);
             if (updateMediaType) {
                 listener.updateMediaType(mediaType);
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
+        }
+
+        if (item.has("fanart")) {
+            updateFanartUrl(item.get("fanart").getAsString());
         }
     }
 
@@ -528,5 +547,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public void playNotificationSoundURI(String uri) {
         playURI(uri);
+    }
+
+    public void sendSystemCommand(String command) {
+        String method = "System." + command;
+        socket.callMethod(method);
     }
 }

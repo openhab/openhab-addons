@@ -62,13 +62,15 @@ The Kodi thing supports the following channels:
 | mute                    | Switch       | Mute/unmute your playback |
 | volume                  | Dimmer       | Read or control the volume of your playback |
 | control                 | Player       | Control the Kodi player, e.g.  play/pause/next/previous/ffward/rewind |
-| title                   | String       | Title of the currently played song/t-show/movie |
+| title                   | String       | Title of the currently played song/movie/tv episode |
+| showtitle               | String       | Title of the currently played tv-show; empty for other types |
 | album                   | String       | Album name of the currently played song |
 | artist                  | String       | Artist name of the currently played song or director of the currently played movie|
 | playuri                 | String       | Plays the file with the provided URI |
 | shownotification        | String       | Shows the provided notification message on the screen |
 | input                   | String       | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowCodec`, `ShowOSD` |
 | inputtext               | String       | This channel emulates a keyboard input |
+| systemcommand           | String       | This channel allows to send commands to shutdown/suspend/hibernate/reboot kodi |
 | mediatype               | String       | The media type of the current file. e.g. song or movie | 
 
 

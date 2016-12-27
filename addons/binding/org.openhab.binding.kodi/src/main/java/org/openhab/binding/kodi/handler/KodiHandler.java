@@ -153,6 +153,14 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
                 }
                 break;
+            case CHANNEL_SYSTEMCOMMAND:
+                if (command instanceof StringType) {
+                    connection.sendSystemCommand(command.toString());
+                    updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
+                }
+                break;
             case CHANNEL_ARTIST:
                 if (command.equals(RefreshType.REFRESH)) {
                     connection.updatePlayerStatus();
@@ -164,6 +172,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_TITLE:
+                if (command.equals(RefreshType.REFRESH)) {
+                    connection.updatePlayerStatus();
+                }
+                break;
+            case CHANNEL_SHOWTITLE:
                 if (command.equals(RefreshType.REFRESH)) {
                     connection.updatePlayerStatus();
                 }
@@ -286,6 +299,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateTitle(String title) {
         updateState(CHANNEL_TITLE, new StringType(title));
+    }
+
+    @Override
+    public void updateShowTitle(String title) {
+        updateState(CHANNEL_SHOWTITLE, new StringType(title));
     }
 
     @Override
