@@ -66,20 +66,12 @@ public class FileRegexParserWorker implements Runnable {
             }
         }
 
-        /*
-         * if (executor != null) {
-         * executor.shutdown();
-         * executor.shutdownNow();
-         * }
-         */
-
     }
 
     private void parseLine(String pattern, String toParse) {
 
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(toParse);
-        // String curGroup = new String("");
         if (m.matches()) {
             for (int i = 1; i <= m.groupCount(); i++) {
                 updateCallback.updateStateReceived("matchingGroup" + i, m.group(i));
@@ -92,7 +84,7 @@ public class FileRegexParserWorker implements Runnable {
 
     @Override
     public void run() {
-        logger.debug("Runner run entered for file" + fileToRead.getName());
+        logger.debug("Runner run entered for file: " + fileToRead.getName());
         while (executeWorker) {
             try {
                 Thread.sleep(1000);
