@@ -99,5 +99,5 @@ Available events:
     * **group** `apogee`
         * **event**: `APOGEE`
 
-**Note**: delayed events not available, currently not supported by the openHab 2 framework
+**Note**: Offsets for each event group can be configured in the channel properties
 

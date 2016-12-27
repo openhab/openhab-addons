@@ -80,6 +80,7 @@
 				<option value="END">end</option>
 			</options>
 		</event>
+        <config-description-ref uri="channel-type:astro:config" />		
 	</channel-type>
 
 	<!-- sunZodiac -->
@@ -214,6 +215,7 @@
 				<option value="RING">ring</option>
 			</options>
 		</event>
+        <config-description-ref uri="channel-type:astro:config" />      
 	</channel-type>
 
 	<!-- moonphase -->
@@ -304,6 +306,7 @@
 				<option value="NEW">new</option>
 			</options>
 		</event>
+        <config-description-ref uri="channel-type:astro:config" />      
 	</channel-type>
 
 
@@ -328,6 +331,7 @@
 				<option value="PARTIAL">partial</option>
 			</options>
 		</event>
+        <config-description-ref uri="channel-type:astro:config" />      
 	</channel-type>
 
 	<!-- distance -->
@@ -373,6 +377,7 @@
 				<option value="APOGEE">apogee</option>
 			</options>
 		</event>
+        <config-description-ref uri="channel-type:astro:config" />      
 	</channel-type>
 
 	<!-- moonZodiac -->
