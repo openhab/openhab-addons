@@ -39,7 +39,6 @@ public class FileRegexParserWorker implements Runnable {
     public FileRegexParserWorker(FileRegexParserHandler caller) {
         updateCallback = caller;
     }
-    // TODO Auto-generated constructor stub
 
     public void startWorker(String fileName, String regEx) {
         logger.debug("Starting Worker thread for " + fileName);
@@ -65,17 +64,14 @@ public class FileRegexParserWorker implements Runnable {
                 logger.debug("Future exception: " + e);
             }
         }
-
     }
 
     private void parseLine(String pattern, String toParse) {
-
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(toParse);
         if (m.matches()) {
             for (int i = 1; i <= m.groupCount(); i++) {
-                updateCallback.updateStateReceived("matchingGroup" + i, m.group(i));
-
+                updateCallback.updateStateReceived("capturingGroup" + i, m.group(i));
             }
         } else {
             logger.info(toParse + ": no match for " + p.toString());
@@ -95,15 +91,12 @@ public class FileRegexParserWorker implements Runnable {
                     filePointer = len;
                 }
                 RandomAccessFile raf = new RandomAccessFile(fileToRead, "r");
-
                 raf.seek(filePointer);
-
                 while ((line = raf.readLine()) != null) {
                     parseLine(regEx, line);
                 }
                 filePointer = raf.getFilePointer();
                 raf.close();
-
             } catch (Exception e) {
                 logger.error(e.toString());
                 try {
@@ -112,10 +105,8 @@ public class FileRegexParserWorker implements Runnable {
                 } catch (Exception e1) {
                     logger.error(e1.toString());
                 }
-
             }
         }
         logger.debug(fileToRead.getName() + ".Worker: finished , futureId:" + System.identityHashCode(future));
     }
-
 }

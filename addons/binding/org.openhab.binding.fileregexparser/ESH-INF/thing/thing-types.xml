@@ -3,10 +3,9 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="filetoparse">
-		<label>FileToParseThing</label>
-		<description>Watches a file and matches a regular expression to each new line. Channels are generated automatically for each matcher group </description>
+		<label>File Parser</label>
+		<description>Watches a file and matches a regular expression to each new line. Channels are generated automatically for each matcher group.</description>
 
 		<channels>
 			<channel id="groupCount" typeId="groupCount" />
@@ -20,32 +19,31 @@
 				<label>RegEx</label>
 				<description>Regular expression to be applied to each line of the file</description>
 			</parameter>
-	        <parameter name="matchingGroupTypes" type="text" required="false">
-                <label>Matching Group Types</label>
-                <description>Types of matching groups str or num, comma separated list. - number must match the number of the matching groups defined in the RegEx  e.g.: str,num,num,str</description>
-            </parameter>
+			<parameter name="capturingGroupTypes" type="text" required="false">
+				<label>Capturing Group Types</label>
+				<description>Types of capturing groups str or num, comma separated list. The number or arguments must match the number of the capturing groups defined in the RegEx  e.g.: str,num,num,str</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="groupCount">
 		<item-type>Number</item-type>
 		<label>groupCount</label>
-		<description>Number of matching groups</description>
+		<description>Number of capturing groups</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="matchingGroupStr">
+	<channel-type id="capturingGroupStr">
 		<item-type>String</item-type>
-		<label>matchingGroup String</label>
-		<description>Result of MatchingGroup, type String </description>
+		<label>capturingGroup String</label>
+		<description>Result of CapturingGroup, type String </description>
 		<state readOnly="true"></state>
 	</channel-type>
-    <channel-type id="matchingGroupNum">
-        <item-type>Number</item-type>
-        <label>matchingGroup Number</label>
-        <description>Result of MatchingGroup x, type Number</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="capturingGroupNum">
+		<item-type>Number</item-type>
+		<label>capturingGroup Number</label>
+		<description>Result of CapturingGroup, type Number</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
 
 </thing:thing-descriptions>
