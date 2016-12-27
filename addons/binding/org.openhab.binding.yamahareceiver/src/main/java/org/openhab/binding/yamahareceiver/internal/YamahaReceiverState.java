@@ -138,7 +138,7 @@ public class YamahaReceiverState {
         // Compute value in db
         com.setVolume(
                 volume * YamahaReceiverCommunication.VOLUME_RANGE / 100.0f + YamahaReceiverCommunication.VOLUME_MIN);
-        // Assign percentage value to internal value (if no IOException occured)
+        // Assign percentage value to internal value (if no IOException occurred)
         this.volume = Math.round(volume * 100) / 100;
     }
 

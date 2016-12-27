@@ -234,7 +234,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     }
                 }
             } catch (IllegalArgumentException e) {
-                logger.error("An exception occured while processing a changed device property :'{}'", e.getMessage());
+                logger.error("An exception occurred while processing a changed device property :'{}'", e.getMessage());
             }
         }
     }

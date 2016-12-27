@@ -152,7 +152,7 @@ public class RFXComBindingConstants {
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
     public final static Map<PacketType, ThingTypeUID> packetTypeThingMap = ImmutableMap
-            .<PacketType, ThingTypeUID> builder()
+            .<PacketType, ThingTypeUID>builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
             .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
             .put(PacketType.BLINDS1, RFXComBindingConstants.THING_TYPE_BLINDS1)

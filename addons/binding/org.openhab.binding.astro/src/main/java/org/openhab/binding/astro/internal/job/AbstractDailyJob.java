@@ -12,6 +12,7 @@ import static org.openhab.binding.astro.AstroBindingConstants.*;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -64,6 +65,7 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
         jobDataMap.put(EventJob.KEY_EVENT, event);
         jobDataMap.put(KEY_CHANNEL_ID, channelId);
 
+        eventAt = DateTimeUtils.addOffset(eventAt, getEventOffset(astroHandler, channelId));
         schedule(astroHandler, EventJob.class, jobDataMap, "event-" + event.toLowerCase() + "-" + channelId, eventAt);
     }
 
@@ -93,6 +95,19 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
             }
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Returns the configured offset of the event.
+     */
+    private int getEventOffset(AstroThingHandler astroHandler, String channelId) {
+        try {
+            BigDecimal delay = (BigDecimal) astroHandler.getThing().getChannel(channelId).getConfiguration()
+                    .get(EVENT_CONFIG_OFFSET);
+            return delay.intValue();
+        } catch (Exception ex) {
+            return 0;
         }
     }
 }

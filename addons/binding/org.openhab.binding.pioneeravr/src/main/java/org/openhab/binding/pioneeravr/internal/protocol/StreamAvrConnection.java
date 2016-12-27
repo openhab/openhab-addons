@@ -159,7 +159,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
                 isSent = true;
 
             } catch (IOException ioException) {
-                logger.error("Error occured when sending command", ioException);
+                logger.error("Error occurred when sending command", ioException);
                 // If an error occurs, close the connection
                 close();
             }
