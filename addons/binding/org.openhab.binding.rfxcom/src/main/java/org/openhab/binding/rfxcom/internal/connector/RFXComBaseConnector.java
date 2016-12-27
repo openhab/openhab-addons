@@ -59,7 +59,7 @@ public abstract class RFXComBaseConnector implements RFXComConnectorInterface {
             Iterator<RFXComEventListener> iterator = _listeners.iterator();
 
             while (iterator.hasNext()) {
-                iterator.next().errorOccured(error);
+                iterator.next().errorOccurred(error);
             }
 
         } catch (Exception e) {
