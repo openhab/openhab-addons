@@ -42,8 +42,8 @@ public class FileRegexParserHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(FileRegexParserHandler.class);
     private String fileName;
     private String regEx;
-    private static Pattern pattern;
-    private static Matcher matcher;
+    private Pattern pattern;
+    private Matcher matcher;
     private FileRegexParserWorker myWorker = new FileRegexParserWorker(this);
 
     public FileRegexParserHandler(Thing thing) {
