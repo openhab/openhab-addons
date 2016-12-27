@@ -156,4 +156,17 @@ public class DateTimeUtils {
         return truncCal1.getTimeInMillis() >= truncCal2.getTimeInMillis();
     }
 
+    /**
+     * Adds or subtracts the specified offset in minutes to the given calendar.
+     */
+    public static Calendar addOffset(Calendar cal, int offset) {
+        if (offset == 0) {
+            return cal;
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(cal.getTime());
+        c.add(Calendar.MINUTE, offset);
+        return c;
+    }
 }
