@@ -275,19 +275,27 @@ Fetching values is only done at startup or if you trigger a REFRESH. I hope this
 With [Homegear](https://www.homegear.eu) everything works as expected.
 
 ### Debugging and Tracing
+
 If you want to see what's going on in the binding, switch the loglevel to DEBUG in the Karaf console
+
 ```
 log:set DEBUG org.openhab.binding.homematic
 ```
+
 If you want to see even more, switch to TRACE to also see the gateway request/response data
+
 ```
 log:set TRACE org.openhab.binding.homematic
 ```
+
 Set the logging back to normal
+
 ```
 log:set INFO org.openhab.binding.homematic
 ```
+
 To identify problems, i need a full startup TRACE log
+
 ```
 stop org.openhab.binding.homematic
 log:set TRACE org.openhab.binding.homematic
