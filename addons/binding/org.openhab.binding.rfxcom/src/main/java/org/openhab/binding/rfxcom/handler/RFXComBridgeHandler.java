@@ -227,7 +227,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
         } catch (UnsatisfiedLinkError e) {
-            logger.error("Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+            logger.error("Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
         }
     }
@@ -407,7 +407,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             } catch (RFXComNotImpException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));
             } catch (RFXComException e) {
-                logger.error("Error occured during packet receiving, data: {}, cause: {}",
+                logger.error("Error occurred during packet receiving, data: {}, cause: {}",
                         DatatypeConverter.printHexBinary(packet), e.getMessage());
             }
 
@@ -415,8 +415,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         }
 
         @Override
-        public void errorOccured(String error) {
-            logger.error("Error occured: {}", error);
+        public void errorOccurred(String error) {
+            logger.error("Error occurred: {}", error);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }

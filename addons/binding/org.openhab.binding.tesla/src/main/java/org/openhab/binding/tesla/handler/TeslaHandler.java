@@ -416,7 +416,7 @@ public class TeslaHandler extends BaseThingHandler {
                     logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
                 }
             } else {
-                logger.error("An error occured while communicating with the vehicle during request {} : {}:{}",
+                logger.error("An error occurred while communicating with the vehicle during request {} : {}:{}",
                         new Object[] { command, (response != null) ? response.getStatus() : "",
                                 (response != null) ? response.getStatusInfo() : "No Response" });
 

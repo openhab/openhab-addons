@@ -266,7 +266,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                 }
             }
         } catch (Exception e) {
-            logger.error("Error occured during message receiving: {}", e.getMessage());
+            logger.error("Error occurred during message receiving: {}", e.getMessage());
         }
     }
 

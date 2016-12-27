@@ -137,7 +137,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             try {
                 return getStationApi().getstationsdata(equipmentId).getBody();
             } catch (Exception e) {
-                logger.error("An error occured while calling station API : {}", e.getMessage());
+                logger.error("An error occurred while calling station API : {}", e.getMessage());
             }
         }
         return null;
@@ -148,7 +148,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             try {
                 return getThermostatApi().getthermostatsdata(equipmentId).getBody();
             } catch (Exception e) {
-                logger.error("An error occured while calling thermostat API : {}", e.getMessage());
+                logger.error("An error occurred while calling thermostat API : {}", e.getMessage());
             }
         }
         return null;

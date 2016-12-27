@@ -53,7 +53,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
             s20Client = S20Client.getInstance();
             super.activate(configProperties);
         } catch (SocketException ex) {
-            logger.error("Error occured while activating S20 discovery service: " + ex.getMessage(), ex);
+            logger.error("Error occurred while activating S20 discovery service: " + ex.getMessage(), ex);
         }
     }
 

@@ -69,22 +69,22 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_IN_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_TAMPER:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_FAULT:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_TRIPPED:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
