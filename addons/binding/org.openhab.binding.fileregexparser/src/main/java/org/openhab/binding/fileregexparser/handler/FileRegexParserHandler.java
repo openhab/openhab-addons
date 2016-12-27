@@ -34,10 +34,7 @@ import org.openhab.binding.fileregexparser.internal.FileRegexParserWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The {@link FileRegexParserHandler} is responsible for handling commands, which are
- * sent to one of the channels.
- *
+/*
  * @author meju25 - Initial contribution
  */
 public class FileRegexParserHandler extends BaseThingHandler {
@@ -78,7 +75,6 @@ public class FileRegexParserHandler extends BaseThingHandler {
 
         try {
             fileName = (String) config.get("fileName");
-
         } catch (Exception e) {
             logger.error("Cannot set fileName parameter.", e);
         }
@@ -94,26 +90,8 @@ public class FileRegexParserHandler extends BaseThingHandler {
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_GROUPCOUNT), new DecimalType(matcher.groupCount()));
         updateStatus(ThingStatus.ONLINE);
         myWorker.startWorker(fileName, regEx);
-
     }
 
-    /*
-     * protected void thingStructureChanged() {
-     * ThingBuilder thingBuilder = editThing();
-     * ChannelTypeUID group1 = new ChannelTypeUID(BINDING_ID, "dynamic");
-     * Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), "group_1"), "String")
-     * .withType(group1).build();
-     * thingBuilder.withChannel(channel);
-     * updateThing(thingBuilder.build());
-     *
-     *
-     * ChannelTypeUID triggerUID = new ChannelTypeUID(BINDING_ID, "dynamic");
-     * Channel mychannel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), "channel_name"), "String")
-     * .withType(triggerUID).build();
-     * thingBuilder.withChannel(mychannel);
-     *
-     * }
-     */
     protected void thingStructureChanged() {
         String regEx;
         Pattern pattern;
@@ -121,13 +99,12 @@ public class FileRegexParserHandler extends BaseThingHandler {
         String[] groupTypes = new String[0];
         int groupCount = 0;
         boolean groupsConfigured = false;
-        ChannelTypeUID chStrMatchingGroup = new ChannelTypeUID("fileregexparser:matchingGroupStr");
-        ChannelTypeUID chNumMatchingGroup = new ChannelTypeUID("fileregexparser:matchingGroupNum");
+        ChannelTypeUID chStrCapturingGroup = new ChannelTypeUID("fileregexparser:capturingGroupStr");
+        ChannelTypeUID chNumCapturingGroup = new ChannelTypeUID("fileregexparser:capturingGroupNum");
         ThingBuilder myThingBuilder = editThing();
         Configuration config = thing.getConfiguration();
         try {
             fileName = (String) config.get("fileName");
-
         } catch (Exception e) {
             logger.error("Cannot set fileName parameter.", e);
         }
@@ -136,8 +113,7 @@ public class FileRegexParserHandler extends BaseThingHandler {
             pattern = Pattern.compile(regEx);
             Matcher matcher = pattern.matcher("");
             groupCount = matcher.groupCount();
-            groupConfig = (String) config.get("matchingGroupTypes");
-
+            groupConfig = (String) config.get("capturingGroupTypes");
         } catch (Exception e) {
             logger.debug("Cannot set regEx parameter.", e);
         }
@@ -145,21 +121,21 @@ public class FileRegexParserHandler extends BaseThingHandler {
             groupsConfigured = true;
             groupTypes = groupConfig.split(",");
             if (groupCount != groupTypes.length) {
-                logger.error("Number of groups in matchingGroupTypes does not equal to the configured groups in regEx");
+                logger.error(
+                        "Number of groups in capturingGroupTypes does not equal to the configured groups in regEx");
                 return;
             }
         }
         List<Channel> channels = new ArrayList<Channel>(thing.getChannels());
 
         for (int i = 1; i <= groupCount; i++) {
-            if (!groupsConfigured || groupTypes[i - 1].equals("str")) {
-                Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), "matchingGroup" + i), "String")
-                        .withLabel("strMatchingGroup " + i).withType(chStrMatchingGroup).build();
-
+            if (!groupsConfigured || groupTypes[i - 1].trim().equals("str")) {
+                Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), "capturingGroup" + i), "String")
+                        .withLabel("strCapturingGroup " + i).withType(chStrCapturingGroup).build();
                 channels.add(channel);
-            } else if (groupTypes[i - 1].equals("num")) {
-                Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), "matchingGroup" + i), "Number")
-                        .withLabel("numMatchingGroup " + i).withType(chNumMatchingGroup).build();
+            } else if (groupTypes[i - 1].trim().equals("num")) {
+                Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), "capturingGroup" + i), "Number")
+                        .withLabel("numCapturingGroup " + i).withType(chNumCapturingGroup).build();
                 channels.add(channel);
             } else {
                 logger.error(String.format("%s is not a valid type", groupTypes[i - 1]));
@@ -190,7 +166,6 @@ public class FileRegexParserHandler extends BaseThingHandler {
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         validateConfigurationParameters(configurationParameters);
         logger.debug("Thing ConfigUpdate: " + thing.getUID());
-        // can be overridden by subclasses
         Configuration configuration = editConfiguration();
         for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
             configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());

@@ -50,14 +50,10 @@ public class FileRegexParserHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (thingTypeUID.equals(THING_TYPE_FILEREGEXPARSER)) {
-
             return new FileRegexParserHandler(thing);
         }
-
         return null;
     }
 
@@ -77,8 +73,8 @@ public class FileRegexParserHandlerFactory extends BaseThingHandlerFactory {
         String[] groupTypes = new String[0];
         int groupCount = 0;
         boolean groupsConfigured = false;
-        ChannelTypeUID chStrMatchingGroup = new ChannelTypeUID("fileregexparser:matchingGroupStr");
-        ChannelTypeUID chNumMatchingGroup = new ChannelTypeUID("fileregexparser:matchingGroupNum");
+        ChannelTypeUID chStrCapturingGroup = new ChannelTypeUID("fileregexparser:capturingGroupStr");
+        ChannelTypeUID chNumCapturingGroup = new ChannelTypeUID("fileregexparser:capturingGroupNum");
         myThing = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         ThingBuilder myThingBuilder = editThing(myThing);
         Configuration config = myThing.getConfiguration();
@@ -87,7 +83,7 @@ public class FileRegexParserHandlerFactory extends BaseThingHandlerFactory {
             pattern = Pattern.compile(regEx);
             Matcher matcher = pattern.matcher("");
             groupCount = matcher.groupCount();
-            groupConfig = (String) config.get("matchingGroupTypes");
+            groupConfig = (String) config.get("capturingGroupTypes");
 
         } catch (Exception e) {
             logger.debug("Cannot set regEx parameter.", e);
@@ -96,7 +92,8 @@ public class FileRegexParserHandlerFactory extends BaseThingHandlerFactory {
             groupsConfigured = true;
             groupTypes = groupConfig.split(",");
             if (groupCount != groupTypes.length) {
-                logger.error("Number of groups in matchingGroupTypes does not equal to the configured groups in regEx");
+                logger.error(
+                        "Number of groups in capturingGroupTypes does not equal to the configured groups in regEx");
                 return null;
             }
         }
@@ -104,13 +101,15 @@ public class FileRegexParserHandlerFactory extends BaseThingHandlerFactory {
 
         for (int i = 1; i <= groupCount; i++) {
             if (!groupsConfigured || groupTypes[i - 1].equals("str")) {
-                Channel channel = ChannelBuilder.create(new ChannelUID(myThing.getUID(), "matchingGroup" + i), "String")
-                        .withLabel("strMatchingGroup " + i).withType(chStrMatchingGroup).build();
+                Channel channel = ChannelBuilder
+                        .create(new ChannelUID(myThing.getUID(), "capturingGroup" + i), "String")
+                        .withLabel("strCapturingGroup " + i).withType(chStrCapturingGroup).build();
 
                 channels.add(channel);
             } else if (groupTypes[i - 1].equals("num")) {
-                Channel channel = ChannelBuilder.create(new ChannelUID(myThing.getUID(), "matchingGroup" + i), "Number")
-                        .withLabel("numMatchingGroup " + i).withType(chNumMatchingGroup).build();
+                Channel channel = ChannelBuilder
+                        .create(new ChannelUID(myThing.getUID(), "capturingGroup" + i), "Number")
+                        .withLabel("numCapturingGroup " + i).withType(chNumCapturingGroup).build();
                 channels.add(channel);
             } else {
                 logger.error(String.format("%s is not a valid type", groupTypes[i - 1]));
