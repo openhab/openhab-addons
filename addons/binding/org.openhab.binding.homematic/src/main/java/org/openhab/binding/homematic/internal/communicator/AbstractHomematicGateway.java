@@ -44,9 +44,11 @@ import org.openhab.binding.homematic.internal.communicator.virtual.DisplayOption
 import org.openhab.binding.homematic.internal.communicator.virtual.FirmwareVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeDurationVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeVirtualDatapoint;
+import org.openhab.binding.homematic.internal.communicator.virtual.ReloadRssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.OnTimeAutomaticVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadAllFromGatewayVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadFromGatewayVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.RssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualGateway;
 import org.openhab.binding.homematic.internal.misc.DelayedExecuter;
@@ -61,6 +63,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.model.HmRssiInfo;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +108,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new InstallModeDurationVirtualDatapoint());
         virtualDatapointHandlers.add(new DeleteDeviceModeVirtualDatapointHandler());
         virtualDatapointHandlers.add(new DeleteDeviceVirtualDatapointHandler());
+        virtualDatapointHandlers.add(new RssiVirtualDatapointHandler());
+        virtualDatapointHandlers.add(new ReloadRssiVirtualDatapointHandler());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
@@ -155,7 +160,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (sb.length() > 2) {
             sb.setLength(sb.length() - 2);
         }
-        logger.info("Used Homematic transfer modes: " + sb.toString());
+        logger.debug("Used Homematic transfer modes: " + sb.toString());
         startClients();
         startServers();
         startWatchdogs();
@@ -467,6 +472,35 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * {@inheritDoc}
      */
     @Override
+    public void loadRssiValues() throws IOException {
+        for (HmInterface hmInterface : availableInterfaces.keySet()) {
+            if (hmInterface == HmInterface.RF || hmInterface == HmInterface.CUXD) {
+                List<HmRssiInfo> rssiInfos = getRpcClient(hmInterface).loadRssiInfo(hmInterface);
+                for (HmRssiInfo hmRssiInfo : rssiInfos) {
+                    updateRssiInfo(hmRssiInfo.getAddress(), DATAPOINT_NAME_RSSI_DEVICE, hmRssiInfo.getDevice());
+                    updateRssiInfo(hmRssiInfo.getAddress(), DATAPOINT_NAME_RSSI_PEER, hmRssiInfo.getPeer());
+                }
+            }
+        }
+    }
+
+    private void updateRssiInfo(String address, String datapointName, Integer value) {
+        HmDatapointInfo dpInfo = new HmDatapointInfo(address, HmParamsetType.VALUES, 0, datapointName);
+        HmChannel channel;
+        try {
+            channel = getDevice(dpInfo.getAddress()).getChannel(0);
+            if (channel != null) {
+                eventReceived(dpInfo, value);
+            }
+        } catch (HomematicClientException e) {
+            // ignore
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void triggerDeviceValuesReload(HmDevice device) {
         logger.debug("Triggering values reload for device '{}'", device.getAddress());
         for (HmChannel channel : device.getChannels()) {
@@ -523,7 +557,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                             : getVirtualDatapointHandler(dp, newValue);
                     if (virtualDatapointHandler != null) {
                         logger.debug("Handling virtual datapoint '{}' on gateway with id '{}'", dp.getName(), id);
-                        virtualDatapointHandler.handle(gateway, dp, dpConfig, newValue);
+                        virtualDatapointHandler.handleCommand(gateway, dp, dpConfig, newValue);
                     } else if (dp.isScript()) {
                         if (MiscUtils.isTrueValue(newValue)) {
                             logger.debug("Executing script '{}' on gateway with id '{}'", dp.getInfo(), id);
@@ -554,7 +588,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     private VirtualDatapointHandler getVirtualDatapointHandler(HmDatapoint dp, Object value) {
         for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
-            if (vdph.canHandle(dp, value)) {
+            if (vdph.canHandleCommand(dp, value)) {
                 return vdph;
             }
         }
@@ -581,6 +615,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 eventListener.onStateUpdated(dp);
                 if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
                     disableDatapoint(dp, DEFAULT_DISABLE_DELAY);
+                }
+                for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
+                    if (vdph.canHandleEvent(dp)) {
+                        vdph.handleEvent(this, dp);
+                        eventListener.onStateUpdated(vdph.getVirtualDatapoint(dp.getChannel()));
+                    }
                 }
             } catch (HomematicClientException ex) {
                 // ignore datapoint not found
@@ -679,24 +719,16 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     private void prepareDevice(HmDevice device) {
         for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
-            vdph.add(device);
-        }
-        for (HmChannel channel : device.getChannels()) {
-            for (HmDatapoint dp : channel.getDatapoints().values()) {
-                if (dp.isVirtual()) {
-                    try {
-                        dp.setValue(getDatapoint(new HmDatapointInfo(dp)).getValue());
-                    } catch (HomematicClientException e) {
-                        // ignore
-                    }
-                }
-            }
+            vdph.initialize(device);
+
         }
         devices.put(device.getAddress(), device);
         logger.debug("Loaded device '{}' ({}) with {} datapoints", device.getAddress(), device.getType(),
                 device.getDatapointCount());
 
-        if (logger.isTraceEnabled()) {
+        if (logger.isTraceEnabled())
+
+        {
             logger.trace("{}", device);
             for (HmChannel channel : device.getChannels()) {
                 logger.trace("  {}", channel);

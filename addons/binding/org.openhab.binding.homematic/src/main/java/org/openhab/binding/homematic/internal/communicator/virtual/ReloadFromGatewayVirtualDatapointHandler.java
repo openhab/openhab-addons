@@ -31,23 +31,31 @@ public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDat
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
-        addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY, HmValueType.BOOL, Boolean.FALSE, false);
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY.equals(dp.getName());
+    public void initialize(HmDevice device) {
+        addDatapoint(device, 0, getName(), HmValueType.BOOL, Boolean.FALSE, false);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
         if (MiscUtils.isTrueValue(dp.getValue())) {
