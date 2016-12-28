@@ -86,10 +86,18 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     protected void adjustRssiValue(HmDatapoint dp) {
         if (dp.getValue() != null && dp.getName().startsWith("RSSI_") && dp.isIntegerType()) {
             int rssiValue = ((Number) dp.getValue()).intValue();
-            if (rssiValue >= 255 || rssiValue <= -255) {
-                dp.setValue(new Integer(0));
-            }
+            dp.setValue(getAdjustedRssiValue(rssiValue));
         }
+    }
+
+    /**
+     * Adjust a rssi value if it is out of range.
+     */
+    protected Integer getAdjustedRssiValue(Integer rssiValue) {
+        if (rssiValue == null || rssiValue >= 255 || rssiValue <= -255) {
+            return 0;
+        }
+        return rssiValue;
     }
 
     /**

@@ -75,4 +75,9 @@ public interface HomematicGateway {
      */
     public String getId();
 
+    /**
+     * Loads all rssi values from the gateway.
+     */
+    public void loadRssiValues() throws IOException;
+
 }

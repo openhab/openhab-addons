@@ -184,6 +184,12 @@ Address: fixed GWE00000000
 #### RELOAD_ALL_FROM_GATEWAY
 A virtual datapoint (Switch) to reload all values for all devices, available in channel 0 in GATEWAY-EXTRAS
 
+#### RELOAD_RSSI
+A virtual datapoint (Switch) to reload all rssi values for all devices, available in channel 0 in GATEWAY-EXTRAS
+
+#### RSSI
+A virtual datapoint (Number) with the unified RSSI value from RSSI_DEVICE and RSSI_PEER, available in channel 0 for all wireless devices
+
 #### INSTALL_MODE
 A virtual datapoint (Switch) to start the install mode on the gateway, available in channel 0 in GATEWAY-EXTRAS
 

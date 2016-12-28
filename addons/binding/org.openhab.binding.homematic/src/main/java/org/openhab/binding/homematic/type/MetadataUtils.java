@@ -279,6 +279,8 @@ public class MetadataUtils {
             } else {
                 return ITEM_TYPE_NUMBER;
             }
+        } else if (dp.isDateTimeType()) {
+            return ITEM_TYPE_DATETIME;
         } else {
             return ITEM_TYPE_STRING;
         }

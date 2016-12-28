@@ -8,32 +8,31 @@
  */
 package org.openhab.binding.homematic.internal.communicator.virtual;
 
-import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY;
+import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_RELOAD_RSSI;
 
 import java.io.IOException;
 
 import org.openhab.binding.homematic.internal.communicator.AbstractHomematicGateway;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
-import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
- * A virtual Switch datapoint which reloads all device values from the gateway.
+ * A virtual Switch datapoint which loads rssi values for all device from the gateway.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class ReloadAllFromGatewayVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
+public class ReloadRssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getName() {
-        return VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY;
+        return VIRTUAL_DATAPOINT_NAME_RELOAD_RSSI;
     }
 
     /**
@@ -42,7 +41,7 @@ public class ReloadAllFromGatewayVirtualDatapointHandler extends AbstractVirtual
     @Override
     public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
-            addDatapoint(device, HmChannel.CHANNEL_NUMBER_EXTRAS, getName(), HmValueType.BOOL, Boolean.FALSE, false);
+            addDatapoint(device, 0, getName(), HmValueType.BOOL, Boolean.FALSE, false);
         }
     }
 
@@ -63,10 +62,11 @@ public class ReloadAllFromGatewayVirtualDatapointHandler extends AbstractVirtual
         dp.setValue(value);
         if (MiscUtils.isTrueValue(dp.getValue())) {
             try {
-                gateway.getEventListener().reloadAllDeviceValues();
+                gateway.loadRssiValues();
             } finally {
                 gateway.disableDatapoint(dp, AbstractHomematicGateway.DEFAULT_DISABLE_DELAY);
             }
         }
     }
+
 }

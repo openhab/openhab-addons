@@ -42,10 +42,18 @@ public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapoint
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         String batteryType = batteries.getProperty(device.getType());
         if (batteryType != null) {
-            addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE, HmValueType.STRING, batteryType, true);
+            addDatapoint(device, 0, getName(), HmValueType.STRING, batteryType, true);
         }
     }
 

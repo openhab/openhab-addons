@@ -29,10 +29,17 @@ public class InstallModeDurationVirtualDatapoint extends AbstractVirtualDatapoin
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
-            HmDatapoint dp = addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION, HmValueType.INTEGER,
-                    60, false);
+            HmDatapoint dp = addDatapoint(device, 0, getName(), HmValueType.INTEGER, 60, false);
             dp.setMinValue(10);
             dp.setMaxValue(300);
         }
@@ -42,15 +49,15 @@ public class InstallModeDurationVirtualDatapoint extends AbstractVirtualDatapoin
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION.equals(dp.getName());
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
     }

@@ -10,11 +10,18 @@ package org.openhab.binding.homematic.internal.model;
 
 /**
  * Definition of the Homematic types.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public enum HmValueType {
-    BOOL, ACTION, FLOAT, INTEGER, ENUM, STRING, UNKNOWN;
+    BOOL,
+    ACTION,
+    FLOAT,
+    INTEGER,
+    ENUM,
+    STRING,
+    UNKNOWN,
+    DATETIME;
 
     /**
      * Parses the string and returns the HmType object.
@@ -34,6 +41,8 @@ public enum HmValueType {
             return ENUM;
         } else if (STRING.toString().equals(type)) {
             return STRING;
+        } else if (DATETIME.toString().equals(type)) {
+            return DATETIME;
         } else {
             return UNKNOWN;
         }
