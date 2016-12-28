@@ -78,8 +78,12 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                     discoveryService.startScan(null);
                     discoveryService.waitForScanFinishing();
                     updateStatus(ThingStatus.ONLINE);
-                    for (Thing hmThing : getThing().getThings()) {
-                        hmThing.getHandler().thingUpdated(hmThing);
+                    if (!config.getGatewayInfo().isHomegear()) {
+                        try {
+                            gateway.loadRssiValues();
+                        } catch (IOException ex) {
+                            logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
+                        }
                     }
                 }
             });
@@ -293,10 +297,10 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     @Override
     public void reloadDeviceValues(HmDevice device) {
+        updateThing(device);
         if (device.isGatewayExtras()) {
             typeGenerator.generate(device);
         }
-        updateThing(device);
     }
 
     /**
