@@ -8,10 +8,14 @@
 package org.openhab.binding.solarlog.handler;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -47,39 +51,40 @@ public class SolarLogHandler extends BaseThingHandler {
         super(thing);
         channelConfigs = new ArrayList<>();
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_LASTUPDATETIME,
-                SolarLogBindingConstants.CHANNEL_LASTUPDATETIME));
+                SolarLogBindingConstants.CHANNEL_LASTUPDATETIME, SolarLogBindingConstants.CHANNEL_TYPE_LASTUPDATETIME));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_PAC,
-                SolarLogBindingConstants.CHANNEL_PAC));
+                SolarLogBindingConstants.CHANNEL_PAC, SolarLogBindingConstants.CHANNEL_TYPE_PAC));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_PDC,
-                SolarLogBindingConstants.CHANNEL_PDC));
+                SolarLogBindingConstants.CHANNEL_PDC, SolarLogBindingConstants.CHANNEL_TYPE_PDC));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_UAC,
-                SolarLogBindingConstants.CHANNEL_UAC));
+                SolarLogBindingConstants.CHANNEL_UAC, SolarLogBindingConstants.CHANNEL_TYPE_UAC));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_UDC,
-                SolarLogBindingConstants.CHANNEL_UDC));
+                SolarLogBindingConstants.CHANNEL_UDC, SolarLogBindingConstants.CHANNEL_TYPE_UDC));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDDAY,
-                SolarLogBindingConstants.CHANNEL_YIELDDAY));
+                SolarLogBindingConstants.CHANNEL_YIELDDAY, SolarLogBindingConstants.CHANNEL_TYPE_YIELDDAY));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDYESTERDAY,
-                SolarLogBindingConstants.CHANNEL_YIELDYESTERDAY));
+                SolarLogBindingConstants.CHANNEL_YIELDYESTERDAY, SolarLogBindingConstants.CHANNEL_TYPE_YIELDYESTERDAY));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDMONTH,
-                SolarLogBindingConstants.CHANNEL_YIELDMONTH));
+                SolarLogBindingConstants.CHANNEL_YIELDMONTH, SolarLogBindingConstants.CHANNEL_TYPE_YIELDMONTH));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDYEAR,
-                SolarLogBindingConstants.CHANNEL_YIELDYEAR));
+                SolarLogBindingConstants.CHANNEL_YIELDYEAR, SolarLogBindingConstants.CHANNEL_TYPE_YIELDYEAR));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDTOTAL,
-                SolarLogBindingConstants.CHANNEL_YIELDTOTAL));
+                SolarLogBindingConstants.CHANNEL_YIELDTOTAL, SolarLogBindingConstants.CHANNEL_TYPE_YIELDTOTAL));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSPAC,
-                SolarLogBindingConstants.CHANNEL_CONSPAC));
+                SolarLogBindingConstants.CHANNEL_CONSPAC, SolarLogBindingConstants.CHANNEL_TYPE_CONSPAC));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDDAY,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDDAY));
+                SolarLogBindingConstants.CHANNEL_CONSYIELDDAY, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDDAY));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDYESTERDAY,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDYESTERDAY));
+                SolarLogBindingConstants.CHANNEL_CONSYIELDYESTERDAY,
+                SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDYESTERDAY));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDMONTH,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDMONTH));
+                SolarLogBindingConstants.CHANNEL_CONSYIELDMONTH, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDMONTH));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDYEAR,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDYEAR));
+                SolarLogBindingConstants.CHANNEL_CONSYIELDYEAR, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDYEAR));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDTOTAL,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDTOTAL));
+                SolarLogBindingConstants.CHANNEL_CONSYIELDTOTAL, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDTOTAL));
         channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_TOTALPOWER,
-                SolarLogBindingConstants.CHANNEL_TOTALPOWER));
+                SolarLogBindingConstants.CHANNEL_TOTALPOWER, SolarLogBindingConstants.CHANNEL_TYPE_TOTALPOWER));
     }
 
     @Override
@@ -121,7 +126,7 @@ public class SolarLogHandler extends BaseThingHandler {
                     if (solarLogData.has(channelConfig.index)) {
                         String value = solarLogData.get(channelConfig.index).getAsString();
                         Channel channel = getThing().getChannel(channelConfig.id);
-                        State state = getState(value);
+                        State state = getState(value, channelConfig.type);
 
                         updateState(channel.getUID(), state);
                     } else {
@@ -133,11 +138,38 @@ public class SolarLogHandler extends BaseThingHandler {
 
     }
 
-    private State getState(String value) {
-        try {
-            return new DecimalType(new BigDecimal(value));
-        } catch (NumberFormatException e) {
-            return new StringType(value);
+    private State getState(String value, String type) {
+        if (type == "Number") {
+            try {
+                logger.trace("Parsing number " + value);
+                return new DecimalType(new BigDecimal(value));
+            } catch (NumberFormatException e) {
+                logger.trace("Parsing number failed. Returning string");
+                return new StringType(value);
+            }
         }
+
+        if (type == "DateTime") {
+            try {
+                logger.trace("Parsing date " + value);
+                try {
+                    Date date = new SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(value);
+                    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");// dd/MM/yyyy
+                    String strDate = sdfDate.format(date);
+
+                    logger.trace("Parsing date successful. Returning date. {}", new DateTimeType(strDate));
+                    return new DateTimeType(strDate);
+                } catch (ParseException fpe) {
+                    logger.trace("Parsing date failed. Returning string. {}", fpe);
+                    return new StringType(value);
+                }
+
+            } catch (IllegalArgumentException e) {
+                logger.trace("Parsing date failed. Returning string: {}", e);
+                return new StringType(value);
+            }
+        }
+        return new StringType(value);
+
     }
 }

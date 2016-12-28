@@ -20,10 +20,10 @@ public class SolarLogBindingConstants {
     public static final String BINDING_ID = "solarlog";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_SOLARLOG = new ThingTypeUID(BINDING_ID, "solarlog_js");
 
     // List of all Channel ids
-    public final static String CHANNEL_ID_LASTUPDATETIME = "lastupdatetime";
+    public final static String CHANNEL_ID_LASTUPDATETIME = "lastupdate";
     public final static String CHANNEL_ID_PAC = "pac";
     public final static String CHANNEL_ID_PDC = "pdc";
     public final static String CHANNEL_ID_UAC = "uac";
@@ -59,6 +59,25 @@ public class SolarLogBindingConstants {
     public final static String CHANNEL_CONSYIELDYEAR = "114";
     public final static String CHANNEL_CONSYIELDTOTAL = "115";
     public final static String CHANNEL_TOTALPOWER = "116";
+
+    // CHannel Type (DateTime or Number
+    public final static String CHANNEL_TYPE_LASTUPDATETIME = "DateTime";
+    public final static String CHANNEL_TYPE_PAC = "Number";
+    public final static String CHANNEL_TYPE_PDC = "Number";
+    public final static String CHANNEL_TYPE_UAC = "Number";
+    public final static String CHANNEL_TYPE_UDC = "Number";
+    public final static String CHANNEL_TYPE_YIELDDAY = "Number";
+    public final static String CHANNEL_TYPE_YIELDYESTERDAY = "Number";
+    public final static String CHANNEL_TYPE_YIELDMONTH = "Number";
+    public final static String CHANNEL_TYPE_YIELDYEAR = "Number";
+    public final static String CHANNEL_TYPE_YIELDTOTAL = "Number";
+    public final static String CHANNEL_TYPE_CONSPAC = "Number";
+    public final static String CHANNEL_TYPE_CONSYIELDDAY = "Number";
+    public final static String CHANNEL_TYPE_CONSYIELDYESTERDAY = "Number";
+    public final static String CHANNEL_TYPE_CONSYIELDMONTH = "Number";
+    public final static String CHANNEL_TYPE_CONSYIELDYEAR = "Number";
+    public final static String CHANNEL_TYPE_CONSYIELDTOTAL = "Number";
+    public final static String CHANNEL_TYPE_TOTALPOWER = "Number";
 
     // Some basic constants (JSON ID)
     public final static String SOLARLOG_JSON_ROOT = "801";

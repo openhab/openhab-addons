@@ -10,14 +10,14 @@
         <description>Sample thing for SolarLog Binding</description>
 
         <channels>
-            <channel id="lastupdatetime" typeId="lastupdatetime"></channel>
+            <channel id="lastupdate" typeId="lastupdate"></channel>
             <channel id="pac" typeId="pac"></channel>
             <channel id="pdc" typeId="pdc"></channel>
             <channel id="uac" typeId="uac"></channel>
             <channel id="udc" typeId="udc"></channel>
             <channel id="yieldday" typeId="yieldday"></channel>
             <channel id="yieldyesterday" typeId="yieldyesterday"></channel>
-            <channel id="yieldyear" typeId="yieldyear"></channel>
+            <channel id="yieldmonth" typeId="yieldmonth"></channel>
             <channel id="yieldyear" typeId="yieldyear"></channel>
             <channel id="yieldtotal" typeId="yieldtotal"></channel>
             <channel id="conspac" typeId="conspac"></channel>
@@ -41,8 +41,8 @@
 			</parameter>
         </config-description>
     </thing-type>
-    <channel-type id="lastupdatetime">
-    	<item-type>Number</item-type>
+    <channel-type id="lastupdate">
+    	<item-type>DateTime</item-type>
        	<label>Last Update Time</label>
     	<description>Last Update Time</description>
     	<state readOnly="true"></state>
@@ -85,7 +85,7 @@
        </channel-type>
     <channel-type id="yieldmonth">
     	<item-type>Number</item-type>
-       	<label>Yield Mopnth</label>
+       	<label>Yield Month</label>
     	<description>Total yield for the month from all of the inverters</description>
     	<state readOnly="true" pattern="%d Wh"></state>
        </channel-type>

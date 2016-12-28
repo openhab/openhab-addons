@@ -31,6 +31,7 @@ public class HttpUtils {
      * JSON request to get the Data from a SolarLog Device
      */
     private static final String JSON_REQ = "{\"801\":{\"170\":null}}";
+    private static final String URL_POSTFIX = "/getjp";
 
     /**
      * Simple logic to perform a post request
@@ -70,7 +71,8 @@ public class HttpUtils {
      * @throws Exception
      */
     public static JsonElement getSolarLogData(String url) throws Exception {
-        String json = HttpUtils.post(url, JSON_REQ);
+        logger.trace("Posting JSON_REQ {} to URL {}", JSON_REQ, url + URL_POSTFIX);
+        String json = HttpUtils.post(url + URL_POSTFIX, JSON_REQ);
         logger.trace("Recieved json from server {}", json);
         JsonElement resp = new JsonParser().parse(json);
         return resp;

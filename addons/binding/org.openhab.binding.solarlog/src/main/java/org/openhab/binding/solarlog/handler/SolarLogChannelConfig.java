@@ -12,11 +12,13 @@ package org.openhab.binding.solarlog.handler;
  * @author Johann Richard
  */
 public class SolarLogChannelConfig {
-    public SolarLogChannelConfig(String id, String index) {
+    public SolarLogChannelConfig(String id, String index, String type) {
         this.id = id;
         this.index = index;
+        this.type = type;
     }
 
     String id;
     String index;
+    String type;
 }
