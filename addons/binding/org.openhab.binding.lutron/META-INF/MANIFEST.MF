@@ -27,3 +27,4 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.lutron,
  org.openhab.binding.lutron.handler
+Require-Bundle: org.eclipse.smarthome.core.scheduler
