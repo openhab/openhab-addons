@@ -89,7 +89,7 @@ public class BinRpcClient extends RpcClient {
             socket.getOutputStream().write(request.createMessage());
             resp = new BinRpcMessage(socket.getInputStream(), false, config.getEncoding());
             return new RpcResponseParser(request).parse(resp.getResponseData());
-        } catch (UnknownRpcFailureException rpcEx) {
+        } catch (UnknownRpcFailureException | UnknownParameterSetException rpcEx) {
             // throw immediately, don't retry the message
             throw rpcEx;
         } catch (IOException ioEx) {

@@ -95,7 +95,7 @@ public class XmlRpcClient extends RpcClient {
             Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes(config.getEncoding())),
                     config.getEncoding()).getResponseData();
             return new RpcResponseParser(request).parse(data);
-        } catch (UnknownRpcFailureException ex) {
+        } catch (UnknownRpcFailureException | UnknownParameterSetException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new IOException(ex.getMessage(), ex);
