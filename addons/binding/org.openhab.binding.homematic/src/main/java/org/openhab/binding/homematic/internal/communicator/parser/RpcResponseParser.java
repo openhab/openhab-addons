@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 
@@ -43,6 +44,8 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
                     String faultMessage = String.format("%s %s (sending %s)", faultCode, faultString, response);
                     if (faultCode.intValue() == -1 && StringUtils.equals("Failure", faultString)) {
                         throw new UnknownRpcFailureException(faultMessage);
+                    } else if (faultCode.intValue() == -3 && StringUtils.equals("Unknown paramset", faultString)) {
+                        throw new UnknownParameterSetException(faultMessage);
                     }
                     throw new IOException(faultMessage);
                 }
@@ -51,5 +54,4 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
         }
         throw new IOException("Unknown Result: " + message);
     }
-
 }

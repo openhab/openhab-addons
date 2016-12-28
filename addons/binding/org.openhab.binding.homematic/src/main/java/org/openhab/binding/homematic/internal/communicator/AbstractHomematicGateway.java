@@ -44,10 +44,10 @@ import org.openhab.binding.homematic.internal.communicator.virtual.DisplayOption
 import org.openhab.binding.homematic.internal.communicator.virtual.FirmwareVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeDurationVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeVirtualDatapoint;
-import org.openhab.binding.homematic.internal.communicator.virtual.ReloadRssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.OnTimeAutomaticVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadAllFromGatewayVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadFromGatewayVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.ReloadRssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.RssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualGateway;
