@@ -77,6 +77,7 @@ public class HomematicConstants {
     public static final String VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY = "RELOAD_FROM_GATEWAY";
     public static final String VIRTUAL_DATAPOINT_NAME_RELOAD_RSSI = "RELOAD_RSSI";
     public static final String VIRTUAL_DATAPOINT_NAME_RSSI = "RSSI";
+    public static final String VIRTUAL_DATAPOINT_NAME_STATE_CONTACT = "STATE_CONTACT";
 
     public static final String RPC_METHODNAME_EVENT = "event";
     public static final String RPC_METHODNAME_LIST_DEVICES = "listDevices";

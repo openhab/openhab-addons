@@ -264,7 +264,8 @@ public class MetadataUtils {
         String channelType = StringUtils.defaultString(dp.getChannel().getType());
 
         if (dp.isBooleanType()) {
-            if ((dpName.equals(DATAPOINT_NAME_STATE) && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
+            if (((dpName.equals(DATAPOINT_NAME_STATE) || dpName.equals(VIRTUAL_DATAPOINT_NAME_STATE_CONTACT))
+                    && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
                     || (dpName.equals(DATAPOINT_NAME_SENSOR) && channelType.equals(CHANNEL_TYPE_SENSOR))) {
                 return ITEM_TYPE_CONTACT;
             } else {
