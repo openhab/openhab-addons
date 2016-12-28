@@ -11,6 +11,7 @@ package org.openhab.binding.homematic.internal.communicator.client;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,12 +26,14 @@ import org.openhab.binding.homematic.internal.communicator.parser.GetValueParser
 import org.openhab.binding.homematic.internal.communicator.parser.HomegearLoadDeviceNamesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListBidcosInterfacesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListDevicesParser;
+import org.openhab.binding.homematic.internal.communicator.parser.RssiInfoParser;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.model.HmRssiInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -321,6 +324,14 @@ public abstract class RpcClient {
             address = "*" + address.substring(2);
         }
         return address;
+    }
+
+    /**
+     * Returns the rssi values for all devices.
+     */
+    public List<HmRssiInfo> loadRssiInfo(HmInterface hmInterface) throws IOException {
+        RpcRequest request = createRpcRequest("rssiInfo");
+        return new RssiInfoParser(config).parse(sendMessage(config.getRpcPort(hmInterface), request));
     }
 
 }

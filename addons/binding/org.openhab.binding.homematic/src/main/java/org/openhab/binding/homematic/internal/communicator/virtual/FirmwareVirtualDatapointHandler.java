@@ -24,9 +24,17 @@ public class FirmwareVirtualDatapointHandler extends AbstractVirtualDatapointHan
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_FIRMWARE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         if (!device.isGatewayExtras()) {
-            addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_FIRMWARE, HmValueType.STRING, device.getFirmware(), true);
+            addDatapoint(device, 0, getName(), HmValueType.STRING, device.getFirmware(), true);
         }
     }
 
