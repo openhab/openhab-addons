@@ -189,13 +189,16 @@ public class MetadataUtils {
         StringBuilder sb = new StringBuilder();
         for (int startIdx = 0; startIdx < keys.length; startIdx++) {
             String key = StringUtils.join(keys, "|", startIdx, keys.length);
+            if (key.endsWith("|")) {
+                key = key.substring(0, key.length() - 1);
+            }
             String description = descriptions.get(key);
             if (description != null) {
                 return description;
             }
             sb.append(key).append(", ");
         }
-        logger.info("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        logger.debug("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
         return null;
     }
 

@@ -56,7 +56,7 @@ public class BinRpcClient extends RpcClient {
      */
     @Override
     protected String getRpcCallbackUrl() {
-        return "binary://" + config.getCallbackHost() + ":" + config.getCallbackPort();
+        return "binary://" + config.getCallbackHost() + ":" + config.getBinCallbackPort();
     }
 
     /**

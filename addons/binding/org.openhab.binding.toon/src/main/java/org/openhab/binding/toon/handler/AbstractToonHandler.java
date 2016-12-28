@@ -31,12 +31,6 @@ public abstract class AbstractToonHandler extends BaseThingHandler {
         super(thing);
     }
 
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        super.bridgeHandlerInitialized(thingHandler, bridge);
-        bridgeHandler = (ToonBridgeHandler) thingHandler;
-    }
-
     protected void updateChannel(String channelName, State state) {
         Channel channel = getThing().getChannel(channelName);
         if (channel != null) {

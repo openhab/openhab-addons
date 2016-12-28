@@ -50,8 +50,7 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
      */
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
-        return (dp.isStringType() && dp.getValue() instanceof String)
-                || (dp.isEnumType() && dp.getValue() instanceof Number);
+        return (dp.isStringType()) || (dp.isEnumType() && dp.getValue() instanceof Number);
     }
 
     /**
@@ -60,7 +59,7 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
     @Override
     protected StringType fromBinding(HmDatapoint dp) throws ConverterException {
         if (dp.isStringType()) {
-            return new StringType(dp.getValue().toString());
+            return new StringType(String.valueOf(dp.getValue()));
         } else {
             String value = dp.getOptionValue();
             if (value == null) {

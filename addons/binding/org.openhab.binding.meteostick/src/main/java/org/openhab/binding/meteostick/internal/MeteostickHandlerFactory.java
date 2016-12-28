@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.meteostick.internal;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -39,7 +40,7 @@ public class MeteostickHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (MeteostickBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new MeteostickBridgeHandler(thing);
+            return new MeteostickBridgeHandler((Bridge) thing);
         }
 
         if (MeteostickSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {

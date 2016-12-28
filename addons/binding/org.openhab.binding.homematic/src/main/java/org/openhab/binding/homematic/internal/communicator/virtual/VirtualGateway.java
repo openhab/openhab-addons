@@ -16,6 +16,7 @@ import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 
 /**
  * Extends the HomematicGateway with a method called from a virtual datapoint.
@@ -33,7 +34,7 @@ public interface VirtualGateway extends HomematicGateway {
     /**
      * Returns the rpc client.
      */
-    public RpcClient getRpcClient();
+    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException;
 
     /**
      * Disables a boolean datapoint by setting the value to false after a given delay.

@@ -13,6 +13,11 @@
 
     <!-- binding -->
 
+    <feature name="openhab-binding-amazondashbutton" description="Amazon Dash Button Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.amazondashbutton/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-astro" description="Astro Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.astro/${project.version}</bundle>
@@ -20,6 +25,7 @@
 
     <feature name="openhab-binding-autelis" description="Autelis Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.autelis/${project.version}</bundle>
     </feature>
 
@@ -29,10 +35,23 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.chromecast/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jackson.version}</bundle>
+        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jackson.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-dscalarm" description="DSCAlarm Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dscalarm/${project.version}</bundle>
+    </feature>
+    
+    <feature name="openhab-binding-exec" description="Exec Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.exec/${project.version}</bundle>
     </feature>
     
     <feature name="openhab-binding-feed" description="Feed Binding" version="${project.version}">
@@ -84,6 +103,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-kodi" description="Kodi Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.kodi/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-kostalinverter" description="Kostal Inverter Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle
@@ -117,10 +141,22 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.milight/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-minecraft" description="Minecraft Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.minecraft/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-network" description="Network Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-model-script</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-oceanic" description="Oceanic Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.oceanic/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-onkyo" description="Onkyo Binding" version="${project.version}">
@@ -133,7 +169,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.opensprinkler/${project.version}</bundle>
     </feature>
-	
+    
     <feature name="openhab-binding-orvibo" description="Orvibo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.orvibo/${project.version}</bundle>
@@ -186,11 +222,16 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.systeminfo/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-tellstick" description="Tellstick Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tellstick/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-tesla" description="Tesla Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tesla/${project.version}</bundle>
     </feature>
-	
+    
     <feature name="openhab-binding-urtsi" description="Somfy URTSI II Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
@@ -219,7 +260,7 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
     </feature>
 
-	<!-- io -->
+    <!-- io -->
 
     <feature name="openhab-transport-feed" description="Feed Transport" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -233,6 +274,11 @@
         <feature>esh-model-script</feature>
         <feature>esh-ui</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.myopenhab/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.openhabcloud/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
@@ -252,12 +298,19 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-misc-imperihome" description="ImperiHome Integration" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>esh-model-item</feature>
+        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.imperihome/${project.version}</bundle>
+    </feature>
+
     <!-- voice -->
 
-    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
+<!--    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
     </feature>
+-->
 
     <feature name="openhab-voice-marytts" description="Mary Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -267,13 +320,13 @@
     <feature name="openhab-voice-voicerss" description="VoiceRSS Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.voicerss/${project.version}</bundle>
+        <configfile finalname="${openhab.conf}/services/voicerss.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/voicerss</configfile>
     </feature>
 
     <!-- ui -->
 
     <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <feature>esh-model-item</feature>
         <feature>esh-model-sitemap</feature>
         <feature>esh-ui-icon</feature>
@@ -291,8 +344,12 @@
     
     <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-dashboard</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-ui-habpanel" description="HABPanel" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habpanel/${project.version}</bundle>
     </feature>
     
 </features>
