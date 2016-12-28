@@ -33,6 +33,8 @@ The following parameters are automatically added:
 - the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
 - the current State of the input channel (see below, example: `%2$s`)
 
+**Note:** A script to convert Exec 1.x style Item definitions into Exec 2.x style Things and Item definitions can be found at https://github.com/stardriver2k/ohsmt
+
 ## Channels
 
 All Things support the following channels:
