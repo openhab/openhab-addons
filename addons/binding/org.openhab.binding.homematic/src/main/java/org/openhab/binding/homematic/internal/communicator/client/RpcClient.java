@@ -147,7 +147,15 @@ public abstract class RpcClient {
         RpcRequest request = createRpcRequest("getParamsetDescription");
         request.addArg(getRpcAddress(channel.getDevice().getAddress()) + ":" + channel.getNumber());
         request.addArg(paramsetType.toString());
-        new GetParamsetDescriptionParser(channel, paramsetType).parse(sendMessage(config.getRpcPort(channel), request));
+        try {
+            new GetParamsetDescriptionParser(channel, paramsetType)
+                    .parse(sendMessage(config.getRpcPort(channel), request));
+        } catch (UnknownParameterSetException ex) {
+            // ignore MASTER paramset
+            if (paramsetType == HmParamsetType.VALUES) {
+                throw ex;
+            }
+        }
     }
 
     /**
@@ -169,6 +177,11 @@ public abstract class RpcClient {
                             channel.getDevice().getAddress());
                     setChannelDatapointValues(channel);
                 } else {
+                    throw ex;
+                }
+            } catch (UnknownParameterSetException ex) {
+                // ignore MASTER paramset
+                if (paramsetType == HmParamsetType.VALUES) {
                     throw ex;
                 }
             }
