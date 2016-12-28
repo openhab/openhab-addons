@@ -17,6 +17,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.glassfish.jersey.client;version="2.22.1",
  org.openhab.binding.isy,
  org.openhab.binding.isy.handler,
  org.slf4j

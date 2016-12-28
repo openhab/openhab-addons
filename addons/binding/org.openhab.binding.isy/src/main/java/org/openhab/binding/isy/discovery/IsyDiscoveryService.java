@@ -94,6 +94,7 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
                                 + ", address: " + node.address);
                     }
                 }
+                // for (scene:insteon.)
             }
 
         } catch (
