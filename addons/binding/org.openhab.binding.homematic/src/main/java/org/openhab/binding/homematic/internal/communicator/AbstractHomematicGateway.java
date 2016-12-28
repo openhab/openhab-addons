@@ -49,6 +49,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.ReloadAllFrom
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadFromGatewayVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadRssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.RssiVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.StateContactVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualGateway;
 import org.openhab.binding.homematic.internal.misc.DelayedExecuter;
@@ -110,6 +111,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new DeleteDeviceVirtualDatapointHandler());
         virtualDatapointHandlers.add(new RssiVirtualDatapointHandler());
         virtualDatapointHandlers.add(new ReloadRssiVirtualDatapointHandler());
+        virtualDatapointHandlers.add(new StateContactVirtualDatapointHandler());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
