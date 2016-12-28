@@ -58,7 +58,7 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) throws HomematicClientException {
         HmChannel channel = dp.getChannel();
         Object value = getRssiValue(channel);
-        HmDatapoint vdpRssi = getVirtualDatapoint(dp.getChannel());
+        HmDatapoint vdpRssi = getVirtualDatapoint(channel);
         vdpRssi.setValue(value);
     }
 
