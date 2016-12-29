@@ -269,15 +269,6 @@ public class GrafikEyeHandler extends BaseThingHandler {
     }
 
     /**
-     * If the bridge is disposed, we should go offline
-     */
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        cancelPolling();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-    }
-
-    /**
      * Initializes the grafik eye. Essentially validates the {@link GrafikEyeConfig}, updates the status to online and
      * starts a status refresh job
      */
