@@ -1,6 +1,8 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public interface RegoConnection {
     /**
@@ -21,17 +23,7 @@ public interface RegoConnection {
      **/
     public void close();
 
-    /**
-     * Writes data bytes through the channel.
-     *
-     * @return
-     */
-    public void write(byte[] data) throws IOException;
+    public OutputStream getOutputStream() throws IOException;
 
-    /**
-     * Reads a single byte from channel.
-     *
-     * @return
-     */
-    public int read() throws IOException;
+    public InputStream getInputStream() throws IOException;
 }

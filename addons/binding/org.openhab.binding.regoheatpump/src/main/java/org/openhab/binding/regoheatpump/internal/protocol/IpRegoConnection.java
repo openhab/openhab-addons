@@ -1,6 +1,7 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -34,7 +35,7 @@ public class IpRegoConnection implements RegoConnection {
             clientSocket.setKeepAlive(true);
         }
         clientSocket.connect(new InetSocketAddress(address, port), CONNECTION_TIMEOUT);
-        logger.debug("Connected to '{}', port = {}.", address, port);
+        logger.info("Connected to '{}', port = {}.", address, port);
     }
 
     @Override
@@ -57,14 +58,12 @@ public class IpRegoConnection implements RegoConnection {
     }
 
     @Override
-    public void write(byte[] data) throws IOException {
-        final OutputStream stream = clientSocket.getOutputStream();
-        stream.write(data);
-        stream.flush();
+    public OutputStream getOutputStream() throws IOException {
+        return clientSocket.getOutputStream();
     }
 
     @Override
-    public int read() throws IOException {
-        return clientSocket.getInputStream().read();
+    public InputStream getInputStream() throws IOException {
+        return clientSocket.getInputStream();
     }
 }

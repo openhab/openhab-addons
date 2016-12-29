@@ -11,6 +11,8 @@ import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -221,9 +223,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
 
         try {
-            checkRegoDevice();
 
-            final T result = executeCommand(channelIID, command, parser);
+            final T result = executeCommandWithRetry(channelIID, command, parser, 5);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Got value for '{}' = {}", channelIID, result);
@@ -235,16 +236,17 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
             logger.warn("Accessing value for channel '" + channelIID + "' failed.", e);
 
-            if (connection != null) {
-                connection.close();
-            }
-
             synchronized (channelDescriptors) {
                 channelDescriptors.clear();
             }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             linkedChannels().forEach(channel -> updateState(channel, UnDefType.UNDEF));
+
+        } catch (InterruptedException e) {
+
+            logger.debug("Execution interrupted when accessing value for channel '" + channelIID + "'", e);
+            Thread.currentThread().interrupt();
 
         } catch (Exception e) {
 
@@ -253,11 +255,39 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private void checkRegoDevice() throws IOException {
+    private <T> T executeCommandWithRetry(final String channelIID, final byte[] command, final ResponseParser<T> parser,
+            int retry) throws InterruptedException, IOException {
+
+        try {
+            checkRegoDevice();
+            return executeCommand(channelIID, command, parser);
+
+        } catch (IOException e) {
+
+            logger.warn("Accessing value for channel '" + channelIID + "' failed, retry " + Integer.toString(retry), e);
+
+            if (connection != null) {
+                connection.close();
+            }
+
+            if (retry > 0) {
+                Thread.sleep(200);
+                return executeCommandWithRetry(channelIID, command, parser, retry - 1);
+            }
+
+            throw e;
+        }
+    }
+
+    private void checkRegoDevice() throws IOException, InterruptedException {
         if (thing.getStatus() != ThingStatus.ONLINE) {
             logger.debug("Reading Rego device version...");
             final Short regoVersion = executeCommand(null, CommandFactory.createReadRegoVersionCommand(),
                     ResponseParserFactory.Short);
+
+            if (regoVersion != 600) {
+                throw new IOException("Invalid rego version received " + Short.toString(regoVersion));
+            }
 
             updateStatus(ThingStatus.ONLINE);
             logger.info("Connected to Rego version {}.", regoVersion);
@@ -276,7 +306,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
     }
 
     private <T> T executeCommand(final String channelIID, final byte[] command, final ResponseParser<T> parser)
-            throws IOException {
+            throws IOException, InterruptedException {
 
         // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
         // register. To prevent accessing same register twice when both channels are linked,
@@ -302,30 +332,52 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             connection.connect();
         }
 
+        // Give heat pump some time between commands. Feeding commands too quickly
+        // might cause heat pump not to respond.
+        Thread.sleep(80);
+
+        // Protocol is request driven so there should be no data available before sending
+        // a command to the heat pump.
+        final InputStream inputStream = connection.getInputStream();
+        final int available = inputStream.available();
+        if (available > 0) {
+            // Limit to max 64 bytes, fuse.
+            final byte[] buffer = new byte[Math.min(64, available)];
+            inputStream.read(buffer);
+            logger.warn("There are {} unexpected bytes available. Skipping {}.", available, buffer);
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("Sending {}", DatatypeConverter.printHexBinary(command));
         }
 
-        connection.write(command);
+        // Send command
+        final OutputStream outputStream = connection.getOutputStream();
+        outputStream.write(command);
+        outputStream.flush();
 
+        // Read response, wait for max 1 second for data to arrive.
         final byte[] response = new byte[parser.responseLength()];
-        for (int i = 0; i < response.length;) {
-            int value = connection.read();
+        final long timeout = System.currentTimeMillis() + 1000;
+        int pos = 0;
 
-            if (value == -1) {
-                if (logger.isDebugEnabled() && i > 0) {
-                    logger.debug("End of stream, read {} bytes => {}", i, response);
-                }
-                throw new EOFException("Connection closed");
+        do {
+            final int len = inputStream.read(response, pos, response.length - pos);
+            if (len > 0) {
+                pos += len;
+            } else {
+                // TODO: remove line below, for debug only.
+                logger.warn("Got EOS, giving more time for data to arrive");
+                Thread.sleep(50);
             }
 
-            if (i == 0 && value != ResponseParser.ComputerAddress) {
-                logger.debug("Ignoring unexpected byte received {}", value);
-                continue;
-            }
+        } while (pos < response.length && timeout > System.currentTimeMillis());
 
-            response[i] = (byte) value;
-            ++i;
+        if (pos < response.length) {
+            // if (logger.isDebugEnabled()) {
+            logger.warn("Response not received, read {} bytes => {}", pos, response);
+            // }
+            throw new EOFException("Response not received");
         }
 
         if (logger.isDebugEnabled()) {
