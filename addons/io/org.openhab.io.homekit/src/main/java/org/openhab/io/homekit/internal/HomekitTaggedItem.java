@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.library.items.ColorItem;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +37,29 @@ public class HomekitTaggedItem {
     public HomekitTaggedItem(Item item, ItemRegistry itemRegistry) {
         this.item = item;
         for (String tag : item.getTags()) {
-            if (item instanceof DimmerItem) {
+
+            if (item instanceof ColorItem) {
+                tag = "Colorful" + tag;
+            } else if (item instanceof DimmerItem) {
                 tag = "Dimmable" + tag;
             }
-            if (!isMemberOfRootGroup(item, itemRegistry)) {
-                homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
-            }
-            if (homekitDeviceType == null) {
+
+            /*
+             * Is the item part of a tagged group AND does it have a matching CharacteristicType ?
+             * This matches items with tags that require a parent group like the "TargetTemperature" in
+             * thermostats
+             */
+            if (isMemberOfRootGroup(item, itemRegistry)) {
                 homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tag);
             }
+
+            /*
+             * If its not a characteristic type for a group item, see if we have a matching device type.
+             */
+            if (homekitCharacteristicType == null) {
+                homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
+            }
+
             if (homekitDeviceType != null || homekitCharacteristicType != null) {
                 break;
             }

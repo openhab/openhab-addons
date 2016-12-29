@@ -27,6 +27,7 @@ Bundle-ClassPath: .,
  lib/log4j-over-slf4j-1.7.21.jar
 Import-Package: javax.sound.sampled,
  org.apache.commons.collections.map,
+ org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.voice,

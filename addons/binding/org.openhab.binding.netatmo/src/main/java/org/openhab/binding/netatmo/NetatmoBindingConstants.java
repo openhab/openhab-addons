@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,15 +76,16 @@ public class NetatmoBindingConstants {
 
     // Thermostat specific channels
     public final static String CHANNEL_SETPOINT_MODE = "SetpointMode";
-    public final static String CHANNEL_SETPOINT_TEMP = "SetpointTemperature";
-    // public final static String CHANNEL_SETPOINT_END_TIME = "setpoint_endtime";
+    public final static String CHANNEL_SETPOINT_END_TIME = "SetpointEndTime";
+    public final static String CHANNEL_SETPOINT_TEMP = "Sp_Temperature";
+    public final static String CHANNEL_THERM_RELAY = "ThermRelayCmd";
+    public final static String CHANNEL_THERM_ORIENTATION = "ThermOrientation";
 
     // Module Properties
     public final static String PROPERTY_BATTERY_MIN = "batteryMin";
     public final static String PROPERTY_BATTERY_MAX = "batteryMax";
     public final static String PROPERTY_BATTERY_LOW = "batteryLow";
     public final static String PROPERTY_SIGNAL_LEVELS = "signalLevels";
-    public final static String PROPERTY_ACTUAL_APP = "actualApp";
 
     // List of all supported physical devices and modules
     public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
@@ -94,5 +96,7 @@ public class NetatmoBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
             MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, PLUG_THING_TYPE,
             THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
+
+    public final static Set<String> MEASURABLE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
 
 }

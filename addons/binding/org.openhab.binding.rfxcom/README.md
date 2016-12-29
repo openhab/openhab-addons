@@ -76,6 +76,14 @@ Bridge rfxcom:bridge:usb0 [ serialPort="/dev/tty.usbserial-06VVEG1Y" ] {
 }
 ```
 
+A TCP bridge, for use with socat on a remote host, can be configured like this:
+
+```
+Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
+    Thing lighting2 100001_1 [deviceId="100001.1", subType="AC"]
+}
+```
+
 ## Channels
 
 This binding currently supports following channels:
@@ -100,6 +108,6 @@ This binding currently supports following channels:
 | signallevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |
 | totalusage | Number | Used energy in Watt hours. |
-| totalamphours | Number | Used "energy" in ampere-hours. |
+| totalamphour | Number | Used "energy" in ampere-hours. |
 | winddirection | Number | Wind direction in degrees. |
 | windspeed | Number | Average wind speed in meters per second. |

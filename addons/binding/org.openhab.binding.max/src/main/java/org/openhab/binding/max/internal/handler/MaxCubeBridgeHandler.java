@@ -205,7 +205,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Exclusive mode  {}.", exclusive);
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
-        updateStatus(ThingStatus.OFFLINE);
+        previousOnline = true; // To trigger offline in case no connection @ startup
         startAutomaticRefresh();
     }
 

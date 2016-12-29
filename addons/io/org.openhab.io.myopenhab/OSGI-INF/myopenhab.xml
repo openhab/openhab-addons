@@ -19,4 +19,7 @@
    <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry"/>
    <reference bind="setEventPublisher" cardinality="0..1" interface="org.eclipse.smarthome.core.events.EventPublisher" name="EventPublisher" policy="dynamic" unbind="unsetEventPublisher"/>
    <property name="service.pid" type="String" value="org.openhab.myopenhab"/>
+   <property name="service.config.description.uri" type="String" value="io:myopenhab"/>
+   <property name="service.config.label" type="String" value="my.openhab"/>
+   <property name="service.config.category" type="String" value="io"/>
 </scr:component>

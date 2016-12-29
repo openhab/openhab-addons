@@ -8,24 +8,16 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.DateTimeItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.StringItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.items.*;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * RFXCOM data class for Security1 message.
@@ -62,6 +54,16 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
 
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
         }
     }
 
@@ -110,6 +112,16 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) status;
         }
+
+        public static Status fromByte(int input) {
+            for (Status status : Status.values()) {
+                if (status.status == input) {
+                    return status;
+                }
+            }
+
+            return Status.UNKNOWN;
+        }
     }
 
     /* Added item for ContactTypes */
@@ -138,6 +150,16 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) contact;
         }
+
+        public static Contact fromByte(int input) {
+            for (Contact status : Contact.values()) {
+                if (status.contact == input) {
+                    return status;
+                }
+            }
+
+            return Contact.UNKNOWN;
+        }
     }
 
     /* Added item for MotionTypes */
@@ -162,6 +184,16 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) motion;
         }
+
+        public static Motion fromByte(int input) {
+            for (Motion motion : Motion.values()) {
+                if (motion.motion == input) {
+                    return motion;
+                }
+            }
+
+            return Motion.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
@@ -171,13 +203,13 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.STATUS, RFXComValueSelector.CONTACT);
 
-    public SubType subType = SubType.X10_SECURITY;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
-    public Status status = Status.NORMAL;
+    public Status status = Status.UNKNOWN;
     public byte batteryLevel = 0;
     public byte signalLevel = 0;
-    public Contact contact = Contact.NORMAL;
-    public Motion motion = Motion.MOTION;
+    public Contact contact = Contact.UNKNOWN;
+    public Motion motion = Motion.UNKNOWN;
 
     public RFXComSecurity1Message() {
         packetType = PacketType.SECURITY1;
@@ -206,34 +238,15 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
 
-        try {
-            status = Status.values()[data[7]];
-        } catch (Exception e) {
-            status = Status.UNKNOWN;
-        }
-
+        status = Status.fromByte(data[7]);
         batteryLevel = (byte) ((data[8] & 0xF0) >> 4);
         signalLevel = (byte) (data[8] & 0x0F);
 
-        try {
-            contact = Contact.values()[data[7]];
-        } catch (Exception e) {
-            contact = Contact.UNKNOWN;
-        }
-
-        try {
-            motion = Motion.values()[data[7]];
-        } catch (Exception e) {
-            motion = Motion.UNKNOWN;
-        }
+        contact = Contact.fromByte(data[7]);
+        motion = Motion.fromByte(data[7]);
     }
 
     @Override

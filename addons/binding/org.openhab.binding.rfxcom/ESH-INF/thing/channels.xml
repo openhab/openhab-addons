@@ -90,27 +90,29 @@
 		<item-type>Number</item-type>
 		<label>Instant Amp</label>
 		<description>Instant current in Amperes</description>
-		<state pattern="%d A" readOnly="true"></state>
+		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="totalamphours" advanced="true">
+	<channel-type id="totalamphour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Ampere-hours</label>
 		<description>Used "energy" in ampere-hours</description>
-		<state pattern="%d Ah" readOnly="true"></state>
+		<state pattern="%.2f Ah" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in degree Celsius</description>
-		<state pattern="%d °C" readOnly="true"></state>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity level in percentages</description>
+		<category>Humidity</category>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 

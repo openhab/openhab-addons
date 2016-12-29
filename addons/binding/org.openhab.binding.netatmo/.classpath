@@ -11,6 +11,6 @@
 	<classpathentry kind="lib" path="lib/json-20131018.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.8.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/netatmo-java-retrofit-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/netatmo-java-retrofit-1.0.6.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

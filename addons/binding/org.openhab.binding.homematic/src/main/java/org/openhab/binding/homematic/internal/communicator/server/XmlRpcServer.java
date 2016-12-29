@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,13 +10,20 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcResponse;
@@ -26,8 +33,7 @@ import org.openhab.binding.homematic.internal.communicator.parser.NewDevicesPars
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import fi.iki.elonen.NanoHTTPD;
+import org.xml.sax.SAXException;
 
 /**
  * Reads a XML-RPC message and handles the method call.
@@ -42,7 +48,7 @@ public class XmlRpcServer implements RpcServer {
     private static final String XML_EMPTY_ARRAY = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data></data></array></value></param></params></methodResponse>";
     private static final String XML_EMPTY_EVENT_LIST = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data><value>event</value></data></array></value></param></params></methodResponse>";
 
-    private XmlRpcHTTPD xmlRpcHTTPD;
+    private Server xmlRpcHTTPD;
     private RpcEventListener listener;
     private HomematicConfig config;
 
@@ -56,10 +62,19 @@ public class XmlRpcServer implements RpcServer {
      */
     @Override
     public void start() throws IOException {
-        logger.debug("Initializing XML-RPC server at port {}", config.getCallbackPort());
+        logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
-        xmlRpcHTTPD = new XmlRpcHTTPD(config.getCallbackPort());
-        xmlRpcHTTPD.start(0, true);
+        xmlRpcHTTPD = new Server(config.getXmlCallbackPort());
+        xmlRpcHTTPD.setHandler(new ResponseHandler());
+
+        try {
+            xmlRpcHTTPD.start();
+            if (TRACE_ENABLED) {
+                xmlRpcHTTPD.dumpStdErr();
+            }
+        } catch (Exception e) {
+            throw new IOException("Jetty start failed", e);
+        }
     }
 
     /**
@@ -69,49 +84,45 @@ public class XmlRpcServer implements RpcServer {
     public void shutdown() {
         if (xmlRpcHTTPD != null) {
             logger.debug("Stopping XML-RPC server");
-            xmlRpcHTTPD.stop();
+            try {
+                xmlRpcHTTPD.stop();
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+            }
         }
     }
 
     /**
-     * A XML-RPC server based on a tiny HTTP server.
+     * Response handler for Jetty implementing a XML-RPC server
      *
-     * @author Gerhard Riegler
-     * @since 1.9.0
+     * @author Martin Herbst
      */
-    private class XmlRpcHTTPD extends NanoHTTPD {
-
-        public XmlRpcHTTPD(int port) {
-            super(port);
-        }
+    private class ResponseHandler extends AbstractHandler {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public Response serve(IHTTPSession session) {
+        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                throws IOException, ServletException {
+            response.setContentType("text/xml;charset=ISO-8859-1");
+            response.setStatus(HttpServletResponse.SC_OK);
+            final PrintWriter respWriter = response.getWriter();
             try {
-                Map<String, String> request = new HashMap<String, String>();
-                session.parseBody(request);
-
+                XmlRpcResponse xmlResponse = new XmlRpcResponse(request.getInputStream(), config.getEncoding());
                 if (TRACE_ENABLED) {
-                    logger.trace("Server original XmlRpcMessage:\n{}", request.get("postData"));
+                    logger.trace("Server parsed XmlRpcMessage:\n{}", xmlResponse);
                 }
-
-                XmlRpcResponse response = new XmlRpcResponse(
-                        new ByteArrayInputStream(request.get("postData").getBytes("ISO-8859-1")));
-                if (TRACE_ENABLED) {
-                    logger.trace("Server parsed XmlRpcMessage:\n{}", response);
-                }
-                String returnValue = handleMethodCall(response.getMethodName(), response.getResponseData());
+                final String returnValue = handleMethodCall(xmlResponse.getMethodName(), xmlResponse.getResponseData());
                 if (TRACE_ENABLED) {
                     logger.trace("Server XmlRpcResponse:\n{}", returnValue);
                 }
-                return newFixedLengthResponse(returnValue);
-            } catch (Exception ex) {
+                respWriter.println(returnValue);
+            } catch (SAXException | ParserConfigurationException ex) {
                 logger.error(ex.getMessage(), ex);
-                return newFixedLengthResponse(XML_EMPTY_STRING);
+                respWriter.println(XML_EMPTY_STRING);
             }
+            baseRequest.setHandled(true);
         }
 
         /**

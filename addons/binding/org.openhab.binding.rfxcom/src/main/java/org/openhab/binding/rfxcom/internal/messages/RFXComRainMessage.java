@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
@@ -18,6 +15,9 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * RFXCOM data class for temperature and humidity message.
@@ -28,7 +28,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComRainMessage extends RFXComBaseMessage {
 
     public enum SubType {
-        UNDEF(0),
         RAIN1(1),
         RAIN2(2),
         RAIN3(3),
@@ -51,6 +50,16 @@ public class RFXComRainMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
@@ -59,7 +68,7 @@ public class RFXComRainMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.UNDEF;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
     public double rainRate = 0;
     public double rainTotal = 0;
@@ -91,14 +100,9 @@ public class RFXComRainMessage extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) {
-
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         rainRate = (short) ((data[6] & 0xFF) << 8 | (data[7] & 0xFF));
@@ -118,7 +122,7 @@ public class RFXComRainMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        byte[] data = new byte[10];
+        byte[] data = new byte[12];
 
         data[0] = 0x0B;
         data[1] = RFXComBaseMessage.PacketType.RAIN.toByte();
@@ -132,7 +136,7 @@ public class RFXComRainMessage extends RFXComBaseMessage {
         data[7] = (byte) (rainR & 0xFF);
 
         short rainT = (short) Math.abs(rainTotal * 10);
-        data[8] = (byte) ((rainT >> 8) & 0xFF);
+        data[8] = (byte) ((rainT >> 16) & 0xFF);
         data[9] = (byte) ((rainT >> 8) & 0xFF);
         data[10] = (byte) (rainT & 0xFF);
 
