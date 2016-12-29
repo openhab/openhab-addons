@@ -43,11 +43,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 <!-- Experimental - Enable when also removing rooms is implemented 
-            <parameter name="roomId" type="integer" required="false" groupName="device">
-                <label>Room Id</label>
-                <description>The room name Id.</description>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="roomId" type="integer" required="false" groupName="device">
+				<label>Room Id</label>
+				<description>The room name Id.</description>
+				<advanced>true</advanced>
+			</parameter>
 -->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
@@ -170,11 +170,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 <!-- Experimental - Enable when also removing rooms is implemented 
-            <parameter name="roomId" type="integer" required="false" groupName="device">
-                <label>Room Id</label>
-                <description>The room name Id.</description>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="roomId" type="integer" required="false" groupName="device">
+				<label>Room Id</label>
+				<description>The room name Id.</description>
+				<advanced>true</advanced>
+			</parameter>
 -->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
@@ -311,8 +311,7 @@
 			</parameter>
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
-				<description>The RF Address used for communication between the devices.
-                </description>
+				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
 			<!-- Trigger reset action from habmin menu -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
@@ -377,8 +376,7 @@
 			</parameter>
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
-				<description>The RF Address used for communication between the devices.
-                </description>
+				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
 		</config-description>
 
@@ -434,8 +432,7 @@
 			</parameter>
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
-				<description>The RF Address used for communication between the devices.
-                </description>
+				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
 			<!-- Trigger reset action from habmin menu -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
