@@ -87,7 +87,6 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
             if (getThing().getStatusInfo().getStatus() != ThingStatus.ONLINE) {
                 dispose();
                 initialize();
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             dispose();
