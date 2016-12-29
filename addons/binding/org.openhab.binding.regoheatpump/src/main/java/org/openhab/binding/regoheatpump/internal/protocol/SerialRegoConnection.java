@@ -1,6 +1,7 @@
 package org.openhab.binding.regoheatpump.internal.protocol;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.slf4j.Logger;
@@ -49,15 +50,13 @@ public class SerialRegoConnection implements RegoConnection {
     }
 
     @Override
-    public void write(byte[] data) throws IOException {
-        final OutputStream stream = serialPort.getOutputStream();
-        stream.write(data);
-        stream.flush();
+    public OutputStream getOutputStream() throws IOException {
+        return serialPort.getOutputStream();
     }
 
     @Override
-    public int read() throws IOException {
-        return serialPort.getInputStream().read();
+    public InputStream getInputStream() throws IOException {
+        return serialPort.getInputStream();
     }
 
     private boolean isPortNameExist(String portName) {

@@ -356,9 +356,9 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         outputStream.write(command);
         outputStream.flush();
 
-        // Read response, wait for max 1 second for data to arrive.
+        // Read response, wait for max 2 second for data to arrive.
         final byte[] response = new byte[parser.responseLength()];
-        final long timeout = System.currentTimeMillis() + 1000;
+        final long timeout = System.currentTimeMillis() + 2000;
         int pos = 0;
 
         do {
