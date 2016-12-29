@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
@@ -58,7 +59,8 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
         if (enable) {
             gateway.disableDatapoint(dp, duration);
         }
-        gateway.getRpcClient().setInstallMode(dp.getChannel().getDevice().getHmInterface(), enable, duration);
+        HmInterface hmInterface = dp.getChannel().getDevice().getHmInterface();
+        gateway.getRpcClient(hmInterface).setInstallMode(hmInterface, enable, duration);
     }
 
     /**

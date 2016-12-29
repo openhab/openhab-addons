@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.harmonyhub.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -135,4 +136,15 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements
     public void removeChannelType(ChannelType type) {
         channelTypes.remove(type);
     }
+
+    public void removeChannelTypesForThing(ThingUID uid) {
+        List<ChannelType> removes = new ArrayList<ChannelType>();
+        for (ChannelType c : channelTypes) {
+            if (c.getUID().getAsString().startsWith(uid.getAsString())) {
+                removes.add(c);
+            }
+        }
+        channelTypes.removeAll(removes);
+    }
+
 }

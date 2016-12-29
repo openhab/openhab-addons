@@ -11,14 +11,19 @@ Import-Package: com.google.common.base,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.upnp,
  org.jupnp.model.meta,
  org.jupnp.model.types,
+ org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.onkyo,
  org.openhab.binding.onkyo.handler
+Bundle-ActivationPolicy: lazy

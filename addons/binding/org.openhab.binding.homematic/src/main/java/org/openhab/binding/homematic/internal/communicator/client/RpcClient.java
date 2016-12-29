@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -190,7 +190,7 @@ public abstract class RpcClient {
     /**
      * Tries to identify the gateway and returns the GatewayInfo.
      */
-    public HmGatewayInfo getGatewayInfo() throws IOException {
+    public HmGatewayInfo getGatewayInfo(String id) throws IOException {
         RpcRequest request = createRpcRequest("getDeviceDescription");
         request.addArg("BidCoS-RF");
         GetDeviceDescriptionParser ddParser = new GetDeviceDescriptionParser();
@@ -220,7 +220,32 @@ public abstract class RpcClient {
             gatewayInfo.setFirmware(biParser.getFirmware());
         }
 
+        if (gatewayInfo.isCCU() || config.hasWiredPort()) {
+            gatewayInfo.setWiredInterface(hasInterface(HmInterface.WIRED, id));
+        }
+
+        if (gatewayInfo.isCCU() || config.hasHmIpPort()) {
+            gatewayInfo.setHmipInterface(hasInterface(HmInterface.HMIP, id));
+        }
+
+        if (gatewayInfo.isCCU() || config.hasCuxdPort()) {
+            gatewayInfo.setCuxdInterface(hasInterface(HmInterface.CUXD, id));
+        }
+
         return gatewayInfo;
+    }
+
+    /**
+     * Returns true, if a connection is possible with the given interface.
+     */
+    private boolean hasInterface(HmInterface hmInterface, String id) throws IOException {
+        try {
+            checkInterface(hmInterface);
+            return true;
+        } catch (IOException ex) {
+            logger.info("Interface '{}' on gateway '{}' not available, disabling support", hmInterface, id);
+            return false;
+        }
     }
 
     /**

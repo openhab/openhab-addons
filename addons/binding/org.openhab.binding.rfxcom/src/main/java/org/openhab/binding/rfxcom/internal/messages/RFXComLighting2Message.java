@@ -8,25 +8,21 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.smarthome.core.library.items.ContactItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
-import org.eclipse.smarthome.core.library.items.NumberItem;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.items.*;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING2;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.GROUP_OFF;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.GROUP_ON;
 
 /**
  * RFXCOM data class for lighting2 message.
@@ -56,6 +52,16 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
+        }
     }
 
     public enum Commands {
@@ -81,6 +87,16 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) command;
         }
+
+        public static Commands fromByte(int input) {
+            for (Commands c : Commands.values()) {
+                if (c.command == input) {
+                    return c;
+                }
+            }
+
+            return Commands.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
@@ -90,10 +106,10 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL);
 
-    public SubType subType = SubType.AC;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
     public byte unitCode = 0;
-    public Commands command = Commands.OFF;
+    public Commands command = Commands.UNKNOWN;
     public byte dimmingLevel = 0;
     public byte signalLevel = 0;
     public boolean group = false;
@@ -122,22 +138,12 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) {
-
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 24 | (data[5] & 0xFF) << 16 | (data[6] & 0xFF) << 8 | (data[7] & 0xFF);
+        command = Commands.fromByte(data[9]);
 
-        try {
-            command = Commands.values()[data[9]];
-        } catch (Exception e) {
-            command = Commands.UNKNOWN;
-        }
         if ((command == Commands.GROUP_ON) || (command == Commands.GROUP_OFF)) {
             unitCode = 0;
         } else {
@@ -154,7 +160,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         byte[] data = new byte[12];
 
         data[0] = 0x0B;
-        data[1] = RFXComBaseMessage.PacketType.LIGHTING2.toByte();
+        data[1] = LIGHTING2.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
         data[4] = (byte) ((sensorId >> 24) & 0xFF);
@@ -315,7 +321,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             case COMMAND:
                 if (type instanceof OnOffType) {
                     if (group) {
-                        command = (type == OnOffType.ON ? Commands.GROUP_ON : Commands.GROUP_OFF);
+                        command = (type == OnOffType.ON ? GROUP_ON : GROUP_OFF);
                     } else {
                         command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     }

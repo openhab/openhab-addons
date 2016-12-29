@@ -10,8 +10,8 @@ package org.openhab.binding.pioneeravr.internal.handler;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link AbstractAvrHandler} is responsible for handling commands, which are sent to one of the channels through an
  * AVR connection.
- * 
+ *
  * @author Antoine Besnard - Initial contribution
  */
 public abstract class AbstractAvrHandler extends BaseThingHandler
@@ -63,7 +63,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
 
     /**
      * Create a new connection to the AVR.
-     * 
+     *
      * @return
      */
     protected abstract AvrConnection createConnection();
@@ -112,40 +112,44 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Called when a Power ON state update is received from the AVR.
+     * Called when a Power ON state update is received from the AVR for the given zone.
      */
-    public void onPowerOn() {
-        // When the AVR is Powered ON, query the volume, the mute state and the source input
-        connection.sendVolumeQuery();
-        connection.sendMuteQuery();
-        connection.sendSourceInputQuery();
+    public void onPowerOn(int zone) {
+        // When the AVR is Powered ON, query the volume, the mute state and the source input of the zone
+        connection.sendVolumeQuery(zone);
+        connection.sendMuteQuery(zone);
+        connection.sendSourceInputQuery(zone);
+
     }
 
     /**
      * Called when a Power OFF state update is received from the AVR.
      */
-    public void onPowerOff() {
+    public void onPowerOff(int zone) {
         // When the AVR is Powered OFF, update the status of channels to Undefined
-        updateState(PioneerAvrBindingConstants.MUTE_CHANNEL, UnDefType.UNDEF);
-        updateState(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, UnDefType.UNDEF);
-        updateState(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, UnDefType.UNDEF);
-        updateState(PioneerAvrBindingConstants.DISPLAY_INFORMATION_CHANNEL, new StringType(StringUtils.EMPTY));
-        updateState(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, new StringType(StringUtils.EMPTY));
+        updateState(getChannelUID(PioneerAvrBindingConstants.MUTE_CHANNEL, zone), UnDefType.UNDEF);
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, zone), UnDefType.UNDEF);
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, zone), UnDefType.UNDEF);
+        updateState(getChannelUID(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, zone), UnDefType.UNDEF);
+
     }
 
     /**
      * Check the status of the AVR. Return true if the AVR is online, else return false.
-     * 
+     *
      * @return
      */
     private void checkStatus() {
         // If the power query request has not been sent, the connection to the
         // AVR has failed. So update its status to OFFLINE.
-        if (!connection.sendPowerQuery()) {
+        if (!connection.sendPowerQuery(1)) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
-            // IF the power query has succeeded, the AVR status is ONLINE.
+            // If the power query has succeeded, the AVR status is ONLINE.
             updateStatus(ThingStatus.ONLINE);
+            // Then send a power query for zone 2 and 3
+            connection.sendPowerQuery(2);
+            connection.sendPowerQuery(3);
         }
     }
 
@@ -159,15 +163,15 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
             boolean commandSent = false;
             boolean unknownCommand = false;
 
-            if (channelUID.getId().equals(PioneerAvrBindingConstants.POWER_CHANNEL)) {
-                commandSent = connection.sendPowerCommand(command);
-            } else if (channelUID.getId().equals(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL)
-                    || channelUID.getId().equals(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL)) {
-                commandSent = connection.sendVolumeCommand(command);
-            } else if (channelUID.getId().equals(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL)) {
-                commandSent = connection.sendInputSourceCommand(command);
-            } else if (channelUID.getId().equals(PioneerAvrBindingConstants.MUTE_CHANNEL)) {
-                commandSent = connection.sendMuteCommand(command);
+            if (channelUID.getId().contains(PioneerAvrBindingConstants.POWER_CHANNEL)) {
+                commandSent = connection.sendPowerCommand(command, getZoneFromChannelUID(channelUID.getId()));
+            } else if (channelUID.getId().contains(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL)
+                    || channelUID.getId().contains(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL)) {
+                commandSent = connection.sendVolumeCommand(command, getZoneFromChannelUID(channelUID.getId()));
+            } else if (channelUID.getId().contains(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL)) {
+                commandSent = connection.sendInputSourceCommand(command, getZoneFromChannelUID(channelUID.getId()));
+            } else if (channelUID.getId().contains(PioneerAvrBindingConstants.MUTE_CHANNEL)) {
+                commandSent = connection.sendMuteCommand(command, getZoneFromChannelUID(channelUID.getId()));
             } else {
                 unknownCommand = true;
             }
@@ -238,7 +242,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
 
     /**
      * Notify an AVR power state update to OpenHAB
-     * 
+     *
      * @param response
      */
     private void managePowerStateUpdate(AvrResponse response) {
@@ -246,53 +250,84 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
 
         // When a Power ON state update is received, call the onPowerOn method.
         if (OnOffType.ON == state) {
-            onPowerOn();
+            onPowerOn(response.getZone());
         } else {
-            onPowerOff();
+            onPowerOff(response.getZone());
         }
 
-        updateState(PioneerAvrBindingConstants.POWER_CHANNEL, state);
+        updateState(getChannelUID(PioneerAvrBindingConstants.POWER_CHANNEL, response.getZone()), state);
     }
 
     /**
      * Notify an AVR volume level update to OpenHAB
-     * 
+     *
      * @param response
      */
     private void manageVolumeLevelUpdate(AvrResponse response) {
-        updateState(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL,
+
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, response.getZone()),
                 new DecimalType(VolumeConverter.convertFromIpControlVolumeToDb(response.getParameterValue())));
-        updateState(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, new PercentType(
-                (int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue())));
+        updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, response.getZone()),
+                new PercentType(
+                        (int) VolumeConverter.convertFromIpControlVolumeToPercent(response.getParameterValue())));
     }
 
     /**
      * Notify an AVR mute state update to OpenHAB
-     * 
+     *
      * @param response
      */
     private void manageMuteStateUpdate(AvrResponse response) {
-        updateState(PioneerAvrBindingConstants.MUTE_CHANNEL,
+        updateState(getChannelUID(PioneerAvrBindingConstants.MUTE_CHANNEL, response.getZone()),
                 response.getParameterValue().equals(MuteStateValues.OFF_VALUE) ? OnOffType.OFF : OnOffType.ON);
     }
 
     /**
      * Notify an AVR input source channel update to OpenHAB
-     * 
+     *
      * @param response
      */
     private void manageInputSourceChannelUpdate(AvrResponse response) {
-        updateState(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, new StringType(response.getParameterValue()));
+        updateState(getChannelUID(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, response.getZone()),
+                new StringType(response.getParameterValue()));
     }
 
     /**
      * Notify an AVR displayed information update to OpenHAB
-     * 
+     *
      * @param response
      */
     private void manageDisplayedInformationUpdate(AvrResponse response) {
         updateState(PioneerAvrBindingConstants.DISPLAY_INFORMATION_CHANNEL,
                 new StringType(DisplayInformationConverter.convertMessageFromIpControl(response.getParameterValue())));
+    }
+
+    /**
+     * Build the channelUID from the channel name and the zone number.
+     *
+     * @param channelName
+     * @param zone
+     * @return
+     */
+    protected String getChannelUID(String channelName, int zone) {
+        return String.format(PioneerAvrBindingConstants.GROUP_CHANNEL_PATTERN, zone, channelName);
+    }
+
+    /**
+     * Return the zone from the given channelUID.
+     *
+     * Return 0 if the zone cannot be extracted from the channelUID.
+     *
+     * @param channelUID
+     * @return
+     */
+    protected int getZoneFromChannelUID(String channelUID) {
+        int zone = 0;
+        Matcher matcher = PioneerAvrBindingConstants.GROUP_CHANNEL_ZONE_PATTERN.matcher(channelUID);
+        if (matcher.find()) {
+            zone = Integer.valueOf(matcher.group(1));
+        }
+        return zone;
     }
 
 }
