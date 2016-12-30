@@ -66,6 +66,13 @@ regoheatpump:serialRego6xx:ivtSerial [ portName="COM3" ]
 | sensors#coldFluidIn      | Temperature         
 | sensors#coldFluidOut     | Temperature         
 | sensors#externalHotWater | Temperature         
+| status#lastErrorTimestamp | DateTime
+| status#lastErrorCode | String
+| frontPanel#powerLed | Switch
+| frontPanel#heatPumpLed | Switch
+| frontPanel#additionalHeatingLed | Switch
+| frontPanel#hotWaterLed | Switch
+| frontPanel#alarmLed | Switch
 | registers#targetValueGT1 | Temperature         
 | registers#onValueGT1     | Temperature
 | registers#offValueGT1    | Temperature
