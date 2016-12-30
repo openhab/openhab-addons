@@ -30,6 +30,8 @@ public class YamahaReceiverState {
     public List<String> inputNames = new ArrayList<String>();
     private final YamahaReceiverCommunication com;
     public int netRadioChannel = 0;
+    public String netRadioStation = "";
+    public String netRadioSong = "";
 
     // Some AVR information
     public String name = "";

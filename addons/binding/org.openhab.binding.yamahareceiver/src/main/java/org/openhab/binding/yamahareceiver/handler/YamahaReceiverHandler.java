@@ -194,6 +194,8 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             updateState(YamahaReceiverBindingConstants.CHANNEL_VOLUME, new PercentType((int) state.getVolume()));
             updateState(YamahaReceiverBindingConstants.CHANNEL_MUTE, state.isMute() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_TUNE, new DecimalType(state.netRadioChannel));
+            updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_STATION, new StringType(state.netRadioStation));
+            updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_SONG, new StringType(state.netRadioSong));
             logger.trace("State upddated!");
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
