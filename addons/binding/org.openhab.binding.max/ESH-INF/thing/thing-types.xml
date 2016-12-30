@@ -43,11 +43,11 @@
 				<description>Action Buttons</description>
 			</parameter-group>
 <!-- Experimental - Enable when also removing rooms is implemented 
-            <parameter name="roomId" type="integer" required="false" groupName="device">
-                <label>Room Id</label>
-                <description>The room name Id.</description>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="roomId" type="integer" required="false" groupName="device">
+				<label>Room Id</label>
+				<description>The room name Id.</description>
+				<advanced>true</advanced>
+			</parameter>
 -->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
@@ -156,7 +156,7 @@
 			<parameter-group name="device">
 				<label>Device Settings</label>
 				<description>Device parameter settings</description>
-				<advanced>false</advanced>
+				<advanced>true</advanced>
 			</parameter-group>
 			<parameter-group name="binding">
 				<label>Binding Settings</label>
@@ -169,15 +169,61 @@
 				<label>Actions</label>
 				<description>Action Buttons</description>
 			</parameter-group>
-
+<!-- Experimental - Enable when also removing rooms is implemented 
+			<parameter name="roomId" type="integer" required="false" groupName="device">
+				<label>Room Id</label>
+				<description>The room name Id.</description>
+				<advanced>true</advanced>
+			</parameter>
+-->
 			<parameter name="room" type="text" required="false" groupName="device">
 				<label>Room</label>
 				<description>The room name.</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="name" type="text" required="false" groupName="device">
 				<label>Device Name</label>
 				<description>The device description.</description>
+				<advanced>true</advanced>
 			</parameter>
+			<parameter name="comfortTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
+				<label>Comfort Temperature</label>
+				<description>Set the Comfort Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ecoTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
+				<label>Eco Temperature</label>
+				<description>Set the Eco Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="offsetTemp" type="decimal" min="-3.5" max="3.5" step="0.5" required="false" groupName="device">
+				<label>OffSet Temperature</label>
+				<description>Set the Thermostat offset.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Max Temperature</label>
+				<description>Set the Thermostat maximum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="minTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Min Temperature</label>
+				<description>Set the Thermostat minimum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="windowOpenTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false" groupName="device">
+				<label>Window Open Temp</label>
+				<description>Set the Window Open Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="windowOpenDuration" type="integer" min="0" max="60" step="5" required="false" groupName="device">
+				<label>Window Open Duration</label>
+				<description>Set the Thermostat Window Open Duration.</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="serialNumber" type="text" required="true" groupName="identification">
 				<label>Serial Number</label>
 				<description>The Serial Number identifies one specific device.</description>
@@ -185,15 +231,15 @@
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
 				<description>The RF Address used for communication between the devices.
-                </description>
+				</description>
 			</parameter>
 			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
 				<label>Actual Temperature Refresh Rate</label>
 				<description>Experimental feature! Rate of the actual refresh in minutes. 0-9=refresh disabled.
-                Minimum refresh rate once/10 minutes, recommended 60min.
-                The settings of the heating thermostats are changed to trigger an update of temperature, as the actual
-                temperature only is updated when the valves changes.
-                </description>
+				Minimum refresh rate once/10 minutes, recommended 60min.
+				The settings of the heating thermostats are changed to trigger an update of temperature, as the actual
+				temperature only is updated when the valves changes.
+				</description>
 				<default>0</default>
 			</parameter>
 			<!-- Trigger reset action from habmin menu -->
@@ -265,8 +311,7 @@
 			</parameter>
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
-				<description>The RF Address used for communication between the devices.
-                </description>
+				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
 			<!-- Trigger reset action from habmin menu -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
@@ -331,8 +376,7 @@
 			</parameter>
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
-				<description>The RF Address used for communication between the devices.
-                </description>
+				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
 		</config-description>
 
@@ -388,8 +432,7 @@
 			</parameter>
 			<parameter name="rfAddress" type="text" required="false" groupName="identification">
 				<label>RF Address</label>
-				<description>The RF Address used for communication between the devices.
-                </description>
+				<description>The RF Address used for communication between the devices.</description>
 			</parameter>
 			<!-- Trigger reset action from habmin menu -->
 			<parameter name="action-deviceDelete" type="integer" groupName="actions">
