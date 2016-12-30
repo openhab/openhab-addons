@@ -1,7 +1,8 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
@@ -13,7 +14,7 @@ import org.openhab.binding.lutron.LutronBindingConstants;
 /**
  * Defines common constants, which are used across the whole binding.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class PrgConstants {
 

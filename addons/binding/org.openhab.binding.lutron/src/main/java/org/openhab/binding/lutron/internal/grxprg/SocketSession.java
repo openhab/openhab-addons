@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * be sent via {@link #sendCommand(String)} and responses will be received on the {@link SocketSessionCallback}
  *
  * @author Tim Roberts
- * @version $Id: $Id
  */
 public class SocketSession {
     private Logger _logger = LoggerFactory.getLogger(SocketSession.class);
