@@ -200,9 +200,14 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.rfxcom/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-binding-samsungtv" description="Samsung TV Binding" version="${project.version}">
+    <feature name="openhab-binding-russound" description="Russound Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.russound/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-samsungtv" description="Samsung TV Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.samsungtv/${project.version}</bundle>
     </feature>
 
