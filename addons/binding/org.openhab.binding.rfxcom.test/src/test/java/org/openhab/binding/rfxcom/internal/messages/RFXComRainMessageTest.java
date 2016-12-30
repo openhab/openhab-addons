@@ -8,15 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import static org.junit.Assert.assertEquals;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.SubType.RAIN2;
 
 import javax.xml.bind.DatatypeConverter;
 
-import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.SubType.RAIN1;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComRainMessage.SubType.RAIN2;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 
 /**
  * Test for RFXCom-binding

@@ -8,14 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
-
-import javax.xml.bind.DatatypeConverter;
-
-import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
+
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 
 /**
  * Test for RFXCom-binding

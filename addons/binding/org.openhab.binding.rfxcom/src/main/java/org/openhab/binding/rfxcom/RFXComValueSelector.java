@@ -26,6 +26,8 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
  */
 public enum RFXComValueSelector {
 
+    RAW_MESSAGE(RFXComBindingConstants.CHANNEL_RAW_MESSAGE, StringItem.class),
+    RAW_PAYLOAD(RFXComBindingConstants.CHANNEL_RAW_PAYLOAD, StringItem.class),
     SHUTTER(RFXComBindingConstants.CHANNEL_SHUTTER, RollershutterItem.class),
     COMMAND(RFXComBindingConstants.CHANNEL_COMMAND, SwitchItem.class),
     MOOD(RFXComBindingConstants.CHANNEL_MOOD, NumberItem.class),

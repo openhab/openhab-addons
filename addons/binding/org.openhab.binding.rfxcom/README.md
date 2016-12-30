@@ -36,6 +36,7 @@ This binding currently supports following packet types:
 * Temperature
 * TemperatureHumidity
 * Thermostat1
+* Undecoded
 * Wind
 
 
@@ -104,6 +105,8 @@ This binding currently supports following channels:
 | motion | Switch | Motion detection sensor state. |
 | rainrate | Number | Rain fall rate in millimeters per hour. |
 | raintotal | Number | Total rain in millimeters. |
+| rawmessage | String | Hexadecimal string of the raw RF message. |
+| rawpayload | String | Hexadecimal string of the message payload, without header. |
 | shutter | Rollershutter | Shutter channel. |
 | signallevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |

@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.Assert.assertEquals;
+
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * Helper class for testing the RFXCom-binding
