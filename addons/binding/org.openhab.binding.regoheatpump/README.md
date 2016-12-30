@@ -5,11 +5,8 @@ The Rego binding supports the Rego 6xx family, used in many heat pumps, like IVT
 Rego 6xx units contain an interface marked as service. Header of this interface is close to the control unit. This is 5V (TTL) serial interface, it means their cable may be not longer than ~50 cm. Interface is connected by a 9 pin can/d-sub connector. Pinout of this connector is the following:
 
 2 - RxD
-
 3 - TxD
-
 4 - +5V
-
 5 - GND
 
 Communication is allways using 19200 bps, 8 bit, no parity, 1 stop bit. This is 5V (TTL) signals, galvanic separator is highly recommended. 
@@ -56,20 +53,20 @@ regoheatpump:serialRego6xx:ivtSerial [ portName="COM3" ]
 
 ## Channels
 
-| Channel Type ID        | Item Type           | Description    |
-| ------------------------ |:-------------------:| --------------:|
-| sensors#radiatorReturn   | Temperature         |                |
-| sensors#outdoor          | Temperature         |                |
-| sensors#hotWater         | Temperature         |                |
-| sensors#radiatorForward  | Temperature         |                |
-| sensors#indoor           | Temperature         |                |
-| sensors#compressor       | Temperature         |                |
-| sensors#heatFluidOut     | Temperature         |                |
-| sensors#heatFluidIn      | Temperature         |                |
-| sensors#coldFluidIn      | Temperature         |                |
-| sensors#coldFluidOut     | Temperature         |                |
-| sensors#externalHotWater | Temperature         |                |
-| registers#targetValueGT1 | Temperature         |                |
+| Channel Type ID        | Item Type           
+| ------------------------ |:-------------------:|
+| sensors#radiatorReturn   | Temperature         
+| sensors#outdoor          | Temperature         
+| sensors#hotWater         | Temperature         
+| sensors#radiatorForward  | Temperature         
+| sensors#indoor           | Temperature         
+| sensors#compressor       | Temperature         
+| sensors#heatFluidOut     | Temperature         
+| sensors#heatFluidIn      | Temperature         
+| sensors#coldFluidIn      | Temperature         
+| sensors#coldFluidOut     | Temperature         
+| sensors#externalHotWater | Temperature         
+| registers#targetValueGT1 | Temperature         
 | registers#onValueGT1     | Temperature
 | registers#offValueGT1    | Temperature
 | registers#targetValueGT3 | Temperature
