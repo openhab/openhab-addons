@@ -16,6 +16,7 @@
   <packaging>pom</packaging>
  
   <modules>
+    <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.autelis</module>
@@ -30,6 +31,7 @@
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.homematic</module>
+    <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.kodi</module>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="undecoded">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Undecoded RF Messages</label>
+		<description>Any messages that RFXCOM can receive but not decode.</description>
+
+		<channels>
+			<channel id="rawMessage" typeId="rawmessage" />
+			<channel id="rawPayload" typeId="rawpayload" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Undecoded items cannot provide a device ID, so this value is always UNDECODED.</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+			        <option value="AC">AC</option>
+			        <option value="ARC">ARC</option>
+			        <option value="ATI">ATI</option>
+			        <option value="HIDEKI_UPM">Hideki, UPM</option>
+			        <option value="LACROSSE_VIKING">La Crosse, Viking</option>
+			        <option value="AD">AD</option>
+			        <option value="MERTIK">Mertik Maxitrol Fireplace controllers</option>
+			        <option value="OREGON1">Oregon Scientific 1</option>
+			        <option value="OREGON2">Oregon Scientific 2</option>
+			        <option value="OREGON3">Oregon Scientific 3</option>
+			        <option value="PROGUARD">ProGuard</option>
+			        <option value="VISONIC">Visonic</option>
+			        <option value="NEC">NEC</option>
+			        <option value="FS20">FS20</option>
+			        <option value="RESERVED">Reserved</option>
+			        <option value="BLINDS">Blinds</option>
+			        <option value="RUBICSON">Rubicson</option>
+			        <option value="AE">AE</option>
+			        <option value="FINE_OFFSET">Fine Offset</option>
+			        <option value="RGB">RGB</option>
+			        <option value="RTS">RTS</option>
+			        <option value="SELECT_PLUS">Select Plus</option>
+			        <option value="HOME_CONFORT">Home Confort</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

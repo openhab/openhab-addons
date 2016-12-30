@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GlobalCache Channel Types -->
+
+	<channel-type id="channel-type-ir">
+		<item-type>String</item-type>
+		<label>Infrared</label>
+		<description>Transmits infrared command on module:connector</description>
+	</channel-type>
+
+	<channel-type id="channel-type-cc">
+		<item-type>Contact</item-type>
+		<label>Contact Closure</label>
+		<description>Transmits contact closure command on module:connector</description>
+	</channel-type>
+
+	<channel-type id="channel-type-sl">
+		<item-type>String</item-type>
+		<label>Serial</label>
+		<description>Transmits serial command on module:connector</description>
+	</channel-type>
+
+	<channel-type id="channel-type-sl-direct" advanced="false">
+		<item-type>String</item-type>
+		<label>Serial</label>
+		<description>Transmits serial command on module:connector bypassing MAP transform</description>
+	</channel-type>
+
+</thing:thing-descriptions>

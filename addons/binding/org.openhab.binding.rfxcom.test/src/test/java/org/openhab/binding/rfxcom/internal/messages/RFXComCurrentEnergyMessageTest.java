@@ -9,7 +9,6 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 
 /**
