@@ -25,6 +25,7 @@ The binding does not require any special configuration
 ## Thing Configuration
 
 AllPlay Players are identified by their device ID.
+
 In the thing file, this looks e.g. like
 ```
 Thing allplay:speaker:mySpeaker [ deviceId="9fbe37ca-d015-47a2-b76e-8fce7bc25687"]
@@ -41,7 +42,7 @@ The devices support the following channels:
 | coverarturl | String | URL of the cover art of the current song | 
 | currentalbum | String | Name of the album currently playing |
 | currentartist | String | Name of the artist currently playing |
-| currentduration | String | Duration in milliseconds of the track currently playing |
+| currentduration | Number | Duration in seconds of the track currently playing |
 | currentgenre | String | Genre of the track currently playing |
 | currenttitle | String | Title of the track currently playing |
 | currenturl | String | URL of the track or radio station currently playing |
@@ -49,7 +50,7 @@ The devices support the following channels:
 | loopmode | String | Loop mode of the speaker (ONE, ALL, NONE) |
 | mute | Switch | Set or get the mute state of the master volume of the speaker |
 | playstate | String | State of the Speaker, e.g. PLAYING, STOPPED,.. |
-| shufflemode | String | Shuffle mode of the speaker (LINEAR, SHUFFLE) |
+| shufflemode | Switch | Toggle the shuffle mode of the speaker |
 | stop | Switch | Stop the playback |
 | stream | String | Play the given HTTP or file stream (file:// or http://) |
 | volume | Dimmer | Get and set the volume of the speaker |

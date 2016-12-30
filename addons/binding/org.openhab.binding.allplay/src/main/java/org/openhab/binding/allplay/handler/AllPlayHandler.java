@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -84,13 +85,13 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void initialize() {
-        logger.debug("Initializing AllPlay handler for speaker " + getDeviceId());
+        logger.debug("Initializing AllPlay handler for speaker {}", getDeviceId());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for speaker to be discovered");
         try {
             allPlay.addSpeakerAnnouncedListener(this);
             discoverSpeaker();
         } catch (DiscoveryException e) {
-            logger.error("Unable to discover speaker", e);
+            logger.error("Unable to discover speaker {}", getDeviceId(), e);
         }
     }
 
@@ -99,28 +100,28 @@ public class AllPlayHandler extends BaseThingHandler
      */
     public void discoverSpeaker() {
         try {
-            logger.debug("Starting discovery for speaker " + getDeviceId());
+            logger.debug("Starting discovery for speaker {}", getDeviceId());
             allPlay.discoverSpeaker(getDeviceId());
         } catch (DiscoveryException e) {
-            logger.error("Unable to discover speaker " + getDeviceId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to discover speaker: " + e.getMessage());
+            logger.error("Unable to discover speaker {}", getDeviceId(), e);
         }
     }
 
     @Override
     public void onSpeakerAnnounced(Speaker speaker) {
-        logger.debug("Speaker announcement received for speaker " + speaker + ". Own id is " + getDeviceId());
+        logger.debug("Speaker announcement received for speaker {}. Own id is {}", speaker, getDeviceId());
         if (isHandledSpeaker(speaker)) {
-            logger.info("Speaker announcement received for handled speaker " + speaker);
+            logger.debug("Speaker announcement received for handled speaker {}", speaker);
             this.speaker = speaker;
             cancelReconnectionJob();
             try {
                 connectToSpeaker();
             } catch (AllPlayException e) {
-                logger.error(
-                        "Error while connecting to speaker" + speaker + ": " + e.getMessage() + ", scheduling retry");
                 logger.debug("Connection error", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error while communicating with speaker" + speaker + ": " + e.getMessage());
+                        "Error while communicating with speaker: " + e.getMessage());
                 scheduleReconnectionJob(speaker);
             }
         }
@@ -128,11 +129,11 @@ public class AllPlayHandler extends BaseThingHandler
 
     private void connectToSpeaker() throws ConnectionException {
         if (speaker != null) {
-            logger.info("Connecting to speaker " + speaker);
+            logger.debug("Connecting to speaker {}", speaker);
             speaker.addSpeakerChangedListener(this);
             speaker.addSpeakerConnectionListener(this);
             speaker.connect();
-            logger.info("Connected to speaker " + speaker);
+            logger.debug("Connected to speaker {}", speaker);
             updateStatus(ThingStatus.ONLINE);
             try {
                 initSpeakerState();
@@ -140,7 +141,7 @@ public class AllPlayHandler extends BaseThingHandler
                 logger.error("Unable to init speaker state", e);
             }
         } else {
-            logger.error("Speaker not discovered yet, cannot connect");
+            logger.error("Speaker {} not discovered yet, cannot connect", getDeviceId());
         }
     }
 
@@ -164,7 +165,7 @@ public class AllPlayHandler extends BaseThingHandler
     @Override
     public void onConnectionLost(String wellKnownName, int alljoynReasonCode) {
         if (isHandledSpeaker(wellKnownName)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Lost connection to speaker.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Lost connection to speaker");
             speaker.removeSpeakerConnectionListener(this);
             speaker.removeSpeakerChangedListener(this);
             scheduleReconnectionJob(speaker);
@@ -174,7 +175,7 @@ public class AllPlayHandler extends BaseThingHandler
     @Override
     public void dispose() {
         if (speaker != null) {
-            logger.info("Disconnecting from speaker " + speaker.getName());
+            logger.debug("Disconnecting from speaker {}", speaker);
             cancelReconnectionJob();
             speaker.removeSpeakerChangedListener(this);
             speaker.removeSpeakerConnectionListener(this);
@@ -186,7 +187,7 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Channel " + channelUID.getId() + " triggered with command " + command);
+        logger.debug("Channel {} triggered with command {}", channelUID.getId(), command);
         if (isSpeakerReady()) {
             try {
                 if (command instanceof RefreshType) {
@@ -195,7 +196,7 @@ public class AllPlayHandler extends BaseThingHandler
                     handleSpeakerCommand(channelUID.getId(), command);
                 }
             } catch (SpeakerException e) {
-                logger.error("Unable to execute command " + command + " on channel " + channelUID.getId(), e);
+                logger.error("Unable to execute command {} on channel {}", command, channelUID.getId(), e);
             }
         }
     }
@@ -215,17 +216,17 @@ public class AllPlayHandler extends BaseThingHandler
                 speaker.stop();
                 break;
             case SHUFFLE_MODE:
-                speaker.setShuffleMode(ShuffleMode.parse(command.toString()));
+                handleShuffleModeCommand(command);
                 break;
             case STREAM:
-                logger.debug("Starting to stream URL: " + command.toString());
+                logger.debug("Starting to stream URL: {}", command.toString());
                 speaker.playItem(command.toString());
                 break;
             case VOLUME:
                 handleVolumeCommand(command);
                 break;
             default:
-                logger.warn("Unable to handle command " + command + " on unknown channel " + channelId);
+                logger.warn("Unable to handle command {} on unknown channel {}", command, channelId);
         }
     }
 
@@ -260,7 +261,7 @@ public class AllPlayHandler extends BaseThingHandler
                 // TODO: Get ZoneID from speaker and update channel when implemented in allPlay library
                 break;
             default:
-                logger.debug("REFRESH command not implemented on channel " + channelId);
+                logger.debug("REFRESH command not implemented on channel {}", channelId);
         }
     }
 
@@ -284,7 +285,7 @@ public class AllPlayHandler extends BaseThingHandler
                 changeTrackPosition(-speakerProperties.getRewindSkipTimeInSec() * 1000);
             }
         } else {
-            logger.warn("Unknown control command: " + command);
+            logger.warn("Unknown control command: {}", command);
         }
     }
 
@@ -296,8 +297,8 @@ public class AllPlayHandler extends BaseThingHandler
      */
     private void changeTrackPosition(long positionOffsetInMs) throws SpeakerException {
         long currentPosition = speaker.getPlayState().getPositionInMs();
-        logger.debug("Jumping from old track position :" + currentPosition + " ms to new position " + currentPosition
-                + positionOffsetInMs + " ms");
+        logger.debug("Jumping from old track position {} ms to new position {} ms", currentPosition,
+                currentPosition + positionOffsetInMs);
         speaker.setPosition(currentPosition + positionOffsetInMs);
     }
 
@@ -310,6 +311,14 @@ public class AllPlayHandler extends BaseThingHandler
         }
     }
 
+    private void handleShuffleModeCommand(Command command) throws SpeakerException {
+        if (OnOffType.ON.equals(command)) {
+            speaker.setShuffleMode(ShuffleMode.SHUFFLE);
+        } else if (OnOffType.OFF.equals(command)) {
+            speaker.setShuffleMode(ShuffleMode.LINEAR);
+        }
+    }
+
     @Override
     public void onPlayStateChanged(PlayState playState) {
         updatePlayState(playState);
@@ -318,31 +327,32 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void onPlaylistChanged() {
-        logger.debug(speaker.getName() + ": Playlist changed: No action");
+        logger.debug("{}: Playlist changed: No action", speaker.getName());
     }
 
     @Override
     public void onLoopModeChanged(LoopMode loopMode) {
-        logger.debug(speaker.getName() + ": LoopMode changed to " + loopMode);
+        logger.debug("{}: LoopMode changed to {}", speaker.getName(), loopMode);
         updateState(LOOP_MODE, new StringType(loopMode.toString()));
 
     }
 
     @Override
     public void onShuffleModeChanged(ShuffleMode shuffleMode) {
-        logger.debug(speaker.getName() + ": ShuffleMode changed to " + shuffleMode);
-        updateState(SHUFFLE_MODE, new StringType(shuffleMode.toString()));
+        logger.debug("{}: ShuffleMode changed to {}", speaker.getName(), shuffleMode);
+        OnOffType shuffleOnOff = (shuffleMode == ShuffleMode.SHUFFLE) ? OnOffType.ON : OnOffType.OFF;
+        updateState(SHUFFLE_MODE, shuffleOnOff);
     }
 
     @Override
     public void onMuteChanged(boolean mute) {
-        logger.debug(speaker.getName() + ": Mute changed to " + mute);
+        logger.debug("{}: Mute changed to {}", speaker.getName(), mute);
         updateState(MUTE, mute ? OnOffType.ON : OnOffType.OFF);
     }
 
     @Override
     public void onVolumeChanged(int volume) {
-        logger.debug(speaker.getName() + ": Volume changed to " + volume);
+        logger.debug("{}: Volume changed to {}", speaker.getName(), volume);
         try {
             updateState(VOLUME, convertAbsoluteVolumeToPercent(volume));
         } catch (SpeakerException e) {
@@ -357,12 +367,12 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void onZoneChanged(String zoneId, int timestamp, Map<String, Integer> slaves) {
-        logger.debug(speaker.getName() + ": Zone changed to " + zoneId);
+        logger.debug("{}: Zone changed to {}", speaker.getName(), zoneId);
         updateState(ZONE_ID, new StringType(zoneId));
     }
 
     private void updatePlayState(PlayState playState) {
-        logger.debug(speaker.getName() + ": PlayState changed to " + playState);
+        logger.debug("{}: PlayState changed to {}", speaker.getName(), playState);
         updateState(PLAY_STATE, new StringType(playState.getState().toString()));
 
         if (playState.getState() == State.PLAYING) {
@@ -377,42 +387,48 @@ public class AllPlayHandler extends BaseThingHandler
             PlaylistItem currentItem = items.iterator().next();
             updateCurrentItemState(currentItem);
         } else {
-            updateState(CURRENT_ARTIST, UnDefType.UNDEF);
-            updateState(CURRENT_ALBUM, UnDefType.UNDEF);
-            updateState(CURRENT_TITLE, UnDefType.UNDEF);
-            updateState(CURRENT_GENRE, UnDefType.UNDEF);
-            updateState(CURRENT_URL, UnDefType.UNDEF);
-            updateState(COVER_ART_URL, UnDefType.UNDEF);
-            updateState(COVER_ART, UnDefType.UNDEF);
+            updateState(CURRENT_ARTIST, UnDefType.NULL);
+            updateState(CURRENT_ALBUM, UnDefType.NULL);
+            updateState(CURRENT_TITLE, UnDefType.NULL);
+            updateState(CURRENT_GENRE, UnDefType.NULL);
+            updateState(CURRENT_URL, UnDefType.NULL);
+            updateState(COVER_ART_URL, UnDefType.NULL);
+            updateState(COVER_ART, UnDefType.NULL);
         }
     }
 
     private void updateCurrentItemState(PlaylistItem currentItem) {
-        logger.debug(speaker.getName() + ": PlaylistItem changed to " + currentItem);
+        logger.debug("{}: PlaylistItem changed to {}", speaker.getName(), currentItem);
         updateState(CURRENT_ARTIST, new StringType(currentItem.getArtist()));
         updateState(CURRENT_ALBUM, new StringType(currentItem.getAlbum()));
         updateState(CURRENT_TITLE, new StringType(currentItem.getTitle()));
         updateState(CURRENT_GENRE, new StringType(currentItem.getGenre()));
-        updateState(CURRENT_DURATION, new DecimalType(currentItem.getDurationInMs()));
+        updateDuration(currentItem.getDurationInMs());
         updateState(CURRENT_URL, new StringType(currentItem.getUrl()));
         updateCoverArtState(currentItem.getThumbnailUrl());
 
         try {
             updateState(CURRENT_USER_DATA, new StringType(String.valueOf(currentItem.getUserData())));
         } catch (SpeakerException e) {
-            logger.warn("Unable to update current user data: " + e.getMessage(), e);
+            logger.warn("Unable to update current user data: {}", e.getMessage(), e);
         }
         logger.debug("MediaType: " + currentItem.getMediaType());
     }
 
+    private void updateDuration(long durationInMs) {
+        DecimalType duration = new DecimalType(durationInMs / 1000);
+        duration.format("%d s");
+        updateState(CURRENT_DURATION, duration);
+    }
+
     private void updateCoverArtState(String coverArtUrl) {
         try {
-            logger.debug(speaker.getName() + ": Cover art URL changed to " + coverArtUrl);
+            logger.debug("{}: Cover art URL changed to {}", speaker.getName(), coverArtUrl);
             updateState(COVER_ART_URL, new StringType(coverArtUrl));
             if (!coverArtUrl.isEmpty()) {
                 updateState(COVER_ART, new RawType(getRawDataFromUrl(coverArtUrl)));
             } else {
-                updateState(COVER_ART, UnDefType.UNDEF);
+                updateState(COVER_ART, UnDefType.NULL);
             }
         } catch (Exception e) {
             logger.warn("Error getting cover art", e);
@@ -428,7 +444,7 @@ public class AllPlayHandler extends BaseThingHandler
     private int convertPercentToAbsoluteVolume(PercentType percentVolume) throws SpeakerException {
         int range = volumeRange.getMax() - volumeRange.getMin();
         int volume = (percentVolume.shortValue() * range) / 100;
-        logger.debug("Volume " + percentVolume.intValue() + "% has been converted to absolute volume " + volume);
+        logger.debug("Volume {}% has been converted to absolute volume {}", percentVolume.intValue(), volume);
         return volume;
     }
 
@@ -438,13 +454,13 @@ public class AllPlayHandler extends BaseThingHandler
         if (range > 0) {
             percentVolume = (volume * 100) / range;
         }
-        logger.debug("Absolute volume " + volume + " has been converted to volume " + percentVolume + "%");
+        logger.debug("Absolute volume {} has been converted to volume {}%", volume, percentVolume);
         return new PercentType(percentVolume);
     }
 
     private boolean isSpeakerReady() {
         if (speaker == null || !speaker.isConnected()) {
-            logger.warn("Cannot execute command, speaker " + speaker + " is not discovered/connected!");
+            logger.warn("Cannot execute command, speaker {} is not discovered/connected!", speaker);
             return false;
         }
         return true;
@@ -481,10 +497,10 @@ public class AllPlayHandler extends BaseThingHandler
                 discoverSpeaker();
             }
         };
-        logger.info("Scheduling job to rediscover to speaker " + speaker.getName());
+        logger.debug("Scheduling job to rediscover to speaker {}", speaker);
         // TODO: Check if it makes sense to repeat the discovery every x minutes or if the AllJoyn library is able to
         // handle re-discovery in _all_ cases.
-        reconnectionJob = scheduler.scheduleAtFixedRate(runnable, 5, 600, TimeUnit.SECONDS);
+        reconnectionJob = scheduler.scheduleWithFixedDelay(runnable, 5, 600, TimeUnit.SECONDS);
     }
 
     /**

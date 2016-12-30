@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -88,7 +89,7 @@ public class AllPlaySpeakerDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     public void onSpeakerAnnounced(Speaker speaker) {
-        logger.debug("Speaker " + speaker.getId() + " (" + speaker.getName() + ") found by discovery service");
+        logger.debug("Speaker {} found by discovery service", speaker);
         ThingUID thingUID = new ThingUID(AllPlayBindingConstants.SPEAKER_THING_TYPE, speaker.getId());
 
         Map<String, Object> properties = new HashMap<>();

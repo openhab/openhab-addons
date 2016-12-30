@@ -10,14 +10,12 @@
 		<parameter name="rewindSkipTimeInSec" type="decimal">
 			<label>Rewind skip time (s)</label>
 			<description>Seconds to jump backwards if the rewind command is executed</description>
-			<required>true</required>
 			<default>10</default>
 			<unitLabel>s</unitLabel>
 		</parameter>
 		<parameter name="fastForwardSkipTimeInSec" type="decimal">
 			<label>Fast forward skip time (s)</label>
 			<description>Seconds to jump forward if the fastforward command is executed</description>
-			<required>true</required>
 			<default>10</default>
 			<unitLabel>s</unitLabel>
 		</parameter>

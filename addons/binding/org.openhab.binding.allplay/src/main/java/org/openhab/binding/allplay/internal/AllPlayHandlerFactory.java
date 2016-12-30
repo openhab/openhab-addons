@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,7 +51,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(AllPlayBindingConstants.SPEAKER_THING_TYPE)) {
-            logger.debug("Creating AllPlayHandler for thing " + thing.getUID());
+            logger.debug("Creating AllPlayHandler for thing {}", thing.getUID());
             return new AllPlayHandler(thing, allPlay, speakerProperties);
         }
         return null;

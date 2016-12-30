@@ -43,8 +43,8 @@
 			<parameter name="volumeStepSize" type="integer">
 				<label>Volume step size</label>
 				<description>Step size to use if the volume is changed using the increase/decrease command.</description>
-				<required>true</required>
-				<default>5</default>
+				<default>1</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -83,7 +83,7 @@
 	<channel-type id="currentduration" advanced="true">
 		<item-type>Number</item-type>
 		<label>Current Duration</label>
-		<description>Duration in milliseconds of the track currently playing</description>
+		<description>Duration in seconds of the track currently playing</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="currentgenre" advanced="true">
@@ -127,24 +127,18 @@
 		<label>Mute</label>
 		<description>Set or get the mute state of the speaker</description>
 	</channel-type>
-	<channel-type id="playstate">
+	<channel-type id="playstate" advanced="true">
 		<item-type>String</item-type>
 		<label>State</label>
-		<description>The State channel contains state of the Speaker, e.g. PLAYING, STOPPED,...</description>
+		<description>The State channel contains state of the Speaker, e.g. BUFFERING, PLAYING, STOPPED,...</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="shufflemode" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Shuffle Mode</label>
-		<description>Shuffle mode of the speaker (LINEAR, SHUFFLE)</description>
-		<state>
-			<options>
-				<option value="LINEAR">Linear</option>
-				<option value="SHUFFLE">Shuffle</option>
-			</options>
-		</state>
+		<description>Toggle the shuffle mode of the speaker</description>
 	</channel-type>
-	<channel-type id="stop">
+	<channel-type id="stop" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the current playback</description>
