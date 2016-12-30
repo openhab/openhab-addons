@@ -2,6 +2,7 @@
 
 This binding integrates devices compatible with [Qualcomm AllPlay](https://www.qualcomm.com/products/allplay).
 The binding uses native libraries for the AllJoyn framework. Libraries for the following platforms are already included in the binding:
+
 * Linux ARM
 * Linux x86 (32 bit)
 * Linux x86-64 (64 bit)
@@ -27,6 +28,7 @@ The binding does not require any special configuration
 AllPlay Players are identified by their device ID.
 
 In the thing file, this looks e.g. like
+
 ```
 Thing allplay:speaker:mySpeaker [ deviceId="9fbe37ca-d015-47a2-b76e-8fce7bc25687"]
 ```
