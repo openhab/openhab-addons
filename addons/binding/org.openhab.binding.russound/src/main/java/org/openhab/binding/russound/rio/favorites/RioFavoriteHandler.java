@@ -82,29 +82,29 @@ public class RioFavoriteHandler extends AbstractThingHandler<RioFavoriteProtocol
             if (command instanceof StringType) {
                 getProtocolHandler().setName(command.toString());
             } else {
-                logger.error("Received a favorite name channel command with a non StringType: {}", command);
+                logger.warn("Received a favorite name channel command with a non StringType: {}", command);
             }
         } else if (id.equals(RioConstants.CHANNEL_FAVSAVE)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().saveFavorite(command == OnOffType.ON);
             } else {
-                logger.error("Received a favorite save channel command with a non OnOffType: {}", command);
+                logger.warn("Received a favorite save channel command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_FAVRESTORE)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().restoreFavorite(command == OnOffType.ON);
             } else {
-                logger.error("Received a favorite restore channel command with a non OnOffType: {}", command);
+                logger.warn("Received a favorite restore channel command with a non OnOffType: {}", command);
             }
         } else if (id.equals(RioConstants.CHANNEL_FAVDELETE)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().deleteFavorite(command == OnOffType.ON);
             } else {
-                logger.error("Received a favorite delete channel command with a non OnOffType: {}", command);
+                logger.warn("Received a favorite delete channel command with a non OnOffType: {}", command);
             }
         } else {
-            logger.error("Unknown/Unsupported Channel id: {}", id);
+            logger.warn("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -216,6 +216,11 @@ public class RioFavoriteHandler extends AbstractThingHandler<RioFavoriteProtocol
                     @Override
                     public void stateChanged(String channelId, State state) {
                         updateState(channelId, state);
+                    }
+
+                    @Override
+                    public void setProperty(String propertyName, String propertyValue) {
+                        getThing().setProperty(propertyName, propertyValue);
                     }
                 })));
 

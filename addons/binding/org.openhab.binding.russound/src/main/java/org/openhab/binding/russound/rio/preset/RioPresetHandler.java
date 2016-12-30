@@ -81,7 +81,7 @@ public class RioPresetHandler extends AbstractThingHandler<RioPresetProtocol> {
             if (command instanceof StringType) {
                 getProtocolHandler().setName(command.toString());
             } else {
-                logger.error("Received a preset name channel command with a non StringType: {}", command);
+                logger.warn("Received a preset name channel command with a non StringType: {}", command);
             }
         } else if (id.equals(RioConstants.CHANNEL_PRESETSAVE)) {
             getProtocolHandler().savePreset();
@@ -90,7 +90,7 @@ public class RioPresetHandler extends AbstractThingHandler<RioPresetProtocol> {
         } else if (id.equals(RioConstants.CHANNEL_PRESETDELETE)) {
             getProtocolHandler().deletePreset();
         } else {
-            logger.error("Unknown/Unsupported Channel id: {}", id);
+            logger.warn("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -208,6 +208,11 @@ public class RioPresetHandler extends AbstractThingHandler<RioPresetProtocol> {
                     @Override
                     public void stateChanged(String channelId, State state) {
                         updateState(channelId, state);
+                    }
+
+                    @Override
+                    public void setProperty(String propertyName, String propertyValue) {
+                        getThing().setProperty(propertyName, propertyValue);
                     }
                 })));
 

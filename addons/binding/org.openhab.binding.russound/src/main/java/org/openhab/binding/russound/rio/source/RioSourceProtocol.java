@@ -315,12 +315,12 @@ class RioSourceProtocol extends AbstractRioProtocol {
                         break;
 
                     case SRC_TYPE:
-                        stateChanged(RioConstants.CHANNEL_SOURCETYPE, new StringType(value));
+                        setProperty(RioConstants.PROPERTY_SOURCETYPE, value);
                         break;
 
                     case SRC_IPADDRESS:
                     case SRC_IPADDRESS2:
-                        stateChanged(RioConstants.CHANNEL_SOURCEIPADDRESS, new StringType(value));
+                        setProperty(RioConstants.PROPERTY_SOURCEIPADDRESS, value);
                         break;
 
                     case SRC_COMPOSERNAME:
@@ -404,10 +404,10 @@ class RioSourceProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid Source Notification (source not a parsable integer): '{}')", resp);
+                logger.warn("Invalid Source Notification (source not a parsable integer): '{}')", resp);
             }
         } else {
-            logger.error("Invalid Source Notification response: '{}'", resp);
+            logger.warn("Invalid Source Notification response: '{}'", resp);
         }
 
     }

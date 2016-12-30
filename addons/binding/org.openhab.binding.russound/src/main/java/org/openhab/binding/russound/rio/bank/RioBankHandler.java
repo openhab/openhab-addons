@@ -101,10 +101,10 @@ public class RioBankHandler extends AbstractBridgeHandler<RioBankProtocol> {
             if (command instanceof StringType) {
                 getProtocolHandler().setName(command.toString());
             } else {
-                logger.error("Received a favorite name channel command with a non StringType: {}", command);
+                logger.warn("Received a favorite name channel command with a non StringType: {}", command);
             }
         } else {
-            logger.error("Unknown/Unsupported Channel id: {}", id);
+            logger.warn("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -201,6 +201,11 @@ public class RioBankHandler extends AbstractBridgeHandler<RioBankProtocol> {
                     @Override
                     public void stateChanged(String channelId, State state) {
                         updateState(channelId, state);
+                    }
+
+                    @Override
+                    public void setProperty(String propertyName, String propertyValue) {
+                        getThing().setProperty(propertyName, propertyValue);
                     }
                 })));
 

@@ -175,9 +175,9 @@ class RioSystemProtocol extends AbstractRioProtocol {
         }
         if (m.groupCount() == 1) {
             final String version = m.group(1);
-            stateChanged(RioConstants.CHANNEL_SYSVERSION, new StringType(version));
+            setProperty(RioConstants.PROPERTY_SYSVERSION, version);
         } else {
-            logger.error("Invalid System Notification response: '{}'", resp);
+            logger.warn("Invalid System Notification response: '{}'", resp);
         }
 
     }
@@ -209,7 +209,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
                     break;
             }
         } else {
-            logger.error("Invalid System Notification response: '{}'", resp);
+            logger.warn("Invalid System Notification response: '{}'", resp);
         }
 
     }

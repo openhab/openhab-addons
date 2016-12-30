@@ -110,90 +110,89 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             if (command instanceof DecimalType) {
                 getProtocolHandler().setZoneBass(((DecimalType) command).intValue());
             } else {
-                logger.error("Received a ZONE BASS channel command with a non DecimalType: {}", command);
+                logger.warn("Received a ZONE BASS channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONETREBLE)) {
             if (command instanceof DecimalType) {
                 getProtocolHandler().setZoneTreble(((DecimalType) command).intValue());
             } else {
-                logger.error("Received a ZONE TREBLE channel command with a non DecimalType: {}", command);
+                logger.warn("Received a ZONE TREBLE channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEBALANCE)) {
             if (command instanceof DecimalType) {
                 getProtocolHandler().setZoneBalance(((DecimalType) command).intValue());
             } else {
-                logger.error("Received a ZONE BALANCE channel command with a non DecimalType: {}", command);
+                logger.warn("Received a ZONE BALANCE channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONETURNONVOLUME)) {
             if (command instanceof DecimalType) {
                 getProtocolHandler().setZoneTurnOnVolume(((DecimalType) command).intValue());
             } else {
-                logger.error("Received a ZONE TURN ON VOLUME channel command with a non DecimalType: {}", command);
+                logger.warn("Received a ZONE TURN ON VOLUME channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONELOUDNESS)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setZoneLoudness(command == OnOffType.ON);
             } else {
-                logger.error("Received a ZONE TURN ON VOLUME channel command with a non OnOffType: {}", command);
+                logger.warn("Received a ZONE TURN ON VOLUME channel command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONESLEEPTIMEREMAINING)) {
             if (command instanceof DecimalType) {
                 getProtocolHandler().setZoneSleepTimeRemaining(((DecimalType) command).intValue());
             } else {
-                logger.error("Received a ZONE SLEEP TIME REMAINING channel command with a non DecimalType: {}",
-                        command);
+                logger.warn("Received a ZONE SLEEP TIME REMAINING channel command with a non DecimalType: {}", command);
             }
         } else if (id.equals(RioConstants.CHANNEL_ZONESOURCE)) {
             if (command instanceof DecimalType) {
                 getProtocolHandler().setZoneSource(((DecimalType) command).intValue());
             } else {
-                logger.error("Received a ZONE SOURCE channel command with a non DecimalType: {}", command);
+                logger.warn("Received a ZONE SOURCE channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONESTATUS)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setZoneStatus(command == OnOffType.ON);
             } else {
-                logger.error("Received a ZONE STATUS channel command with a non OnOffType: {}", command);
+                logger.warn("Received a ZONE STATUS channel command with a non OnOffType: {}", command);
             }
         } else if (id.equals(RioConstants.CHANNEL_ZONEPARTYMODE)) {
             if (command instanceof StringType) {
                 getProtocolHandler().setZonePartyMode(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE PARTY MODE channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE PARTY MODE channel command with a non StringType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEDONOTDISTURB)) {
             if (command instanceof StringType) {
                 getProtocolHandler().setZoneDoNotDisturb(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE DO NOT DISTURB channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE DO NOT DISTURB channel command with a non StringType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEMUTE)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().toggleZoneMute();
             } else {
-                logger.error("Received a ZONE MUTE channel command with a non OnOffType: {}", command);
+                logger.warn("Received a ZONE MUTE channel command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEREPEAT)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().toggleZoneRepeat();
             } else {
-                logger.error("Received a ZONE REPEAT channel command with a non OnOffType: {}", command);
+                logger.warn("Received a ZONE REPEAT channel command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONESHUFFLE)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().toggleZoneShuffle();
             } else {
-                logger.error("Received a ZONE SHUFFLE channel command with a non OnOffType: {}", command);
+                logger.warn("Received a ZONE SHUFFLE channel command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEVOLUME)) {
@@ -204,7 +203,7 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             } else if (command instanceof PercentType) {
                 getProtocolHandler().setZoneVolume(((PercentType) command).intValue() / 2); // only support 0-50
             } else {
-                logger.error(
+                logger.warn(
                         "Received a ZONE VOLUME channel command with a non OnOffType/IncreaseDecreaseType/PercentType: {}",
                         command);
             }
@@ -213,46 +212,46 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setZoneRating(command == OnOffType.ON);
             } else {
-                logger.error("Received a ZONE RATING channel command with a non OnOffType: {}", command);
+                logger.warn("Received a ZONE RATING channel command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEKEYPRESS)) {
             if (command instanceof StringType) {
                 getProtocolHandler().sendKeyPress(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE KEYPRESS channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE KEYPRESS channel command with a non StringType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEKEYRELEASE)) {
             if (command instanceof StringType) {
                 getProtocolHandler().sendKeyRelease(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE KEYRELEASE channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE KEYRELEASE channel command with a non StringType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEKEYHOLD)) {
             if (command instanceof StringType) {
                 getProtocolHandler().sendKeyHold(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE KEYHOLD channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE KEYHOLD channel command with a non StringType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEKEYCODE)) {
             if (command instanceof StringType) {
                 getProtocolHandler().sendKeyCode(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE KEYCODE channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE KEYCODE channel command with a non StringType: {}", command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONEEVENT)) {
             if (command instanceof StringType) {
                 getProtocolHandler().sendEvent(((StringType) command).toString());
             } else {
-                logger.error("Received a ZONE EVENT channel command with a non StringType: {}", command);
+                logger.warn("Received a ZONE EVENT channel command with a non StringType: {}", command);
             }
 
         } else {
-            logger.error("Unknown/Unsupported Channel id: {}", id);
+            logger.warn("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -374,6 +373,11 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
                     @Override
                     public void stateChanged(String channelId, State state) {
                         updateState(channelId, state);
+                    }
+
+                    @Override
+                    public void setProperty(String propertyName, String propertyValue) {
+                        getThing().setProperty(propertyName, propertyValue);
                     }
                 })));
         updateStatus(ThingStatus.ONLINE);

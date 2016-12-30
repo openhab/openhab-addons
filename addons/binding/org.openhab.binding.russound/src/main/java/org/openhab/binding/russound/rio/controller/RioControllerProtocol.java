@@ -11,7 +11,6 @@ package org.openhab.binding.russound.rio.controller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.SocketSessionListener;
 import org.openhab.binding.russound.rio.AbstractRioProtocol;
@@ -112,15 +111,15 @@ class RioControllerProtocol extends AbstractRioProtocol {
 
                 switch (key) {
                     case CTL_TYPE:
-                        stateChanged(RioConstants.CHANNEL_CTLTYPE, new StringType(value));
+                        setProperty(RioConstants.PROPERTY_CTLTYPE, value);
                         break;
 
                     case CTL_IPADDRESS:
-                        stateChanged(RioConstants.CHANNEL_CTLIPADDRESS, new StringType(value));
+                        setProperty(RioConstants.PROPERTY_CTLIPADDRESS, value);
                         break;
 
                     case CTL_MACADDRESS:
-                        stateChanged(RioConstants.CHANNEL_CTLMACADDRESS, new StringType(value));
+                        setProperty(RioConstants.PROPERTY_CTLMACADDRESS, value);
                         break;
 
                     default:
@@ -128,10 +127,10 @@ class RioControllerProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid Controller Notification (controller not a parsable integer): '{}')", resp);
+                logger.warn("Invalid Controller Notification (controller not a parsable integer): '{}')", resp);
             }
         } else {
-            logger.error("Invalid Controller Notification response: '{}'", resp);
+            logger.warn("Invalid Controller Notification response: '{}'", resp);
         }
 
     }

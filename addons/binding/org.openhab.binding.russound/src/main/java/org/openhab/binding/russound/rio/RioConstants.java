@@ -39,16 +39,18 @@ public class RioConstants {
     public final static ThingTypeUID THING_TYPE_ZONE_FAVORITE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
             "zonefavorite");
 
+    // SYSTEM PROPERTIES
+    public final static String PROPERTY_SYSVERSION = "Firmware Version";
+
     // SYSTEM CHANNELS
-    public final static String CHANNEL_SYSVERSION = "version"; // readonly
     public final static String CHANNEL_SYSSTATUS = "status"; // readonly
     public final static String CHANNEL_SYSLANG = "lang"; // read/write - english, chinese, russian
     public final static String CHANNEL_SYSALLON = "allon"; // read/write - english, chinese, russian
 
-    // CONTROLLER CHANNELS
-    public final static String CHANNEL_CTLTYPE = "type"; // readonly
-    public final static String CHANNEL_CTLIPADDRESS = "ipaddress"; // readonly
-    public final static String CHANNEL_CTLMACADDRESS = "macaddress"; // readonly
+    // CONTROLLER PROPERTIES
+    public final static String PROPERTY_CTLTYPE = "Model Type";
+    public final static String PROPERTY_CTLIPADDRESS = "IP Address";
+    public final static String PROPERTY_CTLMACADDRESS = "MAC Address";
 
     // ZONE CHANNELS
     public final static String CHANNEL_ZONENAME = "name"; // 12 max
@@ -96,10 +98,12 @@ public class RioConstants {
     public final static String CHANNEL_PRESETRESTORE = "restore";
     public final static String CHANNEL_PRESETDELETE = "delete";
 
+    // SOURCE PROPERTIES
+    public final static String PROPERTY_SOURCETYPE = "Source Type";
+    public final static String PROPERTY_SOURCEIPADDRESS = "IP Address";
+
     // SOURCE CHANNELS
     public final static String CHANNEL_SOURCENAME = "name";
-    public final static String CHANNEL_SOURCETYPE = "type";
-    public final static String CHANNEL_SOURCEIPADDRESS = "ipaddress";
     public final static String CHANNEL_SOURCECOMPOSERNAME = "composername";
     public final static String CHANNEL_SOURCECHANNEL = "channel";
     public final static String CHANNEL_SOURCECHANNELNAME = "channelname";

@@ -240,11 +240,11 @@ class RioFavoriteProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid System Favorite Notification (favorite not a parsable integer): '{}')", resp);
+                logger.warn("Invalid System Favorite Notification (favorite not a parsable integer): '{}')", resp);
             }
 
         } else {
-            logger.error("Invalid System Favorite Notification: '{}')", resp);
+            logger.warn("Invalid System Favorite Notification: '{}')", resp);
         }
     }
 
@@ -294,12 +294,12 @@ class RioFavoriteProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error(
+                logger.warn(
                         "Invalid zone favorite Notification (controller/zone/favorite not a parsable integer): '{}')",
                         resp);
             }
         } else {
-            logger.error("Invalid Zone Favorite Notification: '{}')", resp);
+            logger.warn("Invalid Zone Favorite Notification: '{}')", resp);
         }
     }
 

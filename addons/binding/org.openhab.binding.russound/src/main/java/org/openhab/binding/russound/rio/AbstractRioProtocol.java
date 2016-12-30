@@ -86,6 +86,16 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
     }
 
     /**
+     * Updates a property via the {@link RioHandlerCallback#setProperty(String, String)}
+     *
+     * @param propertyName a non-null, non-empty property name
+     * @param propertyValue a non-null, possibly empty property value
+     */
+    protected void setProperty(String propertyName, String propertyValue) {
+        getCallback().setProperty(propertyName, propertyValue);
+    }
+
+    /**
      * Updates the status via {@link RioHandlerCallback#statusChanged(ThingStatus, ThingStatusDetail, String)}
      *
      * @param status the new status

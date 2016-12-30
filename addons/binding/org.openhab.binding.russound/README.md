@@ -19,6 +19,7 @@ This binding provides integration with any Russound system that support the RIO 
 The following configurations occur for each of the bridges/things:
 
 ### Russound System
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | ipAddress    | string        | IP Address or host name of the russound system (usually main controller) |
@@ -26,41 +27,49 @@ The following configurations occur for each of the bridges/things:
 | retryPolling | int           | Interval, in seconds, to retry a failed connection attempt               |
 
 ### Russound System Favorite
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | favorite     | int           | The favorite # (1-32)                                                    |
 
 ### Russound Source
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | source       | int           | The source # (1-12)                                                      |
 
 ### Russound Bank
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | bank         | int           | The bank # (1-6)                                                         |
 
 ### Russound Preset
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | preset       | int           | The preset # (1-6)                                                       |
 
 ### Russound Controller
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | controller   | int           | The controller address # (1-6)                                           |
 
 ### Russound Zone
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | zone         | int           | The zone # (1-6)                                                         |
 
 ### Russound Zone Favorite
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | favorite     | int           | The zone favorite # (1-2)                                                |
 
 ### Russound Zone Preset Commands
+
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
 | preset       | int           | The zone preset # (1-36 - corresponds to bank 1-6, preset 1-6)           |
@@ -71,19 +80,22 @@ The following configurations occur for each of the bridges/things:
 The following channels are supported for each bridge/thing
 
 ### Russound System
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | version            | R          | String       | The firmware version of the system                                   |
 | status             | R          | Switch       | Whether any controller/zone is on (or if all are off)                |
 | language           | RW         | String       | System language (english, chinese and russian are supported)         |
 
-### Russound System Favorite 
+### Russound System Favorite
+ 
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | name               | R          | String       | The name of the system favorite (changed by zone favorites)          |
 | valid              | R          | Switch       | If system favorite is valid or not (changed by zone favorites)       |
 
 ### Russound Source (please see source cross-reference below for what is supported by which sources)
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | name               | R          | String       | The name of the source                                               |
@@ -111,24 +123,28 @@ The following channels are supported for each bridge/thing
 | volume             | R          | String       | The source's volume level (undocumented)                             |
 
 ### Russound Bank
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | name               | R          | String       | The name of the bank (changed by SCS-C5 software)                    |
 
 ### Russound Preset
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | name               | R          | String       | The name of the Preset (changed by zone preset commands)             |
 | valid              | R          | Switch       | If preset is valid or not (changed by zone preset commands)          |
 
 ### Russound Controller
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | type               | R          | String       | The model type of the controller (i.e. "MCA-C5")                     |
 | ipaddress          | R          | String       | The IPAddress of the controller (only if it's the main controller)   |
 | macaddress         | R          | String       | The MAC Address of the controller (only if it's the main controller) |
 
-### Russound Zone      
+### Russound Zone
+      
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | status             | RW         | Switch       | Whether the zone is on or off                                        |
@@ -164,6 +180,7 @@ The following channels are supported for each bridge/thing
 
 
 ### Russound Zone Favorite   
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | name               | RW         | String       | The name of the zone favorite (only saved via 'save' channel)        |
@@ -173,6 +190,7 @@ The following channels are supported for each bridge/thing
 | delete             | W          | Switch       | Deletes the favorite (ON=System favorite, OFF=zone favorite)         |
 
 ### Russound Zone Preset Commands
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                          |
 |--------------------|------------|--------------|--------------------------------------------------------------------- |
 | save               | W          | Switch       | Save the zone as a preset                                            |
@@ -181,6 +199,7 @@ The following channels are supported for each bridge/thing
 
 
 ### Source channel support cross reference
+
 | Channel Type ID    | Sirius | XM | SMS3 | DMS 3.1 Media | DMS 3.1 AM/FM | iBridge | Internal AM/FM | Arcam T32 | Others |                                             
 |--------------------|--------|----|------|---------------|---------------|---------|----------------|-----------|--------|
 | name               | X      | X  | X    | X             | X             | X       | X              | X         | X      |         
@@ -208,6 +227,7 @@ The following channels are supported for each bridge/thing
 1.  Sirius Internal Radio Only
 
 ## Full Example
+
 The following is an example of 
 1. Main controller (#1) at ipaddress 192.168.1.24
 2. Two Sources connected to it (#1 is the internal AM/FM and #2 is a DMS 3.1)

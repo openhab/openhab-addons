@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.russound.rio;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -29,7 +31,11 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
     private final RioHandlerCallback _wrappedCallback;
 
     /** The state by channel id */
-    private final Map<String, State> _state = new HashMap<String, State>();
+    private final Map<String, State> _state = new ConcurrentHashMap<String, State>();
+
+    private final Lock _statusLock = new ReentrantLock();
+    private ThingStatus _lastThingStatus = null;
+    private ThingStatusDetail _lastThingStatusDetail = null;
 
     /**
      * Create the callback from the other {@link RioHandlerCallback}
@@ -47,13 +53,26 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
 
     /**
      * Overrides the status changed to simply call the {@link #_wrappedCallback}
-     * 
+     *
      * @param status the new status
      * @param detail the new detail
      * @param msg the new message
      */
     @Override
     public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
+        _statusLock.lock();
+        try {
+            // Simply return we match the last status change (prevents loops if changing to the same status)
+            if (status == _lastThingStatus && detail == _lastThingStatusDetail) {
+                return;
+            }
+
+            _lastThingStatus = status;
+            _lastThingStatusDetail = detail;
+        } finally {
+            _statusLock.unlock();
+        }
+        // If we got this far - call the underlying one
         _wrappedCallback.statusChanged(status, detail, msg);
 
     }
@@ -61,7 +80,7 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
     /**
      * Overrides the state changed to determine if the state is new or changed and then
      * to call the {@link #_wrappedCallback} if it has
-     * 
+     *
      * @param channelId the channel id that changed
      * @param state the new state
      */
@@ -100,5 +119,17 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
             return;
         }
         _state.remove(channelId);
+    }
+
+    /**
+     * Overrides the set property to simply call the {@link #_wrappedCallback}
+     *
+     * @param propertyName a non-null, non-empty property name
+     * @param propertyValue a non-null, possibly empty property value
+     */
+    @Override
+    public void setProperty(String propertyName, String propertyValue) {
+        _wrappedCallback.setProperty(propertyName, propertyValue);
+
     }
 }

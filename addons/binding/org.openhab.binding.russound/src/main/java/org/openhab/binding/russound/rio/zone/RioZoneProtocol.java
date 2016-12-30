@@ -620,10 +620,10 @@ class RioZoneProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid Zone Notification (controller/zone not a parsable integer): '{}')", resp);
+                logger.warn("Invalid Zone Notification (controller/zone not a parsable integer): '{}')", resp);
             }
         } else {
-            logger.error("Invalid Zone Notification response: '{}'", resp);
+            logger.warn("Invalid Zone Notification response: '{}'", resp);
         }
 
     }

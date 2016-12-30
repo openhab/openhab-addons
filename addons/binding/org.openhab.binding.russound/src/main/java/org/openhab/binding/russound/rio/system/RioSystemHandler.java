@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.russound.internal.net.SocketChannelSession;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.rio.AbstractBridgeHandler;
 import org.openhab.binding.russound.rio.RioConstants;
@@ -108,16 +109,16 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             if (command instanceof StringType) {
                 getProtocolHandler().setSystemLanguage(((StringType) command).toString());
             } else {
-                logger.error("Received a SYSTEM LANGUAGE channel command with a non StringType: {}", command);
+                logger.warn("Received a SYSTEM LANGUAGE channel command with a non StringType: {}", command);
             }
         } else if (id.equals(RioConstants.CHANNEL_SYSALLON)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setSystemAllOn(command == OnOffType.ON);
             } else {
-                logger.error("Received a SYSTEM ALL ON channel command with a non OnOffType: {}", command);
+                logger.warn("Received a SYSTEM ALL ON channel command with a non OnOffType: {}", command);
             }
         } else {
-            logger.error("Unknown/Unsupported Channel id: {}", id);
+            logger.warn("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -145,8 +146,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         } else if (id.equals(RioConstants.CHANNEL_SYSSTATUS)) {
             getProtocolHandler().refreshSystemStatus();
 
-        } else if (id.equals(RioConstants.CHANNEL_SYSVERSION)) {
-            getProtocolHandler().refreshVersion();
         } else {
             // Can't refresh any others...
         }
@@ -173,7 +172,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             return;
         }
 
-        _session = new SocketSession(config.getIpAddress(), 9621);
+        _session = new SocketChannelSession(config.getIpAddress(), 9621);
         setProtocolHandler(new RioSystemProtocol(_session, new StatefulHandlerCallback(new RioHandlerCallback() {
             @Override
             public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
@@ -186,6 +185,11 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             @Override
             public void stateChanged(String channelId, State state) {
                 updateState(channelId, state);
+            }
+
+            @Override
+            public void setProperty(String propertyName, String propertyValue) {
+                getThing().setProperty(propertyName, propertyValue);
             }
 
         })));
@@ -226,7 +230,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
                                     }
                                 }
                             } catch (Exception e) {
-                                logger.error("Exception while pinging: {}", e);
+                                logger.error("Exception while pinging: {}", e.getMessage(), e);
                             }
                         }
                     }, config.getPing(), config.getPing(), TimeUnit.SECONDS);
@@ -235,15 +239,14 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
                     updateStatus(ThingStatus.ONLINE);
                     return;
                 } else {
-                    logger.error("getRioConfig returned a null");
+                    logger.warn("getRioConfig returned a null!");
                 }
             } else {
-                logger.error("Login return {}", response);
+                logger.warn("Login return {}", response);
             }
 
         } catch (Exception e) {
-            logger.error("Error connecting: {}", e);
-            e.printStackTrace();
+            logger.error("Error connecting: {}", e.getMessage(), e);
             // do nothing
         }
 
@@ -299,8 +302,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
                         try {
                             connect();
                         } catch (Exception e) {
-                            logger.error("Exception connecting");
-                            e.printStackTrace();
+                            logger.error("Exception connecting: {}", e.getMessage(), e);
                         }
                     }
 

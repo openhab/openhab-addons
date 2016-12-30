@@ -110,10 +110,6 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
 
         if (id.equals(RioConstants.CHANNEL_SOURCENAME)) {
             getProtocolHandler().refreshSourceName();
-        } else if (id.startsWith(RioConstants.CHANNEL_SOURCETYPE)) {
-            getProtocolHandler().refreshSourceType();
-        } else if (id.startsWith(RioConstants.CHANNEL_SOURCEIPADDRESS)) {
-            getProtocolHandler().refreshSourceIpAddress();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCECOMPOSERNAME)) {
             getProtocolHandler().refreshSourceComposerName();
         } else if (id.startsWith(RioConstants.CHANNEL_SOURCECHANNEL)) {
@@ -221,6 +217,11 @@ public class RioSourceHandler extends AbstractBridgeHandler<RioSourceProtocol> {
                         @Override
                         public void stateChanged(String channelId, State state) {
                             updateState(channelId, state);
+                        }
+
+                        @Override
+                        public void setProperty(String propertyName, String propertyValue) {
+                            getThing().setProperty(propertyName, propertyValue);
                         }
                     })));
 

@@ -118,11 +118,11 @@ class RioBankProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid Bank Name Notification (bank/source not a parsable integer): '{}')", resp);
+                logger.warn("Invalid Bank Name Notification (bank/source not a parsable integer): '{}')", resp);
             }
 
         } else {
-            logger.error("Invalid Bank Notification: '{}')", resp);
+            logger.warn("Invalid Bank Notification: '{}')", resp);
         }
     }
 

@@ -240,10 +240,10 @@ class RioPresetProtocol extends AbstractRioProtocol {
                         break;
                 }
             } catch (NumberFormatException e) {
-                logger.error("Invalid Preset Notification (source/bank/preset not a parsable integer): '{}')", resp);
+                logger.warn("Invalid Preset Notification (source/bank/preset not a parsable integer): '{}')", resp);
             }
         } else {
-            logger.error("Invalid Preset Notification: '{}')", resp);
+            logger.warn("Invalid Preset Notification: '{}')", resp);
         }
     }
 

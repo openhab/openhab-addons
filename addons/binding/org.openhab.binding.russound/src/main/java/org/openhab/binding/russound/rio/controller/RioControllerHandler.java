@@ -14,11 +14,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.rio.AbstractBridgeHandler;
-import org.openhab.binding.russound.rio.RioConstants;
 import org.openhab.binding.russound.rio.RioHandlerCallback;
 import org.openhab.binding.russound.rio.StatefulHandlerCallback;
 import org.openhab.binding.russound.rio.source.RioSourceHandler;
@@ -60,52 +58,12 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
     /**
      * {@inheritDoc}
      *
-     * Handles commands to specific channels. This implementation will offload much of its work to the
-     * {@link RioControllerProtocol}. Basically we validate the type of command for the channel then call the
-     * {@link RioControllerProtocol} to handle the actual protocol. Special use case is the {@link RefreshType}
-     * where we call {{@link #handleRefresh(String)} to handle a refresh of the specific channel (which in turn calls
-     * {@link RioControllerProtocol} to handle the actual refresh
+     * Handles commands to specific channels - this handler has no channels to handle and
+     * is a NOP
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        if (command instanceof RefreshType) {
-            handleRefresh(channelUID.getId());
-            return;
-        }
-
         // no commands to implement
-    }
-
-    /**
-     * Method that handles the {@link RefreshType} command specifically. Calls the {@link RioControllerProtocol} to
-     * handle the actual refresh based on the channel id.
-     *
-     * @param id a non-null, possibly empty channel id to refresh
-     */
-    private void handleRefresh(String id) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
-        if (getProtocolHandler() == null) {
-            return;
-        }
-
-        // Remove the cache'd value to force a refreshed value
-        ((StatefulHandlerCallback) getProtocolHandler().getCallback()).removeState(id);
-
-        if (id.equals(RioConstants.CHANNEL_CTLTYPE)) {
-            getProtocolHandler().refreshControllerType();
-
-        } else if (id.equals(RioConstants.CHANNEL_CTLIPADDRESS)) {
-            getProtocolHandler().refreshControllerIpAddress();
-
-        } else if (id.equals(RioConstants.CHANNEL_CTLMACADDRESS)) {
-            getProtocolHandler().refreshControllerMacAddress();
-        } else {
-            // Can't refresh any others...
-        }
     }
 
     /**
@@ -174,6 +132,11 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
                     @Override
                     public void stateChanged(String channelId, State state) {
                         updateState(channelId, state);
+                    }
+
+                    @Override
+                    public void setProperty(String propertyName, String property) {
+                        getThing().setProperty(propertyName, property);
                     }
                 })));
 

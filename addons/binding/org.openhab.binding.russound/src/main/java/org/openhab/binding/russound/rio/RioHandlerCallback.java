@@ -38,4 +38,12 @@ public interface RioHandlerCallback {
      * @param state the new non-null {@State}
      */
     void stateChanged(String channelId, State state);
+
+    /**
+     * Callback to set a property for the thing
+     * 
+     * @param propertyName a non-null, non-empty property name
+     * @param propertyValue a non-null, possibly empty property value
+     */
+    void setProperty(String propertyName, String propertyValue);
 }
