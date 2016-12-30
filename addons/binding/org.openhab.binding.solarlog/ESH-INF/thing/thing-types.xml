@@ -98,7 +98,7 @@
     <channel-type id="yieldtotal">
     	<item-type>Number</item-type>
        	<label>Yield Total</label>
-    	<description>Total yield from all of the inverters</description>
+    	<description>Total yield from all of the inverters</description>
     	<state readOnly="true" pattern="%d Wh"></state>
        </channel-type>
     <channel-type id="conspac">
@@ -110,7 +110,7 @@
     <channel-type id="consyieldday">
     	<item-type>Number</item-type>
        	<label>Consumption Today</label>
-    	<description>Total consumption from all of the con- sumption meters</description>
+    	<description>Total consumption from all of the con- sumption meters</description>
     	<state readOnly="true" pattern="%d Wh"></state>
        </channel-type>
     <channel-type id="consyieldyesterday">
