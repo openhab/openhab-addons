@@ -16,7 +16,7 @@ import com.google.gson.JsonParser;
 
 /**
  * Collection of methods to help retrieve HTTP data from a SolarLog Server
- * Based on SqueezeBox HttpUtils
+ * Based on SqueezeBox HttpUtils, adapted for SolarLog.
  *
  * @author Dan Cunningham
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty

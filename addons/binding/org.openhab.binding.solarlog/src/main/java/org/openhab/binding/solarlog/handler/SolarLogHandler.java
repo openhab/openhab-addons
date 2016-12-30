@@ -37,7 +37,8 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link SolarLogHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to one of the channels. It does the "heavy lifting" of connecting to the
+ * SolarLog, getting the data, parsing it and updating the channels in OpenHab.
  *
  * @author Johann Richard - Initial contribution
  */

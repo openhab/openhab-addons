@@ -20,7 +20,7 @@ import org.openhab.binding.solarlog.handler.SolarLogHandler;
 
 /**
  * The {@link SolarLogHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * handlers. It is completely boiler-plare and nothing special at all.
  *
  * @author Johann Richard - Initial contribution
  */

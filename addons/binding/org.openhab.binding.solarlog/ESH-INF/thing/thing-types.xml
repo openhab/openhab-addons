@@ -32,7 +32,7 @@
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>
 				<description>URL of the SolarLog web interface (e.g. http://solarlog)</description>
-				<default></default>
+				<default>http://solar-log</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="15">
 				<label>Refresh Interval</label>
