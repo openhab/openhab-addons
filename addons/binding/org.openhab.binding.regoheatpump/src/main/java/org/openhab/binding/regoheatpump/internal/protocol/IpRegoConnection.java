@@ -28,14 +28,14 @@ public class IpRegoConnection implements RegoConnection {
 
     @Override
     public void connect() throws IOException {
-        logger.info("Connecting to '{}', port = {}.", address, port);
+        logger.debug("Connecting to '{}', port = {}.", address, port);
         if (clientSocket == null) {
             clientSocket = new Socket();
             clientSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
             clientSocket.setKeepAlive(true);
         }
         clientSocket.connect(new InetSocketAddress(address, port), CONNECTION_TIMEOUT);
-        logger.info("Connected to '{}', port = {}.", address, port);
+        logger.debug("Connected to '{}', port = {}.", address, port);
     }
 
     @Override
@@ -58,12 +58,17 @@ public class IpRegoConnection implements RegoConnection {
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException {
+    public OutputStream outputStream() throws IOException {
         return clientSocket.getOutputStream();
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public InputStream inputStream() throws IOException {
         return clientSocket.getInputStream();
+    }
+
+    @Override
+    public String connectionInfo() {
+        return address + ":" + port;
     }
 }

@@ -9,7 +9,6 @@ package org.openhab.binding.regoheatpump.handler;
 
 import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,6 +89,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         mapper = RegoRegisterMapper.rego600();
         connection = createConnection();
         refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
+
+        logger.info("Rego controller connected via {}", connection.connectionInfo());
 
         scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 1, refreshInterval, TimeUnit.SECONDS);
 
@@ -264,7 +265,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         } catch (IOException e) {
 
-            logger.warn("Accessing value for channel '" + channelIID + "' failed, retry " + Integer.toString(retry), e);
+            logger.debug("Accessing value for channel '" + channelIID + "' failed, retry " + Integer.toString(retry),
+                    e);
 
             if (connection != null) {
                 connection.close();
@@ -338,13 +340,13 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         // Protocol is request driven so there should be no data available before sending
         // a command to the heat pump.
-        final InputStream inputStream = connection.getInputStream();
+        final InputStream inputStream = connection.inputStream();
         final int available = inputStream.available();
         if (available > 0) {
             // Limit to max 64 bytes, fuse.
             final byte[] buffer = new byte[Math.min(64, available)];
             inputStream.read(buffer);
-            logger.warn("There are {} unexpected bytes available. Skipping {}.", available, buffer);
+            logger.debug("There are {} unexpected bytes available. Skipping {}.", available, buffer);
         }
 
         if (logger.isDebugEnabled()) {
@@ -352,7 +354,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
 
         // Send command
-        final OutputStream outputStream = connection.getOutputStream();
+        final OutputStream outputStream = connection.outputStream();
         outputStream.write(command);
         outputStream.flush();
 
@@ -366,18 +368,18 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
             if (len > 0) {
                 pos += len;
             } else {
-                // TODO: remove line below, for debug only.
-                logger.warn("Got EOS, giving more time for data to arrive");
+                // Give some time for response to arrive...
                 Thread.sleep(50);
             }
 
         } while (pos < response.length && timeout > System.currentTimeMillis());
 
         if (pos < response.length) {
-            // if (logger.isDebugEnabled()) {
-            logger.warn("Response not received, read {} bytes => {}", pos, response);
-            // }
-            throw new EOFException("Response not received");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response not received, read {} bytes => {}", pos, response);
+            }
+            throw new IOException("Response not received - got " + Integer.toString(pos) + " bytes of "
+                    + Integer.toString(response.length));
         }
 
         if (logger.isDebugEnabled()) {

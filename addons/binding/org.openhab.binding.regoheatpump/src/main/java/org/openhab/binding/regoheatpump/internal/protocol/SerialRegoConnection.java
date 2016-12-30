@@ -50,16 +50,21 @@ public class SerialRegoConnection implements RegoConnection {
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException {
+    public OutputStream outputStream() throws IOException {
         return serialPort.getOutputStream();
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public InputStream inputStream() throws IOException {
         return serialPort.getInputStream();
     }
 
     private boolean isPortNameExist(String portName) {
         return NRSerialPort.getAvailableSerialPorts().contains(portName);
+    }
+
+    @Override
+    public String connectionInfo() {
+        return portName;
     }
 }

@@ -23,7 +23,18 @@ public interface RegoConnection {
      **/
     public void close();
 
-    public OutputStream getOutputStream() throws IOException;
+    /**
+     * Returns an output stream for this connection.
+     */
+    public OutputStream outputStream() throws IOException;
 
-    public InputStream getInputStream() throws IOException;
+    /**
+     * Returns an input stream for this connection.
+     */
+    public InputStream inputStream() throws IOException;
+
+    /**
+     * Return the connection information.
+     */
+    public String connectionInfo();
 }
