@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author David Gräff - Initial contribution
  */
 public class YamahaReceiverHandler extends BaseThingHandler {
+    private static final String DEFAULT_NET_RADIO_MENU_DIR = "Bookmarks/__My_Favorites";
 
     private Logger logger = LoggerFactory.getLogger(YamahaReceiverHandler.class);
     private String host;
@@ -49,6 +50,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
     private YamahaReceiverState state = null;
     private ScheduledFuture<?> refreshTimer;
     private ZoneDiscoveryService zoneDiscoveryService;
+    private String netRadioMenuDir = DEFAULT_NET_RADIO_MENU_DIR;
 
     public YamahaReceiverHandler(Thing thing) {
         super(thing);
@@ -83,6 +85,10 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         } else {
             relativeVolumeChangeFactor = 0.5f;
         }
+
+        String netRadioMenuConfig = (String) thing.getConfiguration()
+                .get(YamahaReceiverBindingConstants.CONFIG_NETRADIOMENU);
+        netRadioMenuDir = netRadioMenuConfig != null ? netRadioMenuConfig : DEFAULT_NET_RADIO_MENU_DIR;
     }
 
     /**
@@ -111,6 +117,10 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         if (relVolumeChange != null) {
             relativeVolumeChangeFactor = relVolumeChange.floatValue();
         }
+
+        String netRadioMenuConfig = (String) thing.getConfiguration()
+                .get(YamahaReceiverBindingConstants.CONFIG_NETRADIOMENU);
+        netRadioMenuDir = netRadioMenuConfig != null ? netRadioMenuConfig : DEFAULT_NET_RADIO_MENU_DIR;
 
         // Determine the zone of this thing
         String zoneName = (String) thing.getConfiguration().get(YamahaReceiverBindingConstants.CONFIG_ZONE);
@@ -185,8 +195,10 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         }
         lastRefreshInMS = System.currentTimeMillis();
 
+        boolean includeNetradioStation = isLinked(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_STATION);
+
         try {
-            state.updateState();
+            state.updateState(includeNetradioStation);
             updateStatus(ThingStatus.ONLINE);
             updateState(YamahaReceiverBindingConstants.CHANNEL_POWER, state.isPower() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_INPUT, new StringType(state.getInput()));
@@ -194,6 +206,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             updateState(YamahaReceiverBindingConstants.CHANNEL_VOLUME, new PercentType((int) state.getVolume()));
             updateState(YamahaReceiverBindingConstants.CHANNEL_MUTE, state.isMute() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_TUNE, new DecimalType(state.netRadioChannel));
+            updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_STATION, new StringType(state.netRadioStation));
             logger.trace("State upddated!");
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -244,6 +257,9 @@ public class YamahaReceiverHandler extends BaseThingHandler {
                     break;
                 case YamahaReceiverBindingConstants.CHANNEL_NETRADIO_TUNE:
                     state.setNetRadio(((DecimalType) command).intValue());
+                    break;
+                case YamahaReceiverBindingConstants.CHANNEL_NETRADIO_STATION:
+                    state.setNetRadio(netRadioMenuDir, ((StringType) command).toString());
                     break;
                 default:
                     logger.error("Channel " + id + " not supported!");

@@ -56,6 +56,10 @@ public class YamahaReceiverCommunication {
     public static final int VOLUME_MAX = 12;
     public static final int VOLUME_RANGE = -VOLUME_MIN + VOLUME_MAX;
 
+    // Menu navigation timeouts
+    public static final int MENU_RETRY_DELAY = 500;
+    public static final int MENU_MAX_WAITING_TIME = 5000;
+
     // We need a lot of xml parsing. Create a document builder beforehand.
     private final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -175,7 +179,13 @@ public class YamahaReceiverCommunication {
                         + lineNo + "</Preset_Sel></Preset></Play_Control></NET_RADIO></YAMAHA_AV>");
     }
 
-    public void updateState(YamahaReceiverState state) throws IOException {
+    public void setNetRadio(String menuDir, String stationName, String receiverName) throws IOException {
+        NetRadioMenu menu = new NetRadioMenu(receiverName);
+        menu.goToPath(menuDir);
+        menu.selectItem(stationName);
+    }
+
+    public void updateState(YamahaReceiverState state, boolean includeNetradioStation) throws IOException {
         Document doc = postAndGetXmlResponse("<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><" + zone
                 + "><Basic_Status>GetParam</Basic_Status></" + zone + "></YAMAHA_AV>");
         Node basicStatus = getNode(doc.getFirstChild(), "" + zone + "/Basic_Status");
@@ -208,6 +218,16 @@ public class YamahaReceiverCommunication {
         node = getNode(basicStatus, "Input/Input_Sel_Item_Info/Src_Number");
         value = node != null ? node.getTextContent() : "0";
         state.netRadioChannel = Integer.parseInt(value);
+
+        // Get currently playing net radio station for menu based receivers
+        if (includeNetradioStation) {
+            doc = postAndGetXmlResponse(
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><NET_RADIO><Play_Info>GetParam</Play_Info></NET_RADIO></YAMAHA_AV>");
+            node = getNode(doc.getFirstChild(), "NET_RADIO/Play_Info/Meta_Info/Station");
+            state.netRadioStation = node != null ? node.getTextContent() : "";
+        } else {
+            state.netRadioStation = "";
+        }
     }
 
     public void updateInputsList(YamahaReceiverState state) throws IOException {
@@ -258,6 +278,9 @@ public class YamahaReceiverCommunication {
 
     private String postAndGetResponse(String message) throws IOException {
         HttpURLConnection connection = null;
+        if (!message.startsWith("<?xml")) {
+            message = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
+        }
         try {
             URL url = new URL("http://" + host + "/YamahaRemoteControl/ctrl");
             connection = (HttpURLConnection) url.openConnection();
@@ -291,6 +314,155 @@ public class YamahaReceiverCommunication {
             if (connection != null) {
                 connection.disconnect();
             }
+        }
+    }
+
+    private class NetRadioMenu {
+        private String receiverName = "";
+        private Document menuState;
+        private boolean menuStateRequiresUpdate = true;
+
+        public NetRadioMenu(String receiverName) {
+            this.receiverName = receiverName;
+        }
+
+        public boolean isInDirectory(String path) throws IOException {
+            String[] pathArr = path.split("/");
+            // Full path info not available, so guess from last path element and number of path elements
+            return getMenuName().equals(pathArr[pathArr.length - 1]) && getLevel() == pathArr.length;
+        }
+
+        public void goToRoot() throws IOException {
+            if (getLevel() > 0) {
+                String rootCommand = "Return to Home";
+                if (receiverName.matches("^(?:RX-A\\d{1,2}10|RX-A\\d{1,2}00|RX-V\\d{1,2}(?:71|67|65))$")) {
+                    rootCommand = "Back to Home";
+                }
+
+                postAndGetResponse("<YAMAHA_AV cmd=\"PUT\"><NET_RADIO><List_Control><Cursor>" + rootCommand
+                        + "</Cursor></List_Control></NET_RADIO></YAMAHA_AV>");
+                menuChanged();
+            }
+        }
+
+        public void goToPage(int page) throws IOException {
+            int line = (page - 1) * 8 + 1;
+            postAndGetResponse("<YAMAHA_AV cmd=\"PUT\"><NET_RADIO><List_Control><Jump_Line>" + line
+                    + "</Jump_Line></List_Control></NET_RADIO></YAMAHA_AV>");
+            menuChanged();
+        }
+
+        public void goToPath(String fullPath) throws IOException {
+            if (!isInDirectory(fullPath)) {
+                goToRoot();
+
+                String[] pathArr = fullPath.split("/");
+                for (String pathElement : pathArr) {
+                    selectItem(pathElement);
+                }
+            }
+        }
+
+        public String getMenuName() throws IOException {
+            Node menuNameNode = getStateNode("List_Info/Menu_Name");
+            return menuNameNode != null ? menuNameNode.getTextContent() : null;
+        }
+
+        public int getLevel() throws IOException {
+            Node menuLayerNode = getStateNode("List_Info/Menu_Layer");
+            return menuLayerNode != null ? Integer.parseInt(menuLayerNode.getTextContent()) - 1 : -1;
+        }
+
+        public int getPageNumber() throws IOException {
+            Node node = getStateNode("List_Info/Cursor_Position/Current_Line");
+            if (node != null) {
+                int currentLine = Integer.parseInt(node.getTextContent());
+                return (currentLine - 1) / 8;
+            }
+            return 0;
+        }
+
+        public int getNumberOfPages() throws IOException {
+            Node node = getStateNode("List_Info/Cursor_Position/Max_Line");
+            if (node != null) {
+                int maxLines = Integer.parseInt(node.getTextContent());
+                return (int) Math.ceil(maxLines / 8d);
+            }
+            return 0;
+        }
+
+        public void selectItem(String name) throws IOException {
+            for (int page = 1; page <= getNumberOfPages(); page++) {
+                if (getPageNumber() != page) {
+                    goToPage(page);
+                }
+
+                int index = findItemOnCurrentPage(name);
+                if (index > 0) {
+                    postAndGetResponse("<YAMAHA_AV cmd=\"PUT\"><NET_RADIO><List_Control><Direct_Sel>Line_" + index
+                            + "</Direct_Sel></List_Control></NET_RADIO></YAMAHA_AV>");
+                    menuChanged();
+                    return;
+                }
+            }
+
+            throw new IOException("Item '" + name + "' doesn't exist in menu " + getMenuName());
+        }
+
+        private int findItemOnCurrentPage(String itemName) throws IOException {
+            for (int i = 1; i <= 8; i++) {
+                Node node = getStateNode("List_Info/Current_List/Line_" + i + "/Txt");
+                if (node != null && node.getTextContent().equals(itemName)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private Node getStateNode(String path) throws IOException {
+            return getNode(getMenuState().getFirstChild(), path);
+        }
+
+        private Document getMenuState() throws IOException {
+            if (menuStateRequiresUpdate) {
+                refreshMenuState();
+            }
+            return this.menuState;
+        }
+
+        private void menuChanged() {
+            this.menuStateRequiresUpdate = true;
+        }
+
+        private void refreshMenuState() throws IOException {
+            int totalWaitingTime = 0;
+
+            Document doc;
+
+            while (true) {
+                doc = postAndGetXmlResponse(
+                        "<YAMAHA_AV cmd=\"GET\"><NET_RADIO><List_Info>GetParam</List_Info></NET_RADIO></YAMAHA_AV>");
+                Node node = getNode(doc.getFirstChild(), "List_Info/Menu_Status");
+
+                if (node == null || node.getTextContent().equals("Ready")) {
+                    break;
+                }
+
+                totalWaitingTime += MENU_RETRY_DELAY;
+                if (totalWaitingTime > MENU_MAX_WAITING_TIME) {
+                    throw new IOException("Menu still not ready after " + MENU_MAX_WAITING_TIME + "ms");
+                }
+
+                try {
+                    Thread.sleep(MENU_RETRY_DELAY);
+                } catch (InterruptedException e) {
+                    // Ignore and just retry immediately
+                }
+            }
+
+            this.menuState = doc;
+            this.menuStateRequiresUpdate = false;
         }
     }
 }
