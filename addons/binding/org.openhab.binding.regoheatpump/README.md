@@ -3,11 +3,10 @@
 The Rego binding supports the Rego 6xx family, used in many heat pumps, like IVT/Bosch/Autotherm/Carrier and others.
 
 Rego 6xx units contain an interface marked as service. Header of this interface is close to the control unit. This is 5V (TTL) serial interface, it means their cable may be not longer than ~50 cm. Interface is connected by a 9 pin can/d-sub connector. Pinout of this connector is the following:
-
-2 - RxD
-3 - TxD
-4 - +5V
-5 - GND
+* 2 - RxD
+* 3 - TxD
+* 4 - +5V
+* 5 - GND
 
 Communication is allways using 19200 bps, 8 bit, no parity, 1 stop bit. This is 5V (TTL) signals, galvanic separator is highly recommended. 
 
@@ -24,6 +23,7 @@ The easiest way is to add the thing within the Paper UI, below are details for m
 A transparent bridge between serial interface of the heat pump and WiFi is used. This way no additional wires are required between heat pump and computer, running openhab.
 
 Board:
+
 ![board](https://community-openhab-org.s3-eu-central-1.amazonaws.com/optimized/2X/8/8d3037f272397d1b7448902ce355c40e0ca5f41b_1_690x312.png)
 
 The bridge uses a TTL to RS232 (3.3V) convertor with galvanic separation plus a ESP 8266 module.
