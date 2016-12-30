@@ -62,13 +62,13 @@
     <channel-type id="uac">
     	<item-type>Number</item-type>
        	<label>Uac</label>
-    	<description>Average voltage UAC from the inverter</description>
+    	<description>Average voltage UAC from the inverter</description>
     	<state readOnly="true" pattern="%d V"></state>
        </channel-type>
     <channel-type id="udc">
     	<item-type>Number</item-type>
        	<label>Udc</label>
-    	<description>Average voltage UDC from the inverter</description>
+    	<description>Average voltage UDC from the inverter</description>
     	<state readOnly="true" pattern="%d V"></state>
        </channel-type>
     <channel-type id="yieldday">
