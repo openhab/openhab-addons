@@ -63,7 +63,6 @@
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
-    <module>org.openhab.binding.sonyavr</module>
     <module>org.openhab.binding.solarlog</module>
   </modules>
 
