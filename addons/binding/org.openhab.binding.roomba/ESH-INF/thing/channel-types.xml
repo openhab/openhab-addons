@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Roomba Channel Types -->
+
+    <channel-type id="start">
+        <item-type>String</item-type>
+        <label>Start</label>
+        <description>Begins Roomba's cleaning process</description>
+    </channel-type>
+
+    <channel-type id="stop">
+        <item-type>String</item-type>
+        <label>Stop</label>
+        <description>Stops Roomba's cleaning process</description>
+    </channel-type>
+
+    <channel-type id="dock">
+        <item-type>String</item-type>
+        <label>Dock</label>
+        <description>Sends Roomba back to its charging dock</description>
+    </channel-type>
+
+    <channel-type id="spot">
+        <item-type>String</item-type>
+        <label>Spot</label>
+        <description>Begins Roomba's spot clean process</description>
+    </channel-type>
+    
+    <channel-type id="quick">
+        <item-type>String</item-type>
+        <label>Quick</label>
+        <description>Begins Roomba's quick clean process</description>
+    </channel-type>
+
+</thing:thing-descriptions>
