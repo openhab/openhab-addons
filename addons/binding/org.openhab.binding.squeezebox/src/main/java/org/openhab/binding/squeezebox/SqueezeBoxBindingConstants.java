@@ -54,4 +54,5 @@ public class SqueezeBoxBindingConstants {
     public final static String CHANNEL_TYPEID = "typeId";
     public final static String CHANNEL_NAME = "name";
     public final static String CHANNEL_MODEL = "model";
+    public final static String CHANNEL_NOTIFICATION_SOUND_VOLUME = "notificationSoundVolume";
 }
