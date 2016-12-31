@@ -47,7 +47,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
     private final static int SEARCH_TIME = 15;
 
-    private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
 

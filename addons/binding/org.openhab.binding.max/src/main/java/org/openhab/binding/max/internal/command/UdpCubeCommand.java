@@ -36,7 +36,7 @@ public class UdpCubeCommand {
 
     static final String MAXCUBE_COMMAND_STRING = "eQ3Max*\0";
 
-    private final static Logger logger = LoggerFactory.getLogger(UdpCubeCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(UdpCubeCommand.class);
 
     static boolean commandRunning = false;
 

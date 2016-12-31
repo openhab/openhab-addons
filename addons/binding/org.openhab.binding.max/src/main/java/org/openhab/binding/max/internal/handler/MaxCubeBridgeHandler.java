@@ -226,7 +226,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
             if (configurationParameter.getKey().startsWith("action-")) {
                 if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
-                    configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
                     if (configurationParameter.getKey().equals(ACTION_CUBE_REBOOT)) {
                         cubeReboot();
                     }
@@ -235,9 +234,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         refresh = false;
                     }
                 }
+                configuration.put(configurationParameter.getKey(), BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
+            } else {
+                configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
             }
-
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
         }
 
         // Persist changes and restart with new parameters
