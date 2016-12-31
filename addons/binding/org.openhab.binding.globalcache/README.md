@@ -2,7 +2,7 @@
 
 The [GlobalCache](http://www.globalcache.com) binding is used to enable communication between openHAB and GlobalCache [GC-100](http://www.globalcache.com/products/gc-100/) and [iTach](http://www.globalcache.com/products/itach/) family of devices.  Global Cache devices enable the control and automation of infrared, serial, and contact closure devices through an IP network (wired or wireless).
 
-##Overview
+## Overview
 
 The GlobalCache binding discovers GC-100 and iTach devices on the network, and creates an inbox entry for each discovered device.  Once added as a thing, the user can complete the configuration of the device, such as selecting a MAP file for IR and serial codes.
 
