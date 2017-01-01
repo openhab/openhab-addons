@@ -83,6 +83,29 @@ String zmMonitor1_FrameStatusText 	"Frame StatusText [%s]"	 				{channel="zonemi
 // Helpers
 Switch zmMonitor1_Mode			"Monitor active [%s]"
 ```
+###Sample Rule###
+```
+import org.openhab.core.library.types.*
+import org.openhab.core.library.items.*
+import org.openhab.model.script.actions.*
+import org.openhab.model.script.actions.Timer
+
+
+rule "Change Monitor1 Mode"
+when
+    Item zmMonitor1_Mode changed
+then
+	if (zmMonitor1_Mode.state==ON) {
+		sendCommand(zmMonitor1_Function, "Modect")
+		sendCommand(zmMonitor1_Enabled, ON)
+	}
+	else {
+		sendCommand(zmMonitor1_Function, "Monitor")
+		sendCommand(zmMonitor1_Enabled, OFF)
+	}
+end
+```
+
 
 ###Sitemap configuration###
 ```
