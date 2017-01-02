@@ -129,6 +129,8 @@ public enum EiscpCommand {
     NETUSB_MENU8("NLSU8-", EiscpCommandRef.NETUSB_MENU8),
     NETUSB_MENU9("NLSU9-", EiscpCommandRef.NETUSB_MENU9),
     NETUSB_MENU_SELECT("NLSL%X", EiscpCommandRef.NETUSB_MENU_SELECT),
+    NETUSB_TITLE("NLT", EiscpCommandRef.NETUSB_TITLE),
+    NETUSB_TITLE_QUERY("NLTQSTN", EiscpCommandRef.NETUSB_TITLE_QUERY),
 
     /*
      * Zone 2
@@ -238,7 +240,12 @@ public enum EiscpCommand {
     ZONE3_SOURCE_QUERY("SL3QSTN", EiscpCommandRef.ZONE3_SOURCE_QUERY),
     ZONE3_SOURCE_SET("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET),
     ZONE3_SET_SOURCE("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET),
-    ZONE3_SOURCE("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET);
+    ZONE3_SOURCE("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET),
+
+    NETUSB_ALBUM_ART_REQ("NJAREQ", EiscpCommandRef.NETUSB_ALBUM_ART_REQ),
+    NETUSB_ALBUM_ART("NJA", EiscpCommandRef.NETUSB_ALBUM_ART),
+    INFO_QUERY("NRIQSTN", EiscpCommandRef.RECEIVER_INFO_QUERY),
+    INFO("NRI", EiscpCommandRef.RECEIVER_INFO);
 
     private String command;
     private EiscpCommandRef commandRef;
