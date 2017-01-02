@@ -85,7 +85,7 @@ Switch zmMonitor1_Mode			"Monitor active [%s]"
 ```
 
 ###Sample Rule###
-
+```
 rule "Monitor1 TriggerEvent"
 when
     Item zmMonitor1_TriggerEvent changed
