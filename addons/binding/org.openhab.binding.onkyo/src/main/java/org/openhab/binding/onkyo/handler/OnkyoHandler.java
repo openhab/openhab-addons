@@ -11,6 +11,7 @@ package org.openhab.binding.onkyo.handler;
 import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.EventObject;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
+import org.openhab.binding.onkyo.internal.ServiceType;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommandRef;
 import org.slf4j.Logger;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Paul Frank - Initial contribution
+ * @author Marcel Verpaalen - parsing additional commands
  */
 public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
@@ -79,6 +82,15 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 }
             }
 
+            long refreshInterval;
+            try {
+                refreshInterval = ((BigDecimal) this.getConfig().get(REFRESH_INTERVAL)).longValue();
+            } catch (Exception e) {
+                refreshInterval = 60;
+                logger.warn("No refresh Interval defined using {}s", refreshInterval);
+            }
+            logger.warn("No refresh Interval defined using {}s", refreshInterval);
+
             connection = new OnkyoConnection(host, port);
             connection.addEventListener(this);
 
@@ -101,7 +113,12 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     }
                 }
             };
-            statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, 10, TimeUnit.SECONDS);
+            if (refreshInterval > 0) {
+                statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, refreshInterval,
+                        TimeUnit.SECONDS);
+            } else {
+                statusCheckerFuture = scheduler.schedule(statusChecker, 1, TimeUnit.SECONDS);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to receiver. IP address not set.");
@@ -178,6 +195,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             case CHANNEL_PLAY_URI:
                 handlePlayUri(command);
                 break;
+            case CHANNEL_ALBUM_ART:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_ALBUM_ART_REQ);
+                }
+                break;
             case CHANNEL_LISTENMODE:
                 if (command instanceof DecimalType) {
                     sendCommand(EiscpCommandRef.LISTEN_MODE_SET, command);
@@ -198,6 +220,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             case CHANNEL_TITLE:
                 if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommandRef.NETUSB_SONG_TITLE_QUERY);
+                }
+                break;
+            case CHANNEL_NET_MENU_TITLE:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommandRef.NETUSB_TITLE_QUERY);
                 }
                 break;
             case CHANNEL_CURRENTPLAYINGTIME:
@@ -315,9 +342,26 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     case NETUSB_PLAY_STATUS_QUERY:
                         updateNetUsbPlayStatus(data.charAt(3));
                         break;
+                    case NETUSB_TITLE:
+                        ServiceType service = ServiceType.getType(Integer.parseInt(data.substring(3, 5), 16));
+                        String title = data.substring(25, data.length());
+                        updateState(CHANNEL_NET_MENU_TITLE,
+                                new StringType(service.toString() + ((title.length() > 0) ? ": " + title : "")));
+                        break;
+                    case NETUSB_ALBUM_ART:
+                        if (data.substring(3, 5).contentEquals("2-")) {
+                            //TODO: Replace this with ImageType once available
+                            updateState(CHANNEL_ALBUM_ART, new StringType(data.substring(5, data.length())));
+                        } else {
+                            logger.debug("Not supported album art type: {}", data.substring(3, data.length()));
+                        }
+                        break;
+                    case RECEIVER_INFO:
+                        logger.debug("Info message: \n{}", data.substring(3, data.length()));
+                        break;
                     case LISTEN_MODE_SET:
                         String listenModeStr = data.substring(3, 5);
-                        // update only when listen mode is supported
+                        // update only when listen mode is available
                         if (!listenModeStr.equals("N/")) {
                             int listenMode = Integer.parseInt(listenModeStr, 16);
                             updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
@@ -531,7 +575,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         sendCommand(EiscpCommandRef.ZONE2_VOLUME_QUERY);
         sendCommand(EiscpCommandRef.ZONE2_SOURCE_QUERY);
         sendCommand(EiscpCommandRef.ZONE2_MUTE_QUERY);
-
+        sendCommand(EiscpCommandRef.NETUSB_TITLE_QUERY);
         sendCommand(EiscpCommandRef.LISTEN_MODE_QUERY);
 
         if (connection != null && connection.isConnected()) {
