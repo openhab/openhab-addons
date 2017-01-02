@@ -388,15 +388,24 @@ public class Eiscp {
                 inStream.readByte();
 
                 byte[] data = new byte[dataSize];
+                int bytesReceived = 0;
 
-                final int bytesReceived = inStream.read(data, 0, data.length);
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Received {} bytes: {}", bytesReceived, DatatypeConverter.printHexBinary(data));
-                }
-
-                if (bytesReceived != dataSize) {
-                    throw new EiscpException("Data missing: " + (dataSize - bytesReceived));
+                try {
+                    while (bytesReceived < dataSize) {
+                        bytesReceived = bytesReceived + inStream.read(data, bytesReceived, data.length - bytesReceived);
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Received {} bytes: {}", bytesReceived,
+                                    DatatypeConverter.printHexBinary(data));
+                        }
+                    }
+                } catch (Throwable t) {
+                    if (bytesReceived != dataSize) {
+                        logger.debug("Received: '{}'", new String(data, "UTF-8"));
+                        throw new EiscpException(
+                                "Data missing, expected + " + dataSize + " received " + bytesReceived + " bytes");
+                    } else {
+                        throw t;
+                    }
                 }
 
                 // start char
