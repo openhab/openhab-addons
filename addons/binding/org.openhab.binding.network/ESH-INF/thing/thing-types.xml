@@ -47,6 +47,12 @@
 				<default>false</default>
 			</parameter>		
 
+            <parameter name="dhcplisten" type="boolean">
+                <label>Listen for DHCP requests</label>
+                <description>Whether to use DHCP listen or not (may require running as root)</description>
+                <default>false</default>
+            </parameter>
+
 		</config-description>
     </thing-type>
     <channel-type id="online">
