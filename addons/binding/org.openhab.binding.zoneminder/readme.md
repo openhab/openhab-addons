@@ -84,11 +84,18 @@ String zmMonitor1_FrameStatusText 	"Frame StatusText [%s]"	 				{channel="zonemi
 Switch zmMonitor1_Mode			"Monitor active [%s]"
 ```
 ###Sample Rule###
-```
-import org.openhab.core.library.types.*
-import org.openhab.core.library.items.*
-import org.openhab.model.script.actions.*
-import org.openhab.model.script.actions.Timer
+
+rule "Monitor1 TriggerEvent"
+when
+    Item zmMonitor1_TriggerEvent changed
+then
+	if (zmMonitor1_TriggerEvent.state == ON) {
+		logInfo("zoneminder.rules", "ZoneMinder TriggerEvent started")
+	}
+	else if (zmMonitor1_TriggerEvent.state == OFF) {
+		logInfo("zoneminder.rules", "ZoneMinder TriggerEvent stopped")
+	}	
+end
 
 
 rule "Change Monitor1 Mode"
