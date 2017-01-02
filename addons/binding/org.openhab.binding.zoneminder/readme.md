@@ -83,6 +83,7 @@ String zmMonitor1_FrameStatusText 	"Frame StatusText [%s]"	 				{channel="zonemi
 // Helpers
 Switch zmMonitor1_Mode			"Monitor active [%s]"
 ```
+
 ###Sample Rule###
 
 rule "Monitor1 TriggerEvent"
