@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.coolmasternetBindingConstants.*;
+import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,12 +22,12 @@ import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import com.google.common.collect.Sets;
 
 /**
- * The {@link coolmasternetHandlerFactory} is responsible for creating things and thing
+ * The {@link CoolMasterNetHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Two Feathers Pty Ltd - Initial contribution
+ * @author Angus Gratton
  */
-public class coolmasternetHandlerFactory extends BaseThingHandlerFactory {
+public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(Collections.singleton(THING_TYPE_HVAC), Collections.singleton(THING_TYPE_CONTROLLER));

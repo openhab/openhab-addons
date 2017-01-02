@@ -7,8 +7,8 @@
  */
 package org.openhab.binding.coolmasternet.handler;
 
-import static org.openhab.binding.coolmasternet.config.coolmasternetConfiguration.*;
-import static org.openhab.binding.coolmasternet.coolmasternetBindingConstants.*;
+import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
+import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.coolmasternet.internal.ControllerHandler;
 import org.openhab.binding.coolmasternet.internal.ControllerHandler.CoolMasterClientError;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * The {@link HVACHandler} is responsible for handling commands for a single
  * HVAC unit (a single UID on a CoolMasterNet controller.)
  *
- * @author Two Feathers Pty Ltd - Initial contribution
+ * @author Angus Gratton
  */
 public class HVACHandler extends BaseThingHandler {
 
@@ -62,12 +63,14 @@ public class HVACHandler extends BaseThingHandler {
                     DecimalType temp = (DecimalType) command;
                     controller.sendCommand(String.format("temp %s %s", uid, temp));
                 } else if (channel.endsWith(MODE) && command instanceof StringType) {
-                    /* the mode value in the command is the actual coolmasternet protocol command */
+                    /* the mode value in the command is the actual CoolMasterNet protocol command */
                     controller.sendCommand(String.format("%s %s", command, uid));
                 } else if (channel.endsWith(FAN) && command instanceof StringType) {
                     controller.sendCommand(String.format("fspeed %s %s", uid, command));
                 } else if (channel.endsWith(LOUVRE) && command instanceof StringType) {
                     controller.sendCommand(String.format("swing %s %s", uid, command));
+                } else if (command instanceof RefreshType) {
+                    refresh();
                 }
             }
         } catch (CoolMasterClientError e) {
@@ -86,15 +89,24 @@ public class HVACHandler extends BaseThingHandler {
     public void refresh() {
         ThingUID thinguid = getThing().getUID();
 
-        OnOffType on = "1".equals(query("o")) ? OnOffType.ON : OnOffType.OFF;
-        updateState(new ChannelUID(thinguid, ON), on);
+        String on = query("o");
+        if (on != null) {
+            updateState(new ChannelUID(thinguid, ON), "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
+        }
         updateState(new ChannelUID(thinguid, CURRENT_TEMP), new DecimalType(query("a")));
         updateState(new ChannelUID(thinguid, SET_TEMP), new DecimalType(query("t")));
-        String mode = modeNumToStr.getOrDefault(query("m"), null);
-        updateState(new ChannelUID(thinguid, MODE), new StringType(mode));
-        updateState(new ChannelUID(thinguid, LOUVRE), new StringType(query("s")));
-        String fan = fanNumToStr.getOrDefault(query("f"), null);
-        updateState(new ChannelUID(thinguid, FAN), new StringType(fan));
+        String mode = modeNumToStr.get(query("m"));
+        if (mode != null) {
+            updateState(new ChannelUID(thinguid, MODE), new StringType(mode));
+        }
+        String louvre = query("s");
+        if (louvre != null) {
+            updateState(new ChannelUID(thinguid, LOUVRE), new StringType(louvre));
+        }
+        String fan = fanNumToStr.get(query("f"));
+        if (fan != null) {
+            updateState(new ChannelUID(thinguid, FAN), new StringType(fan));
+        }
     }
 
     private String query(String query_char) {
@@ -109,7 +121,7 @@ public class HVACHandler extends BaseThingHandler {
     }
 
     /*
-     * The coolmasternet query command returns numbers 0-5 for operation modes,
+     * The CoolMasterNet query command returns numbers 0-5 for operation modes,
      * but these don't map to any mode you can set on the device, so we use this
      * lookup table.
      */
@@ -126,8 +138,9 @@ public class HVACHandler extends BaseThingHandler {
     }
 
     /*
-     * The coolmasternet query command returns numbers 0-5 for fan speed,
-     * but the fan command uses single-letter abbreviations. Yay consistency?
+     * The CoolMasterNet protocol's query command returns numbers 0-5
+     * for fan speed, but the protocol's fan command (& matching
+     * binding command) use single-letter abbreviations.
      */
     private static final Map<String, String> fanNumToStr;
     static {

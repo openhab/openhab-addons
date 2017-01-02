@@ -1,6 +1,13 @@
+/**
+ * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.coolmasternet.internal;
 
-import static org.openhab.binding.coolmasternet.config.coolmasternetConfiguration.*;
+import static org.openhab.binding.coolmasternet.config.CoolMasterNetConfiguration.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,10 +35,12 @@ import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/* Bridge to access a CoolMasterNet unit'sASCII protocol via TCP socket.
+/* Bridge to access a CoolMasterNet unit's ASCII protocol via TCP socket.
  *
  * A single CoolMasterNet can be connected to one or more HVAC units, each with a unique UID.
  * These are individual Things inside the bridge.
+ *
+ * @author Angus Gratton
  */
 public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
@@ -78,12 +87,11 @@ public class ControllerHandler extends BaseBridgeHandler {
                         h.refresh();
                     }
                 } catch (CoolMasterClientError e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            String.format("Could not connect to CoolMasterNet: {}", e.getMessage()));
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         };
-        refreshJob = scheduler.scheduleAtFixedRate(refreshHVACUnits, 0, refresh, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(refreshHVACUnits, 0, refresh, TimeUnit.SECONDS);
     }
 
     @Override
@@ -156,7 +164,7 @@ public class ControllerHandler extends BaseBridgeHandler {
      * Verify that the client socket is connected and responding, and try to reconnect if possible.
      * May block for 1-2 seconds.
      *
-     * Throws CoolMasterNetClientError if there is a conection problem.
+     * Throws CoolMasterNetClientError if there is a connection problem.
      *
      */
     public void checkConnection() throws CoolMasterClientError {

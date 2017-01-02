@@ -9,7 +9,7 @@
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>CoolMasterNet Network Hostname or IP address</label>
+				<label>Hostname</label>
 				<context>network_address</context>
 				<description>The IP address / FQDN of the CoolMasterNet unit</description>
 				<default></default>
@@ -17,8 +17,8 @@
 			</parameter>
 
 			<parameter name="port" type="integer">
-				<label>ASCII I/F Port number</label>
-				<description>IP address of ASCII interface of CoolMasterNet unit.</description>
+				<label>Port</label>
+				<description>Port of ASCII interface of CoolMasterNet unit.</description>
 				<default>10102</default>
 				<required>false</required>
 			</parameter>
@@ -94,7 +94,7 @@
 
 	<channel-type id="temperature_readback" advanced="true">
 		<item-type>Number</item-type>
-		<label>Set Temperature</label>
+		<label>Current Temperature</label>
 		<description>Current system ambient temperature</description>
 		<category>Temperature</category>
 		<state min="10" max="40" step="0.5" pattern="%d °C" readOnly="true"></state>

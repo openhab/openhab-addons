@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>CoolMasterNet Binding</name>
-    <description>Binding for Cool Automation CoolMasterNet HVAC controllers. Not officially supported by Cool Automation.</description>
+    <description>Binding for Cool Automation CoolMasterNet HVAC controllers.</description>
     <author>Two Feathers Pty Ltd</author>
 
 </binding:binding>
