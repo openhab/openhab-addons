@@ -147,9 +147,17 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
-        sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-        unitCode = data[7];
+
+        if (subType == SubType.T6) {
+            sensorId = (data[4] & 0xFF) << 20 | (data[5] & 0xFF) << 12 | (data[6] & 0xFF) << 4 | (data[7] & 0xF0) >> 4;
+            unitCode = (byte) (data[7] & 0x0F);
+        } else {
+            sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
+            unitCode = data[7];
+        }
+
         command = Commands.fromByte(data[8]);
+
         signalLevel = (byte) ((data[9] & 0xF0) >> 4);
         batteryLevel = (byte) (data[9] & 0x0F);
     }
@@ -165,10 +173,19 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
         data[1] = RFXComBaseMessage.PacketType.BLINDS1.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
-        data[4] = (byte) ((sensorId >> 16) & 0xFF);
-        data[5] = (byte) ((sensorId >> 8) & 0xFF);
-        data[6] = (byte) (sensorId & 0xFF);
-        data[7] = unitCode;
+
+        if (subType == SubType.T6) {
+            data[4] = (byte) ((sensorId >>> 20) & 0xFF);
+            data[5] = (byte) ((sensorId >>> 12) & 0xFF);
+            data[6] = (byte) ((sensorId >>> 4) & 0xFF);
+            data[7] = (byte) (((sensorId & 0x0F) << 4) | (unitCode & 0x0F));
+        } else {
+            data[4] = (byte) ((sensorId >> 16) & 0xFF);
+            data[5] = (byte) ((sensorId >> 8) & 0xFF);
+            data[6] = (byte) (sensorId & 0xFF);
+            data[7] = unitCode;
+        }
+
         data[8] = command.toByte();
         data[9] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));
 
