@@ -178,6 +178,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
                 updateStatus(status, detail, msg);
                 if (status != ThingStatus.ONLINE) {
+                    logger.info(">>> disconnecting because of status: " + status + ":" + detail);
                     disconnect(true);
                 }
             }
@@ -300,7 +301,9 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
                     public void run() {
                         _retryConnection = null;
                         try {
-                            connect();
+                            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                                connect();
+                            }
                         } catch (Exception e) {
                             logger.error("Exception connecting: {}", e.getMessage(), e);
                         }
@@ -341,6 +344,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
      */
     @Override
     public void dispose() {
+        logger.info(">>> disconnecting because of dispose");
         disconnect(false);
     }
 }

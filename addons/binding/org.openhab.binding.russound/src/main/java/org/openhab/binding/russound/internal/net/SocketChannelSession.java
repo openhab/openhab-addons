@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +125,7 @@ public class SocketChannelSession implements SocketSession {
         disconnect();
 
         _client = SocketChannel.open();
-        _client.configureBlocking(false);
+        _client.configureBlocking(true);
 
         _logger.debug("Connecting to {}:{}", _host, _port);
         _client.connect(new InetSocketAddress(_host, _port));
@@ -215,25 +213,21 @@ public class SocketChannelSession implements SocketSession {
         /**
          * Locking to allow proper shutdown of the reader
          */
-        private final Lock _lock = new ReentrantLock();
-        private final Condition _running = _lock.newCondition();
+        private final CountDownLatch _running = new CountDownLatch(1);
 
         /**
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the
          * setSOTimeout)
          */
         public void stopRunning() {
-            _lock.lock();
-            try {
-                if (_isRunning.getAndSet(false)) {
+            if (_isRunning.getAndSet(false)) {
+                try {
                     if (!_running.await(5, TimeUnit.SECONDS)) {
-                        _logger.warn("Waited too long for dispatcher to finish");
+                        _logger.warn("Waited too long for response reader to finish");
                     }
+                } catch (InterruptedException e) {
+                    // Do nothing
                 }
-            } catch (InterruptedException e) {
-                // shouldn't happen
-            } finally {
-                _lock.unlock();
             }
         }
 
@@ -296,12 +290,7 @@ public class SocketChannelSession implements SocketSession {
                 }
             }
 
-            _lock.lock();
-            try {
-                _running.signalAll();
-            } finally {
-                _lock.unlock();
-            }
+            _running.countDown();
         }
     }
 
@@ -323,8 +312,7 @@ public class SocketChannelSession implements SocketSession {
         /**
          * Locking to allow proper shutdown of the reader
          */
-        private final Lock _lock = new ReentrantLock();
-        private final Condition _running = _lock.newCondition();
+        private final CountDownLatch _running = new CountDownLatch(1);
 
         /**
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the poll
@@ -332,19 +320,15 @@ public class SocketChannelSession implements SocketSession {
          */
         public void stopRunning() {
 
-            _lock.lock();
-            try {
-                if (_isRunning.getAndSet(false)) {
+            if (_isRunning.getAndSet(false)) {
+                try {
                     if (!_running.await(5, TimeUnit.SECONDS)) {
                         _logger.warn("Waited too long for dispatcher to finish");
                     }
+                } catch (InterruptedException e) {
+                    // do nothing
                 }
-            } catch (InterruptedException e) {
-                // do nothing
-            } finally {
-                _lock.unlock();
             }
-
         }
 
         /**
@@ -388,14 +372,9 @@ public class SocketChannelSession implements SocketSession {
                     // Do nothing
                 }
             }
+            _isRunning.set(false);
 
-            _lock.lock();
-            try {
-                // Signal that we are done
-                _running.signalAll();
-            } finally {
-                _lock.unlock();
-            }
+            _running.countDown();
         }
     }
 }
