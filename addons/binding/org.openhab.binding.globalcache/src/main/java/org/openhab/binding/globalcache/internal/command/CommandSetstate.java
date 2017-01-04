@@ -47,18 +47,28 @@ public class CommandSetstate extends AbstractCommand {
             return;
         }
 
-        // decode response of form setstate,1:3,0
-        Pattern p = Pattern.compile("setstate,\\d:\\d,[01]");
-        Matcher m = p.matcher(deviceReply);
-        if (!m.matches()) {
+        // Match on response of form setstate,1:3,0 or state,1:3,0
+        if (!matchSetstate()) {
             logger.warn("Successful reply from device can't be matched: {}", deviceReply);
             setState(OnOffType.OFF);
             return;
         }
+    }
 
-        setModule(deviceReply.substring(9, 10));
-        setConnector(deviceReply.substring(11, 12));
-        setState((deviceReply.charAt(13) == '0' ? OnOffType.OFF : OnOffType.ON));
+    private boolean matchSetstate() {
+        // Matches both iTach and GC-100 responses
+        Pattern p = Pattern.compile("(setstate|state),(\\d):(\\d),([01])");
+        Matcher m = p.matcher(deviceReply);
+        if (m.matches()) {
+            logger.trace("Matched setstate response: g2={}, g3={}, g4={}", m.group(2), m.group(3), m.group(4));
+            if (m.groupCount() == 4) {
+                setModule(m.group(2));
+                setConnector(m.group(3));
+                setState(m.group(4).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setState(OnOffType s) {
