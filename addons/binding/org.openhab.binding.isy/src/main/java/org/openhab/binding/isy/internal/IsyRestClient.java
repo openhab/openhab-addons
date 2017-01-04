@@ -88,7 +88,6 @@ public class IsyRestClient implements OHIsyClient {
 
     private void dumpNodes() {
         String nodes = testGetString(nodesTarget);
-        System.out.println(nodes);
     }
 
     private void dumpStatus() {

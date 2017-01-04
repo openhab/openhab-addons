@@ -18,12 +18,15 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class IsyWebSocketSubscription implements WebSocketListener {
 
+    private Logger logger = LoggerFactory.getLogger(IsyWebSocketSubscription.class);
     private ISYModelChangeListener listener;
     private String connectUrl;
     private String authenticationHeader;
@@ -51,14 +54,14 @@ public class IsyWebSocketSubscription implements WebSocketListener {
             Future<Session> future = client.connect(this, echoUri, request);
 
             future.get();
-            System.out.printf("Connecting to : %s%n", echoUri);
+            logger.info("Connecting to : %s%n", echoUri);
 
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
             try {
                 // client.stop();
-                System.out.println("fit finally in IsyWebSocketSubscription");
+                logger.debug("in finally in IsyWebSocketSubscription");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,14 +80,14 @@ public class IsyWebSocketSubscription implements WebSocketListener {
 
     @Override
     public void onWebSocketClose(int arg0, String arg1) {
-        System.err.println("Socket Closed: [" + arg0 + "] " + arg1);
+        logger.debug("Socket Closed: [" + arg0 + "] " + arg1);
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        System.out.println("Reconnecting");
+        logger.info("Reconnecting via Websocket to Isy.");
         if (this.future != null) {
             this.future.cancel(true);
         }
@@ -93,14 +96,13 @@ public class IsyWebSocketSubscription implements WebSocketListener {
 
     @Override
     public void onWebSocketConnect(Session arg0) {
-        System.out.println("Socket Connected: " + arg0);
+        logger.debug("Socket Connected: " + arg0);
 
     }
 
     @Override
     public void onWebSocketError(Throwable arg0) {
-        // TODO Auto-generated method stub
-        System.err.println("FOUND ERROR, " + arg0);
+        logger.error("Error with websocket communication", arg0);
 
     }
 
@@ -126,20 +128,18 @@ public class IsyWebSocketSubscription implements WebSocketListener {
                 String action = (String) actionExpr.evaluate(doc, XPathConstants.STRING);
                 String node = (String) nodeExpr.evaluate(doc, XPathConstants.STRING);
                 if ("ST".equals(control)) {
-                    System.out.println("status change detected");
-                    System.out.println("Test: " + control);
-                    System.out.println("Action: " + action);
-                    System.out.println("Node: " + node);
+                    logger.debug("status change detected");
+                    logger.debug("Test: " + control);
+                    logger.debug("Action: " + action);
+                    logger.debug("Node: " + node);
                     listener.onModelChanged(control, action, node);
                 }
             } catch (SAXException | IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("parse exception", e);
             }
 
         } catch (ParserConfigurationException | XPathExpressionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("parse exception", e);
         }
 
     }
