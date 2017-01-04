@@ -20,8 +20,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.russound,
- org.openhab.binding.russound.internal.rio,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.russound,
- org.openhab.binding.russound.internal.rio
+Export-Package: org.openhab.binding.russound
