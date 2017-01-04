@@ -188,9 +188,7 @@
         <channels>
             <channel id="name" typeId="zfavName"/>
             <channel id="valid" typeId="zfavValid"/>
-            <channel id="save" typeId="zfavSave"/>
-            <channel id="restore" typeId="zfavRestore"/>
-            <channel id="delete" typeId="zfavDelete"/>
+            <channel id="cmd" typeId="zfavCmd"/>
         </channels>
         
         <config-description>
@@ -232,9 +230,9 @@
         <description>Zone Preset Commands to save/restore/delete presets for the zone</description>
 
         <channels>
-            <channel id="save" typeId="zpreSave"/>
-            <channel id="restore" typeId="zpreRestore"/>
-            <channel id="delete" typeId="zpreDelete"/>
+            <channel id="name" typeId="zpreName"/>
+            <channel id="valid" typeId="zpreValid"/>
+            <channel id="cmd" typeId="zpreCmd"/>
         </channels>
         
         <config-description>
@@ -553,20 +551,20 @@
         <label>Valid</label>
         <description>If the zone favorite is valid or not</description>
     </channel-type>
-    <channel-type id="zfavSave" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Save the favorite</label>
-        <description>Saves the favorite (ON=as system favorite, OFF=as zone favorite)</description>
-    </channel-type>
-    <channel-type id="zfavRestore" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Restore a favorite</label>
-        <description>Restores the favorite (ON=system favorite, OFF=zone favorite)</description>
-    </channel-type>
-    <channel-type id="zfavDelete" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Delete a favorite</label>
-        <description>Deletes the favorite (ON=system favorite, OFF=zone favorite)</description>
+    <channel-type id="zfavCmd" advanced="true">
+        <item-type>String</item-type>
+        <label>Favorite Command</label>
+        <description>Preset Command ("savesys", "restoresys", "deletesys", "savezone", "restorezone", "deletezone")</description>
+        <state>
+            <options>
+                <option value="savesys">Save as system favorite</option>
+                <option value="restoresys">Restore system favorite</option>
+                <option value="deletesys">Delete system favorite</option>
+                <option value="savezone">Save as zone favorite</option>
+                <option value="restorezone">Restore zone favorite</option>
+                <option value="deletezone">Delete zone favorite</option>
+            </options>
+        </state>
     </channel-type>
     
     <channel-type id="bkpreName">
@@ -581,20 +579,28 @@
         <description>If the bank preset is valid or not</description>
     </channel-type>
     
-    <channel-type id="zpreSave" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Save the favorite</label>
-        <description>Saves the zone as a preset</description>
+    <channel-type id="zpreName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the zone preset</description>
+        <state readOnly="true"/>
     </channel-type>
-    <channel-type id="zpreRestore" advanced="true">
+    <channel-type id="zpreValid" advanced="true">
         <item-type>Switch</item-type>
-        <label>Restore a favorite</label>
-        <description>Restores the preset to the zone</description>
+        <label>Valid</label>
+        <description>If the zone preset is valid or not</description>
     </channel-type>
-    <channel-type id="zpreDelete" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Delete a favorite</label>
-        <description>Deletes preset for the zone</description>
+    <channel-type id="zpreCmd" advanced="true">
+        <item-type>String</item-type>
+        <label>Preset Command</label>
+        <description>Preset Command ("save", "restore", "delete")</description>
+        <state>
+            <options>
+                <option value="save">Save as preset</option>
+                <option value="restore">Restore preset</option>
+                <option value="delete">Delete preset</option>
+            </options>
+        </state>
     </channel-type>
-        
+    
 </thing:thing-descriptions>

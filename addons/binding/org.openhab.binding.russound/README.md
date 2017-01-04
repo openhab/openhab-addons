@@ -1,6 +1,6 @@
 # Russound Binding
 
-This binding provides integration with any Russound system that support the RIO protocol (all MCA systems, all X systems).  This binding provides  compatibility with RIO Protocol v1.7 (everything but the Media Managment functionality).  The protocol document can be found in the Russound Portal ("RIO Protocol for 3rd Party Integrators.pdf").  Please update to the latest firmware to provide full compatibility with this binding.  This binding does provide full feedback from the Russound system if events occur outside of OpenHAB (such as keypad usage).
+This binding provides integration with any Russound system that support the RIO protocol (all MCA systems, all X systems).  This binding provides  compatibility with RIO Protocol v1.7 (everything but the Media Managment functionality).  The protocol document can be found in the Russound Portal ("RIO Protocol for 3rd Party Integrators.pdf").  Please update to the latest firmware to provide full compatibility with this binding.  This binding does provide full feedback from the Russound system if events occur outside of openHAB (such as keypad usage).
 
 ## Supported Bridges/Things
 
@@ -8,11 +8,11 @@ This binding provides integration with any Russound system that support the RIO 
 * Bridge: Russound Controller (1-6 controllers supported)
 * Bridge: Russound Source (1-12 sources supported)
 * Bridge: Russound Bank (1-6 banks supported for any tuner source)
-* Thing: Russound Preset (1-6 presets supported for each bank)
+* Thing: Russound Bank Preset (1-6 presets supported for each bank)
 * Thing: Russound System Favorite (1-32 favorites supported)
 * Bridge: Russound Zone (1-6 zones supported for each controller) 
 * Thing: Russound Zone Favorite (1-2 zone favorites for each zone)
-* Thing: Russound Zone Preset Commands (1-36 presets commands for each zone [corresponds to banks 1-6, presets 1-6 for each bank])
+* Thing: Russound Zone Presets (1-36 presets for each zone [corresponds to banks 1-6, presets 1-6 for each bank])
                               
 ## Thing Configuration
 
@@ -44,7 +44,7 @@ The following configurations occur for each of the bridges/things:
 |--------------|---------------|--------------------------------------------------------------------------|
 | bank         | int           | The bank # (1-6)                                                         |
 
-### Russound Preset
+### Russound Bank Preset
 
 | Name         | Type          | Description                                                              |
 |--------------|---------------|--------------------------------------------------------------------------|
@@ -181,22 +181,38 @@ The following channels are supported for each bridge/thing
 
 ### Russound Zone Favorite   
 
-| Channel Type ID    | Read/Write | Item Type    | Description                                                          |
-|--------------------|------------|--------------|--------------------------------------------------------------------- |
-| name               | RW         | String       | The name of the zone favorite (only saved via 'save' channel)        |
-| valid              | R          | Switch       | If favorite is valid or not (changed by save [on], delete [off])     |
-| save               | W          | Switch       | Save the favorite (ON=as system favorite, OFF=as zone favorite)      |
-| restore            | W          | Switch       | Restores the favorite (ON=System favorite, OFF=zone favorite)        |
-| delete             | W          | Switch       | Deletes the favorite (ON=System favorite, OFF=zone favorite)         |
+| Channel Type ID    | Read/Write | Item Type    | Description                                                                  |
+|--------------------|------------|--------------|----------------------------------------------------------------------------- |
+| name               | RW         | String       | The name of the zone favorite (only saved when the 'savexxx' cmd is issued)  |
+| valid              | R          | Switch       | If favorite is valid or not ('on' when favorite is saved, 'off' when deleted |
+| cmd                | W          | String       | The favorite command (see note below)                                        |
+
+The favorite command channel ("cmd") supports the following
+
+| Command Text | Description                                         |
+|--------------|-----------------------------------------------------|
+| savesys      | Save the associated zone as the a system favorite   |
+| restoresys   | Restores the system favorite to the associated zone |
+| deletesys    | Deletes the system favorite                         |
+| savezone     | Save the associated zone as the a zone favorite     |
+| restorezone  | Restores the zone favorite to the associated zone   |
+| deletezone   | Deletes the zone favorite                           |
 
 ### Russound Zone Preset Commands
 
-| Channel Type ID    | Read/Write | Item Type    | Description                                                          |
-|--------------------|------------|--------------|--------------------------------------------------------------------- |
-| save               | W          | Switch       | Save the zone as a preset                                            |
-| restore            | W          | Switch       | Restores the preset to the zone                                      |
-| delete             | W          | Switch       | Deletes the preset                                                   |
+| Channel Type ID    | Read/Write | Item Type    | Description                                                                             |
+|--------------------|------------|--------------|-----------------------------------------------------------------------------------------|
+| name               | RW         | String       | The name of the preset (only saved when the 'save' preset cmd is issued)                |
+| valid              | R          | Switch       | If favorite is valid or not ('on' when a preset is saved, 'off' when preset is deleted) |
+| cmd                | W          | String       | The preset command (see note below)                                                     |
 
+The preset command channel ("cmd") supports the following
+
+| Command Text | Description                                |
+|--------------|--------------------------------------------|
+| save         | Save the associated zone as the preset     |
+| restore      | Restores the preset to the associated zone |
+| delete       | Deletes the preset                         |
 
 ### Source channel support cross reference
 
@@ -229,6 +245,7 @@ The following channels are supported for each bridge/thing
 ## Full Example
 
 The following is an example of 
+
 1. Main controller (#1) at ipaddress 192.168.1.24
 2. Two Sources connected to it (#1 is the internal AM/FM and #2 is a DMS 3.1)
 3. Two System favorites (#1 FM 102.9, #2 Pandora on DMS)
@@ -323,14 +340,10 @@ Switch Rio_Sys_Favorite_Valid2 "Valid2 [%s]" { channel="russound:sysfavorite:2:v
 
 String Rio_Zone_Favorite_Name "Name [%s]" { channel="russound:zonefavorite:1:name" }
 Switch Rio_Zone_Favorite_Valid "Valid [%s]" { channel="russound:zonefavorite:1:valid", autoupdate="false" }
-Switch Rio_Zone_Favorite_Save "Save" { channel="russound:zonefavorite:1:save", autoupdate="false"  }
-Switch Rio_Zone_Favorite_Restore "Restore" { channel="russound:zonefavorite:1:restore", autoupdate="false"  }
-Switch Rio_Zone_Favorite_Delete "Delete" { channel="russound:zonefavorite:1:delete", autoupdate="false"  }
+String Rio_Zone_Favorite_Cmd "Command" { channel="russound:zonefavorite:1:cmd" }
 String Rio_Zone_Favorite_Name2 "Name2 [%s]" { channel="russound:zonefavorite:2:name" }
 Switch Rio_Zone_Favorite_Valid2 "Valid2 [%s]" { channel="russound:zonefavorite:2:valid", autoupdate="false" }
-Switch Rio_Zone_Favorite_Save2 "Save2" { channel="russound:zonefavorite:2:save", autoupdate="false"  }
-Switch Rio_Zone_Favorite_Restore2 "Restore2" { channel="russound:zonefavorite:2:restore", autoupdate="false"  }
-Switch Rio_Zone_Favorite_Delete2 "Delete2" { channel="russound:zonefavorite:2:delete", autoupdate="false"  }
+String Rio_Zone_Favorite_Cmd2 "Command2" { channel="russound:zonefavorite:2:cmd"  }
 
 String Rio_Src_Bank_Name "Name [%s]" { channel="russound:bank:1:name" }
 
@@ -339,15 +352,12 @@ Switch Rio_Bank_Preset_Valid "Valid [%s]" { channel="russound:bankpreset:1:valid
 String Rio_Bank_Preset_Name2 "Name2 [%s]" { channel="russound:bankpreset:2:name" }
 Switch Rio_Bank_Preset_Valid2 "Valid2 [%s]" { channel="russound:bankpreset:2:valid" }
 
-Switch Rio_Zone_Preset_Save "Save" { channel="russound:zonepreset:1:save", autoupdate="false"  }
-Switch Rio_Zone_Preset_Restore "Restore" { channel="russound:zonepreset:1:restore", autoupdate="false"  }
-Switch Rio_Zone_Preset_Delete "Delete" { channel="russound:zonepreset:1:delete", autoupdate="false"  }
-Switch Rio_Zone_Preset_Save2 "Save2" { channel="russound:zonepreset:2:save", autoupdate="false"  }
-Switch Rio_Zone_Preset_Restore2 "Restore2" { channel="russound:zonepreset:2:restore", autoupdate="false"  }
-Switch Rio_Zone_Preset_Delete2 "Delete2" { channel="russound:zonepreset:2:delete", autoupdate="false"  }
+String Rio_Zone_Preset_Cmd "Command" { channel="russound:zonepreset:1:cmd"  }
+String Rio_Zone_Preset_Cmd2 "Command2" { channel="russound:zonepreset:2:cmd"  }
 ```
 
 .sitemap
+
 ```
 Frame label="Russound" {
  Text label="System" {
@@ -429,29 +439,15 @@ Frame label="Russound" {
    Text label="Favorite" {
     Text item=Rio_Zone_Favorite_Name
     Text item=Rio_Zone_Favorite_Valid
-    Switch item=Rio_Zone_Favorite_Save mappings=[ON="System"]
-    Switch item=Rio_Zone_Favorite_Save mappings=[OFF="Zone"]
-    Switch item=Rio_Zone_Favorite_Restore mappings=[ON="System"]
-    Switch item=Rio_Zone_Favorite_Restore mappings=[OFF="Zone"]
-    Switch item=Rio_Zone_Favorite_Delete mappings=[ON="System"]
-    Switch item=Rio_Zone_Favorite_Delete mappings=[OFF="Zone"]
+    Selection item=Rio_Zone_Favorite_Cmd mappings=[savezone="Save Zone", restorezone="Restore Zone", deletezone="Delete Zone", savesys="Save System", restoresys="Restore System", deletesys="Delete System"]
     Text item=Rio_Zone_Favorite_Name2
     Text item=Rio_Zone_Favorite_Valid2
-    Switch item=Rio_Zone_Favorite_Save2 mappings=[ON="System"]
-    Switch item=Rio_Zone_Favorite_Save2 mappings=[OFF="Zone"]
-    Switch item=Rio_Zone_Favorite_Restore2 mappings=[ON="System"]
-    Switch item=Rio_Zone_Favorite_Restore2 mappings=[OFF="Zone"]
-    Switch item=Rio_Zone_Favorite_Delete2 mappings=[ON="System"]
-    Switch item=Rio_Zone_Favorite_Delete2 mappings=[OFF="Zone"]
+    Selection item=Rio_Zone_Favorite_Cmd2 mappings=[savezone="Save Zone", restorezone="Restore Zone", deletezone="Delete Zone", savesys="Save System", restoresys="Restore System", deletesys="Delete System"]
    }
 
    Text label="Preset" {
-    Switch item=Rio_Zone_Preset_Save mappings=[ON="Save"]
-    Switch item=Rio_Zone_Preset_Restore mappings=[ON="Restore"]
-    Switch item=Rio_Zone_Preset_Delete mappings=[ON="Delete"]
-    Switch item=Rio_Zone_Preset_Save2 mappings=[ON="Save"]
-    Switch item=Rio_Zone_Preset_Restore2 mappings=[ON="Restore"]
-    Switch item=Rio_Zone_Preset_Delete2 mappings=[ON="Delete"]
+    Selection item=Rio_Zone_Preset_Cmd mappings=[save="Save", restore="Restore", delete="Delete"]
+    Selection item=Rio_Zone_Preset_Cmd2 mappings=[save="Save", restore="Restore", delete="Delete"]
    }
   }
  }

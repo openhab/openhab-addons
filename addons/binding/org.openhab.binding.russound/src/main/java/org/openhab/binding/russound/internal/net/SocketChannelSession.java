@@ -3,6 +3,7 @@ package org.openhab.binding.russound.internal.net;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -11,6 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ public class SocketChannelSession implements SocketSession {
     /**
      * The actual socket being used. Will be null if not connected
      */
-    private SocketChannel _client;
+    private final AtomicReference<SocketChannel> _socketChannel = new AtomicReference<SocketChannel>();
 
     /**
      * The {@link ResponseReader} that will be used to read from {@link #_readBuffer}
@@ -124,20 +126,21 @@ public class SocketChannelSession implements SocketSession {
     public void connect() throws IOException {
         disconnect();
 
-        _client = SocketChannel.open();
-        _client.configureBlocking(true);
+        final SocketChannel channel = SocketChannel.open();
+        channel.configureBlocking(true);
 
         _logger.debug("Connecting to {}:{}", _host, _port);
-        _client.connect(new InetSocketAddress(_host, _port));
+        channel.connect(new InetSocketAddress(_host, _port));
 
         _logger.debug("Waiting for connect");
-        while (!_client.finishConnect()) {
+        while (!channel.finishConnect()) {
             try {
                 Thread.sleep(250);
             } catch (InterruptedException e) {
             }
         }
 
+        _socketChannel.set(channel);
         new Thread(_dispatcher).start();
         new Thread(_responseReader).start();
     }
@@ -152,8 +155,8 @@ public class SocketChannelSession implements SocketSession {
         if (isConnected()) {
             _logger.debug("Disconnecting from {}:{}", _host, _port);
 
-            _client.close();
-            _client = null;
+            final SocketChannel channel = _socketChannel.getAndSet(null);
+            channel.close();
 
             _dispatcher.stopRunning();
             _responseReader.stopRunning();
@@ -169,7 +172,8 @@ public class SocketChannelSession implements SocketSession {
      */
     @Override
     public boolean isConnected() {
-        return _client != null && _client.isConnected();
+        final SocketChannel channel = _socketChannel.get();
+        return channel != null && channel.isConnected();
     }
 
     /*
@@ -191,9 +195,15 @@ public class SocketChannelSession implements SocketSession {
             throw new IOException("Cannot send message - disconnected");
         }
 
-        _logger.debug("Sending Command: '{}'", command);
         ByteBuffer toSend = ByteBuffer.wrap((command + "\r\n").getBytes());
-        _client.write(toSend);
+
+        final SocketChannel channel = _socketChannel.get();
+        if (channel == null) {
+            _logger.debug("Cannot send command '{}' - socket channel was closed", command);
+        } else {
+            _logger.debug("Sending Command: '{}'", command);
+            channel.write(toSend);
+        }
     }
 
     /**
@@ -252,7 +262,14 @@ public class SocketChannelSession implements SocketSession {
                         continue;
                     }
 
-                    int bytesRead = _client.read(readBuffer);
+                    final SocketChannel channel = _socketChannel.get();
+                    if (channel == null) {
+                        // socket was closed
+                        _isRunning.set(false);
+                        break;
+                    }
+
+                    int bytesRead = channel.read(readBuffer);
                     if (bytesRead == -1) {
                         _responses.put(new IOException("server closed connection"));
                         _isRunning.set(false);
@@ -280,6 +297,8 @@ public class SocketChannelSession implements SocketSession {
 
                 } catch (InterruptedException e) {
                     // Do nothing - probably shutting down
+                } catch (AsynchronousCloseException e) {
+                    // socket was definitelyclosed by another thread
                 } catch (IOException e) {
                     try {
                         _isRunning.set(false);

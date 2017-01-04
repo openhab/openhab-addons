@@ -15,14 +15,14 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.russound.rio.RioConstants;
-import org.openhab.binding.russound.rio.bank.RioBankHandler;
-import org.openhab.binding.russound.rio.controller.RioControllerHandler;
-import org.openhab.binding.russound.rio.favorites.RioFavoriteHandler;
-import org.openhab.binding.russound.rio.preset.RioPresetHandler;
-import org.openhab.binding.russound.rio.source.RioSourceHandler;
-import org.openhab.binding.russound.rio.system.RioSystemHandler;
-import org.openhab.binding.russound.rio.zone.RioZoneHandler;
+import org.openhab.binding.russound.internal.rio.RioConstants;
+import org.openhab.binding.russound.internal.rio.bank.RioBankHandler;
+import org.openhab.binding.russound.internal.rio.controller.RioControllerHandler;
+import org.openhab.binding.russound.internal.rio.favorites.RioFavoriteHandler;
+import org.openhab.binding.russound.internal.rio.preset.RioPresetHandler;
+import org.openhab.binding.russound.internal.rio.source.RioSourceHandler;
+import org.openhab.binding.russound.internal.rio.system.RioSystemHandler;
+import org.openhab.binding.russound.internal.rio.zone.RioZoneHandler;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableSet;
  * The {@link RussoundHandlerFactory} is responsible for creating bridge and thing
  * handlers.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class RussoundHandlerFactory extends BaseThingHandlerFactory {
 

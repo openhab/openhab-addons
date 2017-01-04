@@ -12,7 +12,7 @@ package org.openhab.binding.russound;
  * The {@link RussoundBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Tim Roberts - Initial contribution
+ * @author Tim Roberts
  */
 public class RussoundBindingConstants {
 
