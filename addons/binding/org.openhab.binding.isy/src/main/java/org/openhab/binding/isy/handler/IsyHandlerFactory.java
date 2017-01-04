@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.isy.discovery.IsyDiscoveryService;
+import org.openhab.binding.isy.discovery.IsyRestDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +95,8 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
      * @param isyBridgeBridgeHandler
      */
     private void registerIsyBridgeDiscoveryService(IsyBridgeHandler isyBridgeBridgeHandler) {
-        IsyDiscoveryService discoveryService = new IsyDiscoveryService(isyBridgeBridgeHandler);
+        IsyRestDiscoveryService discoveryService = new IsyRestDiscoveryService(isyBridgeBridgeHandler);
+
         discoveryService.activate();
 
         ServiceRegistration<?> discoveryServiceRegistration = bundleContext

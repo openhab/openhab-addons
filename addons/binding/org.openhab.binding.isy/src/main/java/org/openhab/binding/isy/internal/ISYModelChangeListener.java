@@ -8,15 +8,12 @@
  */
 package org.openhab.binding.isy.internal;
 
-import com.universaldevices.device.model.UDControl;
-import com.universaldevices.device.model.UDNode;
-
 /**
  * @author Tim Diekmann
  *
  */
 public interface ISYModelChangeListener {
-    public void onModelChanged(final UDControl control, final Object action, final UDNode node);
+    public void onModelChanged(final String control, final String action, final String node);
 
     public void onDeviceOnLine();
 

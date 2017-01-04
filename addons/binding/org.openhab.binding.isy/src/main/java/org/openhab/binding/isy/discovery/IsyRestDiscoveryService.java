@@ -1,8 +1,7 @@
 package org.openhab.binding.isy.discovery;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -14,17 +13,16 @@ import org.openhab.binding.isy.IsyBindingConstants;
 import org.openhab.binding.isy.config.IsyInsteonDeviceConfiguration;
 import org.openhab.binding.isy.handler.IsyBridgeHandler;
 import org.openhab.binding.isy.internal.InsteonAddress;
-import org.openhab.binding.isy.internal.InsteonClient;
+import org.openhab.binding.isy.internal.Node;
+import org.openhab.binding.isy.internal.OHIsyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
-import com.universaldevices.client.NoDeviceException;
-import com.universaldevices.device.model.UDNode;
 
-public class IsyDiscoveryService extends AbstractDiscoveryService {
+public class IsyRestDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(IsyDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(IsyRestDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private IsyBridgeHandler bridgeHandler;
     private Map<String, ThingTypeUID> mMapDeviceTypeThingType;
@@ -32,7 +30,7 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
     /**
      * Creates a IsyDiscoveryService.
      */
-    public IsyDiscoveryService(IsyBridgeHandler bridgeHandler) {
+    public IsyRestDiscoveryService(IsyBridgeHandler bridgeHandler) {
         super(ImmutableSet.of(new ThingTypeUID(IsyBindingConstants.BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
         this.bridgeHandler = bridgeHandler;
         mMapDeviceTypeThingType = new HashMap<String, ThingTypeUID>();
@@ -67,40 +65,32 @@ public class IsyDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("startScan called for Isy");
         Map<String, Object> properties = null;
-        InsteonClient insteon = this.bridgeHandler.getInsteonClient();
+        OHIsyClient insteon = this.bridgeHandler.getInsteonClient();
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        try {
-            logger.debug("retrieving nodes");
-            Hashtable<String, UDNode> nodes = insteon.getNodes();
-            Collection<UDNode> theNodes = nodes.values();
-            logger.debug("found nodes(#): " + nodes.size());
-            for (UDNode node : theNodes) {
-                InsteonAddress insteonAddress = new InsteonAddress(node.address);
+        logger.debug("retrieving nodes");
+        List<Node> nodes = insteon.getNodes();
+        logger.debug("found nodes(#): " + nodes.size());
+        for (Node node : nodes) {
+            InsteonAddress insteonAddress = new InsteonAddress(node.getAddress());
 
-                properties = new HashMap<>(0);
-                properties.put(IsyInsteonDeviceConfiguration.ADDRESS, insteonAddress.toStringNoDeviceId());
-                properties.put(IsyInsteonDeviceConfiguration.NAME, node.name);
+            properties = new HashMap<>(0);
+            properties.put(IsyInsteonDeviceConfiguration.ADDRESS, insteonAddress.toStringNoDeviceId());
+            properties.put(IsyInsteonDeviceConfiguration.NAME, node.getName());
 
-                if (insteonAddress.getDeviceId() == 1) {
-                    ThingTypeUID theThingTypeUid = mMapDeviceTypeThingType.get(node.typeReadable);
-                    if (theThingTypeUid != null) {
-                        String thingID = node.name.replace(" ", "").replaceAll("\\.", "");
-                        ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
-                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                                .withProperties(properties).withBridge(bridgeUID).withLabel(node.name).build();
-                        thingDiscovered(discoveryResult);
-                    } else {
-                        logger.warn("Unsupported insteon node, name: " + node.name + ", type: " + node.typeReadable
-                                + ", address: " + node.address);
-                    }
+            if (insteonAddress.getDeviceId() == 1) {
+                ThingTypeUID theThingTypeUid = mMapDeviceTypeThingType.get(node.getTypeReadable());
+                if (theThingTypeUid != null) {
+                    String thingID = node.getName().replace(" ", "").replaceAll("\\.", "");
+                    ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                            .withProperties(properties).withBridge(bridgeUID).withLabel(node.getName()).build();
+                    thingDiscovered(discoveryResult);
+                } else {
+                    logger.warn("Unsupported insteon node, name: " + node.getName() + ", type: "
+                            + node.getTypeReadable() + ", address: " + node.getAddress());
                 }
-                // for (scene:insteon.)
             }
-
-        } catch (
-
-        NoDeviceException e) {
-            logger.error("No device exception", e);
+            // for (scene:insteon.)
         }
 
     }

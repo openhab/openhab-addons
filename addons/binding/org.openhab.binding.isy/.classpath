@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-client-9.2.14.v20151106.jar" sourcepath="/Users/craigh/temp/jetty.project/jetty-websocket/websocket-client"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-api-9.2.14.v20151106.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-common-9.2.14.v20151106.jar" sourcepath="/Users/craigh/temp/jetty.project/jetty-websocket/websocket-common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="lib" path="lib/isy_inst.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
