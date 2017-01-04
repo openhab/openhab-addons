@@ -179,6 +179,6 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
             }
         }
         gcMulticastListener.shutdown();
-        logger.info("Discovery job is exiting");
+        logger.debug("Discovery job is exiting");
     }
 }

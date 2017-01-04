@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.globalcache.GlobalCacheBindingConstants;
 import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.openhab.binding.globalcache.handler.GlobalCacheHandler;
 import org.slf4j.Logger;
@@ -98,6 +99,14 @@ public abstract class AbstractCommand implements CommandInterface {
 
     public void setConnector(String c) {
         connector = c;
+    }
+
+    public void setCommandType(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
+    public boolean isGC_100_12() {
+        return thing.getThingTypeUID().equals(GlobalCacheBindingConstants.THING_TYPE_GC_100_12);
     }
 
     @Override
