@@ -226,8 +226,7 @@ public class SocketChannelSession implements SocketSession {
         private final CountDownLatch _running = new CountDownLatch(1);
 
         /**
-         * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the
-         * setSOTimeout)
+         * Stops the reader. Will wait 5 seconds for the runnable to stop
          */
         public void stopRunning() {
             if (_isRunning.getAndSet(false)) {
@@ -298,7 +297,7 @@ public class SocketChannelSession implements SocketSession {
                 } catch (InterruptedException e) {
                     // Do nothing - probably shutting down
                 } catch (AsynchronousCloseException e) {
-                    // socket was definitelyclosed by another thread
+                    // socket was definitely closed by another thread
                 } catch (IOException e) {
                     try {
                         _isRunning.set(false);
@@ -334,18 +333,26 @@ public class SocketChannelSession implements SocketSession {
         private final CountDownLatch _running = new CountDownLatch(1);
 
         /**
+         * Whether the dispatcher is currently processing a message
+         */
+        private final AtomicBoolean _isProcessing = new AtomicBoolean(false);
+
+        /**
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the poll
          * timeout below)
          */
         public void stopRunning() {
-
             if (_isRunning.getAndSet(false)) {
-                try {
-                    if (!_running.await(5, TimeUnit.SECONDS)) {
-                        _logger.warn("Waited too long for dispatcher to finish");
+                // only wait if stopRunning didn't get called as part of processing a message
+                // (which would happen if we are processing an exception that forced a session close)
+                if (!_isProcessing.get()) {
+                    try {
+                        if (!_running.await(5, TimeUnit.SECONDS)) {
+                            _logger.warn("Waited too long for dispatcher to finish");
+                        }
+                    } catch (InterruptedException e) {
+                        // do nothing
                     }
-                } catch (InterruptedException e) {
-                    // do nothing
                 }
             }
         }
@@ -372,16 +379,26 @@ public class SocketChannelSession implements SocketSession {
                         if (response instanceof String) {
                             try {
                                 _logger.debug("Dispatching response: {}", response);
-                                for (SocketSessionListener listener : listeners) {
-                                    listener.responseReceived((String) response);
+                                try {
+                                    _isProcessing.set(true);
+                                    for (SocketSessionListener listener : listeners) {
+                                        listener.responseReceived((String) response);
+                                    }
+                                } finally {
+                                    _isProcessing.set(false);
                                 }
                             } catch (Exception e) {
                                 _logger.warn("Exception occurred processing the response '{}': {}", response, e);
                             }
                         } else if (response instanceof Exception) {
                             _logger.debug("Dispatching exception: {}", response);
-                            for (SocketSessionListener listener : listeners) {
-                                listener.responseException((Exception) response);
+                            try {
+                                _isProcessing.set(true);
+                                for (SocketSessionListener listener : listeners) {
+                                    listener.responseException((Exception) response);
+                                }
+                            } finally {
+                                _isProcessing.set(false);
                             }
                         } else {
                             _logger.warn("Unknown response class: {}", response);
@@ -389,10 +406,13 @@ public class SocketChannelSession implements SocketSession {
                     }
                 } catch (InterruptedException e) {
                     // Do nothing
+                } catch (Exception e) {
+                    _logger.debug("Uncaught exception {}: {}", e.getMessage(), e);
+                    break;
                 }
             }
+            _isProcessing.set(false);
             _isRunning.set(false);
-
             _running.countDown();
         }
     }
