@@ -93,7 +93,7 @@
         <item-type>Number</item-type>
         <label>Cut grass</label>
         <description></description>
-        <state readOnly="true" pattern="%.0f %%"></state>
+        <state readOnly="true" pattern="%d %%"></state>
     </channel-type>
     <channel-type id="ready">
         <item-type>Number</item-type>

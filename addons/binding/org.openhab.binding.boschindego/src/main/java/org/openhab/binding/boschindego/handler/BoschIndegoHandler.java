@@ -16,7 +16,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -114,7 +113,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             updateState(STATECODE, new DecimalType(statecode));
             updateState(READY, new DecimalType(ready ? 1 : 0));
             updateState(ERRORCODE, new DecimalType(error));
-            updateState(MOWED, new PercentType(mowed));
+            updateState(MOWED, new DecimalType(mowed));
             updateState(STATE, new DecimalType(eshStatus));
             updateState(TEXTUAL_STATE, new StringType(statusWithMessage.getMessage()));
 
