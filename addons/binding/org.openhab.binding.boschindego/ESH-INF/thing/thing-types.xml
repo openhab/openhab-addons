@@ -22,6 +22,7 @@
             <description>Username for the Bosch Indego account.</description>
         </parameter>
         <parameter name="password" type="text" required="true">
+            <context>password</context>
             <label>Password</label>
             <description>Password for the Bosch Indego account.</description>
         </parameter>
