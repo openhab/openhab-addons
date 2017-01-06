@@ -37,23 +37,24 @@
     <!-- Sample Channel Type -->
     <channel-type id="state">
         <item-type>Number</item-type>
-        <label>Numeric state of the Indego</label>
+        <label>Numeric state</label>
          <state readOnly="false">
             <options>
-                <option value="1">mow</option>
-                <option value="2">charging/docked</option>
-                <option value="3">paused</option>
+                <option value="1">Mow</option>
+                <option value="2">Charge/Dock</option>
+                <option value="3">Pause</option>
             </options>
          </state>
     </channel-type>
-    <channel-type id="errorcode">
+    <channel-type id="errorcode" advanced="true">
         <item-type>Number</item-type>
-        <label>Numeric state of the error</label>
+        <label>Error Code</label>
         <description>0 = no error</description>
+        <state readOnly="false"></state>
     </channel-type>
     <channel-type id="statecode">
         <item-type>Number</item-type>
-        <label>Statecode</label>
+        <label>State code</label>
         <description>API-code of the Indego state</description>
         <state readOnly="true">
         <options>
@@ -85,18 +86,20 @@
     </channel-type>
     <channel-type id="textualstate">
         <item-type>String</item-type>
-        <label>Textual state of the Indego</label>
+        <label>Textual State</label>
         <description></description>
         <state readOnly="true" />
     </channel-type>
     <channel-type id="mowed">
         <item-type>Number</item-type>
-        <label>Percent of cut grass</label>
+        <label>Cut grass</label>
         <description></description>
+        <state readOnly="true" pattern="%.0f %%"></state>
     </channel-type>
     <channel-type id="ready">
         <item-type>Number</item-type>
-        <label>Indicates if mower is ready to mow</label>
+        <label>Ready</label>
+        <description>Indicates if mower is ready to mow</description>
         <state readOnly="true">
             <options>
                 <option value="0">not ready</option>
