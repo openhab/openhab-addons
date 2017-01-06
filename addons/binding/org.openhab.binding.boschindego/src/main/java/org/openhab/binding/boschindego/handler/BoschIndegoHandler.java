@@ -55,7 +55,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // Currently manual refrshing is not possible in the moment
+            // Currently manual refreshing is not possible in the moment
             return;
         } else if (channelUID.getId().equals(STATE) && command instanceof DecimalType) {
             if (command instanceof DecimalType) {
