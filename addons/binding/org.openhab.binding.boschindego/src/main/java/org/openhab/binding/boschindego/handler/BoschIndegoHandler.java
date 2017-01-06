@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +98,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
 
             if (verifyCommand(commandToSend, eshStatus, state.getState(), error)) {
                 logger.debug("Sending command...");
-                updateState(TEXTUAL_STATE, new StringType("Refreshing..."));
+                updateState(TEXTUAL_STATE, UnDefType.UNDEF);
                 controller.sendCommand(getCommandFromEshStatus(commandToSend));
                 commandToSend = 0;
                 try {
