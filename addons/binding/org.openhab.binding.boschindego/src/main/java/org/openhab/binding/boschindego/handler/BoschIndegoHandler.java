@@ -12,7 +12,6 @@ import static org.openhab.binding.boschindego.internal.IndegoStateConstants.*;
 
 import java.math.BigDecimal;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -71,13 +70,6 @@ public class BoschIndegoHandler extends BaseThingHandler {
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
         }
-    }
-
-    @Override
-    public void updateConfiguration(Configuration configuration) {
-        // TODO Auto-generated method stub
-        super.updateConfiguration(configuration);
-
     }
 
     private synchronized void poll() throws InterruptedException {
