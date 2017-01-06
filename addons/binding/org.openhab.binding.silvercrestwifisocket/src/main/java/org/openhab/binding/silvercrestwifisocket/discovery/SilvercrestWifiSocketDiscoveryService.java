@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.silvercrestwifisocket.discovery;
 
 import java.util.HashMap;
@@ -8,7 +16,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
@@ -24,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SilvercrestWifiSocketDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketDiscoveryService.class);
     private final SilvercrestWifiSocketMediator mediator;
 
     /**
@@ -35,7 +42,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     public SilvercrestWifiSocketDiscoveryService() throws IllegalArgumentException {
         super(SilvercrestWifiSocketBindingConstants.SUPPORTED_THING_TYPES_UIDS,
                 SilvercrestWifiSocketBindingConstants.DISCOVERY_TIMEOUT_SECONDS);
-        LOG.debug("SilvercrestWifiSocketMediator is not initialized yet will create one mediator...");
+        logger.debug("SilvercrestWifiSocketMediator is not initialized yet will create one mediator...");
         this.mediator = new SilvercrestWifiSocketMediator(this);
     }
 
@@ -46,7 +53,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
 
     @Override
     protected void startScan() {
-        LOG.debug("Don't need to start new scan... background scanning in progress by mediator.");
+        logger.debug("Don't need to start new scan... background scanning in progress by mediator.");
     }
 
     /**
@@ -60,52 +67,13 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
         properties.put(SilvercrestWifiSocketBindingConstants.MAC_ADDRESS_ARG, macAddress);
         properties.put(SilvercrestWifiSocketBindingConstants.HOST_ADDRESS_ARG, hostAddress);
 
-        ThingUID newThingId = this.getNewThingId(macAddress);
+        ThingUID newThingId = new ThingUID(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET, macAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("Silvercrest Wifi Socket " + newThingId.getId()).build();
+                .withLabel("Silvercrest Wifi Socket").withRepresentationProperty(macAddress).build();
 
-        LOG.debug("Discovered new thing with mac address '{}' and host address '{}'", macAddress, hostAddress);
+        logger.debug("Discovered new thing with mac address '{}' and host address '{}'", macAddress, hostAddress);
 
         this.thingDiscovered(discoveryResult);
-    }
-
-    /**
-     * Gets one unrepeated {@link ThingUID} based on the existing {@link ThingUID} in
-     * {@link SilvercrestWifiSocketMediator}.
-     *
-     * @param macAddress the mac address to generate the {@link ThingUID}.
-     * @return the new unexisting {@link ThingUID}.
-     */
-    private ThingUID getNewThingId(final String macAddress) {
-        ThingUID thingUID = new ThingUID(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET, macAddress);
-
-        boolean thingUIDExists = this.thingUIDExistsInMediator(thingUID);
-
-        if (thingUIDExists) {
-            int index = 1;
-            while (this.thingUIDExistsInMediator(thingUID)) {
-                thingUID = new ThingUID(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET,
-                        macAddress + "_" + index);
-            }
-        }
-        return thingUID;
-    }
-
-    /**
-     * Check if the {@link ThingUID} exists in {@link SilvercrestWifiSocketMediator}.
-     *
-     * @param thingUID the {@link ThingUID}.
-     * @return true if the {@link ThingUID} already exists.
-     */
-    private boolean thingUIDExistsInMediator(final ThingUID thingUID) {
-        boolean exists = false;
-        for (Thing thing : this.getMediator().getAllThingsRegistred()) {
-            if (thing.getUID().equals(thingUID)) {
-                exists = true;
-                break;
-            }
-        }
-        return exists;
     }
 
     // SETTERS AND GETTERS

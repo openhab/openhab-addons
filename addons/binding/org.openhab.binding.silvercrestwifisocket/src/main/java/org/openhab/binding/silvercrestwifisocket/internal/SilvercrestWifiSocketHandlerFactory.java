@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,9 +18,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
 import org.openhab.binding.silvercrestwifisocket.discovery.SilvercrestWifiSocketDiscoveryService;
-import org.openhab.binding.silvercrestwifisocket.exceptions.MacAddressNotValidException;
 import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketHandler;
 import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketMediator;
+import org.openhab.binding.silvercrestwifisocket.internal.exceptions.MacAddressNotValidException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET);
 
-    private static final Logger LOG = LoggerFactory.getLogger(SilvercrestWifiSocketHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketHandlerFactory.class);
 
     private SilvercrestWifiSocketMediator mediator;
 
@@ -52,14 +53,14 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
 
         if (thingTypeUID.equals(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET)) {
             SilvercrestWifiSocketHandler handler;
-            LOG.debug("Creating a new SilvercrestWifiSocketHandler...");
+            logger.debug("Creating a new SilvercrestWifiSocketHandler...");
             try {
                 handler = new SilvercrestWifiSocketHandler(thing);
-                LOG.debug("SilvercrestWifiSocketMediator will register the handler.");
+                logger.debug("SilvercrestWifiSocketMediator will register the handler.");
                 this.getMediator().registerThingAndWifiSocketHandler(thing, handler);
                 return handler;
             } catch (MacAddressNotValidException e) {
-                LOG.debug("The mac address passed to WifiSocketHandler by configurations is not valid.");
+                logger.debug("The mac address passed to WifiSocketHandler by configurations is not valid.");
             }
 
         }
@@ -96,7 +97,7 @@ public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory
                     }
                 }
             } catch (InvalidSyntaxException e) {
-                LOG.debug("Error looking up for SilvercrestDiscoveryService to get the WifiSocketMediator: {}",
+                logger.debug("Error looking up for SilvercrestDiscoveryService to get the WifiSocketMediator: {}",
                         e.getMessage());
             }
         }

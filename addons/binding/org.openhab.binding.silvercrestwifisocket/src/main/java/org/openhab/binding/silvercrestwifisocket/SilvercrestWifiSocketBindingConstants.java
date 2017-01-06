@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +35,7 @@ public class SilvercrestWifiSocketBindingConstants {
     /**
      * List of all Channel ids
      */
-    public final static String WIFI_SOCKET_CHANNEL_ID = "wifiSocketChannel";
+    public final static String WIFI_SOCKET_CHANNEL_ID = "switch";
 
     /**
      * The supported thing types.

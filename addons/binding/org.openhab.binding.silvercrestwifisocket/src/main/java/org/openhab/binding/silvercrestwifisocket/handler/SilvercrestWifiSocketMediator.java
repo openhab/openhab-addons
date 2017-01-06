@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.silvercrestwifisocket.handler;
 
 import java.net.SocketException;
@@ -8,8 +16,8 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
 import org.openhab.binding.silvercrestwifisocket.discovery.SilvercrestWifiSocketDiscoveryService;
-import org.openhab.binding.silvercrestwifisocket.entities.SilvercrestWifiSocketResponse;
-import org.openhab.binding.silvercrestwifisocket.runnable.SilvercrestWifiSocketUpdateReceiverRunnable;
+import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
+import org.openhab.binding.silvercrestwifisocket.internal.runnable.SilvercrestWifiSocketUpdateReceiverRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +31,7 @@ public class SilvercrestWifiSocketMediator {
 
     private static Logger LOG = LoggerFactory.getLogger(SilvercrestWifiSocketMediator.class);
 
-    private final Map<Thing, SilvercrestWifiSocketHandler> handlersRegistredByThing = new HashMap<>();
+    private final Map<Thing, SilvercrestWifiSocketHandler> handlersRegisteredByThing = new HashMap<>();
 
     private SilvercrestWifiSocketUpdateReceiverRunnable receiver;
     private Thread receiverThread;
@@ -58,7 +66,7 @@ public class SilvercrestWifiSocketMediator {
             handler.newReceivedResponseMessage(receivedMessage);
             LOG.debug("Received message delivered with success to handler of mac {}", receivedMessage.getMacAddress());
         } else {
-            LOG.debug("There is no handler registered for mac address:{}", receivedMessage.getMacAddress());
+            LOG.debug("There is no handler registered for mac address: {}", receivedMessage.getMacAddress());
             // notify discovery service of thing found!
             this.silvercrestDiscoveryService.discoveredWifiSocket(receivedMessage.getMacAddress(),
                     receivedMessage.getHostAddress());
@@ -72,7 +80,7 @@ public class SilvercrestWifiSocketMediator {
      * @param handler the {@link SilvercrestWifiSocketHandler}.
      */
     public void registerThingAndWifiSocketHandler(final Thing thing, final SilvercrestWifiSocketHandler handler) {
-        this.handlersRegistredByThing.put(thing, handler);
+        this.handlersRegisteredByThing.put(thing, handler);
     }
 
     /**
@@ -81,9 +89,9 @@ public class SilvercrestWifiSocketMediator {
      * @param thing the {@link Thing}.
      */
     public void unregisterWifiSocketHandlerByThing(final Thing thing) {
-        SilvercrestWifiSocketHandler handler = this.handlersRegistredByThing.get(thing);
+        SilvercrestWifiSocketHandler handler = this.handlersRegisteredByThing.get(thing);
         if (handler != null) {
-            this.handlersRegistredByThing.remove(thing);
+            this.handlersRegisteredByThing.remove(thing);
         }
 
     }
@@ -96,7 +104,7 @@ public class SilvercrestWifiSocketMediator {
      */
     private SilvercrestWifiSocketHandler getHandlerRegistredByMac(final String macAddress) {
         SilvercrestWifiSocketHandler searchedHandler = null;
-        for (SilvercrestWifiSocketHandler handler : this.handlersRegistredByThing.values()) {
+        for (SilvercrestWifiSocketHandler handler : this.handlersRegisteredByThing.values()) {
             if (macAddress.equals(handler.getMacAddress())) {
                 searchedHandler = handler;
                 // don't spend more computation. Found the handler.
@@ -131,7 +139,7 @@ public class SilvercrestWifiSocketMediator {
      *
      * @returns all the {@link Thing}.
      */
-    public Set<Thing> getAllThingsRegistred() {
-        return this.handlersRegistredByThing.keySet();
+    public Set<Thing> getAllThingsRegistered() {
+        return this.handlersRegisteredByThing.keySet();
     }
 }

@@ -9,7 +9,7 @@ This binding integrates the Silvercrest Wifi Socket SWS-A1 sold by Lidl.
 
 ## Discovery
 
-The Discovery of Wifi Sockets is always running in background. When one command is sent to wifi socket using the android/ios app, or if the physical in the device is pressed, the device is recognized and is placed into the Inbox.
+The Discovery of Wifi Sockets is always running in the background. If a command is sent to wifi socket using the android/ios app, or if the physical in the device is pressed, the device is recognized and is placed into the Inbox.
 
 ## Binding Configuration
 
@@ -17,7 +17,7 @@ The binding does not require any special configuration. The Wifi Socket should b
 
 ## Thing Configuration
 
-To configure one Wifi Socket manually is only required the mac address from the socket. You can check it in your router or using some mobile app.
+To configure one Wifi Socket manually is only the mac address is required. You can check the Wifi Socket mac address in your router or using some mobile app.
 
 Wifi Socket thing parameters:
 
@@ -40,4 +40,4 @@ The Silvercrest Wifi Socket support the following channel:
 
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|
-| wifi-socket-switch | Switch | Wifi Socket Switch. |
+| switch | Switch | Wifi Socket Switch. |

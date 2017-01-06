@@ -10,7 +10,7 @@
         <description>Supports Silvercrest Wifi Socket SWS-A1.</description>
 
         <channels>
-            <channel id="wifiSocketChannel" typeId="wifi-socket-switch"/>
+            <channel id="switch" typeId="switch"/>
         </channels>
         
         <config-description>
@@ -20,7 +20,8 @@
             </parameter>
             <parameter name="hostAddress" type="text">
                 <label>Host address</label>
-                <description>The socket Host address. The binding is capable to discover the host address.</description>
+                <context>network-address</context>
+                <description>The socket Host address. The binding is able to discover the host address.</description>
             </parameter>
             <parameter name="updateInterval" type="integer" min="5">
                 <label>Update interval</label>
@@ -31,7 +32,7 @@
     </thing-type>
 
     <!-- Socket type Channel Type -->
-    <channel-type id="wifi-socket-switch">
+    <channel-type id="switch">
         <item-type>Switch</item-type>
         <label>Socket Switch</label>
         <description>Silvercrest Wifi Socket Switch to turn on or off.</description>

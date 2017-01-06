@@ -1,4 +1,12 @@
-package org.openhab.binding.silvercrestwifisocket.utils;
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.silvercrestwifisocket.internal.utils;
 
 import java.net.DatagramPacket;
 import java.util.regex.Pattern;
@@ -9,10 +17,11 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.openhab.binding.silvercrestwifisocket.entities.SilvercrestWifiSocketRequest;
-import org.openhab.binding.silvercrestwifisocket.entities.SilvercrestWifiSocketResponse;
-import org.openhab.binding.silvercrestwifisocket.enums.SilvercrestWifiSocketResponseType;
-import org.openhab.binding.silvercrestwifisocket.exceptions.PacketIntegrityErrorException;
+import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketRequest;
+import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
+import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketResponseType;
+import org.openhab.binding.silvercrestwifisocket.internal.exceptions.NotOneResponsePacketException;
+import org.openhab.binding.silvercrestwifisocket.internal.exceptions.PacketIntegrityErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WifiSocketPacketConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WifiSocketPacketConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(WifiSocketPacketConverter.class);
 
     private static String REQUEST_PREFIX = "01";
     private static String RESPONSE_PREFIX = "0142";
@@ -66,8 +75,8 @@ public class WifiSocketPacketConverter {
      */
     public WifiSocketPacketConverter() {
         // init cipher
+        byte[] encriptionKeyBytes;
         try {
-            byte[] encriptionKeyBytes;
             encriptionKeyBytes = ENCRIPTION_KEY.getBytes("UTF-8");
             SecretKeySpec secretKey = new SecretKeySpec(encriptionKeyBytes, "AES");
             IvParameterSpec IvKey = new IvParameterSpec(encriptionKeyBytes);
@@ -77,8 +86,10 @@ public class WifiSocketPacketConverter {
 
             this.silvercrestDecryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
             this.silvercrestDecryptCipher.init(Cipher.DECRYPT_MODE, secretKey, IvKey);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            logger.debug(
+                    "Failure on WifiSocketPacketConverter creation. There was a problem creating ciphers. Error: {}",
+                    exception.getLocalizedMessage());
         }
 
     }
@@ -100,18 +111,18 @@ public class WifiSocketPacketConverter {
             bEncrypted = this.silvercrestEncryptCipher.doFinal(inputByte);
             int encryptDataLength = bEncrypted.length;
 
-            LOG.trace("Encrypted data={" + byteArrayToHexString(inputByte) + "}");
-            LOG.trace("Decrypted data={" + byteArrayToHexString(bEncrypted) + "}");
+            logger.trace("Encrypted data={" + byteArrayToHexString(inputByte) + "}");
+            logger.trace("Decrypted data={" + byteArrayToHexString(bEncrypted) + "}");
             String cryptedCommand = byteArrayToHexString(bEncrypted);
 
             String packetString = REQUEST_PREFIX + LOCK_STATUS + requestPacket.getMacAddress()
                     + Integer.toHexString(encryptDataLength) + cryptedCommand;
 
-            LOG.trace("Request Packet: {}", packetString);
-            LOG.trace("Request packet decrypted data: [{}] with lenght: {}", fullCommand);
+            logger.trace("Request Packet: {}", packetString);
+            logger.trace("Request packet decrypted data: [{}] with lenght: {}", fullCommand, fullCommand.length());
             requestDatagram = hexStringToByteArray(packetString);
         } catch (BadPaddingException | IllegalBlockSizeException e) {
-            LOG.debug("Failure processing the build of the request packet for mac '{}' and type '{}'",
+            logger.debug("Failure processing the build of the request packet for mac '{}' and type '{}'",
                     requestPacket.getMacAddress(), requestPacket.getType());
         }
         return requestDatagram;
@@ -123,9 +134,10 @@ public class WifiSocketPacketConverter {
      * @param packet the {@link DatagramPacket}
      * @return the {@link SilvercrestWifiSocketResponse} is successfully decrypted.
      * @throws PacketIntegrityErrorException if the message has some integrity error.
+     * @throws NotOneResponsePacketException if the message received is not one response packet.
      */
     public SilvercrestWifiSocketResponse decryptResponsePacket(final DatagramPacket packet)
-            throws PacketIntegrityErrorException {
+            throws PacketIntegrityErrorException, NotOneResponsePacketException {
         SilvercrestWifiSocketResponse responsePacket = this.decryptResponsePacket(
                 WifiSocketPacketConverter.byteArrayToHexString(packet.getData(), packet.getLength()));
 
@@ -139,62 +151,63 @@ public class WifiSocketPacketConverter {
      *
      * 00 -- 0029 -- C1 -- 11 -- 7150
      *
-     * @param hexPacket
-     * @return
-     * @throws PacketIntegrityErrorException
+     * @param hexPacket the hex packet to convert
+     * @return the converted response.
+     * @throws PacketIntegrityErrorException the packet passed is not recognized.
+     * @throws NotOneResponsePacketException the packet passed is not one response.
      */
     private SilvercrestWifiSocketResponse decryptResponsePacket(final String hexPacket)
-            throws PacketIntegrityErrorException {
+            throws PacketIntegrityErrorException, NotOneResponsePacketException {
 
         if (!Pattern.matches(RESPONSE_PREFIX + REGEX_HEXADECIMAL_PAIRS, hexPacket)) {
-            throw new PacketIntegrityErrorException(
-                    "The packet received is not one response! \nPacket:[" + hexPacket + "]");
+            logger.trace("The packet received is not one response! \nPacket:[" + hexPacket + "]");
+            throw new NotOneResponsePacketException("The packet received is not one response.");
         }
 
-        LOG.trace("Response packet: {}", hexPacket);
+        logger.trace("Response packet: {}", hexPacket);
         String macAddress = hexPacket.substring(4, 16);
-        LOG.trace("The mac address of the sender of the packet is: {}", macAddress);
+        logger.trace("The mac address of the sender of the packet is: {}", macAddress);
         String decryptedData = this.decrypt(hexPacket.substring(18, hexPacket.length()));
 
-        LOG.trace("Response packet decrypted data: [{}] with lenght: {}", decryptedData, decryptedData.length());
+        logger.trace("Response packet decrypted data: [{}] with lenght: {}", decryptedData, decryptedData.length());
 
         SilvercrestWifiSocketResponseType responseType;
         // check packet integrity
         if (Pattern.matches(REGEX_START_OF_RECEIVED_PACKET_SEARCH_MAC_ADDRESS, decryptedData)) {
             responseType = SilvercrestWifiSocketResponseType.DISCOVERY;
-            LOG.trace("Received answer of mac address search! lenght:{}", decryptedData.length());
+            logger.trace("Received answer of mac address search! lenght:{}", decryptedData.length());
 
         } else if (Pattern.matches(REGEX_START_OF_RECEIVED_PACKET_HEART_BEAT, decryptedData)) {
             responseType = SilvercrestWifiSocketResponseType.ACK;
-            LOG.trace("Received heart beat!");
+            logger.trace("Received heart beat!");
 
         } else if (Pattern.matches(REGEX_START_OF_RECEIVED_PACKET_CMD_GPIO_EVENT, decryptedData)) {
-            LOG.trace("Received gpio event!");
+            logger.trace("Received gpio event!");
             String status = decryptedData.substring(20, 22);
             responseType = "FF".equalsIgnoreCase(status) ? SilvercrestWifiSocketResponseType.ON
                     : SilvercrestWifiSocketResponseType.OFF;
-            LOG.trace("Socket status: {}", responseType);
+            logger.trace("Socket status: {}", responseType);
 
         } else if (Pattern.matches(REGEX_START_OF_RECEIVED_PACKET_RESPONSE_GPIO_CHANGE_REQUEST, decryptedData)) {
-            LOG.trace("Received response from a gpio change request!");
+            logger.trace("Received response from a gpio change request!");
             String status = decryptedData.substring(20, 22);
             responseType = "FF".equalsIgnoreCase(status) ? SilvercrestWifiSocketResponseType.ON
                     : SilvercrestWifiSocketResponseType.OFF;
-            LOG.trace("Socket status: {}", responseType);
+            logger.trace("Socket status: {}", responseType);
 
         } else if (Pattern.matches(REGEX_START_OF_RECEIVED_PACKET_QUERY_STATUS, decryptedData)) {
-            LOG.trace("Received response from status query!");
+            logger.trace("Received response from status query!");
             String status = decryptedData.substring(20, 22);
             responseType = "FF".equalsIgnoreCase(status) ? SilvercrestWifiSocketResponseType.ON
                     : SilvercrestWifiSocketResponseType.OFF;
-            LOG.trace("Socket status: {}", responseType);
+            logger.trace("Socket status: {}", responseType);
 
         } else {
             throw new PacketIntegrityErrorException("The packet decrypted is with wrong format. \nPacket:[" + hexPacket
                     + "]  \nDecryptedPacket:[" + decryptedData + "]");
         }
 
-        LOG.trace("Decrypt success. Packet is from socket with mac address [{}] and type is [{}]", macAddress,
+        logger.trace("Decrypt success. Packet is from socket with mac address [{}] and type is [{}]", macAddress,
                 responseType);
         return new SilvercrestWifiSocketResponse(macAddress, responseType);
     }
@@ -210,11 +223,11 @@ public class WifiSocketPacketConverter {
         byte[] bDecrypted;
         try {
             bDecrypted = this.silvercrestDecryptCipher.doFinal(inputByte);
-            LOG.trace("Encrypted data={" + byteArrayToHexString(inputByte) + "}");
-            LOG.trace("Decrypted data={" + byteArrayToHexString(bDecrypted) + "}");
+            logger.trace("Encrypted data={" + byteArrayToHexString(inputByte) + "}");
+            logger.trace("Decrypted data={" + byteArrayToHexString(bDecrypted) + "}");
             return byteArrayToHexString(bDecrypted);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.trace("Problem decrypting the input data. Bad reception?");
         }
         return null;
     }
