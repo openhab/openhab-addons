@@ -11,6 +11,9 @@ import static org.openhab.binding.boschindego.BoschIndegoBindingConstants.*;
 import static org.openhab.binding.boschindego.internal.IndegoStateConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -44,8 +47,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
     private int commandToSend;
 
-    private Thread pollingThread;
-    private boolean running;
+    private ScheduledFuture pollFuture;
 
     public BoschIndegoHandler(Thing thing) {
         super(thing);
@@ -60,19 +62,13 @@ public class BoschIndegoHandler extends BaseThingHandler {
             if (command instanceof DecimalType) {
                 synchronized (this) {
                     commandToSend = ((DecimalType) command).intValue();
-                    this.notifyAll();
+                    reschedule();
                 }
-            } else {
             }
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
         }
     }
 
-    private synchronized void poll() throws InterruptedException {
+    private synchronized void poll() {
         // Create controller instance
         try {
             IndegoController controller = new IndegoController(getConfig().get("username").toString(),
@@ -205,41 +201,38 @@ public class BoschIndegoHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
         logger.debug("removing thing..");
-        running = false;
-        pollingThread.interrupt();
+        if (pollFuture != null) {
+            pollFuture.cancel(true);
+        }
+    }
+
+    private void reschedule() {
+        logger.debug("rescheduling");
+
+        if (pollFuture != null) {
+            pollFuture.cancel(false);
+        }
+
+        int refreshRate = ((BigDecimal) getConfig().get("refresh")).intValue();
+        pollFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
+
+            @Override
+            public void run() {
+                poll();
+            }
+        }, 0, refreshRate, TimeUnit.SECONDS);
+
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        reschedule();
     }
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        running = true;
-        pollingThread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    while (running) {
-                        synchronized (BoschIndegoHandler.this) {
-                            poll();
-                            BoschIndegoHandler.this.wait(((BigDecimal) getConfig().get("refresh")).intValue() * 1000);
-
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    logger.debug("Binding closed");
-                }
-
-            }
-        });
         updateStatus(ThingStatus.OFFLINE);
-        pollingThread.start();
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        reschedule();
     }
 }
