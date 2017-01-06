@@ -6,8 +6,15 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- lib/bosch-indego-controller-lib-0.8-jar-with-dependencies.jar
+ lib/bosch-indego-controller-lib-0.8.jar,
+ lib/httpclient-4.5.2.jar,
+ lib/httpcore-4.4.4.jar,
+ lib/commons-codec-1.9.jar,
+ lib/commons-logging-1.2.jar
 Import-Package: 
+ com.fasterxml.jackson.annotation;version="2.4.5",
+ com.fasterxml.jackson.core;version="2.4.5",
+ com.fasterxml.jackson.databind;version="2.4.5",
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
