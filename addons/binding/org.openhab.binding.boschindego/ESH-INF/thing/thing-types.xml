@@ -51,7 +51,7 @@
         <description>0 = no error</description>
         <state readOnly="false"></state>
     </channel-type>
-    <channel-type id="statecode">
+    <channel-type id="statecode" advanced="true">
         <item-type>Number</item-type>
         <label>State code</label>
         <description>API-code of the Indego state</description>
