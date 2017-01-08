@@ -176,4 +176,24 @@
 		<state min="0" max="360" step="1" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+		<description>Scene channel</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Scene1</option>
+				<option value="1">Scene2</option>
+				<option value="2">Scene1 Room2</option>
+				<option value="3">Scene2 Room2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sceneswitch">
+		<item-type>Switch</item-type>
+		<label>Scene Switch</label>
+		<description>Scene switch channel</description>
+	</channel-type>
+
 </thing:thing-descriptions>

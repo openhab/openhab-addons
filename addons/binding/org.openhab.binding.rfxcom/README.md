@@ -114,3 +114,5 @@ This binding currently supports following channels:
 | totalamphour | Number | Used "energy" in ampere-hours. |
 | winddirection | Number | Wind direction in degrees. |
 | windspeed | Number | Average wind speed in meters per second. |
+| scene | Number | Livolo scene. |
+| sceneswitch | Switch | Switch between two Livolo scenes. |

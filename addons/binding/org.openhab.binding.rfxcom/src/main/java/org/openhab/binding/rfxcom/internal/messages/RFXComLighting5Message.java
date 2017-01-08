@@ -35,6 +35,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Messag
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.EURODOMEST;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.LIGHTWAVERF;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.LIVOLO_APPLIANCE;
 
 /**
  * RFXCOM data class for lighting5 message.
@@ -119,6 +120,10 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
         COLOUR_PALETTE(0x11, LIGHTWAVERF),
         COLOUR_TONE(0x12, LIGHTWAVERF),
         COLOUR_CYCLE(0x13, LIGHTWAVERF),
+        SCENE1(0x04, LIVOLO_APPLIANCE),
+        SCENE2(0X05, LIVOLO_APPLIANCE),
+        SCENE1_ROOM2(0x08, LIVOLO_APPLIANCE),
+        SCENE2_ROOM2(0X09, LIVOLO_APPLIANCE),
 
         UNKNOWN(255);
 
@@ -154,7 +159,8 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
             RFXComValueSelector.DIMMING_LEVEL, RFXComValueSelector.CONTACT);
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
-            .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL);
+            .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL, RFXComValueSelector.SCENE,
+                    RFXComValueSelector.SCENE_SWITCH, RFXComValueSelector.SCENE_SWITCH2);
 
     public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
@@ -402,6 +408,46 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
                     // Evert: I do not know how to get previous object state...
                     dimmingLevel = 5;
 
+                } else {
+                    throw new RFXComException("Can't convert " + type + " to Command");
+                }
+                break;
+
+            case SCENE:
+                if (type instanceof DecimalType) {
+                    byte scene = ((DecimalType) type).byteValue();
+                    switch (scene) {
+                        case 0:
+                            command = Commands.SCENE1;
+                            break;
+                        case 1:
+                            command = Commands.SCENE2;
+                            break;
+                        case 2:
+                            command = Commands.SCENE1_ROOM2;
+                            break;
+                        case 3:
+                            command = Commands.SCENE2_ROOM2;
+                            break;
+                        default:
+                            throw new RFXComException("Unexpected scene: " + scene);
+                    }
+                } else {
+                    throw new RFXComException("Can't convert " + type + " to Scene");
+                }
+                break;
+
+            case SCENE_SWITCH:
+                if (type instanceof OnOffType) {
+                    command = (type == OnOffType.ON ? Commands.SCENE1 : Commands.SCENE2);
+                } else {
+                    throw new RFXComException("Can't convert " + type + " to Command");
+                }
+                break;
+
+            case SCENE_SWITCH2:
+                if (type instanceof OnOffType) {
+                    command = (type == OnOffType.ON ? Commands.SCENE1_ROOM2 : Commands.SCENE2_ROOM2);
                 } else {
                     throw new RFXComException("Can't convert " + type + " to Command");
                 }

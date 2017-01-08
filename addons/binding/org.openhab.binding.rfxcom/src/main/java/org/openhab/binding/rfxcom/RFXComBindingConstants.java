@@ -96,6 +96,9 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_VOLTAGE = "voltage";
     public final static String CHANNEL_SET_POINT = "setpoint";
     public static final String CHANNEL_DATE_TIME = "dateTime";
+    public final static String CHANNEL_SCENE = "scene";
+    public final static String CHANNEL_SCENE_SWITCH = "sceneSwitch";
+    public final static String CHANNEL_SCENE_SWITCH2 = "sceneSwitch2";
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_UNDECODED = new ThingTypeUID(BINDING_ID, "undecoded");
