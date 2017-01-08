@@ -21,6 +21,7 @@ import org.openhab.binding.lutron.handler.DimmerHandler;
 import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.handler.KeypadHandler;
 import org.openhab.binding.lutron.handler.OccupancySensorHandler;
+import org.openhab.binding.lutron.handler.PhantomHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
@@ -38,7 +39,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
     public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
-            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
+            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_PHANTOM);
 
     // Other types that can be initiated but not discovered
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
@@ -61,6 +62,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new DimmerHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
             return new SwitchHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_PHANTOM)) {
+            return new PhantomHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OCCUPANCYSENSOR)) {
             return new OccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_KEYPAD)) {

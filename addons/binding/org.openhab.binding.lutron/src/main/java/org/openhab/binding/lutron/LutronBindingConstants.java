@@ -28,6 +28,7 @@ public class LutronBindingConstants {
     public final static ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public final static ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
     public final static ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
+    public final static ThingTypeUID THING_TYPE_PHANTOM = new ThingTypeUID(BINDING_ID, "phantom");
 
     // List of all Channel ids
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -51,6 +52,31 @@ public class LutronBindingConstants {
     public final static String CHANNEL_LED5 = "led5";
     public final static String CHANNEL_LED6 = "led6";
     public final static String CHANNEL_LED7 = "led7";
+
+    // Phantom
+    public final static String CHANNEL_PBUTTON1 = "pbutton1";
+    public final static String CHANNEL_PBUTTON2 = "pbutton2";
+    public final static String CHANNEL_PBUTTON3 = "pbutton3";
+    public final static String CHANNEL_PBUTTON4 = "pbutton4";
+    public final static String CHANNEL_PBUTTON5 = "pbutton5";
+    public final static String CHANNEL_PBUTTON6 = "pbutton6";
+    public final static String CHANNEL_PBUTTON7 = "pbutton7";
+    public final static String CHANNEL_PBUTTON8 = "pbutton8";
+    public final static String CHANNEL_PBUTTON9 = "pbutton9";
+    public final static String CHANNEL_PBUTTON10 = "pbutton10";
+    /*
+     * //Keeping this in case I want to re-add LED support.
+     * public final static String CHANNEL_PLED1 = "pled1";
+     * public final static String CHANNEL_PLED2 = "pled2";
+     * public final static String CHANNEL_PLED3 = "pled3";
+     * public final static String CHANNEL_PLED4 = "pled4";
+     * public final static String CHANNEL_PLED5 = "pled5";
+     * public final static String CHANNEL_PLED6 = "pled6";
+     * public final static String CHANNEL_PLED7 = "pled7";
+     * public final static String CHANNEL_PLED8 = "pled8";
+     * public final static String CHANNEL_PLED9 = "pled9";
+     * public final static String CHANNEL_PLED10 = "pled10";
+     */
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
