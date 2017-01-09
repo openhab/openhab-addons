@@ -88,6 +88,9 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_TOTAL_USAGE = "totalUsage";
     public final static String CHANNEL_INSTANT_AMPS = "instantAmp";
     public final static String CHANNEL_TOTAL_AMP_HOUR = "totalAmpHour";
+    public final static String CHANNEL_CHANNEL_1_AMPS = "channel1Amps";
+    public final static String CHANNEL_CHANNEL_2_AMPS = "channel2Amps";
+    public final static String CHANNEL_CHANNEL_3_AMPS = "channel3Amps";
     public final static String CHANNEL_STATUS = "status";
     public final static String CHANNEL_MOTION = "motion";
     public final static String CHANNEL_CONTACT = "contact";

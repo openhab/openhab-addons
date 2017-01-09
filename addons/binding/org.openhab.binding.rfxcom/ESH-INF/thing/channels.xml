@@ -105,6 +105,13 @@
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="current" advanced="true">
+		<item-type>Number</item-type>
+		<label>Amps</label>
+		<description>Current in Amperes</description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="totalamphour" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Ampere-hours</label>
