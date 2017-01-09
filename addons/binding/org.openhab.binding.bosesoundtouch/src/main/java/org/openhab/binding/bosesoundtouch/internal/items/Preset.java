@@ -35,6 +35,23 @@ public class Preset {
         return (getPos() >= 1 && getPos() <= 6);
     }
 
+    public RemoteKey getKey() {
+        if (getPos() == 1) {
+            return RemoteKey.PRESET_1;
+        } else if (getPos() == 2) {
+            return RemoteKey.PRESET_2;
+        } else if (getPos() == 3) {
+            return RemoteKey.PRESET_3;
+        } else if (getPos() == 4) {
+            return RemoteKey.PRESET_4;
+        } else if (getPos() == 5) {
+            return RemoteKey.PRESET_5;
+        } else if (getPos() == 6) {
+            return RemoteKey.PRESET_6;
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();

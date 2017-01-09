@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
+import org.openhab.binding.bosesoundtouch.internal.XMLResponseHandler;
 import org.openhab.binding.bosesoundtouch.internal.ZoneState;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
 import org.openhab.binding.bosesoundtouch.internal.items.Preset;
@@ -171,6 +172,80 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 }
                 if (operationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
                     simulateRemoteKey(RemoteKey.POWER);
+                }
+            }
+        } else if (channelUID.equals(channelOperationModeUID)) {
+            if (command instanceof StringType) {
+                // try to parse string command...
+                String cmd = command.toString();
+                if (cmd.equals("STANDBY")) {
+                    if (operationMode != OperationModeType.STANDBY) {
+                        simulateRemoteKey(RemoteKey.POWER);
+                    }
+                } else if (cmd.equals("INTERNET_RADIO")) {
+                    if (operationMode == OperationModeType.STANDBY) {
+                        simulateRemoteKey(RemoteKey.POWER);
+                    }
+                    Preset psFound = null;
+                    for (Preset ps : mapOfPresets.values()) {
+                        if ((psFound == null)
+                                && (ps.getContentItem().getOperationMode() == OperationModeType.INTERNET_RADIO)) {
+                            psFound = ps;
+                        }
+                    }
+                    if (psFound != null) {
+                        simulateRemoteKey(psFound.getKey());
+                    } else {
+                        logger.warn("Unable to switch to mode: INTERNET_RADIO. No PRESET defined");
+                    }
+                } else if (cmd.equals("BLUETOOTH")) {
+                    if (operationMode == OperationModeType.STANDBY) {
+                        simulateRemoteKey(RemoteKey.POWER);
+                    }
+                    int counter = 0;
+                    while ((operationMode != OperationModeType.BLUETOOTH) && counter < 5) {
+                        simulateRemoteKey(RemoteKey.AUX_INPUT);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        counter++;
+                    }
+                    if (counter == 5) {
+                        logger.warn("Unable to switch to mode: BLUETOOTH. Mayby no device available");
+                    }
+                } else if (cmd.equals("AUX")) {
+                    if (operationMode == OperationModeType.STANDBY) {
+                        simulateRemoteKey(RemoteKey.POWER);
+                    }
+                    while (operationMode != OperationModeType.AUX) {
+                        simulateRemoteKey(RemoteKey.AUX_INPUT);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                } else if (cmd.equals("MEDIA")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
+                } else if (cmd.equals("SPOTIFY")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
+                } else if (cmd.equals("PANDORA")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
+                } else if (cmd.equals("DEEZER")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
+                } else if (cmd.equals("SIRIUSXM")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
+                } else if (cmd.equals("STORED_MUSIC")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
+                } else if (cmd.equals("GROUPMEMBER")) {
+                    logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                    // TODO
                 }
             }
         } else if (channelUID.equals(channelVolumeUID)) {
@@ -524,7 +599,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         logger.debug("onMessage(\"" + msg + "\")");
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
-            reader.setContentHandler(new ResponseHandler(this));
+            reader.setContentHandler(new XMLResponseHandler(this));
             reader.parse(new InputSource(new StringReader(msg)));
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -549,33 +624,37 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         logger.debug("onPong(\"" + payload + "\")");
     }
 
-    protected void checkOperationMode() {
+    public void checkOperationMode() {
         OperationModeType om = OperationModeType.OTHER;
         if (thing.getStatus() == ThingStatus.ONLINE) {
             if (currentContentItem != null) {
-                om = null;
-                for (Preset ps : mapOfPresets.values()) {
+                Preset psFound = null;
+                for (Preset ps : mapOfPresets.values()) { // TODO
                     if (ps.getContentItem().equals(currentContentItem)) {
-                        if (ps.posIsValid()) {
-                            om = OperationModeType.INTERNET_RADIO;
-                            updateState(channelPresetUID, new StringType(ps.toString()));
-                        } else {
-                            logger.warn(thing + ": Invalid preset active: " + ps.getPos());
-                        }
+                        psFound = ps;
                     }
                 }
-                if (om == null) {
+                if (psFound != null) {
+                    updateState(channelPresetUID, new StringType(psFound.toString()));
+                } else {
+                    logger.warn(thing + ": Invalid preset active");
+                    updateState(channelPresetUID, new StringType(""));
+                }
+
+                if (om == OperationModeType.OTHER) {
                     om = currentContentItem.getOperationMode();
                 }
             } else {
                 om = OperationModeType.STANDBY;
             }
-        } else {
-            om = OperationModeType.OTHER;
         }
-        if (operationMode != om) {
-            updateState(channelOperationModeUID, new StringType(om.name()));
-            operationMode = om;
+
+        updateState(channelOperationModeUID, new StringType(om.name()));
+        operationMode = om;
+        if (om == OperationModeType.STANDBY) {
+            updateState(channelPowerUID, OnOffType.OFF);
+        } else {
+            updateState(channelPowerUID, OnOffType.ON);
         }
     }
 

@@ -4,7 +4,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="device">
 		<label>Bose SoundTouch</label>
 		<description>The represents a Bose SoundTouch device like the SoundTouch 10, 20, 30, etc</description>
@@ -47,7 +46,6 @@
         </config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="power">
         <item-type>Switch</item-type>
         <label>Power</label>
@@ -68,6 +66,21 @@
         <item-type>String</item-type>
         <label>Operation Mode</label>
         <description>Bose SoundTouch current Operation Mode</description>
+        <state readOnly="false">
+            <options>
+                <option value="STANDBY">STANDBY</option>
+                <option value="INTERNET_RADIO">INTERNET_RADIO</option>
+                <option value="BLUETOOTH">BLUETOOTH</option>
+                <option value="AUX">AUX</option>
+                <!--<option value="MEDIA">MEDIA</option> 
+                <option value="SPOTIFY">SPOTIFY</option>
+                <option value="PANDORA">PANDORA</option>
+                <option value="DEEZER">DEEZER</option>
+                <option value="SIRIUSXM">SIRIUSXM</option>
+                <option value="STORED_MUSIC">STORED_MUSIC</option>
+                <option value="GROUPMEMBER">GROUPMEMBER</option> -->
+            </options>
+        </state>
     </channel-type>
     <channel-type id="zoneInfo">
         <item-type>String</item-type>
@@ -90,6 +103,16 @@
         <item-type>String</item-type>
         <label>Preset</label>
         <description>Control Preset, e.g. "PRESET_1"/.../"PRESET_6"</description>
+        <state readOnly="false">
+            <options>
+                <option value="PRESET_1">PRESET_1</option>
+                <option value="PRESET_2">PRESET_2</option>
+                <option value="PRESET_3">PRESET_3</option>
+                <option value="PRESET_4">PRESET_4</option>
+                <option value="PRESET_5">PRESET_5</option>
+                <option value="PRESET_6">PRESET_6</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="keyCode">
         <item-type>String</item-type>
