@@ -28,8 +28,11 @@ public class CommandSendserial extends AbstractCommand {
 
     public CommandSendserial(Thing thing, Command command, LinkedBlockingQueue<RequestMessage> queue, String mod,
             String con, String code) {
-        // FIXME Fix for SERIAL1 and SERIAL2
         super(thing, queue, "sendserial", CommandType.SERIAL1);
+        // Check to see if this is for the second serial port on a GC-100-12
+        if (isGC_100_12() && mod.equals("2")) {
+            setCommandType(CommandType.SERIAL2);
+        }
         this.command = command;
         this.deviceCommand = code;
     }

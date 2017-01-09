@@ -8,15 +8,16 @@
  */
 package org.openhab.binding.rfxcom;
 
-import java.io.InvalidClassException;
-
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.DateTimeItem;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
+
+import java.io.InvalidClassException;
 
 /**
  * Represents all valid value selectors which could be processed by RFXCOM
@@ -49,11 +50,15 @@ public enum RFXComValueSelector {
     TOTAL_USAGE(RFXComBindingConstants.CHANNEL_TOTAL_USAGE, NumberItem.class),
     INSTANT_AMPS(RFXComBindingConstants.CHANNEL_INSTANT_AMPS, NumberItem.class),
     TOTAL_AMP_HOUR(RFXComBindingConstants.CHANNEL_TOTAL_AMP_HOUR, NumberItem.class),
+    CHANNEL1_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL1_AMPS, NumberItem.class),
+    CHANNEL2_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL2_AMPS, NumberItem.class),
+    CHANNEL3_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL3_AMPS, NumberItem.class),
     STATUS(RFXComBindingConstants.CHANNEL_STATUS, StringItem.class),
     MOTION(RFXComBindingConstants.CHANNEL_MOTION, SwitchItem.class),
     CONTACT(RFXComBindingConstants.CHANNEL_CONTACT, ContactItem.class),
     VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE, NumberItem.class),
     SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class),
+    DATE_TIME(RFXComBindingConstants.CHANNEL_DATE_TIME, DateTimeItem.class),
     LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class);
 
     private final String text;
