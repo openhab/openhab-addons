@@ -17,7 +17,7 @@
 
 # Prepare openHAB
 
-1. [Download](http://www.openhab.org/getting-started/downloads.html) openHAB 2 Beta Snapshot Offline or Online (further information about installing openHAB you can find [here](http://docs.openhab.org/installation/index.html))
+1. [Download](http://www.openhab.org/getting-started/downloads.html) openHAB 2 (further information about installing openHAB you can find [here](http://docs.openhab.org/installation/index.html))
 2. Install Z-Way Binding
     - via Extension Manager (not yet available for the Z-Way Binding)
     - via Download

@@ -117,8 +117,6 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 if (connection.getResponseCode() == 401) {
-                    logger.info("(DiscoverySuccess) Z-Way server found on host: {}", ipAddress);
-
                     ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_BRIDGE,
                             ipAddress.replaceAll("\\.", "_"));
 
@@ -128,12 +126,9 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
                             .withProperty(ZWayBindingConstants.BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS, ipAddress)
                             .withLabel("Z-Way Server " + ipAddress).build();
                     thingDiscovered(discoveryResult);
-                } else {
-                    logger.info("No Z-Way server found on host: {}", ipAddress);
                 }
             } catch (Exception e) {
-                logger.info(e.getClass().toString());
-                logger.info("Z-Way server not found on host: {} ({})", ipAddress, e.getMessage());
+                logger.warn("Discovery resulted in an unexpected exception", e);
             }
         }
     }

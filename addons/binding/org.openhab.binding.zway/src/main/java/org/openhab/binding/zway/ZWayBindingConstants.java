@@ -83,10 +83,10 @@ public class ZWayBindingConstants {
     public final static String ACTIONS_CHANNEL_OPTION_REFRESH = "REFRESH";
 
     /* Bridge config properties */
-    public final static String BRIDGE_CONFIG_OPENHAB_ALIAS = "openHabAlias";
-    public final static String BRIDGE_CONFIG_OPENHAB_IP_ADDRESS = "openHabIpAddress";
-    public final static String BRIDGE_CONFIG_OPENHAB_PORT = "openHabPort";
-    public final static String BRIDGE_CONFIG_OPENHAB_PROTOCOL = "openHabProtocol";
+    public final static String BRIDGE_CONFIG_OPENHAB_ALIAS = "openHABAlias";
+    public final static String BRIDGE_CONFIG_OPENHAB_IP_ADDRESS = "openHABIpAddress";
+    public final static String BRIDGE_CONFIG_OPENHAB_PORT = "openHABPort";
+    public final static String BRIDGE_CONFIG_OPENHAB_PROTOCOL = "openHABProtocol";
     public final static String BRIDGE_CONFIG_ZWAY_SERVER_IP_ADDRESS = "zwayServerIpAddress";
     public final static String BRIDGE_CONFIG_ZWAY_SERVER_PORT = "zwayServerPort";
     public final static String BRIDGE_CONFIG_ZWAY_SERVER_PROTOCOL = "zwayServerProtocol";

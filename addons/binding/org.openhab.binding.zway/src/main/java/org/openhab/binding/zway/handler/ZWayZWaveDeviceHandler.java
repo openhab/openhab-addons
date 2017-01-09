@@ -87,8 +87,6 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                                 }
                             }
                         } else {
-                            logger.warn("Initializing Z-Way device handler failed (physical device not found): {}",
-                                    getThing().getLabel());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                     "Z-Way physical device with node id " + mConfig.getNodeId() + " not found.");
                         }
@@ -126,12 +124,10 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Devices not loaded");
-                    logger.warn("Devices not loaded");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "Z-Way bridge handler not found or not ONLINE.");
-                logger.warn("Z-Way bridge handler not found or not ONLINE.");
             }
         }
     };
@@ -158,7 +154,6 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
             // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
             scheduler.schedule(new Initializer(), 2, TimeUnit.SECONDS);
         } else {
-            logger.warn("Initializing Z-Way device handler failed (node id is null): {}", getThing().getLabel());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Z-Way node id required!");
         }
     }

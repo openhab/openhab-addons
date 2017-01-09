@@ -51,22 +51,22 @@ The information about accessing openHAB are needed so that the Observer mechanis
 
 | Configuration Name        | Mandatory | Default | Desciption |
 | ------------------------- | --------- | ------- | ---------- |
-| openHabAlias              |   |                   | By default, the alias is generated during initialization or configuration update of thing handler. |
-| openHabIpAddress          | X | localhost         | The IP address or hostname of the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used. |
-| openHabPort               |   | 8080              | The port of the openHAB server (0 to 65335) |
-| openHabProtocol           |   | http              | Protocol to connect to the openHAB server (http or https) |
-| zwayServerIpAddress       | X | localhost         | The IP address or hostname of the Z-Way server. If Z-Way and openHAB are running on the same machine, the default value can be used. |
+| openHABAlias              |           |         | By default, the alias is generated during initialization or configuration update of thing handler. |
+| openHABIpAddress          |   | localhost         | The IP address or hostname of the openHAB server. If Z-Way and openHAB are running on the same machine, the default value can be used. |
+| openHABPort               |   | 8080              | The port of the openHAB server (0 to 65335) |
+| openHABProtocol           |   | http              | Protocol to connect to the openHAB server (http or https) |
+| zwayServerIpAddress       |   | localhost         | The IP address or hostname of the Z-Way server. If Z-Way and openHAB are running on the same machine, the default value can be used. |
 | zwayServerPort            |   | 8083              | The port of the Z-Way server (0 to 65335) |
 | zwayServerProtocol        |   | http              | Protocol to connect to the Z-Way server (http or https) |
-| zwayServerUsername        | X | admin             | Username to access the Z-Way server. |
+| zwayServerUsername        |   | admin             | Username to access the Z-Way server. |
 | zwayServerPassword        | X |                   | Password to access the Z-Way server. |
 | pollingInterval           |   | 3600              | Refresh device states and registration from Z-Way server in seconds (at least 60). |
 | observerMechanismEnabled  |   | true              | The observer functionality is responsible for the item registration as observer in Z-Way. Attention: if disable this option, you have to setup an other synchronization mechanism like MQTT. |
 
-Only the Z-Way server can be configured textual (Attention! *openHabAlias* has to be set because the bridge configuration can not be changed at runtime):
+Only the Z-Way server can be configured textual (Attention! *openHABAlias* has to be set because the bridge configuration can not be changed at runtime):
 
 ```
-Bridge zway:zwayServer:192_168_2_42 [ openHabAlias="development", openHabIpAddress="localhost", openHabPort=8080, openHabProtocol="http", zwayServerIpAddress="localhost", zwayServerPort=8083, zwayServerProtocol="http", zwayServerUsername="admin", zwayServerPassword="admin", pollingInterval=3600, observerMechanismEnabled=true ] {
+Bridge zway:zwayServer:192_168_2_42 [ openHABAlias="development", openHABIpAddress="localhost", openHABPort=8080, openHABProtocol="http", zwayServerIpAddress="localhost", zwayServerPort=8083, zwayServerProtocol="http", zwayServerUsername="admin", zwayServerPassword="admin", pollingInterval=3600, observerMechanismEnabled=true ] {
     // associated things have to be created with the Paper UI
 }
 ```
