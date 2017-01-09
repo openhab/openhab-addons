@@ -29,6 +29,12 @@
 		<description>Contact channel</description>
 	</channel-type>
 
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<description>DateTime channel</description>
+	</channel-type>
+
 	<channel-type id="dimminglevel">
 		<item-type>Dimmer</item-type>
 		<label>Dimming Level</label>
