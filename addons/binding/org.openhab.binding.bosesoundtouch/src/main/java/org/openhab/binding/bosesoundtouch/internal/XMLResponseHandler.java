@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch.handler;
+package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +15,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
-import org.openhab.binding.bosesoundtouch.internal.XMLHandlerState;
-import org.openhab.binding.bosesoundtouch.internal.ZoneState;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
 import org.openhab.binding.bosesoundtouch.internal.items.Preset;
 import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
@@ -29,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author marvin
  * @author Thomas Traunbauer
  */
-public class ResponseHandler extends DefaultHandler {
+public class XMLResponseHandler extends DefaultHandler {
 
     private BoseSoundTouchHandler boseSoundTouchHandler;
 
@@ -43,7 +42,7 @@ public class ResponseHandler extends DefaultHandler {
     private boolean volumeMuteEnabled;
     private ZoneMember zoneMember;
 
-    public ResponseHandler(BoseSoundTouchHandler boseSoundTouchHandler) {
+    public XMLResponseHandler(BoseSoundTouchHandler boseSoundTouchHandler) {
         states = new Stack<>();
         state = XMLHandlerState.INIT;
         this.boseSoundTouchHandler = boseSoundTouchHandler;
@@ -265,6 +264,7 @@ public class ResponseHandler extends DefaultHandler {
                 boseSoundTouchHandler.getLogger().error(boseSoundTouchHandler.getThing() + ": Unknown SourceType: "
                         + source + " - needs to be defined!");
             }
+            // TODO Implement other sources
             contentItem.setLocation(attributes.getValue("location"));
             contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
         }
@@ -377,7 +377,8 @@ public class ResponseHandler extends DefaultHandler {
                 boseSoundTouchHandler.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
                 break;
             case VolumeActual:
-                boseSoundTouchHandler.updateVolume(new PercentType(Integer.parseInt(new String(ch, start, length))));
+                String temp = new String(ch, start, length);
+                boseSoundTouchHandler.updateVolume(new PercentType(Integer.parseInt(temp)));
                 break;
             case VolumeMuteEnabled:
                 volumeMuteEnabled = Boolean.parseBoolean(new String(ch, start, length));
