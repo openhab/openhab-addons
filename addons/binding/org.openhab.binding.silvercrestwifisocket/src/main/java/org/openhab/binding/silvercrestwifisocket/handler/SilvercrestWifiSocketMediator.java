@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SilvercrestWifiSocketMediator {
 
-    private static Logger LOG = LoggerFactory.getLogger(SilvercrestWifiSocketMediator.class);
+    private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketMediator.class);
 
     private final Map<Thing, SilvercrestWifiSocketHandler> handlersRegisteredByThing = new HashMap<>();
 
@@ -56,7 +56,7 @@ public class SilvercrestWifiSocketMediator {
      * @param receivedMessage the {@link SilvercrestWifiSocketResponse} message.
      */
     public void processReceivedPacket(final SilvercrestWifiSocketResponse receivedMessage) {
-        LOG.debug("Received packet from: {} with content: [{}]", receivedMessage.getHostAddress(),
+        logger.debug("Received packet from: {} with content: [{}]", receivedMessage.getHostAddress(),
                 receivedMessage.getType());
 
         SilvercrestWifiSocketHandler handler = this.getHandlerRegistredByMac(receivedMessage.getMacAddress());
@@ -64,9 +64,10 @@ public class SilvercrestWifiSocketMediator {
         if (handler != null) {
             // deliver message to handler.
             handler.newReceivedResponseMessage(receivedMessage);
-            LOG.debug("Received message delivered with success to handler of mac {}", receivedMessage.getMacAddress());
+            logger.debug("Received message delivered with success to handler of mac {}",
+                    receivedMessage.getMacAddress());
         } else {
-            LOG.debug("There is no handler registered for mac address: {}", receivedMessage.getMacAddress());
+            logger.debug("There is no handler registered for mac address: {}", receivedMessage.getMacAddress());
             // notify discovery service of thing found!
             this.silvercrestDiscoveryService.discoveredWifiSocket(receivedMessage.getMacAddress(),
                     receivedMessage.getHostAddress());
@@ -74,7 +75,7 @@ public class SilvercrestWifiSocketMediator {
     }
 
     /**
-     * Regists one new {@link Thing} and the corresponding {@link SilvercrestWifiSocketHandler}.
+     * Registers a new {@link Thing} and the corresponding {@link SilvercrestWifiSocketHandler}.
      *
      * @param thing the {@link Thing}.
      * @param handler the {@link SilvercrestWifiSocketHandler}.
@@ -84,7 +85,7 @@ public class SilvercrestWifiSocketMediator {
     }
 
     /**
-     * Unregists one {@link SilvercrestWifiSocketHandler} by the corresponding {@link Thing}.
+     * Unregisters a {@link SilvercrestWifiSocketHandler} by the corresponding {@link Thing}.
      *
      * @param thing the {@link Thing}.
      */
@@ -127,9 +128,9 @@ public class SilvercrestWifiSocketMediator {
                         SilvercrestWifiSocketBindingConstants.WIFI_SOCKET_DEFAULT_UDP_PORT);
                 this.receiverThread = new Thread(this.receiver);
                 this.receiverThread.start();
-                LOG.debug("Invoked the start of receiver thread.");
+                logger.debug("Invoked the start of receiver thread.");
             } catch (SocketException e) {
-                LOG.debug("Cannot start the socket with default port...");
+                logger.debug("Cannot start the socket with default port...");
             }
         }
     }
