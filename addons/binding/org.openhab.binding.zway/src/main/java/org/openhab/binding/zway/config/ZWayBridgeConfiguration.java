@@ -18,11 +18,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayBridgeConfiguration {
-    private String openHabAlias;
+    private String openHABAlias;
 
-    private String openHabIpAddress;
-    private Integer openHabPort;
-    private String openHabProtocol;
+    private String openHABIpAddress;
+    private Integer openHABPort;
+    private String openHABProtocol;
 
     private String zwayServerIpAddress;
     private Integer zwayServerPort;
@@ -35,35 +35,35 @@ public class ZWayBridgeConfiguration {
     private Boolean observerMechanismEnabled;
 
     public String getOpenHabAlias() {
-        return openHabAlias;
+        return openHABAlias;
     }
 
     public void setOpenHabAlias(String openHabAlias) {
-        this.openHabAlias = openHabAlias;
+        this.openHABAlias = openHabAlias;
     }
 
     public String getOpenHabIpAddress() {
-        return openHabIpAddress;
+        return openHABIpAddress;
     }
 
     public void setOpenHabIpAddress(String ipAddress) {
-        this.openHabIpAddress = ipAddress;
+        this.openHABIpAddress = ipAddress;
     }
 
     public Integer getOpenHabPort() {
-        return openHabPort;
+        return openHABPort;
     }
 
     public void setOpenHabPort(Integer port) {
-        this.openHabPort = port;
+        this.openHABPort = port;
     }
 
     public String getOpenHabProtocol() {
-        return openHabProtocol;
+        return openHABProtocol;
     }
 
     public void setOpenHabProtocol(String protocol) {
-        this.openHabProtocol = protocol;
+        this.openHABProtocol = protocol;
     }
 
     public String getZWayIpAddress() {
