@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.rfxcom;
 
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The {@link RFXComBindingConstants} class defines common constants, which are
@@ -88,11 +87,15 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_TOTAL_USAGE = "totalUsage";
     public final static String CHANNEL_INSTANT_AMPS = "instantAmp";
     public final static String CHANNEL_TOTAL_AMP_HOUR = "totalAmpHour";
+    public static final String CHANNEL_CHANNEL1_AMPS = "channel1Amps";
+    public static final String CHANNEL_CHANNEL2_AMPS = "channel2Amps";
+    public static final String CHANNEL_CHANNEL3_AMPS = "channel3Amps";
     public final static String CHANNEL_STATUS = "status";
     public final static String CHANNEL_MOTION = "motion";
     public final static String CHANNEL_CONTACT = "contact";
     public final static String CHANNEL_VOLTAGE = "voltage";
     public final static String CHANNEL_SET_POINT = "setpoint";
+    public static final String CHANNEL_DATE_TIME = "dateTime";
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_UNDECODED = new ThingTypeUID(BINDING_ID, "undecoded");

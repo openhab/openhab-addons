@@ -9,7 +9,12 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+
+import javax.xml.bind.DatatypeConverter;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for RFXCom-binding
@@ -18,9 +23,32 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
  * @since 1.9.0
  */
 public class RFXComCurrentEnergyMessageTest {
-    @Test(expected = RFXComNotImpException.class)
-    public void checkNotImplemented() throws Exception {
-        // TODO Note that this message is supported in the 1.9 binding
-        RFXComMessageFactory.createMessage(RFXComBaseMessage.PacketType.CURRENT_ENERGY);
+    private void testMessage(String hexMsg, RFXComCurrentEnergyMessage.SubType subType, int seqNbr, String deviceId,
+                             int count, double channel1, double channel2, double channel3, double totalUsage, int signalLevel,
+                             int batteryLevel) throws RFXComException, RFXComNotImpException {
+        final RFXComCurrentEnergyMessage msg = (RFXComCurrentEnergyMessage) RFXComMessageFactory
+                .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
+        assertEquals("SubType", subType, msg.subType);
+        assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
+        assertEquals("Sensor Id", deviceId, msg.getDeviceId());
+        assertEquals("Count", count, msg.count);
+        assertEquals("Channel 1", channel1, msg.channel1Amps, 0.01);
+        assertEquals("Channel 2", channel2, msg.channel2Amps, 0.01);
+        assertEquals("Channel 3", channel3, msg.channel3Amps, 0.01);
+        assertEquals("Total usage", totalUsage, msg.totalUsage, 0.05);
+        assertEquals("Signal Level", signalLevel, msg.signalLevel);
+        assertEquals("Battery Level", batteryLevel, msg.batteryLevel);
+
+        byte[] decoded = msg.decodeMessage();
+
+        assertEquals("Message converted back", hexMsg, DatatypeConverter.printHexBinary(decoded));
+    }
+
+    @Test
+    public void testSomeMessages() throws RFXComException, RFXComNotImpException {
+        testMessage("135B0106B800000016000000000000006F148889", RFXComCurrentEnergyMessage.SubType.ELEC4, 6, "47104", 0,
+                2.2d, 0d, 0d, 32547.4d, 8, 9);
+        testMessage("135B014FB80002001D0000000000000000000079", RFXComCurrentEnergyMessage.SubType.ELEC4, 79, "47104",
+                2, 2.9d, 0d, 0d, 0d, 7, 9);
     }
 }
