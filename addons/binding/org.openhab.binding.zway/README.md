@@ -31,9 +31,9 @@ Z-Way server constructs (virtual) devices for each function, such as motion sens
 
 ## Discovery
 
-A discovery service for Z-Way servers in local network starts immediately after the installation of the binding. Z-Way doesn't support any discovery protocol like UPnP for this purpose. That's why first all IP addresses in local network are checked on port 8083. If the server answers, a ZAutomation request (*/ZAutomation/api/v1/status*) is performed to ensure, the found server runs Z-Way.
+A discovery service for Z-Way servers scans local network and must always be started manually. Z-Way doesn't support any discovery protocol like UPnP for this purpose. That's why first all IP addresses in local network are checked on port 8083. If the server answers, a ZAutomation request (*/ZAutomation/api/v1/status*) is performed to ensure, the found server runs Z-Way.
 
-Another discovery service provides available devices (a configured bridge is necessary). Both discovery services are performed at a specified interval, but can also be started manually.
+Another discovery service provides available devices (a configured bridge is necessary). The device discovery service is performed at a specified interval, but can also be started manually.
 
 Note: In the Z-Way server device can be disabled or made invisible. Only for active and visible Z-Way devices channels will created.
 

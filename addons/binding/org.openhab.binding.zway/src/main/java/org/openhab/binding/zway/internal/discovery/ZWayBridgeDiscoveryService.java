@@ -17,8 +17,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.commons.net.util.SubnetUtils;
@@ -40,18 +38,10 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final static int SEARCH_TIME = 240;
-    private final static int INITIAL_DELAY = 15;
-    private final static int SCAN_INTERVAL = 3600;
-
-    private ZWayDeviceScan mZWayServerScanningRunnable;
-    private ScheduledFuture<?> mZWayServerScanningJob;
 
     public ZWayBridgeDiscoveryService() {
         super(ZWayBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
         logger.debug("Initializing ZWayBridgeDiscoveryService");
-
-        mZWayServerScanningRunnable = new ZWayDeviceScan();
-        activate(null);
     }
 
     private void scan() {
@@ -109,7 +99,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
         @Override
         public void run() {
             if (!pingHost(ipAddress, 8083, 500)) {
-                return; // Error occured while searching Z-Way servers (Unreachable)
+                return; // Error occurred while searching Z-Way servers (Unreachable)
             }
 
             try {
@@ -142,32 +132,6 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        if (mZWayServerScanningJob == null || mZWayServerScanningJob.isCancelled()) {
-            logger.debug("Starting background scanning job");
-            mZWayServerScanningJob = AbstractDiscoveryService.scheduler.scheduleWithFixedDelay(
-                    mZWayServerScanningRunnable, INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
-        } else {
-            logger.debug("Scanning job is allready active");
-        }
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        if (mZWayServerScanningJob != null && !mZWayServerScanningJob.isCancelled()) {
-            mZWayServerScanningJob.cancel(false);
-            mZWayServerScanningJob = null;
-        }
-    }
-
-    public class ZWayDeviceScan implements Runnable {
-        @Override
-        public void run() {
-            scan();
-        }
     }
 
     class ValidateIPV4 {
