@@ -33,7 +33,7 @@ boschindego:indego:lawnmower [username="myname@myhost.tld", password="idontneedt
 | statecode       | Number | Detailed state of the mower. I included English and German map-files to read the state easier (readonly)|
 |textualstate| String| State as a text. (readonly)|
 |ready | Number | Shows if the mower is ready to mow (1=ready, 0=not ready, readonly)|
-|mowed | Dimmer | Cut grass in percent|
+|mowed | Dimmer | Cut grass in percent (readonly)|
 
 For example you can use this sitemap entry to control the mower manually:
 

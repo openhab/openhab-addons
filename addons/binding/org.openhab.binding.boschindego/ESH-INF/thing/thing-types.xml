@@ -90,7 +90,7 @@
         <state readOnly="true" />
     </channel-type>
     <channel-type id="mowed">
-        <item-type>Number</item-type>
+        <item-type>Dimmer</item-type>
         <label>Cut grass</label>
         <description></description>
         <state readOnly="true" pattern="%d %%"></state>
