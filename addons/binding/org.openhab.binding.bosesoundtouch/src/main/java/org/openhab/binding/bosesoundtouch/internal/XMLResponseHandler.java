@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * @author marvin
+ * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */
 public class XMLResponseHandler extends DefaultHandler {

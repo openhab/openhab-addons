@@ -2,6 +2,9 @@ package org.openhab.binding.bosesoundtouch.internal.items;
 
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 
+/**
+ * @author Christian Niessner - Initial contribution
+ */
 public class ZoneMember {
     private String ip;
     private String mac;

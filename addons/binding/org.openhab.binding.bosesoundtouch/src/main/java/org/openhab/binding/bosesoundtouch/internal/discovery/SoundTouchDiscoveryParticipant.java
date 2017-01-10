@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * results of searches for mDNS services of type _pulse-server._tcp.local.
  *
  * @author Christian Niessner - Initial contribution
+ * @author Thomas Traunbauer
  */
 public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
@@ -59,12 +60,16 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             InetAddress[] addrs = info.getInetAddresses();
 
             // we expect only one address per device..
-            if (addrs.length > 1)
+            if (addrs.length > 1) {
                 logger.warn("Bose SoundTouch device " + info.getName() + " (" + label
                         + ") reports multiple addresses - using the first one!" + Arrays.toString(addrs));
+            }
 
             properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
             properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_PORT, BigDecimal.valueOf(info.getPort()));
+            if (getMacAddress(info) != null) {
+                properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_MAC, new String(getMacAddress(info)));
+            }
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         }
         return result;
@@ -77,18 +82,12 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             if (info.getType() != null) {
                 if (info.getType().equals(getServiceType())) {
                     logger.trace("Discovered a Bose SoundTouch thing with name '{}'", info.getName());
-                    byte[] mac = info.getPropertyBytes("MAC");
-                    if (mac == null) {
-                        logger.warn("SoundTouch Device " + info.getName() + " delivered no MAC Address!");
+                    byte[] mac = getMacAddress(info);
+                    if (mac != null) {
+                        return new ThingUID(BoseSoundTouchBindingConstants.THING_TYPE_DEVICE, new String(mac));
+                    } else {
                         return null;
                     }
-                    if (mac.length != 12) {
-                        BigInteger bi = new BigInteger(1, mac);
-                        logger.warn("SoundTouch Device " + info.getName() + " delivered an invalid MAC Address: 0x"
-                                + String.format("%0" + (mac.length << 1) + "X", bi));
-                        return null;
-                    }
-                    return new ThingUID(BoseSoundTouchBindingConstants.THING_TYPE_DEVICE, new String(mac));
                 }
             }
         }
@@ -98,5 +97,23 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Override
     public String getServiceType() {
         return "_soundtouch._tcp.local.";
+    }
+
+    private byte[] getMacAddress(ServiceInfo info) {
+        if (info != null) {
+            byte[] mac = info.getPropertyBytes("MAC");
+            if (mac == null) {
+                logger.warn("SoundTouch Device " + info.getName() + " delivered no MAC Address!");
+                return null;
+            }
+            if (mac.length != 12) {
+                BigInteger bi = new BigInteger(1, mac);
+                logger.warn("SoundTouch Device " + info.getName() + " delivered an invalid MAC Address: 0x"
+                        + String.format("%0" + (mac.length << 1) + "X", bi));
+                return null;
+            }
+            return mac;
+        }
+        return null;
     }
 }

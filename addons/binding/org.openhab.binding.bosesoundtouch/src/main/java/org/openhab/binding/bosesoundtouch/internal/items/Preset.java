@@ -31,10 +31,6 @@ public class Preset {
         this.contentItem = contentItem;
     }
 
-    public boolean posIsValid() {
-        return (getPos() >= 1 && getPos() <= 6);
-    }
-
     public RemoteKey getKey() {
         if (getPos() == 1) {
             return RemoteKey.PRESET_1;

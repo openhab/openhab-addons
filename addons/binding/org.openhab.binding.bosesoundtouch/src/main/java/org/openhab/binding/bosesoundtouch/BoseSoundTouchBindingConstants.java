@@ -24,13 +24,8 @@ public class BoseSoundTouchBindingConstants {
 
     public static final String BINDING_ID = "bosesoundtouch";
 
-    // This is the master bridge
-    public final static ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "bridge");
-
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
 
     // all thing types
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
@@ -63,5 +58,4 @@ public class BoseSoundTouchBindingConstants {
 
     public static final String DEVICE_INFO_NAME = "INFO_NAME";
     public static final String DEVICE_INFO_TYPE = "INFO_TYPE";
-
 }
