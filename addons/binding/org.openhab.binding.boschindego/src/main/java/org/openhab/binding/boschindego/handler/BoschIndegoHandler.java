@@ -12,7 +12,9 @@ import static org.openhab.binding.boschindego.BoschIndegoBindingConstants.*;
 import static org.openhab.binding.boschindego.internal.IndegoStateConstants.*;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -45,9 +47,12 @@ import de.zazaz.iot.bosch.indego.IndegoException;
 public class BoschIndegoHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(BoschIndegoHandler.class);
-    private int commandToSend;
+    private Queue<DeviceCommand> commandQueue = new LinkedList<>();
 
-    private ScheduledFuture pollFuture;
+    private ScheduledFuture<?> pollFuture;
+
+    // If false the request is already scheduled.
+    private boolean shouldReschedule;
 
     public BoschIndegoHandler(Thing thing) {
         super(thing);
@@ -60,10 +65,34 @@ public class BoschIndegoHandler extends BaseThingHandler {
             return;
         } else if (channelUID.getId().equals(STATE) && command instanceof DecimalType) {
             if (command instanceof DecimalType) {
-                synchronized (this) {
-                    commandToSend = ((DecimalType) command).intValue();
-                    reschedule();
-                }
+                sendCommand(((DecimalType) command).intValue());
+            }
+        }
+    }
+
+    private void sendCommand(int commandInt) {
+        DeviceCommand command;
+        switch (commandInt) {
+            case 1:
+                command = DeviceCommand.MOW;
+                break;
+            case 2:
+                command = DeviceCommand.RETURN;
+                break;
+            case 3:
+                command = DeviceCommand.PAUSE;
+                break;
+            default:
+                logger.error("Invalid command");
+                return;
+
+        }
+        synchronized (commandQueue) {
+            // Add command to queue to avoid blocking
+            commandQueue.offer(command);
+            if (shouldReschedule) {
+                shouldReschedule = false;
+                reschedule();
             }
         }
     }
@@ -83,12 +112,20 @@ public class BoschIndegoHandler extends BaseThingHandler {
             int error = state.getError();
             int statecode = state.getState();
             boolean ready = isReadyToMow(state.getState(), state.getError());
-
-            if (verifyCommand(commandToSend, eshStatus, state.getState(), error)) {
+            DeviceCommand commandToSend = null;
+            synchronized (commandQueue) {
+                // Discard older commands
+                while (!commandQueue.isEmpty()) {
+                    commandToSend = commandQueue.poll();
+                }
+                // For newer commands a new request is needed
+                shouldReschedule = true;
+            }
+            if (commandToSend != null && verifyCommand(commandToSend, statusWithMessage.getAssociatedCommand(),
+                    state.getState(), error)) {
                 logger.debug("Sending command...");
                 updateState(TEXTUAL_STATE, UnDefType.UNDEF);
-                controller.sendCommand(getCommandFromEshStatus(commandToSend));
-                commandToSend = 0;
+                controller.sendCommand(commandToSend);
                 try {
                     for (int i = 0; i < 30 && !Thread.interrupted(); i++) {
                         DeviceStateInformation stateTmp = controller.getState();
@@ -134,51 +171,29 @@ public class BoschIndegoHandler extends BaseThingHandler {
                 || statusCode == STATE_PAUSED || statusCode == STATE_IDLE_IN_LAWN) && error == 0;
     }
 
-    private boolean verifyCommand(int command, int eshStatus, int statusCode, int errorCode) {
+    private boolean verifyCommand(DeviceCommand command, DeviceCommand state, int statusCode, int errorCode) {
         // Mower reported an error
         if (errorCode != 0) {
             logger.error("The mower reported an error.");
             return false;
         }
-        // Command out of range
-        if (command < 1 || command > 3) {
-            logger.debug("Command out of range");
-            return false;
-        }
+
         // Command is equal to current state
-        if (command == eshStatus) {
+        if (command == state) {
             logger.debug("Command is equal to state");
             return false;
         }
         // Cant pause while the mower is docked
-        if (command == 3 && eshStatus == 2) {
+        if (command == DeviceCommand.PAUSE && state == DeviceCommand.RETURN) {
             logger.debug("Can´t pause the mower while it´s docked or docking");
             return false;
         }
         // Command means "MOW" but mower is not ready
-        if (command == 1 && !isReadyToMow(statusCode, errorCode)) {
+        if (command == DeviceCommand.MOW && !isReadyToMow(statusCode, errorCode)) {
             logger.debug("The mower is not ready to mow in the moment");
             return false;
         }
         return true;
-    }
-
-    private DeviceCommand getCommandFromEshStatus(int eshStatus) {
-        DeviceCommand command;
-        switch (eshStatus) {
-            case 1:
-                command = DeviceCommand.MOW;
-                break;
-            case 2:
-                command = DeviceCommand.RETURN;
-                break;
-            case 3:
-                command = DeviceCommand.PAUSE;
-                break;
-            default:
-                command = null;
-        }
-        return command;
     }
 
     private int getEshStatusFromCommand(DeviceCommand command) {
