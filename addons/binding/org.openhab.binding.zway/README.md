@@ -1,10 +1,8 @@
 # Z-Way Binding
 
-See also [Getting Started](doc/GETTING_STARTED.md) document.
+Z-Way is a software to configure and control a Z-Wave network. The software comes with a full stack from Z-Wave transceiver with certified firmware to a REST API on high level.
 
-## Introduction
-
-**Z-Way** is a software to configure and control a Z-Wave network. The software comes with a full stack from Z-Wave transceiver with certified firmware to a REST API on high level. Z-Way comes in three parts [cf. [Z-Wave.Me]([Z-Wave.Me](https://www.z-wave.me/index.php?id=1))]:
+Z-Way comes in three parts [cf. [Z-Wave.Me]([Z-Wave.Me](https://www.z-wave.me/index.php?id=1))]:
 
 - a firmware that runs on the Z-Wave transceiver chip
 - the communication stack that runs on different host Operating Systems
