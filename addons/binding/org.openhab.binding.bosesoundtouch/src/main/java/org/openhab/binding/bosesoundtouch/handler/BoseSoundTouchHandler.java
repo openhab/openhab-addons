@@ -91,14 +91,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private ChannelUID channelNowPlayingStationNameUID;
     private ChannelUID channelNowPlayingTrackUID;
 
-    private String currentSourceString;
+    private ArrayList<Preset> listOfPresets;
+
+    private State nowPlayingSource;
     private ContentItem currentContentItem;
-    private String macAddress;
     private boolean muted;
-    private OperationModeType operationMode;
-    private HashMap<Integer, Preset> mapOfPresets;
+    private OperationModeType currentOperationMode;
+
     private WebSocket socket;
-    private int socketRequestId;
+
     private ZoneState zoneState;
     private BoseSoundTouchHandler masterZoneSoundTouchHandler;
     private ArrayList<ZoneMember> zoneMembers;
@@ -109,10 +110,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void initialize() {
-        macAddress = thing.getUID().getId();
-        operationMode = OperationModeType.OFFLINE;
-        mapOfPresets = new HashMap<>();
-        currentSourceString = "";
+        currentOperationMode = OperationModeType.OFFLINE;
+        listOfPresets = new ArrayList<Preset>();
+        nowPlayingSource = null;
 
         channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
         channelVolumeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
@@ -135,25 +135,13 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelNowPlayingStationNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONNAME);
         channelNowPlayingTrackUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGTRACK);
 
-        mapOfAllSoundTouchDevices.put(macAddress, this);
+        mapOfAllSoundTouchDevices.put(getMacAddress(), this);
         openConnection();
-    }
-
-    private ChannelUID getChannelUID(String channelId) {
-        Channel chann = thing.getChannel(channelId);
-        if (chann == null) {
-            // refresh thing...
-            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
-                    thing.getConfiguration());
-            updateThing(newThing);
-            chann = thing.getChannel(channelId);
-        }
-        return chann.getUID();
     }
 
     @Override
     public void handleRemoval() {
-        mapOfAllSoundTouchDevices.remove(macAddress);
+        mapOfAllSoundTouchDevices.remove(getMacAddress());
         super.handleRemoval();
     }
 
@@ -169,10 +157,10 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             if (channelUID.equals(channelPowerUID)) {
                 if (command instanceof OnOffType) {
                     OnOffType onOffType = (OnOffType) command;
-                    if (operationMode == OperationModeType.STANDBY && onOffType == OnOffType.ON) {
+                    if (currentOperationMode == OperationModeType.STANDBY && onOffType == OnOffType.ON) {
                         simulateRemoteKey(RemoteKey.POWER);
                     }
-                    if (operationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
+                    if (currentOperationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
                         simulateRemoteKey(RemoteKey.POWER);
                     }
                 }
@@ -181,15 +169,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     // try to parse string command...
                     String cmd = command.toString();
                     if (cmd.equals("STANDBY")) {
-                        if (operationMode != OperationModeType.STANDBY) {
+                        if (currentOperationMode != OperationModeType.STANDBY) {
                             simulateRemoteKey(RemoteKey.POWER);
                         }
                     } else if (cmd.equals("INTERNET_RADIO")) {
-                        if (operationMode == OperationModeType.STANDBY) {
+                        if (currentOperationMode == OperationModeType.STANDBY) {
                             simulateRemoteKey(RemoteKey.POWER);
                         }
                         Preset psFound = null;
-                        for (Preset ps : mapOfPresets.values()) {
+                        for (Preset ps : listOfPresets) {
                             if ((psFound == null)
                                     && (ps.getContentItem().getOperationMode() == OperationModeType.INTERNET_RADIO)) {
                                 psFound = ps;
@@ -201,11 +189,11 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             logger.warn("Unable to switch to mode: INTERNET_RADIO. No PRESET defined");
                         }
                     } else if (cmd.equals("BLUETOOTH")) {
-                        if (operationMode == OperationModeType.STANDBY) {
+                        if (currentOperationMode == OperationModeType.STANDBY) {
                             simulateRemoteKey(RemoteKey.POWER);
                         }
                         int counter = 0;
-                        while ((operationMode != OperationModeType.BLUETOOTH) && counter < 5) {
+                        while ((currentOperationMode != OperationModeType.BLUETOOTH) && counter < 5) {
                             simulateRemoteKey(RemoteKey.AUX_INPUT);
                             try {
                                 Thread.sleep(1000);
@@ -217,10 +205,10 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             logger.warn("Unable to switch to mode: BLUETOOTH. Mayby no device available");
                         }
                     } else if (cmd.equals("AUX")) {
-                        if (operationMode == OperationModeType.STANDBY) {
+                        if (currentOperationMode == OperationModeType.STANDBY) {
                             simulateRemoteKey(RemoteKey.POWER);
                         }
-                        while (operationMode != OperationModeType.AUX) {
+                        while (currentOperationMode != OperationModeType.AUX) {
                             simulateRemoteKey(RemoteKey.AUX_INPUT);
                             try {
                                 Thread.sleep(1000);
@@ -253,7 +241,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             } else if (channelUID.equals(channelVolumeUID)) {
                 if (command instanceof PercentType) {
                     PercentType percentType = (PercentType) command;
-                    sendRequestInWebSocket("volume", null, "<volume " + "deviceID=\"" + macAddress + "\"" + ">"
+                    sendRequestInWebSocket("volume", null, "<volume " + "deviceID=\"" + getMacAddress() + "\"" + ">"
                             + percentType.intValue() + "</volume>");
                 }
             } else if (channelUID.equals(channelMuteUID)) {
@@ -331,8 +319,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             if ("add".equals(action)) {
                                 boolean found = false;
                                 for (ZoneMember m : zoneMembers) {
-                                    if (oh.macAddress.equals(m.getMac())) {
-                                        logger.warn("Zone add: ID " + oh.macAddress + " is already member in zone!");
+                                    if (oh.getMacAddress().equals(m.getMac())) {
+                                        logger.warn(
+                                                "Zone add: ID " + oh.getMacAddress() + " is already member in zone!");
                                         found = true;
                                         break;
                                     }
@@ -340,7 +329,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                                 if (!found) {
                                     ZoneMember nm = new ZoneMember();
                                     nm.setHandler(oh);
-                                    nm.setMac(oh.macAddress);
+                                    nm.setMac(oh.getMacAddress());
                                     Map<String, Object> props = oh.thing.getConfiguration().getProperties();
                                     String host = (String) props
                                             .get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
@@ -353,14 +342,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                                 boolean found = false;
                                 for (Iterator< ZoneMember>mi = zoneMembers.iterator(); mi.hasNext();) {
                                     ZoneMember m = mi.next();
-                                    if (oh.macAddress.equals(m.getMac())) {
+                                    if (oh.getMacAddress().equals(m.getMac())) {
                                         mi.remove();
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    logger.warn("Zone remove: ID " + oh.macAddress + " is not a member in zone!");
+                                    logger.warn("Zone remove: ID " + oh.getMacAddress() + " is not a member in zone!");
                                 } else {
                                     updateZones();
                                 }
@@ -461,171 +450,34 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
     }
 
-    private String getDeviceName() {
-        return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
-    }
-
-    private void updateZones() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<zone master=\"").append(macAddress).append("\">");
-        for (ZoneMember mbr : zoneMembers) {
-            sb.append("<member ipaddress=\"").append(mbr.getIp()).append("\">").append(mbr.getMac())
-                    .append("</member>");
-        }
-        sb.append("</zone>");
-        sendRequestInWebSocket("setZone", "mainNode=\"newZone\"", sb.toString());
-    }
-
-    protected void openConnection() {
-        zoneState = ZoneState.None;
-        masterZoneSoundTouchHandler = null;
-        zoneMembers = new ArrayList<ZoneMember>();
-        // updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
-        OkHttpClient client = new OkHttpClient();
-        // we need longer timeouts for websocket.
-        client.setReadTimeout(300, TimeUnit.SECONDS);
-        Map<String, Object> props = thing.getConfiguration().getProperties();
-        String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
-
-        // try {
-        // BigDecimal port = (BigDecimal) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_PORT);
-        // String urlBase = "http://" + host + ":" + port + "/";
-        // Request request = new Request.Builder().url(urlBase + "info").build();
-        // Response response = client.newCall(request).execute();
-        // if (response.code() != 200) {
-        // throw new IOException("Invalid response code: " + response.code());
-        // }
-        // String resp = response.body().string();
-        // } catch (IOException e) {
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        // }
-        String wsUrl = "http://" + host + ":8080/"; // TODO port 8080 is hardcoded ?
-        Request request = new Request.Builder().url(wsUrl).addHeader("Sec-WebSocket-Protocol", "gabbo").build();
-        WebSocketCall call = WebSocketCall.create(client, request);
-        call.enqueue(this);
-    }
-
-    // Helper methods.
-
-    public int sendRequestInWebSocket(String url) {
-        int myId = socketRequestId++;
-        String msg = "<msg><header " + "deviceID=\"" + macAddress + "\"" + " url=\"" + url
-                + "\" method=\"GET\"><request requestID=\"" + myId + "\"><info type=\"new\"/></request></header></msg>";
+    public void sendRequestInWebSocket(String url) {
+        int id = 0;
+        String msg = "<msg><header " + "deviceID=\"" + getMacAddress() + "\"" + " url=\"" + url
+                + "\" method=\"GET\"><request requestID=\"" + id + "\"><info type=\"new\"/></request></header></msg>";
         try {
             socket.sendMessage(RequestBody.create(WebSocket.TEXT, msg));
         } catch (IOException e) {
             onFailure(e, null);
-            return -1;
         }
-        return myId;
     }
 
-    private int sendRequestInWebSocket(String url, String infoAddon, String postData) {
-        int myId = socketRequestId++;
-        String msg = "<msg><header " + "deviceID=\"" + macAddress + "\"" + " url=\"" + url
-                + "\" method=\"POST\"><request requestID=\"" + myId + "\"><info " + (infoAddon == null ? "" : infoAddon)
+    private void sendRequestInWebSocket(String url, String infoAddon, String postData) {
+        int id = 0;
+        String msg = "<msg><header " + "deviceID=\"" + getMacAddress() + "\"" + " url=\"" + url
+                + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + (infoAddon == null ? "" : infoAddon)
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
         try {
             socket.sendMessage(RequestBody.create(WebSocket.TEXT, msg));
         } catch (IOException e) {
             onFailure(e, null);
-            return -1;
         }
-        return myId;
-    }
-
-    private void simulateRemoteKey(RemoteKey key, boolean press) {
-        sendRequestInWebSocket("key", press ? "mainNode=\"keyPress\"" : "mainNode=\"keyRelease\"",
-                "<key state=\"" + (press ? "press" : "release") + "\" sender=\"Gabbo\">" + key.name() + "</key>");
-
     }
 
     private void simulateRemoteKey(RemoteKey key) {
-        simulateRemoteKey(key, true);
-        simulateRemoteKey(key, false);
-    }
-
-    public void zonesChanged() {
-        StringBuilder sb = new StringBuilder();
-        switch (zoneState) {
-            case Master:
-                sb.append("Master; Members: ");
-                break;
-            case Member:
-                sb.append("Member; Master is: ");
-                if (masterZoneSoundTouchHandler == null) {
-                    sb.append("<null>");
-                } else {
-                    sb.append(masterZoneSoundTouchHandler.getDeviceName());
-                }
-                sb.append("; Members: ");
-                break;
-            case None:
-                sb.append("");
-                break;
-        }
-        for (int i = 0; i < zoneMembers.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            sb.append(zoneMembers.get(i).getHandler().getDeviceName());
-        }
-        updateState(channelZoneInfoUID, new StringType(sb.toString()));
-    }
-
-    // WebSocketListener interface
-    @Override
-    public void onClose(int code, String reason) {
-        logger.debug("onClose(" + code + ", \"" + reason + "\")");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        this.operationMode = OperationModeType.OFFLINE;
-        this.currentContentItem = null;
-        this.checkOperationMode();
-    }
-
-    @Override
-    public void onFailure(IOException e, Response response) {
-        logger.error(thing + ": Error during websocket communication: ", e);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        this.operationMode = OperationModeType.OFFLINE;
-        this.currentContentItem = null;
-        this.checkOperationMode();
-        try {
-            socket.close(1011, "Failure: " + e.getMessage());
-        } catch (IOException e1) {
-            logger.error(thing + ": Error while closing websocket communication (during error handling): ", e);
-        }
-    }
-
-    @Override
-    public void onMessage(ResponseBody message) throws IOException {
-        String msg = message.string();
-        logger.debug("onMessage(\"" + msg + "\")");
-        try {
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-            reader.setContentHandler(new XMLResponseHandler(this));
-            reader.parse(new InputSource(new StringReader(msg)));
-        } catch (IOException e) {
-            // This should never happen - we're not performing I/O!
-            logger.error("Could not parse XML from string '{}'; exception is: ", msg, e);
-        } catch (Throwable s) {
-            logger.error("Could not parse XML from string '{}'; exception is: ", msg, s);
-        }
-    }
-
-    @Override
-    public void onOpen(WebSocket socket, Response resp) {
-        logger.debug("onOpen(\"" + resp + "\")");
-        this.socket = socket;
-        this.socketRequestId = 0;
-        updateStatus(ThingStatus.ONLINE);
-        // socket.newMessageSink(PayloadType.TEXT);
-        sendRequestInWebSocket("info");
-    }
-
-    @Override
-    public void onPong(Buffer payload) {
-        logger.debug("onPong(\"" + payload + "\")");
+        sendRequestInWebSocket("key", "mainNode=\"keyPress\"",
+                "<key state=\"press\" sender=\"Gabbo\">" + key.name() + "</key>");
+        sendRequestInWebSocket("key", "mainNode=\"keyRelease\"",
+                "<key state=\"release\" sender=\"Gabbo\">" + key.name() + "</key>");
     }
 
     public void checkOperationMode() {
@@ -633,7 +485,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (thing.getStatus() == ThingStatus.ONLINE) {
             if (currentContentItem != null) {
                 Preset psFound = null;
-                for (Preset ps : mapOfPresets.values()) { // TODO
+                for (Preset ps : listOfPresets) {
                     if (ps.getContentItem().equals(currentContentItem)) {
                         psFound = ps;
                     }
@@ -654,7 +506,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
 
         updateState(channelOperationModeUID, new StringType(om.name()));
-        operationMode = om;
+        currentOperationMode = om;
         if (om == OperationModeType.STANDBY) {
             updateState(channelPowerUID, OnOffType.OFF);
         } else {
@@ -662,20 +514,73 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
     }
 
-    public Logger getLogger() {
-        return logger;
-    }
-
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
-
-    public BoseSoundTouchHandler getSoundTouchDevices(String mac) {
+    public BoseSoundTouchHandler getBoseSoundTouchHandler(String mac) {
         return mapOfAllSoundTouchDevices.get(mac);
     }
 
+    public void clearListOfPresets() {
+        listOfPresets.clear();
+    }
+
+    public void addPresetToList(Preset preset) {
+        listOfPresets.add(preset);
+    }
+
+    public State getNowPlayingSource() {
+        return nowPlayingSource;
+    }
+
+    public ContentItem getCurrentContentItem() {
+        return currentContentItem;
+    }
+
+    public void setCurrentContentItem(ContentItem currentContentItem) {
+        this.currentContentItem = currentContentItem;
+    }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
+    public ZoneState getZoneState() {
+        return zoneState;
+    }
+
+    public void setZoneState(ZoneState zoneState) {
+        this.zoneState = zoneState;
+    }
+
+    public BoseSoundTouchHandler getMasterZoneSoundTouchHandler() {
+        return masterZoneSoundTouchHandler;
+    }
+
+    public void setMasterZoneSoundTouchHandler(BoseSoundTouchHandler masterZoneSoundTouchHandler) {
+        this.masterZoneSoundTouchHandler = masterZoneSoundTouchHandler;
+    }
+
+    public void addZoneMember(ZoneMember zoneMember) {
+        if (zoneMembers == null) {
+            zoneMembers = new ArrayList<ZoneMember>();
+        }
+        boolean found = false;
+        for (ZoneMember m : zoneMembers) {
+            if (zoneMember.getHandler().getMacAddress().equals(m.getMac())) {
+                logger.warn("Zone add: ID " + zoneMember.getHandler().getMacAddress() + " is already member in zone!");
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            zoneMembers.add(zoneMember);
+        }
+    }
+
     public void updateNowPlayingSource(State state) {
-        currentSourceString = state.toString();
+        nowPlayingSource = state;
     }
 
     public void updateNowPlayingAlbum(State state) {
@@ -722,77 +627,149 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         updateState(channelMuteUID, state);
     }
 
-    public void clearMapOfPresets() {
-        mapOfPresets.clear();
+    @Override
+    public void onOpen(WebSocket socket, Response resp) {
+        logger.debug("onOpen(\"" + resp + "\")");
+        this.socket = socket;
+        updateStatus(ThingStatus.ONLINE);
+        // socket.newMessageSink(PayloadType.TEXT);
+        sendRequestInWebSocket("info");
     }
 
-    public void addPresetToMap(Preset preset) {
-        mapOfPresets.put(preset.getPos(), preset);
+    @Override
+    public void onFailure(IOException e, Response response) {
+        logger.error(thing + ": Error during websocket communication: ", e);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        this.currentOperationMode = OperationModeType.OFFLINE;
+        this.currentContentItem = null;
+        this.checkOperationMode();
+        try {
+            socket.close(1011, "Failure: " + e.getMessage());
+        } catch (IOException e1) {
+            logger.error(thing + ": Error while closing websocket communication (during error handling): ", e);
+        }
     }
 
-    public String getCurrentSourceString() {
-        return currentSourceString;
+    @Override
+    public void onMessage(ResponseBody message) throws IOException {
+        String msg = message.string();
+        logger.debug("onMessage(\"" + msg + "\")");
+        try {
+            XMLReader reader = XMLReaderFactory.createXMLReader();
+            reader.setContentHandler(new XMLResponseHandler(this));
+            reader.parse(new InputSource(new StringReader(msg)));
+        } catch (IOException e) {
+            // This should never happen - we're not performing I/O!
+            logger.error("Could not parse XML from string '{}'; exception is: ", msg, e);
+        } catch (Throwable s) {
+            logger.error("Could not parse XML from string '{}'; exception is: ", msg, s);
+        }
     }
 
-    public void setCurrentSourceString(String currentSourceString) {
-        this.currentSourceString = currentSourceString;
+    @Override
+    public void onPong(Buffer payload) {
+        logger.debug("onPong(\"" + payload + "\")");
     }
 
-    public ContentItem getCurrentContentItem() {
-        return currentContentItem;
-    }
-
-    public void setCurrentContentItem(ContentItem currentContentItem) {
-        this.currentContentItem = currentContentItem;
+    @Override
+    public void onClose(int code, String reason) {
+        logger.debug("onClose(" + code + ", \"" + reason + "\")");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        this.currentOperationMode = OperationModeType.OFFLINE;
+        this.currentContentItem = null;
+        this.checkOperationMode();
     }
 
     public String getMacAddress() {
-        return macAddress;
+        return thing.getUID().getId();
     }
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public Logger getLogger() {
+        return logger;
     }
 
-    public boolean isMuted() {
-        return muted;
-    }
-
-    public void setMuted(boolean muted) {
-        this.muted = muted;
-    }
-
-    public ZoneState getZoneState() {
-        return zoneState;
-    }
-
-    public void setZoneState(ZoneState zoneState) {
-        this.zoneState = zoneState;
-    }
-
-    public BoseSoundTouchHandler getMasterZoneSoundTouchHandler() {
-        return masterZoneSoundTouchHandler;
-    }
-
-    public void setMasterZoneSoundTouchHandler(BoseSoundTouchHandler masterZoneSoundTouchHandler) {
-        this.masterZoneSoundTouchHandler = masterZoneSoundTouchHandler;
-    }
-
-    public void addZoneMember(ZoneMember zoneMember) {
-        if (zoneMembers == null) {
-            zoneMembers = new ArrayList<ZoneMember>();
+    private ChannelUID getChannelUID(String channelId) {
+        Channel chann = thing.getChannel(channelId);
+        if (chann == null) {
+            // refresh thing...
+            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
+                    thing.getConfiguration());
+            updateThing(newThing);
+            chann = thing.getChannel(channelId);
         }
-        boolean found = false;
-        for (ZoneMember m : zoneMembers) {
-            if (zoneMember.getHandler().macAddress.equals(m.getMac())) {
-                logger.warn("Zone add: ID " + zoneMember.getHandler().macAddress + " is already member in zone!");
-                found = true;
+        return chann.getUID();
+    }
+
+    private String getDeviceName() {
+        return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
+    }
+
+    public void zonesChanged() {
+        StringBuilder sb = new StringBuilder();
+        switch (zoneState) {
+            case Master:
+                sb.append("Master; Members: ");
                 break;
+            case Member:
+                sb.append("Member; Master is: ");
+                if (masterZoneSoundTouchHandler == null) {
+                    sb.append("<null>");
+                } else {
+                    sb.append(masterZoneSoundTouchHandler.getDeviceName());
+                }
+                sb.append("; Members: ");
+                break;
+            case None:
+                sb.append("");
+                break;
+        }
+        for (int i = 0; i < zoneMembers.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
             }
+            sb.append(zoneMembers.get(i).getHandler().getDeviceName());
         }
-        if (!found) {
-            zoneMembers.add(zoneMember);
+        updateState(channelZoneInfoUID, new StringType(sb.toString()));
+    }
+
+    private void updateZones() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<zone master=\"").append(getMacAddress()).append("\">");
+        for (ZoneMember mbr : zoneMembers) {
+            sb.append("<member ipaddress=\"").append(mbr.getIp()).append("\">").append(mbr.getMac())
+                    .append("</member>");
         }
+        sb.append("</zone>");
+        sendRequestInWebSocket("setZone", "mainNode=\"newZone\"", sb.toString());
+    }
+
+    private void openConnection() {
+        zoneState = ZoneState.None;
+        masterZoneSoundTouchHandler = null;
+        zoneMembers = new ArrayList<ZoneMember>();
+        // updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
+        OkHttpClient client = new OkHttpClient();
+        // we need longer timeouts for websocket.
+        client.setReadTimeout(300, TimeUnit.SECONDS);
+        Map<String, Object> props = thing.getConfiguration().getProperties();
+        String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
+
+        // try {
+        // BigDecimal port = (BigDecimal) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_PORT);
+        // String urlBase = "http://" + host + ":" + port + "/";
+        // Request request = new Request.Builder().url(urlBase + "info").build();
+        // Response response = client.newCall(request).execute();
+        // if (response.code() != 200) {
+        // throw new IOException("Invalid response code: " + response.code());
+        // }
+        // String resp = response.body().string();
+        // } catch (IOException e) {
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        // }
+        String wsUrl = "http://" + host + ":8080/"; // TODO port 8080 is hardcoded ?
+        Request request = new Request.Builder().url(wsUrl).addHeader("Sec-WebSocket-Protocol", "gabbo").build();
+        WebSocketCall call = WebSocketCall.create(client, request);
+        call.enqueue(this);
     }
 
 }
