@@ -118,8 +118,8 @@ public class XMLResponseHandler extends DefaultHandler {
                     }
                     state = XMLHandlerState.NowPlaying;
                     String source = attributes.getValue("source");
-                    if (boseSoundTouchHandler.getCurrentSourceString() == null
-                            || !boseSoundTouchHandler.getCurrentSourceString().equals(source)) {
+                    if (boseSoundTouchHandler.getNowPlayingSource() == null
+                            || !boseSoundTouchHandler.getNowPlayingSource().toString().equals(source)) {
                         // source changed
                         boseSoundTouchHandler.updateNowPlayingSource(new StringType(source));
                         // clear all "nowPlaying" details on source change...
