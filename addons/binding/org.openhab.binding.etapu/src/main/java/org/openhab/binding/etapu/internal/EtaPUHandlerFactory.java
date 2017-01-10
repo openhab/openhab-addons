@@ -7,11 +7,6 @@
  */
 package org.openhab.binding.etapu.internal;
 
-import static org.openhab.binding.etapu.EtaPUBindingConstants.ETA_THING_TYPE;
-
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,22 +21,26 @@ import org.openhab.binding.etapu.handler.EtaPUHandler;
  */
 public class EtaPUHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(ETA_THING_TYPE);
+    // List of all Thing Type UIDs
+    public final static ThingTypeUID ETA_THING_TYPE = new ThingTypeUID("etapu", "etapu");
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return ETA_THING_TYPE.equals(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
 
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(ETA_THING_TYPE)) {
+        if (supportsThingType(thing.getThingTypeUID())) {
             return new EtaPUHandler(thing);
         }
 
         return null;
     }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+    }
+
 }

@@ -7,16 +7,24 @@
  */
 package org.openhab.binding.etapu.handler;
 
-import static org.openhab.binding.etapu.EtaPUBindingConstants.CHANNEL_1;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.etapu.SourceConfig;
 import org.openhab.binding.etapu.channels.ETAChannel;
 import org.slf4j.Logger;
@@ -32,21 +40,18 @@ public class EtaPUHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(EtaPUHandler.class);
     private SourceConfig sourceConfig;
+    // List of all Channel ids
+    private final Set<ETAChannel> channels = new HashSet<>();
 
     public EtaPUHandler(Thing thing) {
         super(thing);
+        addChannel("kesselstatus", "/user/var/112/10021/0/0/12000");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_1)) {
-            // TODO: handle command
+        // Read only
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
@@ -78,10 +83,41 @@ public class EtaPUHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-
+        for (ETAChannel channel : channels) {
+            refreshChannel(channel);
+        }
     }
 
-    private void refreshChannel(ETAChannel channel) {
-        ClientResource resource;
+    private void refreshChannel(ETAChannel etachannel) {
+        sendRequest(etachannel);
+        Channel channel = getThing().getChannel(etachannel.getId());
+        State state = new StringType(etachannel.getValue());
+        updateState(channel.getUID(), state);
     }
+
+    private void sendRequest(ETAChannel channel) {
+        URL etarest;
+        try {
+            etarest = new URL("http://" + sourceConfig.ipAddress + ":8080" + channel.getUrl());
+            URLConnection yc = etarest.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+            String inputLine;
+            StringBuffer sb = new StringBuffer();
+            while ((inputLine = in.readLine()) != null) {
+                sb.append(inputLine);
+            }
+            in.close();
+            channel.setResponse(sb.toString());
+        } catch (IOException e) {
+            logger.warn("Unable to connect to web service: " + channel.getUrl());
+        }
+    }
+
+    private void addChannel(String id, String url) {
+        ETAChannel c = new ETAChannel();
+        c.setId(id);
+        c.setUrl(url);
+        channels.add(c);
+    }
+
 }

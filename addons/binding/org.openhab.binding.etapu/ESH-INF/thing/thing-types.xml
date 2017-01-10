@@ -5,11 +5,11 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="etapu">
-		<label>EtaPU Binding Thing</label>
-		<description>Sample thing for EtaPU Binding</description>
+		<label>ETA PelletsUnit</label>
+		<description>EtaPU Binding das alle verfügbaren Daten der REST API ausliest.</description>
 
 		<channels>
-			<channel id="kesselstatus" typeId="kesselstatus" />
+			<channel id="kesselstatus" typeId="kesselstatus"/>
 		</channels>
 
 		<config-description>

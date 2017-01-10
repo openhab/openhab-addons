@@ -7,8 +7,6 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: 
- org.openhab.binding.etapu,
- org.openhab.binding.etapu.handler,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -16,6 +14,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.etapu,
+ org.openhab.binding.etapu.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.etapu,

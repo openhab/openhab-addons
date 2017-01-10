@@ -12,8 +12,6 @@
 
 	<groupId>org.openhab.binding</groupId>
 	<artifactId>org.openhab.binding.etapu</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
-
 	<name>EtaPU Binding</name>
 	<packaging>eclipse-plugin</packaging>
 
@@ -43,6 +41,20 @@
 										<versionRange>[3.1,)</versionRange>
 										<goals>
 											<goal>compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.eclipse.tycho</groupId>
+										<artifactId>tycho-packaging-plugin</artifactId>
+										<versionRange>[0.24.0,)</versionRange>
+										<goals>
+											<goal>validate-version</goal>
+											<goal>build-qualifier</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
