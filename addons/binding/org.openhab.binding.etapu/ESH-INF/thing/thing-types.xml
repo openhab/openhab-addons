@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="etapu"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="etapu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>EtaPU Binding Thing</label>
-        <description>Sample thing for EtaPU Binding</description>
+	<!-- Sample Thing Type -->
+	<thing-type id="etapu">
+		<label>EtaPU Binding Thing</label>
+		<description>Sample thing for EtaPU Binding</description>
 
-        <channels>
-            <channel id="channel1" typeId="sample-channel"/>
-        </channels>
-    </thing-type>
+		<channels>
+			<channel id="kesselstatus" typeId="kesselstatus" />
+		</channels>
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>etapuItem</item-type>
-        <label>EtaPU Binding Channel</label>
-        <description>Sample channel for EtaPU Binding</description>
-    </channel-type>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP Address</label>
+				<description>IP Address of the ETA PU API interface</description>
+				<default></default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true">
+                <label>Refresh Interval</label>
+                <description>States how often the information is polled (in seconds).</description>
+                <default>60</default>
+            </parameter>
+		</config-description>
+	</thing-type>
+
+	
+	<channel-type id="kesselstatus">
+		<item-type>String</item-type>
+		<label>Kesselstatus</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
 
 </thing:thing-descriptions>
