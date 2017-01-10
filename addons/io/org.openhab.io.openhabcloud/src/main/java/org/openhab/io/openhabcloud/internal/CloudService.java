@@ -165,6 +165,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudBaseUrl = DEFAULT_URL;
         }
 
+        exposedItems = new HashSet<>();
         Object expCfg = config.get(CFG_EXPOSE);
         if (expCfg instanceof String) {
             String value = (String) expCfg;
@@ -174,17 +175,13 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             while (value.endsWith("]")) {
                 value = value.substring(0, value.length() - 1);
             }
-            exposedItems = new HashSet<>();
             for (String itemName : Arrays.asList((value).split(","))) {
                 exposedItems.add(itemName.trim());
             }
         } else if (expCfg instanceof Iterable) {
-            exposedItems = new HashSet<>();
             for (Object entry : ((Iterable<?>) expCfg)) {
                 exposedItems.add(entry.toString());
             }
-        } else {
-            exposedItems = null;
         }
 
         logger.debug("UUID = " + InstanceUUID.get() + ", secret = " + getSecret());
