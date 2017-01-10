@@ -21,6 +21,7 @@ import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
 import org.openhab.binding.bosesoundtouch.internal.items.Preset;
 import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
+import org.slf4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -42,18 +43,20 @@ public class XMLResponseHandler extends DefaultHandler {
     private Preset preset;
     private boolean volumeMuteEnabled;
     private ZoneMember zoneMember;
+    private Logger logger;
 
     public XMLResponseHandler(BoseSoundTouchHandler boseSoundTouchHandler) {
         states = new Stack<>();
         state = XMLHandlerState.INIT;
         this.boseSoundTouchHandler = boseSoundTouchHandler;
+        logger = boseSoundTouchHandler.getLogger();
         init();
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        boseSoundTouchHandler.getLogger().debug("startElement(\"" + localName + "\"; state: " + state + ")");
+        logger.debug("startElement(\"" + localName + "\"; state: " + state + ")");
         states.push(state);
         XMLHandlerState curState = state; // save for switch statement
         Map<String, XMLHandlerState> stateMap = stateSwitchingMap.get(state);
@@ -73,9 +76,8 @@ public class XMLResponseHandler extends DefaultHandler {
                     // message
                     state = XMLHandlerState.Msg;
                 } else {
-                    if (boseSoundTouchHandler.getLogger().isDebugEnabled()) {
-                        boseSoundTouchHandler.getLogger()
-                                .warn("Unhandled XML entity during " + curState + ": " + localName);
+                    if (logger.isDebugEnabled()) {
+                        logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     }
                     state = XMLHandlerState.Unprocessed;
                 }
@@ -96,8 +98,7 @@ public class XMLResponseHandler extends DefaultHandler {
                         state = XMLHandlerState.Unprocessed;
                     }
                 } else {
-                    boseSoundTouchHandler.getLogger()
-                            .warn("Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -105,8 +106,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("request".equals(localName)) {
                     state = XMLHandlerState.Unprocessed; // TODO implement request id / response tracking...
                 } else {
-                    boseSoundTouchHandler.getLogger()
-                            .warn("Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -123,16 +123,15 @@ public class XMLResponseHandler extends DefaultHandler {
                         // source changed
                         boseSoundTouchHandler.updateNowPlayingSource(new StringType(source));
                         // clear all "nowPlaying" details on source change...
-                        StringType ste = new StringType("");
-                        boseSoundTouchHandler.updateNowPlayingAlbum(ste);
-                        boseSoundTouchHandler.updateNowPlayingArtwork(ste);
-                        boseSoundTouchHandler.updateNowPlayingArtist(ste);
-                        boseSoundTouchHandler.updateNowPlayingDescription(ste);
-                        boseSoundTouchHandler.updateNowPlayingItemName(ste);
-                        boseSoundTouchHandler.updateNowPlayingPlayStatus(ste);
-                        boseSoundTouchHandler.updateNowPlayingStationLocation(ste);
-                        boseSoundTouchHandler.updateNowPlayingStationName(ste);
-                        boseSoundTouchHandler.updateNowPlayingTrack(ste);
+                        boseSoundTouchHandler.updateNowPlayingAlbum(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingArtwork(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingArtist(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingDescription(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingItemName(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingPlayStatus(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingStationLocation(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingStationName(new StringType(""));
+                        boseSoundTouchHandler.updateNowPlayingTrack(new StringType(""));
                     }
                 } else if ("zone".equals(localName)) {
                     String master = attributes.getValue("master");
@@ -146,11 +145,10 @@ public class XMLResponseHandler extends DefaultHandler {
                         } else {
                             // an other device is the master
                             boseSoundTouchHandler.setZoneState(ZoneState.Master);
-                            boseSoundTouchHandler
-                                    .setMasterZoneSoundTouchHandler(boseSoundTouchHandler.getSoundTouchDevices(master));
+                            boseSoundTouchHandler.setMasterZoneSoundTouchHandler(
+                                    boseSoundTouchHandler.getBoseSoundTouchHandler(master));
                             if (boseSoundTouchHandler.getMasterZoneSoundTouchHandler() == null) {
-                                boseSoundTouchHandler.getLogger()
-                                        .warn("Zone update: Unable to find master with ID " + master);
+                                logger.warn("Zone update: Unable to find master with ID " + master);
                             }
                         }
                     }
@@ -158,8 +156,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 } else {
                     state = stateMap.get(localName);
                     if (state == null) {
-                        boseSoundTouchHandler.getLogger()
-                                .warn("Unhandled XML entity during " + curState + ": " + localName);
+                        logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                         state = XMLHandlerState.Unprocessed;
                     } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets) {
                         if (!checkDeviceId(localName, attributes)) {
@@ -176,8 +173,7 @@ public class XMLResponseHandler extends DefaultHandler {
                     this.preset = new Preset();
                     this.preset.setPos(Integer.parseInt(id));
                 } else {
-                    boseSoundTouchHandler.getLogger()
-                            .warn("Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -187,8 +183,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 boseSoundTouchHandler.addZoneMember(zoneMember);
                 state = stateMap.get(localName);
                 if (state == null) {
-                    boseSoundTouchHandler.getLogger()
-                            .warn("Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -200,8 +195,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case Volume:
                 state = stateMap.get(localName);
                 if (state == null) {
-                    boseSoundTouchHandler.getLogger()
-                            .warn("Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -221,7 +215,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case VolumeMuteEnabled:
             case ZoneMember:
             case ZoneUpdated: // currently this dosn't provide any zone details..
-                boseSoundTouchHandler.getLogger().warn("Unhandled XML entity during " + curState + ": " + localName);
+                logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                 state = XMLHandlerState.Unprocessed;
                 break;
             case Unprocessed:
@@ -240,7 +234,7 @@ public class XMLResponseHandler extends DefaultHandler {
             // try {
             // contentItem.source = Source.valueOf(source);
             // } catch (Throwable t) {
-            // boseSoundTouchHandler.getLogger().error(boseSoundTouchHandler.getThing() + ": Unknown Source: "
+            // logger.error(boseSoundTouchHandler.getThing() + ": Unknown Source: "
             // + source + " - needs to be defined!");
             // contentItem.source = Source.UNKNOWN;
             // }
@@ -262,15 +256,15 @@ public class XMLResponseHandler extends DefaultHandler {
                 contentItem.setOperationMode(OperationModeType.STORED_MUSIC);
             } else {
                 contentItem.setOperationMode(OperationModeType.OTHER);
-                boseSoundTouchHandler.getLogger().error(boseSoundTouchHandler.getThing() + ": Unknown SourceType: "
-                        + source + " - needs to be defined!");
+                logger.error(boseSoundTouchHandler.getThing() + ": Unknown SourceType: " + source
+                        + " - needs to be defined!");
             }
             // TODO Implement other sources
             contentItem.setLocation(attributes.getValue("location"));
             contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
         }
         if (state == XMLHandlerState.Presets) {
-            boseSoundTouchHandler.clearMapOfPresets();
+            boseSoundTouchHandler.clearListOfPresets();
         }
         if (state == XMLHandlerState.Volume) {
             volumeMuteEnabled = false;
@@ -280,7 +274,7 @@ public class XMLResponseHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        boseSoundTouchHandler.getLogger().debug("endElement(\"" + localName + "\")");
+        logger.debug("endElement(\"" + localName + "\")");
         final XMLHandlerState prevState = state;
         state = states.pop();
         if (prevState == XMLHandlerState.Info) {
@@ -302,7 +296,7 @@ public class XMLResponseHandler extends DefaultHandler {
             preset.setContentItem(contentItem);
         }
         if (prevState == XMLHandlerState.Preset && state == XMLHandlerState.Presets) {
-            boseSoundTouchHandler.addPresetToMap(preset);
+            boseSoundTouchHandler.addPresetToList(preset);
             boseSoundTouchHandler.checkOperationMode();
         }
         if (prevState == XMLHandlerState.Volume) {
@@ -321,7 +315,7 @@ public class XMLResponseHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        boseSoundTouchHandler.getLogger().debug("Text data during " + state + ": " + new String(ch, start, length));
+        logger.debug("Text data during " + state + ": " + new String(ch, start, length));
         super.characters(ch, start, length);
         switch (state) {
             case INIT:
@@ -338,8 +332,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case UnprocessedNoTextExpected:
             case Zone:
             case ZoneUpdated:
-                boseSoundTouchHandler.getLogger()
-                        .warn("Unexpected text data during " + state + ": " + new String(ch, start, length));
+                logger.warn("Unexpected text data during " + state + ": " + new String(ch, start, length));
                 break;
             case Unprocessed:
                 // drop quietly..
@@ -387,9 +380,9 @@ public class XMLResponseHandler extends DefaultHandler {
             case ZoneMember:
                 String mac = new String(ch, start, length);
                 zoneMember.setMac(mac);
-                zoneMember.setHandler(boseSoundTouchHandler.getSoundTouchDevices(mac));
+                zoneMember.setHandler(boseSoundTouchHandler.getBoseSoundTouchHandler(mac));
                 if (zoneMember.getHandler() == null) {
-                    boseSoundTouchHandler.getLogger().warn("Zone update: Unable to find member with ID " + mac);
+                    logger.warn("Zone update: Unable to find member with ID " + mac);
                 }
                 break;
         }
@@ -475,12 +468,12 @@ public class XMLResponseHandler extends DefaultHandler {
     private boolean checkDeviceId(String localName, Attributes attributes) {
         String did = attributes.getValue("deviceID");
         if (did == null) {
-            boseSoundTouchHandler.getLogger().warn("No Device-ID in Entity " + localName);
+            logger.warn("No Device-ID in Entity " + localName);
             return false;
         }
         if (!did.equals(boseSoundTouchHandler.getMacAddress())) {
-            boseSoundTouchHandler.getLogger().warn("Wrong Device-ID in Entity " + localName + ": Got: " + did
-                    + " expected: " + boseSoundTouchHandler.getMacAddress());
+            logger.warn("Wrong Device-ID in Entity " + localName + ": Got: " + did + " expected: "
+                    + boseSoundTouchHandler.getMacAddress());
             return false;
         }
         return true;
@@ -490,8 +483,7 @@ public class XMLResponseHandler extends DefaultHandler {
         Map<String, String> prop = boseSoundTouchHandler.getThing().getProperties();
         String cur = prop.get(option);
         if (cur == null || !cur.equals(value)) {
-            boseSoundTouchHandler.getLogger()
-                    .info("Option \"" + option + "\" updated: From \"" + cur + "\" to \"" + value + "\"");
+            logger.info("Option \"" + option + "\" updated: From \"" + cur + "\" to \"" + value + "\"");
             boseSoundTouchHandler.getThing().setProperty(option, value);
         }
     }
