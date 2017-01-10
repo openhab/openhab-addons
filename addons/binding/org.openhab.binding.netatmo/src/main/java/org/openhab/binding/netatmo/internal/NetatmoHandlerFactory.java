@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +21,10 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.netatmo.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.handler.station.NAMainHandler;
-import org.openhab.binding.netatmo.handler.station.NAStationModuleHandler;
+import org.openhab.binding.netatmo.handler.station.NAModule1Handler;
+import org.openhab.binding.netatmo.handler.station.NAModule2Handler;
+import org.openhab.binding.netatmo.handler.station.NAModule3Handler;
+import org.openhab.binding.netatmo.handler.station.NAModule4Handler;
 import org.openhab.binding.netatmo.handler.thermostat.NAPlugHandler;
 import org.openhab.binding.netatmo.handler.thermostat.NATherm1Handler;
 import org.osgi.framework.ServiceRegistration;
@@ -49,9 +53,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             NetatmoBridgeHandler bridgeHandler = new NetatmoBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
-        } else if (thingTypeUID.equals(MODULE1_THING_TYPE) || thingTypeUID.equals(MODULE2_THING_TYPE)
-                || thingTypeUID.equals(MODULE3_THING_TYPE) || thingTypeUID.equals(MODULE4_THING_TYPE)) {
-            return new NAStationModuleHandler(thing);
+        } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
+            return new NAModule1Handler(thing);
+        } else if (thingTypeUID.equals(MODULE2_THING_TYPE)) {
+            return new NAModule2Handler(thing);
+        } else if (thingTypeUID.equals(MODULE3_THING_TYPE)) {
+            return new NAModule3Handler(thing);
+        } else if (thingTypeUID.equals(MODULE4_THING_TYPE)) {
+            return new NAModule4Handler(thing);
         } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
             return new NAMainHandler(thing);
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {

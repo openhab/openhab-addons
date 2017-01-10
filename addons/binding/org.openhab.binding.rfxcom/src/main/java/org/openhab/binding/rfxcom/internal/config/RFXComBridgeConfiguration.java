@@ -21,6 +21,12 @@ public class RFXComBridgeConfiguration {
     // Configuration for discovered bridge devices
     public String bridgeId;
 
+    // Host for using RFXCOM over TCP/IP
+    public String host;
+
+    // Port for using RFXCOM over TCP/IP
+    public int port;
+
     public String transceiverType;
 
     // Won't configure protocols to RFXCOM transceiver

@@ -36,6 +36,7 @@ This binding currently supports following packet types:
 * Temperature
 * TemperatureHumidity
 * Thermostat1
+* Undecoded
 * Wind
 
 
@@ -61,12 +62,25 @@ sudo kextunload -b com.apple.driver.AppleUSBFTDI
 
 If you have any problems with JD2XX or you don't want to disable FTDI driver on OS X, you can also configure RFXCOM transceivers/receivers manually.
 
+You can also use an RFXCOM device over TCP/IP. To start a TCP server for an RFXCOM device, you can use socat:
+```
+socat tcp-listen:10001,fork,reuseaddr file:/dev/ttyUSB0,raw
+``` 
+
 After the bridge is configured and the transceiver receives a message from any sensor or actuator, the device is put in the Inbox. Because RFXCOM communication is a one way protocol, receiver actuators can't be discovered automatically.
 
 Both bridges and sensor/actuators are easy to configure from the Paper UI. However, you can configure things manually in the thing file, for example:
 
 ```
 Bridge rfxcom:bridge:usb0 [ serialPort="/dev/tty.usbserial-06VVEG1Y" ] {
+    Thing lighting2 100001_1 [deviceId="100001.1", subType="AC"]
+}
+```
+
+A TCP bridge, for use with socat on a remote host, can be configured like this:
+
+```
+Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
     Thing lighting2 100001_1 [deviceId="100001.1", subType="AC"]
 }
 ```
@@ -91,10 +105,12 @@ This binding currently supports following channels:
 | motion | Switch | Motion detection sensor state. |
 | rainrate | Number | Rain fall rate in millimeters per hour. |
 | raintotal | Number | Total rain in millimeters. |
+| rawmessage | String | Hexadecimal string of the raw RF message. |
+| rawpayload | String | Hexadecimal string of the message payload, without header. |
 | shutter | Rollershutter | Shutter channel. |
 | signallevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |
 | totalusage | Number | Used energy in Watt hours. |
-| totalamphours | Number | Used "energy" in ampere-hours. |
+| totalamphour | Number | Used "energy" in ampere-hours. |
 | winddirection | Number | Wind direction in degrees. |
 | windspeed | Number | Average wind speed in meters per second. |

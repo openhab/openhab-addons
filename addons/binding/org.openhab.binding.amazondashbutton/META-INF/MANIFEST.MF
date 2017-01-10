@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AmazonDashButton Binding
+Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .,
+ lib/jna-4.2.1.jar,
+ lib/pcap4j-core-1.6.6.jar,
+ lib/pcap4j-packetfactory-static-1.6.6.jar
+Import-Package: 
+ com.google.common.base,
+ com.google.common.collect,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.i18n,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.common.osgi,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.events,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.amazondashbutton,
+ org.openhab.binding.amazondashbutton.handler,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.amazondashbutton,
+ org.openhab.binding.amazondashbutton.handler

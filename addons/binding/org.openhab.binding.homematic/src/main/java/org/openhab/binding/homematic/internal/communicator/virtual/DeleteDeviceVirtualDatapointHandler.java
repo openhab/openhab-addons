@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
      */
     @Override
     public void add(HmDevice device) {
-        if (!device.isGatewayExtras()) {
+        if (!device.isGatewayExtras() && !(device.getHmInterface() == HmInterface.CUXD)) {
             addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE, HmValueType.BOOL, Boolean.FALSE, false);
         }
     }
@@ -61,7 +62,7 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
             try {
                 HmDatapoint deleteMode = dp.getChannel().getDatapoint(
                         HmDatapointInfo.createValuesInfo(dp.getChannel(), VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE));
-
+                HmDevice device = dp.getChannel().getDevice();
                 int flag = -1;
                 switch (deleteMode.getOptionValue()) {
                     case MODE_RESET:
@@ -75,9 +76,9 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
                 }
                 if (flag == -1) {
                     logger.info("Can't delete device '{}' from gateway '{}', DELETE_MODE is LOCKED",
-                            dp.getChannel().getDevice().getAddress(), gateway.getId());
+                            device.getAddress(), gateway.getId());
                 } else {
-                    gateway.getRpcClient().deleteDevice(dp.getChannel().getDevice(), flag);
+                    gateway.getRpcClient(device.getHmInterface()).deleteDevice(device, flag);
                 }
             } finally {
                 gateway.disableDatapoint(dp, AbstractHomematicGateway.DEFAULT_DISABLE_DELAY);

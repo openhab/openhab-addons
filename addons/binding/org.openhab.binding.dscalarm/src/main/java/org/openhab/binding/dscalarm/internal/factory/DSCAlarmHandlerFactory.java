@@ -49,42 +49,51 @@ import org.slf4j.LoggerFactory;
 public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(DSCAlarmHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
+    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID, ThingUID bridgeUID) {
+    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
+            ThingUID bridgeUID) {
 
         if (DSCAlarmBindingConstants.ENVISALINKBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID envisalinkBridgeUID = getEnvisalinkBridgeThingUID(thingTypeUID, thingUID, configuration);
-            logger.debug("createThing(): ENVISALINK_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID, envisalinkBridgeUID.getId());
+            logger.debug("createThing(): ENVISALINK_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID,
+                    envisalinkBridgeUID.getId());
             return super.createThing(thingTypeUID, configuration, envisalinkBridgeUID, null);
         } else if (DSCAlarmBindingConstants.IT100BRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID it100BridgeUID = getIT100BridgeThingUID(thingTypeUID, thingUID, configuration);
-            logger.debug("createThing(): IT100_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID, it100BridgeUID.getId());
+            logger.debug("createThing(): IT100_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID,
+                    it100BridgeUID.getId());
             return super.createThing(thingTypeUID, configuration, it100BridgeUID, null);
         } else if (DSCAlarmBindingConstants.TCPSERVERBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID tcpServerBridgeUID = getTCPServerBridgeThingUID(thingTypeUID, thingUID, configuration);
-            logger.debug("createThing(): TCP_SERVER_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID, tcpServerBridgeUID.getId());
+            logger.debug("createThing(): TCP_SERVER_BRIDGE: Creating an '{}' type Thing - {}", thingTypeUID,
+                    tcpServerBridgeUID.getId());
             return super.createThing(thingTypeUID, configuration, tcpServerBridgeUID, null);
         } else if (DSCAlarmBindingConstants.PANEL_THING_TYPE.equals(thingTypeUID)) {
             ThingUID panelThingUID = getDSCAlarmPanelUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            logger.debug("createThing(): PANEL_THING: Creating '{}' type Thing - {}", thingTypeUID, panelThingUID.getId());
+            logger.debug("createThing(): PANEL_THING: Creating '{}' type Thing - {}", thingTypeUID,
+                    panelThingUID.getId());
             return super.createThing(thingTypeUID, configuration, panelThingUID, bridgeUID);
         } else if (DSCAlarmBindingConstants.PARTITION_THING_TYPE.equals(thingTypeUID)) {
             ThingUID partitionThingUID = getDSCAlarmPartitionUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            logger.debug("createThing(): PARTITION_THING: Creating '{}' type Thing - {}", thingTypeUID, partitionThingUID.getId());
+            logger.debug("createThing(): PARTITION_THING: Creating '{}' type Thing - {}", thingTypeUID,
+                    partitionThingUID.getId());
             return super.createThing(thingTypeUID, configuration, partitionThingUID, bridgeUID);
         } else if (DSCAlarmBindingConstants.ZONE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID zoneThingUID = getDSCAlarmZoneUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            logger.debug("createThing(): ZONE_THING: Creating '{}' type Thing - {}", thingTypeUID, zoneThingUID.getId());
+            logger.debug("createThing(): ZONE_THING: Creating '{}' type Thing - {}", thingTypeUID,
+                    zoneThingUID.getId());
             return super.createThing(thingTypeUID, configuration, zoneThingUID, bridgeUID);
         } else if (DSCAlarmBindingConstants.KEYPAD_THING_TYPE.equals(thingTypeUID)) {
             ThingUID keypadThingUID = getDSCAlarmKeypadUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            logger.debug("createThing(): KEYPAD_THING: Creating '{}' type Thing - {}", thingTypeUID, keypadThingUID.getId());
+            logger.debug("createThing(): KEYPAD_THING: Creating '{}' type Thing - {}", thingTypeUID,
+                    keypadThingUID.getId());
             return super.createThing(thingTypeUID, configuration, keypadThingUID, bridgeUID);
         }
 
-        throw new IllegalArgumentException("createThing(): The thing type " + thingTypeUID + " is not supported by the DSC Alarm binding.");
+        throw new IllegalArgumentException(
+                "createThing(): The thing type " + thingTypeUID + " is not supported by the DSC Alarm binding.");
     }
 
     @Override
@@ -100,7 +109,8 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
      * @param configuration
      * @return thingUID
      */
-    private ThingUID getEnvisalinkBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getEnvisalinkBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID == null) {
             String ipAddress = (String) configuration.get(EnvisalinkBridgeConfiguration.IP_ADDRESS);
             String bridgeID = ipAddress.replace('.', '_');
@@ -134,7 +144,8 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
      * @param configuration
      * @return thingUID
      */
-    private ThingUID getTCPServerBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getTCPServerBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID == null) {
             String ipAddress = (String) configuration.get(TCPServerBridgeConfiguration.IP_ADDRESS);
             String port = (String) configuration.get(TCPServerBridgeConfiguration.PORT);
@@ -153,7 +164,8 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
      * @param bridgeUID
      * @return thingUID
      */
-    private ThingUID getDSCAlarmPanelUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration, ThingUID bridgeUID) {
+    private ThingUID getDSCAlarmPanelUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+            ThingUID bridgeUID) {
         if (thingUID == null) {
             String panelId = "panel";
             thingUID = new ThingUID(thingTypeUID, panelId, bridgeUID.getId());
@@ -170,9 +182,11 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
      * @param bridgeUID
      * @return thingUID
      */
-    private ThingUID getDSCAlarmPartitionUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration, ThingUID bridgeUID) {
+    private ThingUID getDSCAlarmPartitionUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+            ThingUID bridgeUID) {
         if (thingUID == null) {
-            String partitionId = "partition" + (String) configuration.get(DSCAlarmPartitionConfiguration.PARTITION_NUMBER);
+            String partitionId = "partition"
+                    + (String) configuration.get(DSCAlarmPartitionConfiguration.PARTITION_NUMBER);
             thingUID = new ThingUID(thingTypeUID, partitionId, bridgeUID.getId());
         }
         return thingUID;
@@ -187,7 +201,8 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
      * @param bridgeUID
      * @return thingUID
      */
-    private ThingUID getDSCAlarmZoneUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration, ThingUID bridgeUID) {
+    private ThingUID getDSCAlarmZoneUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+            ThingUID bridgeUID) {
         if (thingUID == null) {
             String zoneId = "zone" + (String) configuration.get(DSCAlarmZoneConfiguration.ZONE_NUMBER);
             thingUID = new ThingUID(thingTypeUID, zoneId, bridgeUID.getId());
@@ -204,7 +219,8 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
      * @param bridgeUID
      * @return thingUID
      */
-    private ThingUID getDSCAlarmKeypadUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration, ThingUID bridgeUID) {
+    private ThingUID getDSCAlarmKeypadUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+            ThingUID bridgeUID) {
         if (thingUID == null) {
             String keypadId = "keypad";
             thingUID = new ThingUID(thingTypeUID, keypadId, bridgeUID.getId());
@@ -221,10 +237,12 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
         DSCAlarmDiscoveryService discoveryService = new DSCAlarmDiscoveryService(dscAlarmBridgeHandler);
         discoveryService.activate();
 
-        ServiceRegistration<?> discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
+        ServiceRegistration<?> discoveryServiceRegistration = bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
         discoveryServiceRegistrations.put(dscAlarmBridgeHandler.getThing().getUID(), discoveryServiceRegistration);
 
-        logger.debug("registerDSCAlarmDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}", dscAlarmBridgeHandler, DiscoveryService.class.getName(), discoveryService);
+        logger.debug("registerDSCAlarmDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
+                dscAlarmBridgeHandler, DiscoveryService.class.getName(), discoveryService);
     }
 
     @Override
@@ -267,10 +285,12 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        ServiceRegistration<?> discoveryServiceRegistration = discoveryServiceRegistrations.get(thingHandler.getThing().getUID());
+        ServiceRegistration<?> discoveryServiceRegistration = discoveryServiceRegistrations
+                .get(thingHandler.getThing().getUID());
 
         if (discoveryServiceRegistration != null) {
-            DSCAlarmDiscoveryService discoveryService = (DSCAlarmDiscoveryService) bundleContext.getService(discoveryServiceRegistration.getReference());
+            DSCAlarmDiscoveryService discoveryService = (DSCAlarmDiscoveryService) bundleContext
+                    .getService(discoveryServiceRegistration.getReference());
             discoveryService.deactivate();
             discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;

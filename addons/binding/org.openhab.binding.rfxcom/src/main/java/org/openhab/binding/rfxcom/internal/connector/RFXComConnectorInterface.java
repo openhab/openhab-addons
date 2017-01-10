@@ -10,6 +10,8 @@ package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
+
 /**
  * This interface defines interface to communicate RFXCOM controller.
  *
@@ -19,22 +21,22 @@ public interface RFXComConnectorInterface {
 
     /**
      * Procedure for connecting to RFXCOM controller.
-     * 
+     *
      * @param device
      *            Controller connection parameters (e.g. serial port name or IP
      *            address).
      */
-    public void connect(String device) throws Exception;
+    public void connect(RFXComBridgeConfiguration device) throws Exception;
 
     /**
      * Procedure for disconnecting to RFXCOM controller.
-     * 
+     *
      */
     public void disconnect();
 
     /**
      * Procedure for send raw data to RFXCOM controller.
-     * 
+     *
      * @param data
      *            raw bytes.
      */
@@ -42,7 +44,7 @@ public interface RFXComConnectorInterface {
 
     /**
      * Procedure for register event listener.
-     * 
+     *
      * @param listener
      *            Event listener instance to handle events.
      */
@@ -50,7 +52,7 @@ public interface RFXComConnectorInterface {
 
     /**
      * Procedure for remove event listener.
-     * 
+     *
      * @param listener
      *            Event listener instance to remove.
      */

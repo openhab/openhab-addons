@@ -6,6 +6,7 @@
 	<thing-type id="thermostat1">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
 			<bridge-type-ref id="RFXtrx433" />
 			<bridge-type-ref id="RFXrec433" />
 		</supported-bridge-type-refs>
@@ -18,8 +19,6 @@
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 
 		<config-description>

@@ -24,11 +24,13 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.astro.internal.config.AstroThingConfig;
-import org.openhab.binding.astro.internal.job.DailyJob;
+import org.openhab.binding.astro.internal.job.AbstractBaseJob;
+import org.openhab.binding.astro.internal.job.AbstractDailyJob;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
@@ -65,6 +67,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        logger.debug("Initializing thing {}", getThing().getUID());
         String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(AstroThingConfig.class);
         thingConfig.setThingUid(thingUid);
@@ -96,6 +99,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
+        logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
 
     /**
@@ -103,8 +107,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
+        logger.debug("Disposing thing {}", getThing().getUID());
+        if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
+            schedulerFuture.cancel(true);
+            schedulerFuture = null;
+        }
         stopJobs();
         quartzScheduler = null;
+        logger.debug("Thing {} disposed", getThing().getUID());
     }
 
     /**
@@ -114,7 +124,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             logger.debug("Refreshing {}", channelUID);
-            publishChannelIfLinked(getThing().getChannel(channelUID.getId()));
+            publishChannelIfLinked(channelUID);
         } else {
             logger.warn("The Astro-Binding is a read-only binding and can not handle commands");
         }
@@ -132,22 +142,24 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Iterates all channels of the thing and updates their states.
      */
-    protected void publishPlanet() {
+    public void publishPlanet() {
         logger.debug("Publishing planet {} for thing {}", getPlanet().getClass().getSimpleName(), getThing().getUID());
         for (Channel channel : getThing().getChannels()) {
-            publishChannelIfLinked(channel);
+            if (channel.getKind() != ChannelKind.TRIGGER) {
+                publishChannelIfLinked(channel.getUID());
+            }
         }
     }
 
     /**
      * Publishes the channel with data if it's linked.
      */
-    private void publishChannelIfLinked(Channel channel) {
-        if (isLinked(channel.getUID().getId()) && getPlanet() != null) {
+    private void publishChannelIfLinked(ChannelUID channelUID) {
+        if (isLinked(channelUID.getId()) && getPlanet() != null) {
             try {
-                updateState(channel.getUID(), PropertyUtils.getState(channel.getUID(), getPlanet()));
+                updateState(channelUID, PropertyUtils.getState(channelUID, getPlanet()));
             } catch (Exception ex) {
-                logger.error("Can't update state for channel " + channel.getUID() + ": " + ex.getMessage(), ex);
+                logger.error("Can't update state for channel " + channelUID + ": " + ex.getMessage(), ex);
             }
         }
     }
@@ -157,54 +169,60 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * already scheduled jobs first.
      */
     private void restartJobs() {
+        logger.debug("Restarting jobs for thing {}", getThing().getUID());
 
-        if (schedulerFuture != null) {
+        if (schedulerFuture != null && !schedulerFuture.isCancelled()) {
             schedulerFuture.cancel(true);
         }
 
         schedulerFuture = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
+                stopJobs();
+
                 try {
                     synchronized (schedulerLock) {
                         if (quartzScheduler == null) {
                             quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
                         }
 
-                        stopJobs();
-
                         if (getThing().getStatus() == ThingStatus.ONLINE) {
                             String thingUid = getThing().getUID().toString();
+                            String typeId = getThing().getThingTypeUID().getId();
                             JobDataMap jobDataMap = new JobDataMap();
-                            jobDataMap.put("thingUid", thingUid);
+                            jobDataMap.put(AbstractBaseJob.KEY_THING_UID, thingUid);
+                            jobDataMap.put(AbstractBaseJob.KEY_JOB_NAME, "job-daily");
 
                             // dailyJob
-                            String jobIdentity = DailyJob.class.getSimpleName();
-                            Trigger trigger = newTrigger().withIdentity("dailyJobTrigger", thingUid)
+                            Trigger trigger = newTrigger().withIdentity("trigger-daily-" + typeId, thingUid)
                                     .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?")).build();
-                            JobDetail jobDetail = newJob(DailyJob.class).withIdentity(jobIdentity, thingUid)
-                                    .usingJobData(jobDataMap).build();
+                            JobDetail jobDetail = newJob(getDailyJobClass())
+                                    .withIdentity("job-daily-" + typeId, thingUid).usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
-                            logger.info("Scheduled astro {} at midnight for thing {}", jobIdentity, thingUid);
+                            logger.info("Scheduled astro job-daily-{} at midnight for thing {}", typeId, thingUid);
 
                             // startupJob
-                            trigger = newTrigger().withIdentity("dailyJobStartupTrigger", thingUid).startNow().build();
-                            jobDetail = newJob(DailyJob.class).withIdentity("dailyJobStartup", thingUid)
+                            trigger = newTrigger().withIdentity("trigger-daily-startup-" + typeId, thingUid).startNow()
+                                    .build();
+                            jobDetail = newJob(getDailyJobClass()).withIdentity("job-daily-startup-" + typeId, thingUid)
                                     .usingJobData(jobDataMap).build();
                             quartzScheduler.scheduleJob(jobDetail, trigger);
 
-                            if (linkedPositionalChannels > 0) {
+                            if (isPositionalChannelLinked()) {
                                 // positional intervalJob
-                                jobIdentity = PositionalJob.class.getSimpleName();
+                                jobDataMap = new JobDataMap();
+                                jobDataMap.put(AbstractBaseJob.KEY_THING_UID, thingUid);
+                                jobDataMap.put(AbstractBaseJob.KEY_JOB_NAME, "job-positional");
+
                                 Date start = new Date(System.currentTimeMillis() + (thingConfig.getInterval()) * 1000);
-                                trigger = newTrigger().withIdentity("positionalJobTrigger", thingUid).startAt(start)
+                                trigger = newTrigger().withIdentity("trigger-positional", thingUid).startAt(start)
                                         .withSchedule(simpleSchedule().repeatForever()
                                                 .withIntervalInSeconds(thingConfig.getInterval()))
                                         .build();
-                                jobDetail = newJob(PositionalJob.class).withIdentity(jobIdentity, thingUid)
+                                jobDetail = newJob(PositionalJob.class).withIdentity("job-positional", thingUid)
                                         .usingJobData(jobDataMap).build();
                                 quartzScheduler.scheduleJob(jobDetail, trigger);
-                                logger.info("Scheduled astro {} with interval of {} seconds for thing {}", jobIdentity,
+                                logger.info("Scheduled astro job-positional with interval of {} seconds for thing {}",
                                         thingConfig.getInterval(), thingUid);
                             }
                         }
@@ -216,25 +234,38 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         }, 2000, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Stops all jobs for this thing.
+     */
     private void stopJobs() {
-        if (quartzScheduler != null) {
-            try {
-                String thingUid = getThing().getUID().toString();
-                for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
-                    logger.info("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
-                    quartzScheduler.deleteJob(jobKey);
+        logger.debug("Stopping jobs for thing {}", getThing().getUID());
+        synchronized (schedulerLock) {
+            if (quartzScheduler != null) {
+                try {
+                    String thingUid = getThing().getUID().toString();
+                    for (JobKey jobKey : quartzScheduler.getJobKeys(jobGroupEquals(thingUid))) {
+                        logger.debug("Deleting astro {} for thing '{}'", jobKey.getName(), thingUid);
+                        quartzScheduler.deleteJob(jobKey);
+                    }
+                } catch (SchedulerException ex) {
+                    logger.error(ex.getMessage(), ex);
                 }
-            } catch (SchedulerException ex) {
-                logger.error(ex.getMessage(), ex);
             }
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void channelLinked(ChannelUID channelUID) {
         linkedChannelChange(channelUID, 1);
+        publishChannelIfLinked(channelUID);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         linkedChannelChange(channelUID, -1);
@@ -245,9 +276,39 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     private void linkedChannelChange(ChannelUID channelUID, int step) {
         if (ArrayUtils.contains(getPositionalChannelIds(), channelUID.getId())) {
+            int oldValue = linkedPositionalChannels;
             linkedPositionalChannels += step;
+            if ((oldValue == 0 && linkedPositionalChannels > 0) || (oldValue > 0 && linkedPositionalChannels == 0)) {
+                restartJobs();
+            }
         }
-        restartJobs();
+    }
+
+    /**
+     * Returns true, if at least one positional channel is linked.
+     */
+    private boolean isPositionalChannelLinked() {
+        for (Channel channel : getThing().getChannels()) {
+            if (ArrayUtils.contains(getPositionalChannelIds(), channel.getUID().getId())
+                    && isLinked(channel.getUID().getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Emits an event for the given channel.
+     */
+    public void triggerEvent(String channelId, String event) {
+        triggerChannel(getThing().getChannel(channelId).getUID(), event);
+    }
+
+    /**
+     * Returns the scheduler for the astro jobs.
+     */
+    public Scheduler getScheduler() {
+        return quartzScheduler;
     }
 
     /**
@@ -269,4 +330,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns the channelIds for positional calculation.
      */
     protected abstract String[] getPositionalChannelIds();
+
+    /**
+     * Returns the class for the daily calculation job.
+     */
+    protected abstract Class<? extends AbstractDailyJob> getDailyJobClass();
 }

@@ -6,6 +6,7 @@
 	<thing-type id="energy">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
 			<bridge-type-ref id="RFXtrx433" />
 			<bridge-type-ref id="RFXrec433" />
 		</supported-bridge-type-refs>
@@ -14,11 +15,10 @@
 		<description>A Energy device.</description>
 
 		<channels>
-			<channel id="command" typeId="command" />
-			<channel id="instanPower" typeId="instantpower" />
+			<channel id="instantPower" typeId="instantpower" />
 			<channel id="totalUsage" typeId="totalusage" />
 			<channel id="instantAmp" typeId="instantamp" />
-			<channel id="totalAmpHours" typeId="totalamphours" />
+			<channel id="totalAmpHour" typeId="totalamphour" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />

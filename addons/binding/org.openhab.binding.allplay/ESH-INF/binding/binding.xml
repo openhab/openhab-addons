@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="allplay" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>AllPlay Binding</name>
+	<description>The AllPlay binding integrates devices compatible with Qualcomm AllPlay.</description>
+	<author>Dominic Lerbs</author>
+
+	<config-description>
+		<parameter name="rewindSkipTimeInSec" type="decimal">
+			<label>Rewind skip time (s)</label>
+			<description>Seconds to jump backwards if the rewind command is executed</description>
+			<default>10</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+		<parameter name="fastForwardSkipTimeInSec" type="decimal">
+			<label>Fast forward skip time (s)</label>
+			<description>Seconds to jump forward if the fastforward command is executed</description>
+			<default>10</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+	</config-description>
+
+</binding:binding>

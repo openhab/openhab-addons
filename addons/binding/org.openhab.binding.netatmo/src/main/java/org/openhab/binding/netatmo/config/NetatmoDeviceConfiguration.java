@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,12 +14,6 @@ package org.openhab.binding.netatmo.config;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class NetatmoDeviceConfiguration {
-    private String equipmentId;
+public class NetatmoDeviceConfiguration extends NetatmoThingConfiguration {
     public long refreshInterval;
-
-    public String getEquipmentId() {
-        // Bug #3891 : Netatmo API only works with lower case device/module ids
-        return equipmentId.toLowerCase();
-    }
 }

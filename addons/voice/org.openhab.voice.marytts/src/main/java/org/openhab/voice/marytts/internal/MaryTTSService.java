@@ -15,6 +15,7 @@ package org.openhab.voice.marytts.internal;
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -26,6 +27,8 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
@@ -41,29 +44,35 @@ import marytts.modules.synthesis.Voice;
  */
 public class MaryTTSService implements TTSService {
 
-    private static final MaryInterface marytts = getMaryInterface();
+    private final Logger logger = LoggerFactory.getLogger(MaryTTSService.class);
+
+    private MaryInterface marytts;
 
     /**
      * Set of supported voices
      */
-    private final HashSet<org.eclipse.smarthome.core.voice.Voice> voices = initVoices();
+    private HashSet<org.eclipse.smarthome.core.voice.Voice> voices;
 
     /**
      * Set of supported audio formats
      */
-    private final HashSet<AudioFormat> audioFormats = initAudioFormats();
+    private HashSet<AudioFormat> audioFormats;
 
-    /**
-     * {@inheritDoc}
-     */
+    protected void activate() {
+        try {
+            marytts = getMaryInterface();
+            voices = initVoices();
+            audioFormats = initAudioFormats();
+        } catch (Throwable t) {
+            logger.error("Failed to initialize MaryTTS: {}", t.getMessage(), t);
+        }
+    }
+
     @Override
     public Set<org.eclipse.smarthome.core.voice.Voice> getAvailableVoices() {
         return this.voices;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return this.audioFormats;
@@ -94,12 +103,12 @@ public class MaryTTSService implements TTSService {
          * However, the TTSService interface allows the AudioFormat and
          * the Voice to vary independently. Thus, an external user does
          * not know about the requirement that a given voice is paired
-         * with a given AudioFormat. The test below inforces this.
+         * with a given AudioFormat. The test below enforces this.
          *
          * However, this leads to a problem. The user has no way to
          * know which AudioFormat is apropos for a give Voice. Thus,
          * throwing a TTSException for the wrong AudioFormat makes
-         * the user guess the right AudioFormat, a apinful process.
+         * the user guess the right AudioFormat, a painful process.
          * Alternatively, we can get the right AudioFormat for the
          * Voice and ignore what the user requests, also wrong.
          *
@@ -125,7 +134,7 @@ public class MaryTTSService implements TTSService {
             try {
                 AudioInputStream audioInputStream = marytts.generateAudio(text);
                 audioStream = new MaryTTSAudioStream(audioInputStream, maryTTSVoiceAudioFormat);
-            } catch (SynthesisException e) {
+            } catch (SynthesisException | IOException e) {
                 throw new TTSException("Error generating an AudioStream", e);
             }
 
