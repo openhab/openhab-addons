@@ -4,7 +4,6 @@ import static org.openhab.binding.homepilot.HomePilotBindingConstants.*;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -15,9 +14,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
@@ -31,7 +27,7 @@ public class DefaultHttpGateway implements HomePilotGateway {
     private String id;
     private HomePilotConfig config;
     private HttpClient httpClient;
-    private Cache<String, String> responseCache;
+    // private Cache<String, String> responseCache;
 
     public DefaultHttpGateway(String id, HomePilotConfig config) {
         this.id = id;
@@ -54,16 +50,16 @@ public class DefaultHttpGateway implements HomePilotGateway {
             throw new RuntimeException(ex.getMessage(), ex);
         }
 
-        responseCache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS)
-                .build(new CacheLoader<String, String>() {
-
-                    @Override
-                    public String load(String url) throws Exception {
-                        logger.info("Calling url " + url);
-                        return httpClient.POST(url).header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8")
-                                .send().getContentAsString();
-                    }
-                });
+        // responseCache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS)
+        // .build(new CacheLoader<String, String>() {
+        //
+        // @Override
+        // public String load(String url) throws Exception {
+        // logger.info("Calling url " + url);
+        // return httpClient.POST(url).header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8")
+        // .send().getContentAsString();
+        // }
+        // });
     }
 
     @Override
@@ -75,7 +71,9 @@ public class DefaultHttpGateway implements HomePilotGateway {
     public List<HomePilotDevice> loadAllDevices() {
         String url = String.format("http://%s/deviceajax.do?alldevices", config.getAddress());
         try {
-            return transform2Devices(responseCache.get(url));
+            return transform2Devices(
+                    httpClient.POST(url).header(HttpHeader.CONTENT_TYPE, "application/json;charset=utf-8").send()
+                            .getContentAsString()/* responseCache.get(url) */);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

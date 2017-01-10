@@ -4,6 +4,7 @@ import static org.openhab.binding.homepilot.HomePilotBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -36,9 +37,17 @@ public class HomePilotThingHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_POSITION:
-                    handler.getGateway().handleSetPosition(getThing().getUID().getId(),
-                            Integer.parseInt(command.toString()));
-                    updateState(CHANNEL_POSITION, new DecimalType(command.toString()));
+                    int position = 0;
+                    if (command instanceof DecimalType) {
+                        position = ((DecimalType) command).intValue();
+                    } else if (command instanceof OnOffType) {
+                        position = OnOffType.ON.equals(command) ? 100 : 0;
+                    } else {
+                        throw new IllegalStateException("unkown command type " + command.getClass());
+                    }
+                    position = position > 100 ? 100 : ((position < 0) ? 0 : position);
+                    handler.getGateway().handleSetPosition(getThing().getUID().getId(), position);
+                    updateState(CHANNEL_POSITION, new PercentType(position));
                     break;
                 case CHANNEL_STATE:
                     handler.getGateway().handleSetOnOff(getThing().getUID().getId(), OnOffType.ON.equals(command));
@@ -70,12 +79,23 @@ public class HomePilotThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_STATE, device.getPosition() == 0 ? OnOffType.OFF : OnOffType.ON);
                 break;
             case ITEM_TYPE_ROLLERSHUTTER:
-                updateState(CHANNEL_POSITION, new DecimalType(device.getPosition()));
+                int position = device.getPosition();
+                position = position > 100 ? 100 : ((position < 0) ? 0 : position);
+                // position must be between 0 and 100
+                try {
+                    updateState(CHANNEL_POSITION, new PercentType(position));
+                } catch (Exception e) {
+                    throw new RuntimeException("pos: '" + position + "'", e);
+                }
                 break;
             default:
                 throw new IllegalStateException(
                         "unknown thing type " + getThing().getThingTypeUID().getId() + " in " + getThing());
 
         }
+    }
+
+    public static void main(String[] args) {
+        new PercentType(0);
     }
 }

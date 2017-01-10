@@ -41,7 +41,7 @@
         <item-type>Number</item-type>
         <label>HomePilot Position Channel</label>
         <description>Position channel for HomePilot Binding</description>
-        <state min="0" max="101" step="1" readOnly="false" pattern="%.0f"></state>
+        <state min="0" max="100" step="1" readOnly="false" pattern="%d"></state>
     </channel-type>
 
 </thing:thing-descriptions>

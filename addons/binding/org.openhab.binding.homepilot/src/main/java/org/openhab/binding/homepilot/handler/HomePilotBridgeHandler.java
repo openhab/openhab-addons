@@ -63,7 +63,6 @@ public class HomePilotBridgeHandler extends BaseBridgeHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                logger.info("refresh Bridge");
                 try {
                     for (Thing thing : getThing().getThings()) {
                         ((HomePilotThingHandler) thing.getHandler()).refresh();
@@ -129,7 +128,7 @@ public class HomePilotBridgeHandler extends BaseBridgeHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
-        if (discoveryServiceRegistration != null) {
+        if (discoveryServiceRegistration != null && bundleContext != null) {
             bundleContext.ungetService(discoveryServiceRegistration.getReference());
         }
         super.dispose();
