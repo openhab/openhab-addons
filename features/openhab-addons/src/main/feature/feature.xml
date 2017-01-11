@@ -290,6 +290,11 @@
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
     </feature>
+	
+	<feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zway/${project.version}</bundle>
+    </feature>
 
     <!-- io -->
 
