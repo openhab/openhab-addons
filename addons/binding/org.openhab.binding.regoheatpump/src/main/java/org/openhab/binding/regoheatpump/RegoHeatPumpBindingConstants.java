@@ -25,17 +25,17 @@ public class RegoHeatPumpBindingConstants {
     public final static ThingTypeUID THING_TYPE_SERIAL_REGO6XX = new ThingTypeUID(BINDING_ID, "serialRego6xx");
 
     // List of all Channel ids
-    public final static String CHANNEL_GROUP_SENSORS = "sensors#";
+    public final static String CHANNEL_GROUP_SENSOR_VALUES = "sensorValues#";
     public final static String CHANNEL_GROUP_DEVICE_VALUES = "deviceValues#";
     public final static String CHANNEL_GROUP_REGISTERS = "registers#";
     public final static String CHANNEL_LAST_ERROR = "status#lastError";
     public final static String CHANNEL_LAST_ERROR_TIMESTAMP = CHANNEL_LAST_ERROR + "Timestamp";
     public final static String CHANNEL_LAST_ERROR_TYPE = CHANNEL_LAST_ERROR + "Type";
-    public final static String CHANNEL_FRONT_PANEL_POWER_LED = "frontPanel#power";
-    public final static String CHANNEL_FRONT_PANEL_PUMP_LED = "frontPanel#heatPumpLed";
-    public final static String CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED = "frontPanel#additionalHeatingLed";
-    public final static String CHANNEL_FRONT_PANEL_WATER_HEATER_LED = "frontPanel#hotWaterLed";
-    public final static String CHANNEL_FRONT_PANEL_ALARM_LED = "frontPanel#alarmLed";
+    public final static String CHANNEL_FRONT_PANEL_POWER_LAMP = "frontPanel#powerLamp";
+    public final static String CHANNEL_FRONT_PANEL_PUMP_LAMP = "frontPanel#heatPumpLamp";
+    public final static String CHANNEL_FRONT_PANEL_ADDITIONAL_HEAT_LAMP = "frontPanel#additionalHeatLamp";
+    public final static String CHANNEL_FRONT_PANEL_WATER_HEATER_LAMP = "frontPanel#hotWaterLamp";
+    public final static String CHANNEL_FRONT_PANEL_ALARM_LAMP = "frontPanel#alarmLamp";
 
     public final static String REFRESH_INTERVAL = "refreshInterval";
 

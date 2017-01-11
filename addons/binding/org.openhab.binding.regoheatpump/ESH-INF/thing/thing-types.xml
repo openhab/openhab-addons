@@ -10,7 +10,7 @@
         <description>Manage Rego 6xx based heat pump over TCP/IP</description>
         
         <channel-groups>
-            <channel-group id="sensors" typeId="sensors" />
+            <channel-group id="sensorValues" typeId="sensorValues" />
             <channel-group id="deviceValues" typeId="deviceValues" />
             <channel-group id="registers" typeId="registers" />
             <channel-group id="frontPanel" typeId="frontPanel" />
@@ -42,7 +42,7 @@
         <description>Manage Rego 6xx based heat pump over serial port</description>
         
         <channel-groups>
-            <channel-group id="sensors" typeId="sensors" />            
+            <channel-group id="sensorValues" typeId="sensorValues" />            
             <channel-group id="deviceValues" typeId="deviceValues" />
             <channel-group id="registers" typeId="registers" />
             <channel-group id="frontPanel" typeId="frontPanel" />
@@ -62,8 +62,8 @@
         </config-description>        
     </thing-type>
 
-    <channel-group-type id="sensors">
-        <label>Sensors</label>
+    <channel-group-type id="sensorValues">
+        <label>Sensor Values</label>
         <channels>
             <channel id="radiatorReturn" typeId="radiatorReturnTemp"/>
             <channel id="outdoor" typeId="outdoorTemp"/>
@@ -82,14 +82,14 @@
     <channel-group-type id="deviceValues">
         <label>Device Values</label>
         <channels>
+            <channel id="radiatorPump" typeId="radiatorPumpState"/>
+            <channel id="heatFluidPump" typeId="heatFluidPumpState"/>
             <channel id="coldFluidPump" typeId="coldFluidPumpState"/>
             <channel id="compressor" typeId="compressorState"/>
             <channel id="additionalHeat3kW" typeId="additionalHeat3kWState"/>
             <channel id="additionalHeat6kW" typeId="additionalHeat6kWState"/>
-            <channel id="radiatorPump" typeId="radiatorPumpState"/>
-            <channel id="heatFluidPump" typeId="heatFluidPumpState"/>
-            <channel id="threeWayValve" typeId="threeWayValveState"/>
             <channel id="alarm" typeId="alarmState"/>
+            <channel id="threeWayValve" typeId="threeWayValveState"/>
         </channels>
     </channel-group-type>
 
@@ -105,15 +105,6 @@
             <channel id="offValueGT3" typeId="temperature"/>
             <channel id="targetValueGT4" typeId="temperature"/>
             <channel id="addHeatPower" typeId="temperature"/>
-            <!-- Device values -->
-            <channel id="coldFluidPump" typeId="coldFluidPumpState"/>
-            <channel id="compressor" typeId="compressorState"/>
-            <channel id="additionalHeat3kW" typeId="additionalHeat3kWState"/>
-            <channel id="additionalHeat6kW" typeId="additionalHeat6kWState"/>
-            <channel id="radiatorPump" typeId="radiatorPumpState"/>
-            <channel id="heatFluidPump" typeId="heatFluidPumpState"/>
-            <channel id="threeWayValve" typeId="threeWayValveState"/>
-            <channel id="alarm" typeId="alarmState"/>
             <!-- Settings -->
             <channel id="heatCurve" typeId="temperature"/>
             <channel id="heatCurveFineAdj" typeId="temperature"/>
@@ -146,11 +137,11 @@
     <channel-group-type id="frontPanel">
         <label>Front Panel</label>
         <channels>
-            <channel id="powerLed" typeId="powerLed"/>
-            <channel id="heatPumpLed" typeId="heatPumpLed"/>
-            <channel id="additionalHeatingLed" typeId="additionalHeatingLed"/>
-            <channel id="hotWaterLed" typeId="hotWaterLed"/>
-            <channel id="alarmLed" typeId="alarmLed"/>
+            <channel id="powerLamp" typeId="powerLamp"/>
+            <channel id="heatPumpLamp" typeId="heatPumpLamp"/>
+            <channel id="additionalHeatLamp" typeId="additionalHeatLamp"/>
+            <channel id="hotWaterLamp" typeId="hotWaterLamp"/>
+            <channel id="alarmLamp" typeId="alarmLamp"/>
         </channels>
     </channel-group-type>
 
@@ -293,37 +284,42 @@
         <state readOnly="true" pattern="%tc"/>
     </channel-type>
 
-    <channel-type id="powerLed" advanced="true">
+    <channel-type id="powerLamp" advanced="true">
         <item-type>Switch</item-type>
-        <label>Power led</label>
+        <label>Power lamp</label>
+        <description>Lamp on when the heat pump is on</description>
         <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
-    <channel-type id="heatPumpLed">
+    <channel-type id="heatPumpLamp">
         <item-type>Switch</item-type>
-        <label>Heat pump led</label>
+        <label>Heat pump lamp</label>
+        <description>Lamp on when the heat pump (compressor) is operational</description>
         <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
 
-    <channel-type id="additionalHeatingLed">
+    <channel-type id="additionalHeatLamp">
         <item-type>Switch</item-type>
-        <label>Additional heating led</label>
+        <label>Additional heat lamp</label>
+        <description>Lamp on when the heat pump is using additional heat from an electric cassette</description>
         <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
-    <channel-type id="hotWaterLed">
+    <channel-type id="hotWaterLamp">
         <item-type>Switch</item-type>
-        <label>Hot water led</label>
+        <label>Hot water lamp</label>
+        <description>Lamp on when the heat pump is heating water in the heater</description>
         <category>Switch</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>
     
-    <channel-type id="alarmLed">
+    <channel-type id="alarmLamp">
         <item-type>Switch</item-type>
-        <label>Alarm led</label>
+        <label>Alarm lamp</label>
+        <description>Lamp indicates that a fault has occurred in the heat pump</description>
         <category>Siren</category>
         <state readOnly="true" pattern="%s"/>
     </channel-type>

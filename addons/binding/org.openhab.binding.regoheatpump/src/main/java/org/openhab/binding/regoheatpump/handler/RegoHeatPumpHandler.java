@@ -136,23 +136,23 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
                 readLastErrorTimestamp();
                 break;
 
-            case CHANNEL_FRONT_PANEL_POWER_LED:
+            case CHANNEL_FRONT_PANEL_POWER_LAMP:
                 readFromFrontPanel(channelIID, (short) 0x0012);
                 break;
 
-            case CHANNEL_FRONT_PANEL_PUMP_LED:
+            case CHANNEL_FRONT_PANEL_PUMP_LAMP:
                 readFromFrontPanel(channelIID, (short) 0x0013);
                 break;
 
-            case CHANNEL_FRONT_PANEL_ADDITIONAL_HEATING_LED:
+            case CHANNEL_FRONT_PANEL_ADDITIONAL_HEAT_LAMP:
                 readFromFrontPanel(channelIID, (short) 0x0014);
                 break;
 
-            case CHANNEL_FRONT_PANEL_WATER_HEATER_LED:
+            case CHANNEL_FRONT_PANEL_WATER_HEATER_LAMP:
                 readFromFrontPanel(channelIID, (short) 0x0015);
                 break;
 
-            case CHANNEL_FRONT_PANEL_ALARM_LED:
+            case CHANNEL_FRONT_PANEL_ALARM_LAMP:
                 readFromFrontPanel(channelIID, (short) 0x0016);
                 break;
 
