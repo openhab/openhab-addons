@@ -658,7 +658,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
                 updateCubeState();
                 if (((S_Message) message).isCommandDiscarded()) {
-                    logger.info("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
+                    logger.warn("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
                             freeMemorySlots);
                 } else {
                     logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle, freeMemorySlots);
