@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.regoheatpump.internal.protocol;
 
+import javax.xml.bind.DatatypeConverter;
+
 abstract class AbstractResponseParser<T> implements ResponseParser<T> {
     private final static byte ComputerAddress = (byte) 0x01;
 
@@ -28,11 +30,11 @@ abstract class AbstractResponseParser<T> implements ResponseParser<T> {
         }
 
         if (buffer[0] != ComputerAddress) {
-            throw new IllegalStateException("Invalid header " + buffer[0]);
+            throw new IllegalStateException("Invalid header " + DatatypeConverter.printHexBinary(buffer));
         }
 
         if (Checksum.calculate(buffer, 1, responseLength() - 2) != buffer[responseLength() - 1]) {
-            throw new IllegalStateException("Invalid crc.");
+            throw new IllegalStateException("Invalid crc - " + DatatypeConverter.printHexBinary(buffer));
         }
 
         return convert(buffer);

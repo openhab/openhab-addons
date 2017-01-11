@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -128,8 +128,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private void processChannelRequest(final String channelIID) {
         switch (channelIID) {
-            case CHANNEL_LAST_ERROR_CODE:
-                readLastErrorCode();
+            case CHANNEL_LAST_ERROR_TYPE:
+                readLastErrorType();
                 break;
 
             case CHANNEL_LAST_ERROR_TIMESTAMP:
@@ -183,8 +183,8 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         }
     }
 
-    private void readLastErrorCode() {
-        readLastError(CHANNEL_LAST_ERROR_CODE, e -> new StringType(Byte.toString(e.error())));
+    private void readLastErrorType() {
+        readLastError(CHANNEL_LAST_ERROR_TYPE, e -> new StringType(Byte.toString(e.error())));
     }
 
     private void readLastErrorTimestamp() {
@@ -200,9 +200,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
     private void readFromFrontPanel(final String channelIID, short address) {
         final byte[] command = CommandFactory.createReadFromFrontPanelCommand(address);
-        executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, v -> {
-            return v == 0 ? OnOffType.OFF : OnOffType.ON;
-        });
+        executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.Short, DecimalType::new);
     }
 
     private boolean readFromSystemRegister(final String channelIID) {
@@ -314,7 +312,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
         // CHANNEL_LAST_ERROR_CODE and CHANNEL_LAST_ERROR_TIMESTAMP are read from same
         // register. To prevent accessing same register twice when both channels are linked,
         // use same name for both so only a single fetch will be triggered.
-        final String mappedChannelIID = (CHANNEL_LAST_ERROR_CODE.equals(channelIID)
+        final String mappedChannelIID = (CHANNEL_LAST_ERROR_TYPE.equals(channelIID)
                 || CHANNEL_LAST_ERROR_TIMESTAMP.equals(channelIID)) ? CHANNEL_LAST_ERROR : channelIID;
 
         // Use transient channel descriptor for null (not cached) channels.

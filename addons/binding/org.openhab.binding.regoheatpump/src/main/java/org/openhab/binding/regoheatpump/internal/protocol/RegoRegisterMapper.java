@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;;
 
 public class RegoRegisterMapper {
@@ -49,6 +50,17 @@ public class RegoRegisterMapper {
         @Override
         public State convert(Short value) {
             return new DecimalType(ValueConverter.toDouble(value));
+        }
+    }
+
+    private static class StringChannel extends Int16Channel {
+        private StringChannel(short address) {
+            super(address);
+        }
+
+        @Override
+        public State convert(Short value) {
+            return new StringType(value.toString());
         }
     }
 
@@ -89,14 +101,14 @@ public class RegoRegisterMapper {
             mappings.put(CHANNEL_GROUP_REGISTERS + "addHeatPower", new TemperatureChannel((short) 108));
 
             // Device values
-            mappings.put(CHANNEL_GROUP_REGISTERS + "coldFluidPumpP3", new Int16Channel((short) 509));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "compressor", new Int16Channel((short) 510));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "additionalHeat3kW", new Int16Channel((short) 511));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "additionalHeat6kW", new Int16Channel((short) 512));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "radiatorPumpP1", new Int16Channel((short) 515));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "heatFluidPumpP2", new Int16Channel((short) 516));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "threeWayValve", new Int16Channel((short) 517));
-            mappings.put(CHANNEL_GROUP_REGISTERS + "alarm", new Int16Channel((short) 518));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "coldFluidPump", new Int16Channel((short) 509));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "compressor", new Int16Channel((short) 510));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "additionalHeat3kW", new Int16Channel((short) 511));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "additionalHeat6kW", new Int16Channel((short) 512));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "radiatorPump", new Int16Channel((short) 515));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "heatFluidPump", new Int16Channel((short) 516));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "threeWayValve", new StringChannel((short) 517));
+            mappings.put(CHANNEL_GROUP_DEVICE_VALUES + "alarm", new Int16Channel((short) 518));
 
             // Settings
             mappings.put(CHANNEL_GROUP_REGISTERS + "heatCurve", new TemperatureChannel((short) 0));
