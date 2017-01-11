@@ -26,8 +26,9 @@ public class RegoHeatPumpBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_GROUP_SENSOR_VALUES = "sensorValues#";
+    public final static String CHANNEL_GROUP_CONTROL_DATA = "controlData#";
     public final static String CHANNEL_GROUP_DEVICE_VALUES = "deviceValues#";
-    public final static String CHANNEL_GROUP_REGISTERS = "registers#";
+    public final static String CHANNEL_GROUP_SETTINGS = "settings#";
     public final static String CHANNEL_LAST_ERROR = "status#lastError";
     public final static String CHANNEL_LAST_ERROR_TIMESTAMP = CHANNEL_LAST_ERROR + "Timestamp";
     public final static String CHANNEL_LAST_ERROR_TYPE = CHANNEL_LAST_ERROR + "Type";

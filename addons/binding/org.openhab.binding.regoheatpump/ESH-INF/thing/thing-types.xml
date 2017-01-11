@@ -11,8 +11,9 @@
         
         <channel-groups>
             <channel-group id="sensorValues" typeId="sensorValues" />
+            <channel-group id="controlData" typeId="controlData" />
             <channel-group id="deviceValues" typeId="deviceValues" />
-            <channel-group id="registers" typeId="registers" />
+            <channel-group id="settings" typeId="settings" />
             <channel-group id="frontPanel" typeId="frontPanel" />
             <channel-group id="status" typeId="status" />
         </channel-groups>
@@ -43,8 +44,9 @@
         
         <channel-groups>
             <channel-group id="sensorValues" typeId="sensorValues" />            
+            <channel-group id="controlData" typeId="controlData" />
             <channel-group id="deviceValues" typeId="deviceValues" />
-            <channel-group id="registers" typeId="registers" />
+            <channel-group id="settings" typeId="settings" />
             <channel-group id="frontPanel" typeId="frontPanel" />
             <channel-group id="status" typeId="status" />
         </channel-groups>
@@ -79,6 +81,20 @@
         </channels>
     </channel-group-type>
     
+    <channel-group-type id="controlData">
+        <label>Control data</label>
+        <channels>
+            <channel id="radiatorReturnTarget" typeId="radiatorReturnTarget"/>
+            <channel id="radiatorReturnOn" typeId="radiatorReturnOn"/>
+            <channel id="radiatorReturnOff" typeId="radiatorReturnOff"/>
+            <channel id="hotWaterTarget" typeId="hotWaterTarget"/>
+            <channel id="hotWaterOn" typeId="hotWaterOn"/>
+            <channel id="hotWaterOff" typeId="hotWaterOff"/>
+            <channel id="radiatorForwardTarget" typeId="radiatorForwardTarget"/>
+            <channel id="addHeatPower" typeId="addHeatPower"/>
+        </channels>
+    </channel-group-type>
+
     <channel-group-type id="deviceValues">
         <label>Device Values</label>
         <channels>
@@ -93,20 +109,10 @@
         </channels>
     </channel-group-type>
 
-    <channel-group-type id="registers">
-        <label>Register Values</label>
+    <channel-group-type id="settings">
+        <label>Settings</label>
         <channels>
-            <!-- Control data -->
-            <channel id="targetValueGT1" typeId="temperature"/>
-            <channel id="onValueGT1" typeId="temperature"/>
-            <channel id="offValueGT1" typeId="temperature"/>
-            <channel id="targetValueGT3" typeId="temperature"/>
-            <channel id="onValueGT3" typeId="temperature"/>
-            <channel id="offValueGT3" typeId="temperature"/>
-            <channel id="targetValueGT4" typeId="temperature"/>
-            <channel id="addHeatPower" typeId="temperature"/>
-            <!-- Settings -->
-            <channel id="heatCurve" typeId="temperature"/>
+            <channel id="heatCurve" typeId="heatCurve"/>
             <channel id="heatCurveFineAdj" typeId="temperature"/>
             <channel id="indoorTempSetting" typeId="temperature"/>
             <channel id="curveInflByInTemp" typeId="temperature"/>
@@ -386,4 +392,74 @@
         <state readOnly="true" pattern="%s"/>
     </channel-type>
 
+    <channel-type id="radiatorReturnTarget" advanced="true">
+        <item-type>Number</item-type>
+        <label>Radiator return target</label>
+        <description>Calculated desired radiator return temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="radiatorReturnOn" advanced="true">
+        <item-type>Number</item-type>
+        <label>Minimal radiator return</label>
+        <description>Calculated minimal (start) radiator return temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="radiatorReturnOff" advanced="true">
+        <item-type>Number</item-type>
+        <label>Maximal radiator return</label>
+        <description>Calculated maximal (stop) radiator return temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="hotWaterTarget" advanced="true">
+        <item-type>Number</item-type>
+        <label>Hot water target</label>
+        <description>Desired radiator return temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="hotWaterOn" advanced="true">
+        <item-type>Number</item-type>
+        <label>Minimal hot water</label>
+        <description>Minimal (start) hot water temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="hotWaterOff" advanced="true">
+        <item-type>Number</item-type>
+        <label>Maximal hot water</label>
+        <description>Maximal (stop) hot water temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="radiatorForwardTarget" advanced="true">
+        <item-type>Number</item-type>
+        <label>Radiator forward target</label>
+        <description>Calculated desired radiator forward temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="addHeatPower" advanced="true">
+        <item-type>Number</item-type>
+        <label>Additional heat power</label>
+        <category>Energy</category>
+        <state readOnly="true" pattern="%.1f %%"/>
+    </channel-type>
+    
+    <channel-type id="heatCurve" advanced="true">
+        <item-type>Number</item-type>
+        <label>Heat curve</label>
+        <category>Line</category>
+        <state readOnly="true" pattern="%.1f"/>
+    </channel-type>
+    
 </thing:thing-descriptions>
