@@ -10,147 +10,136 @@ Currently, the binding supports a single type of Thing, being the `command` Thin
 
 The binding does not require any specific configuration.
 
+Note that on Unix systems the commands are executed in the context and with the privileges of the process running the java virtual machine, and it is not advised to run the virtual machine as superuser/root. It is advised to test the execution of the command in a shell using the user owning the JVM process, for example
 
-**Linux:**
-Note that the commands are executed in the context and with the privileges of the process running the Java Virtual Machine.
-On a Linux system the system user `openhab` needs to have the privileges needed to execute your intended command.
-It is advised to test the correct operation of the command in the scope of the `openhab` user on the command line first:
-
-```shell
-sudo -u openhab <YOUR COMMAND>
 ```
-It is not advised to run the virtual machine as superuser/root.
+sudo -u openhab <command>
+```
+
+The execution of the commands is triggered by either sending a Command or State Update to the input Channel of the `command` Thing, if configured so, or by sending the ON Command to the run Channel of the `command` Thing (see below)
 
 ## Thing Configuration
-.
-The "command" Thing requires the command to execute on the shell.
+
+The `command` Thing requires the following mandatory configuration parameters:
+
+- [command] the command to execute on the shell. 
+
 Optionally one can specify:
 
+- [transform] a transformation to apply on the execution result
+- [interval] an interval, in seconds, the [command] will be repeatedly executed. Default is 60 seconds, set to 0 to avoid repetition
+- [timeout] a time-out, in seconds, after which the execution of the [command] will time out
+- [runOnInput] a boolean parameter to make the [command] execute immediately every time a Command or a State Update is sent to the input channel of the `command` Thing, and lastly
+- [repeatEnabled] a boolean parameter to allow the [command] to be executed repeatedly, e.g. when the same Command or State Update is sent to input channel repeatedly. This parameter only makes sense when used in combination with [runOnInput] set to true
 
-- `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result,
-- `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid repetition.
-- `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
-- `autorun` - A boolean parameter to make the command execute immediately every time the state of the input channel has changed.
+For each [command] a separate Thing has to be defined. For example,
 
-For each command a separate Thing has to be defined.
-
-```java
-Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
+```
+Thing exec:command:apc [command="/usr/local/bin/apcaccess  status", interval=15, timeout=5, runOnInput=true, repeatEnabled=true]
 ```
 
+[command] itself can be enhanced using some specific qualifiers that will be substituted by actual values at runtime. The qualifiers have the following syntax:
 
-The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax).
-The following parameters are automatically added:
+`${<key>:<transform>:<formatter>}`
 
--   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
--   the current State of the input channel (see below, example: `%2$s`)
+whereby 
 
+- <key> can be either
+     - the name of an Item
+     - `exec-input`, denoting the current State of the input Channel of the `command` Thing
+     - `exec-time`, denoting the current date (as java.util.Date)     
+- <transform> is any valid [Transformation](https://www.openhab.org/docs/configuration/transformations.html) service expression, e.g. REGEX((.*?)). <transform> is mandatory for the `exec-time` key
+- <formatter> is a formatting string using the well known syntax of the [java.util.Formatter](http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax) class
+
+At runtime the binding will grab the value of the <key>, transform it with the <transform> expression, and finally format the transformation result using the <formatter> format. For example,
+
+```
+Thing exec:command:lightcontroller [command="/usr/local/bin/light.sh  ${lightSwitch:MAP(en.map):%1$s}"]
+```
+
+When the [command] of the lightcontroller item is executed then the value of the lightSwitch Item is retrieved, transformed using the en.map MAP Transform, and passed on as a literal string (i.e. %1$s takes the first argument of the result of the Transform, and formats it as a String) to the ligh.sh script
+
+Nesting of substitution keys is supported, e.g. `${lightSwitch_${lightCounter}}` will resolve the lightCounter Item first, and then subsequently resolve the second substitution key. For example, if the value of lighCounter would happen to be 3, then the second substitution resolved to the value of Item `lighSwitch_3`
+
+```
+Thing exec:command:lightcontroller [command="/usr/local/bin/light.sh  ${exec-input}"]
+```
+
+In the above example, exec-input is substituted with the actual State of the input Channel of the `exec:command:lightcontroller` Thing
+
+The Channels themselves are defined as custom State Channels (https://github.com/eclipse/smarthome/blob/master/docs/documentation/features/dsl.md#defining-channels), so one can freely define the Type of each Channel. The `command` Thing supports both an `input` and `output` Channel to set an input for the [command] and get the output of the command execution.
 
 ## Channels
 
 All Things support the following channels:
 
-| Channel Type ID | Item Type | Description                                                                          |
-|-----------------|-----------|--------------------------------------------------------------------------------------|
-| input           | String    | Input parameter to provide to the command                                            |
-| output          | String    | Output of the last execution of the command                                          |
-| exit            | Number    | The exit value of the last execution of the command                                  |
-| run             | Switch    | Send ON to execute the command, the current state tells whether it is running or not |
-| lastexecution   | DateTime  | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format        |
-
-
-## Minimal Example
-
-**demo.things**
-
-```java
-Thing exec:command:apc [command="/usr/local/bin/apcaccess status", interval=15, timeout=5]
-Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2$s", transform="REGEX((.*?))"]
-```
-
-**demo.items**
-
-```java
-String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
-String APCRunning {channel="exec:command:apc:run"}
-String APCExitValue {channel="exec:command:apc:exit"}
-String APCLastExecution {channel="exec:command:apc:lastexecution"}
-```
+| Channel Type ID | Item Type    | Description                               |
+|-----------------|--------------|-------------------------------------------|
+| input           | custom       | Input parameter to provide to the command |
+| output          | custom       | Output of the last execution of the command |
+| exit            | Number       | The exit value of the last execution of the command |
+| run             | Switch       | Send ON to execute the command. the current State of this channel tells whether the command is running or not |
+| lastexecution   | DateTime     | Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format |
 
 ## Full Example
 
-Following is an example how to set up an exec command thing, debug it with a rule and set the returned string to an Number Item. 
-
-**For this to work also the openHAB RegEx Transformation has to be installed**
+Some additional examples can be found on the [OpenHAB community forum](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)
 
 **demo.things**
 
-```java
-// "%2$s" will be replace by the input channel, this makes it possible to use one command line with different arguments.
-// e.g: "ls" as <YOUR COMMAND> and "-a" or "-l" as additional argument set to the input channel in the rule.
-Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
+```
+Thing exec:command:switch_monitor [command="switch_control.sh check", interval=1]
+{
+Channels:
+    Switch : output
+}
+Thing exec:command:switch_control [command="switch_control.sh ${exec-input}", runOnInput=true, repeatEnabled=true] {
+Channels:
+        Switch : input
+        String : output
+}
 ```
 
 **demo.items**
 
-```java
-Switch YourTrigger
-Number YourNumber "Your Number [%.1f °C]"
 
-// state of the execution, is running or finished
-Switch yourcommand {channel="exec:command:yourcommand:run"}
-// Arguments to be placed for '%2$s' in command line
-String yourcommand_Args {channel="exec:command:yourcommand:input"}
-// Output of command line execution 
-String yourcommand_out {channel="exec:command:yourcommand:output"}
 ```
-
-**demo.sitemap**
-
-```java
-// Name of file and name of sitemap has to be the same
-sitemap demo label="Your Value"
-{
-        Frame {
-            Switch item=YourTrigger
-            Text item=YourNumber
-        }
-}
+Switch LampSwitch {channel="exec:command:switch_control:input", channel="exec:command:switch_monitor:output"}
+String LampResult {channel="exec:command:switch_control:output"}
+Switch LampSwitching {channel="exec:comamnd:switch_control:run"}
+Number YourNumber "Your Number [%.1f °C]"
 ```
 
 **demo.rules**
 
-```java
+```
 rule "Your Execution"
   when
-     Item YourTrigger changed
+     Item someTrigger changed
   then
+        // set the additional command line arguments to the switch_control.sh script
         if(YourTrigger.state == ON){
-                yourcommand_Args.sendCommand("Additional Argument to command line for ON")
+                LampSwitch.sendCommand(ON)
         }else{
-                yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
+                LampSwitch.sendCommand(OFF)
         }
+
+      // Trigger execution
+      LampSwitching.sendCommand(ON)
 
       // wait for the command to complete
       // State will be NULL if not used before or ON while command is executed
-      while(yourcommand.state != OFF){
+      while(LampSwitching.state != OFF){
          Thread::sleep(500)
       }
       
-      // Trigger execution
-      yourcommand.sendCommand(ON)
-      
       // Logging of command line result
-      logInfo("Your command exec", "Result:" + yourcommand_out.state )
+      logInfo("Switching the lamp", "Result:" + LampResult.state )
       
       // If the returned string is just a number it can be parsed
-      // If not a regex or another transformation can be used
+      // If not a transformation service can be used
       YourNumber.postUpdate(
-            (Integer::parseInt(yourcommand_out.state.toString) as Number )
+            (Integer::parseInt(LampResult.state.toString) as Number )
       )
 end
 ```
-
-## Source
-
-[OpenHAB community thread with a detailed example.](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)

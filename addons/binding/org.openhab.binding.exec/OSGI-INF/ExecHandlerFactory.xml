@@ -15,10 +15,11 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.exec.internal.ExecHandlerFactory">
 
-	<implementation class="org.openhab.binding.exec.internal.ExecHandlerFactory"/>
+    <implementation class="org.openhab.binding.exec.internal.ExecHandlerFactory"/>
 
-	<service>
-		<provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-	</service>
-
+    <service>
+        <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+    </service>
+   
+    <reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry" />
 </scr:component>
