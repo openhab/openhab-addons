@@ -21,6 +21,10 @@ public class ContentItem {
     private String itemName;
     private boolean isPresetable;
 
+    public ContentItem() {
+        itemName = "";
+    }
+
     private boolean isEqual(String s1, String s2) {
         if (s1 == s2) {
             return true;

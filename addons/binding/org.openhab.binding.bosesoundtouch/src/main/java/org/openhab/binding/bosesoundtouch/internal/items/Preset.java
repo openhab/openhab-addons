@@ -16,6 +16,10 @@ public class Preset {
     private int pos;
     private ContentItem contentItem;
 
+    public Preset(int pos) {
+        this.pos = pos;
+    }
+
     public int getPos() {
         return pos;
     }
