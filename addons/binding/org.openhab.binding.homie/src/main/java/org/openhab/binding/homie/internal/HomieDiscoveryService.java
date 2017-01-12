@@ -3,33 +3,47 @@ package org.openhab.binding.homie.internal;
 import static org.openhab.binding.homie.HomieBindingConstants.*;
 
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HomieDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
     private static Logger logger = LoggerFactory.getLogger(HomieDiscoveryService.class);
 
+    private MqttConnection mqttconnection;
     private Map<String, HomieInformationHolder> thingCache = Collections
             .synchronizedMap(new HashMap<String, HomieInformationHolder>());
 
     public HomieDiscoveryService() {
         super(Collections.singleton(HOMIE_THING_TYPE), DISCOVERY_TIMEOUT_SECONDS, true);
         logger.info("Homie Discovery Service started");
+        mqttconnection = MqttConnection.getInstance();
+    }
+
+    protected void activate(ComponentContext componentContext) {
+        Dictionary<String, Object> configProperties = componentContext.getProperties();
+        String brokerURL = (String) configProperties.get("mqttbrokerurl");
+        String basetopic = (String) configProperties.get("basetopic");
+        if (StringUtils.isNotBlank(brokerURL) && StringUtils.isNotBlank(basetopic)) {
+            // mqttconnection = new MqttConnection(brokerURL, basetopic);
+        }
     }
 
     @Override
     protected void startScan() {
         logger.info("Homie Discovery Service start scan");
         thingCache.clear();
-        MqttConnection.getInstance().listenForDeviceIds(this);
+        mqttconnection.listenForDeviceIds(this);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.*;
+import static org.openhab.binding.homie.HomieBindingConstants.MQTT_CLIENTID;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -15,47 +15,69 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MqttConnection {
+
+    private class CallbackHandler implements MqttCallback {
+
+        @Override
+        public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
+
+        }
+
+        @Override
+        public void deliveryComplete(IMqttDeliveryToken arg0) {
+
+        }
+
+        @Override
+        public void connectionLost(Throwable arg0) {
+            logger.error("MQTT Connection lost", arg0);
+            try {
+                client.connect();
+            } catch (MqttException e) {
+                logger.error("MQTT Reconnect failed", e);
+            }
+
+        }
+
+    }
+
     private static Logger logger = LoggerFactory.getLogger(MqttConnection.class);
 
     private static MqttConnection instance = null;
 
+    private final String brokerURL;
+    private final String basetopic;
     private MqttClient client;
     private MqttClientPersistence persistence = new MemoryPersistence();
 
-    public MqttConnection() throws MqttException {
-        logger.debug("Homie MQTT Connection start");
-        client = new MqttClient(BROKER_URL, MQTT_CLIENTID, new MemoryPersistence());
-        client.connect();
-        client.setCallback(new MqttCallback() {
+    public static MqttConnection getInstance() {
+        if (instance == null) {
+            instance = new MqttConnection();
 
-            @Override
-            public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
-                // TODO Auto-generated method stub
+        }
+        return instance;
+    }
 
-            }
+    private MqttConnection() {
+        this.brokerURL = "tcp://broker:1883";
+        this.basetopic = "homie";
+        connect();
+    }
 
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void connectionLost(Throwable arg0) {
-                logger.error("MQTT Connection lost", arg0);
-                try {
-                    client.connect();
-                } catch (MqttException e) {
-                    logger.error("MQTT Reconnect failed", e);
-                }
-
-            }
-        });
-        logger.debug("Homie MQTT Connection connected");
+    private void connect() {
+        try {
+            logger.debug("Homie MQTT Connection start");
+            client = new MqttClient(brokerURL, MQTT_CLIENTID, new MemoryPersistence());
+            client.connect();
+            client.setCallback(new CallbackHandler());
+            logger.debug("Homie MQTT Connection connected");
+        } catch (MqttException e) {
+            logger.error("MQTT Connect failed", e);
+        }
     }
 
     public void subscribe(Thing thing, IMqttMessageListener messageListener) {
-        String topic = String.format("%s/%s/#", BASETOPIC, thing.getUID().getId());
+        String topic = String.format("%s/%s/#", basetopic, thing.getUID().getId());
         try {
             client.subscribe(topic, messageListener);
         } catch (MqttException e) {
@@ -63,19 +85,8 @@ public class MqttConnection {
         }
     }
 
-    public static MqttConnection getInstance() {
-        if (instance == null) {
-            try {
-                instance = new MqttConnection();
-            } catch (MqttException e) {
-                logger.error("Failed to connect to broker", e);
-            }
-        }
-        return instance;
-    }
-
     public void listenForDeviceIds(IMqttMessageListener messageListener) {
-        String topic = String.format("%s/#", BASETOPIC);
+        String topic = String.format("%s/#", basetopic);
         logger.debug("Listening for devices on topic " + topic);
         try {
             client.subscribe(topic, messageListener);

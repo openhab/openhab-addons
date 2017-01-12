@@ -7,8 +7,12 @@
  */
 package org.openhab.binding.homie.handler;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -27,10 +31,11 @@ import org.slf4j.LoggerFactory;
 public class HomieHandler extends BaseThingHandler implements IMqttMessageListener {
 
     private Logger logger = LoggerFactory.getLogger(HomieHandler.class);
+    private MqttConnection mqttconnection;
 
-    public HomieHandler(Thing thing) {
+    public HomieHandler(Thing thing, MqttConnection mqttconnection) {
         super(thing);
-
+        this.mqttconnection = mqttconnection;
     }
 
     @Override
@@ -47,7 +52,7 @@ public class HomieHandler extends BaseThingHandler implements IMqttMessageListen
 
     @Override
     public void initialize() {
-        MqttConnection.getInstance().subscribe(thing, this);
+        mqttconnection.subscribe(thing, this);
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         updateStatus(ThingStatus.ONLINE);
@@ -63,14 +68,44 @@ public class HomieHandler extends BaseThingHandler implements IMqttMessageListen
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         if (topic.endsWith("$stats/uptime")) {
-            ChannelUID channel = new ChannelUID("uptime");
-            triggerChannel(channel, message.toString());
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "stats_uptime");
+            updateState(channel, new DecimalType(message.toString()));
+
         } else if (topic.endsWith("$online")) {
-            ChannelUID channel = new ChannelUID("online");
+            boolean isOnline = StringUtils.equalsIgnoreCase(message.toString(), "true");
+            updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "online");
+
+            updateState(channel, isOnline ? OnOffType.ON : OnOffType.OFF);
             triggerChannel(channel, message.toString());
         } else if (topic.endsWith("$name")) {
-            getThing().setLabel(message.toString());
-            updateThing(thing);
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "name");
+            updateState(channel, new StringType(message.toString()));
+
+        } else if (topic.endsWith("$localip")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "localip");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$mac")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "mac");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$stats/signal")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "stats_signal");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$stats/interval")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "stats_interval");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$fw/name")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "fw_name");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$fw/version")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "fw_version");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$fw/checksum")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "fw_checksum");
+            updateState(channel, new StringType(message.toString()));
+        } else if (topic.endsWith("$implementation")) {
+            ChannelUID channel = new ChannelUID(getThing().getUID(), "implementation");
+            updateState(channel, new StringType(message.toString()));
         }
 
         /*
