@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.zoneminder.discovery;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -86,7 +85,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
                         ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT_DEFAULTVALUE);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT,
-                        ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT_DEFAULTVALUE);
+                        ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(String.format("%s", monitor.getName())).build();
@@ -109,12 +108,17 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                ArrayList<ZoneMinderMonitor> monitors = zoneMinderServerHandler.getMonitors();
 
-                for (ZoneMinderMonitor monitor : monitors) {
-                    monitorAdded(monitor);
-                }
+                // TODO:: FIX THIS AFTER Addidng Session and Connection
+                /*
+                 * ArrayList<ZoneMinderMonitor> monitors = zoneMinderServerHandler.getMonitors();
+                 * 
+                 * for (ZoneMinderMonitor monitor : monitors) {
+                 * monitorAdded(monitor);
+                 * }
+                 */
             }
+
         };
 
         logger.debug("request monitor discovery job scheduled to run every {} seconds", TIMEOUT);

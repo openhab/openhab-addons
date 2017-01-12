@@ -3,6 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="lib" path="lib/zoneminder4j-0.1-jar-with-dependencies.jar" sourcepath="D:/Development/Java/workspace/zoneminder4j"/>
+	<classpathentry kind="lib" path="D:/Development/OpenHAB/openhab2-zoneminder/git/openhab2-master/git/openhab2-addons/addons/binding/org.openhab.binding.zoneminder/lib/zoneminder4j-0.7.jar" sourcepath="D:/Development/Java/workspace/zoneminder4j"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
