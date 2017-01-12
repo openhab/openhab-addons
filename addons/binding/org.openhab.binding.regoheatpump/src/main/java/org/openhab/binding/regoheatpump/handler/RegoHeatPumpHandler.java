@@ -93,7 +93,7 @@ public abstract class RegoHeatPumpHandler extends BaseThingHandler {
 
         logger.info("Rego controller connected via {}", connection.connectionInfo());
 
-        scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 1, refreshInterval, TimeUnit.SECONDS);
+        scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 2, refreshInterval, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
     }

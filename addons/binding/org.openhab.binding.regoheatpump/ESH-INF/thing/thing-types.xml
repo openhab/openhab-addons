@@ -82,7 +82,7 @@
     </channel-group-type>
     
     <channel-group-type id="controlData">
-        <label>Control data</label>
+        <label>Control Data</label>
         <channels>
             <channel id="radiatorReturnTarget" typeId="radiatorReturnTarget"/>
             <channel id="radiatorReturnOn" typeId="radiatorReturnOn"/>
@@ -113,22 +113,22 @@
         <label>Settings</label>
         <channels>
             <channel id="heatCurve" typeId="heatCurve"/>
-            <channel id="heatCurveFineAdj" typeId="temperature"/>
-            <channel id="indoorTempSetting" typeId="temperature"/>
-            <channel id="curveInflByInTemp" typeId="temperature"/>
-            <channel id="adjCurveAt20" typeId="temperature"/>
-            <channel id="adjCurveAt15" typeId="temperature"/>
-            <channel id="adjCurveAt10" typeId="temperature"/>
-            <channel id="adjCurveAt5" typeId="temperature"/>
-            <channel id="adjCurveAt0" typeId="temperature"/>
-            <channel id="adjCurveAtMinus5" typeId="temperature"/>
-            <channel id="adjCurveAtMinus10" typeId="temperature"/>
-            <channel id="adjCurveAtMinus15" typeId="temperature"/>
-            <channel id="adjCurveAtMinus20" typeId="temperature"/>
-            <channel id="adjCurveAtMinus25" typeId="temperature"/>
-            <channel id="adjCurveAtMinus30" typeId="temperature"/>
-            <channel id="adjCurveAtMinus35" typeId="temperature"/>
-            <channel id="heatCurveCouplingDiff" typeId="temperature"/>
+            <channel id="heatCurveFineAdj" typeId="heatCurveFineAdj"/>
+            <channel id="indoorTempSetting" typeId="indoorTempSetting"/>
+            <channel id="curveInflByInTemp" typeId="curveInflByInTemp"/>
+            <channel id="adjCurveAt20" typeId="adjCurveAt20"/>
+            <channel id="adjCurveAt15" typeId="adjCurveAt15"/>
+            <channel id="adjCurveAt10" typeId="adjCurveAt10"/>
+            <channel id="adjCurveAt5" typeId="adjCurveAt5"/>
+            <channel id="adjCurveAt0" typeId="adjCurveAt0"/>
+            <channel id="adjCurveAtMinus5" typeId="adjCurveAtMinus5"/>
+            <channel id="adjCurveAtMinus10" typeId="adjCurveAtMinus10"/>
+            <channel id="adjCurveAtMinus15" typeId="adjCurveAtMinus15"/>
+            <channel id="adjCurveAtMinus20" typeId="adjCurveAtMinus20"/>
+            <channel id="adjCurveAtMinus25" typeId="adjCurveAtMinus25"/>
+            <channel id="adjCurveAtMinus30" typeId="adjCurveAtMinus30"/>
+            <channel id="adjCurveAtMinus35" typeId="adjCurveAtMinus35"/>
+            <channel id="heatCurveCouplingDiff" typeId="heatCurveCouplingDiff"/>
         </channels>
     </channel-group-type>
 
@@ -150,15 +150,6 @@
             <channel id="alarmLamp" typeId="alarmLamp"/>
         </channels>
     </channel-group-type>
-
-    <!-- TODO - remove! -->
-    <channel-type id="temperature" advanced="true">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Temperature value in degrees celsius</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f °C"/>
-    </channel-type>
 
     <channel-type id="radiatorReturnTemp">
         <item-type>Number</item-type>
@@ -284,10 +275,10 @@
     
     <channel-type id="lastErrorTimestamp">
         <item-type>DateTime</item-type>
-        <label>Last error timestamp</label>
+        <label>Last error date</label>
         <description>Information about when last alarm occurred</description>
         <category>Clock</category>
-        <state readOnly="true" pattern="%tc"/>
+        <state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM:%1$tS"/>
     </channel-type>
 
     <channel-type id="powerLamp" advanced="true">
@@ -458,8 +449,136 @@
     <channel-type id="heatCurve" advanced="true">
         <item-type>Number</item-type>
         <label>Heat curve</label>
+        <description>Heat curve influences the heat pump’s production of heat</description>
         <category>Line</category>
         <state readOnly="true" pattern="%.1f"/>
     </channel-type>
     
+    <channel-type id="heatCurveFineAdj" advanced="true">
+        <item-type>Number</item-type>
+        <label>Heat curve fine tune</label>
+        <description>Fine-tuning means that you offset the heat curve in parallel</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="indoorTempSetting" advanced="true">
+        <item-type>Number</item-type>
+        <label>Indoor target</label>
+        <description>Desired temperature in the room where the sensor is fitted</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+         
+    <channel-type id="curveInflByInTemp" advanced="true">
+        <item-type>Number</item-type>
+        <label>Room sensor influence</label>
+        <description>Set how much the room sensor should influence the heat curve</description>
+        <category>Line</category>
+        <state readOnly="true" pattern="%.1f"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAt20" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at 20 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+    
+    <channel-type id="adjCurveAt15" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at 15 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAt10" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at 10 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAt5" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at 5 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAt0" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at 0 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus5" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -5 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus10" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -10 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus15" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -15 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus20" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -20 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus25" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -25 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus30" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -30 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="adjCurveAtMinus35" advanced="true">
+        <item-type>Number</item-type>
+        <label>Adjust heat curve at -35 °C</label>
+        <description>Heat curve can be adjusted up or down every fifth outdoor degree. The purpose of breaking the curve is to be able to influence the heat pump's heat production at extra sensitive outdoor temperatures</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
+    <channel-type id="heatCurveCouplingDiff" advanced="true">
+        <item-type>Number</item-type>
+        <label>Heat curve coupling diff</label>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C"/>
+    </channel-type>
+
 </thing:thing-descriptions>
