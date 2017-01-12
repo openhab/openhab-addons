@@ -10,6 +10,7 @@ Import-Package:
  org.apache.commons.exec,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -19,6 +20,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.exec,
  org.openhab.binding.exec.handler,
+ org.openhab.core.library.types,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

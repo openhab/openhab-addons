@@ -25,7 +25,9 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -53,13 +55,14 @@ public class ExecHandler extends BaseThingHandler {
     public static final String TIME_OUT = "timeout";
     public static final String COMMAND = "command";
     public static final String TRANSFORM = "transform";
-    public static final String AUTORUN = "autorun";
+    public static final String RUN_ON_INPUT = "runOnInput";
+    public static final String REPEAT_ENABLED = "repeatEnabled";
 
     // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
 
     private ScheduledFuture<?> executionJob;
-    private String lastInput;
+    private String lastInput = "";
 
     private static Runtime rt = Runtime.getRuntime();
 
@@ -79,13 +82,17 @@ public class ExecHandler extends BaseThingHandler {
                         scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
                     }
                 }
-            } else if (channelUID.getId().equals(INPUT)) {
-                if (command instanceof StringType) {
-                    String previousInput = lastInput;
-                    lastInput = command.toString();
-                    if (lastInput != null && !lastInput.equals(previousInput)) {
-                        if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN)).booleanValue()) {
-                            lastInput = command.toString();
+            } else if (channelUID.getId().equals(STRING_INPUT) || channelUID.getId().equals(SWITCH_INPUT)
+                    || channelUID.getId().equals(DIMMER_INPUT) || channelUID.getId().equals(CONTACT_INPUT)
+                    || channelUID.getId().equals(ROLLERSHUTTER_INPUT)) {
+                String previousInput = lastInput;
+                lastInput = command.toString();
+                if (getConfig().get(RUN_ON_INPUT) != null && ((Boolean) getConfig().get(RUN_ON_INPUT)).booleanValue()) {
+                    if (getConfig().get(REPEAT_ENABLED) != null
+                            && ((Boolean) getConfig().get(REPEAT_ENABLED)).booleanValue()) {
+                        scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
+                    } else {
+                        if (lastInput != null && !lastInput.equals(previousInput)) {
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
                                     getConfig().get(COMMAND), command.toString());
                             scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
@@ -100,7 +107,8 @@ public class ExecHandler extends BaseThingHandler {
     public void initialize() {
 
         if (executionJob == null || executionJob.isCancelled()) {
-            if (((BigDecimal) getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
+            if (((BigDecimal) getConfig().get(INTERVAL)) != null
+                    && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int polling_interval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
                 executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, polling_interval,
                         TimeUnit.SECONDS);
@@ -166,7 +174,34 @@ public class ExecHandler extends BaseThingHandler {
                     logger.error("An exception occurred while executing '{}' : '{}'",
                             new Object[] { commandLine.toString(), e.getMessage() });
                     updateState(RUN, OnOffType.OFF);
-                    updateState(OUTPUT, new StringType(e.getMessage()));
+
+                    if (e.getMessage().equals("OPEN")) {
+                        updateState(CONTACT_OUTPUT, OpenClosedType.OPEN);
+                    }
+
+                    if (e.getMessage().equals("CLOSED")) {
+                        updateState(CONTACT_OUTPUT, OpenClosedType.CLOSED);
+                    }
+
+                    if (e.getMessage().equals("ON")) {
+                        updateState(DIMMER_OUTPUT, OnOffType.ON);
+                        updateState(SWITCH_OUTPUT, OnOffType.ON);
+                    }
+
+                    if (e.getMessage().equals("OFF")) {
+                        updateState(DIMMER_OUTPUT, OnOffType.OFF);
+                        updateState(SWITCH_OUTPUT, OnOffType.OFF);
+                    }
+
+                    if (e.getMessage().equals("UP")) {
+                        updateState(ROLLERSHUTTER_OUTPUT, UpDownType.UP);
+                    }
+
+                    if (e.getMessage().equals("DOWN")) {
+                        updateState(ROLLERSHUTTER_OUTPUT, UpDownType.DOWN);
+                    }
+
+                    updateState(STRING_OUTPUT, new StringType(e.getMessage()));
                     return;
                 }
 
@@ -227,7 +262,7 @@ public class ExecHandler extends BaseThingHandler {
                     transformedResponse = transformResponse(transformedResponse, transformation);
                 }
 
-                updateState(OUTPUT, new StringType(transformedResponse));
+                updateState(STRING_OUTPUT, new StringType(transformedResponse));
 
                 DateTimeType stampType = new DateTimeType(Calendar.getInstance());
                 updateState(LAST_EXECUTION, stampType);

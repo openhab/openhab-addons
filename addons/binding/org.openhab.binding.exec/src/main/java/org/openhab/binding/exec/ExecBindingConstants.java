@@ -24,8 +24,16 @@ public class ExecBindingConstants {
     public final static ThingTypeUID THING_COMMAND = new ThingTypeUID(BINDING_ID, "command");
 
     // List of all Channel ids
-    public final static String OUTPUT = "output";
-    public final static String INPUT = "input";
+    public final static String CONTACT_INPUT = "contactInput";
+    public final static String CONTACT_OUTPUT = "contactOutput";
+    public final static String DIMMER_INPUT = "dimmerInput";
+    public final static String DIMMER_OUTPUT = "dimmerOutput";
+    public final static String ROLLERSHUTTER_INPUT = "rollershutterInput";
+    public final static String ROLLERSHUTTER_OUTPUT = "rollershutterOutput";
+    public final static String STRING_OUTPUT = "stringOutput";
+    public final static String STRING_INPUT = "stringInput";
+    public final static String SWITCH_INPUT = "switchInput";
+    public final static String SWITCH_OUTPUT = "switchOutput";
     public final static String EXIT = "exit";
     public final static String RUN = "run";
     public final static String LAST_EXECUTION = "lastexecution";

@@ -9,8 +9,16 @@
         <description>The Command encapsulates a shell command to be executed</description>
 
         <channels>
-            <channel id="output" typeId="output"/>
-            <channel id="input" typeId="input"/>
+            <channel id="contactInput" typeId="contactInput" />
+            <channel id="contactOutput" typeId="contactOutput" /> 
+            <channel id="dimmerInput" typeId="dimmerInput" />
+            <channel id="dimmerOutput" typeId="dimmerOutput" />
+            <channel id="rollershutterInput" typeId="rollershutterInput" />
+            <channel id="rollershutterOutput" typeId="rollershutterOutput" />
+            <channel id="stringOutput" typeId="stringOutput"/>
+            <channel id="stringInput" typeId="stringInput"/>
+            <channel id="switchInput" typeId="switchInput" />
+            <channel id="switchOutput" typeId="switchInput" />
             <channel id="exit" typeId="exit"/>
             <channel id="run" typeId="run"/>
             <channel id="lastexecution" typeId="lastexecution" />
@@ -28,34 +36,86 @@
             </parameter>
             <parameter name="interval" type="integer"  required="false">
                 <label>Interval</label>
-                <description>Interval, in seconds, the command will be repeatedly executed</description>
-                <default>60</default>
+                <description>Interval, in seconds, the command will be repeatedly executed. The minimum value is 1 second</description>
             </parameter>
             <parameter name="timeout" type="integer"  required="false">
                 <label>Timeout</label>
                 <description>Time out, in seconds, the execution of the command will time out</description>
                 <default>15</default>
             </parameter>
-            <parameter name="autorun" type="boolean"  required="false">
-                <label>Autorun</label>
-                <description>When true, the command will execute each time the state of the input channel changes</description>
-                <default>false</default>
-            </parameter>         
+            <parameter name="runOnInput" type="boolean"  required="false">
+                <label>Run On Input</label>
+                <description>When true, the command will execute each time a Command is received on any of the input channels, e.g input, switch,...</description>
+                <default>true</default>
+            </parameter>
+            <parameter name="repeatEnabled" type="boolean"  required="false">
+                <label>Repeat Enabled</label>
+                <description>When true, the command will execute on any Command that is received on the input channel, even if not different from a previous Command received on the input channel. If false, then the command will be executed if the Command received on the input channel is different from the previously received Command</description>
+                <default>true</default>
+            </parameter>        
         </config-description>
         
     </thing-type>
 
-    <channel-type id="output">
+    <channel-type id="contactInput">
+        <item-type>Contact</item-type>
+        <label>Contact Input</label>
+        <description>Item Types accepted by a Contact will be transformed into their string equivalent and passed as second parameter to the command</description>
+        <state readOnly="false"></state>  
+    </channel-type>
+    <channel-type id="contactOutput">
+        <item-type>Contact</item-type>        
+        <label>Output</label>
+        <description>Output of the last execution of the command</description>
+        <state readOnly="true"></state>  
+    </channel-type>
+     <channel-type id="dimmerInput">
+        <item-type>Dimmer</item-type>
+        <label>Dimmer Input</label>
+        <description>Item Types accepted by a Dimmer will be transformed into their string equivalent and passed on as second parameter to the command</description>
+        <state readOnly="false"></state>  
+    </channel-type>
+    <channel-type id="dimmerOutput">
+        <item-type>Dimmer</item-type>        
+        <label>Output</label>
+        <description>Output of the last execution of the command</description>
+        <state readOnly="true"></state>  
+    </channel-type>
+    <channel-type id="rollershutterInput">
+        <item-type>Rollershutter</item-type>
+        <label>Rollershutter Input</label>
+        <description>Item Types accepted by a Rollershutter will be transformed into their string equivalent and passed as second parameter to the command</description>
+        <state readOnly="false"></state>  
+    </channel-type>
+    <channel-type id="rollershutterOutput">
+        <item-type>Rollershutter</item-type>        
+        <label>Output</label>
+        <description>Output of the last execution of the command</description>
+        <state readOnly="true"></state>  
+    </channel-type>
+    <channel-type id="stringInput">
+        <item-type>String</item-type>        
+        <label>Input</label>
+        <description>Input that will be passed as second parameter to the command</description>
+        <state readOnly="false"></state>  
+    </channel-type>
+    <channel-type id="stringOutput">
         <item-type>String</item-type>        
         <label>Output</label>
         <description>Output of the last execution of the command</description>
         <state readOnly="true"></state>  
     </channel-type>
-    <channel-type id="input">
-        <item-type>String</item-type>        
-        <label>Input</label>
-        <description>Input that will be passed as second parameter to the command</description>
+    <channel-type id="switchInput">
+        <item-type>Switch</item-type>
+        <label>Switch Input</label>
+        <description>Item Types acceted by a Switch (ON/OFF) will be transformed into their string equivalent ("ON"/"OFF" and passed on as second parameter to the command</description>
         <state readOnly="false"></state>  
+    </channel-type>
+    <channel-type id="switchOutput">
+        <item-type>Switch</item-type>        
+        <label>Output</label>
+        <description>Output of the last execution of the command</description>
+        <state readOnly="true"></state>  
     </channel-type>
     <channel-type id="exit">
         <item-type>Number</item-type>
@@ -65,7 +125,7 @@
     </channel-type>
      <channel-type id="run">
         <item-type>Switch</item-type>
-        <label>Running</label>
+        <label>Run</label>
         <description>Send ON to execute the command and the current state tells whether it is running or not</description>
         <state readOnly="true"></state>  
     </channel-type>
@@ -75,4 +135,4 @@
         <description>Time/Date the command was last executed, in yyyy-MM-dd'T'HH:mm:ss.SSSZ format</description>
         <state readOnly="true"></state>  
     </channel-type>
-</thing:thing-descriptions>
+    </thing:thing-descriptions>
