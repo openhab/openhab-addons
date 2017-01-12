@@ -1,6 +1,6 @@
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.BASETOPIC;
+import static org.openhab.binding.homie.HomieBindingConstants.*;
 
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -21,7 +21,7 @@ public class MqttConnection {
 
     public MqttConnection() throws MqttException {
         logger.debug("Homie MQTT Connection start");
-        client = new MqttClient("tcp://broker:1883", "homieOpenhab2Binding", new MemoryPersistence());
+        client = new MqttClient(BROKER_URL, MQTT_CLIENTID, new MemoryPersistence());
         client.connect();
         logger.debug("Homie MQTT Connection connected");
     }

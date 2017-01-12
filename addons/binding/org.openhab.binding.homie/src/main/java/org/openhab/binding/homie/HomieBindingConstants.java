@@ -22,11 +22,19 @@ public class HomieBindingConstants {
     public static final String BINDING_ID = "homie";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID HOMIE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieNode");
+    public final static ThingTypeUID HOMIE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieDeviceV2");
 
-    public final static int DISCOVERY_TIMEOUT_SECONDS = 5;
+    public final static int DISCOVERY_TIMEOUT_SECONDS = 30;
 
     public final static String BASETOPIC = "homie";
 
     public final static Pattern HOMIE_ID_REGEX = Pattern.compile("\\/([a-z0-9]([a-z0-9\\\\-]+[a-z0-9])?)\\/\\$");
+
+    public final static String BROKER_URL = "tcp://localhost:1883";
+
+    public final static String MQTT_CLIENTID = "homieOpenhab2Binding";
+
+    public final static String THING_PROP_SPEC_VERSION = "homie-specification-version";
+    public final static String THING_PROP_IMPL_VERSION = "implementation-version";
+
 }

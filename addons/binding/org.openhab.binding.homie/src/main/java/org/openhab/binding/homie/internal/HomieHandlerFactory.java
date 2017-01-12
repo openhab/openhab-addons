@@ -12,8 +12,10 @@ import static org.openhab.binding.homie.HomieBindingConstants.HOMIE_THING_TYPE;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.homie.handler.HomieHandler;
@@ -48,4 +50,13 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
+
+    @Override
+    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
+            ThingUID bridgeUID) {
+        Thing result = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+
+        return result;
+    }
+
 }

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Homie Binding</name>
-    <description>This is the binding for Homie.</description>
+    <description>This is the binding for Homie devices, using the Homie MQTT convention.</description>
     <author>Michael Kolb</author>
 
 </binding:binding>

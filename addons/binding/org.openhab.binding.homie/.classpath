@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java/"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.paho.client.mqttv3-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.5.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

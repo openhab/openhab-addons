@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.openhab.binding.homie;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,lib/org.eclipse.paho.client.mqttv3-1.1.0.jar
+Bundle-ClassPath: .,lib/org.eclipse.paho.client.mqttv3-1.1.0.jar,lib/commons-lang3-3.5.jar
 Import-Package: 
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
