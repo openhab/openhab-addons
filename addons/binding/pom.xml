@@ -55,7 +55,9 @@
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rfxcom.test</module>
+    <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
+    <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.systeminfo</module>
@@ -63,10 +65,11 @@
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
+    <module>org.openhab.binding.upb</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
-    <module>org.openhab.binding.upb</module>
+    <module>org.openhab.binding.zway</module>
   </modules>
 
 </project>
