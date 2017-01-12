@@ -69,9 +69,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
 
-    // map for of all registered devices for zone membership lookup...
-    private Map<String, BoseSoundTouchHandler> mapOfAllSoundTouchDevices = new HashMap<>();
-
     private ChannelUID channelPowerUID;
     private ChannelUID channelVolumeUID;
     private ChannelUID channelMuteUID;
@@ -100,6 +97,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private WebSocket socket;
 
+    private Map<String, BoseSoundTouchHandler> mapOfAllSoundTouchDevices = new HashMap<>();
     private ZoneState zoneState;
     private BoseSoundTouchHandler masterZoneSoundTouchHandler;
     private ArrayList<ZoneMember> zoneMembers;
@@ -152,6 +150,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             openConnection(); // try to reconnect....
         }
         if (command instanceof RefreshType) {
+            checkOperationMode();
             // TODO implement RefreshType
         } else {
             if (channelUID.equals(channelPowerUID)) {
@@ -530,10 +529,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         return nowPlayingSource;
     }
 
-    public ContentItem getCurrentContentItem() {
-        return currentContentItem;
-    }
-
     public void setCurrentContentItem(ContentItem currentContentItem) {
         this.currentContentItem = currentContentItem;
     }
@@ -754,19 +749,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         Map<String, Object> props = thing.getConfiguration().getProperties();
         String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
 
-        // try {
-        // BigDecimal port = (BigDecimal) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_PORT);
-        // String urlBase = "http://" + host + ":" + port + "/";
-        // Request request = new Request.Builder().url(urlBase + "info").build();
-        // Response response = client.newCall(request).execute();
-        // if (response.code() != 200) {
-        // throw new IOException("Invalid response code: " + response.code());
-        // }
-        // String resp = response.body().string();
-        // } catch (IOException e) {
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        // }
-        String wsUrl = "http://" + host + ":8080/"; // TODO port 8080 is hardcoded ?
+        // Port seems to be hardcoded, therefore no userinput or discovery is necessary
+        String wsUrl = "http://" + host + ":8080/";
         Request request = new Request.Builder().url(wsUrl).addHeader("Sec-WebSocket-Protocol", "gabbo").build();
         WebSocketCall call = WebSocketCall.create(client, request);
         call.enqueue(this);

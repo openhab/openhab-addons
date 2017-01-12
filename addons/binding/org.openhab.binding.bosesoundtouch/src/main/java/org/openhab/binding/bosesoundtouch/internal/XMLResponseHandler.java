@@ -32,18 +32,20 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLResponseHandler extends DefaultHandler {
 
+    private Logger logger;
+
     private BoseSoundTouchHandler boseSoundTouchHandler;
 
     private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
 
-    private ContentItem contentItem;
     private Stack<XMLHandlerState> states;
     private XMLHandlerState state;
     private boolean msgHeaderWasValid;
+
     private Preset preset;
+    private ContentItem contentItem;
     private boolean volumeMuteEnabled;
     private ZoneMember zoneMember;
-    private Logger logger;
 
     public XMLResponseHandler(BoseSoundTouchHandler boseSoundTouchHandler) {
         states = new Stack<>();
@@ -170,8 +172,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("preset".equals(localName)) {
                     state = XMLHandlerState.Preset;
                     String id = attributes.getValue("id");
-                    this.preset = new Preset();
-                    this.preset.setPos(Integer.parseInt(id));
+                    preset = new Preset(Integer.parseInt(id));
                 } else {
                     logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                     state = XMLHandlerState.Unprocessed;
@@ -285,9 +286,6 @@ public class XMLResponseHandler extends DefaultHandler {
         }
         if (prevState == XMLHandlerState.ContentItem && state == XMLHandlerState.NowPlaying) {
             // update now playing name...
-            if (contentItem.getItemName() == null) {
-                contentItem.setItemName(""); // null values cause exceptions in openhab...
-            }
             boseSoundTouchHandler.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
             boseSoundTouchHandler.setCurrentContentItem(contentItem);
             boseSoundTouchHandler.checkOperationMode();
