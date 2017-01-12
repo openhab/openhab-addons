@@ -16,7 +16,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The things requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
+The thing configuration requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation. These configurations are done in PaperUI.
 
 ## Channels
 
@@ -51,21 +51,14 @@ The things requires the geolocation (latitude, longitude) for which the calculat
 
 ## Full Example
 
-Things:
-
-```
-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
-```
-
 Items:
 
 ```
-DateTime Sunrise_Time  "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
-DateTime Sunset_Time   "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
-Number   Azimuth       "Azimuth"                { channel="astro:sun:home:position#azimuth" }
-Number   Elevation     "Elevation"              { channel="astro:sun:home:position#elevation" }
-String   MoonPhase     "MoonPhase"              { channel="astro:moon:home:phase#name" }
+DateTime Sunrise_Time  "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:local:rise#start" }
+DateTime Sunset_Time   "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:local:set#start" }
+Number   Azimuth       "Azimuth"                { channel="astro:sun:local:position#azimuth" }
+Number   Elevation     "Elevation"              { channel="astro:sun:local:position#elevation" }
+String   MoonPhase     "MoonPhase"              { channel="astro:moon:local:phase#name" }
 ```
 
 Events:
@@ -73,7 +66,7 @@ Events:
 ```
 rule "example trigger rule"
 when
-    Channel 'astro:sun:home:rise#event' triggered START 
+    Channel 'astro:sun:local:rise#event' triggered START 
 then
     ...
 end
@@ -99,5 +92,5 @@ Available events:
     * **group** `apogee`
         * **event**: `APOGEE`
 
-**Note**: Offsets for each event group can be configured in the channel properties
-
+**Note**: Offsets for each event group can be configured in the channel properties under "Range Event" in the PaperUI.
+          
