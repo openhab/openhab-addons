@@ -1,10 +1,11 @@
 # openHAB2 binding for Bose SoundTouch
 
-This is an initial version of my openHAB2 binding for the Bose SoundTouch multiroom system.
+This is the openHAB2 binding for the Bose SoundTouch multiroom system.
+Here you can find a precompiled [Binding](https://github.com/marvkis/org.openhab.binding.bosesoundtouch-dist)
 
 After installing the binding into the your openHAB2 distribution, you can start discovering your devices through the PaperUI GUI (btw: see discovery hints on the bottom of this document).
 
-After discovering and configuring the device through the web GUI I think you want to use it. I access them the 'classical openHAB1 way' trough the items / sitemap / rules way. Here a few samples of my configuration:
+After discovering and configuring the device through the web GUI you may use it. To access them, the 'classical openHAB1 way', trough the items / sitemaps / rules way. Here a few samples for the configuration:
 
 From the **items/bose.items** file:
 ```
@@ -68,27 +69,26 @@ Bose.rule:
 ```
 rule "Bose: Combine Kitchen with living room"
 when
-        Item Bose1_power changed
+		Item Bose1_power changed
 then
-        if (Bose1_power.state == ON) {
-                sendCommand(Bose1_ZoneControl, "add kitchen")
-       }
+		if (Bose1_power.state == ON) {
+			sendCommand(Bose1_ZoneControl, "add kitchen")
+		}
 end
 
 rule "wake up"
 when
-        Time cron "0 30 6 ? * MON,TUE,WED,THU,FRI”
+		Time cron "0 30 6 ? * MON,TUE,WED,THU,FRI”
 then
-       sendCommand(Bose1_Power, ON)
-       sendCommand(Bose1_Volume, 10)
-       sendCommand(Bose1_KeyCode, “PRESET_1")
+		sendCommand(Bose1_Power, ON)
+		sendCommand(Bose1_Volume, 10)
+		sendCommand(Bose1_KeyCode, “PRESET_1")
 end
 ```
 
-I hope this gives you some idea's how to use this plugin. It's not 100% ready but the things start to work.
+I hope this gives you some idea's how to use this plugin.
 
 If you need support or have new idea's please use the [openHAB cummunity](https://community.openhab.org/t/bose-soundtouch-binding/5678) to post the requests.
-
 
 #### Known issues and Workarounds
 
@@ -113,12 +113,9 @@ export _JAVA_OPTIONS="-Djava.net.preferIPv4Stack=true”
 ```
 before starting openHAB. When this is set the discovery worked on the linux box.
 
-##### State inconsistency after openHAB2
+##### State inconsistency after openHAB2 startup
 The next known issue is during openHAB2 startup:
-The SoundTouch speakers are contacted in a quite early phase during openHAB2 startup and all status information is fetched. But in this stage it seems that the binding files are not pparsed, and so you see invalid states when you open the sitemap. Just turn the speakers on/off to refresh all states.
+The SoundTouch speakers are contacted in a quite early phase during openHAB2 startup and all status information is fetched. But in this stage it seems that the binding files are not parsed, and so you see invalid states when you open the sitemap. Just turn the speakers on/off to refresh all states.
 
 ##### Detailed states missing
 On my devel box I see all the detailed states. But on my production box I see that the states seem to be updated accordingly (on the console logs) but the values are not visible within the sitemap. Currently I don’t have an idea why. Maybe you can drop me a short note if it’s working on your box or not.
-
-I think that’s all for now….
-
