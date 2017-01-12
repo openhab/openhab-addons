@@ -22,6 +22,13 @@
 			<channel id="fw_checksum" typeId="fw-checksum-channel" />
 			<channel id="implementation" typeId="implementation-channel" />
 		</channels>
+		
+		<config-description>
+		  <parameter name="mqttbrokerurl" type="text" required="true">
+		      <label>MQTT Broker URL</label>
+		      <description>MQTT Broker URL in the format "tcp://myBrokerHost:1883"</description>
+		  </parameter>
+		</config-description>
 	</thing-type>
 
 
