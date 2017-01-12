@@ -27,7 +27,7 @@ public class MqttConnection {
     }
 
     public void subscribe(Thing thing, IMqttMessageListener messageListener) {
-        String topic = String.format("%s/%s/#", BASETOPIC, thing.getUID());
+        String topic = String.format("%s/%s/#", BASETOPIC, thing.getUID().getId());
         try {
             client.subscribe(topic, messageListener);
         } catch (MqttException e) {
