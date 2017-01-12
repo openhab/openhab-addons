@@ -12,6 +12,8 @@ public interface HomePilotGateway {
 
     public boolean handleSetOnOff(String deviceId, boolean on);
 
+    public boolean handleStop(String deviceId);
+
     public String getId();
 
     public void initialize();

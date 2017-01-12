@@ -5,6 +5,8 @@ import static org.openhab.binding.homepilot.HomePilotBindingConstants.*;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -37,17 +39,26 @@ public class HomePilotThingHandler extends BaseThingHandler {
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_POSITION:
-                    int position = 0;
-                    if (command instanceof DecimalType) {
-                        position = ((DecimalType) command).intValue();
-                    } else if (command instanceof OnOffType) {
-                        position = OnOffType.ON.equals(command) ? 100 : 0;
+
+                    if (command.equals(StopMoveType.STOP)) {
+                        handler.getGateway().handleStop(getThing().getUID().getId());
+                        // no state to update here
+                        // updateState(CHANNEL_POSITION, new PercentType(position));
                     } else {
-                        throw new IllegalStateException("unkown command type " + command.getClass());
+                        int position = 0;
+                        if (command instanceof DecimalType) {
+                            position = ((DecimalType) command).intValue();
+                        } else if (command instanceof OnOffType) {
+                            position = ((PercentType) ((OnOffType) command).as(PercentType.class)).intValue();
+                        } else if (command instanceof UpDownType) {
+                            position = ((PercentType) ((UpDownType) command).as(PercentType.class)).intValue();
+                        } else {
+                            throw new IllegalStateException("unkown command type " + command.getClass());
+                        }
+                        position = position > 100 ? 100 : ((position < 0) ? 0 : position);
+                        handler.getGateway().handleSetPosition(getThing().getUID().getId(), position);
+                        updateState(CHANNEL_POSITION, new PercentType(position));
                     }
-                    position = position > 100 ? 100 : ((position < 0) ? 0 : position);
-                    handler.getGateway().handleSetPosition(getThing().getUID().getId(), position);
-                    updateState(CHANNEL_POSITION, new PercentType(position));
                     break;
                 case CHANNEL_STATE:
                     handler.getGateway().handleSetOnOff(getThing().getUID().getId(), OnOffType.ON.equals(command));
@@ -57,6 +68,7 @@ public class HomePilotThingHandler extends BaseThingHandler {
                     throw new IllegalStateException("unknown channel id " + channelUID.getId() + " in " + channelUID);
             }
         }
+
     }
 
     @Override

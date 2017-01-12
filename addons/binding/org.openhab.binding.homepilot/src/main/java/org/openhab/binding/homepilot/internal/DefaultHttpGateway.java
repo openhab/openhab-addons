@@ -87,14 +87,14 @@ public class DefaultHttpGateway implements HomePilotGateway {
             JsonArray devicesJSON = responseJSON.get("devices").getAsJsonArray();
             for (int i = 0; i < devicesJSON.size(); i++) {
                 JsonObject deviceJSON = devicesJSON.get(i).getAsJsonObject();
-                int serial = deviceJSON.get("serial").getAsInt();
+                int deviceGroup = deviceJSON.get("deviceGroup").getAsInt();
                 ThingTypeUID thingTypeUID;
-                if (serial == 43) {
+                if (deviceGroup == 1) {
                     thingTypeUID = THING_TYPE_SWITCH;
-                } else if (serial == 49) {
+                } else if (deviceGroup == 2) {
                     thingTypeUID = THING_TYPE_ROLLERSHUTTER;
                 } else {
-                    throw new RuntimeException(String.format("unknown serial %s for device %s", serial,
+                    throw new RuntimeException(String.format("unknown serial %s for device %s", deviceGroup,
                             deviceJSON.get("did").getAsString()));
                 }
                 HomePilotDevice device = new HomePilotDeviceImpl(thingTypeUID, deviceJSON.get("did").getAsInt(),
@@ -116,6 +116,20 @@ public class DefaultHttpGateway implements HomePilotGateway {
         return sendFields(deviceId, fields);
     }
 
+    @Override
+    public boolean handleSetOnOff(String deviceId, boolean on) {
+        Fields fields = new Fields();
+        fields.add("cid", on ? "10" : "11");
+        return sendFields(deviceId, fields);
+    }
+
+    @Override
+    public boolean handleStop(String deviceId) {
+        Fields fields = new Fields();
+        fields.add("cid", "2");
+        return sendFields(deviceId, fields);
+    }
+
     private boolean sendFields(String deviceId, Fields fields) {
         String url = String.format("http://%s/deviceajax.do?", config.getAddress());
         try {
@@ -134,13 +148,6 @@ public class DefaultHttpGateway implements HomePilotGateway {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public boolean handleSetOnOff(String deviceId, boolean on) {
-        Fields fields = new Fields();
-        fields.add("cid", on ? "10" : "11");
-        return sendFields(deviceId, fields);
     }
 
     @Override

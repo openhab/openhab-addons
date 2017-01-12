@@ -7,7 +7,7 @@ This addon is developed against a *Rademacher HomePilot* Version 1.
 To use this addon simple add the following thing to your things file.
 
 ```
-homepilot:bridge:default { address="x.x.x.x"}
+homepilot:bridge:default [ address="x.x.x.x" ]
 ``` 
 
 The name *default* could be changed to whatever you want. 
