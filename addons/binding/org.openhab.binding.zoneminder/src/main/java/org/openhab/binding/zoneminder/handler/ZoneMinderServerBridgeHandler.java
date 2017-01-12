@@ -9,18 +9,15 @@
 package org.openhab.binding.zoneminder.handler;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -31,26 +28,24 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
-import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
+import org.openhab.binding.zoneminder.internal.DataFetchRunnable;
+import org.openhab.binding.zoneminder.internal.RefreshPriorityEnum;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderBridgeServerConfig;
-import org.openhab.binding.zoneminder.internal.request.ZoneMinderMonitorRequest;
-import org.openhab.binding.zoneminder.internal.request.ZoneMinderMonitorTriggerRequest;
-import org.openhab.binding.zoneminder.internal.request.ZoneMinderRequestType;
-import org.openhab.binding.zoneminder.internal.request.ZoneMinderServerBaseRequest;
-import org.openhab.binding.zoneminder.internal.request.ZoneMinderServerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+import name.eskildsen.zoneminder.ZoneMinderConnection;
+import name.eskildsen.zoneminder.ZoneMinderFactory;
 import name.eskildsen.zoneminder.ZoneMinderServerProxy;
-import name.eskildsen.zoneminder.api.ZoneMinderData;
+import name.eskildsen.zoneminder.ZoneMinderSession;
 import name.eskildsen.zoneminder.api.ZoneMinderDiskUsage;
 import name.eskildsen.zoneminder.api.daemon.ZoneMinderHostDaemonStatus;
 import name.eskildsen.zoneminder.api.host.ZoneMinderHostLoad;
-import name.eskildsen.zoneminder.api.host.ZoneMinderHostVersion;
-import name.eskildsen.zoneminder.api.monitor.ZoneMinderMonitor;
+import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
 
 /**
  * Handler for a ZoneMinder Server.
@@ -58,8 +53,7 @@ import name.eskildsen.zoneminder.api.monitor.ZoneMinderMonitor;
  * @author Martin S. Eskildsen
  *
  */
-public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
-        implements ZoneMinderHandler, ZoneMinderMonitorEventListener {
+public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements ZoneMinderHandler {
 
     public static final int TELNET_TIMEOUT = 5000;
 
@@ -72,25 +66,39 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private ScheduledFuture<?> taskWatchDog = null;
+    private int refreshFrequency = 0;
+    private int refreshCycleCount = 0;
 
     /** Connection status for the bridge. */
     private boolean connected = false;
 
-    protected Boolean isAlive = false;
+    protected boolean _alive = false;
 
     private Runnable watchDogRunnable = new Runnable() {
+
+        ZoneMinderSession zoneMinderSession = null;
 
         @Override
         public void run() {
             try {
+                /*
+                 * if (zoneMinderSession == null) {
+                 * zoneMinderSession = ZoneMinderFactory.CreateSession(zoneMinderConnection);
+                 * }
+                 */
 
-                updateAvaliabilityStatus();
-
+                updateAvaliabilityStatus(zoneMinderConnection);
             } catch (Exception exception) {
                 logger.error("Server WatchDog::run(): Exception: ", exception);
             }
         }
     };
+
+    /**
+     * Local copies of last fetched values from ZM
+     */
+    private String channelCpuLoad = "";
+    private String channelDiskUsage = "";
 
     /**
      * Bridge configuration from OpenHAB
@@ -99,35 +107,78 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
     Boolean isInitialized = false;
 
-    Map<String, ZoneMinderData> zmServerData = new HashMap<String, ZoneMinderData>();
-
     /**
-     * ZoneMinder Server connection
+     * ZoneMinder Server session
      */
-    private ZoneMinderServerProxy zoneMinderServerProxy = null;
+    private ZoneMinderSession zoneMinderSession = null;
+    private ZoneMinderConnection zoneMinderConnection = null;
 
-    private ScheduledFuture<?> taskHighPriorityRefresh = null;
-    private ScheduledFuture<?> taskLowPriorityRefresh = null;
+    private ScheduledFuture<?> taskRefreshData = null;
+    private ScheduledFuture<?> taskPriorityRefreshData = null;
 
-    private Runnable refreshHighPriorityDataRunnable = new Runnable() {
+    private DataFetchRunnable refreshDataRunnable = new DataFetchRunnable(zoneMinderConnection) {
+
         @Override
         public void run() {
             try {
-                refreshHighPriorityPriorityData();
+                boolean fetchDiskUsage = false;
+
+                if (isConnected()) {
+                    connect();
+                }
+
+                refreshCycleCount++;
+
+                if ((refreshCycleCount * refreshFrequency >= config.getRefreshInterval())) {
+
+                    // Is it time to query DiskUsage??
+                    if ((refreshCycleCount * refreshFrequency) >= (config.getRefreshIntervalLowPriorityTask() * 60)) {
+                        refreshCycleCount = 0;
+                        logger.debug("'refreshDataRunnable()': (diskUsage='true'");
+                        fetchDiskUsage = true;
+                    } else {
+                        logger.debug("'refreshDataRunnable()': (diskUsage='false'");
+                    }
+
+                    refreshThing(fetchDiskUsage, getSession());
+
+                }
+
             } catch (Exception exception) {
                 logger.error("monitorRunnable::run(): Exception: ", exception);
             }
         }
     };
 
-    private Runnable refreshLowPriorityDataRunnable = new Runnable() {
+    private DataFetchRunnable refreshPriorityDataRunnable = new DataFetchRunnable(zoneMinderConnection) {
 
         @Override
         public void run() {
             try {
-                if (isConnected() == true) {
-                    refreshLowPriorityPriorityData();
+                if (isConnected()) {
+                    connect();
                 }
+
+                // Make sure priority updates is done
+                for (Thing thing : getThing().getThings()) {
+                    try {
+
+                        if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
+                            Thing thingMonitor = thing;
+                            ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
+
+                            if (thingHandler.getRefreshPriority() == RefreshPriorityEnum.HIGH_PRIORITY) {
+                                logger.debug(String.format("C-> Monitor %s", thingHandler.getZoneMinderId()));
+                                thingHandler.refreshThing(RefreshPriorityEnum.HIGH_PRIORITY, getSession());
+                            }
+                        }
+
+                    } catch (Exception ex) {
+                        logger.error("Method 'refreshThing()' for Bridge failed for thing='{}' - Exception='{}'",
+                                thing.getUID(), ex.getMessage());
+                    }
+                }
+
             } catch (Exception exception) {
                 logger.error("monitorRunnable::run(): Exception: ", exception);
             }
@@ -155,14 +206,15 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
         logger.debug("About to initialize bridge " + ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
         super.initialize();
         try {
+            updateStatus(ThingStatus.OFFLINE);
 
             this.config = getBridgeConfig();
 
             logger.debug("ZoneMinder Server Bridge Handler Initialized");
             logger.debug("   HostName:           {}", config.getHostName());
             logger.debug("   Protocol:           {}", config.getProtocol());
-            logger.debug("   Port (HTTP)         {}", config.getHttpPort());
-            logger.debug("   Port (Telnet)       {}", config.getTelnetPort());
+            logger.debug("   Port HTTP(S)        {}", config.getHttpPort());
+            logger.debug("   Port Telnet         {}", config.getTelnetPort());
             logger.debug("   Server Path         {}", config.getServerBasePath());
             logger.debug("   User:               {}", config.getUserName());
             logger.debug("   Refresh interval:   {}", config.getRefreshInterval());
@@ -170,8 +222,20 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
             closeConnection();
 
-            taskHighPriorityRefresh = null;
-            taskLowPriorityRefresh = null;
+            ZoneMinderFactory.Initialize(getBridgeConfig().getProtocol(), getBridgeConfig().getHostName(),
+                    getBridgeConfig().getHttpPort(), getBridgeConfig().getTelnetPort(),
+                    getBridgeConfig().getServerBasePath(), getBridgeConfig().getUserName(),
+                    getBridgeConfig().getPassword());
+
+            /*
+             * zoneMinderConnection = ZoneMinderFactory.CreateConnection(getBridgeConfig().getProtocol(),
+             * getBridgeConfig().getHostName(), getBridgeConfig().getHttpPort(), getBridgeConfig().getTelnetPort(),
+             * getBridgeConfig().getServerBasePath(),
+             * getBridgeConfig().getUserName(), getBridgeConfig().getPassword());
+             */
+
+            taskRefreshData = null;
+            taskPriorityRefreshData = null;
 
         } catch (Exception ex) {
             logger.error("'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'", ex.getMessage());
@@ -182,8 +246,25 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    protected int calculateCommonRefreshFrequency(int refreshRate) {
+        // Check if 30, 15, 10 or 5 seconds is possible
+        if ((refreshRate % 30) == 0) {
+            return 30;
+        } else if ((refreshRate % 15) == 0) {
+            return 15;
+        } else if ((refreshRate % 10) == 0) {
+            return 10;
+        } else if ((refreshRate % 5) == 0) {
+            return 5;
+        }
+
+        // Hmm, didn't find a obvious shared value. Run every second...
+        return 1;
+
+    }
+
     protected void startWatchDogTask() {
-        taskWatchDog = startTask(watchDogRunnable, 10, TimeUnit.SECONDS);
+        taskWatchDog = startTask(watchDogRunnable, 0, 10, TimeUnit.SECONDS);
     }
 
     protected void stopWatchDogTask() {
@@ -196,9 +277,12 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         logger.debug("Stop polling of ZoneMinder Server API");
+
+        logger.info("Stopping WatchDog task");
         stopWatchDogTask();
-        stopTask(taskHighPriorityRefresh);
-        stopTask(taskLowPriorityRefresh);
+
+        logger.info("Stopping refresh data task");
+        stopTask(taskRefreshData);
     }
 
     @Override
@@ -234,8 +318,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
         for (Thing thing : things) {
             ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
-            logger.debug("getZoneMinderThingHandlerFromZoneMinderId(): '{}' ?= '{}'", thingHandler.getZoneMinderId(),
-                    zoneMinderId);
             if ((thingHandler.getZoneMinderId().equals(zoneMinderId))
                     && (thing.getThingTypeUID().equals(thingTypeUID))) {
                 return thingHandler;
@@ -247,89 +329,64 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
     /**
      * Method for polling the ZoneMinder Server.
      */
-    protected void onRefreshLowPriorityPriorityData() {
-        logger.debug("Refreshing diskusage from ZoneMinder Server Task - '{}'", getThing().getUID());
-
-        if (!isConnected()) {
-            logger.error("Not Connected to the ZoneMinder Server!");
-            connect();
-        }
-
-        /*
-         * Fetch data for all monitors attached to this bridge
-         */
-        if (isConnected()) {
-            ZoneMinderServerRequest request = new ZoneMinderServerRequest(
-                    ZoneMinderRequestType.SERVER_LOW_PRIORITY_DATA, getZoneMinderId());
-            processZoneMinderServerRequest(request);
-        }
-    }
-
-    protected void onRefreshHighPriorityPriorityData() {
-        logger.trace("ZoneMinder Server: Refreshing Bridge...");
-
-        // Refresh channels on the bridge
-        this.refreshThing();
-
-        List<Thing> things = getThing().getThings();
-
-        for (Thing thing : things) {
-
-            ZoneMinderBaseThingHandler handler = (ZoneMinderBaseThingHandler) thing.getHandler();
-
-            if (handler != null) {
-                logger.debug("***Checking '{}' - Status: {}, Refreshed: {}", thing.getUID(), thing.getStatus(),
-                        handler.isThingRefreshed());
-
-                handler.refreshThing();
-
-            } else {
-                logger.error("refreshBridge(): Thing handler not found!");
-            }
-
-        }
-
-    }
-
-    /**
-     * Just logging - nothing to do.
+    // TODO:: REMOVED
+    /*
+     * protected void onRefreshLowPriorityPriorityData() {
+     * logger.debug("Refreshing diskusage from ZoneMinder Server Task - '{}'", getThing().getUID());
+     *
+     * if (!isConnected()) {
+     * logger.error("'onRefreshLowPriorityPriorityData()': Not Connected to the ZoneMinder Server!");
+     * connect();
+     * }
+     *
+     * if (isConnected()) {
+     * ZoneMinderServerRequest request = new ZoneMinderServerRequest(
+     * ZoneMinderRequestType.SERVER_LOW_PRIORITY_DATA, getZoneMinderId());
+     * processZoneMinderServerRequest(request);
+     * }
+     * }
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("update " + channelUID.getAsString() + " with " + command.toString());
     }
 
-    protected void refreshThing() {
+    protected synchronized void refreshThing(boolean fetchDiskUsage, ZoneMinderSession session) {
 
-        logger.debug("refreshThing(): Thing='{}'!", getThing().getUID(), this.getThing().getUID());
-        List<Thing> things = getThing().getThings();
-        List<Channel> channels = getThing().getChannels();
+        logger.debug("'refreshThing()': Thing='{}'!", getThing().getUID(), this.getThing().getUID());
 
         if (isConnected()) {
+            List<Channel> channels = getThing().getChannels();
+            // TOPDO:: FIX THIS ZoneMinderServerProxy zoneMinderServerProxy = ZoneMinderFactory.getServerProxy(session);
+            ZoneMinderServerProxy zoneMinderServerProxy = ZoneMinderFactory.getServerProxy();
+            /*
+             * Fetch data for Bridge
+             */
+            ZoneMinderHostLoad hostLoad = zoneMinderServerProxy.getHostCpuLoad();
+            channelCpuLoad = hostLoad.getCpuLoad().toString();
+
+            if (config.getRefreshIntervalLowPriorityTask() != 0) {
+                ZoneMinderDiskUsage du = zoneMinderServerProxy.getHostDiskUsage();
+                channelDiskUsage = du.getDiskUsage();
+            }
 
             /*
-             * Fetch data for all monitors attached to this bridge
+             * Update all channels on Bridge
              */
-            logger.debug("Sending request for refresh of Server channels....");
-            ZoneMinderServerBaseRequest request = new ZoneMinderServerRequest(
-                    ZoneMinderRequestType.SERVER_HIGH_PRIORITY_DATA, getZoneMinderId());
-            processZoneMinderServerRequest(request);
-
-            for (Thing thing : things) {
+            for (Channel channel : channels) {
+                updateChannel(channel.getUID());
+            }
+            /*
+             * Request Things attached to Bridge to refresh
+             */
+            for (Thing thing : getThing().getThings()) {
                 try {
+
                     if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
                         Thing thingMonitor = thing;
                         ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
 
-                        logger.debug(String.format("Sending request for refresh of channels for monitor '%s'....",
-                                thingHandler.getZoneMinderId()));
-
-                        request = new ZoneMinderMonitorRequest(ZoneMinderRequestType.MONITOR_THING,
-                                thingHandler.getZoneMinderId());
-                        processZoneMinderServerRequest(request);
-
-                        logger.debug("Updated ZoneMinderApiData for Thing: {}  {}", thing.getThingTypeUID(),
-                                thing.getUID());
+                        thingHandler.refreshThing(RefreshPriorityEnum.SCHEDULED, session);
                     }
 
                 } catch (Exception ex) {
@@ -337,58 +394,65 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
                             this.getZoneMinderId(), thing.getUID(), ex.getMessage());
                 }
             }
-
-        }
-
-        /*
-         * Update all channels
-         */
-        for (Channel channel : channels) {
-            updateChannel(channel.getUID());
-        }
-
-        // this.setThingRefreshed(false);
-    }
-
-    @Override
-    public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String zoneMinderId,
-            List<ZoneMinderData> arrData) {
-
-        if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
-
-            // Check data sets individually and update the local copy if they are there
-            // ZoneMinderServerData updatedData = (ZoneMinderServerData) data;
-            synchronized (zmServerData) {
-                for (ZoneMinderData data : arrData) {
-                    String dataClassKey = data.getKey();
-                    if (zmServerData.containsKey(dataClassKey)) {
-                        zmServerData.remove(dataClassKey);
-                    }
-                    zmServerData.put(dataClassKey, data);
-                }
-            }
-        } else {
-            ZoneMinderBaseThingHandler thing = getZoneMinderThingHandlerFromZoneMinderId(thingTypeUID, zoneMinderId);
-
-            // If thing not found, then it is not to this thing that it belongs :-)
-            if (thing != null) {
-
-                thing.notifyZoneMinderApiDataUpdated(thingTypeUID, zoneMinderId, arrData);
-            }
         }
     }
+
+    /*
+     * // TODO:: ReWRITE This
+     *
+     * @Override
+     * public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String zoneMinderId,
+     * List<ZoneMinderData> arrData) {
+     *
+     * logger.error("TODO:: IMPLEMENT ME");
+     * // TODO:: REMOVED
+     * if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
+     *
+     * // Check data sets individually and update the local copy if they are there
+     * // ZoneMinderServerData updatedData = (ZoneMinderServerData) data;
+     * synchronized (zmServerData) {
+     * for (ZoneMinderData data : arrData) {
+     * String dataClassKey = data.getKey();
+     * if (zmServerData.containsKey(dataClassKey)) {
+     * zmServerData.remove(dataClassKey);
+     * }
+     * zmServerData.put(dataClassKey, data);
+     * }
+     * }
+     * } else {
+     * ZoneMinderBaseThingHandler thing = getZoneMinderThingHandlerFromZoneMinderId(thingTypeUID, zoneMinderId);
+     *
+     * // If thing not found, then it is not to this thing that it belongs :-)
+     * if (thing != null) {
+     *
+     * thing.notifyZoneMinderApiDataUpdated(thingTypeUID, zoneMinderId, arrData);
+     * }
+     * }
+     *
+     * }
+     */
 
     /**
      * Connect The Bridge.
+     *
+     * @throws ZoneMinderUrlNotFoundException
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws IllegalArgumentException
      */
-    protected synchronized void connect() {
-        onDisconnected();
+    protected synchronized boolean connect_NOT_USED_()
+            throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException {
+
+        if (isConnected()) {
+            onDisconnected();
+        }
 
         openConnection();
 
         if (isConnected()) {
             onConnected();
         }
+        return isConnected();
     }
 
     /**
@@ -399,7 +463,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
         closeConnection();
 
         if (!isConnected()) {
-            onDisconnected();
+            onBridgeDisconnected(this);
         }
     }
 
@@ -410,8 +474,12 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
         return connected;
     }
 
-    public Boolean isAlive() {
-        return isAlive;
+    public boolean isAlive() {
+        return _alive;
+    }
+
+    private synchronized boolean getConnected() {
+        return this.connected;
     }
 
     /**
@@ -423,12 +491,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
         if (this.connected != connected) {
             this.connected = connected;
-
-            if (connected == true) {
-                onConnected();
-            } else if (connected == false) {
-                onDisconnected();
-            }
         }
 
     }
@@ -438,7 +500,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
      *
      * @param connected
      */
-    protected void setBridgeConnection(boolean connected) {
+    private void setBridgeConnectionStatus(boolean connected) {
         logger.debug("setBridgeConnection(): Set Bridge to {}", connected ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         Bridge bridge = getBridge();
@@ -448,18 +510,30 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
         }
 
         setConnected(connected);
+    }
 
+    /**
+     * Set channel 'bridge_connection'.
+     *
+     * @param connected
+     */
+    private boolean getBridgeConnectionStatus() {
+        return getConnected();
     }
 
     /**
      * Runs when connection established.
+     *
+     * @throws ZoneMinderUrlNotFoundException
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws IllegalArgumentException
      */
     public void onConnected() {
         logger.debug("onConnected(): Bridge Connected!");
+        setConnected(true);
+        onBridgeConnected(this, zoneMinderConnection);
 
-        onBridgeConnected(this);
-
-        refreshThing();
         // Inform thing handlers of connection
         List<Thing> things = getThing().getThings();
 
@@ -467,19 +541,34 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
             ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
 
             if (thingHandler != null) {
-                thingHandler.onBridgeConnected(this);
-                logger.trace("onConnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(),
+                try {
+                    thingHandler.onBridgeConnected(this, zoneMinderConnection);
+                } catch (IllegalArgumentException | GeneralSecurityException | IOException
+                        | ZoneMinderUrlNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                logger.debug("onConnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(),
                         thing.getUID(), thingHandler);
             }
         }
+        /*
+         * 2017.01.09 - TODO:: Instead make sure job is started
+         * // Then fetch some data from ZoneMinder API....
+         * boolean fetchDiskUsage = false;
+         * if (config.getRefreshIntervalLowPriorityTask() != 0) {
+         * fetchDiskUsage = true;
+         * }
+         * refreshThing(fetchDiskUsage, zoneMinderSession);
+         */
     }
 
     /**
      * Runs when disconnected.
      */
-    public void onDisconnected() {
+    private void onDisconnected() {
         logger.debug("onDisconnected(): Bridge Disconnected!");
-
+        setConnected(false);
         onBridgeDisconnected(this);
 
         // Inform thing handlers of disconnection
@@ -490,102 +579,159 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
             if (thingHandler != null) {
                 thingHandler.onBridgeDisconnected(this);
-                logger.trace("onDisconnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(),
+                logger.debug("onDisconnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(),
                         thing.getUID(), thingHandler);
             }
         }
     }
 
+    // TODO:: IMPLEMENT ERROR HANDLING
+
     @Override
-    public void updateAvaliabilityStatus() {
+    public void updateAvaliabilityStatus(ZoneMinderConnection connection) {
         ThingStatus newStatus = ThingStatus.OFFLINE;
-        isAlive = false;
+        boolean _isAlive = false;
+        ZoneMinderSession tmpSession = null;
 
-        // Just wait until we are finished initializing
-        if (isInitialized == false) {
-            return;
-        }
+        ThingStatus prevStatus = getThing().getStatus();
 
-        // Check if server Bridge configuration is valid
-        if (!isConfigValid()) {
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration");
-            setBridgeConnection(false);
-            return;
-        }
-
-        // Check if we have a connection to ZoneMinder Server - else try to establish one
-        if (zoneMinderServerProxy == null) {
-            if (openConnection() == false) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Cannot access ZoneMinder Server. Check provided usercredentials");
-                setBridgeConnection(false);
-                return;
+        // Igf we we are already ONLINE and have a session
+        if ((prevStatus == ThingStatus.ONLINE) && (zoneMinderSession != null)) {
+            tmpSession = zoneMinderSession;
+        } else {
+            // Temporary solution, should also implement some mechanishm to reconnect
+            try {
+                tmpSession = ZoneMinderFactory.CreateSession(connection);
+            } catch (IllegalArgumentException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (GeneralSecurityException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } catch (ZoneMinderUrlNotFoundException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
             }
         }
 
-        if (!zoneMinderServerProxy.isConnected()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot access ZoneMinder Server. Check provided usercredentials");
-            setBridgeConnection(false);
-            return;
-        }
+        // TODO:: Allow usage of non pooled session
+        ZoneMinderServerProxy zoneMinderServerProxy = ZoneMinderFactory.getServerProxy();
+        // ZoneMinderServerProxy zoneMinderServerProxy = ZoneMinderFactory.getServerProxy(tmpSession);
 
-        if (zoneMinderServerProxy.getHostDaemonCheckState() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "ZoneMinder Server Daemon state is unknown.");
-            setBridgeConnection(false);
-            return;
-        }
+        try {
 
-        ZoneMinderHostDaemonStatus daemonStatus = zoneMinderServerProxy.getHostDaemonCheckState();
-        if (!daemonStatus.isDaemonRunning()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "ZoneMinder Server Daemon isn't running.");
-            setBridgeConnection(false);
-            return;
-        }
+            // Just wait until we are finished initializing
+            if (isInitialized == false) {
+                _alive = _isAlive;
+                return;
+            }
 
-        // Set Status to OFFLINE if it is OFFLINE
+            // Check if server Bridge configuration is valid
+            if (!isConfigValid()) {
 
-        // Check if server API can be accessed
-        if (!isZoneMinderApiEnabled()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration");
+                setBridgeConnectionStatus(false);
+                return;
+            }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "ZoneMinder Server API isn't enabled. In ZoneMinder make sure option 'ZM_OPT_USE_API' is enabled");
-            setBridgeConnection(false);
-            return;
-        }
+            if (tmpSession == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot access ZoneMinder Server. Check provided usercredentials");
+                setBridgeConnectionStatus(false);
+                return;
+            }
+            // TODO:: FIX THIS
+            /*
+             * if (tmpSession.isConnected() == false) {
+             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+             * "Cannot access ZoneMinder Server. Check provided usercredentials");
+             * setBridgeConnectionStatus(false);
+             * return;
+             * }
+             */
+            if (zoneMinderServerProxy.getHostDaemonCheckState() == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "ZoneMinder Server Daemon state is unknown.");
+                setBridgeConnectionStatus(false);
+                return;
+            }
 
-        if (!isZoneMinderExternalTriggerEnabled()) {
+            ZoneMinderHostDaemonStatus daemonStatus = zoneMinderServerProxy.getHostDaemonCheckState();
+            if (!daemonStatus.isDaemonRunning()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "ZoneMinder Server Daemon isn't running.");
+                setBridgeConnectionStatus(false);
+                return;
+            }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "ZoneMinder Server External trigger isn't enabled. In ZoneMinder enabled ZM_xxx");
-            setBridgeConnection(false);
-            return;
-        }
+            // Set Status to OFFLINE if it is OFFLINE
 
-        // 4. Check server version
-        // 5. Check server API version
+            // Check if server API can be accessed
+            if (!isZoneMinderApiEnabled()) {
 
-        // Check if refresh jobs is running
-        if (!isZoneMinderServerDaemonEnabled()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "ZoneMinder Server API isn't enabled. In ZoneMinder make sure option 'ZM_OPT_USE_API' is enabled");
+                setBridgeConnectionStatus(false);
+                return;
+            }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "ZoneMinder Server cannot be reached. Daemon appears to be stopped.");
-            setBridgeConnection(false);
-            return;
-        }
+            if (!isZoneMinderExternalTriggerEnabled()) {
 
-        isAlive = true;
-        if (isAlive == true) {
-            newStatus = ThingStatus.ONLINE;
-        } else {
-            newStatus = ThingStatus.OFFLINE;
-        }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "ZoneMinder Server External trigger isn't enabled. In ZoneMinder enabled ZM_xxx");
+                setBridgeConnectionStatus(false);
+                return;
+            }
 
-        if (thing.getStatus() != newStatus) {
-            updateStatus(newStatus);
+            // 4. Check server version
+            // 5. Check server API version
+
+            // Check if refresh jobs is running
+            if (!isZoneMinderServerDaemonEnabled()) {
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "ZoneMinder Server cannot be reached. Daemon appears to be stopped.");
+                setBridgeConnectionStatus(false);
+                _alive = _isAlive;
+                return;
+            }
+
+            // TODO:: Should be improved
+            _isAlive = true;
+            if (_isAlive == true) {
+                _alive = _isAlive;
+                newStatus = ThingStatus.ONLINE;
+            } else {
+                _alive = _isAlive;
+                newStatus = ThingStatus.OFFLINE;
+            }
+
+            // Status changed
+            if (thing.getStatus() != newStatus) {
+                updateStatus(newStatus);
+            }
+
+        } finally {
+            if (prevStatus != newStatus) {
+
+                // Wen't to other state than ONLINE
+                if (prevStatus == ThingStatus.ONLINE) {
+                    onDisconnected();
+                }
+                // Wen't To ONLINE status
+                else if (newStatus == ThingStatus.ONLINE) {
+                    try {
+                        zoneMinderSession = tmpSession;
+                        onConnected();
+                    } catch (IllegalArgumentException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
         // Ask child things to update their Availability Status
@@ -593,7 +739,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
             ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
             if (thingHandler instanceof ZoneMinderThingMonitorHandler) {
                 try {
-                    thingHandler.updateAvaliabilityStatus();
+                    thingHandler.updateAvaliabilityStatus(connection);
                 } catch (Exception ex) {
                     logger.debug("Failed to call 'updateAvailabilityStatus()' for '{}'",
                             thingHandler.getThing().getUID());
@@ -655,15 +801,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
             switch (channel.getId()) {
                 case ZoneMinderConstants.CHANNEL_IS_ALIVE:
+
                     updateState(channel, (isAlive() ? OnOffType.ON : OnOffType.OFF));
-                    break;
-
-                case ZoneMinderConstants.CHANNEL_SERVER_ZM_VERSION:
-                    state = getServerVersionState();
-                    break;
-
-                case ZoneMinderConstants.CHANNEL_SERVER_ZM_API_VERSION:
-                    state = getServerVersionApiState();
                     break;
 
                 case ZoneMinderConstants.CHANNEL_SERVER_DISKUSAGE:
@@ -681,37 +820,48 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
             }
 
             if (state != null) {
+                logger.debug(String.format("BridgeHandler.updateChannel(): Updating channel '%s' to state='%s'",
+                        channel.getId(), state.toString()));
                 updateState(channel.getId(), state);
             }
         } catch (Exception ex) {
-            logger.error("Error occurred when 'updateChannel()' was called for thing='{}', channel='{}'",
-                    channel.getThingUID(), channel.getId());
+            String message = String.format(
+                    "Error when 'updateChannel()' was called for thing='%s', channel='%s' [Exception='%s']",
+                    channel.getThingUID(), channel.getId(), ex.getMessage());
+            logger.error(message);
+
         }
     }
 
-    Boolean openConnection() {
+    protected boolean openConnection() {
         boolean connected = false;
         if (isConnected() == false) {
             logger.debug("Connecting Bridge to ZoneMinder Server.");
 
             try {
                 closeConnection();
-
-                zoneMinderServerProxy = new ZoneMinderServerProxy(getBridgeConfig().getProtocol(),
-                        getBridgeConfig().getHostName(), getBridgeConfig().getServerBasePath(),
-                        getBridgeConfig().getUserName(), getBridgeConfig().getPassword());
-
-                connected = zoneMinderServerProxy.connect();
+                zoneMinderSession = ZoneMinderFactory.CreateSession(zoneMinderConnection);
+                /*
+                 * zoneMinderConnection = ZoneMinderFactory.CreateConnection(getBridgeConfig().getProtocol(),
+                 * getBridgeConfig().getHostName(), getBridgeConfig().getServerBasePath(),
+                 * getBridgeConfig().getUserName(), getBridgeConfig().getPassword());
+                 * // HEST CREATE CONNECTION
+                 * // connected = zoneMinderSession.connect();
+                 * // zoneMinderServerProxy = ZoneMinderFactory.getServerProxy(zoneMinderSession);
+                 */
+                // TODO:: FIX THIS
+                // connected = zoneMinderSession.isConnected();
+                connected = true;
 
                 logger.debug("openConnection(): Connecting to ZoneMinder Server (Telnet)");
 
-                setBridgeConnection(connected);
-
+                setConnected(true);
                 // Subscribe to events for this monitor
                 List<Thing> things = getThing().getThings();
                 for (Thing thing : things) {
                     try {
                         if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
+
                             Thing thingMonitor = thing;
                             ZoneMinderThingMonitorHandler monitorHandler = (ZoneMinderThingMonitorHandler) thing
                                     .getHandler();
@@ -719,9 +869,11 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
                             logger.debug(
                                     String.format("Subscribe to events from ZoneMinder Server for monitor '%s'....",
                                             monitorHandler.getZoneMinderId()));
-
-                            zoneMinderServerProxy.SubscribeMonitorEvents(monitorHandler.getZoneMinderId(),
-                                    monitorHandler);
+                            /*
+                             * 2017.01.09 - TODO:: FIXME
+                             * zoneMinderSession.SubscribeMonitorEvents(monitorHandler.getZoneMinderId(),
+                             * monitorHandler);
+                             */
                         }
 
                     } catch (Exception ex) {
@@ -730,18 +882,21 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
                     }
                 }
 
-            } catch (UnknownHostException unknownException) {
-                logger.error("openConnection(): Unknown Host Exception: ", unknownException);
-                setBridgeConnection(false);
-            } catch (SocketException socketException) {
-                logger.error("openConnection(): Socket Exception: ", socketException);
-                setBridgeConnection(false);
-            } catch (IOException ioException) {
-                logger.error("openConnection(): IO Exception: ", ioException);
-                setBridgeConnection(false);
-            } catch (Exception exception) {
+            } /*
+               * catch (UnknownHostException unknownException) {
+               * logger.error("openConnection(): Unknown Host Exception: ", unknownException);
+               * setConnected(false);
+               * } catch (SocketException socketException) {
+               * logger.error("openConnection(): Socket Exception: ", socketException);
+               * setConnected(false);
+               * } catch (IOException ioException) {
+               * logger.error("openConnection(): IO Exception: ", ioException);
+               * setConnected(false);
+               * }
+               */
+            catch (Exception exception) {
                 logger.error("openConnection(): Exception: ", exception);
-                setBridgeConnection(false);
+                setConnected(false);
             } finally {
                 if (isConnected() == false) {
                     closeConnection();
@@ -750,18 +905,20 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
         }
         return isConnected();
-
     }
 
     synchronized void closeConnection() {
         try {
-            if (zoneMinderServerProxy != null) {
-                zoneMinderServerProxy.closeConnection();
-                zoneMinderServerProxy = null;
-            }
-            logger.debug("closeConnection(): Closed HTTP Connection!");
+            /*
+             * 2017.01.09 - TODO:: FIXME
+             * if (zoneMinderSession != null) {
+             * zoneMinderSession.closeConnection();
+             * zoneMinderSession = null;
+             * // zoneMinderServerProxy = null;
+             * }
+             */ logger.debug("closeConnection(): Closed HTTP Connection!");
 
-            setBridgeConnection(false);
+            setConnected(false);
 
         } catch (Exception exception) {
             logger.error("closeConnection(): Error closing connection - " + exception.getMessage());
@@ -769,117 +926,77 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
     }
 
-    public void activateZoneMinderMonitorTrigger(String monitorId, String text, Integer timeout) {
-        ZoneMinderMonitorTriggerRequest request = new ZoneMinderMonitorTriggerRequest(
-                ZoneMinderRequestType.MONITOR_TRIGGER_REQUEST, true, monitorId, 255, text, timeout);
-
-        processZoneMinderServerRequest(request);
-    }
-
-    public void cancelZoneMinderMonitorTrigger(String monitorId) {
-        ZoneMinderMonitorTriggerRequest request = new ZoneMinderMonitorTriggerRequest(
-                ZoneMinderRequestType.MONITOR_TRIGGER_REQUEST, false, monitorId, 255, "", 0);
-
-        processZoneMinderServerRequest(request);
-    }
-
-    private boolean processZoneMinderServerRequest(ZoneMinderServerBaseRequest request) {
-        List<ZoneMinderData> arrData = new ArrayList<ZoneMinderData>();
-        ThingTypeUID thingTypeUID = request.getThingTypeUID();
-        String zoneMinderId = request.getId();
-        Boolean doNotify = false;
-        switch (request.getRequestType()) {
-
-            case MONITOR_THING:
-                arrData.add(zoneMinderServerProxy.getMonitor(zoneMinderId));
-                arrData.add(zoneMinderServerProxy.getMonitorCaptureDaemonStatus(zoneMinderId));
-                arrData.add(zoneMinderServerProxy.getMonitorAnalysisDaemonStatus(zoneMinderId));
-                arrData.add(zoneMinderServerProxy.getMonitorFrameDaemonStatus(zoneMinderId));
-                doNotify = true;
-                break;
-
-            case SERVER_HIGH_PRIORITY_DATA:
-                arrData.add((zoneMinderServerProxy.getHostVersion()));
-                arrData.add((zoneMinderServerProxy.getHostCpuLoad()));
-                arrData.add((zoneMinderServerProxy.getHostDaemonCheckState()));
-                doNotify = true;
-                break;
-
-            case SERVER_LOW_PRIORITY_DATA:
-                arrData.add((zoneMinderServerProxy.getHostDiskUsage()));
-                doNotify = true;
-                break;
-
-            case MONITOR_TRIGGER_REQUEST:
-                ZoneMinderMonitorTriggerRequest triggerRequest = (ZoneMinderMonitorTriggerRequest) request;
-                try {
-                    if (triggerRequest.getActivatedState()) {
-                        zoneMinderServerProxy.activateForceAlarm(triggerRequest.getId(), triggerRequest.getPriority(),
-                                triggerRequest.getReason(), "", "", triggerRequest.getTimeout());
-                    } else {
-                        zoneMinderServerProxy.deactivateForceAlarm(triggerRequest.getId());
-                    }
-                } catch (Exception e) {
-
-                    logger.error(e.getMessage());
-                }
-                break;
-            default:
-                logger.warn("Unhandled ZoneMinder Server request occurred (request='{}'", request.getRequestType());
-        }
-
-        if (doNotify == true) {
-            notifyZoneMinderApiDataUpdated(thingTypeUID, zoneMinderId, arrData);
-        }
-
-        return false;
-
-    }
-
-    public ArrayList<ZoneMinderMonitor> getMonitors() {
-        return zoneMinderServerProxy.getMonitors();
-    }
-
-    protected State getServerVersionState() {
-
-        State state = new StringType("-");
-        synchronized (zmServerData) {
-            if (zmServerData.containsKey(ZoneMinderHostVersion.class.getSimpleName())) {
-                ZoneMinderHostVersion data = (ZoneMinderHostVersion) zmServerData
-                        .get(ZoneMinderHostVersion.class.getSimpleName());
-                state = new StringType(data.getVersion());
-            }
-        }
-
-        return state;
-    }
-
-    protected State getServerVersionApiState() {
-
-        State state = new StringType("-");
-        synchronized (zmServerData) {
-            if (zmServerData.containsKey(ZoneMinderHostVersion.class.getSimpleName())) {
-                ZoneMinderHostVersion data = (ZoneMinderHostVersion) zmServerData
-                        .get(ZoneMinderHostVersion.class.getSimpleName());
-                state = new StringType(data.getApiVersion());
-            }
-        }
-
-        return state;
-    }
-
+    /*
+     * private boolean processZoneMinderServerRequest(ZoneMinderServerBaseRequest request) {
+     * logger.info("TODO:: FIX ME");
+     * // TODO:: REMOVED
+     *
+     * List<ZoneMinderData> arrData = new ArrayList<ZoneMinderData>();
+     * ThingTypeUID thingTypeUID = request.getThingTypeUID();
+     * String zoneMinderId = request.getId();
+     * Boolean doNotify = false;
+     *
+     * ZoneMinderMonitorProxy monitorProxy = ZoneMinderFactory.getMonitorProxy(zoneMinderSession, zoneMinderId);
+     *
+     * switch (request.getRequestType()) {
+     *
+     * case MONITOR_THING:
+     * arrData.add(monitorProxy.getMonitor(zoneMinderId));
+     * arrData.add(monitorProxy.getCaptureDaemonStatus());
+     * arrData.add(monitorProxy.getAnalysisDaemonStatus());
+     * arrData.add(monitorProxy.getFrameDaemonStatus());
+     * doNotify = true;
+     * break;
+     *
+     * case SERVER_HIGH_PRIORITY_DATA:
+     * arrData.add((zoneMinderServerProxy.getHostVersion()));
+     * arrData.add((zoneMinderServerProxy.getHostCpuLoad()));
+     * arrData.add((zoneMinderServerProxy.getHostDaemonCheckState()));
+     * doNotify = true;
+     * break;
+     *
+     * case SERVER_LOW_PRIORITY_DATA:
+     * arrData.add((zoneMinderServerProxy.getHostDiskUsage()));
+     * doNotify = true;
+     * break;
+     *
+     * case MONITOR_TRIGGER_REQUEST:
+     * ZoneMinderMonitorTriggerRequest triggerRequest = (ZoneMinderMonitorTriggerRequest) request;
+     * try {
+     * if (triggerRequest.getActivatedState()) {
+     * monitorProxy.activateForceAlarm(triggerRequest.getId(), triggerRequest.getPriority(),
+     * triggerRequest.getReason(), "", "", triggerRequest.getTimeout());
+     * } else {
+     * monitorProxy.deactivateForceAlarm(triggerRequest.getId());
+     * }
+     * } catch (Exception e) {
+     *
+     * logger.error(e.getMessage());
+     * }
+     * break;
+     * default:
+     * logger.warn("Unhandled ZoneMinder Server request occurred (request='{}'", request.getRequestType());
+     * }
+     *
+     * if (doNotify == true) {
+     * notifyZoneMinderApiDataUpdated(thingTypeUID, zoneMinderId, arrData);
+     * }
+     * return false;
+     *
+     * }
+     */
+    /*
+     * public ArrayList<ZoneMinderMonitor> getMonitors() {
+     * return zoneMinderServerProxy.getMonitors();
+     * }
+     */
     protected State getServerCpuLoadState() {
 
-        State state = new StringType("-");
+        State state = UnDefType.UNDEF;
 
         try {
-            synchronized (zmServerData) {
-                if (zmServerData.containsKey(ZoneMinderHostLoad.class.getSimpleName())) {
-                    ZoneMinderHostLoad data = (ZoneMinderHostLoad) zmServerData
-                            .get(ZoneMinderHostLoad.class.getSimpleName());
-
-                    state = new StringType(data.getCpuLoad().toString());
-                }
+            if (channelCpuLoad != "") {
+                state = new DecimalType(new BigDecimal(channelCpuLoad));
             }
 
         } catch (Exception ex) {
@@ -891,18 +1008,12 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
 
     protected State getServerDiskUsageState() {
 
-        State state = new StringType("-");
+        State state = UnDefType.UNDEF;
 
         try {
-            synchronized (zmServerData) {
-                if (zmServerData.containsKey(ZoneMinderDiskUsage.class.getSimpleName())) {
-                    ZoneMinderDiskUsage data = (ZoneMinderDiskUsage) zmServerData
-                            .get(ZoneMinderDiskUsage.class.getSimpleName());
-
-                    state = new StringType(data.getDiskUsage());
-                }
+            if (channelDiskUsage != "") {
+                state = new DecimalType(new BigDecimal(channelDiskUsage));
             }
-
         } catch (Exception ex) {
             logger.debug(ex.getMessage());
         }
@@ -911,29 +1022,42 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge) {
+    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, ZoneMinderConnection conenction) {
 
-        if (taskHighPriorityRefresh == null) {
-            taskHighPriorityRefresh = startTask(refreshHighPriorityDataRunnable, config.getRefreshInterval(),
-                    TimeUnit.SECONDS);
-        }
+        if (taskRefreshData == null) {
+            if (config.getRefreshIntervalLowPriorityTask() != 0) {
+                refreshFrequency = calculateCommonRefreshFrequency(config.getRefreshInterval());
+            } else {
+                refreshFrequency = config.getRefreshInterval();
+            }
 
-        if (taskLowPriorityRefresh == null) {
-            taskLowPriorityRefresh = startTask(refreshLowPriorityDataRunnable,
-                    config.getRefreshIntervalLowPriorityTask(), TimeUnit.MINUTES);
+            taskRefreshData = startTask(refreshDataRunnable, 0, refreshFrequency, TimeUnit.SECONDS);
+            // TODO:: ACTIVATE ME
+            taskPriorityRefreshData = startTask(refreshPriorityDataRunnable, 0, 1, TimeUnit.SECONDS);
+
         }
 
     }
 
     @Override
     public void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge) {
+        logger.debug("'onBridgeDisconnected()' called");
 
-        if (taskLowPriorityRefresh != null) {
-            stopTask(taskLowPriorityRefresh);
-            taskLowPriorityRefresh = null;
-        }
-        synchronized (zmServerData) {
-            zmServerData.clear();
+        // Clear values
+        channelCpuLoad = "";
+        channelDiskUsage = "";
+
+        // Inform thing handlers of disconnection
+        List<Thing> things = getThing().getThings();
+
+        for (Thing thing : things) {
+            ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
+
+            if (thingHandler != null) {
+                thingHandler.onBridgeDisconnected(this);
+                logger.trace("onDisconnected(): Bridge - {}, Thing - {}, Thing Handler - {}", thing.getBridgeUID(),
+                        thing.getUID(), thingHandler);
+            }
         }
 
     }
@@ -941,15 +1065,15 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
     /**
      * Method to start a data refresh task.
      */
-    protected ScheduledFuture<?> startTask(Runnable command, long refreshInterval, TimeUnit unit) {
+    protected ScheduledFuture<?> startTask(Runnable command, long delay, long interval, TimeUnit unit) {
         ScheduledFuture<?> task = null;
         logger.debug("Starting ZoneMinder Bridge Monitor Task. Command='{}'", command.toString());
-        if (refreshInterval == 0) {
+        if (interval == 0) {
             return task;
         }
 
         if (task == null || task.isCancelled()) {
-            task = scheduler.scheduleWithFixedDelay(command, 0, refreshInterval, unit);
+            task = scheduler.scheduleWithFixedDelay(command, delay, interval, unit);
         }
         return task;
     }
@@ -961,36 +1085,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler
         logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
         if (task != null && !task.isCancelled()) {
             task.cancel(true);
-        }
-    }
-
-    /**
-     * Method for updating High priority Data.
-     */
-
-    public synchronized void refreshHighPriorityPriorityData() {
-        logger.debug("Refreshing high priority data from ZoneMinder Server Task - '{}'", getThing().getUID());
-
-        if (!isConnected()) {
-            logger.error("Not Connected to the ZoneMinder Server!");
-            connect();
-        }
-
-        onRefreshHighPriorityPriorityData();
-    }
-
-    /**
-     * Method for updating Low priority Data.
-     */
-
-    public synchronized void refreshLowPriorityPriorityData() {
-        logger.debug("Refreshing low priority data from ZoneMinder Server Task - '{}'", getThing().getUID());
-
-        if (isConnected()) {
-            onRefreshLowPriorityPriorityData();
-        } else {
-            logger.error("Not Connected to the ZoneMinder Server!");
-            connect();
         }
     }
 

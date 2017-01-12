@@ -13,19 +13,38 @@
         <description>Camera in ZoneMinder</description>
 
         <channels>
-            <channel id="name" typeId="monitor_name" />
-            <channel id="enabled" typeId="monitor_enabled" />
-            <channel id="sourcetype" typeId="monitor_sourcetype" />
-            <channel id="trigger-event" typeId="monitor_trigger_event" />
-            <channel id="function" typeId="monitor_function" />
             <channel id="is-alive" typeId="monitor_is_alive" />
-            <channel id="daemon-capture-state" typeId="monitor_zmc_daemon_state" />
-            <channel id="daemon-capture-statustext" typeId="monitor_zmc_daemon_statustext" />
-            <channel id="daemon-analysis-state" typeId="monitor_zma_daemon_state" />
-            <channel id="daemon-analysis-statustext" typeId="monitor_zma_daemon_statustext" />
-            <channel id="daemon-frame-state" typeId="monitor_zmf_daemon_state" />
-            <channel id="daemon-frame-statustext" typeId="monitor_zmf_daemon_statustext" />
+            <channel id="enabled" typeId="monitor_enabled" />
             
+            <channel id="force-alarm" typeId="monitor_force_alarm" />
+            
+            <!--  Telnet + poll -->            
+            <channel id="event-state" typeId="monitor_event_state" />
+            
+            <channel id="record-state" typeId="monitor_record_state" />
+            
+            <!-- Poll  --> 
+            <!--  /zm/api/monitors/alarm/id:MonitorId/command:status.json  -->
+            <!-- Either 0: idle, 1: pre-alarm, 2: alarm, 3: alert, 4: recording -->
+            <channel id="detailed-status" typeId="monitor_detailed_status" /> 
+
+            <channel id="function" typeId="monitor_function" />
+            
+
+
+            <!--             
+                None - Event for monitor not triggered right now.
+                Signal - Event for monitor not triggered because of signal loss
+                Motion - Event for monitor triggered because of motion detected in ZoneMinder
+                openHAB - Event for monitor triggered by OpenHAB.
+                Other - Event for monitor triggered by other reason (somebody hase written an unknown reason....)
+            -->       
+            
+            <channel id="event-cause" typeId="monitor_event_cause" /> 
+            
+            <channel id="capture-daemon-state" typeId="monitor_zmc_daemon_state" />
+            <channel id="analysis-daemon-state" typeId="monitor_zma_daemon_state" />
+            <channel id="frame-daemon-state" typeId="monitor_zmf_daemon_state" />
         </channels>
 
         <config-description-ref uri="thing-type:monitor-channels:config" />
@@ -33,135 +52,111 @@
 
 
     <!-- Channel definitions of ZoneMinder Server -->
-    <channel-type id="monitor_id">
-        <item-type>String</item-type>
-        <label>Monitor Id</label>
-        <description>ZoneMinder Server Id of Monitor</description>
-        <category>General</category>
-        <state readOnly="true" />
-    </channel-type>
-
-
-    <channel-type id="monitor_name">
-        <item-type>String</item-type>
-        <label>ZoneMinder Name</label>
-        <description>Name of Monitor in ZoneMinder Server </description>
-        <category>General</category>
-        <state readOnly="true" />
-    </channel-type>
- 
-    <channel-type id="monitor_sourcetype">
-        <item-type>String</item-type>
-        <label>Monitor Source Type</label>
-        <description>Source Type of Monitor in ZoneMinder Server </description>
-        <category>General</category>
-        <state readOnly="true" />
-    </channel-type>
-           
     <channel-type id="monitor_is_alive">
         <item-type>Switch</item-type>
-        <label>Monitor IsAlive</label>
+        <label>Is Alive</label>
         <description>Switch telling if the monitor is alive</description>
-        <category>Status</category>
         <state readOnly="true" />
     </channel-type>
+
     <channel-type id="monitor_enabled">
         <item-type>Switch</item-type>
         <label>Enabled</label>
         <description>Showing the value of the checkbox 'enabled' in ZoneMinder for the monitor.</description>
-        <category>Status</category>
         <state readOnly="false" />
     </channel-type>
 
-    <channel-type id="monitor_function">
+    <channel-type id="monitor_force_alarm">
+        <item-type>Switch</item-type>
+        <label>Force Alarm</label>
+        <description>Will force an alarm from openHAB in ZoneMinder</description>
+        <state readOnly="false" />
+    </channel-type>
+
+
+    <channel-type id="monitor_event_state">
+        <item-type>Switch</item-type>
+        <label>Alarm status</label>
+        <description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF' </description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="monitor_record_state">
+        <item-type>Switch</item-type>
+        <label>Recording status</label>
+        <description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF' </description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="monitor_detailed_status" advanced="true">
         <item-type>String</item-type>
-        <label>Operating mode</label>
-        <description>Current Monitor Function: None, Monitor, Modect, Record, Mocord, Nodect</description>
+        <label>Detailed Status</label>
+        <description>Current Monitor Status: 0=Idle, 1=Pre-alarm, 2=Alarm, 3=Alert, 4=Recording</description>
         <state pattern="%s" readOnly="true">
             <options>
-                <option value="none">None</option>
-                <option value="monitor">Monitor</option>
-                <option value="modect">Modect</option>
-                <option value="record">Record</option>
-                <option value="mocord">Mocord</option>
-                <option value="nodect">Nodect</option>
+                <option value="Idle">Idle</option>
+                <option value="Pre-alarm">Pre-alarm</option>
+                <option value="Alarm">Alarm</option>
+                <option value="Alert">Alert</option>
+                <option value="Recording">Recording</option>
             </options>
         </state>
     </channel-type>
-
-    <channel-type id="monitor_trigger_event">
-        <item-type>Switch</item-type>
-        <label>Force Alarm</label>
-        <description>Switch is ON whenever the the monitor is recording, and OFF when the monitor is idle</description>
-        <category>Trigger</category>
-        <state readOnly="false" />
-    </channel-type>
-    <channel-type id="monitor_image_width">
-        <item-type>Number</item-type>
-        <label>Width of recorded image</label>
-        <description>Width of recorded image</description>
-        <category>Status</category>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="monitor_image_height">
-        <item-type>Number</item-type>
-        <label>Height of recorded image</label>
-        <description>Height of recorded image</description>
-        <category>Status</category>
-        <state readOnly="true" />
-    </channel-type>
-
-    <channel-type id="monitor_disk_usage">    
-        <item-type>Number</item-type>
-        <label>Diskusage</label>
-        <description>ZoneMinder Disk Usage for this monitor</description>
-        <state readOnly="true"/>
-    </channel-type>
     
-    <channel-type id="monitor_zmc_daemon_state">
+    
+    <channel-type id="monitor_function" advanced="true">
+        <item-type>String</item-type>
+        <label>Operating mode</label>
+        <description>Current Monitor Function: None, Monitor, Modect, Record, Mocord, Nodect</description>
+        <state pattern="%s" readOnly="false">
+            <options>
+                <option value="None">None</option>
+                <option value="Monitor">Monitor</option>
+                <option value="Modect">Modect</option>
+                <option value="Record">Record</option>
+                <option value="Mocord">Mocord</option>
+                <option value="Nodect">Nodect</option>
+            </options>
+        </state>
+        
+    </channel-type>
+
+
+    
+    <channel-type id="monitor_event_cause" advanced="true">
+        <item-type>String</item-type>
+        <label>Event Cause</label>
+        <description>Cause of event: None, Signal, Motion, Forced Web, openHAB, Other</description>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="none">None</option>
+                <option value="signal">Signal</option>
+                <option value="motion">Motion</option>
+                <option value="forced_web">Forced Web</option>
+                <option value="openhab">openHAB</option>
+                <option value="other">Other</option>
+            </options>
+        </state>    
+    </channel-type>    
+    
+    <channel-type id="monitor_zmc_daemon_state" advanced="true">
         <item-type>Switch</item-type>
-        <label>zmc daemon State</label>
+        <label>zmc daemon Status</label>
         <description>State of ZoneMinder Capture daemon for this monitor</description>
-        <category>Daemons</category>
         <state readOnly="true"/>
     </channel-type>        
-    <channel-type id="monitor_zmc_daemon_statustext">
-        <item-type>String</item-type>
-        <label>zmc daemon Statustext</label>
-        <description>Status text for ZoneMinder Capture daemon for this monitor</description>
-        <category>Daemons</category>
-        <state readOnly="true"/>
-    </channel-type>        
-
-    <channel-type id="monitor_zma_daemon_state">
+    
+    <channel-type id="monitor_zma_daemon_state" advanced="true">
         <item-type>Switch</item-type>
-        <label>zma daemon State</label>
+        <label>zma daemon Status</label>
         <description>State of ZoneMinder Analysis daemon for this monitor</description>
-        <category>Daemons</category>
-        <state readOnly="true"/>
-    </channel-type>        
-    <channel-type id="monitor_zma_daemon_statustext">
-        <item-type>String</item-type>
-        <label>zma daemon Statustext</label>
-        <description>Status text for ZoneMinder Analysis daemon for this monitor</description>
-        <category>Daemons</category>
         <state readOnly="true"/>
     </channel-type>        
 
-
-
-    <channel-type id="monitor_zmf_daemon_state">
+    <channel-type id="monitor_zmf_daemon_state" advanced="true">
         <item-type>Switch</item-type>
-        <label>zmf daemon State</label>
+        <label>zmf daemon Status</label>
         <description>State of ZoneMinder Frame daemon for this monitor</description>
-        <category>Daemons</category>
-        <state readOnly="true"/>
-    </channel-type>        
-    <channel-type id="monitor_zmf_daemon_statustext">
-        <item-type>String</item-type>
-        <label>zmf daemon Statustext</label>
-        <description>Status text for ZoneMinder Frame daemon for this monitor</description>
-        <category>Daemons</category>
         <state readOnly="true"/>
     </channel-type>        
             

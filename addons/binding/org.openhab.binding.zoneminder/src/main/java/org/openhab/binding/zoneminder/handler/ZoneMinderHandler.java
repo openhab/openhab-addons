@@ -8,7 +8,13 @@
  */
 package org.openhab.binding.zoneminder.handler;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.eclipse.smarthome.core.thing.ChannelUID;
+
+import name.eskildsen.zoneminder.ZoneMinderConnection;
+import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
 
 /**
  * Interface for ZoneMinder handlers.
@@ -18,11 +24,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 public interface ZoneMinderHandler {
     String getZoneMinderId();
 
-    void updateAvaliabilityStatus();
+    void updateAvaliabilityStatus(ZoneMinderConnection connection);
 
     void updateChannel(ChannelUID channel);
 
-    void onBridgeConnected(ZoneMinderServerBridgeHandler bridge);
+    void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, ZoneMinderConnection connection)
+            throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException;
 
     void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge);
 

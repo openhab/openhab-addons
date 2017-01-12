@@ -8,13 +8,11 @@
  */
 package org.openhab.binding.zoneminder.handler;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -28,12 +26,17 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.RefreshPriorityEnum;
 import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import name.eskildsen.zoneminder.ZoneMinderConnection;
+import name.eskildsen.zoneminder.ZoneMinderFactory;
+import name.eskildsen.zoneminder.ZoneMinderSession;
 import name.eskildsen.zoneminder.api.ZoneMinderData;
+import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
 
 /**
  * The {@link ZoneMinderBaseThingHandler} is responsible for handling commands, which are
@@ -60,10 +63,20 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /** Unique Id of the thing in zoneminder. */
     private String zoneMinderId;
 
-    private Map<String, ZoneMinderData> zmMonitorDataArr = new HashMap<String, ZoneMinderData>();
+    private ZoneMinderConnection zoneMinderConnection = null;
+    private ZoneMinderSession zoneMinderSession = null;
+
+    // TODO:: Removed
+    // private Map<String, ZoneMinderData> zmMonitorDataArr = new HashMap<String, ZoneMinderData>();
 
     /** Configuration from OpenHAB */
     protected ZoneMinderThingConfig configuration;
+
+    private RefreshPriorityEnum _refreshPriority = RefreshPriorityEnum.SCHEDULED;
+
+    public RefreshPriorityEnum getRefreshPriority() {
+        return _refreshPriority;
+    }
 
     public ZoneMinderBaseThingHandler(Thing thing) {
         super(thing);
@@ -90,37 +103,36 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         }
     }
 
-    /**
-     * Method to start a data refresh task.
-     *
-     * @param command
-     * @param refreshInterval
-     * @param unit
-     */
-    protected ScheduledFuture<?> startTask(Runnable command, long refreshInterval, TimeUnit unit) {
-        ScheduledFuture<?> task = null;
-        logger.debug("Starting ZoneMinder Bridge Monitor Task. Command='{}'", command.toString());
-        if (refreshInterval == 0) {
-            return task;
-        }
+    protected ZoneMinderSession getZoneMinderSession() {
+        return zoneMinderSession;
+    }
 
-        if (task == null || task.isCancelled()) {
-            task = scheduler.scheduleAtFixedRate(command, 500, refreshInterval, unit);
+    protected boolean isConnected() {
+        if (zoneMinderSession == null) {
+            return false;
         }
-        return task;
+        // TODO:: FIX THIS
+        return true;
+        // return zoneMinderSession.isConnected();
+    }
+
+    /**
+     * Method to start a priority data refresh task.
+     */
+
+    protected boolean startPriorityRefresh() {
+
+        logger.info("Starting High Priority Refresh for Monitor '{}'", getZoneMinderId());
+        _refreshPriority = RefreshPriorityEnum.HIGH_PRIORITY;
+        return true;
     }
 
     /**
      * Method to stop the data Refresh task.
-     *
-     * @param task
-     *
      */
-    protected void stopTask(ScheduledFuture<?> task) {
-        logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
-        if (task != null && !task.isCancelled()) {
-            task.cancel(true);
-        }
+    protected void stopPriorityRefresh() {
+        logger.info("Stopping Priority Refresh for Monitor '{}'", getZoneMinderId());
+        _refreshPriority = RefreshPriorityEnum.SCHEDULED;
     }
 
     @Override
@@ -132,31 +144,45 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      * Helper method for getting ChannelUID from ChannelId.
      *
      */
-    public synchronized ChannelUID getChannelUIDFromChannelId(String id) {
+    public ChannelUID getChannelUIDFromChannelId(String id) {
         Channel ch = thing.getChannel(id);
         return ch.getUID();
     }
 
+    protected abstract void onFetchData(ZoneMinderSession session);
+
     /**
      * Method to Refresh Thing Handler.
      */
-    public final void refreshThing() {
+    public synchronized final void refreshThing(RefreshPriorityEnum refreshPriority, ZoneMinderSession session) {
 
-        if (getZoneMinderBridgeHandler() != null) {
-            logger.debug("refreshThing(): Bridge '{}' Found for Thing '{}'!",
-                    zoneMinderBridgeHandler.getThing().getUID(), this.getThing().getUID());
-
-            Thing thing = getThing();
-            List<Channel> channels = thing.getChannels();
-            logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
-
-            for (Channel channel : channels) {
-                updateChannel(channel.getUID());
-            }
-
-            this.setThingRefreshed(true);
+        if ((refreshPriority != getRefreshPriority()) && (!isConnected())) {
+            return;
         }
-        logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
+
+        if (refreshPriority == RefreshPriorityEnum.HIGH_PRIORITY) {
+            logger.debug("Performing HIGH PRIORITY UPDATE for monitor '{}'.....", getZoneMinderId());
+        }
+
+        if (isConnected()) {
+            if (getZoneMinderBridgeHandler() != null) {
+                logger.debug("refreshThing(): Bridge '{}' Found for Thing '{}'!",
+                        zoneMinderBridgeHandler.getThing().getUID(), this.getThing().getUID());
+
+                onFetchData(session);
+
+                Thing thing = getThing();
+                List<Channel> channels = thing.getChannels();
+                logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
+
+                for (Channel channel : channels) {
+                    updateChannel(channel.getUID());
+                }
+
+                this.setThingRefreshed(true);
+            }
+            logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
+        }
     }
 
     /**
@@ -164,7 +190,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      *
      * @return zoneMinderBridgeHandler
      */
-    public synchronized ZoneMinderServerBridgeHandler getZoneMinderBridgeHandler() {
+    public /* synchronized */ ZoneMinderServerBridgeHandler getZoneMinderBridgeHandler() {
 
         if (this.zoneMinderBridgeHandler == null) {
 
@@ -175,9 +201,13 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
                 return null;
             }
 
-            logger.debug("getZoneMidnerBridgeHandler(): Bridge for '{}' - '{}'", getThing().getUID(), bridge.getUID());
-
-            ThingHandler handler = bridge.getHandler();
+            logger.debug("getZoneMinderBridgeHandler(): Bridge for '{}' - '{}'", getThing().getUID(), bridge.getUID());
+            ThingHandler handler = null;
+            try {
+                handler = bridge.getHandler();
+            } catch (Exception ex) {
+                logger.debug(String.format("Exception in 'getZoneMinderBridgeHandler()': {}", ex.getMessage()));
+            }
 
             if (handler instanceof ZoneMinderServerBridgeHandler) {
                 this.zoneMinderBridgeHandler = (ZoneMinderServerBridgeHandler) handler;
@@ -231,19 +261,28 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge) {
+    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, ZoneMinderConnection connection)
+            throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException {
         logger.debug("onBridgeConnected(): Bridge '{}' is connected", bridge.getThing().getUID());
 
-        if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
-            updateAvaliabilityStatus();
+        zoneMinderSession = ZoneMinderFactory.CreateSession(connection);
 
-            refreshThing();
-        }
+        // TODO:: Seems to be CAllled elsewhere
+        /*
+         * if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
+         * updateAvaliabilityStatus(connection);
+         *
+         * refreshThing(RefreshPriorityEnum.SCHEDULED, zoneMinderSession);
+         *
+         * }
+         */
     }
 
     @Override
     public void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge) {
         logger.debug("onBridgeDisconnected(): Bridge '{}' disconnected", bridge.getThing().getUID());
+
+        zoneMinderSession = null;
 
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
 
@@ -319,30 +358,32 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         return (BigDecimal) getConfigValue(configKey);
     }
 
+    // TODO:: REWRITE This
     @Override
     public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId,
             List<ZoneMinderData> arrData) {
-
-        synchronized (zmMonitorDataArr) {
-            for (ZoneMinderData data : arrData) {
-                String dataClassKey = data.getKey();
-                if (zmMonitorDataArr.containsKey(dataClassKey)) {
-                    zmMonitorDataArr.remove(dataClassKey);
-                }
-                zmMonitorDataArr.put(dataClassKey, data);
-            }
-        }
-
+        // TODO: RENOVED
+        /*
+         * synchronized (zmMonitorDataArr) {
+         * for (ZoneMinderData data : arrData) {
+         * String dataClassKey = data.getKey();
+         * if (zmMonitorDataArr.containsKey(dataClassKey)) {
+         * zmMonitorDataArr.remove(dataClassKey);
+         * }
+         * zmMonitorDataArr.put(dataClassKey, data);
+         * }
+         * }
+         */
     }
-
-    protected ZoneMinderData getZoneMinderData(Class type) {
-
-        synchronized (zmMonitorDataArr) {
-            if (zmMonitorDataArr.containsKey(type.getSimpleName())) {
-                return zmMonitorDataArr.get(type.getSimpleName());
-            }
-        }
-        return null;
-    }
-
+    /*
+     * protected ZoneMinderData getZoneMinderData(Class type) {
+     *
+     * synchronized (zmMonitorDataArr) {
+     * if (zmMonitorDataArr.containsKey(type.getSimpleName())) {
+     * return zmMonitorDataArr.get(type.getSimpleName());
+     * }
+     * }
+     * return null;
+     * }
+     */
 }

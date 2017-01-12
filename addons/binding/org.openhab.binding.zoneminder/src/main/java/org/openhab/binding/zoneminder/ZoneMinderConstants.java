@@ -40,13 +40,10 @@ public class ZoneMinderConstants {
     public final static ThingTypeUID THING_TYPE_BRIDGE_ZONEMINDER_SERVER = new ThingTypeUID(BINDING_ID,
             BRIDGE_ZONEMINDER_SERVER);
 
-    // Shared channel for all
+    // Shared channel for all bridges / things
     public final static String CHANNEL_IS_ALIVE = "is-alive";
 
     // Channel Id's for the ZoneMinder Server
-
-    public final static String CHANNEL_SERVER_ZM_VERSION = "zm-version";
-    public final static String CHANNEL_SERVER_ZM_API_VERSION = "zm-api-version";
     public final static String CHANNEL_SERVER_DISKUSAGE = "disk-usage";
     public final static String CHANNEL_SERVER_CPULOAD = "cpu-load";
 
@@ -55,6 +52,7 @@ public class ZoneMinderConstants {
     public final static String PARAM_PORT = "port";
     public final static String PARAM_REFRESH_INTERVAL_ = "refresh_interval";
     public final static String PARAM_REFRESH_INTERVAL_DISKUSAGE = "refresh_interval_disk_usage";
+
     // Default values for Monitor parameters
     public static final Integer DEFAULT_HTTP_PORT = 80;
     public static final Integer DEFAULT_TELNET_PORT = 6802;
@@ -69,18 +67,20 @@ public class ZoneMinderConstants {
     /*
      * Channel Id's for the ZoneMinder Monitor
      */
-    public final static String CHANNEL_MONITOR_ID = "id";
-    public final static String CHANNEL_MONITOR_NAME = "name";
-    public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
+    // public final static String CHANNEL_MONITOR_ID = "id";
+    // public final static String CHANNEL_MONITOR_NAME = "name";
+    // public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
     public final static String CHANNEL_MONITOR_ENABLED = "enabled";
-    public final static String CHANNEL_MONITOR_TRIGGER_EVENT = "trigger-event";
+    public final static String CHANNEL_MONITOR_FORCE_ALARM = "force-alarm";
+    public final static String CHANNEL_MONITOR_EVENT_STATE = "event-state";
+    public final static String CHANNEL_MONITOR_EVENT_CAUSE = "event-cause";
+    public final static String CHANNEL_MONITOR_RECORD_STATE = "record-state";
+    public final static String CHANNEL_MONITOR_DETAILED_STATUS = "detailed-status";
     public final static String CHANNEL_MONITOR_FUNCTION = "function";
-    public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATE = "daemon-capture-state";
-    public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATUSTEXT = "daemon-capture-statustext";
-    public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE = "daemon-analysis-state";
-    public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATUSTEXT = "daemon-analysis-statustext";
-    public final static String CHANNEL_MONITOR_FRAME_DAEMON_STATE = "daemon-frame-state";
-    public final static String CHANNEL_MONITOR_FRAME_DAEMON_STATUSTEXT = "daemon-frame-statustext";
+
+    public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATE = "capture-daemon-state";
+    public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE = "analysis-daemon-state";
+    public final static String CHANNEL_MONITOR_FRAME_DAEMON_STATE = "frame-daemon-state";
 
     // Parameters for the ZoneMinder Monitor
     public final static String PARAMETER_MONITOR_ID = "monitorId";
@@ -89,6 +89,13 @@ public class ZoneMinderConstants {
 
     // Default values for Monitor parameters
     public final static Integer PARAMETER_MONITOR_TRIGGER_TIMEOUT_DEFAULTVALUE = 60;
-    public final static String PARAMETER_MONITOR_EVENTTEXT_DEFAULTVALUE = "OpenHAB triggered event";
+
+    public final static String PARAMETER_MONITOR_EVENTNOTE_DEFAULTVALUE = "openHAB triggered event";
+
+    public final static String MONITOR_EVENT_NONE = "";
+    public final static String MONITOR_EVENT_SIGNAL = "Signal";
+    public final static String MONITOR_EVENT_MOTION = "Motion";
+    public final static String MONITOR_EVENT_FORCED_WEB = "Forced Web";
+    public final static String MONITOR_EVENT_OPENHAB = "openHAB";
 
 }
