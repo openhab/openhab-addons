@@ -284,7 +284,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     public void deviceInclusion() {
-        if (previousOnline) {
+        if (previousOnline && socket != null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Inclusion");
             logger.info("Start MAX! inclusion mode for 60 seconds");
             try {
