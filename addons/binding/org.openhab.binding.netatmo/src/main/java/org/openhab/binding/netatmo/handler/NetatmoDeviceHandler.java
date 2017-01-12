@@ -108,8 +108,12 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
                 return ChannelTypeUtils.toDateTimeType(device.getLastStatusStore());
             case CHANNEL_LOCATION:
                 NAPlace place = device.getPlace();
-                return new PointType(new DecimalType(place.getLocation().get(1)),
-                        new DecimalType(place.getLocation().get(0)), new DecimalType(place.getAltitude()));
+                PointType point = new PointType(new DecimalType(place.getLocation().get(1)),
+                        new DecimalType(place.getLocation().get(0)));
+                if (place.getAltitude() != null) {
+                    point.setAltitude(new DecimalType(place.getAltitude()));
+                }
+                return point;
             case CHANNEL_WIFI_STATUS:
                 Integer wifiStatus = device.getWifiStatus();
                 return new DecimalType(getSignalStrength(wifiStatus));
