@@ -38,7 +38,7 @@
     </channel-type>
     
     <channel-type id="position">
-        <item-type>Integer</item-type>
+        <item-type>Number</item-type>
         <label>HomePilot Position Channel</label>
         <description>Position channel for HomePilot Binding</description>
         <state min="0" max="100" step="1" readOnly="false" pattern="%d"></state>
