@@ -29,18 +29,14 @@
 			<channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
 		</channels>
         <config-description>
-            <parameter name="serialNumber" type="text" required="false">
-                <label>Serial Number</label>
-                <description>The Serial Number identifies one specific device.</description>
-            </parameter>
             <parameter name="DEVICE_HOST" type="text" required="true">
                 <label>Host Address</label>
                 <description>The Host / IP Address used for communication to this device.
                 </description>
             </parameter>
-            <parameter name="DEVICE_PORT" type="integer" required="true" min="1" max="65335">
-                <label>Port</label>
-                <description>Port for communication on this device.
+            <parameter name="DEVICE_MAC" type="text" required="true">
+                <label>MAC Address</label>
+                <description>The MAC Address used for communication to this device.
                 </description>
             </parameter>
         </config-description>

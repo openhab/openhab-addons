@@ -54,7 +54,6 @@ public class BoseSoundTouchBindingConstants {
 
     // Device configuration parameters;
     public static final String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
-    public static final String DEVICE_PARAMETER_PORT = "DEVICE_PORT";
     public static final String DEVICE_PARAMETER_MAC = "DEVICE_MAC";
 
     public static final String DEVICE_INFO_NAME = "INFO_NAME";

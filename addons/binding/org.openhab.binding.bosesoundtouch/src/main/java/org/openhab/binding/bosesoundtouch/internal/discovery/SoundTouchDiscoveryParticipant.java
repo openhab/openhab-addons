@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.bosesoundtouch.internal.discovery;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
@@ -49,7 +48,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
         ThingUID uid = getThingUID(info);
         if (uid != null) {
 
-            Map<String, Object> properties = new HashMap<>(3);
+            Map<String, Object> properties = new HashMap<>(2);
             String label = "unnamed Bose SoundTouch device";
             try {
                 label = info.getName();
@@ -66,7 +65,6 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             }
 
             properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
-            properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_PORT, BigDecimal.valueOf(info.getPort()));
             if (getMacAddress(info) != null) {
                 properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_MAC, new String(getMacAddress(info)));
             }
