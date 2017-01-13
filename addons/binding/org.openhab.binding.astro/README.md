@@ -82,7 +82,9 @@ Things:
 astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 ```
+
 or optionally with an offset
+
 ```
 astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ] {
     Channels:
