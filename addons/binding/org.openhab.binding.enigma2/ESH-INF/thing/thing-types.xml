@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enigma2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="device">
+        <label>Enigma2</label>
+        <description>The Thing represents an Enigma2 STB</description>
+
+        <channels>
+            <channel id="power" typeId="power" />
+            <channel id="volume" typeId="volume" />
+            <channel id="channelName" typeId="channelName" />
+            <channel id="channelNumber" typeId="channelNumber" />
+            <channel id="mute" typeId="mute" />
+        </channels>
+        <config-description>
+            <parameter name="DEVICE_HOST" type="text" required="true">
+                <label>Host Address</label>
+                <description>The Host / IP Address used for communication to this device.</description>
+            </parameter>
+            <parameter name="USER" type="text" required="false">
+                <label>Host Address</label>
+                <description>The Host / IP Address used for communication to this device.</description>
+            </parameter>
+            <parameter name="PASSWORD" type="text" required="false">
+                <label>MAC Address</label>
+                <description>The MAC Address used for communication to this device.</description>
+            </parameter>
+            <parameter name="REFRESH" type="text" required="false">
+                <label>MAC Address</label>
+                <description>The MAC Address used for communication to this device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>    
+
+   <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Sets Power on/off</description>
+    </channel-type>
+     <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Set or get the volume</description>
+        <category>SoundVolume</category>
+    </channel-type>
+    <channel-type id="channelName">
+        <item-type>String</item-type>
+        <label>Channel Name</label>
+        <description>get the current channel name</description>
+    </channel-type>
+     <channel-type id="channelNumber">
+        <item-type>String</item-type>
+        <label>Channel Number</label>
+        <description>set the current channel number</description>
+    </channel-type>
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Volume Mute</label>
+        <description>Mute state of the Enigma2 STB</description>
+    </channel-type>
+
+</thing:thing-descriptions>
