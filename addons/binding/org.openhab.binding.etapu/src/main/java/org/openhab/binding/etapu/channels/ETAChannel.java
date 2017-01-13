@@ -6,12 +6,17 @@ import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class ETAChannel {
+
+    private Logger logger = LoggerFactory.getLogger(ETAChannel.class);
+
     private String id;
 
     private String url;
@@ -43,13 +48,17 @@ public class ETAChannel {
     }
 
     public String getValue() {
-        String result = null;
+        String result = "";
         try {
-            Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                    .parse(new InputSource(new StringReader(getResponse())));
-            NodeList nodeList = d.getElementsByTagName("value");
-            if (nodeList.getLength() > 0) {
-                result = nodeList.item(0).getAttributes().getNamedItem("strValue").getNodeValue();
+            if (response != null) {
+                Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                        .parse(new InputSource(new StringReader(getResponse())));
+                NodeList nodeList = d.getElementsByTagName("value");
+                if (nodeList.getLength() > 0) {
+                    result = nodeList.item(0).getAttributes().getNamedItem("strValue").getNodeValue();
+                }
+            } else {
+                logger.warn("Channel " + id + " did not receive a result.");
             }
         } catch (SAXException | IOException | ParserConfigurationException e) {
             e.printStackTrace();

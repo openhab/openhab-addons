@@ -9,7 +9,27 @@
 		<description>EtaPU Binding das alle verfügbaren Daten der REST API ausliest.</description>
 
 		<channels>
-			<channel id="kesselstatus" typeId="kesselstatus"/>
+			<channel id="kesselstatus" typeId="kesselstatus" />
+			<channel id="heizkreisstatus" typeId="heizkreisstatus" />
+			<channel id="stoermeldung" typeId="stoermeldung" />
+			<channel id="entaschentaste" typeId="entaschentaste" />
+			<channel id="entaschennachfruehestens" typeId="entaschennachfruehestens" />
+			<channel id="entaschennachspaetestens" typeId="entaschennachspaetestens" />
+			<channel id="kuebelleerennach" typeId="kuebelleerennach" />
+			<channel id="silovorrat" typeId="silovorrat" />
+			<channel id="kesselpelletsvorrat" typeId="kesselpelletsvorrat" />
+			<channel id="kesselpelletsfuellen" typeId="kesselpelletsfuellen" />
+			<channel id="betriebssekunden" typeId="betriebssekunden" />
+			<channel id="gesamtverbrauch" typeId="gesamtverbrauch" />
+			<channel id="kgseitwartung" typeId="kgseitwartung" />
+			<channel id="kgseitentaschung" typeId="kgseitentaschung" />
+			<channel id="hksolltemperatur" typeId="hksolltemperatur" />
+			<channel id="hkvorlaufminus10" typeId="hkvorlaufminus10" />
+			<channel id="hkvorlaufplus10" typeId="hkvorlaufplus10" />
+			<channel id="hkvorlaufabsenkung" typeId="hkvorlaufabsenkung" />
+			<channel id="heizgrenzetag" typeId="heizgrenzetag" />
+			<channel id="heizgrenzenacht" typeId="heizgrenzenacht" />
+			<channel id="aussentemperatur" typeId="aussentemperatur" />
 		</channels>
 
 		<config-description>
@@ -19,17 +39,118 @@
 				<default></default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="true">
-                <label>Refresh Interval</label>
-                <description>States how often the information is polled (in seconds).</description>
-                <default>60</default>
-            </parameter>
+				<label>Refresh Interval</label>
+				<description>States how often the information is polled (in seconds).</description>
+				<default>60</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
-	
+
 	<channel-type id="kesselstatus">
 		<item-type>String</item-type>
 		<label>Kesselstatus</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+
+	<channel-type id="heizkreisstatus">
+		<item-type>String</item-type>
+		<label>Heizkreis Status</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="stoermeldung">
+		<item-type>String</item-type>
+		<label>Stoermeldungen</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="entaschentaste">
+		<item-type>String</item-type>
+		<label>Entaschung</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="entaschennachfruehestens">
+		<item-type>Number</item-type>
+		<label>Entaschen nach min.</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="entaschennachspaetestens">
+		<item-type>Number</item-type>
+		<label>Entaschen nach max.</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="kuebelleerennach">
+		<item-type>Number</item-type>
+		<label>Aschebox leeren nach</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="silovorrat">
+		<item-type>Number</item-type>
+		<label>Lagervorrat</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="kesselpelletsvorrat">
+		<item-type>Number</item-type>
+		<label>Behälterinhalt</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="kesselpelletsfuellen">
+		<item-type>String</item-type>
+		<label>Behälter füllen</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="betriebssekunden">
+		<item-type>String</item-type>
+		<label>Betriebssekunden</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="gesamtverbrauch">
+		<item-type>Number</item-type>
+		<label>Gesamtverbrauch Pellets</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="kgseitwartung">
+		<item-type>Number</item-type>
+		<label>Verbrauch seit Wartung</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="kgseitentaschung">
+		<item-type>Number</item-type>
+		<label>Verbrauch seit Entaschung</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="hksolltemperatur">
+		<item-type>Number</item-type>
+		<label>Vorlauf</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="hkvorlaufminus10">
+		<item-type>Number</item-type>
+		<label>Vorlauftemperatur bei -10°</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="hkvorlaufplus10">
+		<item-type>Number</item-type>
+		<label>Vorlauftemperatur bei +10°</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="hkvorlaufabsenkung">
+		<item-type>Number</item-type>
+		<label>Vorlauf Absenkung</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="heizgrenzetag">
+		<item-type>Number</item-type>
+		<label>Heizgrenze Tag</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="heizgrenzenacht">
+		<item-type>Number</item-type>
+		<label>Heizgrenze Nacht</label>
+		<description>Zeigt den aktuellen Status des Kessels</description>
+	</channel-type>
+	<channel-type id="aussentemperatur">
+		<item-type>Number</item-type>
+		<label>Aussentemperatur</label>
 		<description>Zeigt den aktuellen Status des Kessels</description>
 	</channel-type>
 

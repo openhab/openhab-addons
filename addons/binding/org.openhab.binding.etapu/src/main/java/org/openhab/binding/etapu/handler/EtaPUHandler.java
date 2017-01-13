@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -46,6 +47,27 @@ public class EtaPUHandler extends BaseThingHandler {
     public EtaPUHandler(Thing thing) {
         super(thing);
         addChannel("kesselstatus", "/user/var/112/10021/0/0/12000");
+        addChannel("heizkreisstatus", "/user/var/112/10101/0/0/12090");
+        addChannel("stoermeldung", "/user/var/112/10241/0/11149/2001");
+        addChannel("entaschentaste", "/user/var/112/10021/0/0/12112");
+        addChannel("entaschennachfruehestens", "/user/var/112/10021/0/0/12073");
+        addChannel("entaschennachspaetestens", "/user/var/112/10021/0/0/12074");
+        addChannel("kuebelleerennach", "/user/var/112/10021/0/0/12120");
+        addChannel("silovorrat", "/user/var/112/10201/0/0/12015");
+        addChannel("kesselpelletsvorrat", "/user/var/112/10021/0/0/12011");
+        addChannel("kesselpelletsfuellen", "/user/var/112/10021/0/0/12071");
+        addChannel("betriebssekunden", "/user/var/112/10021/0/0/12153");
+        addChannel("gesamtverbrauch", "/user/var/112/10021/0/0/12016");
+        addChannel("kgseitwartung", "/user/var/112/10021/0/0/12014");
+        addChannel("kgseitentaschung", "/user/var/112/10021/0/0/12012");
+        addChannel("hksolltemperatur", "/user/var/112/10101/0/0/12111");
+        addChannel("hkvorlaufminus10", "/user/var/112/10101/0/0/12104");
+        addChannel("hkvorlaufplus10", "/user/var/112/10101/0/0/12103");
+        addChannel("hkvorlaufabsenkung", "/user/var/112/10101/0/0/12107");
+        addChannel("heizgrenzetag", "/user/var/112/10101/0/0/12096");
+        addChannel("heizgrenzenacht", "/user/var/112/10101/0/0/12097");
+        addChannel("aussentemperatur", "/user/var//112/10241/0/0/12197");
+
     }
 
     @Override
@@ -62,8 +84,10 @@ public class EtaPUHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
-                    refresh();
-                    updateStatus(ThingStatus.ONLINE);
+                    if (sourceConfig.ipAddress != null && !sourceConfig.ipAddress.isEmpty()) {
+                        refresh();
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             e.getClass().getName() + ":" + e.getMessage());
@@ -72,7 +96,12 @@ public class EtaPUHandler extends BaseThingHandler {
             }
 
         }, 0, sourceConfig.refreshInterval, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.ONLINE);
+        if (sourceConfig.ipAddress != null && !sourceConfig.ipAddress.isEmpty()) {
+            updateStatus(ThingStatus.ONLINE);
+            refresh();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keine IP Adresse konfiguriert.");
+        }
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
         // Add a description to give user information to understand why thing does not work
@@ -82,7 +111,7 @@ public class EtaPUHandler extends BaseThingHandler {
 
     }
 
-    private void refresh() {
+    private synchronized void refresh() {
         for (ETAChannel channel : channels) {
             refreshChannel(channel);
         }
@@ -91,8 +120,16 @@ public class EtaPUHandler extends BaseThingHandler {
     private void refreshChannel(ETAChannel etachannel) {
         sendRequest(etachannel);
         Channel channel = getThing().getChannel(etachannel.getId());
-        State state = new StringType(etachannel.getValue());
-        updateState(channel.getUID(), state);
+        if (channel != null) {
+            State state;
+            try {
+                Double d = Double.parseDouble(etachannel.getValue().replace(",", "."));
+                state = new DecimalType(d);
+            } catch (NumberFormatException e) {
+                state = new StringType(etachannel.getValue());
+            }
+            updateState(channel.getUID(), state);
+        }
     }
 
     private void sendRequest(ETAChannel channel) {
