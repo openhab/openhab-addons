@@ -11,10 +11,6 @@ import static org.openhab.binding.homie.HomieBindingConstants.*;
 import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -25,15 +21,12 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
-import org.openhab.binding.homie.internal.conventionv200.NodePropertiesList;
-import org.openhab.binding.homie.internal.conventionv200.NodePropertiesListAnnouncementParser;
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +42,12 @@ public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessag
     private Logger logger = LoggerFactory.getLogger(HomieBridgeHandler.class);
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
-    private final List<String> subThings = Collections.synchronizedList(new LinkedList<String>());
 
-    public HomieBridgeHandler(Bridge thing, MqttConnection mqttconnection) {
+    public HomieBridgeHandler(Bridge thing) {
         super(thing);
-        this.mqttconnection = mqttconnection;
+        this.mqttconnection = new MqttConnection("BridgeHandler");
         topicParser = new TopicParser(mqttconnection.getBasetopic());
+
     }
 
     @Override
@@ -73,14 +66,15 @@ public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessag
     public void initialize() {
         try {
             mqttconnection.subscribe(thing, this);
+            updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
             logger.error("Error subscribing for MQTT topics", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error subscribing MQTT" + e.toString());
         }
+
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -88,6 +82,12 @@ public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessag
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        mqttconnection.disconnect();
+        super.dispose();
     }
 
     @Override
@@ -133,45 +133,12 @@ public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessag
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_IMPLEMENTATION);
                     updateState(channel, new StringType(message.toString()));
                 }
-            } else if (ht.isNodeProperty()) {
-                String nodeId = ht.getNodeId();
-                Thing thing = addOrGetNode(nodeId);
-                String prop = ht.getCombinedInternalPropertyName();
-
-                if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                    NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
-                    NodePropertiesList propslist = parser.parse(message.toString());
-                    addOrGetChannels(propslist);
-                } else if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYTYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                    updatePropertyType(ht.getNodeId(), message);
-                }
-
-                // Use this to add channels dynamically
-                /*
-                 * ThingBuilder thingBuilder = editThing();
-                 *
-                 * thingBuilder.withChannels(newChannels);
-                 * updateThing(thingBuilder.build());
-                 */
             }
+
         } catch (ParseException e) {
             logger.error("Topic cannot be handled", e);
         }
 
     }
 
-    private void updatePropertyType(String nodeId, String type) {
-        logger.debug("Updating node (thing) type" + nodeId + " to " + type);
-
-    }
-
-    private void addOrGetChannels(NodePropertiesList list) {
-        logger.debug("Add new properties (channels)" + Arrays.toString(list.getProperties().toArray()));
-
-    }
-
-    private Thing addOrGetNode(String nodeId) {
-        logger.debug("Add new node (thing) " + nodeId);
-        return getThing();
-    }
 }

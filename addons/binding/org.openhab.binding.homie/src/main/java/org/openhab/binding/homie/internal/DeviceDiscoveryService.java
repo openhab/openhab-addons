@@ -20,19 +20,19 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HomieDeviceDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
+public class DeviceDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
 
-    private static Logger logger = LoggerFactory.getLogger(HomieDeviceDiscoveryService.class);
+    private static Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
 
     private final TopicParser topicParser;
     private MqttConnection mqttconnection;
     private Map<String, HomieInformationHolder> thingCache = Collections
             .synchronizedMap(new HashMap<String, HomieInformationHolder>());
 
-    public HomieDeviceDiscoveryService() {
+    public DeviceDiscoveryService() {
         super(Collections.singleton(HOMIE_DEVICE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS, true);
         logger.info("Homie Discovery Service started");
-        mqttconnection = MqttConnection.getInstance();
+        mqttconnection = new MqttConnection("DeviceDiscovery");
         topicParser = new TopicParser(HomieBindingConstants.BASETOPIC);
     }
 

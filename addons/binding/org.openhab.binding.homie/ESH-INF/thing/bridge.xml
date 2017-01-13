@@ -5,7 +5,7 @@
 
 	<!-- Bridge - Homie Convention V2.0 -->
 	<bridge-type id="homieDeviceV2">
-		<label>Homie Device</label>
+		<label>Homie Device (Bridge)</label>
 		<description>This bridge represents a Homie Device that complies with the Homie MQTT Convention V2.0.0</description>
 
 		<channels>

@@ -18,6 +18,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.homie,
  org.openhab.binding.homie.handler,
+ org.osgi.framework;version="1.8.0",
  org.osgi.service.component;version="1.2.2",
  org.slf4j
 Service-Component: OSGI-INF/*.xml

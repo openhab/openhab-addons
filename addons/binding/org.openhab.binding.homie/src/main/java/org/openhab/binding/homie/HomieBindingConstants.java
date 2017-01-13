@@ -19,7 +19,7 @@ public class HomieBindingConstants {
 
     public final static String MQTT_TOPIC_SEPARATOR = "/";
     // To be removed as soon as configuration is working
-    public final static String BROKER_URL = "tcp://localhost:1883";
+    public final static String BROKER_URL = "tcp://broker:1883";
     public final static String BASETOPIC = "homie";
 
     public static final String BINDING_ID = "homie";

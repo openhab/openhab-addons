@@ -30,11 +30,18 @@ public class MqttConnection {
 
         @Override
         public void connectionLost(Throwable arg0) {
-            logger.error("MQTT Connection lost", arg0);
-            try {
-                client.connect();
-            } catch (MqttException e) {
-                logger.error("MQTT Reconnect failed", e);
+            if (doReconnect) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e1) {
+
+                }
+                logger.error("MQTT Connection lost", arg0);
+                try {
+                    client.connect();
+                } catch (MqttException e) {
+                    logger.error("MQTT Reconnect failed", e);
+                }
             }
 
         }
@@ -43,42 +50,50 @@ public class MqttConnection {
 
     private static Logger logger = LoggerFactory.getLogger(MqttConnection.class);
 
-    private static MqttConnection instance = null;
-
     private final String brokerURL;
     private final String basetopic;
     private MqttClient client;
     private final String listenDeviceTopic;
+    private boolean doReconnect = true;
+
+    private final String qualifier;
 
     public String getBasetopic() {
         return basetopic;
     }
 
-    public static MqttConnection getInstance() {
-        if (instance == null) {
-            instance = new MqttConnection();
-
+    public void disconnect() {
+        doReconnect = false;
+        try {
+            client.disconnectForcibly();
+        } catch (MqttException e) {
+            logger.error("Error on disconnect", e);
         }
-        return instance;
     }
 
-    private MqttConnection() {
+    public MqttConnection(String clientIdentifier) {
         this.brokerURL = BROKER_URL;
         this.basetopic = BASETOPIC;
         listenDeviceTopic = String.format("%s/#", basetopic);
+        qualifier = clientIdentifier;
         connect();
     }
 
     private void connect() {
         try {
             logger.debug("Homie MQTT Connection start");
-            client = new MqttClient(brokerURL, MQTT_CLIENTID, new MemoryPersistence());
+            client = new MqttClient(brokerURL, MQTT_CLIENTID + "-" + qualifier, new MemoryPersistence());
             client.connect();
             client.setCallback(new CallbackHandler());
             logger.debug("Homie MQTT Connection connected");
         } catch (MqttException e) {
             logger.error("MQTT Connect failed", e);
         }
+    }
+
+    public void subscribe(Bridge bridge, Thing thing, IMqttMessageListener messageListener) throws MqttException {
+        String topic = String.format("%s/%s/%s/#", basetopic, bridge.getUID().getId(), thing.getUID().getId());
+        client.subscribe(topic, messageListener);
     }
 
     public void subscribe(Thing thing, IMqttMessageListener messageListener) throws MqttException {
@@ -101,6 +116,15 @@ public class MqttConnection {
     }
 
     public void unsubscribeListenForDeviceIds() {
+        try {
+            client.unsubscribe(listenDeviceTopic);
+        } catch (MqttException e) {
+            logger.error("Failed to unsubscribe from topic " + listenDeviceTopic, e);
+        }
+
+    }
+
+    public void unsubscribeListenForNodeIds() {
         try {
             client.unsubscribe(listenDeviceTopic);
         } catch (MqttException e) {
