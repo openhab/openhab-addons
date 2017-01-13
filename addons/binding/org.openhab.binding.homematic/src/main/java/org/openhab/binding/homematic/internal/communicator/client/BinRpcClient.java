@@ -73,7 +73,7 @@ public class BinRpcClient extends RpcClient {
      */
     @Override
     protected synchronized Object[] sendMessage(int port, RpcRequest request) throws IOException {
-        if (TRACE_ENABLED) {
+        if (logger.isTraceEnabled()) {
             logger.trace("Client BinRpcRequest:\n{}", request);
         }
         return sendMessage(port, (BinRpcMessage) request, 0);
@@ -103,7 +103,7 @@ public class BinRpcClient extends RpcClient {
                 return sendMessage(port, request, socketRetryCounter);
             }
         } finally {
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Client BinRpcResponse:\n{}", resp == null ? "null" : resp.toString());
             }
         }
