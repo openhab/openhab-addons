@@ -77,7 +77,7 @@ public class XmlRpcClient extends RpcClient {
     @Override
     protected synchronized Object[] sendMessage(int port, RpcRequest request) throws IOException {
         try {
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Client XmlRpcRequest (port {}):\n{}", port, request);
             }
 
@@ -88,7 +88,7 @@ public class XmlRpcClient extends RpcClient {
                     .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()).send();
 
             String result = new String(response.getContent(), config.getEncoding());
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
 

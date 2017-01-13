@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
-    protected static final boolean TRACE_ENABLED = logger.isTraceEnabled();
 
     protected HomematicConfig config;
 
