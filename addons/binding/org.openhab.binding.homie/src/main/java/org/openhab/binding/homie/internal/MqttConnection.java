@@ -1,15 +1,15 @@
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.MQTT_CLIENTID;
+import static org.openhab.binding.homie.HomieBindingConstants.*;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,11 @@ public class MqttConnection {
     private final String brokerURL;
     private final String basetopic;
     private MqttClient client;
-    private MqttClientPersistence persistence = new MemoryPersistence();
+    private final String listenDeviceTopic;
+
+    public String getBasetopic() {
+        return basetopic;
+    }
 
     public static MqttConnection getInstance() {
         if (instance == null) {
@@ -59,8 +63,9 @@ public class MqttConnection {
     }
 
     private MqttConnection() {
-        this.brokerURL = "tcp://broker:1883";
-        this.basetopic = "homie";
+        this.brokerURL = BROKER_URL;
+        this.basetopic = BASETOPIC;
+        listenDeviceTopic = String.format("%s/#", basetopic);
         connect();
     }
 
@@ -76,23 +81,32 @@ public class MqttConnection {
         }
     }
 
-    public void subscribe(Thing thing, IMqttMessageListener messageListener) {
+    public void subscribe(Thing thing, IMqttMessageListener messageListener) throws MqttException {
         String topic = String.format("%s/%s/#", basetopic, thing.getUID().getId());
-        try {
-            client.subscribe(topic, messageListener);
-        } catch (MqttException e) {
-            logger.error("Failed to subscribe to topic " + topic, e);
-        }
+        client.subscribe(topic, messageListener);
     }
 
     public void listenForDeviceIds(IMqttMessageListener messageListener) {
-        String topic = String.format("%s/#", basetopic);
-        logger.debug("Listening for devices on topic " + topic);
+
+        logger.debug("Listening for devices on topic " + listenDeviceTopic);
         try {
-            client.subscribe(topic, messageListener);
+            client.subscribe(listenDeviceTopic, messageListener);
         } catch (MqttException e) {
-            logger.error("Failed to subscribe to topic " + topic, e);
+            logger.error("Failed to subscribe to topic " + listenDeviceTopic, e);
         }
+    }
+
+    public void listenForNodeIds(Bridge bridge, IMqttMessageListener messageListener) throws MqttException {
+        subscribe(bridge, messageListener);
+    }
+
+    public void unsubscribeListenForDeviceIds() {
+        try {
+            client.unsubscribe(listenDeviceTopic);
+        } catch (MqttException e) {
+            logger.error("Failed to unsubscribe from topic " + listenDeviceTopic, e);
+        }
+
     }
 
 }

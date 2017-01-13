@@ -2,32 +2,38 @@ package org.openhab.binding.homie.internal;
 
 import static org.openhab.binding.homie.HomieBindingConstants.*;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.homie.HomieBindingConstants;
+import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
+import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HomieDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
-    private static Logger logger = LoggerFactory.getLogger(HomieDiscoveryService.class);
+public class HomieDeviceDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
 
+    private static Logger logger = LoggerFactory.getLogger(HomieDeviceDiscoveryService.class);
+
+    private final TopicParser topicParser;
     private MqttConnection mqttconnection;
     private Map<String, HomieInformationHolder> thingCache = Collections
             .synchronizedMap(new HashMap<String, HomieInformationHolder>());
 
-    public HomieDiscoveryService() {
-        super(Collections.singleton(HOMIE_THING_TYPE), DISCOVERY_TIMEOUT_SECONDS, true);
+    public HomieDeviceDiscoveryService() {
+        super(Collections.singleton(HOMIE_DEVICE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS, true);
         logger.info("Homie Discovery Service started");
         mqttconnection = MqttConnection.getInstance();
+        topicParser = new TopicParser(HomieBindingConstants.BASETOPIC);
     }
 
     protected void activate(ComponentContext componentContext) {
@@ -42,26 +48,34 @@ public class HomieDiscoveryService extends AbstractDiscoveryService implements I
     @Override
     protected void startScan() {
         logger.info("Homie Discovery Service start scan");
-        thingCache.clear();
         mqttconnection.listenForDeviceIds(this);
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+
+        mqttconnection.unsubscribeListenForDeviceIds();
+        thingCache.clear();
     }
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         logger.debug("Homie MQTT Message arrived " + message.toString() + " on topic " + topic);
-        Matcher idMatcher = HOMIE_ID_REGEX.matcher(topic);
 
-        if (idMatcher.find()) {
-            String homieId = idMatcher.group(1);
+        try {
+            HomieTopic topicInfo = topicParser.parse(topic);
+
+            String homieId = topicInfo.getDeviceId();
             HomieInformationHolder homieDeviceInformation = getCacheEntry(homieId);
-            homieDeviceInformation.parse(topic, message.toString());
+            homieDeviceInformation.parse(topicInfo, message.toString());
             if (homieDeviceInformation.isInformationComplete()) {
                 logger.debug("Data for Homie Device " + homieId + " is complete");
-                ThingUID thingId = new ThingUID(HOMIE_THING_TYPE, homieId);
+                ThingUID thingId = new ThingUID(HOMIE_DEVICE_THING_TYPE, homieId);
                 thingDiscovered(homieDeviceInformation.toDiscoveryResult(thingId));
-
             }
-
+        } catch (ParseException e) {
+            logger.debug("Topic cannot be parsed", e);
         }
 
     }

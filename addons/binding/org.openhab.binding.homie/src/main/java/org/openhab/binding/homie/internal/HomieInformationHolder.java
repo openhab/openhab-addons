@@ -1,11 +1,13 @@
 package org.openhab.binding.homie.internal;
 
 import static org.openhab.binding.homie.HomieBindingConstants.*;
+import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 
 /**
  * Cache entry to sum up single static information until all information required to create a Homie thing was gathered.
@@ -59,13 +61,17 @@ public class HomieInformationHolder {
 
     }
 
-    public void parse(String topic, String message) {
-        if (StringUtils.endsWith(topic, "/$homie")) {
-            setHomieSpecVersion(message);
-        } else if (StringUtils.endsWith(topic, "/$name")) {
-            setName(message);
-        } else if (StringUtils.endsWith(topic, "/$implementation")) {
-            setImplementation(message);
+    public void parse(HomieTopic topic, String message) {
+        if (topic.isInternalProperty()) {
+            String propname = topic.getInternalPropertyName();
+            if (StringUtils.equals(propname, HOMIE_TOPIC_SUFFIX)) {
+                setHomieSpecVersion(message);
+            } else if (StringUtils.equals(propname, NAME_TOPIC_SUFFIX)) {
+                setName(message);
+            } else if (StringUtils.equals(propname, IMPLEMENTATION_TOPIC_SUFFIX)) {
+                setImplementation(message);
+            }
         }
+
     }
 }

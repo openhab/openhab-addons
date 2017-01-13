@@ -11,7 +11,7 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="true" name="org.openhab.binding.homie.internal">
 
-   <implementation class="org.openhab.binding.homie.internal.HomieDiscoveryService"/>
+   <implementation class="org.openhab.binding.homie.internal.HomieDeviceDiscoveryService"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>

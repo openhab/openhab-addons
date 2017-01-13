@@ -22,16 +22,31 @@ HomieDevice.prototype.announce=function(){
 	mqttspy.publish(basetopic+this.id+"/$fw/version",this.fwversion,1,true);
 	mqttspy.publish(basetopic+this.id+"/$fw/checksum","79af87723dc295f95bdb277a61189a2a",1,false);
 	mqttspy.publish(basetopic+this.id+"/$implementation","D1Mini",1,true);
+	mqttspy.publish(basetopic+this.id+"/$implementation","D1Mini",1,true);
+
+
+}
+
+HomieDevice.prototype.sendprops=function(){
+	//Nodes and props
+	mqttspy.publish(basetopic+this.id+"/temp/$type","temperature",1,true);
+	mqttspy.publish(basetopic+this.id+"/temp/$properties","unit,degrees,sensorinterval:settable",1,true);
+	mqttspy.publish(basetopic+this.id+"/temp/unit","c",1,true);
+	mqttspy.publish(basetopic+this.id+"/temp/degrees","15.6",1,true);
+	mqttspy.publish(basetopic+this.id+"/temp/sensorinterval","1",1,true);
 }
 
 
 function publish() {
 	//var Thread = Java.type("java.lang.Thread");
-	for(i=0;i<10;i++){
+	for(i=0;i<3;i++){
 		var device=new HomieDevice("abc123-"+i,"D1 Mini "+i,"MyFirmware");
 		device.announce();
+		if(i==1){
+			device.sendprops();
+		}
 	}
-	
+
 }
 
 publish();

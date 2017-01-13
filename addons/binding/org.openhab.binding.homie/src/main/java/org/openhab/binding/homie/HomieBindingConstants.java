@@ -7,8 +7,6 @@
  */
 package org.openhab.binding.homie;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -19,22 +17,37 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class HomieBindingConstants {
 
+    public final static String MQTT_TOPIC_SEPARATOR = "/";
+    // To be removed as soon as configuration is working
+    public final static String BROKER_URL = "tcp://localhost:1883";
+    public final static String BASETOPIC = "homie";
+
     public static final String BINDING_ID = "homie";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID HOMIE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieDeviceV2");
 
-    public final static int DISCOVERY_TIMEOUT_SECONDS = 30;
+    public final static ThingTypeUID HOMIE_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieDeviceV2");
+    public final static ThingTypeUID HOMIE_NODE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieNodeV2");
 
-    public final static String BASETOPIC = "homie";
-
-    public final static Pattern HOMIE_ID_REGEX = Pattern.compile("\\/([a-z0-9]([a-z0-9\\\\-]+[a-z0-9])?)\\/\\$");
-
-    public final static String BROKER_URL = "tcp://localhost:1883";
+    public final static int DEVICE_DISCOVERY_TIMEOUT_SECONDS = 30;
+    public final static int NODE_DISCOVERY_TIMEOUT_SECONDS = 60;
 
     public final static String MQTT_CLIENTID = "homieOpenhab2Binding";
 
     public final static String THING_PROP_SPEC_VERSION = "homie-specification-version";
     public final static String THING_PROP_IMPL_VERSION = "implementation-version";
+
+    public final static String CHANNEL_STATS_UPTIME = "stats_uptime";
+    public final static String CHANNEL_ONLINE = "online";
+    public final static String CHANNEL_NAME = "name";
+    public static final String CHANNEL_IMPLEMENTATION = "implementation";
+    public static final String CHANNEL_FIRMWARE_CHECKSUM = "fw_checksum";
+    public static final String CHANNEL_FIRMWARE_VERSION = "fw_version";
+    public static final String CHANNEL_FIRMWARE_NAME = "fw_name";
+    public static final String CHANNEL_STATS_INTERVAL = "stats_interval";
+    public static final String CHANNEL_STATS_SIGNAL = "stats_signal";
+    public static final String CHANNEL_MAC = "mac";
+    public static final String CHANNEL_LOCALIP = "localip";
+    public static final String MAC_TOPIC_SUFFIX = "$mac";
 
 }

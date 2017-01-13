@@ -7,23 +7,25 @@
  */
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.HOMIE_THING_TYPE;
+import static org.openhab.binding.homie.HomieBindingConstants.*;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.homie.handler.HomieHandler;
+import org.openhab.binding.homie.handler.HomieBridgeHandler;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * The {@link HomieHandlerFactory} is responsible for creating things and thing
@@ -34,7 +36,8 @@ import org.slf4j.LoggerFactory;
 public class HomieHandlerFactory extends BaseThingHandlerFactory {
     private static Logger logger = LoggerFactory.getLogger(HomieHandlerFactory.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HOMIE_THING_TYPE);
+    private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
+            .newArrayList(HOMIE_DEVICE_THING_TYPE, HOMIE_NODE_THING_TYPE);
 
     private MqttConnection mqttconnection = MqttConnection.getInstance();
 
@@ -60,14 +63,11 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(HOMIE_THING_TYPE)) {
+        if (thingTypeUID.equals(HOMIE_DEVICE_THING_TYPE)) {
             logger.info("Create homie thing for " + thing.toString());
-            return new HomieHandler(thing, mqttconnection);
+            return new HomieBridgeHandler((Bridge) thing, mqttconnection);
         }
-
         return null;
     }
 
