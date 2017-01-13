@@ -9,9 +9,9 @@ The binding integrates the AHA ( [AVM Home Automation](http://avm.de/ratgeber/sm
 
 The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices. It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now. The Box has to run at least on firmware FRITZ!OS 6.00 and hast to support the "Smart Home" service.
 
-### FRITZ!DECT 200
+### FRITZ!DECT 200 / FRITZ!DECT 210
 
-This [switchable outlet](http://avm.de/produkte/fritzdect/fritzdect-200/) has to be connected to a FRITZ!Box by DECT protocol. It supports switching the outlet, current power and accumulated energy consumption and temperature readings.
+This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol. They support switching the outlet, current power and accumulated energy consumption and temperature readings.
 
 ### FRITZ!DECT Repeater 100
 
@@ -59,10 +59,10 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 |-------------|--------|-----------------------------|------------------------------------|
-| temperature | Number | Actual measured temperature | FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
-| energy | Number | Accumulated energy consumption | FRITZ!DECT 200, FRITZ!Powerline 546E |
-| power | Number | Current power consumption | FRITZ!DECT 200, FRITZ!Powerline 546E |
-| outlet | Switch | Switchable outlet | FRITZ!DECT 200, FRITZ!Powerline 546E |
+| temperature | Number | Actual measured temperature | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
+| energy | Number | Accumulated energy consumption | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| power | Number | Current power consumption | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| outlet | Switch | Switchable outlet | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
 
 ## Full Example
 
