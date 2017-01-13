@@ -16,7 +16,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The things requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
+The things require the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 
 ## Channels
 
@@ -54,8 +54,8 @@ The things requires the geolocation (latitude, longitude) for which the calculat
 Things:
 
 ```
-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
+astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 ```
 
 Items:
@@ -99,5 +99,16 @@ Available events:
     * **group** `apogee`
         * **event**: `APOGEE`
 
-**Note**: Offsets for each event group can be configured in the channel properties
+Offsets:
+
+*For each event group you can optionally configure an offset in the channel properties for the corresponding thing.*
+
+```
+astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ] {
+    Channels:
+        Type rangeEvent : rise#event [
+            offset=-30
+        ]
+}
+```
 
