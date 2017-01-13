@@ -111,12 +111,15 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
     }
 
     private void updateChannel(String channelId, boolean readonly) {
-        ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-        Channel channel = ChannelBuilder.create(channelUID, "Everything").withLabel(channelId)
-                .withKind(ChannelKind.STATE).build();
-        ThingBuilder builder = editThing();
-        builder.withChannel(channel);
-        updateThing(builder.build());
+        if (getThing().getChannel(channelId) == null) {
+
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+            Channel channel = ChannelBuilder.create(channelUID, "Everything").withLabel(channelId)
+                    .withKind(ChannelKind.STATE).build();
+            ThingBuilder builder = editThing();
+            builder.withChannel(channel);
+            updateThing(builder.build());
+        }
     }
 
 }
