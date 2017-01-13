@@ -118,12 +118,16 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
+<<<<<<< 96f519654d3af7331fe2a84989f0d82d36360d70
 =======
     <module>org.openhab.binding.chamberlainmyq</module>
 >>>>>>> Added Chamberlain MyQ skeleton
 =======
     <module>org.openhab.binding.yamahareceiver</module>
 >>>>>>> readded branch changes
+=======
+    <module>org.openhab.binding.wink</module>
+>>>>>>> Project skeleton.
   </modules>
 
 </project>
