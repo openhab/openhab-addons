@@ -43,6 +43,15 @@ public class WinkDeviceConfig {
         }
     }
 
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+    public String asString() {
+      // TODO: Add more data?
+      return ("Name:       " + name + "\n"+
+              "Model name: " + modelName);
+    }
+
+>>>>>>> Project skeleton.
     public boolean validateConfig() {
         if (this.deviceId == null || this.name == null) {
             return false;
@@ -73,4 +82,8 @@ public class WinkDeviceConfig {
     public String getPubnubChannel() {
         return pubnubChannel;
     }
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 }
+=======
+}
+>>>>>>> Project skeleton.

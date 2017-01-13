@@ -137,6 +137,7 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 <<<<<<< 96f519654d3af7331fe2a84989f0d82d36360d70
 =======
     <module>org.openhab.binding.chamberlainmyq</module>
@@ -154,3 +155,10 @@
   </modules>
 
 </project>
+=======
+    <module>org.openhab.binding.wink</module>
+  </modules>
+
+</project>
+
+>>>>>>> Project skeleton.
