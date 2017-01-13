@@ -97,8 +97,11 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
                 addWinkDevice(THING_TYPE_LIGHT_BULB, element.getAsJsonObject(), "light_bulb_id");
             } else if (element.getAsJsonObject().get("remote_id") != null) {
                 addWinkDevice(THING_TYPE_REMOTE, element.getAsJsonObject(), "remote_id");
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 			} else if (element.getAsJsonObject().get("binary_switch_id") != null) {
                 addWinkDevice(THING_TYPE_BINARY_SWITCH, element.getAsJsonObject(), "binary_switch_id");
+=======
+>>>>>>> Project skeleton.
             }
         }
     }

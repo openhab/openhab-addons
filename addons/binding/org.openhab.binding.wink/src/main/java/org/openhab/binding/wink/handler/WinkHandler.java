@@ -1,5 +1,9 @@
 /**
  * Copyright (c) 2014-2016 by the respective copyright holders.
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+ *
+>>>>>>> Project skeleton.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -63,16 +67,28 @@ public abstract class WinkHandler extends BaseThingHandler {
     public WinkHandler(Thing thing) {
         super(thing);
         String config = (String) getThing().getConfiguration().get(WINK_DEVICE_CONFIG);
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
         String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
         this.deviceConfig = new WinkDeviceConfig(id);
         parseConfig(config);
+=======
+        logger.trace("Initializing a thing with the following config: " + config);
+        String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
+        logger.trace("Thing ID: " + id);
+        this.deviceConfig = new WinkDeviceConfig(id);
+        parseConfig(config);
+        logger.info("Initializing a Wink device: \n" + deviceConfig.asString());
+>>>>>>> Project skeleton.
         registerToPubNub();
     }
 
     @Override
     public void dispose() {
         super.dispose();
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 
+=======
+>>>>>>> Project skeleton.
         pubnub.unsubscribe().channels(Arrays.asList(deviceConfig.getPubnubChannel()));
         pubnub.destroy();
     }
@@ -83,6 +99,10 @@ public abstract class WinkHandler extends BaseThingHandler {
      * @param jsonConfigString the string containing the configuration of this thing as returned by the hub (in JSON).
      */
     protected void parseConfig(String jsonConfigString) {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+        logger.trace("Parsing a thing's config: " + jsonConfigString);
+>>>>>>> Project skeleton.
         JsonParser parser = new JsonParser();
         deviceConfig.readConfigFromJson(parser.parse(jsonConfigString).getAsJsonObject());
     }
@@ -126,7 +146,11 @@ public abstract class WinkHandler extends BaseThingHandler {
          * @param handler The handler for which the configuration should be read.
          */
         public WinkDeviceRequestCallback(WinkHandler handler) {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
             Preconditions.checkArgument(handler != null, "The argument 'handler' must not be null.");
+=======
+            Preconditions.checkArgument(handler != null, "The argument |handler| must not be null.");
+>>>>>>> Project skeleton.
             this.handler = handler;
         }
 
@@ -155,6 +179,10 @@ public abstract class WinkHandler extends BaseThingHandler {
 
         @Override
         public void parseRequestResult(JsonObject jsonResult) {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+            logger.trace("Parsing a ReadDeviceState request result: " + jsonResult);
+>>>>>>> Project skeleton.
             // The response from the server is a JSON object containing the device information and state.
             handler.updateDeviceStateCallback(jsonResult.get("data").getAsJsonObject());
         }
@@ -164,6 +192,10 @@ public abstract class WinkHandler extends BaseThingHandler {
      * Query the {@link WinkHub2Handler} for this device's state.
      */
     protected void ReadDeviceState() {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+        logger.trace("Querying the device state for: \n" + deviceConfig.asString());
+>>>>>>> Project skeleton.
         try {
             getHubHandler().sendRequestToServer(getDeviceRequestPath(), new ReadDeviceStateCallback(this));
         } catch (IOException e) {
@@ -189,11 +221,20 @@ public abstract class WinkHandler extends BaseThingHandler {
 
         @Override
         public void parseRequestResult(JsonObject jsonResult) {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+            logger.trace("Parsing a SendCommandCallback request result: " + jsonResult);
+>>>>>>> Project skeleton.
             handler.sendCommandCallback(jsonResult);
         }
     }
 
     public void sendCommand(String payLoad) {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+        logger.trace("Sending a command with the following payload: " + payLoad +
+                     "\nto device: \n" + deviceConfig.asString());
+>>>>>>> Project skeleton.
         try {
             getHubHandler().sendRequestToServer(getDeviceRequestPath() + "/desired_state",
                     new SendCommandCallback(this), payLoad);
@@ -207,6 +248,10 @@ public abstract class WinkHandler extends BaseThingHandler {
     /////////////////////////////////////////////////
 
     protected void registerToPubNub() {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+        logger.debug("Doing the PubNub registration for :\n" + deviceConfig.asString());
+>>>>>>> Project skeleton.
         PNConfiguration pnConfiguration = new PNConfiguration();
         pnConfiguration.setSubscribeKey(this.deviceConfig.getPubnubSubscribeKey());
 
@@ -214,6 +259,10 @@ public abstract class WinkHandler extends BaseThingHandler {
         this.pubnub.addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+                logger.trace("Received a reply from PubNub: " + message.getMessage().getAsString());
+>>>>>>> Project skeleton.
                 JsonParser parser = new JsonParser();
                 JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                 pubNubMessageCallback(jsonMessage);
@@ -224,7 +273,16 @@ public abstract class WinkHandler extends BaseThingHandler {
             }
 
             @Override
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
             public void status(PubNub arg0, PNStatus arg1) {
+=======
+            public void status(PubNub arg0, PNStatus status) {
+              if (status.isError()) {
+                logger.error("PubNub communication error: " + status.getStatusCode());
+              } else {
+                logger.trace("PubNub status: no error.");
+              }
+>>>>>>> Project skeleton.
             }
         });
 

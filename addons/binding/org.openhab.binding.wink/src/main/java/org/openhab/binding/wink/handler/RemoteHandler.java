@@ -1,3 +1,14 @@
+<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
+=======
+/**
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+>>>>>>> Project skeleton.
 package org.openhab.binding.wink.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
