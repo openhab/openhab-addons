@@ -19,7 +19,7 @@ No binding configuration required.
 The thing configuration requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation. These configurations are done in PaperUI.
 
 ## Channels
-
+ 
 * **thing** `sun`
     * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
         * **channel** `start, end` (DateTime), `duration` (Number)
@@ -51,6 +51,12 @@ The thing configuration requires the geolocation (latitude, longitude) for which
 
 ## Full Example
 
+Things: 
+ 
+``` 
+-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60] 
+-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60] 
+``` 
 Items:
 
 ```
