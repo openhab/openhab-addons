@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tankerkoenig"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	    <!-- Sample Thing Type -->
+	    <thing-type id="tankstelle">
+	        <label>Tankstelle</label>
+	        <description>Dieses "Thing" bildet eine Tankstelle ab, zu welcher man sich E5-, E10-, und Diesel-Preise abrufen kann</description>
+	
+	        <channels>
+	            <channel id="diesel" typeId="diesel"/>
+	            <channel id="e10" typeId="e10"/>
+	            <channel id="e5" typeId="e5"/>
+	        </channels>
+	        
+	        
+	        <config-description>
+	            <parameter name="apikey" type="text" required="true">
+	                <label>API-Key</label>
+	                <description>tankerkoenig API-Key. Nötige Registrierung unter https://creativecommons.tankerkoenig.de
+	                </description>
+	            </parameter>
+	            
+	            <parameter name="locationid" type="text" required="true">
+	                <label>Tankstellen-ID</label>
+	                <description>Tankstellen-ID</description>
+	            </parameter>
+	            
+	            <parameter name="refresh" type="integer" min="10">
+	                <label>Aktualisierungsintervall</label>
+	                <description>Spezifiziert das Aktualisierungsintervall in Minuten. Minimum 10 Minuten.</description>
+	                <default>60</default>
+	            </parameter>
+	            
+	        </config-description>
+	        
+	    </thing-type>
+	
+	    <!-- Sample Channel Type -->
+	    <channel-type id="diesel">
+	        <item-type>Number</item-type>
+	        <label>Diesel</label>
+	        <description>Diesel price</description>
+	        <state readOnly="true"></state>
+	    </channel-type>
+	    
+	    <channel-type id="e10">
+	        <item-type>Number</item-type>
+	        <label>E10</label>
+	        <description>E10 price</description>
+	        <state readOnly="true"></state>
+	    </channel-type>
+	    
+	    <channel-type id="e5">
+            <item-type>Number</item-type>
+            <label>E5</label>
+            <description>E5 price</description>
+            <state readOnly="true"></state>
+        </channel-type>
+
+</thing:thing-descriptions>
