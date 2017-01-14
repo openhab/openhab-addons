@@ -10,6 +10,9 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -24,6 +27,8 @@ import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
  */
 public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
 
+    private Map<String, BoseSoundTouchHandler> mapOfAllSoundTouchDevices = new HashMap<>();
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -34,9 +39,25 @@ public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
-            return new BoseSoundTouchHandler(thing);
+            return new BoseSoundTouchHandler(thing, this);
         }
 
         return null;
+    }
+
+    public void registerSoundTouchDevice(BoseSoundTouchHandler handler) {
+        mapOfAllSoundTouchDevices.put(handler.getMacAddress(), handler);
+    }
+
+    public void removeSoundTouchDevice(BoseSoundTouchHandler handler) {
+        mapOfAllSoundTouchDevices.remove(handler.getMacAddress());
+    }
+
+    public Map<String, BoseSoundTouchHandler> getAllSoundTouchDevices() {
+        return mapOfAllSoundTouchDevices;
+    }
+
+    public BoseSoundTouchHandler getBoseSoundTouchDevice(String mac) {
+        return mapOfAllSoundTouchDevices.get(mac);
     }
 }

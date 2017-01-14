@@ -148,7 +148,7 @@ public class XMLResponseHandler extends DefaultHandler {
                             // an other device is the master
                             boseSoundTouchHandler.setZoneState(ZoneState.Master);
                             boseSoundTouchHandler.setMasterZoneSoundTouchHandler(
-                                    boseSoundTouchHandler.getBoseSoundTouchHandler(master));
+                                    boseSoundTouchHandler.getFactory().getBoseSoundTouchDevice(master));
                             if (boseSoundTouchHandler.getMasterZoneSoundTouchHandler() == null) {
                                 logger.warn("Zone update: Unable to find master with ID " + master);
                             }
@@ -378,7 +378,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case ZoneMember:
                 String mac = new String(ch, start, length);
                 zoneMember.setMac(mac);
-                zoneMember.setHandler(boseSoundTouchHandler.getBoseSoundTouchHandler(mac));
+                zoneMember.setHandler(boseSoundTouchHandler.getFactory().getBoseSoundTouchDevice(mac));
                 if (zoneMember.getHandler() == null) {
                     logger.warn("Zone update: Unable to find member with ID " + mac);
                 }

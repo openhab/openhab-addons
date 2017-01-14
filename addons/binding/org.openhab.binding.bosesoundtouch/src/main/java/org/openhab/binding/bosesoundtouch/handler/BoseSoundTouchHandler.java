@@ -11,7 +11,6 @@ package org.openhab.binding.bosesoundtouch.handler;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
+import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseHandler;
 import org.openhab.binding.bosesoundtouch.internal.ZoneState;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
@@ -97,13 +97,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private WebSocket socket;
 
-    private Map<String, BoseSoundTouchHandler> mapOfAllSoundTouchDevices = new HashMap<>();
+    private BoseSoundTouchHandlerFactory factory;
     private ZoneState zoneState;
     private BoseSoundTouchHandler masterZoneSoundTouchHandler;
     private ArrayList<ZoneMember> zoneMembers;
 
-    public BoseSoundTouchHandler(Thing thing) {
+    public BoseSoundTouchHandler(Thing thing, BoseSoundTouchHandlerFactory factory) {
         super(thing);
+        this.factory = factory;
     }
 
     @Override
@@ -133,13 +134,13 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelNowPlayingStationNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONNAME);
         channelNowPlayingTrackUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGTRACK);
 
-        mapOfAllSoundTouchDevices.put(getMacAddress(), this);
+        factory.registerSoundTouchDevice(this);
         openConnection();
     }
 
     @Override
     public void handleRemoval() {
-        mapOfAllSoundTouchDevices.remove(getMacAddress());
+        factory.removeSoundTouchDevice(this);
         super.handleRemoval();
     }
 
@@ -297,7 +298,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                         String action = cmdlc.split(" ")[0];
                         String other = cmdlc.split(" ")[1];
                         BoseSoundTouchHandler oh = null;
-                        for (Entry<String, BoseSoundTouchHandler> e : mapOfAllSoundTouchDevices.entrySet()) {
+                        for (Entry<String, BoseSoundTouchHandler> e : factory.getAllSoundTouchDevices().entrySet()) {
                             BoseSoundTouchHandler o = e.getValue();
                             // try by mac
                             String mac = e.getKey();
@@ -339,7 +340,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                                 }
                             } else if ("remove".equals(action)) {
                                 boolean found = false;
-                                for (Iterator< ZoneMember>mi = zoneMembers.iterator(); mi.hasNext();) {
+                                for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
                                     ZoneMember m = mi.next();
                                     if (oh.getMacAddress().equals(m.getMac())) {
                                         mi.remove();
@@ -513,8 +514,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
     }
 
-    public BoseSoundTouchHandler getBoseSoundTouchHandler(String mac) {
-        return mapOfAllSoundTouchDevices.get(mac);
+    public BoseSoundTouchHandlerFactory getFactory() {
+        return factory;
     }
 
     public void clearListOfPresets() {
@@ -751,6 +752,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
         // Port seems to be hardcoded, therefore no userinput or discovery is necessary
         String wsUrl = "http://" + host + ":8080/";
+        logger.debug(thing.getUID() + " Connecting to: " + wsUrl);
         Request request = new Request.Builder().url(wsUrl).addHeader("Sec-WebSocket-Protocol", "gabbo").build();
         WebSocketCall call = WebSocketCall.create(client, request);
         call.enqueue(this);
