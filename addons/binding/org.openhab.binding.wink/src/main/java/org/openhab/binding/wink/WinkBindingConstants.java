@@ -20,9 +20,21 @@ public class WinkBindingConstants {
     public static final String BINDING_ID = "wink";
     
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_TYPE_LIGHT_BULB = new ThingTypeUID(BINDING_ID, "light_bulb");
 
-    // List of all Channel ids
-    public final static String CHANNEL_1 = "channel1";
+    // List of all Channel ids for the common stuffs
+    public final static String CHANNEL_NAME = "name";
+    public final static String CHANNEL_MODEL_NAME = "model_name";
+    public final static String CHANNEL_PUBNUB_SUBSCRIBE_KEY = "subscribe_key";
+    public final static String CHANNEL_PUBNUB_CHANNEL = "channel";
 
+    // List of all Channel ids for a light bulb
+    public final static String CHANNEL_LIGHT_DESIRED_STATE_POWERED = "powered";
+    public final static String CHANNEL_LIGHT_DESIRED_STATE_BRIGHTNESS = "brightness";
+
+    // REST URI constants
+    public static final String WINK_URI = "https://api.wink.com/";
+    public static final String DEVICES_REQUEST_PATH = "users/me/wink_devices";
+    public static final String WINK_ACCESS_TOKEN = "access_token";
+    public static final String WINK_REFRESH_TOKEN = "refresh_token";
 }

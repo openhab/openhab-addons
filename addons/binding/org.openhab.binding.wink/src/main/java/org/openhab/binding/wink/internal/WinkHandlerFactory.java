@@ -12,7 +12,7 @@ import static org.openhab.binding.wink.WinkBindingConstants.*;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.wink.handler.WinkHandler;
+import org.openhab.binding.wink.handler.LightBulbHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class WinkHandlerFactory extends BaseThingHandlerFactory {
     
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_LIGHT_BULB);
     
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,8 +38,8 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
-            return new WinkHandler(thing);
+        if (thingTypeUID.equals(THING_TYPE_LIGHT_BULB)) {
+            return new LightBulbHandler(thing);
         }
 
         return null;
