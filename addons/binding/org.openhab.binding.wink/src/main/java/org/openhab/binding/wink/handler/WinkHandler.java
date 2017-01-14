@@ -7,8 +7,6 @@
  */
 package org.openhab.binding.wink.handler;
 
-import static org.openhab.binding.wink.WinkBindingConstants.*;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -20,28 +18,28 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link WinkHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Sebastien Marchand - Initial contribution
  */
 public class WinkHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(WinkHandler.class);
 
-	public WinkHandler(Thing thing) {
-		super(thing);
-	}
+    public WinkHandler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-        if(channelUID.getId().equals(CHANNEL_1)) {
-            // TODO: handle command
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // if(channelUID.getId().equals(CHANNEL_1)) {
+        // TODO: handle command
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
-	}
+        // Note: if communication with thing fails for some reason,
+        // indicate that by setting the status with detail information
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // "Could not control device at IP address x.x.x.x");
+        // }
+    }
 
     @Override
     public void initialize() {

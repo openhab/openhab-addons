@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Wink Binding</name>
-    <description>This is the binding for Wink.</description>
+    <description>This is the binding for the Wink Hub.</description>
     <author>Sebastien Marchand</author>
 
 </binding:binding>
