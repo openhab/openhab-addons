@@ -3,6 +3,7 @@
 	<name>org.openhab.binding.wink</name>
 	<comment></comment>
 	<projects>
+		<project>org.eclipse.smarthome.config.discovery</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -7,14 +7,19 @@
  */
 package org.openhab.binding.wink.handler;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lutron.internal.discovery.WinkDeviceDiscoveryService;
 import org.openhab.binding.wink.config.WinkHub2Config;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +33,11 @@ public class WinkHub2Handler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(WinkHub2Handler.class);
 
+    private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
+
     public WinkHub2Handler(Bridge bridge) {
         super(bridge);
-        logger.info("Here's a new light bulb handler!");
+        logger.info("Here's a new Wink Hub 2 handler!");
     }
 
     @Override
@@ -42,7 +49,17 @@ public class WinkHub2Handler extends BaseBridgeHandler {
     public void initialize() {
         this.config = getThing().getConfiguration().as(WinkHub2Config.class);
         if (validConfiguration()) {
+            WinkDeviceDiscoveryService discovery = new WinkDeviceDiscoveryService(this);
 
+            this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery,
+                    null);
+
+            this.scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    // connect();
+                }
+            }, 0, TimeUnit.SECONDS);
         }
     }
 
@@ -58,6 +75,10 @@ public class WinkHub2Handler extends BaseBridgeHandler {
             return false;
         }
         return true;
+    }
+
+    public WinkHub2Config getHubConfig() {
+        return this.config;
     }
 
     private WinkHub2Config config;

@@ -5,7 +5,14 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><bridge-type id="wink_hub_2">
     	<label>Wink Hub 2</label>
     	<config-description>
-    		<parameter name="access_token" type="text" required="true"></parameter></config-description>
+    		<parameter name="access_token" type="text" required="true">
+    			<label>Access token</label>
+    			<description>The access token of the hub</description>
+    		</parameter>
+    		<parameter name="refresh_token" type="text" required="true">
+    			<label>Refresh token</label>
+    			<description>The refresh token of the hub</description>
+    		</parameter></config-description>
 </bridge-type>
 	<thing-type id="dimmable_light_bulb">
         <supported-bridge-type-refs>

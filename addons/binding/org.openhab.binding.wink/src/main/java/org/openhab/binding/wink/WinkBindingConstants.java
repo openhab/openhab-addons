@@ -35,7 +35,7 @@ public class WinkBindingConstants {
 
     // REST URI constants
     public static final String WINK_URI = "https://api.wink.com/";
-    public static final String DEVICES_REQUEST_PATH = "users/me/wink_devices";
+    public static final String WINK_DEVICES_REQUEST_PATH = "users/me/wink_devices";
     public static final String WINK_ACCESS_TOKEN = "access_token";
     public static final String WINK_REFRESH_TOKEN = "refresh_token";
 }

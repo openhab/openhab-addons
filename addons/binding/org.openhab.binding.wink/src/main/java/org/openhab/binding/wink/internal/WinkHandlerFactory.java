@@ -18,6 +18,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.wink.handler.LightBulbHandler;
 import org.openhab.binding.wink.handler.WinkHub2Handler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -28,6 +30,10 @@ import com.google.common.collect.ImmutableSet;
  * @author Sebastien Marchand - Initial contribution
  */
 public class WinkHandlerFactory extends BaseThingHandlerFactory {
+
+    private Logger logger = LoggerFactory.getLogger(WinkHandlerFactory.class);
+
+    public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2,
             THING_TYPE_LIGHT_BULB);
