@@ -25,17 +25,17 @@
                 <label>Host Address</label>
                 <description>The Host / IP Address used for communication to this device.</description>
             </parameter>
+            <parameter name="REFRESH" type="text" required="true">
+                <label>Refresh interval</label>
+                <description>Time for autoupdate</description>
+            </parameter>
             <parameter name="USER" type="text" required="false">
-                <label>Host Address</label>
-                <description>The Host / IP Address used for communication to this device.</description>
+                <label>User Name</label>
+                <description>The Username of the Webinterface.</description>
             </parameter>
             <parameter name="PASSWORD" type="text" required="false">
-                <label>MAC Address</label>
-                <description>The MAC Address used for communication to this device.</description>
-            </parameter>
-            <parameter name="REFRESH" type="text" required="false">
-                <label>MAC Address</label>
-                <description>The MAC Address used for communication to this device.</description>
+                <label>Password</label>
+                <description>The Password of the Webinterface.</description>
             </parameter>
         </config-description>
     </thing-type>    
