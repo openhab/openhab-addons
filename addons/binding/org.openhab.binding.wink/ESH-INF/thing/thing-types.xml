@@ -2,23 +2,26 @@
 <thing:thing-descriptions bindingId="wink"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-    <!-- Sample Thing Type -->
-    <thing-type id="sample">
-        <label>Wink Binding Thing</label>
-        <description>Sample thing for Wink Binding</description>
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><bridge-type id="wink_hub_2">
+    	<label>Wink Hub 2</label>
+    	<config-description>
+    		<parameter name="access_token" type="text" required="true"></parameter></config-description>
+</bridge-type>
+	<thing-type id="dimmable_light_bulb">
+        <supported-bridge-type-refs>
+        	<bridge-type-ref id="wink_hub_2" />
+        </supported-bridge-type-refs>
+        <label>Light Bulb (Dimmable)</label>
+        <description>Controls dimmable light bulb</description>
 
         <channels>
-            <channel id="channel1" typeId="sample-channel"/>
+            <channel id="lightlevel" typeId="lightDimmer"></channel>
         </channels>
     </thing-type>
-
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>winkItem</item-type>
-        <label>Wink Binding Channel</label>
-        <description>Sample channel for Wink Binding</description>
+    <channel-type id="lightDimmer">
+        <item-type>Dimmer</item-type>
+        <label>Light Level</label>
+        <description>Increase/decrease the light level</description>
     </channel-type>
 
 </thing:thing-descriptions>
