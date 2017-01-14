@@ -11,9 +11,14 @@
         <channels>
             <channel id="power" typeId="power" />
             <channel id="volume" typeId="volume" />
-            <channel id="channelName" typeId="channelName" />
-            <channel id="channelNumber" typeId="channelNumber" />
             <channel id="mute" typeId="mute" />
+            <channel id="playerControl" typeId="playerControl" />
+            <channel id="channelNumber" typeId="channelNumber" />
+            
+            <channel id="nowPlayingChannel" typeId="nowPlayingChannel" />
+            <channel id="nowPlayingTitle" typeId="nowPlayingTitle" />
+            <channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
+            <channel id="nowPlayingDescriptionExtended" typeId="nowPlayingDescriptionExtended" />
         </channels>
         <config-description>
             <parameter name="DEVICE_HOST" type="text" required="true">
@@ -46,20 +51,46 @@
         <description>Set or get the volume</description>
         <category>SoundVolume</category>
     </channel-type>
-    <channel-type id="channelName">
-        <item-type>String</item-type>
-        <label>Channel Name</label>
-        <description>get the current channel name</description>
-    </channel-type>
-     <channel-type id="channelNumber">
-        <item-type>String</item-type>
-        <label>Channel Number</label>
-        <description>set the current channel number</description>
-    </channel-type>
     <channel-type id="mute">
         <item-type>Switch</item-type>
         <label>Volume Mute</label>
         <description>Mute state of the Enigma2 STB</description>
+    </channel-type>
+    <channel-type id="playerControl">
+        <item-type>Player</item-type>
+        <label>Player Control</label>
+        <description>Control the Player, e.g. play/pause/stop/next/previous</description>
+        <category>Player</category>
+    </channel-type>
+    <channel-type id="channelNumber">
+        <item-type>String</item-type>
+        <label>Channel Number</label>
+        <description>set the current channel number</description>
+    </channel-type>
+    
+    <channel-type id="nowPlayingChannel">
+        <item-type>String</item-type>
+        <label>Channel Name</label>
+        <description>get the current channel name</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="nowPlayingTitle">
+        <item-type>String</item-type>
+        <label>Title</label>
+        <description>Current playing Title</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="nowPlayingDescription">
+        <item-type>String</item-type>
+        <label>Description</label>
+        <description>Current playing description</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="nowPlayingDescriptionExtended">
+        <item-type>String</item-type>
+        <label>Description Extended</label>
+        <description>Current playing description extended</description>
+        <state readOnly="true" />
     </channel-type>
 
 </thing:thing-descriptions>

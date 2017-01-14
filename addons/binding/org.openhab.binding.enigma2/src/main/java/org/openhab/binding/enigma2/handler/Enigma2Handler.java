@@ -9,6 +9,8 @@ package org.openhab.binding.enigma2.handler;
 
 import java.util.ArrayList;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,7 +23,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.enigma2.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2CommandHandler;
 import org.openhab.binding.enigma2.internal.Enigma2CommandHandlerListener;
-import org.openhab.binding.enigma2.internal.Enigma2PowerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +38,14 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
 
     private ChannelUID channelPowerUID;
     private ChannelUID channelVolumeUID;
-    private ChannelUID channelChannelNameUID;
-    private ChannelUID channelChannelNumberUID;
     private ChannelUID channelMuteUID;
+    private ChannelUID channelPlayerControlUID;
+    private ChannelUID channelChannelNumberUID;
+
+    private ChannelUID channelNowPlaylingChannelUID;
+    private ChannelUID channelNowPlaylingTitleUID;
+    private ChannelUID channelNowPlaylingDescriptionUID;
+    private ChannelUID channelNowPlaylingDescriptionExtendedUID;
 
     private Enigma2CommandHandler commandHandler;
 
@@ -49,37 +55,44 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand() called, channelUID={}, command={}", channelUID, command);
-        if (command instanceof RefreshType) {
-            getCurrentValues();
-        } else {
-            if (channelUID.equals(channelPowerUID)) {
-                commandHandler.sendOnOff(command, Enigma2PowerState.TOGGLE_STANDBY);
-            } else if (channelUID.equals(channelVolumeUID)) {
-                commandHandler.setVolume(command);
-            } else if (channelUID.equals(channelChannelNumberUID)) {
-                commandHandler.setChannel(command);
-            } else if (channelUID.equals(channelMuteUID)) {
-                commandHandler.sendMuteUnmute(command);
-            }
-            // sendRcCommand(command, bindingConfig.getCmdValue());
-            // setDownmix(command);
-        }
-    }
-
-    @Override
     public void initialize() {
         channelPowerUID = getChannelUID(Enigma2BindingConstants.CHANNEL_POWER);
         channelVolumeUID = getChannelUID(Enigma2BindingConstants.CHANNEL_VOLUME);
-        channelChannelNameUID = getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL_NAME);
+        channelNowPlaylingChannelUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_CHANNEL);
         channelChannelNumberUID = getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL_NUMBER);
         channelMuteUID = getChannelUID(Enigma2BindingConstants.CHANNEL_MUTE);
+        channelPlayerControlUID = getChannelUID(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL);
+
+        channelNowPlaylingTitleUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE);
+        channelNowPlaylingDescriptionUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION);
+        channelNowPlaylingDescriptionExtendedUID = getChannelUID(
+                Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED);
 
         Refresher refresher = new Refresher();
         refresher.addListener(this);
         updateStatus(ThingStatus.ONLINE);
         refresher.start();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handleCommand() called, channelUID={}, command={}", channelUID, command);
+        if (command instanceof RefreshType) {
+            updateCurrentStates();
+            commandHandler.generateServiceMaps();
+        } else {
+            if (channelUID.equals(channelPowerUID)) {
+                commandHandler.togglePowerState(command);
+            } else if (channelUID.equals(channelVolumeUID)) {
+                commandHandler.setVolume(command);
+            } else if (channelUID.equals(channelChannelNumberUID)) {
+                commandHandler.setChannelNumber(command);
+            } else if (channelUID.equals(channelMuteUID)) {
+                commandHandler.setMute(command);
+            } else if (channelUID.equals(channelPlayerControlUID)) {
+                commandHandler.setPlayControl(command);
+            }
+        }
     }
 
     public String getUserName() {
@@ -130,17 +143,33 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
         return chann.getUID();
     }
 
-    private void getCurrentValues() {
+    private void updateCurrentStates() {
+        // TODO nur setzten wenn Eingeschalten, sonst null
         updateState(channelPowerUID, commandHandler.getPowerState());
-        updateState(channelVolumeUID, commandHandler.getVolume());
-        updateState(channelChannelNameUID, commandHandler.getChannelName());
-        updateState(channelChannelNumberUID, commandHandler.getChannelNumber());
-        updateState(channelMuteUID, commandHandler.isMuted());
+        if (commandHandler.getPowerState() == OnOffType.ON) {
+            updateState(channelVolumeUID, commandHandler.getVolumeState());
+            updateState(channelNowPlaylingChannelUID, commandHandler.getChannelNameState());
+            updateState(channelChannelNumberUID, commandHandler.getChannelNumberState());
+            updateState(channelMuteUID, commandHandler.getMutedState());
+
+            updateState(channelNowPlaylingTitleUID, commandHandler.getNowPlayingTitle());
+            updateState(channelNowPlaylingDescriptionUID, commandHandler.getNowPlayingDescription());
+            updateState(channelNowPlaylingDescriptionExtendedUID, commandHandler.getNowPlayingDescriptionExtended());
+        } else {
+            updateState(channelVolumeUID, new StringType(""));
+            updateState(channelNowPlaylingChannelUID, new StringType(""));
+            updateState(channelChannelNumberUID, new StringType(""));
+            updateState(channelMuteUID, new StringType(""));
+
+            updateState(channelNowPlaylingTitleUID, new StringType(""));
+            updateState(channelNowPlaylingDescriptionUID, new StringType(""));
+            updateState(channelNowPlaylingDescriptionExtendedUID, new StringType(""));
+        }
     }
 
     @Override
     public void getUpdate() {
-        getCurrentValues();
+        updateCurrentStates();
     }
 
     private class Refresher extends Thread {

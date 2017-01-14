@@ -34,8 +34,13 @@ public class Enigma2BindingConstants {
     public final static String CHANNEL_POWER = "power";
     public final static String CHANNEL_VOLUME = "volume";
     public final static String CHANNEL_MUTE = "mute";
-    public final static String CHANNEL_CHANNEL_NAME = "channelName";
+    public final static String CHANNEL_PLAYER_CONTROL = "playerControl";
     public final static String CHANNEL_CHANNEL_NUMBER = "channelNumber";
+
+    public final static String CHANNEL_NOW_PLAYING_CHANNEL = "nowPlayingChannel";
+    public final static String CHANNEL_NOW_PLAYING_TITLE = "nowPlayingTitle";
+    public final static String CHANNEL_NOW_PLAYING_DESCRIPTION = "nowPlayingDescription";
+    public final static String CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED = "nowPlayingDescriptionExtended";
 
     public final static String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
 

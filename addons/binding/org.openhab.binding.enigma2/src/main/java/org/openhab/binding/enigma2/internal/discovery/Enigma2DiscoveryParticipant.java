@@ -96,12 +96,22 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         return "_ssh._tcp.local.";
     }
 
+    private boolean isNameValid(String name) {
+        if (name.contains("optimuss")) {
+            return true;
+        }
+        if (name.contains("dream")) {
+            return true;
+        }
+        return false;
+    }
+
     private String getFormattedIPAddress(ServiceInfo info) {
         if (info != null) {
             InetAddress[] addrs = info.getInetAddresses();
             if (addrs.length > 0) {
                 String name = info.getName();
-                if (name.equals("optimussos2plus")) { // TODO find all enigma2 devices
+                if (isNameValid("name")) {
                     String ip = addrs[0].getHostAddress();
                     if (ip != null) {
                         String formatedIP = ip.replace(".", "");
