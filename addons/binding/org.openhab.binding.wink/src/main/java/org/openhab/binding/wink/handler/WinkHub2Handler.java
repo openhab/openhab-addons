@@ -7,24 +7,27 @@
  */
 package org.openhab.binding.wink.handler;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.wink.config.WinkHub2Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO: The {@link LightBulbHandler} is responsible for handling commands, which are
+ * TODO: The {@link WinkHub2Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Sebastien Marchand - Initial contribution
  */
-public class LightBulbHandler extends WinkHandler {
+public class WinkHub2Handler extends WinkHandler {
 
-    private Logger logger = LoggerFactory.getLogger(LightBulbHandler.class);
+    private Logger logger = LoggerFactory.getLogger(WinkHub2Handler.class);
 
-    public LightBulbHandler(Thing thing) {
+    public WinkHub2Handler(Thing thing) {
         super(thing);
         logger.info("Here's a new light bulb handler!");
     }
@@ -44,15 +47,25 @@ public class LightBulbHandler extends WinkHandler {
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+        this.config = getThing().getConfiguration().as(WinkHub2Config.class);
+        if (validConfiguration()) {
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        }
     }
+
+    private boolean validConfiguration() {
+        if (this.config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hub configuration missing");
+            return false;
+        } else if (StringUtils.isEmpty(this.config.access_token)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "access_token not specified");
+            return false;
+        } else if (StringUtils.isEmpty(this.config.refresh_token)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "refresh_token not specified");
+            return false;
+        }
+        return true;
+    }
+
+    private WinkHub2Config config;
 }
