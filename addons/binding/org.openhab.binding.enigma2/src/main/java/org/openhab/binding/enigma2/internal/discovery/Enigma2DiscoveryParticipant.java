@@ -111,7 +111,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
             InetAddress[] addrs = info.getInetAddresses();
             if (addrs.length > 0) {
                 String name = info.getName();
-                if (isNameValid("name")) {
+                if (isNameValid(name)) {
                     String ip = addrs[0].getHostAddress();
                     if (ip != null) {
                         String formatedIP = ip.replace(".", "");
