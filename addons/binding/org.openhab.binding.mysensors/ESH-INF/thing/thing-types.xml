@@ -1,0 +1,1435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mysensors" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GATEWAY -->
+
+	<bridge-type id="bridge-ser">
+		<label>MySensors Serial Gateway</label>
+		<description>MySensors Gateway connected via serial port
+		</description>
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<description>The serial port the MySensors Gateway is connected to
+				</description>
+			</parameter>
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
+				<label>Send Delay</label>
+				<description>The delay between messages send to the gateway 
+				</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="baudRate" type="integer" required="false" min="300" max="250000">
+				<label>Baudrate</label>
+				<description>Baudrate for serial port
+				</description>
+				<default>115200</default>
+			</parameter>
+			<parameter name="skipStartupCheck" type="boolean" required="false">
+				<label>Skip startup connection check</label>
+				<description>Allow the user to bypass the I_VERSION check on startup</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableNetworkSanCheck" type="boolean" required="false">
+				<label>Disable network sanity check</label>
+				<description>Network sanity check periodically unsure that gateway is up and running</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<bridge-type id="bridge-eth">
+		<label>MySensors Ethernet Gateway</label>
+		<description>MySensors Gateway connected via ethernet/IP
+		</description>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP Address</label>
+				<description>The IP Address the MySensors Gateway uses
+				</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer" required="true" min="1" max="65535">
+				<label>TCP Port</label>
+				<description>The TCP Port the MySensors Gateway uses (usually 5003)
+				</description>
+				<default>5003</default>
+			</parameter>
+			<parameter name="sendDelay" type="integer" required="false" min="1" max="1000">
+				<label>Send Delay</label>
+				<description>The delay between messages send to the gateway 
+				</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="skipStartupCheck" type="boolean" required="false">
+				<label>Skip startup connection check</label>
+				<description>Allow the user to bypass the I_VERSION check on startup</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imperial" type="boolean" required="false">
+				<label>Imperial/Metric selection</label>
+				<description>Metric answer with imperial instead of metric</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableNetworkSanCheck" type="boolean" required="false">
+				<label>Disable network sanity check</label>
+				<description>Network sanity check periodically unsure that gateway is up and running</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- SENSORS -->
+
+	<thing-type id="humidity">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Humidity Sensor</label>
+		<description>Humidity sensor</description>
+
+		<channels>
+			<channel id="hum" typeId="hum-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+			<channel id="custom" typeId="var1-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="temperature">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Temperature Sensor</label>
+		<description>Temperature sensor</description>
+
+		<channels>
+			<channel id="temp" typeId="temp-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+			<channel id="custom" typeId="var1-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="multimeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Multimeter Sensor</label>
+		<description>Multimeter sensor</description>
+
+		<channels>
+			<channel id="volt" typeId="volt-channel" />
+			<channel id="current" typeId="current-channel" />
+			<channel id="impedance" typeId="impedance-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Light</label>
+		<description>Light</description>
+
+		<channels>
+			<channel id="status" typeId="status-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="requestAck" type="boolean" required="false">
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="revertState" type="boolean" required="false">
+				<label>Revert State</label>
+				<description>Revert state if no Ack received</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="power">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Power</label>
+		<description>Power-Sensor</description>
+
+		<channels>
+			<channel id="watt" typeId="watt-channel" />
+			<channel id="kwh" typeId="kwh-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId-watt</label>
+				<description>The ID of the first child, displaying watt, of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="baro">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Barometer</label>
+		<description>Barometer</description>
+
+		<channels>
+			<channel id="baro" typeId="baro-channel" />
+			<channel id="pressure" typeId="pressure-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="door">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Door</label>
+		<description>Door</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="armed" typeId="armed-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="motion">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Motion</label>
+		<description>Motion detection</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="armed" typeId="armed-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="smoke">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Smoke</label>
+		<description>Smoke detection</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Dimmer</label>
+		<description>Dimmer</description>
+
+		<channels>
+			<channel id="dimmer" typeId="dimmer-channel" />
+			<channel id="watt" typeId="watt-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="cover">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>RollerShutter</label>
+		<description>RollerShutter</description>
+
+		<channels>
+			<channel id="cover" typeId="cover-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="wind">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Wind</label>
+		<description>Wind</description>
+
+		<channels>
+			<channel id="wind" typeId="wind-channel" />
+			<channel id="gust" typeId="gust-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="rain">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Rain</label>
+		<description>Rain</description>
+
+		<channels>
+			<channel id="rain" typeId="rain-channel" />
+			<channel id="rainrate" typeId="rainrate-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="uv">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>UV</label>
+		<description>UV</description>
+
+		<channels>
+			<channel id="uv" typeId="uv-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="weight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Weight</label>
+		<description>Weight</description>
+
+		<channels>
+			<channel id="weight" typeId="weight-channel" />
+			<channel id="impedance" typeId="impedance-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="distance">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Distance</label>
+		<description>Distance</description>
+
+		<channels>
+			<channel id="distance" typeId="distance-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="light-level">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Light level</label>
+		<description>Light level</description>
+
+		<channels>
+			<channel id="light-level" typeId="light-level-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="requestAck" type="boolean" required="false">
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="revertState" type="boolean" required="false">
+				<label>Revert State</label>
+				<description>Revert state if no Ack received</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="hvacThermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Thermostat</label>
+		<description>Thermostat</description>
+
+		<channels>
+			<channel id="temp" typeId="temp-channel" />
+			<channel id="hvac-flow-state" typeId="hvac-flow-state-channel" />
+			<channel id="hvac-flow-mode" typeId="hvac-flow-mode-channel" />
+			<channel id="hvac-setPoint-heat" typeId="hvac-setPoint-heat-channel" />
+			<channel id="hvac-setPoint-cool" typeId="hvac-setPoint-cool-channel" />
+			<channel id="hvac-speed" typeId="hvac-speed-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="var5" typeId="var5-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="waterMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>WaterMeter</label>
+		<description>Water flow meter</description>
+
+		<channels>
+			<channel id="flow" typeId="flow-channel" />
+			<channel id="volume" typeId="volume-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="customSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>CustomSensor</label>
+		<description>Custom Sensor with VAR1 - VAR5 channels -> Values are also transmitted to the sensor</description>
+
+		<channels>
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="var5" typeId="var5-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="requestAck" type="boolean" required="false">
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="revertState" type="boolean" required="false">
+				<label>Revert State</label>
+				<description>Revert state if no Ack received</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="lock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Lock Sensor</label>
+		<description>Lock sensor</description>
+
+		<channels>
+			<channel id="lock" typeId="lock-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="sound">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Level Sensor</label>
+		<description>Level sensor</description>
+
+		<channels>
+			<channel id="tripped" typeId="tripped-channel" />
+			<channel id="armed" typeId="armed-channel" />
+			<channel id="level" typeId="level-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="rgbLight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>RGB Light Sensor</label>
+		<description>RGB light sensor</description>
+
+		<channels>
+			<channel id="status" typeId="status-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="requestAck" type="boolean" required="false">
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="revertState" type="boolean" required="false">
+				<label>Revert State</label>
+				<description>Revert state if no Ack received</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="rgbwLight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>RGBW Light Sensor</label>
+		<description>RGBW light sensor</description>
+
+		<channels>
+			<channel id="status" typeId="status-channel" />
+			<channel id="var1" typeId="var1-channel" />
+			<channel id="var2" typeId="var2-channel" />
+			<channel id="var3" typeId="var3-channel" />
+			<channel id="var4" typeId="var4-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="requestAck" type="boolean" required="false">
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="revertState" type="boolean" required="false">
+				<label>Revert State</label>
+				<description>Revert state if no Ack received</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="waterQuality">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>PH Meter Sensor</label>
+		<description>PH meter sensor</description>
+
+		<channels>
+			<channel id="temp" typeId="temp-channel" />
+			<channel id="ph" typeId="ph-channel" />
+			<channel id="orp" typeId="orp-channel" />
+			<channel id="ec" typeId="ec-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="requestAck" type="boolean" required="false">
+				<label>Request ACK</label>
+				<description>Request ACK from Actuator</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="revertState" type="boolean" required="false">
+				<label>Revert State</label>
+				<description>Revert state if no Ack received</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="smartSleep" type="boolean" required="false">
+				<label>SmartSleep</label>
+				<description>Does this node support Smartsleep? 
+								A message to the node is only send in response to a heartbeat!
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="mysensorsMessage">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>MySensors Message</label>
+		<description>Shows the complete MySensors Message</description>
+
+		<channels>
+			<channel id="mySensorsMessage" typeId="mySensorsMessage-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="text">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Text</label>
+		<description>V_TEXT</description>
+
+		<channels>
+			<channel id="text" typeId="text-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="irSend">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>IR Send</label>
+		<description>Send IR codes</description>
+
+		<channels>
+			<channel id="irSend" typeId="irSend-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="irReceive">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>IR Receive</label>
+		<description>Receive IR codes</description>
+
+		<channels>
+			<channel id="irReceive" typeId="irReceive-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<context>NodeId</context>
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+				<context>ChildId</context>
+				<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+				<default>999</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="airQuality">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-ser" />
+			<bridge-type-ref id="bridge-eth" />
+		</supported-bridge-type-refs>
+
+		<label>Air Quality Meter</label>
+		<description>Air Quality Meter</description>
+
+		<channels>
+			<channel id="co2-level" typeId="co2-level-channel" />
+			<channel id="battery" typeId="battery-channel" />
+			<channel id="lastupdate" typeId="lastupdate-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>NodeId</label>
+				<description>The ID of the node in the MySensors network
+				</description>
+			</parameter>
+			<parameter name="childId" type="text" required="true">
+			<label>ChildId</label>
+				<description>The ID of the child of a node in the MySensors network
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- CHANNELS -->
+
+	<channel-type id="hum-channel">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>MySensors Humidity Channel</description>
+		<category>Humidity</category>
+		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="temp-channel">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>MySensors Temperature Channel</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="volt-channel">
+		<item-type>Number</item-type>
+		<label>Volt</label>
+		<description>MySensors Volt Channel</description>
+		<category>Energy</category>
+		<state pattern="%.1f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="current-channel">
+		<item-type>Number</item-type>
+		<label>Ampere</label>
+		<description>MySensors Current Channel</description>
+		<category>Energy</category>
+		<state pattern="%.1f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="status-channel">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>Status</description>
+		<category>Light</category>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="watt-channel">
+		<item-type>Number</item-type>
+		<label>Watt</label>
+		<description>MySensors Watt Channel</description>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="kwh-channel">
+		<item-type>Number</item-type>
+		<label>KWH</label>
+		<description>MySensors KWH Channel</description>
+		<category>Energy</category>
+		<state pattern="%.2f KWH" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pressure-channel">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>MySensors Pressure Channel</description>
+		<category>Weather</category>
+	</channel-type>
+	<channel-type id="baro-channel">
+		<item-type>String</item-type>
+		<label>Forecast</label>
+		<description>MySensors Forecast Channel</description>
+		<category>Weather</category>
+	</channel-type>
+	<channel-type id="tripped-channel">
+		<item-type>Contact</item-type>
+		<label>Tripped Status</label>
+		<description>Tripped Status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="armed-channel">
+		<item-type>Contact</item-type>
+		<label>Armed Status</label>
+		<description>Armed Status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dimmer-channel">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Dimmer</description>
+		<category>LightVolume</category>
+		<state min="0" max="100" pattern="%d %%" />
+	</channel-type>
+	<channel-type id="cover-channel">
+		<item-type>Rollershutter</item-type>
+		<label>Cover</label>
+		<description>Cover</description>
+		<category>Blinds</category>
+	</channel-type>
+	<channel-type id="wind-channel">
+		<item-type>Number</item-type>
+		<label>Wind speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+	</channel-type>
+	<channel-type id="gust-channel">
+		<item-type>Number</item-type>
+		<label>Wind gust</label>
+		<description>Wind gust</description>
+		<category>Wind</category>
+	</channel-type>
+	<channel-type id="rain-channel">
+		<item-type>Number</item-type>
+		<label>Amount of rain</label>
+		<description>Amount of rain</description>
+		<category>Rain</category>
+	</channel-type>
+	<channel-type id="rainrate-channel">
+		<item-type>Number</item-type>
+		<label>Rain rate</label>
+		<description>Rain rate</description>
+		<category>Rain</category>
+	</channel-type>
+	<channel-type id="uv-channel">
+		<item-type>Number</item-type>
+		<label>UV</label>
+		<description>UV</description>
+		<category>Light</category>
+	</channel-type>
+	<channel-type id="weight-channel">
+		<item-type>Number</item-type>
+		<label>Weight</label>
+		<description>Weight</description>
+	</channel-type>
+	<channel-type id="impedance-channel">
+		<item-type>Number</item-type>
+		<label>Impedance</label>
+		<description>Impedance</description>
+	</channel-type>
+	<channel-type id="distance-channel">
+		<item-type>Number</item-type>
+		<label>Distance</label>
+		<description>Distance</description>
+	</channel-type>
+	<channel-type id="light-level-channel">
+		<item-type>Number</item-type>
+		<label>Light level</label>
+		<description>Light level</description>
+	</channel-type>
+	<channel-type id="version-channel">
+		<item-type>Number</item-type>
+		<label>Version</label>
+		<description>MySensors Version</description>
+	</channel-type>
+	<channel-type id="battery-channel">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+		<description>MySensors Battery Channel</description>
+		<category>Energy</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastupdate-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>MySensors Last Update</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="hvac-setPoint-heat-channel">
+		<item-type>Number</item-type>
+		<label>Set point heat</label>
+		<description>MySensors Set point Heat Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-setPoint-cool-channel">
+		<item-type>Number</item-type>
+		<label>Set point cool</label>
+		<description>MySensors Set point Cool Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-flow-state-channel">
+		<item-type>String</item-type>
+		<label>Flow state</label>
+		<description>MySensors HVAC Flow State Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-speed-channel">
+		<item-type>String</item-type>
+		<label>Speed</label>
+		<description>MySensors HVAC Speed Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="hvac-flow-mode-channel">
+		<item-type>String</item-type>
+		<label>Flow mode</label>
+		<description>MySensors HVAC Flow Mode Channel</description>
+		<category>Heating</category>
+	</channel-type>
+	<channel-type id="var1-channel">
+		<item-type>Number</item-type>
+		<label>Variable 1</label>
+		<description>MySensors var1 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var2-channel">
+		<item-type>Number</item-type>
+		<label>Variable 2</label>
+		<description>MySensors var2 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var3-channel">
+		<item-type>Number</item-type>
+		<label>Variable 3</label>
+		<description>MySensors var3 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var4-channel">
+		<item-type>Number</item-type>
+		<label>Variable 4</label>
+		<description>MySensors var4 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="var5-channel">
+		<item-type>Number</item-type>
+		<label>Variable 5</label>
+		<description>MySensors var5 Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="flow-channel">
+		<item-type>Number</item-type>
+		<label>Flow</label>
+		<description>MySensors Water Flow Channel</description>
+	</channel-type>
+	<channel-type id="volume-channel">
+		<item-type>Number</item-type>
+		<label>Volume</label>
+		<description>MySensors Water Volume Channel</description>
+	</channel-type>
+	<channel-type id="lock-channel">
+		<item-type>Status</item-type>
+		<label>Lock</label>
+		<description>MySensors Lock Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="level-channel">
+		<item-type>Number</item-type>
+		<label>Level</label>
+		<description>MySensors Level Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="ph-channel">
+		<item-type>Number</item-type>
+		<label>PH Meter</label>
+		<description>MySensors PH Meter Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="orp-channel">
+		<item-type>Number</item-type>
+		<label>PH Meter</label>
+		<description>MySensors Water ORP Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="ec-channel">
+		<item-type>Number</item-type>
+		<label>PH Meter</label>
+		<description>MySensors Water Electric Condictivity Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="mysensorsMessage-channel">
+		<item-type>String</item-type>
+		<label>MySensors Message</label>
+		<description>MySensors Message Channel</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="text-channel">
+		<item-type>String</item-type>
+		<label>Text</label>
+		<description>MySensors Text Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="irSend-channel">
+		<item-type>String</item-type>
+		<label>Text</label>
+		<description>MySensors IR Send Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="irReceive-channel">
+		<item-type>String</item-type>
+		<label>Text</label>
+		<description>MySensors IR Receive Channel</description>
+		<category>Variable</category>
+	</channel-type>
+	<channel-type id="co2-level-channel">
+		<item-type>Number</item-type>
+		<label>CO2 ppm</label>
+		<description>MySensors CO2 Level Channel</description>
+		<category>Variable</category>
+	</channel-type>
+</thing:thing-descriptions>
