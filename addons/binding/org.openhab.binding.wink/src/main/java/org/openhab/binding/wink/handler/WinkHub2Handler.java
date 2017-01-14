@@ -8,10 +8,11 @@
 package org.openhab.binding.wink.handler;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.wink.config.WinkHub2Config;
 import org.slf4j.Logger;
@@ -23,25 +24,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sebastien Marchand - Initial contribution
  */
-public class WinkHub2Handler extends WinkHandler {
+public class WinkHub2Handler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(WinkHub2Handler.class);
 
-    public WinkHub2Handler(Thing thing) {
-        super(thing);
+    public WinkHub2Handler(Bridge bridge) {
+        super(bridge);
         logger.info("Here's a new light bulb handler!");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // if(channelUID.getId().equals(CHANNEL_1)) {
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
         logger.info("Received a command!");
     }
 

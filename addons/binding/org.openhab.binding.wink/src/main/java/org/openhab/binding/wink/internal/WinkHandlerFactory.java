@@ -11,6 +11,7 @@ import static org.openhab.binding.wink.WinkBindingConstants.*;
 
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -42,7 +43,7 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WINK_HUB_2)) {
-            return new WinkHub2Handler(thing);
+            return new WinkHub2Handler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_LIGHT_BULB)) {
             return new LightBulbHandler(thing);
         }
