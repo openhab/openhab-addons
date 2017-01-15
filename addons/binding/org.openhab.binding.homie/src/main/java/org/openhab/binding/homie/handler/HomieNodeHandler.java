@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homie.internal.HomieConfiguration;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
@@ -57,7 +58,10 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        if (command == RefreshType.REFRESH) {
+            // reconnect to mqtt to receive the retained messages once more
+            mqttconnection.reconnect();
+        }
     }
 
     @Override
@@ -118,8 +122,8 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
             ThingBuilder builder = editThing();
             builder.withChannel(channel);
             updateThing(builder.build());
-            // Reconnect to receive retained messages that may arrived before creating this channel
-            mqttconnection.reconnect();
+
+            handleCommand(channelUID, RefreshType.REFRESH);
         }
     }
 

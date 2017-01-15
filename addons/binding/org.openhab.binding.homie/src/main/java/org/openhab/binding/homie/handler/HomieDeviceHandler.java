@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
@@ -57,6 +58,10 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            // reconnect to mqtt to receive the retained messages once more
+            mqttconnection.reconnect();
+        }
         // if(channelUID.getId().equals(CHANNEL_1)) {
         // // TODO: handle command
         //
@@ -104,39 +109,39 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
                 String prop = ht.getCombinedInternalPropertyName();
                 if (StringUtils.equals(prop, STATS_UPTIME_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_UPTIME);
-                    updateState(channel, new DecimalType(message.toString()));
+                    updateState(channel, new DecimalType(message));
                 } else if (StringUtils.equals(prop, ONLINE_TOPIC_SUFFIX)) {
-                    boolean isOnline = StringUtils.equalsIgnoreCase(message.toString(), "true");
+                    boolean isOnline = StringUtils.equalsIgnoreCase(message, "true");
                     updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_ONLINE);
                     updateState(channel, isOnline ? OnOffType.ON : OnOffType.OFF);
                 } else if (StringUtils.equals(prop, NAME_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_NAME);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, LOCALIP_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_LOCALIP);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, MAC_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_MAC);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, STATS_SIGNAL_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_SIGNAL);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new DecimalType(message));
                 } else if (StringUtils.equals(prop, STATS_INTERVAL_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_INTERVAL);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new DecimalType(message));
                 } else if (StringUtils.equals(prop, FIRMWARE_NAME_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_FIRMWARE_NAME);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, FIRMWARE_VERSION_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_FIRMWARE_VERSION);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, FIRMWARE_CHECKSUM_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_FIRMWARE_CHECKSUM);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, IMPLEMENTATION_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_IMPLEMENTATION);
-                    updateState(channel, new StringType(message.toString()));
+                    updateState(channel, new StringType(message));
                 }
             }
 
