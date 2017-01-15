@@ -1,15 +1,17 @@
 package org.openhab.binding.homie.internal;
 
 import static org.openhab.binding.homie.HomieBindingConstants.*;
+import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.NAME_TOPIC_SUFFIX;
 
 import java.text.ParseException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
@@ -22,8 +24,6 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService implements 
 
     private final TopicParser topicParser;
     private MqttConnection mqttconnection;
-    private Map<String, DeviceInformationHolder> thingCache = Collections
-            .synchronizedMap(new HashMap<String, DeviceInformationHolder>());
 
     public DeviceDiscoveryService(HomieConfiguration config) {
         super(Collections.singleton(HOMIE_DEVICE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS, true);
@@ -43,36 +43,24 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService implements 
         super.stopScan();
 
         mqttconnection.unsubscribeListenForDeviceIds();
-        thingCache.clear();
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
-        logger.debug("Homie MQTT Message arrived " + message.toString() + " on topic " + topic);
+    public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+        String message = mqttMessage.toString();
 
         try {
-            HomieTopic topicInfo = topicParser.parse(topic);
-
-            String homieId = topicInfo.getDeviceId();
-            DeviceInformationHolder homieDeviceInformation = getCacheEntry(homieId);
-            homieDeviceInformation.parse(topicInfo, message.toString());
-            if (homieDeviceInformation.isInformationComplete()) {
-                logger.debug("Data for Homie Device " + homieId + " is complete");
-                ThingUID thingId = new ThingUID(HOMIE_DEVICE_THING_TYPE, homieId);
-                thingDiscovered(homieDeviceInformation.toDiscoveryResult(thingId));
+            HomieTopic ht = topicParser.parse(topic);
+            if (ht.isDeviceProperty() && StringUtils.equals(ht.getCombinedInternalPropertyName(), NAME_TOPIC_SUFFIX)) {
+                ThingUID thingId = new ThingUID(HOMIE_DEVICE_THING_TYPE, ht.getDeviceId());
+                DiscoveryResult dr = DiscoveryResultBuilder.create(thingId).withLabel(message).build();
+                thingDiscovered(dr);
             }
+
         } catch (ParseException e) {
             logger.debug("Topic cannot be parsed", e);
         }
 
-    }
-
-    private DeviceInformationHolder getCacheEntry(String homieId) {
-        if (!thingCache.containsKey(homieId)) {
-            thingCache.put(homieId, new DeviceInformationHolder());
-            logger.info("Homie with id " + homieId + " discovered");
-        }
-        return thingCache.get(homieId);
     }
 
 }
