@@ -80,13 +80,6 @@ Switch zmMonitor1_Mode			"Monitor active [%s]"
 
 ###Sample Rule###
 ```
-zmMonitor1_ForceAlarm        "Force Alarm [%s]"              <switch>    {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:force-alarm"}
-Switch zmMonitor1_EventState        "Alarm [%s]"                <switch>    {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:event-state"}
-Switch zmMonitor1_Recording         "Recording [%s]"            <switch>    {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:record-state"}
-String zmMonitor1_DetailedStatus    "Detailed Status [%s]"                  {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:detailed-status"}
-String zmMonitor1_EventCause
-
-
 rule "Monitor1 Alarm State"
 when
     Item zmMonitor1_EventState changed
