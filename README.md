@@ -8,8 +8,8 @@ This binding supports the following thing types
 
 <table>
 <tr><td><b>Thing</b></td><td><b>Thing Type</b></td><td><b>Discovery</b></td><td><b>Description</b></td></tr>
-<tr><td>ZoneMinder Server</td><td>Bridge</td><td>No</td><td>A ZoneMinder Server. Required version is minimum 1.29</td></tr>
-<tr><td>ZoneMinder Monitor</td><td>Thing</td><td>Yes</td><td>Monitor as defined in ZoneMinder Server</td></tr>
+<tr><td>ZoneMinder Server</td><td>Bridge</td><td>Manual</td><td>A ZoneMinder Server. Required version is minimum 1.29</td></tr>
+<tr><td>ZoneMinder Monitor</td><td>Thing</td><td>Automatic</td><td>Monitor as defined in ZoneMinder Server</td></tr>
 </table>
 
 ## Getting started /  Discovery
