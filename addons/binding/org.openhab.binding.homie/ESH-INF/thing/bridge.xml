@@ -9,19 +9,75 @@
 		<description>This bridge represents a Homie Device that complies with the Homie MQTT Convention V2.0.0</description>
 
 		<channels>
-			<channel id="homie" typeId="homie-channel" />
-			<channel id="online" typeId="online-channel" />
-			<channel id="name" typeId="name-channel" />
-			<channel id="localip" typeId="localip-channel" />
-			<channel id="mac" typeId="mac-channel" />
-			<channel id="stats_uptime" typeId="stats-uptime-channel" />
-			<channel id="stats_signal" typeId="stats-signal-channel" />
-			<channel id="system-stats_signal" typeId="system.signal-strength" />
-			<channel id="stats_interval" typeId="stats-interval-channel" />
-			<channel id="fw_name" typeId="fw-name-channel" />
-			<channel id="fw_version" typeId="fw-version-channel" />
-			<channel id="fw_checksum" typeId="fw-checksum-channel" />
-			<channel id="implementation" typeId="implementation-channel" />
+			<channel id="homie" typeId="homie-channel">
+				<properties>
+					<property name="topic_suffix">$homie</property>
+				</properties>
+			</channel>
+
+			<channel id="online" typeId="online-channel">
+				<properties>
+					<property name="topic_suffix">$online</property>
+				</properties>
+			</channel>
+
+			<channel id="name" typeId="name-channel">
+				<properties>
+					<property name="topic_suffix">$name</property>
+				</properties>
+			</channel>
+
+			<channel id="localip" typeId="localip-channel">
+				<properties>
+					<property name="topic_suffix">$localip</property>
+				</properties>
+			</channel>
+			<channel id="mac" typeId="mac-channel">
+				<properties>
+					<property name="topic_suffix">$mac</property>
+				</properties>
+			</channel>
+
+			<channel id="stats_uptime" typeId="stats-uptime-channel">
+				<properties>
+					<property name="topic_suffix">$stats/uptime</property>
+				</properties>
+			</channel>
+			<channel id="stats_signal" typeId="stats-signal-channel">
+				<properties>
+					<property name="topic_suffix">$stats/signal</property>
+				</properties>
+			</channel>
+			<channel id="system-stats_signal" typeId="system.signal-strength">
+				<properties>
+					<property name="topic_suffix">$stats/signal</property>
+				</properties>
+			</channel>
+			<channel id="stats_interval" typeId="stats-interval-channel">
+				<properties>
+					<property name="topic_suffix">$stats/interval</property>
+				</properties>
+			</channel>
+			<channel id="fw_name" typeId="fw-name-channel">
+				<properties>
+					<property name="topic_suffix">$fw/name</property>
+				</properties>
+			</channel>
+			<channel id="fw_version" typeId="fw-version-channel">
+				<properties>
+					<property name="topic_suffix">$fw/version</property>
+				</properties>
+			</channel>
+			<channel id="fw_checksum" typeId="fw-checksum-channel">
+				<properties>
+					<property name="topic_suffix">$fw/checksum</property>
+				</properties>
+			</channel>
+			<channel id="implementation" typeId="implementation-channel">
+				<properties>
+					<property name="topic_suffix">$implementation</property>
+				</properties>
+			</channel>
 		</channels>
 	</bridge-type>
 	<!-- Thing - Homie Convention V2.0 -->

@@ -24,6 +24,7 @@ public class HomieConventions {
     public static final String STATS_INTERVAL_TOPIC_SUFFIX = "$stats/interval";
     public static final String STATS_SIGNAL_TOPIC_SUFFIX = "$stats/signal";
     public static final String HOMIE_TOPIC_SUFFIX = "$homie";
+    public static final String MAC_TOPIC_SUFFIX = "$mac";
 
     public static final String HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX = "$type";
     public static final String HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX = "$properties";

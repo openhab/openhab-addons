@@ -1,52 +1,23 @@
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.MQTT_CLIENTID;
+import static org.openhab.binding.homie.HomieBindingConstants.*;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.homie.handler.HomieDeviceHandler;
+import org.openhab.binding.homie.handler.HomieNodeHandler;
+import org.openhab.binding.homie.internal.conventionv200.HomieConventions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MqttConnection {
-
-    private class CallbackHandler implements MqttCallback {
-
-        @Override
-        public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
-
-        }
-
-        @Override
-        public void deliveryComplete(IMqttDeliveryToken arg0) {
-
-        }
-
-        @Override
-        public void connectionLost(Throwable arg0) {
-            if (doReconnect) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-
-                }
-                logger.error("MQTT Connection lost", arg0);
-                try {
-                    client.connect();
-                } catch (MqttException e) {
-                    logger.error("MQTT Reconnect failed", e);
-                }
-            }
-
-        }
-
-    }
 
     private static Logger logger = LoggerFactory.getLogger(MqttConnection.class);
 
@@ -54,7 +25,6 @@ public class MqttConnection {
     private final String basetopic;
     private MqttClient client;
     private final String listenDeviceTopic;
-    private boolean doReconnect = true;
 
     private final String qualifier;
 
@@ -63,7 +33,6 @@ public class MqttConnection {
     }
 
     public void disconnect() {
-        doReconnect = false;
         try {
             client.disconnectForcibly();
         } catch (MqttException e) {
@@ -76,6 +45,7 @@ public class MqttConnection {
         this.basetopic = basetopic;
         listenDeviceTopic = String.format("%s/#", basetopic);
         qualifier = clientIdentifier;
+
         connect();
     }
 
@@ -86,18 +56,21 @@ public class MqttConnection {
     private void connect() {
         try {
             logger.debug("Homie MQTT Connection start");
+            MqttConnectOptions opts = new MqttConnectOptions();
+            opts.setAutomaticReconnect(true);
             client = new MqttClient(brokerURL, MQTT_CLIENTID + "-" + qualifier, new MemoryPersistence());
-            client.connect();
-            client.setCallback(new CallbackHandler());
+            client.connect(opts);
             logger.debug("Homie MQTT Connection connected");
         } catch (MqttException e) {
             logger.error("MQTT Connect failed", e);
         }
     }
 
-    public void subscribe(Bridge bridge, Thing thing, IMqttMessageListener messageListener) throws MqttException {
-        String topic = String.format("%s/%s/%s/#", basetopic, bridge.getUID().getId(), thing.getUID().getId());
-        client.subscribe(topic, messageListener);
+    public void listenForNodeProperties(Bridge device, Thing node, IMqttMessageListener messageListener)
+            throws MqttException {
+        String topic = String.format("%s/%s/%s/", basetopic, device.getUID().getId(), node.getUID().getId());
+        client.subscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, messageListener);
+        client.subscribe(topic + HomieConventions.HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX, messageListener);
     }
 
     public void subscribe(Thing thing, IMqttMessageListener messageListener) throws MqttException {
@@ -106,9 +79,9 @@ public class MqttConnection {
     }
 
     public void listenForDeviceIds(IMqttMessageListener messageListener) {
-
         logger.debug("Listening for devices on topic " + listenDeviceTopic);
         try {
+            client.unsubscribe(listenDeviceTopic);
             client.subscribe(listenDeviceTopic, messageListener);
         } catch (MqttException e) {
             logger.error("Failed to subscribe to topic " + listenDeviceTopic, e);
@@ -137,12 +110,37 @@ public class MqttConnection {
 
     }
 
-    public void reconnect() {
+    /**
+     * Subscribe
+     *
+     * @param channelUID
+     * @param handler
+     */
+    public void subscribeChannel(ChannelUID channelUID, HomieNodeHandler handler) {
+        String topic = String.format("%s/%s/%s/#", basetopic, handler.getThing().getBridgeUID().getId(),
+                channelUID.getId());
         try {
-            client.disconnectForcibly();
-            client.connect();
+            client.unsubscribe(topic);
+            client.subscribe(topic, handler);
         } catch (MqttException e) {
-            logger.error("Error reconnecting", e);
+            logger.error("Error (re)subscribing to channel. topic is " + topic, e);
+        }
+    }
+
+    /**
+     * Subscribe to a channel of a device
+     *
+     * @param channelUID
+     * @param handler
+     */
+    public void subscribeChannel(Channel channel, HomieDeviceHandler handler) {
+        String topic = String.format("%s/%s/%s", basetopic, handler.getThing().getUID().getId(),
+                channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX));
+        try {
+            client.unsubscribe(topic);
+            client.subscribe(topic, handler);
+        } catch (MqttException e) {
+            logger.error("Error (re)subscribing to channel. topic is " + topic, e);
         }
 
     }

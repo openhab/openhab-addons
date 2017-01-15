@@ -1,8 +1,10 @@
 package org.openhab.binding.homie.handler;
 
+import static org.openhab.binding.homie.HomieBindingConstants.CHANNELPROPERTY_TOPICSUFFIX;
 import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,16 +60,16 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
         if (command == RefreshType.REFRESH) {
-            // reconnect to mqtt to receive the retained messages once more
-            mqttconnection.reconnect();
+            mqttconnection.subscribeChannel(channelUID, this);
         }
     }
 
     @Override
     public void initialize() {
         try {
-            mqttconnection.subscribe(getBridge(), thing, this);
+            mqttconnection.listenForNodeProperties(getBridge(), thing, this);
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
             logger.error("Error subscribing for MQTT topics", e);
@@ -87,9 +89,8 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                     if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX)) {
                         NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
                         NodePropertiesList propslist = parser.parse(message.toString());
-                        propslist.getProperties().stream().forEach(item -> {
-                            createChannel(item);
-
+                        propslist.getProperties().stream().forEach(property -> {
+                            createChannel(property, Collections.singletonMap(CHANNELPROPERTY_TOPICSUFFIX, property));
                         });
                     } else if (StringUtils.equals(prop, HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
                         String type = message;
@@ -113,16 +114,14 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
         }
     }
 
-    private void createChannel(String channelId) {
+    private void createChannel(String channelId, Map<String, String> properties) {
         if (getThing().getChannel(channelId) == null) {
-
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
             Channel channel = ChannelBuilder.create(channelUID, "String").withLabel(channelId)
-                    .withKind(ChannelKind.STATE).build();
+                    .withKind(ChannelKind.STATE).withProperties(properties).build();
             ThingBuilder builder = editThing();
             builder.withChannel(channel);
             updateThing(builder.build());
-
             handleCommand(channelUID, RefreshType.REFRESH);
         }
     }

@@ -44,6 +44,7 @@ public class HomieBindingConstants {
     public static final String CHANNEL_MAC = "mac";
     public static final String CHANNEL_LOCALIP = "localip";
     public static final String CHANNEL_STATS_SIGNAL_ESH = "system-stats_signal";
-    public static final String MAC_TOPIC_SUFFIX = "$mac";
+
+    public static final String CHANNELPROPERTY_TOPICSUFFIX = "topic_suffix";
 
 }

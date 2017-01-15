@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -58,18 +59,13 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
-            // reconnect to mqtt to receive the retained messages once more
-            mqttconnection.reconnect();
+        Channel channel = getThing().getChannel(channelUID.getId());
+        if (channel != null) {
+            if (command == RefreshType.REFRESH) {
+                // reconnect to mqtt to receive the retained messages once more
+                mqttconnection.subscribeChannel(channel, this);
+            }
         }
-        // if(channelUID.getId().equals(CHANNEL_1)) {
-        // // TODO: handle command
-        //
-        // // Note: if communication with thing fails for some reason,
-        // // indicate that by setting the status with detail information
-        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // // "Could not control device at IP address x.x.x.x");
-        // }
     }
 
     @Override
@@ -82,16 +78,6 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error subscribing MQTT" + e.toString());
         }
-
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     @Override
@@ -111,6 +97,7 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
             HomieTopic ht = topicParser.parse(topic);
             if (ht.isDeviceProperty()) {
                 String prop = ht.getCombinedInternalPropertyName();
+
                 if (StringUtils.equals(prop, STATS_UPTIME_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_UPTIME);
                     updateState(channel, new DecimalType(message));
