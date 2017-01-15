@@ -7,7 +7,16 @@
  */
 package org.openhab.binding.wink.handler;
 
+import static org.openhab.binding.wink.WinkBindingConstants.WINK_URI;
+
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -56,6 +65,7 @@ public class WinkHub2Handler extends BaseBridgeHandler {
             this.scheduler.schedule(new Runnable() {
                 @Override
                 public void run() {
+                    // TODO
                     // connect();
                 }
             }, 0, TimeUnit.SECONDS);
@@ -82,4 +92,54 @@ public class WinkHub2Handler extends BaseBridgeHandler {
     }
 
     private WinkHub2Config config;
+
+    // REST API variables
+    protected Client winkClient = ClientBuilder.newClient();
+    protected WebTarget winkTarget = winkClient.target(WINK_URI);
+
+    public interface RequestCallback {
+        public void parseRequestResult(String jsonResult);
+    }
+
+    protected class Request implements Runnable {
+        private WebTarget target;
+        private RequestCallback callback;
+
+        public Request(String targetPath, RequestCallback callback) {
+            this.target = winkTarget.path(targetPath);
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String result = "";
+                // if (isAwake() && getThing().getStatus() == ThingStatus.ONLINE) {
+                result = invokeAndParse(target);
+                // }
+
+                if (result != null && result != "") {
+                    logger.debug("Hub replied with: " + result);
+                    callback.parseRequestResult(result);
+                }
+            } catch (Exception e) {
+                logger.error("An exception occurred while executing a request to the hub: '{}'", e.getMessage());
+            }
+        }
+    }
+
+    protected String invokeAndParse(WebTarget target) {
+        if (this.config != null) {
+            logger.debug("Requesting the hub for: " + target.toString());
+            Response response = target.request(MediaType.APPLICATION_JSON_TYPE)
+                    .header("Authorization", "Bearer " + this.config.access_token).get();
+            return response.readEntity(String.class);
+        }
+        return null;
+    }
+
+    public void getConfigFromServer(String deviceRequestPath, RequestCallback callback) throws IOException {
+        Request request = new Request(deviceRequestPath, callback);
+        request.run();
+    }
 }

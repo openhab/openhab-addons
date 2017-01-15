@@ -7,14 +7,10 @@
  */
 package org.openhab.binding.wink.handler;
 
-import static org.openhab.binding.wink.WinkBindingConstants.*;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TODO: The {@link LightBulbHandler} is responsible for handling commands, which are
@@ -23,8 +19,6 @@ import org.slf4j.LoggerFactory;
  * @author Sebastien Marchand - Initial contribution
  */
 public class LightBulbHandler extends WinkHandler {
-
-    private Logger logger = LoggerFactory.getLogger(LightBulbHandler.class);
 
     public LightBulbHandler(Thing thing) {
         super(thing);
@@ -45,9 +39,6 @@ public class LightBulbHandler extends WinkHandler {
 
     @Override
     public void initialize() {
-        String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
-        String pubnub_subscribe = (String) getThing().getConfiguration().get(CHANNEL_PUBNUB_SUBSCRIBE_KEY);
-        String pubnub_channel = (String) getThing().getConfiguration().get(CHANNEL_PUBNUB_CHANNEL);
         updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further
@@ -56,5 +47,10 @@ public class LightBulbHandler extends WinkHandler {
         // as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    protected String getDeviceRequestPath() {
+        return "light_bulbs/" + this.deviceConfig.getDeviceId();
     }
 }
