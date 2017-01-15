@@ -119,25 +119,22 @@ sitemap zoneminder label="Zoneminder"
 				Switch item=zmsIsAlive
 				Text  item=zmsCpuLoad
 				Text  item=zmsDiskUsage
-				Text  item=zmsServerVersion
-				Text  item=zmsServerApiVersion
 			}
 		}
 
 		Text item=zmMonitor1_Function label="(Monitor-1) [%s]" {
 			Frame {
-				Text 	item=zmMonitor1_Name
-				Switch	item=zmMonitor1_Enabled
-				Text 	item=zmMonitor1_SourceType
-				Switch	item=zmMonitor1_TriggerEvent
-				Selection item=zmMonitor1_Function mappings=["None"=None, "Modect"=Modect, "Monitor"=Monitor, "Record"=Record, "Mocord"=Mocord, "Nodect"=Nodect]
-				Text 	item=zmMonitor1_IsAlive
-				Text 	item=zmMonitor1_CaptureStatus
-				Text 	item=zmMonitor1_CaptureStatusText
-				Text 	item=zmMonitor1_AnalysisStatus
-				Text 	item=zmMonitor1_AnalysisStatusText
-				Text 	item=zmMonitor1_FrameStatus
-				Text 	item=zmMonitor1_FrameStatusText
+				Switch 		item=zmMonitor1_Enabled
+				Switch 		item=zmMonitor1_ForceAlarm
+				Text		item=zmMonitor1_IsAlive
+				Selection	item=zmMonitor1_Function 	mappings=["None"=None, "Modect"=Modect, "Monitor"=Monitor, "Record"=Record, "Mocord"=Mocord, "Nodect"=Nodect]
+				Text  		item=zmMonitor1_EventState 	
+				Text 		item=zmMonitor1_Recording 	
+				Text		item=zmMonitor1_DetailedStatus
+				Text 		item=zmMonitor1_EventCause
+				Text 		item=zmMonitor1_CaptureState
+				Text 		item=zmMonitor1_AnalysisState
+				Text 		item=zmMonitor1_FrameState
 			}
 		}
 		Frame label="Monitor Helpers" {
