@@ -15,33 +15,12 @@
         <channels>
             <channel id="is-alive" typeId="monitor_is_alive" />
             <channel id="enabled" typeId="monitor_enabled" />
-            
             <channel id="force-alarm" typeId="monitor_force_alarm" />
-            
-            <!--  Telnet + poll -->            
             <channel id="event-state" typeId="monitor_event_state" />
-            
             <channel id="record-state" typeId="monitor_record_state" />
-            
-            <!-- Poll  --> 
-            <!--  /zm/api/monitors/alarm/id:MonitorId/command:status.json  -->
-            <!-- Either 0: idle, 1: pre-alarm, 2: alarm, 3: alert, 4: recording -->
             <channel id="detailed-status" typeId="monitor_detailed_status" /> 
-
             <channel id="function" typeId="monitor_function" />
-            
-
-
-            <!--             
-                None - Event for monitor not triggered right now.
-                Signal - Event for monitor not triggered because of signal loss
-                Motion - Event for monitor triggered because of motion detected in ZoneMinder
-                openHAB - Event for monitor triggered by OpenHAB.
-                Other - Event for monitor triggered by other reason (somebody hase written an unknown reason....)
-            -->       
-            
             <channel id="event-cause" typeId="monitor_event_cause" /> 
-            
             <channel id="capture-daemon-state" typeId="monitor_zmc_daemon_state" />
             <channel id="analysis-daemon-state" typeId="monitor_zma_daemon_state" />
             <channel id="frame-daemon-state" typeId="monitor_zmf_daemon_state" />
@@ -62,7 +41,7 @@
     <channel-type id="monitor_enabled">
         <item-type>Switch</item-type>
         <label>Enabled</label>
-        <description>Showing the value of the checkbox 'enabled' in ZoneMinder for the monitor.</description>
+        <description>Showing the value of the checkbox 'enabled' in ZoneMinder for the monitor</description>
         <state readOnly="false" />
     </channel-type>
 
@@ -77,14 +56,14 @@
     <channel-type id="monitor_event_state">
         <item-type>Switch</item-type>
         <label>Alarm status</label>
-        <description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF' </description>
+        <description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF'</description>
         <state readOnly="true" />
     </channel-type>
 
     <channel-type id="monitor_record_state">
         <item-type>Switch</item-type>
         <label>Recording status</label>
-        <description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF' </description>
+        <description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF'</description>
         <state readOnly="true" />
     </channel-type>
     

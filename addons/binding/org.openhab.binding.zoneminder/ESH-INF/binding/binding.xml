@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>ZoneMinder Binding</name>
-    <description>This binding interfaces a ZoneMinder Server.</description>
+    <description>This binding interfaces a ZoneMinder Server</description>
     <author>Martin S. Eskildsen</author>
 
 </binding:binding>

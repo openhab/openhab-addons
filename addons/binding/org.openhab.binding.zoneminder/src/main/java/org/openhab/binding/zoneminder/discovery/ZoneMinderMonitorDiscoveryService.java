@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.zoneminder.discovery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -23,7 +24,7 @@ import org.openhab.binding.zoneminder.handler.ZoneMinderThingMonitorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import name.eskildsen.zoneminder.api.monitor.ZoneMinderMonitor;
+import name.eskildsen.zoneminder.interfaces.IZoneMinderMonitorData;
 
 /**
  * When a {@link ZoneMinderMonitorDiscoveryService} finds a new Monitor we will
@@ -70,7 +71,11 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         }
     }
 
-    public void monitorAdded(ZoneMinderMonitor monitor) {
+    protected String BuildMonitorLabel(String id, String name) {
+        return String.format("%s [%s-%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, id, name);
+    }
+
+    public void monitorAdded(IZoneMinderMonitorData monitor) {
 
         try {
             ThingUID bridgeUID = zoneMinderServerHandler.getThing().getUID();
@@ -78,8 +83,9 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
             ThingUID thingUID = new ThingUID(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR, bridgeUID,
                     monitorUID);
 
+            // Does Monitor exist?
             if (!monitorThingExists(thingUID)) {
-                logger.debug("monitor added {} : {} ", monitor.getId(), monitor.getName());
+                logger.info("[DISCOVERY] Monitor added '{}':'{}'", monitor.getId(), monitor.getName());
                 Map<String, Object> properties = new HashMap<>(0);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.valueOf(monitor.getId()));
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
@@ -88,7 +94,8 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
                         ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(String.format("%s", monitor.getName())).build();
+                        .withBridge(bridgeUID)
+                        .withLabel(String.format(BuildMonitorLabel(monitor.getId(), monitor.getName()))).build();
 
                 thingDiscovered(discoveryResult);
             }
@@ -109,14 +116,12 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
             @Override
             public void run() {
 
-                // TODO:: FIX THIS AFTER Addidng Session and Connection
-                /*
-                 * ArrayList<ZoneMinderMonitor> monitors = zoneMinderServerHandler.getMonitors();
-                 * 
-                 * for (ZoneMinderMonitor monitor : monitors) {
-                 * monitorAdded(monitor);
-                 * }
-                 */
+                ArrayList<IZoneMinderMonitorData> monitors = zoneMinderServerHandler.getMonitors();
+
+                for (IZoneMinderMonitorData monitor : monitors) {
+                    monitorAdded(monitor);
+                }
+
             }
 
         };
