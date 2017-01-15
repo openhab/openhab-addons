@@ -28,7 +28,6 @@ public class LightBulbHandler extends WinkHandler {
 
     public LightBulbHandler(Thing thing) {
         super(thing);
-        logger.info("Here's a new light bulb handler!");
     }
 
     @Override
