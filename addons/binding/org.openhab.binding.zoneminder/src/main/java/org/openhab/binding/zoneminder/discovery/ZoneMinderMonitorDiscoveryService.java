@@ -56,8 +56,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     protected void startScan() {
-        // Intentionally left blank
-
+        doMonitorScan();
     }
 
     /*
@@ -75,7 +74,15 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         return String.format("%s [%s-%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, id, name);
     }
 
-    public void monitorAdded(IZoneMinderMonitorData monitor) {
+    protected synchronized void doMonitorScan() {
+        ArrayList<IZoneMinderMonitorData> monitors = zoneMinderServerHandler.getMonitors();
+
+        for (IZoneMinderMonitorData monitor : monitors) {
+            monitorAdded(monitor);
+        }
+    }
+
+    protected void monitorAdded(IZoneMinderMonitorData monitor) {
 
         try {
             ThingUID bridgeUID = zoneMinderServerHandler.getThing().getUID();
@@ -115,18 +122,12 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-
-                ArrayList<IZoneMinderMonitorData> monitors = zoneMinderServerHandler.getMonitors();
-
-                for (IZoneMinderMonitorData monitor : monitors) {
-                    monitorAdded(monitor);
-                }
-
+                doMonitorScan();
             }
 
         };
 
-        logger.debug("request monitor discovery job scheduled to run every {} seconds", TIMEOUT);
+        logger.debug("[DISCOVERY] - request monitor discovery job scheduled to run every {} seconds", TIMEOUT);
         requestMonitorJob = scheduler.scheduleWithFixedDelay(runnable, 10, TIMEOUT, TimeUnit.SECONDS);
     }
 
