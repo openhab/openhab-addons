@@ -18,6 +18,7 @@
 			<channel id="online" typeId="online-channel">
 				<properties>
 					<property name="topic_suffix">$online</property>
+					<property name="thing_state_indicator">online</property>
 				</properties>
 			</channel>
 
@@ -44,11 +45,6 @@
 				</properties>
 			</channel>
 			<channel id="stats_signal" typeId="stats-signal-channel">
-				<properties>
-					<property name="topic_suffix">$stats/signal</property>
-				</properties>
-			</channel>
-			<channel id="system-stats_signal" typeId="system.signal-strength">
 				<properties>
 					<property name="topic_suffix">$stats/signal</property>
 				</properties>

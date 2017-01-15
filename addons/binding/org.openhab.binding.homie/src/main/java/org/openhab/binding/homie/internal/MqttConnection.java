@@ -139,6 +139,7 @@ public class MqttConnection {
         try {
             client.unsubscribe(topic);
             client.subscribe(topic, handler);
+            logger.debug("Subscribed to topic " + topic);
         } catch (MqttException e) {
             logger.error("Error (re)subscribing to channel. topic is " + topic, e);
         }

@@ -8,7 +8,6 @@
 package org.openhab.binding.homie.handler;
 
 import static org.openhab.binding.homie.HomieBindingConstants.*;
-import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import java.text.ParseException;
 
@@ -27,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
@@ -86,65 +86,59 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
         super.dispose();
     }
 
-    long map(long x, long in_min, long in_max, long out_min, long out_max) {
-        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
-
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+
         String message = mqttMessage.toString();
         try {
+
             HomieTopic ht = topicParser.parse(topic);
             if (ht.isDeviceProperty()) {
                 String prop = ht.getCombinedInternalPropertyName();
 
-                if (StringUtils.equals(prop, STATS_UPTIME_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_UPTIME);
-                    updateState(channel, new DecimalType(message));
-                } else if (StringUtils.equals(prop, ONLINE_TOPIC_SUFFIX)) {
-                    boolean isOnline = StringUtils.equalsIgnoreCase(message, "true");
-                    updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_ONLINE);
-                    updateState(channel, isOnline ? OnOffType.ON : OnOffType.OFF);
-                } else if (StringUtils.equals(prop, NAME_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_NAME);
-                    updateState(channel, new StringType(message));
-                } else if (StringUtils.equals(prop, LOCALIP_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_LOCALIP);
-                    updateState(channel, new StringType(message));
-                } else if (StringUtils.equals(prop, MAC_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_MAC);
-                    updateState(channel, new StringType(message));
-                } else if (StringUtils.equals(prop, STATS_SIGNAL_TOPIC_SUFFIX)) {
-                    // Homie Channel
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_SIGNAL);
-                    updateState(channel, new DecimalType(message));
+                getThing().getChannels().forEach(channel -> {
+                    String topicSuffix = channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX);
 
-                    // Eclipse smart home system channel
-                    ChannelUID channelesh = new ChannelUID(getThing().getUID(), CHANNEL_STATS_SIGNAL_ESH);
-                    int val = Integer.parseInt(message);
-                    val = (int) map(val, 0, 100, 0, 4); // Scale percent (0-9) to ESH scale (0-4)
-                    updateState(channelesh, new DecimalType(val));
-                } else if (StringUtils.equals(prop, STATS_INTERVAL_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_INTERVAL);
-                    updateState(channel, new DecimalType(message));
-                } else if (StringUtils.equals(prop, FIRMWARE_NAME_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_FIRMWARE_NAME);
-                    updateState(channel, new StringType(message));
-                } else if (StringUtils.equals(prop, FIRMWARE_VERSION_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_FIRMWARE_VERSION);
-                    updateState(channel, new StringType(message));
-                } else if (StringUtils.equals(prop, FIRMWARE_CHECKSUM_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_FIRMWARE_CHECKSUM);
-                    updateState(channel, new StringType(message));
-                } else if (StringUtils.equals(prop, IMPLEMENTATION_TOPIC_SUFFIX)) {
-                    ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_IMPLEMENTATION);
-                    updateState(channel, new StringType(message));
-                }
+                    boolean topicMatchesChannel = StringUtils.equals(topicSuffix, prop);
+                    if (topicMatchesChannel) {
+                        updateChannelState(channel, message);
+
+                    }
+
+                });
+
             }
 
         } catch (ParseException e) {
-            logger.error("Topic cannot be handled", e);
+            logger.info("Topic cannot be handled", e);
+        }
+
+    }
+
+    private void updateChannelState(Channel channel, String message) {
+        ChannelUID chId = channel.getUID();
+        State result = null;
+
+        // Special handling for topics that not only change a channel, but also update a thing state
+        String indicatedState = channel.getProperties().get(CHANNELPROPERTY_THINGSTATEINDICATOR);
+        if (StringUtils.equals(indicatedState, "online")) {
+            boolean isOnline = Boolean.parseBoolean(message);
+            updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        }
+
+        if (StringUtils.equals(channel.getAcceptedItemType(), "Number")) {
+            result = new DecimalType(message);
+        } else if (StringUtils.equals(channel.getAcceptedItemType(), "String")) {
+            result = new StringType(message);
+        } else if (StringUtils.equals(channel.getAcceptedItemType(), "Switch")) {
+            boolean value = Boolean.parseBoolean(message);
+            result = value ? OnOffType.ON : OnOffType.OFF;
+        }
+
+        if (result != null) {
+            logger.debug("Updating channel " + channel.getUID() + " with parsed state " + result
+                    + " which was parsed out of " + message);
+            updateState(chId, result);
         }
 
     }
