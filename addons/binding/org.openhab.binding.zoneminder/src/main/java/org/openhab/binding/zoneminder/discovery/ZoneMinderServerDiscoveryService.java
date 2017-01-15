@@ -62,19 +62,11 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
         return ZoneMinderServerBridgeHandler.SUPPORTED_THING_TYPES;
     }
 
-    // Background discovery disabled for now!
-
     @Override
     protected void startBackgroundDiscovery() {
-        /*
-         * scheduler.schedule(new Runnable() {
-         *
-         * @Override
-         * public void run() {
-         * discoverZoneMinderServer();
-         * }
-         * }, 0, TimeUnit.MILLISECONDS);
-         */ }
+
+        // Background discovery disabled - doesn't give much sense
+    }
 
     /*
      * (non-Javadoc)
@@ -83,14 +75,14 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        // discoverZoneMinderServer();
+        discoverZoneMinderServer();
     }
 
     /**
      * Method for ZoneMinder Server Discovery.
      */
-    public synchronized void discoverZoneMinderServer() {
-        logger.debug("Starting ZoneMinder Bridge Discovery.");
+    protected synchronized void discoverZoneMinderServer() {
+        logger.info("[DISCOVERY] - Starting ZoneMinder Bridge Discovery.");
         String ipAddress = "";
         SubnetUtils subnetUtils = null;
         SubnetInfo subnetInfo = null;
@@ -103,13 +95,18 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             subnetUtils = new SubnetUtils(localHost.getHostAddress() + "/"
                     + networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
             subnetInfo = subnetUtils.getInfo();
-            lowIP = convertIPToNumber("192.168.1.53");// subnetInfo.getLowAddress());
-            highIP = convertIPToNumber("192.168.1.56");// (subnetInfo.getHighAddress());
+            lowIP = convertIPToNumber(subnetInfo.getLowAddress());
+            highIP = convertIPToNumber(subnetInfo.getHighAddress());
+            /*
+             * lowIP = convertIPToNumber("192.168.1.53");
+             * highIP = convertIPToNumber("192.168.1.56");
+             */
         } catch (IllegalArgumentException e) {
-            logger.error("discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
+            logger.error("[DISCOVERY] -discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
             return;
         } catch (Exception e) {
-            logger.error("discoverZoneMinderServer(): Error - Unable to get Subnet Information! {}", e.toString());
+            logger.error("[DISCOVERY] - discoverZoneMinderServer(): Error - Unable to get Subnet Information! {}",
+                    e.toString());
             return;
         }
 
@@ -126,14 +123,15 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             try (Socket socket = new Socket()) {
                 ipAddress = convertNumberToIP(ip);
 
-                logger.debug("Discoververing ZoneMinder Server at IPAddress '{}'", ipAddress);
+                logger.debug("[DISCOVERY] - Discoververing ZoneMinder Server at IPAddress '{}'", ipAddress);
                 discoverZoneMinderServerHttp(ipAddress);
 
             } catch (IllegalArgumentException e) {
-                logger.error("discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
+                logger.error("[DISCOVERY] - discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
 
             } catch (IOException e) {
-                logger.error("discoverZoneMinderServer(): IO Exception! [{}] - {}", ipAddress, e.toString());
+                logger.error("[DISCOVERY] - discoverZoneMinderServer(): IO Exception! [{}] - {}", ipAddress,
+                        e.toString());
             }
         }
     }
@@ -210,7 +208,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
 
         if (response.contains("<title>ZM - Login</title>") || response.contains("<title>ZM - Console</title>")
                 || response.contains("ZoneMinder")) {
-            logger.debug("Discovered ZoneMinder Server at '{}'", ipAddress);
+            logger.info("[DOSCOVERY] - Discovered ZoneMinder Server at '{}'", ipAddress);
 
             ThingUID uid = new ThingUID(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER,
                     ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);

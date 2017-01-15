@@ -350,6 +350,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         logger.debug("'[BRIDGE] - refreshThing()': Thing='{}'!", getThing().getUID(), this.getThing().getUID());
 
         List<Channel> channels = getThing().getChannels();
+        List<Thing> things = getThing().getThings();
+
         IZoneMinderServer zoneMinderServerProxy = ZoneMinderFactory.getServerProxy();
         if (isConnected()) {
             /*
@@ -379,7 +381,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         /*
          * Request Things attached to Bridge to refresh
          */
-        for (Thing thing : getThing().getThings()) {
+        for (Thing thing : things) {
             try {
 
                 if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {

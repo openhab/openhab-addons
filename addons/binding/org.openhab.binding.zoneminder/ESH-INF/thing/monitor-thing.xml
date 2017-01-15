@@ -16,14 +16,14 @@
             <channel id="is-alive" typeId="monitor_is_alive" />
             <channel id="enabled" typeId="monitor_enabled" />
             <channel id="force-alarm" typeId="monitor_force_alarm" />
-            <channel id="event-state" typeId="monitor_event_state" />
-            <channel id="record-state" typeId="monitor_record_state" />
+            <channel id="alarm" typeId="monitor_alarm" />
+            <channel id="recording" typeId="monitor_recording" />
             <channel id="detailed-status" typeId="monitor_detailed_status" /> 
             <channel id="function" typeId="monitor_function" />
             <channel id="event-cause" typeId="monitor_event_cause" /> 
-            <channel id="capture-daemon-state" typeId="monitor_zmc_daemon_state" />
-            <channel id="analysis-daemon-state" typeId="monitor_zma_daemon_state" />
-            <channel id="frame-daemon-state" typeId="monitor_zmf_daemon_state" />
+            <channel id="capture-daemon" typeId="monitor_zmc_daemon" />
+            <channel id="analysis-daemon" typeId="monitor_zma_daemon" />
+            <channel id="frame-daemon" typeId="monitor_zmf_daemon" />
         </channels>
 
         <config-description-ref uri="thing-type:monitor-channels:config" />
@@ -53,14 +53,14 @@
     </channel-type>
 
 
-    <channel-type id="monitor_event_state">
+    <channel-type id="monitor_alarm">
         <item-type>Switch</item-type>
         <label>Alarm status</label>
         <description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF'</description>
         <state readOnly="true" />
     </channel-type>
 
-    <channel-type id="monitor_record_state">
+    <channel-type id="monitor_recording">
         <item-type>Switch</item-type>
         <label>Recording status</label>
         <description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF'</description>
@@ -118,21 +118,21 @@
         </state>    
     </channel-type>    
     
-    <channel-type id="monitor_zmc_daemon_state" advanced="true">
+    <channel-type id="monitor_zmc_daemon" advanced="true">
         <item-type>Switch</item-type>
         <label>zmc daemon Status</label>
         <description>State of ZoneMinder Capture daemon for this monitor</description>
         <state readOnly="true"/>
     </channel-type>        
     
-    <channel-type id="monitor_zma_daemon_state" advanced="true">
+    <channel-type id="monitor_zma_daemon" advanced="true">
         <item-type>Switch</item-type>
         <label>zma daemon Status</label>
         <description>State of ZoneMinder Analysis daemon for this monitor</description>
         <state readOnly="true"/>
     </channel-type>        
 
-    <channel-type id="monitor_zmf_daemon_state" advanced="true">
+    <channel-type id="monitor_zmf_daemon" advanced="true">
         <item-type>Switch</item-type>
         <label>zmf daemon Status</label>
         <description>State of ZoneMinder Frame daemon for this monitor</description>

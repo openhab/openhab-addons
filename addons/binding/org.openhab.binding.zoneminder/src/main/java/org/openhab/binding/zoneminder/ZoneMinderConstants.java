@@ -72,15 +72,15 @@ public class ZoneMinderConstants {
     // public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
     public final static String CHANNEL_MONITOR_ENABLED = "enabled";
     public final static String CHANNEL_MONITOR_FORCE_ALARM = "force-alarm";
-    public final static String CHANNEL_MONITOR_EVENT_STATE = "event-state";
+    public final static String CHANNEL_MONITOR_EVENT_STATE = "alarm";
     public final static String CHANNEL_MONITOR_EVENT_CAUSE = "event-cause";
-    public final static String CHANNEL_MONITOR_RECORD_STATE = "record-state";
+    public final static String CHANNEL_MONITOR_RECORD_STATE = "recording";
     public final static String CHANNEL_MONITOR_DETAILED_STATUS = "detailed-status";
     public final static String CHANNEL_MONITOR_FUNCTION = "function";
 
-    public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATE = "capture-daemon-state";
-    public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE = "analysis-daemon-state";
-    public final static String CHANNEL_MONITOR_FRAME_DAEMON_STATE = "frame-daemon-state";
+    public final static String CHANNEL_MONITOR_CAPTURE_DAEMON_STATE = "capture-daemon";
+    public final static String CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE = "analysis-daemon";
+    public final static String CHANNEL_MONITOR_FRAME_DAEMON_STATE = "frame-daemon";
 
     // Parameters for the ZoneMinder Monitor
     public final static String PARAMETER_MONITOR_ID = "monitorId";
