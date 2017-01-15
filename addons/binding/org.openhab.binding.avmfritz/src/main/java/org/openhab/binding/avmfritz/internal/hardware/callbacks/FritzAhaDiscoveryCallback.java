@@ -38,7 +38,9 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
 	 * @param service Discovery service to call with result.
 	 */
 	public FritzAhaDiscoveryCallback(FritzahaWebInterface webIface, AvmDiscoveryService service) {
-		super("webservices/homeautoswitch.lua", "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+		super(WEBSERVICE_PATH,
+				"switchcmd=getdevicelistinfos",
+				webIface, Method.GET, 1);
 		this.service = service;
 	}
 
