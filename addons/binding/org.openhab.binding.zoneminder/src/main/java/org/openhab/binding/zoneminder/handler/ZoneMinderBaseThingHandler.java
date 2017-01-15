@@ -15,28 +15,27 @@ import java.util.EventObject;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
-import org.openhab.binding.zoneminder.internal.RefreshPriorityEnum;
-import org.openhab.binding.zoneminder.internal.ZoneMinderMonitorEventListener;
+import org.openhab.binding.zoneminder.internal.DataRefreshPriorityEnum;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import name.eskildsen.zoneminder.ZoneMinderConnection;
-import name.eskildsen.zoneminder.ZoneMinderFactory;
-import name.eskildsen.zoneminder.ZoneMinderSession;
-import name.eskildsen.zoneminder.api.ZoneMinderData;
+import name.eskildsen.zoneminder.ZoneMinderSessionMgr;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
+import name.eskildsen.zoneminder.interfaces.IZoneMinderConnectionInfo;
 
 /**
  * The {@link ZoneMinderBaseThingHandler} is responsible for handling commands, which are
@@ -45,7 +44,7 @@ import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
  * @author Martin S. Eskildsen - Initial contribution
  */
 public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
-        implements ZoneMinderMonitorEventListener, ZoneMinderHandler {
+        implements /* TODO:: REMOVED ZoneMinderMonitorEventListener, */ ZoneMinderHandler {
 
     public static final int EVENT_REFRESH_INTERVAL = 200;
 
@@ -63,18 +62,15 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     /** Unique Id of the thing in zoneminder. */
     private String zoneMinderId;
 
-    private ZoneMinderConnection zoneMinderConnection = null;
-    private ZoneMinderSession zoneMinderSession = null;
-
-    // TODO:: Removed
-    // private Map<String, ZoneMinderData> zmMonitorDataArr = new HashMap<String, ZoneMinderData>();
+    /** ZoneMidner ConnectionInfo */
+    private IZoneMinderConnectionInfo zoneMinderConnection = null;
 
     /** Configuration from OpenHAB */
     protected ZoneMinderThingConfig configuration;
 
-    private RefreshPriorityEnum _refreshPriority = RefreshPriorityEnum.SCHEDULED;
+    private DataRefreshPriorityEnum _refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
 
-    public RefreshPriorityEnum getRefreshPriority() {
+    public DataRefreshPriorityEnum getRefreshPriority() {
         return _refreshPriority;
     }
 
@@ -103,17 +99,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         }
     }
 
-    protected ZoneMinderSession getZoneMinderSession() {
-        return zoneMinderSession;
-    }
-
     protected boolean isConnected() {
-        if (zoneMinderSession == null) {
-            return false;
-        }
-        // TODO:: FIX THIS
-        return true;
-        // return zoneMinderSession.isConnected();
+        return ZoneMinderSessionMgr.getInstance().isConnected();
     }
 
     /**
@@ -123,7 +110,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     protected boolean startPriorityRefresh() {
 
         logger.info("Starting High Priority Refresh for Monitor '{}'", getZoneMinderId());
-        _refreshPriority = RefreshPriorityEnum.HIGH_PRIORITY;
+        _refreshPriority = DataRefreshPriorityEnum.HIGH_PRIORITY;
         return true;
     }
 
@@ -132,7 +119,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
      */
     protected void stopPriorityRefresh() {
         logger.info("Stopping Priority Refresh for Monitor '{}'", getZoneMinderId());
-        _refreshPriority = RefreshPriorityEnum.SCHEDULED;
+        _refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
     }
 
     @Override
@@ -149,40 +136,42 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         return ch.getUID();
     }
 
-    protected abstract void onFetchData(ZoneMinderSession session);
+    protected abstract void onFetchData();
 
     /**
      * Method to Refresh Thing Handler.
      */
-    public synchronized final void refreshThing(RefreshPriorityEnum refreshPriority, ZoneMinderSession session) {
+    public synchronized final void refreshThing(DataRefreshPriorityEnum refreshPriority) {
 
         if ((refreshPriority != getRefreshPriority()) && (!isConnected())) {
             return;
         }
 
-        if (refreshPriority == RefreshPriorityEnum.HIGH_PRIORITY) {
-            logger.debug("Performing HIGH PRIORITY UPDATE for monitor '{}'.....", getZoneMinderId());
+        if (refreshPriority == DataRefreshPriorityEnum.HIGH_PRIORITY) {
+            logger.info("[MONITOR:{}] - Performing HIGH PRIORITY UPDATE for monitor.....", getZoneMinderId());
         }
 
-        if (isConnected()) {
-            if (getZoneMinderBridgeHandler() != null) {
+        if (getZoneMinderBridgeHandler() != null) {
+            if (isConnected()) {
+
                 logger.debug("refreshThing(): Bridge '{}' Found for Thing '{}'!",
                         zoneMinderBridgeHandler.getThing().getUID(), this.getThing().getUID());
 
-                onFetchData(session);
-
-                Thing thing = getThing();
-                List<Channel> channels = thing.getChannels();
-                logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
-
-                for (Channel channel : channels) {
-                    updateChannel(channel.getUID());
-                }
-
-                this.setThingRefreshed(true);
+                onFetchData();
             }
-            logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
         }
+
+        Thing thing = getThing();
+        List<Channel> channels = thing.getChannels();
+        logger.debug("refreshThing(): Refreshing Thing - {}", thing.getUID());
+
+        for (Channel channel : channels) {
+            updateChannel(channel.getUID());
+        }
+
+        this.setThingRefreshed(true);
+        logger.debug("refreshThing(): Thing Refreshed - {}", thing.getUID());
+
     }
 
     /**
@@ -230,7 +219,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
 
         switch (channel.getId()) {
             case ZoneMinderConstants.CHANNEL_IS_ALIVE:
-                updateState(channel, (isAlive ? OnOffType.ON : OnOffType.OFF));
+                updateState(channel, getChannelBoolAsOnOffState(isAlive));
                 break;
             default:
                 logger.error(
@@ -261,28 +250,15 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, ZoneMinderConnection connection)
+    public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, IZoneMinderConnectionInfo connection)
             throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException {
         logger.debug("onBridgeConnected(): Bridge '{}' is connected", bridge.getThing().getUID());
 
-        zoneMinderSession = ZoneMinderFactory.CreateSession(connection);
-
-        // TODO:: Seems to be CAllled elsewhere
-        /*
-         * if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
-         * updateAvaliabilityStatus(connection);
-         *
-         * refreshThing(RefreshPriorityEnum.SCHEDULED, zoneMinderSession);
-         *
-         * }
-         */
     }
 
     @Override
     public void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge) {
-        logger.debug("onBridgeDisconnected(): Bridge '{}' disconnected", bridge.getThing().getUID());
-
-        zoneMinderSession = null;
+        logger.info("onBridgeDisconnected(): Bridge '{}' disconnected", bridge.getThing().getUID());
 
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
 
@@ -358,32 +334,35 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         return (BigDecimal) getConfigValue(configKey);
     }
 
-    // TODO:: REWRITE This
-    @Override
-    public void notifyZoneMinderApiDataUpdated(ThingTypeUID thingTypeUID, String ZoneMinderId,
-            List<ZoneMinderData> arrData) {
-        // TODO: RENOVED
-        /*
-         * synchronized (zmMonitorDataArr) {
-         * for (ZoneMinderData data : arrData) {
-         * String dataClassKey = data.getKey();
-         * if (zmMonitorDataArr.containsKey(dataClassKey)) {
-         * zmMonitorDataArr.remove(dataClassKey);
-         * }
-         * zmMonitorDataArr.put(dataClassKey, data);
-         * }
-         * }
-         */
+    protected State getChannelStringAsStringState(String channelValue) {
+        State state = UnDefType.UNDEF;
+
+        try {
+            if (isConnected()) {
+                state = new StringType(channelValue);
+            }
+
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+        }
+
+        return state;
+
     }
-    /*
-     * protected ZoneMinderData getZoneMinderData(Class type) {
-     *
-     * synchronized (zmMonitorDataArr) {
-     * if (zmMonitorDataArr.containsKey(type.getSimpleName())) {
-     * return zmMonitorDataArr.get(type.getSimpleName());
-     * }
-     * }
-     * return null;
-     * }
-     */
+
+    protected State getChannelBoolAsOnOffState(boolean value) {
+        State state = UnDefType.UNDEF;
+
+        try {
+            if (isConnected()) {
+                state = value ? OnOffType.ON : OnOffType.OFF;
+            }
+
+        } catch (Exception ex) {
+            logger.debug(ex.getMessage());
+        }
+
+        return state;
+    }
+
 }

@@ -13,8 +13,8 @@ import java.security.GeneralSecurityException;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
-import name.eskildsen.zoneminder.ZoneMinderConnection;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
+import name.eskildsen.zoneminder.interfaces.IZoneMinderConnectionInfo;
 
 /**
  * Interface for ZoneMinder handlers.
@@ -24,11 +24,11 @@ import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
 public interface ZoneMinderHandler {
     String getZoneMinderId();
 
-    void updateAvaliabilityStatus(ZoneMinderConnection connection);
+    void updateAvaliabilityStatus(IZoneMinderConnectionInfo connection);
 
     void updateChannel(ChannelUID channel);
 
-    void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, ZoneMinderConnection connection)
+    void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, IZoneMinderConnectionInfo connection)
             throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException;
 
     void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge);
