@@ -80,15 +80,34 @@ Switch zmMonitor1_Mode			"Monitor active [%s]"
 
 ###Sample Rule###
 ```
-rule "Monitor1 TriggerEvent"
+zmMonitor1_ForceAlarm        "Force Alarm [%s]"              <switch>    {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:force-alarm"}
+Switch zmMonitor1_EventState        "Alarm [%s]"                <switch>    {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:event-state"}
+Switch zmMonitor1_Recording         "Recording [%s]"            <switch>    {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:record-state"}
+String zmMonitor1_DetailedStatus    "Detailed Status [%s]"                  {channel="zoneminder:monitor:ZoneMinderSample:monitor-1:detailed-status"}
+String zmMonitor1_EventCause
+
+
+rule "Monitor1 Alarm State"
 when
-    Item zmMonitor1_TriggerEvent changed
+    Item zmMonitor1_EventState changed
 then
-	if (zmMonitor1_TriggerEvent.state == ON) {
-		logInfo("zoneminder.rules", "ZoneMinder TriggerEvent started")
+	if (zmMonitor1_EventState.state == ON) {
+		logInfo("zoneminder.rules", "ZoneMinder Alarm started")
 	}
 	else if (zmMonitor1_TriggerEvent.state == OFF) {
-		logInfo("zoneminder.rules", "ZoneMinder TriggerEvent stopped")
+		logInfo("zoneminder.rules", "ZoneMinder Alarm stopped")
+	}	
+end
+
+rule "Monitor1 Recording State"
+when
+    Item zmMonitor1_Recording changed
+then
+	if (zmMonitor1_Recording.state == ON) {
+		logInfo("zoneminder.rules", "ZoneMinder recording started")
+	}
+	else if (zmMonitor1_Recording.state == OFF) {
+		logInfo("zoneminder.rules", "ZoneMinder recording stopped")
 	}	
 end
 
