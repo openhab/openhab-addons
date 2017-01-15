@@ -137,4 +137,14 @@ public class MqttConnection {
 
     }
 
+    public void reconnect() {
+        try {
+            client.disconnectForcibly();
+            client.connect();
+        } catch (MqttException e) {
+            logger.error("Error reconnecting", e);
+        }
+
+    }
+
 }

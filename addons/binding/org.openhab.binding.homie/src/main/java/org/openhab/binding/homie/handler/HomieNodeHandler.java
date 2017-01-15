@@ -43,8 +43,6 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
 
-    private final HashMap<String, String> channelValueCache = new HashMap<>();
-
     public HomieNodeHandler(Thing thing, HomieConfiguration config) {
         super(thing);
         this.mqttconnection = MqttConnection.fromConfiguration(config, this);
@@ -100,15 +98,11 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                     }
                 } else {
                     String channelId = ht.getNodeId();
-
                     Channel channel = getThing().getChannel(channelId);
-                    if (channel == null) {
-                        channelValueCache.put(channelId, message);
-                    } else {
+                    if (channel != null) {
                         updateState(channel.getUID(), new StringType(message));
                     }
                 }
-
             }
         } catch (ParseException e) {
             logger.error("Unable to parse topic", e);
@@ -124,9 +118,8 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
             ThingBuilder builder = editThing();
             builder.withChannel(channel);
             updateThing(builder.build());
-            if (channelValueCache.containsKey(channelId)) {
-                updateState(channelUID, new StringType(channelValueCache.remove(channelId)));
-            }
+            // Reconnect to receive retained messages that may arrived before creating this channel
+            mqttconnection.reconnect();
         }
     }
 
