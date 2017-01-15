@@ -8,10 +8,12 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: com.google.common.base,
  com.google.common.collect,
+ org.apache.commons.io;version="2.2.0",
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
@@ -26,4 +28,4 @@ Import-Package: com.google.common.base,
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.onkyo,
  org.openhab.binding.onkyo.handler
-Bundle-ActivationPolicy: lazy
+Require-Bundle: org.slf4j.log4j

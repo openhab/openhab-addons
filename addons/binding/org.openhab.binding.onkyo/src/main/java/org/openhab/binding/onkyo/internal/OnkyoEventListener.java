@@ -8,16 +8,14 @@
  */
 package org.openhab.binding.onkyo.internal;
 
-import java.util.EventListener;
-import java.util.EventObject;
+import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
 
 /**
  * This interface defines interface to receive status updates from Onkyo receiver.
  *
  * @author Pauli Anttila
- * @since 1.3.0
  */
-public interface OnkyoEventListener extends EventListener {
+public interface OnkyoEventListener {
 
     /**
      * Procedure for receive status update from Onkyo AV receiver.
@@ -25,6 +23,11 @@ public interface OnkyoEventListener extends EventListener {
      * @param data
      *            Received data.
      */
-    void statusUpdateReceived(EventObject event, String ip, String data);
+    void statusUpdateReceived(String ip, EiscpMessage data);
 
+    /**
+     * Procedure for connection error events from Onkyo AV receiver.
+     *
+     */
+    void connectionError(String ip);
 }
