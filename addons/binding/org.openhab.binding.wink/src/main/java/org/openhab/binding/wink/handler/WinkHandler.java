@@ -7,14 +7,20 @@
  */
 package org.openhab.binding.wink.handler;
 
+import static org.openhab.binding.wink.WinkBindingConstants.WINK_DEVICE_ID;
+
+import java.io.IOException;
+
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.wink.config.WinkDeviceConfig;
+import org.openhab.binding.wink.handler.WinkHub2Handler.RequestCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link WinkHandler} is responsible for handling commands, which are
@@ -22,43 +28,47 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sebastien Marchand - Initial contribution
  */
-public class WinkHandler extends BaseThingHandler {
-
-    private Logger logger = LoggerFactory.getLogger(WinkHandler.class);
+public abstract class WinkHandler extends BaseThingHandler {
+    protected WinkDeviceConfig deviceConfig;
+    protected Logger logger = LoggerFactory.getLogger(WinkHandler.class);
 
     public WinkHandler(Thing thing) {
         super(thing);
+        String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
+        this.deviceConfig = new WinkDeviceConfig(id);
     }
 
     protected WinkHub2Handler getHubHandler() {
-        Bridge bridge = getBridge();
+        Bridge hub = getBridge();
 
-        return bridge == null ? null : (WinkHub2Handler) bridge.getHandler();
+        return hub == null ? null : (WinkHub2Handler) hub.getHandler();
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // if(channelUID.getId().equals(CHANNEL_1)) {
-        // TODO: handle command
+    protected abstract String getDeviceRequestPath();
 
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-        // }
+    private class ReadConfigCallback implements RequestCallback {
+        private WinkHandler handler;
+
+        public ReadConfigCallback(WinkHandler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void parseRequestResult(String jsonResult) {
+            JsonParser parser = new JsonParser();
+            handler.parseConfig(parser.parse(jsonResult).getAsJsonObject());
+        }
     }
 
-    @Override
-    public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+    public void readConfig() {
+        try {
+            getHubHandler().getConfigFromServer(getDeviceRequestPath(), new ReadConfigCallback(this));
+        } catch (IOException e) {
+            logger.error("Error while querying the hub for " + getDeviceRequestPath(), e);
+        }
+    }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    public void parseConfig(JsonObject jsonConfig) {
+        deviceConfig.readConfigFromJson(jsonConfig);
     }
 }
