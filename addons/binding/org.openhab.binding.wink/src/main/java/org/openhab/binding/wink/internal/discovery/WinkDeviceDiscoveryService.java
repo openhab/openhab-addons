@@ -11,6 +11,9 @@ package org.openhab.binding.wink.internal.discovery;
 import static org.openhab.binding.wink.WinkBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -21,10 +24,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.wink.handler.WinkHub2Handler;
 import org.openhab.binding.wink.internal.WinkHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(WinkDeviceDiscoveryService.class);
@@ -39,16 +49,12 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
         super(WinkHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
 
         this.hubHandler = hubHandler;
-
-        logger.info("Starting the Wink discovery service!");
     }
 
     private ScheduledFuture<?> scanTask;
 
     @Override
     protected void startScan() {
-        logger.info("Starting the Wink discovery scan!");
-
         if (this.scanTask == null || this.scanTask.isDone()) {
             this.scanTask = scheduler.schedule(new Runnable() {
                 @Override
@@ -98,8 +104,54 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    protected void addLightBulb(JsonObject lightBulbDescription) {
+        String uuid = lightBulbDescription.get("uuid").toString().replaceAll("\"", "");
+        String device_name = lightBulbDescription.get("name").toString();
+        ThingUID hubUID = this.hubHandler.getThing().getUID();
+        ThingUID uid = new ThingUID(THING_TYPE_LIGHT_BULB, hubUID, uuid);
+
+        JsonObject pubnubBlob = lightBulbDescription.get("subscription").getAsJsonObject().get("pubnub")
+                .getAsJsonObject();
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(WINK_DEVICE_ID, lightBulbDescription.get("light_bulb_id").toString().replaceAll("\"", ""));
+        properties.put(WINK_PUBNUB_SUBSCRIBE_KEY, pubnubBlob.get("subscribe_key").toString().replaceAll("\"", ""));
+        properties.put(WINK_PUBNUB_CHANNEL, pubnubBlob.get("channel").toString().replaceAll("\"", ""));
+
+        logger.info(properties.toString());
+
+        // DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(hubUID).withLabel(device_name)
+        // .withProperties(properties).build();
+
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(device_name).withProperties(properties)
+                .withBridge(hubUID).build();
+
+        thingDiscovered(result);
+
+        logger.info("Discovered {}", uid);
+    }
+
+    protected void enumerateDevices(String hubReplyJSON) {
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObject = parser.parse(hubReplyJSON).getAsJsonObject();
+        JsonElement data_blob = jsonObject.get("data");
+        if (data_blob == null) {
+            logger.error("Empty data blob");
+            return;
+        }
+        Iterator<JsonElement> data_blob_iter = data_blob.getAsJsonArray().iterator();
+        while (data_blob_iter.hasNext()) {
+            JsonElement element = data_blob_iter.next();
+            if (!element.isJsonObject()) {
+                continue;
+            }
+            if (element.getAsJsonObject().get("light_bulb_id") != null) {
+                addLightBulb(element.getAsJsonObject());
+            }
+        }
+    }
+
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
-        logger.info("invokeAndParse!");
         if (this.hubHandler.getHubConfig() != null) {
             Response response;
 
@@ -107,10 +159,9 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
             } else {
                 if (command != null) {
                 } else {
-                    logger.info("Sending request!: " + target.toString());
                     response = target.request(MediaType.APPLICATION_JSON_TYPE)
                             .header("Authorization", "Bearer " + this.hubHandler.getHubConfig().access_token).get();
-                    logger.info(response.toString());
+                    enumerateDevices(response.readEntity(String.class));
                 }
             }
 

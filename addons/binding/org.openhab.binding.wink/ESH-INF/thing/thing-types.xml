@@ -14,7 +14,7 @@
     			<description>The refresh token of the hub</description>
     		</parameter></config-description>
 </bridge-type>
-	<thing-type id="dimmable_light_bulb">
+	<thing-type id="light_bulb">
         <supported-bridge-type-refs>
         	<bridge-type-ref id="wink_hub_2" />
         </supported-bridge-type-refs>
@@ -24,7 +24,12 @@
         <channels>
             <channel id="lightlevel" typeId="lightDimmer"></channel>
         </channels>
-    </thing-type>
+        <config-description>
+        	<parameter name="device_id" type="text">
+        		<required>true</required></parameter>
+        	<parameter name="pubnub_subscribe_key" type="text"></parameter>
+        	<parameter name="pubnub_channel" type="text"></parameter></config-description>
+	</thing-type>
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>

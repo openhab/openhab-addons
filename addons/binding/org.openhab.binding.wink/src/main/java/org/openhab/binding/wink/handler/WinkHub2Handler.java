@@ -37,7 +37,6 @@ public class WinkHub2Handler extends BaseBridgeHandler {
 
     public WinkHub2Handler(Bridge bridge) {
         super(bridge);
-        logger.info("Here's a new Wink Hub 2 handler!");
     }
 
     @Override
@@ -61,6 +60,7 @@ public class WinkHub2Handler extends BaseBridgeHandler {
                 }
             }, 0, TimeUnit.SECONDS);
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private boolean validConfiguration() {
