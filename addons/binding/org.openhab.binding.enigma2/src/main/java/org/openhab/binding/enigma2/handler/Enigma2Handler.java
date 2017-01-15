@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,9 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
 
     private Enigma2CommandHandler commandHandler;
 
+    Refresher refresher;
+    boolean hadWarned = false;
+
     public Enigma2Handler(Thing thing) {
         super(thing);
         commandHandler = new Enigma2CommandHandler(this);
@@ -68,7 +71,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
         channelNowPlaylingDescriptionExtendedUID = getChannelUID(
                 Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED);
 
-        Refresher refresher = new Refresher();
+        refresher = new Refresher();
         refresher.addListener(this);
         updateStatus(ThingStatus.ONLINE);
         refresher.start();
@@ -95,6 +98,11 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
         }
     }
 
+    @Override
+    public void dispose() {
+        refresher.removeListener(this);
+    }
+
     public String getUserName() {
         return (String) thing.getConfiguration().get(Enigma2BindingConstants.DEVICE_PARAMETER_USER);
     }
@@ -108,27 +116,18 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     }
 
     public int getRefreshInterval() {
-        return Integer
-                .parseInt((String) thing.getConfiguration().get(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH));
-    }
-
-    /**
-     * Processes an string containing xml and returning the content of a
-     * specific tag (alyways lowercase)
-     */
-    public static String getContentOfElement(String content, String element) {
-
-        final String beginTag = "<" + element + ">";
-        final String endTag = "</" + element + ">";
-
-        final int startIndex = content.indexOf(beginTag) + beginTag.length();
-        final int endIndex = content.indexOf(endTag);
-
-        if (startIndex != -1 && endIndex != -1) {
-            return content.substring(startIndex, endIndex);
-        } else {
-            return null;
+        int returnVal;
+        try {
+            returnVal = Integer
+                    .parseInt((String) thing.getConfiguration().get(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH));
+        } catch (Exception e) {
+            if (!hadWarned) {
+                logger.warn(thing + ": Error during parsing refresh time. Set to default 5000", e);
+                hadWarned = true;
+            }
+            returnVal = 5000;
         }
+        return returnVal;
     }
 
     private ChannelUID getChannelUID(String channelId) {
@@ -144,7 +143,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     }
 
     private void updateCurrentStates() {
-        // TODO nur setzten wenn Eingeschalten, sonst null
         updateState(channelPowerUID, commandHandler.getPowerState());
         if (commandHandler.getPowerState() == OnOffType.ON) {
             updateState(channelVolumeUID, commandHandler.getVolumeState());

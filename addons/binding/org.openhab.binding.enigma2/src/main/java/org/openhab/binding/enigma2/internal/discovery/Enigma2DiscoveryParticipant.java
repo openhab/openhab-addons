@@ -1,6 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- *
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +7,7 @@
  */
 package org.openhab.binding.enigma2.internal.discovery;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.enigma2.Enigma2BindingConstants;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Enigma2DiscoveryParticipant} is responsible processing the
- * results of searches for mDNS services of type _pulse-server._tcp.local.
+ * results of searches for mDNS services of type _ssh._tcp.local. and finding a webinterface
  *
  * @author Thomas Traunbauer - Initial contribution
  */
@@ -96,11 +97,14 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         return "_ssh._tcp.local.";
     }
 
-    private boolean isNameValid(String name) {
-        if (name.contains("optimuss")) {
-            return true;
+    private boolean isIPValid(String ip) {
+        String content;
+        try {
+            content = HttpUtil.executeUrl("GET", "http://" + ip + "/web/about", 5000);
+        } catch (IOException e) {
+            return false;
         }
-        if (name.contains("dream")) {
+        if ((content != null) && (content.contains("e2enigmaversion"))) {
             return true;
         }
         return false;
@@ -110,9 +114,8 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (info != null) {
             InetAddress[] addrs = info.getInetAddresses();
             if (addrs.length > 0) {
-                String name = info.getName();
-                if (isNameValid(name)) {
-                    String ip = addrs[0].getHostAddress();
+                String ip = addrs[0].getHostAddress();
+                if (isIPValid(ip)) {
                     if (ip != null) {
                         String formatedIP = ip.replace(".", "");
                         return formatedIP;

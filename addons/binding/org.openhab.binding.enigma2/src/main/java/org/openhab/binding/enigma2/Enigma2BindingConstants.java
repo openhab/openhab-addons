@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link Enigma2Binding} class defines common constants, which are
+ * The {@link Enigma2BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Thomas Traunbauer - Initial contribution
@@ -46,6 +46,6 @@ public class Enigma2BindingConstants {
 
     public final static String DEVICE_PARAMETER_USER = "USER";
     public final static String DEVICE_PARAMETER_PASSWORD = "PASSWORD";
-    public final static String DEVICE_PARAMETER_REFRESH = "REFRESH"; // 10000
+    public final static String DEVICE_PARAMETER_REFRESH = "REFRESH";
 
 }

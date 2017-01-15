@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.enigma2.internal;
 
 import java.io.BufferedWriter;
@@ -21,6 +28,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.enigma2.handler.Enigma2Handler;
+import org.openhab.binding.enigma2.internal.xml.XmlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -28,6 +36,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The {@link Enigma2CommandHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Thomas Traunbauer - Initial contribution
+ */
 public class Enigma2CommandHandler {
 
     private Logger logger = LoggerFactory.getLogger(Enigma2CommandHandler.class);
@@ -57,23 +71,6 @@ public class Enigma2CommandHandler {
     /**
      * Toggles on and off
      */
-    public void setPowerState(Command command, Enigma2PowerState powerState) {
-        if (command instanceof OnOffType) {
-            try {
-                String com = createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE + "?newstate="
-                        + powerState.getValue();
-                HttpUtil.executeUrl("GET", com, timeout);
-            } catch (IOException e) {
-                logger.error(thing + ": Error during send Command: ", e);
-            }
-        } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
-        }
-    }
-
-    /**
-     * Toggles on and off
-     */
     public void togglePowerState(Command command) {
         if (command instanceof OnOffType) {
             try {
@@ -88,11 +85,10 @@ public class Enigma2CommandHandler {
         }
     }
 
-    /*
-     * Setter
-     */
     /**
      * Sets the volume
+     * either an int value
+     * or an IncreaseDecreaseType
      */
     public void setVolume(Command command) {
         // up or down one step
@@ -113,7 +109,9 @@ public class Enigma2CommandHandler {
     }
 
     /**
-     * Sets the channel
+     * Sets the channel number
+     * either an int value
+     * or an IncreaseDecreaseType
      */
     public void setChannelNumber(Command command) {
         if (command instanceof IncreaseDecreaseType) {
@@ -130,12 +128,8 @@ public class Enigma2CommandHandler {
         }
     }
 
-    public boolean isMuted() {
-        return (getMutedState() == OnOffType.ON);
-    }
-
     /**
-     * Toggles mute and unmute
+     * Toggles mute
      */
     public void setMute(Command command) {
         if (command instanceof OnOffType) {
@@ -167,6 +161,11 @@ public class Enigma2CommandHandler {
         }
     }
 
+    /**
+     * Sets play command
+     * either PlayPauseType
+     * or NextPreviousType
+     */
     public void setPlayControl(Command command) {
         if (command instanceof PlayPauseType) {
             PlayPauseType type = (PlayPauseType) command;
@@ -206,13 +205,13 @@ public class Enigma2CommandHandler {
     /**
      * Requests, whether the device is on or off
      *
-     * @return <code>true</code>, if the device is on, else <code>false</code>
+     * @return OnOffType
      */
     public State getPowerState() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE,
                     timeout);
-            content = getContentOfElement(content, "e2instandby");
+            content = XmlUtil.getContentOfElement(content, "e2instandby");
             State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
             return returnState;
         } catch (IOException e) {
@@ -222,12 +221,14 @@ public class Enigma2CommandHandler {
     }
 
     /**
-     * @return requests the current value the volume
+     * Requests the current value of the volume
+     *
+     * @return StringType(vol/e2current)
      */
     public State getVolumeState() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_VOLUME, timeout);
-            content = getContentOfElement(content, "e2current");
+            content = XmlUtil.getContentOfElement(content, "e2current");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -237,12 +238,14 @@ public class Enigma2CommandHandler {
     }
 
     /**
-     * @return requests the current channel name
+     * Requests the current channel name
+     *
+     * @return StringType(channel/e2servicename)
      */
     public State getChannelNameState() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL, timeout);
-            content = getContentOfElement(content, "e2servicename");
+            content = XmlUtil.getContentOfElement(content, "e2servicename");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -251,10 +254,15 @@ public class Enigma2CommandHandler {
         return null;
     }
 
-    private String getChannelServiceReference() {
+    /**
+     * Requests the current channel ServiceReference
+     *
+     * @return StringType(channel/e2servicereference)
+     */
+    public String getChannelServiceReference() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL, timeout);
-            content = getContentOfElement(content, "e2servicereference");
+            content = XmlUtil.getContentOfElement(content, "e2servicereference");
             return content;
         } catch (IOException e) {
             logger.error(thing + ": Error during send Command: ", e);
@@ -263,12 +271,14 @@ public class Enigma2CommandHandler {
     }
 
     /**
-     * @return requests the current channel number
+     * Requests the current channel number
+     *
+     * @return StringType(map(channel/e2servicereference))
      */
     public State getChannelNumberState() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL, timeout);
-            content = getContentOfElement(content, "e2servicename");
+            content = XmlUtil.getContentOfElement(content, "e2servicename");
             Integer number = mapOfServicesName.get(content);
             if (number != null) {
                 String asdf = number.toString();
@@ -284,13 +294,12 @@ public class Enigma2CommandHandler {
     /**
      * Requests, whether the device is muted or unmuted
      *
-     * @return <code>true</code>, if the device is muted, else
-     *         <code>false</code>
+     * @return OnOffType
      */
     public State getMutedState() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_VOLUME, timeout);
-            content = getContentOfElement(content, "e2ismuted");
+            content = XmlUtil.getContentOfElement(content, "e2ismuted");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
@@ -302,13 +311,12 @@ public class Enigma2CommandHandler {
     /**
      * Requests, if downmix is active
      *
-     * @return <code>true</code>, if dowmix is active
-     *         <code>false</code>
+     * @return OnOffType
      */
     public State isDownmixActiveState() {
         try {
             String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX, timeout);
-            content = getContentOfElement(content, "e2state");
+            content = XmlUtil.getContentOfElement(content, "e2state");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
@@ -317,11 +325,16 @@ public class Enigma2CommandHandler {
         return null;
     }
 
+    /**
+     * Requests the now playing title
+     *
+     * @return StringType(e2eventtitle)
+     */
     public State getNowPlayingTitle() {
         try {
             String content = HttpUtil.executeUrl("GET",
                     createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference(), timeout);
-            content = getContentOfElement(content, "e2eventtitle");
+            content = XmlUtil.getContentOfElement(content, "e2eventtitle");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -330,11 +343,16 @@ public class Enigma2CommandHandler {
         return null;
     }
 
+    /**
+     * Requests the now playing description
+     *
+     * @return StringType(e2eventdescription)
+     */
     public State getNowPlayingDescription() {
         try {
             String content = HttpUtil.executeUrl("GET",
                     createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference(), timeout);
-            content = getContentOfElement(content, "e2eventdescription");
+            content = XmlUtil.getContentOfElement(content, "e2eventdescription");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -343,11 +361,16 @@ public class Enigma2CommandHandler {
         return null;
     }
 
+    /**
+     * Requests the now playing description extended
+     *
+     * @return StringType(e2eventdescriptionExtended)
+     */
     public State getNowPlayingDescriptionExtended() {
         try {
             String content = HttpUtil.executeUrl("GET",
                     createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference(), timeout);
-            content = getContentOfElement(content, "e2eventdescriptionextended");
+            content = XmlUtil.getContentOfElement(content, "e2eventdescriptionextended");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -356,6 +379,9 @@ public class Enigma2CommandHandler {
         return null;
     }
 
+    /**
+     * Scans "http://enigma2/web/getallservices" and generates map
+     */
     public void generateServiceMaps() {
         try {
             File inputFile = new File("services.xml");
@@ -396,6 +422,10 @@ public class Enigma2CommandHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isMuted() {
+        return (getMutedState() == OnOffType.ON);
     }
 
     private String createUserPasswordHostnamePrefix() {
@@ -445,25 +475,6 @@ public class Enigma2CommandHandler {
         }
         returnArray[str.length()] = Enigma2RemoteKey.OK;
         return returnArray;
-    }
-
-    /**
-     * Processes an string containing xml and returning the content of a
-     * specific tag (alyways lowercase)
-     */
-    private static String getContentOfElement(String content, String element) {
-
-        final String beginTag = "<" + element + ">";
-        final String endTag = "</" + element + ">";
-
-        final int startIndex = content.indexOf(beginTag) + beginTag.length();
-        final int endIndex = content.indexOf(endTag);
-
-        if (startIndex != -1 && endIndex != -1) {
-            return content.substring(startIndex, endIndex);
-        } else {
-            return null;
-        }
     }
 
     /**

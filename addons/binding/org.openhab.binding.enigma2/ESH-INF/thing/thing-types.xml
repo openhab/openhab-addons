@@ -25,9 +25,9 @@
                 <label>Host Address</label>
                 <description>The Host / IP Address used for communication to this device.</description>
             </parameter>
-            <parameter name="REFRESH" type="text" required="true">
+            <parameter name="REFRESH" type="text" required="false">
                 <label>Refresh interval</label>
-                <description>Time for autoupdate</description>
+                <description>Time for autoupdate (default=5000)</description>
             </parameter>
             <parameter name="USER" type="text" required="false">
                 <label>User Name</label>
