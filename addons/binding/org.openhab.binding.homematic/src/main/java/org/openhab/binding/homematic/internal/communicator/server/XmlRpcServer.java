@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
  */
 public class XmlRpcServer implements RpcServer {
     private final static Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
-    private final static boolean TRACE_ENABLED = logger.isTraceEnabled();
 
     private static final String XML_EMPTY_STRING = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value></value></param></params></methodResponse>";
     private static final String XML_EMPTY_ARRAY = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data></data></array></value></param></params></methodResponse>";
@@ -69,7 +68,7 @@ public class XmlRpcServer implements RpcServer {
 
         try {
             xmlRpcHTTPD.start();
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 xmlRpcHTTPD.dumpStdErr();
             }
         } catch (Exception e) {
@@ -110,11 +109,11 @@ public class XmlRpcServer implements RpcServer {
             final PrintWriter respWriter = response.getWriter();
             try {
                 XmlRpcResponse xmlResponse = new XmlRpcResponse(request.getInputStream(), config.getEncoding());
-                if (TRACE_ENABLED) {
+                if (logger.isTraceEnabled()) {
                     logger.trace("Server parsed XmlRpcMessage:\n{}", xmlResponse);
                 }
                 final String returnValue = handleMethodCall(xmlResponse.getMethodName(), xmlResponse.getResponseData());
-                if (TRACE_ENABLED) {
+                if (logger.isTraceEnabled()) {
                     logger.trace("Server XmlRpcResponse:\n{}", returnValue);
                 }
                 respWriter.println(returnValue);
