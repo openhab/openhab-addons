@@ -19,27 +19,28 @@ The binding consists of a Bridge (the ZoneMinder Server it self), and a number o
 ### Bridge ###
  Channel       | Type      | Description
 -------------- | --------- | ----------------------------------
-Is Alive       | Switch    | Parameter indicationg if the server IsAlive
+is-alive       | Switch    | Parameter indicating if the server IsAlive
 CPU load       | Text      | Current CPU Load of server
 Disk Usage     | text      | Current Disk Usage on server
-Server Version | Text      | Version of ZoneMinder
-API Version    | Text      | Version of API 
 
 ### Thing ###
 
  Channel       | Type      | Description
 -------------- | --------- | ----------------------------------
-Is Alive       | Switch    | Parameter indicationg if the monitor IsAlive
-Enabled        | Switch    | Parameter indicationg if the monitor is enabled
-Name           | Text      | Name of Monitor
-SourceType     | Text      | As stated in ZoneMinder (Local, Remote, File, Ffmpeg, Libvlc, cUrl)
-Trigger        | Switch    | State of the ForceAlarm in ZoneMidner. This can both be read and set from OpenHAB.
-Function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
-ZMC Daemon State    | Switch      | Run state of ZMC Daemon 
-ZMA Daemon State    | Switch      | Run state of ZMA Daemon 
-ZMF Daemon State    | Switch      | Run state of ZMF Daemon 
+is-alive       | Switch    | Parameter indicating if the monitor IsAlive
+enabled        | Switch    | Parameter indicating if the monitor is enabled
+force-alarm    | Switch    | Parameter indicating if Force Alarm for the the monitor is active
+alarm	       | Switch    | true if monitor has an active alarm
+recording      | Text	   | true if monitor is recording
+detailed-status| Text	   | 
+event-cause    | Text	   | 	
+function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
+capture-daemon | Switch      | Run state of ZMC Daemon 
+analysis-daemon| Switch      | Run state of ZMA Daemon 
+frame-daemon   | Switch      | Run state of ZMF Daemon 
 
 ##Manual configuration##
+
 ###Things configuration###
 ```
 Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USERNAME>", password="<PASSWORD>", telnet_port=6802, refresh_interval_disk_usage=1 ]
