@@ -27,15 +27,22 @@ import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link HomieNodeHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Michael Kolb - Initial Contribution
+ *
+ */
 public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageListener {
 
     private Logger logger = LoggerFactory.getLogger(HomieNodeHandler.class);
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
 
-    public HomieNodeHandler(Thing thing) {
+    public HomieNodeHandler(Thing thing, String brokerurl, String basetopic) {
         super(thing);
-        this.mqttconnection = new MqttConnection("NodeHandler#" + thing.getUID().getAsString());
+        this.mqttconnection = new MqttConnection(brokerurl, basetopic, "NodeHandler#" + thing.getUID().getAsString());
         topicParser = new TopicParser(mqttconnection.getBasetopic());
     }
 
@@ -81,7 +88,8 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                         NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
                         NodePropertiesList propslist = parser.parse(message.toString());
                         propslist.getProperties().stream().forEach(item -> {
-                            updateChannel(item, propslist.isPropertySettable(item));
+                            createChannel(item);
+
                         });
                     } else if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYTYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
                         updatePropertyType(ht.getNodeId(), message);
@@ -92,13 +100,6 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                     updateState(channel.getUID(), new StringType(message));
                 }
 
-                // Use this to add channels dynamically
-                /*
-                 * ThingBuilder thingBuilder = editThing();
-                 *
-                 * thingBuilder.withChannels(newChannels);
-                 * updateThing(thingBuilder.build());
-                 */
             }
         } catch (ParseException e) {
             logger.error("Unable to parse topic", e);
@@ -110,11 +111,11 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
 
     }
 
-    private void updateChannel(String channelId, boolean readonly) {
+    private void createChannel(String channelId) {
         if (getThing().getChannel(channelId) == null) {
 
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-            Channel channel = ChannelBuilder.create(channelUID, "Everything").withLabel(channelId)
+            Channel channel = ChannelBuilder.create(channelUID, "String").withLabel(channelId)
                     .withKind(ChannelKind.STATE).build();
             ThingBuilder builder = editThing();
             builder.withChannel(channel);

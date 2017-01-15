@@ -54,6 +54,12 @@ public class HomieInformationHolder {
         return StringUtils.isNotBlank(homie) && StringUtils.isNotBlank(name) && StringUtils.isNotBlank(implementation);
     }
 
+    /**
+     * Create a discovery result out of the gathered information
+     * 
+     * @param homieThing
+     * @return
+     */
     public DiscoveryResult toDiscoveryResult(ThingUID homieThing) {
         return DiscoveryResultBuilder.create(homieThing).withLabel(getName())
                 .withProperty(THING_PROP_SPEC_VERSION, getHomieSpecVersion())
@@ -61,6 +67,12 @@ public class HomieInformationHolder {
 
     }
 
+    /**
+     * Parse a mqtt message for relevant information
+     * 
+     * @param topic
+     * @param message
+     */
     public void parse(HomieTopic topic, String message) {
         if (topic.isInternalProperty()) {
             String propname = topic.getInternalPropertyName();

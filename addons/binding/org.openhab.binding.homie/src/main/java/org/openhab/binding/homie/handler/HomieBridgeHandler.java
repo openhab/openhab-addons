@@ -43,9 +43,14 @@ public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessag
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
 
-    public HomieBridgeHandler(Bridge thing) {
+    /**
+     * Constructor
+     *
+     * @param thing The Bridge that will be handled
+     */
+    public HomieBridgeHandler(Bridge thing, String brokerurl, String basetopic) {
         super(thing);
-        this.mqttconnection = new MqttConnection("BridgeHandler");
+        this.mqttconnection = new MqttConnection(brokerurl, basetopic, "BridgeHandler");
         topicParser = new TopicParser(mqttconnection.getBasetopic());
 
     }

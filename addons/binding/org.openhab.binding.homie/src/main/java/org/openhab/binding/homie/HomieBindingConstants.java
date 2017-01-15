@@ -18,13 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class HomieBindingConstants {
 
     public final static String MQTT_TOPIC_SEPARATOR = "/";
-    // To be removed as soon as configuration is working
-    public final static String BROKER_URL = "tcp://broker:1883";
-    public final static String BASETOPIC = "homie";
 
     public static final String BINDING_ID = "homie";
-
-    // List of all Thing Type UIDs
 
     public final static ThingTypeUID HOMIE_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieDeviceV2");
     public final static ThingTypeUID HOMIE_NODE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieNodeV2");

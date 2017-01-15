@@ -5,6 +5,12 @@ import static org.openhab.binding.homie.internal.conventionv200.HomieConventions
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Parser for property announcement messages (e.g. the message sent to homie/686f6d6965/temperature/$properties)
+ *
+ * @author Michael Kolb - Initial Contribution
+ *
+ */
 public class NodePropertiesListAnnouncementParser {
 
     protected final static String MATCHGROUP_PROPERTYNAME_NAME = "propname";

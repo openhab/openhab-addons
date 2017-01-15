@@ -9,6 +9,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.homie.HomieBindingConstants;
 
+/**
+ * Parser for Homie MQTT Topics
+ *
+ * @author Michael Kolb - Initial Contribution
+ *
+ */
 public class TopicParser {
 
     protected final static String MATCHGROUP_INTERNAL_PROPERTY_NAME = "intproperty";

@@ -1,6 +1,6 @@
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.*;
+import static org.openhab.binding.homie.HomieBindingConstants.MQTT_CLIENTID;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -71,9 +71,9 @@ public class MqttConnection {
         }
     }
 
-    public MqttConnection(String clientIdentifier) {
-        this.brokerURL = BROKER_URL;
-        this.basetopic = BASETOPIC;
+    public MqttConnection(String brokerurl, String basetopic, String clientIdentifier) {
+        this.brokerURL = brokerurl;
+        this.basetopic = basetopic;
         listenDeviceTopic = String.format("%s/#", basetopic);
         qualifier = clientIdentifier;
         connect();
