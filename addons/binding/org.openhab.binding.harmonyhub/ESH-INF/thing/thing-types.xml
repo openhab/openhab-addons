@@ -17,18 +17,25 @@
             <property name="id"></property>
         </properties>
         <config-description>
-	        <parameter name="name" type="text" required="true">
-	                <label>Name</label>
-	                <description>The name given to the hub when first setup (case insensitive)
+	        <parameter name="name" type="text" required="false">
+	                <label>Name (optional)</label>
+	                <description>The name given to the hub when first setup (case insensitive). If name is supplied then the binding will use discovery to find the hub on the network. Leave blank if host option is supplied.
 	                </description>
 	        </parameter>
+	         <parameter name="host" type="text" required="false">
+                    <label>Host (optional)</label>
+                    <description>Host or IP address of hub, leave blank if name option is supplied.
+                    </description>
+            </parameter>
             <parameter name="discoveryTimeout" type="integer" required="false">
                 <label>Discovery Timeout</label>
+                <default>30</default>
                 <description>How long in seconds to search the network for this hub.
                 </description>
             </parameter>
             <parameter name="heartBeatInterval" type="integer" required="false">
                 <label>Heart Beat Interval</label>
+                <default>60</default>
                 <description>Heart beat keep alive time in seconds.
                 </description>
             </parameter>

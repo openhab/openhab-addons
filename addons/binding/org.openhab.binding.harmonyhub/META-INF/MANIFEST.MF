@@ -19,6 +19,7 @@ Bundle-ClassPath: .,
 Import-Package: 
  com.google.inject,
  javax.inject,
+ org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common,

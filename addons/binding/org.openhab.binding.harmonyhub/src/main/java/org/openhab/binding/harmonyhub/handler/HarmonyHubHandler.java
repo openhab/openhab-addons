@@ -18,9 +18,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -76,6 +79,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
 
     private static final int HEARTBEAT_INTERVAL = 30;
 
+    private ScheduledExecutorService buttonExecutor = Executors.newSingleThreadScheduledExecutor();
+
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<HubStatusListener>();
 
     private HarmonyClient client;
@@ -129,13 +134,13 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         connect();
     }
 
     @Override
     public void dispose() {
         listeners.clear();
+        buttonExecutor.shutdownNow();
         disconnectFromHub();
         factory.removeChannelTypesForThing(getThing().getUID());
     }
@@ -166,7 +171,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
     public void hubDiscovered(HarmonyHubDiscoveryResult result) {
         logger.debug("Found hub with name {}", result.getFriendlyName());
         HarmonyHubConfig config = getConfig().as(HarmonyHubConfig.class);
-        if (result.getFriendlyName().equalsIgnoreCase(config.name)) {
+        /*
+         * if we have host set, then accept this as it should be our only response, otherwise make sure
+         * the name of the hub matches our config name. I
+         */
+        if (StringUtils.isNotBlank(config.host) || result.getFriendlyName().equalsIgnoreCase(config.name)) {
             // remove our listener so HubDiscoveryFinished can not be called while we connect
             discovery.removeListener(this);
             discovery.stopDiscovery();
@@ -209,7 +218,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
         discoTime = config.discoveryTimeout > 0 ? config.discoveryTimeout : DISCO_TIME;
         heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
 
-        discovery = new HarmonyHubDiscovery(discoTime);
+        discovery = new HarmonyHubDiscovery(discoTime, config.host);
         discovery.addListener(this);
         discovery.startDiscovery();
     }
@@ -357,6 +366,40 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
      */
     public HarmonyClient getClient() {
         return client;
+    }
+
+    /**
+     * Sends a button press to a device
+     *
+     * @param device
+     * @param button
+     */
+    public void pressButton(int device, String button) {
+        buttonExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (client != null) {
+                    client.pressButton(device, button);
+                }
+            }
+        });
+    }
+
+    /**
+     * Sends a button press to a device
+     *
+     * @param device
+     * @param button
+     */
+    public void pressButton(String device, String button) {
+        buttonExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (client != null) {
+                    client.pressButton(device, button);
+                }
+            }
+        });
     }
 
     /**
