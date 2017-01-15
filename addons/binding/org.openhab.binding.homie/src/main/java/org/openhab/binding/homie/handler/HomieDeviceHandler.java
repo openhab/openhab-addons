@@ -32,14 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HomieBridgeHandler} is responsible for handling commands, which are
+ * The {@link HomieDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Michael Kolb - Initial contribution
  */
-public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessageListener {
+public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessageListener {
 
-    private Logger logger = LoggerFactory.getLogger(HomieBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(HomieDeviceHandler.class);
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
 
@@ -48,9 +48,9 @@ public class HomieBridgeHandler extends BaseBridgeHandler implements IMqttMessag
      *
      * @param thing The Bridge that will be handled
      */
-    public HomieBridgeHandler(Bridge thing, String brokerurl, String basetopic) {
+    public HomieDeviceHandler(Bridge thing, MqttConnection connection) {
         super(thing);
-        this.mqttconnection = new MqttConnection(brokerurl, basetopic, "BridgeHandler");
+        this.mqttconnection = connection;
         topicParser = new TopicParser(mqttconnection.getBasetopic());
 
     }

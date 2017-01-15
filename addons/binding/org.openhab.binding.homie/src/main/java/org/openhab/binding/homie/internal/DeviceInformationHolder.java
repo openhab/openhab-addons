@@ -15,7 +15,7 @@ import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
  * @author Michael Kolb - Initial contribution
  *
  */
-public class HomieInformationHolder {
+public class DeviceInformationHolder {
 
     private String homie;
     private String name;

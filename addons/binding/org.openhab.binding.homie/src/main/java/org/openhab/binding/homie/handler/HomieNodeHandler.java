@@ -3,6 +3,8 @@ package org.openhab.binding.homie.handler;
 import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -47,12 +49,6 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
     }
 
     @Override
-    public void handleRemoval() {
-        // TODO Auto-generated method stub
-        super.handleRemoval();
-    }
-
-    @Override
     public void dispose() {
         mqttconnection.disconnect();
         super.dispose();
@@ -73,7 +69,6 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error subscribing MQTT" + e.toString());
         }
-
     }
 
     @Override
@@ -91,8 +86,15 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                             createChannel(item);
 
                         });
-                    } else if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYTYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                        updatePropertyType(ht.getNodeId(), message);
+                    } else if (StringUtils.equals(prop, HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
+                        String type = message;
+                        logger.debug("Updating node (thing) type " + ht.getNodeId() + " to " + type);
+                        Map<String, String> props = new HashMap<>(getThing().getProperties());
+                        props.put("type", type);
+                        ThingBuilder builder = editThing();
+
+                        Thing newThing = builder.withProperties(getThing().getProperties()).build();
+                        updateThing(newThing);
                     }
                 } else {
                     String channelId = ht.getNodeId();
@@ -104,11 +106,6 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
         } catch (ParseException e) {
             logger.error("Unable to parse topic", e);
         }
-    }
-
-    private void updatePropertyType(String nodeId, String type) {
-        logger.debug("Updating node (thing) type" + nodeId + " to " + type);
-
     }
 
     private void createChannel(String channelId) {

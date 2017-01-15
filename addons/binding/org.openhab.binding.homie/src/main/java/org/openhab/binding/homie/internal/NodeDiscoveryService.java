@@ -13,7 +13,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.homie.handler.HomieBridgeHandler;
+import org.openhab.binding.homie.handler.HomieDeviceHandler;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.slf4j.Logger;
@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 public class NodeDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
     private static Logger logger = LoggerFactory.getLogger(NodeDiscoveryService.class);
     private final MqttConnection connection;
-    private final HomieBridgeHandler bridgeHandler;
+    private final HomieDeviceHandler bridgeHandler;
     private final TopicParser parser;
 
-    public NodeDiscoveryService(HomieBridgeHandler bridgeHandler, String brokerurl, String basetopic) {
+    public NodeDiscoveryService(HomieDeviceHandler bridgeHandler, String brokerurl, String basetopic) {
         super(Collections.singleton(HOMIE_NODE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS);
         this.connection = new MqttConnection(brokerurl, basetopic,
                 "NodeDiscovery#" + bridgeHandler.getThing().getUID().getAsString());

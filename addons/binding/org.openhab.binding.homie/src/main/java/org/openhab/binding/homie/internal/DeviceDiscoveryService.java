@@ -22,8 +22,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService implements 
 
     private final TopicParser topicParser;
     private MqttConnection mqttconnection;
-    private Map<String, HomieInformationHolder> thingCache = Collections
-            .synchronizedMap(new HashMap<String, HomieInformationHolder>());
+    private Map<String, DeviceInformationHolder> thingCache = Collections
+            .synchronizedMap(new HashMap<String, DeviceInformationHolder>());
 
     public DeviceDiscoveryService(String brokerurl, String basetopic) {
         super(Collections.singleton(HOMIE_DEVICE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS, true);
@@ -54,7 +54,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService implements 
             HomieTopic topicInfo = topicParser.parse(topic);
 
             String homieId = topicInfo.getDeviceId();
-            HomieInformationHolder homieDeviceInformation = getCacheEntry(homieId);
+            DeviceInformationHolder homieDeviceInformation = getCacheEntry(homieId);
             homieDeviceInformation.parse(topicInfo, message.toString());
             if (homieDeviceInformation.isInformationComplete()) {
                 logger.debug("Data for Homie Device " + homieId + " is complete");
@@ -67,9 +67,9 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService implements 
 
     }
 
-    private HomieInformationHolder getCacheEntry(String homieId) {
+    private DeviceInformationHolder getCacheEntry(String homieId) {
         if (!thingCache.containsKey(homieId)) {
-            thingCache.put(homieId, new HomieInformationHolder());
+            thingCache.put(homieId, new DeviceInformationHolder());
             logger.info("Homie with id " + homieId + " discovered");
         }
         return thingCache.get(homieId);

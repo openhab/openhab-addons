@@ -23,11 +23,11 @@
 			<channel id="implementation" typeId="implementation-channel" />
 		</channels>
 	</bridge-type>
-    <!-- Thing - Homie Convention V2.0 -->
-    <thing-type id="homieNodeV2">
-        <label>Homie Node</label>
-        <description>This thing represents a Homie Node that complies with the Homie MQTT Convention V2.0.0</description>
-    </thing-type>
+	<!-- Thing - Homie Convention V2.0 -->
+	<thing-type id="homieNodeV2">
+		<label>Homie Node</label>
+		<description>This thing represents a Homie Node that complies with the Homie MQTT Convention V2.0.0</description>
+	</thing-type>
 
 
 

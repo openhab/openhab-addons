@@ -23,7 +23,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.homie.handler.HomieBridgeHandler;
+import org.openhab.binding.homie.HomieChannelTypeProvider;
+import org.openhab.binding.homie.handler.HomieDeviceHandler;
 import org.openhab.binding.homie.handler.HomieNodeHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
@@ -44,31 +45,23 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
             .newArrayList(HOMIE_DEVICE_THING_TYPE, HOMIE_NODE_THING_TYPE);
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     private String brokerurl;
     private String basetopic;
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    private HomieChannelTypeProvider provider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof HomieBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
-        }
+    protected void setChannelProvider(HomieChannelTypeProvider provider) {
+        this.provider = provider;
     }
 
-    private synchronized void registerDiscoveryService(HomieBridgeHandler thingHandler) {
-        NodeDiscoveryService discoveryService = new NodeDiscoveryService(thingHandler, brokerurl, basetopic);
-        this.discoveryServiceRegs.put(thingHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    protected void unsetChannelProvider(HomieChannelTypeProvider provider) {
+        this.provider = null;
     }
 
     @Override
@@ -85,11 +78,30 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    protected synchronized void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof HomieNodeHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                serviceReg.unregister();
+                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            }
+        }
+    }
+
+    private synchronized void registerDiscoveryService(HomieDeviceHandler thingHandler) {
+
+        NodeDiscoveryService discoveryService = new NodeDiscoveryService(thingHandler, brokerurl, basetopic);
+        this.discoveryServiceRegs.put(thingHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(HOMIE_DEVICE_THING_TYPE)) {
             logger.info("Create homie thing for " + thing.toString());
-            HomieBridgeHandler handler = new HomieBridgeHandler((Bridge) thing, brokerurl, basetopic);
+            MqttConnection mqtt = new MqttConnection(brokerurl, basetopic, "DeviceHandler-" + thing.getUID());
+            HomieDeviceHandler handler = new HomieDeviceHandler((Bridge) thing, mqtt);
             registerDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(HOMIE_NODE_THING_TYPE)) {
