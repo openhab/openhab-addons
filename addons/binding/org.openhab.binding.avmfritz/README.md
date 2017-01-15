@@ -7,11 +7,11 @@ The binding integrates the AHA ( [AVM Home Automation](http://avm.de/ratgeber/sm
 
 ### FRITZ!Box
 
-The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices. It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now. The Box has to run at least on firmware FRITZ!OS 6.00 and hast to support the "Smart Home" service.
+The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices. It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now. The Box has to run at least on firmware FRITZ!OS 6.00 and has to support the "Smart Home" service.
 
 ### FRITZ!DECT 200 / FRITZ!DECT 210
 
-This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol. They support switching the outlet, current power and accumulated energy consumption and temperature readings.
+These switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol. They support switching the outlet, current power and accumulated energy consumption and temperature readings.
 
 ### FRITZ!DECT Repeater 100
 
@@ -19,7 +19,11 @@ This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) 
 
 ### FRITZ!Powerline 546E
 
-This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in standalone mode. It supports switching the outlet and current power and energy consumption readings. This device does not contain a temperature sensor.
+This [powerline adapter](https://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in standalone mode. It supports switching the outlet and current power and accumulated energy consumption readings. This device does not contain a temperature sensor.
+
+### FRITZ!Powerline 1240E / FRITZ!Powerline 1220E / FRITZ!Powerline 1000E / FRITZ!Powerline 540E / FRITZ!Powerline 530E / FRITZ!Powerline 510E
+
+These powerline adapter [FRITZ!Powerline 1240E](https://avm.de/produkte/fritzpowerline/fritzpowerline-1240e/) ###TODO### can only be used in standalone mode. They neither support switching outlets nor reading current power or accumulated energy consumption and have no temperature sensors.
 
 ## Discovery
 
@@ -41,7 +45,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 * asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
 * syncTimeout (optional, 500 to 15000), default 2000 (in millis)
 
-### FRITZ!Powerline 546E
+### FRITZ!Powerline
 
 * ipAddress (mandatory), default "fritz.powerline"
 * protocol (optional, http or https), default "http"
@@ -56,6 +60,8 @@ If correct credentials are set in the bridge configuration, connected AHA device
 * AIN (mandatory), no default (AIN number of device)
 
 ## Channels
+
+### FRITZ!DECT
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 |-------------|--------|-----------------------------|------------------------------------|

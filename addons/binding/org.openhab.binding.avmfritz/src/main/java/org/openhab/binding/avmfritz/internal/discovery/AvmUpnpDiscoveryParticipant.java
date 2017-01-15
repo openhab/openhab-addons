@@ -91,9 +91,15 @@ public class AvmUpnpDiscoveryParticipant implements
 //	It world be better to use udn but in my case FB is discovered twice
 //								.getIdentity().getUdn().getIdentifierString()
 								.replaceAll("[^a-zA-Z0-9_]", "_"));
-					} else if (modelName.startsWith(PL546E_MODEL_NAME)) {
+					//} else if (modelName.startsWith(PL546E_MODEL_NAME)) {
+					} else if (modelName.startsWith(POWERLINE_MODEL_NAME)) {
 						logger.debug("discovered on " + device.getIdentity().getDiscoveredOnLocalAddress());
-						return new ThingUID(PL546E_STANDALONE_THING_TYPE, device
+						//return new ThingUID(PL546E_STANDALONE_THING_TYPE, device
+				        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device
+				        		.getProductName().replaceAll("[^a-zA-Z0-9_]", "_"));
+			            String thingName = modelName.replaceAll("[^a-zA-Z0-9_]", "_");
+			            ThingUID thingUID = new ThingUID(thingTypeUID, thingName);
+						return new ThingUID(thingUID, device
 								.getIdentity().getDescriptorURL().getHost()
 //	It world be better to use udn but in my case PL546E is discovered twice
 //								.getIdentity().getUdn().getIdentifierString()
