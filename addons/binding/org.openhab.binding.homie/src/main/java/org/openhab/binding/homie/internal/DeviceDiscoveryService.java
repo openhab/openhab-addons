@@ -25,11 +25,11 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService implements 
     private Map<String, DeviceInformationHolder> thingCache = Collections
             .synchronizedMap(new HashMap<String, DeviceInformationHolder>());
 
-    public DeviceDiscoveryService(String brokerurl, String basetopic) {
+    public DeviceDiscoveryService(HomieConfiguration config) {
         super(Collections.singleton(HOMIE_DEVICE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS, true);
         logger.info("Homie Discovery Service started");
-        mqttconnection = new MqttConnection(brokerurl, basetopic, "DeviceDiscovery");
-        topicParser = new TopicParser(basetopic);
+        mqttconnection = MqttConnection.fromConfiguration(config, this);
+        topicParser = new TopicParser(config.getBaseTopic());
     }
 
     @Override

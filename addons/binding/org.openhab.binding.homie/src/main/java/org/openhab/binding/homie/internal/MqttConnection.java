@@ -79,6 +79,10 @@ public class MqttConnection {
         connect();
     }
 
+    public static MqttConnection fromConfiguration(HomieConfiguration config, Object consumer) {
+        return new MqttConnection(config.getBrokerUrl(), config.getBaseTopic(), MQTT_CLIENTID + "-" + consumer);
+    }
+
     private void connect() {
         try {
             logger.debug("Homie MQTT Connection start");

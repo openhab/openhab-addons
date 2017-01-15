@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.homie.internal.HomieConfiguration;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 import org.openhab.binding.homie.internal.conventionv200.NodePropertiesList;
@@ -42,9 +43,11 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
 
-    public HomieNodeHandler(Thing thing, String brokerurl, String basetopic) {
+    private final HashMap<String, String> channelValueCache = new HashMap<>();
+
+    public HomieNodeHandler(Thing thing, HomieConfiguration config) {
         super(thing);
-        this.mqttconnection = new MqttConnection(brokerurl, basetopic, "NodeHandler#" + thing.getUID().getAsString());
+        this.mqttconnection = MqttConnection.fromConfiguration(config, this);
         topicParser = new TopicParser(mqttconnection.getBasetopic());
     }
 
@@ -92,14 +95,18 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                         Map<String, String> props = new HashMap<>(getThing().getProperties());
                         props.put("type", type);
                         ThingBuilder builder = editThing();
-
                         Thing newThing = builder.withProperties(getThing().getProperties()).build();
                         updateThing(newThing);
                     }
                 } else {
                     String channelId = ht.getNodeId();
+
                     Channel channel = getThing().getChannel(channelId);
-                    updateState(channel.getUID(), new StringType(message));
+                    if (channel == null) {
+                        channelValueCache.put(channelId, message);
+                    } else {
+                        updateState(channel.getUID(), new StringType(message));
+                    }
                 }
 
             }
@@ -117,6 +124,9 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
             ThingBuilder builder = editThing();
             builder.withChannel(channel);
             updateThing(builder.build());
+            if (channelValueCache.containsKey(channelId)) {
+                updateState(channelUID, new StringType(channelValueCache.remove(channelId)));
+            }
         }
     }
 

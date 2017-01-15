@@ -25,10 +25,9 @@ public class NodeDiscoveryService extends AbstractDiscoveryService implements IM
     private final HomieDeviceHandler bridgeHandler;
     private final TopicParser parser;
 
-    public NodeDiscoveryService(HomieDeviceHandler bridgeHandler, String brokerurl, String basetopic) {
+    public NodeDiscoveryService(HomieDeviceHandler bridgeHandler, HomieConfiguration config) {
         super(Collections.singleton(HOMIE_NODE_THING_TYPE), DEVICE_DISCOVERY_TIMEOUT_SECONDS);
-        this.connection = new MqttConnection(brokerurl, basetopic,
-                "NodeDiscovery#" + bridgeHandler.getThing().getUID().getAsString());
+        this.connection = MqttConnection.fromConfiguration(config, this);
         this.bridgeHandler = bridgeHandler;
         this.parser = new TopicParser(connection.getBasetopic());
     }

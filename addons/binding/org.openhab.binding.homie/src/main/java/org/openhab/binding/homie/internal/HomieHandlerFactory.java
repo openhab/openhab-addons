@@ -10,12 +10,10 @@ package org.openhab.binding.homie.internal;
 import static org.openhab.binding.homie.HomieBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -45,8 +43,7 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
             .newArrayList(HOMIE_DEVICE_THING_TYPE, HOMIE_NODE_THING_TYPE);
 
-    private String brokerurl;
-    private String basetopic;
+    private HomieConfiguration configuration;
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private HomieChannelTypeProvider provider;
@@ -67,14 +64,10 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
+        configuration = new HomieConfiguration(componentContext.getProperties());
 
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        brokerurl = (String) properties.get("mqttbrokerurl");
-        basetopic = (String) properties.get("basetopic");
-        if (StringUtils.isNotBlank(brokerurl) && StringUtils.isNotBlank(basetopic)) {
-            DeviceDiscoveryService service = new DeviceDiscoveryService(brokerurl, basetopic);
-            bundleContext.registerService(DiscoveryService.class.getName(), service, new Hashtable<String, Object>());
-        }
+        DeviceDiscoveryService service = new DeviceDiscoveryService(configuration);
+        bundleContext.registerService(DiscoveryService.class.getName(), service, new Hashtable<String, Object>());
     }
 
     @Override
@@ -90,7 +83,7 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDiscoveryService(HomieDeviceHandler thingHandler) {
 
-        NodeDiscoveryService discoveryService = new NodeDiscoveryService(thingHandler, brokerurl, basetopic);
+        NodeDiscoveryService discoveryService = new NodeDiscoveryService(thingHandler, configuration);
         this.discoveryServiceRegs.put(thingHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
@@ -100,12 +93,12 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(HOMIE_DEVICE_THING_TYPE)) {
             logger.info("Create homie thing for " + thing.toString());
-            MqttConnection mqtt = new MqttConnection(brokerurl, basetopic, "DeviceHandler-" + thing.getUID());
+            MqttConnection mqtt = MqttConnection.fromConfiguration(configuration, this);
             HomieDeviceHandler handler = new HomieDeviceHandler((Bridge) thing, mqtt);
             registerDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(HOMIE_NODE_THING_TYPE)) {
-            return new HomieNodeHandler(thing, brokerurl, basetopic);
+            return new HomieNodeHandler(thing, configuration);
         }
         return null;
     }
