@@ -145,14 +145,29 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     private void updateCurrentStates() {
         updateState(channelPowerUID, commandHandler.getPowerState());
         if (commandHandler.getPowerState() == OnOffType.ON) {
-            updateState(channelVolumeUID, commandHandler.getVolumeState());
-            updateState(channelNowPlaylingChannelUID, commandHandler.getChannelNameState());
-            updateState(channelChannelNumberUID, commandHandler.getChannelNumberState());
-            updateState(channelMuteUID, commandHandler.getMutedState());
+            if (commandHandler.getVolumeState() != null) {
+                updateState(channelVolumeUID, commandHandler.getVolumeState());
+            }
+            if (commandHandler.getChannelNameState() != null) {
+                updateState(channelNowPlaylingChannelUID, commandHandler.getChannelNameState());
+            }
+            if (commandHandler.getChannelNumberState() != null) {
+                updateState(channelChannelNumberUID, commandHandler.getChannelNumberState());
+            }
+            if (commandHandler.getMutedState() != null) {
+                updateState(channelMuteUID, commandHandler.getMutedState());
+            }
 
-            updateState(channelNowPlaylingTitleUID, commandHandler.getNowPlayingTitle());
-            updateState(channelNowPlaylingDescriptionUID, commandHandler.getNowPlayingDescription());
-            updateState(channelNowPlaylingDescriptionExtendedUID, commandHandler.getNowPlayingDescriptionExtended());
+            if (commandHandler.getNowPlayingTitle() != null) {
+                updateState(channelNowPlaylingTitleUID, commandHandler.getNowPlayingTitle());
+            }
+            if (commandHandler.getNowPlayingDescription() != null) {
+                updateState(channelNowPlaylingDescriptionUID, commandHandler.getNowPlayingDescription());
+            }
+            if (commandHandler.getNowPlayingDescriptionExtended() != null) {
+                updateState(channelNowPlaylingDescriptionExtendedUID,
+                        commandHandler.getNowPlayingDescriptionExtended());
+            }
         } else {
             updateState(channelVolumeUID, new StringType(""));
             updateState(channelNowPlaylingChannelUID, new StringType(""));
