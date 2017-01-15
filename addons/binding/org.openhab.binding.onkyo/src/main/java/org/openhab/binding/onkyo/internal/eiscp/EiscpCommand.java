@@ -14,6 +14,7 @@ package org.openhab.binding.onkyo.internal.eiscp;
  * @author Thomas.Eichstaedt-Engelen
  * @author Pauli Anttila
  * @author Paul Frank
+ * @author Marcel Verpaalen
  * @since 1.3.0
  */
 public enum EiscpCommand {
@@ -116,6 +117,21 @@ public enum EiscpCommand {
     NETUSB_PLAY_STATUS_QUERY("NSTQSTN", EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY),
     NETUSB_PLAY_STATUS("NST", EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY),
 
+    NETUSB_MENU_POSITION("NLSC", EiscpCommandRef.NETUSB_MENU_POSITION),
+    NETUSB_MENU0("NLSU0-", EiscpCommandRef.NETUSB_MENU0),
+    NETUSB_MENU1("NLSU1-", EiscpCommandRef.NETUSB_MENU1),
+    NETUSB_MENU2("NLSU2-", EiscpCommandRef.NETUSB_MENU2),
+    NETUSB_MENU3("NLSU3-", EiscpCommandRef.NETUSB_MENU3),
+    NETUSB_MENU4("NLSU4-", EiscpCommandRef.NETUSB_MENU4),
+    NETUSB_MENU5("NLSU5-", EiscpCommandRef.NETUSB_MENU5),
+    NETUSB_MENU6("NLSU6-", EiscpCommandRef.NETUSB_MENU6),
+    NETUSB_MENU7("NLSU7-", EiscpCommandRef.NETUSB_MENU7),
+    NETUSB_MENU8("NLSU8-", EiscpCommandRef.NETUSB_MENU8),
+    NETUSB_MENU9("NLSU9-", EiscpCommandRef.NETUSB_MENU9),
+    NETUSB_MENU_SELECT("NLSL%X", EiscpCommandRef.NETUSB_MENU_SELECT),
+    NETUSB_TITLE("NLT", EiscpCommandRef.NETUSB_TITLE),
+    NETUSB_TITLE_QUERY("NLTQSTN", EiscpCommandRef.NETUSB_TITLE_QUERY),
+
     /*
      * Zone 2
      */
@@ -133,8 +149,9 @@ public enum EiscpCommand {
     ZONE2_VOLUME_QUERY("ZVLQSTN", EiscpCommandRef.ZONE2_VOLUME_QUERY),
     ZONE2_VOLUME_SET("ZVL%02X", EiscpCommandRef.ZONE2_VOLUME_SET),
     ZONE2_SET_VOLUME("ZVL%02X", EiscpCommandRef.ZONE2_VOLUME_SET),
-    ZONE2_VOLUME("ZVL%02X", EiscpCommandRef.ZONE2_VOLUME_SET),
+    ZONE2_VOLUME("ZVL", EiscpCommandRef.ZONE2_VOLUME_SET),
 
+    /* Removed as this prevents lookup of the right source. All sources are captured with "SLZ%02X"
     ZONE2_SOURCE_DVR("SLZ00", EiscpCommandRef.ZONE2_SOURCE_DVR),
     ZONE2_SOURCE_VCR("SLZ00", EiscpCommandRef.ZONE2_SOURCE_DVR),
     ZONE2_SOURCE_SATELLITE("SLZ01", EiscpCommandRef.ZONE2_SOURCE_SATELLITE),
@@ -156,18 +173,21 @@ public enum EiscpCommand {
     ZONE2_SOURCE_AM("SLZ25", EiscpCommandRef.ZONE2_SOURCE_AM),
     ZONE2_SOURCE_TUNER("SLZ26", EiscpCommandRef.ZONE2_SOURCE_TUNER),
     ZONE2_SOURCE_MUSICSERVER("SLZ27", EiscpCommandRef.ZONE2_SOURCE_MUSICSERVER),
-    ZONE2_SOURCE_INTERETRADIO("SLZ28", EiscpCommandRef.ZONE2_SOURCE_INTERETRADIO),
+    ZONE2_SOURCE_INTERNETRADIO("SLZ28", EiscpCommandRef.ZONE2_SOURCE_INTERNETRADIO),
     ZONE2_SOURCE_USB("SLZ29", EiscpCommandRef.ZONE2_SOURCE_USB),
     ZONE2_SOURCE_USB_BACK("SLZ2A", EiscpCommandRef.ZONE2_SOURCE_USB_BACK),
-    ZONE2_SOURCE_NETWORK("SLZ2C", EiscpCommandRef.ZONE2_SOURCE_NETWORK),
+    ZONE2_SOURCE_NETWORK("SLZ2B", EiscpCommandRef.ZONE2_SOURCE_NETWORK),
+    ZONE2_SOURCE_USB_T("SLZ2C", EiscpCommandRef.ZONE2_SOURCE_USB_T),
     ZONE2_SOURCE_MULTICH("SLZ30", EiscpCommandRef.ZONE2_SOURCE_MULTICH),
     ZONE2_SOURCE_SIRIUS("SLZ32", EiscpCommandRef.ZONE2_SOURCE_SIRIUS),
+    ZONE2_SOURCE_SOURCE("SLZ80", EiscpCommandRef.ZONE2_SOURCE_SOURCE),
+    */
     ZONE2_SOURCE_UP("SLZUP", EiscpCommandRef.ZONE2_SOURCE_UP),
     ZONE2_SOURCE_DOWN("SLZDOWN", EiscpCommandRef.ZONE2_SOURCE_DOWN),
     ZONE2_SOURCE_QUERY("SLZQSTN", EiscpCommandRef.ZONE2_SOURCE_QUERY),
     ZONE2_SOURCE_SET("SLZ%02X", EiscpCommandRef.ZONE2_SOURCE_SET),
     ZONE2_SET_SOURCE("SLZ%02X", EiscpCommandRef.ZONE2_SOURCE_SET),
-    ZONE2_SOURCE("SLZ%02X", EiscpCommandRef.ZONE2_SOURCE_SET),
+    ZONE2_SOURCE("SLZ", EiscpCommandRef.ZONE2_SOURCE_SET),
 
     /*
      * Zone 3
@@ -209,7 +229,7 @@ public enum EiscpCommand {
     ZONE3_SOURCE_AM("SL325", EiscpCommandRef.ZONE3_SOURCE_AM),
     ZONE3_SOURCE_TUNER("SL326", EiscpCommandRef.ZONE3_SOURCE_TUNER),
     ZONE3_SOURCE_MUSICSERVER("SL327", EiscpCommandRef.ZONE3_SOURCE_MUSICSERVER),
-    ZONE3_SOURCE_INTERETRADIO("SL328", EiscpCommandRef.ZONE3_SOURCE_INTERETRADIO),
+    ZONE3_SOURCE_INTERNETRADIO("SL328", EiscpCommandRef.ZONE3_SOURCE_INTERNETRADIO),
     ZONE3_SOURCE_USB("SL329", EiscpCommandRef.ZONE3_SOURCE_USB),
     ZONE3_SOURCE_USB_BACK("SL32A", EiscpCommandRef.ZONE3_SOURCE_USB_BACK),
     ZONE3_SOURCE_NETWORK("SL32C", EiscpCommandRef.ZONE3_SOURCE_NETWORK),
@@ -220,7 +240,12 @@ public enum EiscpCommand {
     ZONE3_SOURCE_QUERY("SL3QSTN", EiscpCommandRef.ZONE3_SOURCE_QUERY),
     ZONE3_SOURCE_SET("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET),
     ZONE3_SET_SOURCE("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET),
-    ZONE3_SOURCE("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET);
+    ZONE3_SOURCE("SL3%02X", EiscpCommandRef.ZONE3_SOURCE_SET),
+
+    NETUSB_ALBUM_ART_REQ("NJAREQ", EiscpCommandRef.NETUSB_ALBUM_ART_REQ),
+    NETUSB_ALBUM_ART("NJA", EiscpCommandRef.NETUSB_ALBUM_ART),
+    INFO_QUERY("NRIQSTN", EiscpCommandRef.RECEIVER_INFO_QUERY),
+    INFO("NRI", EiscpCommandRef.RECEIVER_INFO);
 
     private String command;
     private EiscpCommandRef commandRef;

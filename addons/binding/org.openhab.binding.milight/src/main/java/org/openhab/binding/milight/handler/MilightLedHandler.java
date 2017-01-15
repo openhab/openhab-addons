@@ -13,12 +13,9 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.milight.MilightBindingConstants;
 import org.openhab.binding.milight.internal.MilightThingState;
@@ -114,20 +111,9 @@ public class MilightLedHandler extends BaseThingHandler {
     public void initialize() {
         bulbid = Integer.valueOf(thing.getUID().getId());
         if (getBridge() != null) {
-            bridgeHandlerInitialized(null, getBridge());
+            MilightBridgeHandler brHandler = (MilightBridgeHandler) getBridge().getHandler();
+            state = new MilightThingState(bulbid, brHandler.getCommunication());
+            updateStatus(brHandler.getThing().getStatus());
         }
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        MilightBridgeHandler brHandler = (MilightBridgeHandler) bridge.getHandler();
-        state = new MilightThingState(bulbid, brHandler.getCommunication());
-        updateStatus(brHandler.getThing().getStatus());
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        updateStatus(bridgeStatusInfo.getStatus());
-        state = new MilightThingState(bulbid, ((MilightBridgeHandler) getBridge().getHandler()).getCommunication());
     }
 }

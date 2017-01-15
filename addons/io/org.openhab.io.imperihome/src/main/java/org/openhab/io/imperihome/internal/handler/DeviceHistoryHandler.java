@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceHistoryHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(DeviceHistoryHandler.class);
-
     private static final String CHARSET = "UTF-8";
+
+    private final Logger logger = LoggerFactory.getLogger(DeviceHistoryHandler.class);
 
     private final DeviceRegistry deviceRegistry;
     private final PersistenceServiceRegistry persistenceServiceRegistry;

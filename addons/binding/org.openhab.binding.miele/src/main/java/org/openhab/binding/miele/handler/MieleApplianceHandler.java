@@ -234,7 +234,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     }
                 }
             } catch (IllegalArgumentException e) {
-                logger.error("An exception occured while processing a changed device property :'{}'", e.getMessage());
+                logger.error("An exception occurred while processing a changed device property :'{}'", e.getMessage());
             }
         }
     }
@@ -255,18 +255,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 updateStatus(ThingStatus.ONLINE);
             }
         }
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        if (getMieleBridgeHandler() == null) {
-            if (thingHandler instanceof MieleBridgeHandler) {
-                this.bridgeHandler = (MieleBridgeHandler) thingHandler;
-                this.bridgeHandler.registerApplianceStatusListener(this);
-            }
-        }
-        ThingStatusInfo statusInfo = getBridge().getStatusInfo();
-        updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
     }
 
     private synchronized MieleBridgeHandler getMieleBridgeHandler() {

@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
@@ -18,6 +15,9 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * RFXCOM data class for energy message.
@@ -27,11 +27,10 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  */
 public class RFXComEnergyMessage extends RFXComBaseMessage {
 
-    private static float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
-    private static float WATTS_TO_AMPS_CONVERSION_FACTOR = 230F;
+    private static final double TOTAL_USAGE_CONVERSION_FACTOR = 223.666d;
+    private static final double WATTS_TO_AMPS_CONVERSION_FACTOR = 230d;
 
     public enum SubType {
-        ELEC1(0),
         ELEC2(1),
         ELEC3(2),
 
@@ -50,6 +49,16 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
@@ -58,7 +67,7 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.ELEC1;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
     public byte count = 0;
     public double instantAmp = 0;
@@ -99,21 +108,14 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         count = data[6];
 
         // all usage is reported in Watts based on 230V
         instantPower = ((data[7] & 0xFF) << 24 | (data[8] & 0xFF) << 16 | (data[9] & 0xFF) << 8 | (data[10] & 0xFF));
-
-        totalUsage = ((data[11] & 0xFF) << 40 | (data[12] & 0xFF) << 32 | (data[13] & 0xFF) << 24
+        totalUsage = ((long) (data[11] & 0xFF) << 40 | (long) (data[12] & 0xFF) << 32 | (data[13] & 0xFF) << 24
                 | (data[14] & 0xFF) << 16 | (data[15] & 0xFF) << 8 | (data[16] & 0xFF)) / TOTAL_USAGE_CONVERSION_FACTOR;
-        ;
 
         // convert to amps so external code can determine the watts based on local voltage
         instantAmp = instantPower / WATTS_TO_AMPS_CONVERSION_FACTOR;
@@ -125,7 +127,7 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        byte[] data = new byte[17];
+        byte[] data = new byte[18];
 
         data[0] = 0x11;
         data[1] = RFXComBaseMessage.PacketType.ENERGY.toByte();
@@ -136,8 +138,9 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
         data[5] = (byte) (sensorId & 0x00FF);
         data[6] = count;
 
-        long instantUsage = (long) instantPower;
-        long totalUsage = (long) this.totalUsage;
+        // convert our 'amp' values back into Watts since this is what comes back
+        long instantUsage = (long) (instantAmp * WATTS_TO_AMPS_CONVERSION_FACTOR);
+        long totalUsage = (long) (totalAmpHour * WATTS_TO_AMPS_CONVERSION_FACTOR * TOTAL_USAGE_CONVERSION_FACTOR);
 
         data[7] = (byte) ((instantUsage >> 24) & 0xFF);
         data[8] = (byte) ((instantUsage >> 16) & 0xFF);
