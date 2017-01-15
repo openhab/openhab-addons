@@ -7,6 +7,7 @@
  */
 package org.openhab.binding.wink.handler;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -27,6 +28,12 @@ public class WinkHandler extends BaseThingHandler {
 
     public WinkHandler(Thing thing) {
         super(thing);
+    }
+
+    protected WinkHub2Handler getHubHandler() {
+        Bridge bridge = getBridge();
+
+        return bridge == null ? null : (WinkHub2Handler) bridge.getHandler();
     }
 
     @Override

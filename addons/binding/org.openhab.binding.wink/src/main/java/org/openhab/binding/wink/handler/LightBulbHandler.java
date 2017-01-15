@@ -7,6 +7,8 @@
  */
 package org.openhab.binding.wink.handler;
 
+import static org.openhab.binding.wink.WinkBindingConstants.*;
+
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -44,8 +46,9 @@ public class LightBulbHandler extends WinkHandler {
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
+        String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
+        String pubnub_subscribe = (String) getThing().getConfiguration().get(CHANNEL_PUBNUB_SUBSCRIBE_KEY);
+        String pubnub_channel = (String) getThing().getConfiguration().get(CHANNEL_PUBNUB_CHANNEL);
         updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further

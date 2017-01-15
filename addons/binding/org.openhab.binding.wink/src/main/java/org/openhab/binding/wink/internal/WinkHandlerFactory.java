@@ -35,17 +35,17 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
     public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2,
-            THING_TYPE_LIGHT_BULB);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        logger.info("Checking if the factory supports " + THING_TYPE_LIGHT_BULB.toString());
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
+                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WINK_HUB_2)) {

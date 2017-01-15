@@ -26,8 +26,8 @@ public class WinkBindingConstants {
     // List of all Channel ids for the common stuffs
     public final static String CHANNEL_NAME = "name";
     public final static String CHANNEL_MODEL_NAME = "model_name";
-    public final static String CHANNEL_PUBNUB_SUBSCRIBE_KEY = "subscribe_key";
-    public final static String CHANNEL_PUBNUB_CHANNEL = "channel";
+    public final static String CHANNEL_PUBNUB_SUBSCRIBE_KEY = "pubnub_subscribe_key";
+    public final static String CHANNEL_PUBNUB_CHANNEL = "pubnub_channel";
 
     // List of all Channel ids for a light bulb
     public final static String CHANNEL_LIGHT_DESIRED_STATE_POWERED = "powered";
@@ -38,4 +38,8 @@ public class WinkBindingConstants {
     public static final String WINK_DEVICES_REQUEST_PATH = "users/me/wink_devices";
     public static final String WINK_ACCESS_TOKEN = "access_token";
     public static final String WINK_REFRESH_TOKEN = "refresh_token";
+
+    public static final String WINK_DEVICE_ID = "device_id";
+    public static final String WINK_PUBNUB_SUBSCRIBE_KEY = "pubnub_subscribe_key";
+    public static final String WINK_PUBNUB_CHANNEL = "pubnub_channel";
 }
