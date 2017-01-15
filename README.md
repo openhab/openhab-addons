@@ -50,34 +50,28 @@ Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USER
 ```
 ###Items configuration###
 ```
-// SERVER
-Switch zmsIsAlive 			"Zoneminder alive [%s]"			<switch>	{channel="zoneminder:server:ZoneMinderSample:is-alive"}
-Number zmsCpuLoad 			"ZoneMinder Server Load [%d]"				{channel="zoneminder:server:ZoneMinderSample:cpu-load"}
-Number zmsDiskUsage			"ZoneMinder Disk Usage [%d]"				{channel="zoneminder:server:ZoneMinderSample:disk-usage"}
+/* *****************************************
+ * SERVER
+ * *****************************************/
+Switch zmServer_IsAlive 			"Zoneminder alive [%s]"			<switch>	{channel="zoneminder:server:ZoneMinderSample:is-alive"}
+Number zmServer_CpuLoad 			"ZoneMinder Server Load [%s]"				{channel="zoneminder:server:ZoneMinderSample:cpu-load"}
 
-String zmsServerVersion			"ZoneMinder Server Version [%s]"			{channel="zoneminder:server:ZoneMinderSample:zm-version"}
-String zmsServerApiVersion 		"ZoneMinder Server Version [%s]"			{channel="zoneminder:server:ZoneMinderSample:zm-api-version"}
+Number zmServer_DiskUsage			"ZoneMinder Disk Usage [%s]"				{channel="zoneminder:server:ZoneMinderSample:disk-usage"}
 
-// MONITOR 1
-String zmMonitor1_Name 			"Name [%s]" 						{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:name"}
-Switch zmMonitor1_IsAlive 		"Alive [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:is-alive"}
-Switch zmMonitor1_Enabled 		"Enabled [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:enabled"}
-
-String zmMonitor1_SourceType 		"Source [%s]" 						{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:sourcetype"}
-Switch zmMonitor1_TriggerEvent 		"Trigger [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:trigger-event"}
-
-String zmMonitor1_Function 		"Function [%s]" 					{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:function"}
-
-Switch zmMonitor1_CaptureStatus 	"Capture Daemon [%s]" 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:daemon-capture-state"}
-String zmMonitor1_CaptureStatusText 	"Capture statustext [%s]"  				{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:daemon-capture-statustext"}
-
-
-Switch zmMonitor1_AnalysisStatus 	"Analysis Daemon [%s]" 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:daemon-analysis-state"}
-String zmMonitor1_AnalysisStatusText 	"Analysis StatusText [%s]" 				{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:daemon-analysis-statustext"}
-
-
-Switch zmMonitor1_FrameStatus		"Frame Daemon [%s]"			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:daemon-frame-state"}
-String zmMonitor1_FrameStatusText 	"Frame StatusText [%s]"	 				{channel="zoneminder:monitor:ZoneMinderSample:monitor_1:daemon-frame-statustext"}
+/* *****************************************
+ * MONITOR 1
+ * *****************************************/
+Switch zmMonitor1_IsAlive 		"Alive [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:is-alive"}
+Switch zmMonitor1_Enabled 		"Enabled [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:enabled"}
+Switch zmMonitor1_ForceAlarm 		"Force Alarm [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:force-alarm"}
+Switch zmMonitor1_EventState 		"Alarm [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:event-state"}
+Switch zmMonitor1_Recording 		"Recording [%s]"	 		<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:record-state"}
+String zmMonitor1_DetailedStatus	"Detailed Status [%s]"	 				{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:detailed-status"}
+String zmMonitor1_EventCause 		"Event Cause [%s]"	 		<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:event-cause"}
+String zmMonitor1_Function 		"Function [%s]" 					{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:function"}
+Switch zmMonitor1_CaptureState	 	"Capture Daemon [%s]" 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:capture-daemon-state"}
+Switch zmMonitor1_AnalysisState 	"Analysis Daemon [%s]" 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:analysis-daemon-state"}
+Switch zmMonitor1_FrameState		"Frame Daemon [%s]"			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:frame-daemon-state"}
 
 
 // Helpers
