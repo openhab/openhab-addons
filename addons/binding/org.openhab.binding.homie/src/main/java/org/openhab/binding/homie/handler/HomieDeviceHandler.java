@@ -100,6 +100,10 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
         super.dispose();
     }
 
+    long map(long x, long in_min, long in_max, long out_min, long out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String message = mqttMessage.toString();
@@ -125,8 +129,15 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_MAC);
                     updateState(channel, new StringType(message));
                 } else if (StringUtils.equals(prop, STATS_SIGNAL_TOPIC_SUFFIX)) {
+                    // Homie Channel
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_SIGNAL);
                     updateState(channel, new DecimalType(message));
+
+                    // Eclipse smart home system channel
+                    ChannelUID channelesh = new ChannelUID(getThing().getUID(), CHANNEL_STATS_SIGNAL_ESH);
+                    int val = Integer.parseInt(message);
+                    val = (int) map(val, 0, 100, 0, 4); // Scale percent (0-9) to ESH scale (0-4)
+                    updateState(channelesh, new DecimalType(val));
                 } else if (StringUtils.equals(prop, STATS_INTERVAL_TOPIC_SUFFIX)) {
                     ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_STATS_INTERVAL);
                     updateState(channel, new DecimalType(message));

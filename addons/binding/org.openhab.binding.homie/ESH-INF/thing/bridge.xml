@@ -16,6 +16,7 @@
 			<channel id="mac" typeId="mac-channel" />
 			<channel id="stats_uptime" typeId="stats-uptime-channel" />
 			<channel id="stats_signal" typeId="stats-signal-channel" />
+			<channel id="system-stats_signal" typeId="system.signal-strength" />
 			<channel id="stats_interval" typeId="stats-interval-channel" />
 			<channel id="fw_name" typeId="fw-name-channel" />
 			<channel id="fw_version" typeId="fw-version-channel" />
