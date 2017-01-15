@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.homie.HomieChannelTypeProvider;
 import org.openhab.binding.homie.internal.HomieConfiguration;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
@@ -45,9 +46,11 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
     private Logger logger = LoggerFactory.getLogger(HomieNodeHandler.class);
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
+    private final HomieChannelTypeProvider channelTypeProvider;
 
-    public HomieNodeHandler(Thing thing, HomieConfiguration config) {
+    public HomieNodeHandler(Thing thing, HomieConfiguration config, HomieChannelTypeProvider provider) {
         super(thing);
+        this.channelTypeProvider = provider;
         this.mqttconnection = MqttConnection.fromConfiguration(config, this);
         topicParser = new TopicParser(mqttconnection.getBasetopic());
     }
