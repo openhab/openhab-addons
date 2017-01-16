@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lametrictime"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="device" listed="true">
+        <label>LaMetric Time</label>
+        <description>Provides control for the LaMetric Time connected clock and its apps</description>
+        
+        <channel-groups>
+            <channel-group id="display" typeId="displayType"/>
+            <channel-group id="audio" typeId="audioType"/>
+            <channel-group id="bluetooth" typeId="bluetoothType"/>
+            <channel-group id="notifications" typeId="notificationType"/>
+        </channel-groups>
+
+        <config-description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>Host name or network address of the LaMetric Time</description>
+            </parameter>
+            <parameter name="apiKey" type="text" required="true">
+                <label>API key</label>
+                <description>API key to access LaMetric Time</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="clockApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Clock App</label>
+        <description>Provides control for the clock app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="setAlarm" typeId="parameterActionType">
+                <label>Set Alarm</label>
+                <description>Set the alarm</description>
+            </channel>
+            <channel id="snooze" typeId="parameterActionType">
+                <label>Snooze</label>
+                <description>Snooze the alarm</description>
+            </channel>
+            <channel id="snooze10" typeId="triggerActionType">
+                <label>Snooze 10 Minutes</label>
+                <description>Snooze the alarm for 10 minutes</description>
+            </channel>
+            <channel id="stopAlarm" typeId="triggerActionType">
+                <label>Stop Alarm</label>
+                <description>Stop the alarm</description>
+            </channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+                <default>com.lametric.clock</default>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="countdownApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Countdown App</label>
+        <description>Provides control for the countdown app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="configure" typeId="parameterActionType">
+                <label>Configure</label>
+                <description>Configure the timer</description>
+            </channel>
+            <channel id="pause" typeId="triggerActionType">
+                <label>Pause</label>
+                <description>Pause the countdown</description>
+            </channel>
+            <channel id="reset" typeId="triggerActionType">
+                <label>Reset</label>
+                <description>Reset the countdown</description>
+            </channel>
+            <channel id="start" typeId="triggerActionType">
+                <label>Start</label>
+                <description>Start the countdown</description>
+            </channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+                <default>com.lametric.countdown</default>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="radioApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Radio App</label>
+        <description>Provides control for the radio app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="next" typeId="triggerActionType">
+                <label>Next</label>
+                <description>Switch to the next station</description>
+            </channel>
+            <channel id="play" typeId="triggerActionType">
+                <label>Play</label>
+                <description>Play the radio</description>
+            </channel>
+            <channel id="previous" typeId="triggerActionType">
+                <label>Previous</label>
+                <description>Switch to the previous station</description>
+            </channel>
+            <channel id="stop" typeId="triggerActionType">
+                <label>Stop</label>
+                <description>Stop the radio</description>
+            </channel>
+            <channel id="control" typeId="controlType">
+                <label>Player</label>
+                <description>Control interface for manipulating the radio</description>
+            </channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+                <default>com.lametric.radio</default>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="stopwatchApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Stopwatch App</label>
+        <description>Provides control for the stopwatch app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="pause" typeId="triggerActionType">
+                <label>Pause</label>
+                <description>Pause the stopwatch</description>
+            </channel>
+            <channel id="reset" typeId="triggerActionType">
+                <label>Reset</label>
+                <description>Reset the stopwatch</description>
+            </channel>
+            <channel id="start" typeId="triggerActionType">
+                <label>Start</label>
+                <description>Start the stopwatch</description>
+            </channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+                <default>com.lametric.stopwatch</default>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="weatherApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Weather App</label>
+        <description>Provides control for the weather app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="forecast" typeId="triggerActionType">
+                <label>Forecast</label>
+                <description>Show the forecast</description>
+            </channel>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+                <default>com.lametric.weather</default>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="genericApp" listed="true">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="device" />
+        </supported-bridge-type-refs>
+        
+        <label>LaMetric Time Generic App</label>
+        <description>Provides control for a generic app on the LaMetric Time</description>
+        
+        <channels>
+            <channel id="activate" typeId="activateType"/>
+            <channel id="frames" typeId="framesType"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="packageName" type="text" required="true">
+                <label>Package Name</label>
+                <description>Unique identifier for the application</description>
+            </parameter>
+            <parameter name="widgetId" type="text" required="false">
+                <label>Widget ID</label>
+                <description>Unique identifier for the application instance (defaults to first instance)</description>
+            </parameter>
+            <parameter name="accessToken" type="text" required="false">
+                <label>Access Token</label>
+                <description>Token required to send updates to the app</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-group-type id="displayType">
+        <label>Display</label>
+        <channels>
+            <channel id="brightness" typeId="brightnessType"/>
+            <channel id="brightnessMode" typeId="brightnessModeType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="audioType">
+        <label>Audio</label>
+        <channels>
+            <channel id="volume" typeId="volumeType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="bluetoothType">
+        <label>Bluetooth</label>
+        <channels>
+            <channel id="active" typeId="bluetoothActiveType"/>
+            <channel id="name" typeId="bluetoothNameType"/>
+            <channel id="discoverable" typeId="bluetoothDiscoverableType"/>
+            <channel id="available" typeId="bluetoothAvailableType"/>
+            <channel id="pairable" typeId="bluetoothPairableType"/>
+            <channel id="mac" typeId="bluetoothMacType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="notificationType">
+        <label>Notifications</label>
+        <channels>
+            <channel id="info" typeId="simpleNotificationType"/>
+            <channel id="warning" typeId="simpleNotificationType"/>
+            <channel id="alert" typeId="simpleNotificationType"/>
+            <channel id="advanced" typeId="jsonNotificationType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="jsonNotificationType">
+        <item-type>String</item-type>
+        <label>Advanced Notification</label>
+        <description>Channel to send custom messages with the LaMetric APIs JSON structure.</description>
+    </channel-type>
+
+    <channel-type id="simpleNotificationType">
+        <item-type>String</item-type>
+        <label>Simple notification</label>
+        <description>Send a notification to LaMetric Time</description>
+        <category>Recorder</category>
+        <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="brightnessType">
+        <item-type>Dimmer</item-type>
+        <label>Display Brightness Channel</label>
+        <description>Adjust the brightness of the display</description>
+        <state min="0" max="100" step="1" readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="brightnessModeType">
+        <item-type>String</item-type>
+        <label>Display Brightness Mode</label>
+        <description>Manual or Auto mode</description>
+        <state readOnly="false">
+            <options>
+                <option value="auto">auto</option>
+                <option value="manual">manual</option>
+            </options>
+        </state>
+    </channel-type>
+
+
+    <channel-type id="volumeType">
+        <item-type>Dimmer</item-type>
+        <label>Sound Volume Channel</label>
+        <description>Adjust the volume of the speaker</description>
+    </channel-type>
+
+    <channel-type id="bluetoothActiveType">
+        <item-type>Switch</item-type>
+        <label>Bluetooth State Channel</label>
+        <description>Switch Bluetooth on/off</description>
+    </channel-type>
+
+    <channel-type id="bluetoothDiscoverableType">
+        <item-type>Switch</item-type>
+        <label>Bluetooth Discoverable State Channel</label>
+        <description>If Bluetooth is discoverable</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="bluetoothAvailableType">
+        <item-type>Switch</item-type>
+        <label>Bluetooth Available State Channel</label>
+        <description>If bluetooth is available</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="bluetoothPairableType">
+        <item-type>Switch</item-type>
+        <label>Bluetooth Pairable State Channel</label>
+        <description>If bluetooth is pairable</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="bluetoothNameType">
+        <item-type>String</item-type>
+        <label>Bluetooth Name</label>
+        <description>Name under which the bluetooth connection is visible.</description>
+    </channel-type>
+
+    <channel-type id="bluetoothMacType">
+        <item-type>String</item-type>
+        <label>Bluetooth Mac Adress</label>
+        <description>The mac address of the bluetooth interface.</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="activateType">
+        <item-type>Switch</item-type>
+        <label>Activate</label>
+        <description>Activate the app</description>
+    </channel-type>
+    
+    <channel-type id="framesType" advanced="true">
+        <item-type>String</item-type>
+        <label>Frames</label>
+        <description>Update app frames using JSON</description>
+    </channel-type>
+    
+    <channel-type id="parameterActionType" advanced="true">
+        <item-type>String</item-type>
+        <label>Parameter Action</label>
+        <description>Perform an action with parameters as input</description>
+    </channel-type>
+    
+    <channel-type id="triggerActionType">
+        <item-type>Switch</item-type>
+        <label>Trigger Action</label>
+        <description>Perform an action with a simple trigger (no parameters)</description>
+    </channel-type>
+    
+    <channel-type id="controlType">
+        <item-type>Player</item-type>
+        <label>Control</label>
+        <description>Player control</description>
+    </channel-type>
+</thing:thing-descriptions>
