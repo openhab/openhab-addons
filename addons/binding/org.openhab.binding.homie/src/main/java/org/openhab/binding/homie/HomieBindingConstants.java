@@ -45,6 +45,7 @@ public class HomieBindingConstants {
     public static final String CHANNEL_LOCALIP = "localip";
     public static final String CHANNEL_STATS_SIGNAL_ESH = "system-stats_signal";
 
+    public static final String CHANNELPROPERTY_READONLY = "readonly";
     public static final String CHANNELPROPERTY_TOPICSUFFIX = "topic_suffix";
     public static final String CHANNELPROPERTY_THINGSTATEINDICATOR = "thing_state_indicator";
 

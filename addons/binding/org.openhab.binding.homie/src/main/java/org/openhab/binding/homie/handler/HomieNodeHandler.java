@@ -1,10 +1,9 @@
 package org.openhab.binding.homie.handler;
 
-import static org.openhab.binding.homie.HomieBindingConstants.CHANNELPROPERTY_TOPICSUFFIX;
+import static org.openhab.binding.homie.HomieBindingConstants.*;
 import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homie.HomieChannelTypeProvider;
@@ -33,6 +33,8 @@ import org.openhab.binding.homie.internal.conventionv200.NodePropertiesListAnnou
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * The {@link HomieNodeHandler} is responsible for handling commands, which are
@@ -92,8 +94,10 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                     if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX)) {
                         NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
                         NodePropertiesList propslist = parser.parse(message.toString());
-                        propslist.getProperties().stream().forEach(property -> {
-                            createChannel(property, Collections.singletonMap(CHANNELPROPERTY_TOPICSUFFIX, property));
+                        propslist.getProperties().forEach(property -> {
+                            boolean readonly=propslist.isPropertySettable(property);
+                            createChannel(property,readonly,
+                                    ImmutableMap.of(CHANNELPROPERTY_TOPICSUFFIX, property)));
                         });
                     } else if (StringUtils.equals(prop, HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
                         String type = message;
@@ -119,9 +123,13 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
 
     private void createChannel(String channelId, Map<String, String> properties) {
         if (getThing().getChannel(channelId) == null) {
+            boolean readonly=
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, "ct-" + channelId);
+            channelTypeProvider.addChannelType(channelTypeUID, readOnly);
+
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
             Channel channel = ChannelBuilder.create(channelUID, "String").withLabel(channelId)
-                    .withKind(ChannelKind.STATE).withProperties(properties).build();
+                    .withKind(ChannelKind.STATE).withProperties(properties).withType(channelTypeUID).build();
             ThingBuilder builder = editThing();
             builder.withChannel(channel);
             updateThing(builder.build());

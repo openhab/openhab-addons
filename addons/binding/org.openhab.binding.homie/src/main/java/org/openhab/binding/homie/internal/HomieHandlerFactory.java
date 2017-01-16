@@ -98,7 +98,7 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(HOMIE_NODE_THING_TYPE)) {
-            return new HomieNodeHandler(thing, configuration);
+            return new HomieNodeHandler(thing, configuration, provider);
         }
         return null;
     }
