@@ -19,7 +19,7 @@ The binding consists of a Bridge (the ZoneMinder Server it self), and a number o
 ### Bridge ###
  Channel       | Type      | Description
 -------------- | --------- | ----------------------------------
-is-alive       | Switch    | Parameter indicating if the server IsAlive
+online         | Switch    | Parameter indicating if the server is online
 CPU load       | Text      | Current CPU Load of server
 Disk Usage     | text      | Current Disk Usage on server
 
@@ -27,7 +27,7 @@ Disk Usage     | text      | Current Disk Usage on server
 
  Channel       | Type      | Description
 -------------- | --------- | ----------------------------------
-is-alive       | Switch    | Parameter indicating if the monitor IsAlive
+online         | Switch    | Parameter indicating if the monitor is online
 enabled        | Switch    | Parameter indicating if the monitor is enabled
 force-alarm    | Switch    | Parameter indicating if Force Alarm for the the monitor is active
 alarm	       | Switch    | true if monitor has an active alarm
@@ -54,7 +54,7 @@ Bridge zoneminder:server:ZoneMinderSample [ hostname="192.168.1.55", user="<USER
 /* *****************************************
  * SERVER
  * *****************************************/
-Switch zmServer_IsAlive 			"Zoneminder alive [%s]"			<switch>	{channel="zoneminder:server:ZoneMinderSample:is-alive"}
+Switch zmServer_Online 			"Zoneminder Online [%s]"			<switch>	{channel="zoneminder:server:ZoneMinderSample:online"}
 Number zmServer_CpuLoad 			"ZoneMinder Server Load [%s]"				{channel="zoneminder:server:ZoneMinderSample:cpu-load"}
 
 Number zmServer_DiskUsage			"ZoneMinder Disk Usage [%s]"				{channel="zoneminder:server:ZoneMinderSample:disk-usage"}
@@ -62,7 +62,7 @@ Number zmServer_DiskUsage			"ZoneMinder Disk Usage [%s]"				{channel="zoneminder
 /* *****************************************
  * MONITOR 1
  * *****************************************/
-Switch zmMonitor1_IsAlive 		"Alive [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:is-alive"}
+Switch zmMonitor1_Online 		"Online [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:online"}
 Switch zmMonitor1_Enabled 		"Enabled [%s]" 				<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:enabled"}
 Switch zmMonitor1_ForceAlarm 		"Force Alarm [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:force-alarm"}
 Switch zmMonitor1_EventState 		"Alarm [%s]"	 			<switch>	{channel="zoneminder:monitor:ZoneMinderSample:monitor-1:alarm"}
@@ -127,11 +127,11 @@ end
 sitemap zoneminder label="Zoneminder"
 {
 	Frame {
-		Text item=zmsIsAlive label="ZoneMinder Server [%s]" {
+		Text item=zmServer_Online label="ZoneMinder Server [%s]" {
 			Frame {
-				Switch item=zmsIsAlive
-				Text  item=zmsCpuLoad
-				Text  item=zmsDiskUsage
+				Text item=zmServer_Online
+				Text  item=zmServer_CpuLoad
+				Text  item=zmServer_DiskUsage
 			}
 		}
 
@@ -139,7 +139,7 @@ sitemap zoneminder label="Zoneminder"
 			Frame {
 				Switch 		item=zmMonitor1_Enabled
 				Switch 		item=zmMonitor1_ForceAlarm
-				Text		item=zmMonitor1_IsAlive
+				Text		item=zmMonitor1_Online
 				Selection	item=zmMonitor1_Function 	mappings=["None"=None, "Modect"=Modect, "Monitor"=Monitor, "Record"=Record, "Mocord"=Mocord, "Nodect"=Nodect]
 				Text  		item=zmMonitor1_EventState 	
 				Text 		item=zmMonitor1_Recording 	
