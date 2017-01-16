@@ -76,7 +76,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Override
     public ThingUID getThingUID(ServiceInfo info) {
         if (info != null) {
-            logger.debug("ServiceInfo: " + info);
+            logger.trace("ServiceInfo: " + info);
             if (info.getType() != null) {
                 if (info.getType().equals(getServiceType())) {
                     logger.trace("Discovered a Bose SoundTouch thing with name '{}'", info.getName());

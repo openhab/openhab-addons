@@ -77,11 +77,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelZoneControlUID;
     private ChannelUID channelPresetUID;
+    private ChannelUID channelRateEnabled;
+    private ChannelUID channelSkipEnabled;
+    private ChannelUID channelSkipPreviousEnabled;
     private ChannelUID channelKeyCodeUID;
     private ChannelUID channelNowPlayingAlbumUID;
     private ChannelUID channelNowPlayingArtistUID;
     private ChannelUID channelNowPlayingArtworkUID;
     private ChannelUID channelNowPlayingDescriptionUID;
+    private ChannelUID channelNowPlayingGenreUID;
     private ChannelUID channelNowPlayingItemNameUID;
     private ChannelUID channelNowPlayingPlayStatusUID;
     private ChannelUID channelNowPlayingStationLocationUID;
@@ -121,13 +125,17 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
         channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
+        channelRateEnabled = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_RATEENABLED);
+        channelSkipEnabled = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPENABLED);
+        channelSkipPreviousEnabled = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPPREVIOUSENABLED);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
 
         channelNowPlayingAlbumUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGALBUM);
         channelNowPlayingArtworkUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTWORK);
         channelNowPlayingArtistUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTIST);
         channelNowPlayingDescriptionUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGDESCRIPTION);
-        channelNowPlayingItemNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGITEMNAME);
+        channelNowPlayingItemNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGGENRE);
+        channelNowPlayingGenreUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGITEMNAME);
         channelNowPlayingPlayStatusUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGPLAYSTATUS);
         channelNowPlayingStationLocationUID = getChannelUID(
                 BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONLOCATION);
@@ -139,6 +147,12 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     @Override
+    public void dispose() {
+        super.dispose();
+        closeConnection();
+    }
+
+    @Override
     public void handleRemoval() {
         factory.removeSoundTouchDevice(this);
         super.handleRemoval();
@@ -146,7 +160,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand(" + channelUID + ", " + command + ");");
+        logger.debug(getDeviceName() + ": handleCommand(" + channelUID + ", " + command + ");");
         if (thing.getStatus() != ThingStatus.ONLINE) {
             openConnection(); // try to reconnect....
         }
@@ -186,7 +200,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                         if (psFound != null) {
                             simulateRemoteKey(psFound.getKey());
                         } else {
-                            logger.warn("Unable to switch to mode: INTERNET_RADIO. No PRESET defined");
+                            logger.warn(
+                                    getDeviceName() + ": Unable to switch to mode: INTERNET_RADIO. No PRESET defined");
                         }
                     } else if (cmd.equals("BLUETOOTH")) {
                         if (currentOperationMode == OperationModeType.STANDBY) {
@@ -202,7 +217,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             counter++;
                         }
                         if (counter == 5) {
-                            logger.warn("Unable to switch to mode: BLUETOOTH. Mayby no device available");
+                            logger.warn(getDeviceName()
+                                    + ": Unable to switch to mode: BLUETOOTH. Mayby no device available");
                         }
                     } else if (cmd.equals("AUX")) {
                         if (currentOperationMode == OperationModeType.STANDBY) {
@@ -216,25 +232,25 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             }
                         }
                     } else if (cmd.equals("MEDIA")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     } else if (cmd.equals("SPOTIFY")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     } else if (cmd.equals("PANDORA")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     } else if (cmd.equals("DEEZER")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     } else if (cmd.equals("SIRIUSXM")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     } else if (cmd.equals("STORED_MUSIC")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     } else if (cmd.equals("GROUPMEMBER")) {
-                        logger.warn("\"" + cmd + "\" " + "OperationMode not supported yet");
+                        logger.warn(getDeviceName() + ": \"" + cmd + "\" " + "OperationMode not supported yet");
                         // TODO
                     }
                 }
@@ -286,7 +302,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                         simulateRemoteKey(RemoteKey.PREV_TRACK);
                     }
                 } else {
-                    logger.warn("Invalid command type: " + command.getClass() + ": " + command);
+                    logger.warn(getDeviceName() + ": Invalid command type: " + command.getClass() + ": " + command);
                 }
             } else if (channelUID.equals(channelZoneControlUID)) {
                 if (command instanceof StringType) {
@@ -314,14 +330,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                             }
                         }
                         if (oh == null) {
-                            logger.warn("Invalid / unknown device: \"" + other + "\" in command " + cmd);
+                            logger.warn(getDeviceName() + ": Invalid / unknown device: \"" + other + "\" in command "
+                                    + cmd);
                         } else {
                             if ("add".equals(action)) {
                                 boolean found = false;
                                 for (ZoneMember m : zoneMembers) {
                                     if (oh.getMacAddress().equals(m.getMac())) {
-                                        logger.warn(
-                                                "Zone add: ID " + oh.getMacAddress() + " is already member in zone!");
+                                        logger.warn(getDeviceName() + ": Zone add: ID " + oh.getMacAddress()
+                                                + " is already member in zone!");
                                         found = true;
                                         break;
                                     }
@@ -349,19 +366,20 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                                     }
                                 }
                                 if (!found) {
-                                    logger.warn("Zone remove: ID " + oh.getMacAddress() + " is not a member in zone!");
+                                    logger.warn(getDeviceName() + ": Zone remove: ID " + oh.getMacAddress()
+                                            + " is not a member in zone!");
                                 } else {
                                     updateZones();
                                 }
                             } else {
-                                logger.warn("Invalid zone command: " + cmd);
+                                logger.warn(getDeviceName() + ": Invalid zone command: " + cmd);
                             }
                         }
                     } else {
-                        logger.warn("Invalid zone command: " + cmd);
+                        logger.warn(getDeviceName() + ": Invalid zone command: " + cmd);
                     }
                 } else {
-                    logger.warn("Invalid command type: " + command.getClass() + ": " + command);
+                    logger.warn(getDeviceName() + ":Invalid command type: " + command.getClass() + ": " + command);
                 }
             } else if (channelUID.equals(channelPresetUID)) {
                 if (command instanceof StringType) {
@@ -379,7 +397,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     } else if (cmd.equals("PRESET_6")) {
                         simulateRemoteKey(RemoteKey.PRESET_6);
                     } else {
-                        logger.warn("Invalid preset: " + cmd);
+                        logger.warn(getDeviceName() + ": Invalid preset: " + cmd);
                     }
                 }
             } else if (channelUID.equals(channelKeyCodeUID)) {
@@ -440,11 +458,11 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     } else if (cmd.equals("REMOVE_FAVORITE")) {
                         simulateRemoteKey(RemoteKey.REMOVE_FAVORITE);
                     } else {
-                        logger.warn("Invalid remote key: " + cmd);
+                        logger.warn(getDeviceName() + ": Invalid remote key: " + cmd);
                     }
                 }
             } else {
-                logger.warn("Got command \"" + command + "\" for channel \"" + channelUID.getId()
+                logger.warn(getDeviceName() + ": Got command \"" + command + "\" for channel \"" + channelUID.getId()
                         + "\" which is unhandled!");
             }
         }
@@ -493,7 +511,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 if (psFound != null) {
                     updateState(channelPresetUID, new StringType(psFound.toString()));
                 } else {
-                    logger.warn(thing + ": Invalid preset active");
+                    logger.warn(getDeviceName() + ": Invalid preset active");
                     updateState(channelPresetUID, new StringType(""));
                 }
 
@@ -565,7 +583,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         boolean found = false;
         for (ZoneMember m : zoneMembers) {
             if (zoneMember.getHandler().getMacAddress().equals(m.getMac())) {
-                logger.warn("Zone add: ID " + zoneMember.getHandler().getMacAddress() + " is already member in zone!");
+                logger.warn(getDeviceName() + ": Zone add: ID " + zoneMember.getHandler().getMacAddress()
+                        + " is already member in zone!");
                 found = true;
                 break;
             }
@@ -595,6 +614,10 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         updateState(channelNowPlayingDescriptionUID, state);
     }
 
+    public void updateNowPlayingGenre(State state) {
+        updateState(channelNowPlayingGenreUID, state);
+    }
+
     public void updateNowPlayingItemName(State state) {
         updateState(channelNowPlayingItemNameUID, state);
     }
@@ -615,6 +638,18 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         updateState(channelNowPlayingTrackUID, state);
     }
 
+    public void updateRateEnabled(State state) {
+        updateState(channelRateEnabled, state);
+    }
+
+    public void updateSkipEnabled(State state) {
+        updateState(channelSkipEnabled, state);
+    }
+
+    public void updateSkipPreviousEnabled(State state) {
+        updateState(channelSkipPreviousEnabled, state);
+    }
+
     public void updateVolume(State state) {
         updateState(channelVolumeUID, state);
     }
@@ -625,7 +660,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void onOpen(WebSocket socket, Response resp) {
-        logger.debug("onOpen(\"" + resp + "\")");
+        logger.debug(getDeviceName() + ": onOpen(\"" + resp + "\")");
         this.socket = socket;
         updateStatus(ThingStatus.ONLINE);
         // socket.newMessageSink(PayloadType.TEXT);
@@ -634,42 +669,43 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void onFailure(IOException e, Response response) {
-        logger.error(thing + ": Error during websocket communication: ", e);
+        logger.error(getDeviceName() + ": Error during websocket communication: ", e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         this.currentOperationMode = OperationModeType.OFFLINE;
         this.currentContentItem = null;
         this.checkOperationMode();
         try {
-            socket.close(1011, "Failure: " + e.getMessage());
+            socket.close(1011, getDeviceName() + ": Failure: " + e.getMessage());
         } catch (IOException e1) {
-            logger.error(thing + ": Error while closing websocket communication (during error handling): ", e);
+            logger.error(getDeviceName() + ": Error while closing websocket communication (during error handling): ",
+                    e);
         }
     }
 
     @Override
     public void onMessage(ResponseBody message) throws IOException {
         String msg = message.string();
-        logger.debug("onMessage(\"" + msg + "\")");
+        logger.debug(getDeviceName() + ": onMessage(\"" + msg + "\")");
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
             reader.setContentHandler(new XMLResponseHandler(this));
             reader.parse(new InputSource(new StringReader(msg)));
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            logger.error("Could not parse XML from string '{}'; exception is: ", msg, e);
+            logger.error(getDeviceName() + ": Could not parse XML from string '{}'; exception is: ", msg, e);
         } catch (Throwable s) {
-            logger.error("Could not parse XML from string '{}'; exception is: ", msg, s);
+            logger.error(getDeviceName() + ": Could not parse XML from string '{}'; exception is: ", msg, s);
         }
     }
 
     @Override
     public void onPong(Buffer payload) {
-        logger.debug("onPong(\"" + payload + "\")");
+        logger.debug(getDeviceName() + ": onPong(\"" + payload + "\")");
     }
 
     @Override
     public void onClose(int code, String reason) {
-        logger.debug("onClose(" + code + ", \"" + reason + "\")");
+        logger.debug(getDeviceName() + ": onClose(" + code + ", \"" + reason + "\")");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         this.currentOperationMode = OperationModeType.OFFLINE;
         this.currentContentItem = null;
@@ -696,7 +732,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         return chann.getUID();
     }
 
-    private String getDeviceName() {
+    public String getDeviceName() {
         return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
     }
 
@@ -740,6 +776,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     private void openConnection() {
+        closeConnection();
         zoneState = ZoneState.None;
         masterZoneSoundTouchHandler = null;
         zoneMembers = new ArrayList<ZoneMember>();
@@ -752,10 +789,20 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
         // Port seems to be hardcoded, therefore no userinput or discovery is necessary
         String wsUrl = "http://" + host + ":8080/";
-        logger.debug(thing.getUID() + " Connecting to: " + wsUrl);
+        logger.debug(getDeviceName() + ": Connecting to: " + wsUrl);
         Request request = new Request.Builder().url(wsUrl).addHeader("Sec-WebSocket-Protocol", "gabbo").build();
         WebSocketCall call = WebSocketCall.create(client, request);
         call.enqueue(this);
     }
 
+    private void closeConnection() {
+        if (socket != null) {
+            try {
+                socket.close(1000, "Binding shutdown");
+            } catch (IOException e) {
+                logger.error(thing + ": Error while closing websocket communication: ", e);
+            }
+            socket = null;
+        }
+    }
 }

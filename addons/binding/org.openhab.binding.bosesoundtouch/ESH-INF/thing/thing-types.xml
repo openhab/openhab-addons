@@ -17,11 +17,15 @@
 			<channel id="playerControl" typeId="playerControl" />
 			<channel id="zoneControl" typeId="zoneControl" />
 			<channel id="preset" typeId="preset" />
+            <channel id="rateEnabled" typeId="rateEnabled" />
+            <channel id="skipEnabled" typeId="skipEnabled" />
+            <channel id="skipPreviousEnabled" typeId="skipPreviousEnabled" />
 			<channel id="keyCode" typeId="keyCode" />
 			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
 			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
 			<channel id="nowPlayingArtwork" typeId="nowPlayingArtwork" />
 			<channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
+            <channel id="nowPlayingGenre" typeId="nowPlayingGenre" />
 			<channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
 			<channel id="nowPlayingPlayStatus" typeId="nowPlayingPlayStatus" />
 			<channel id="nowPlayingStationLocation" typeId="nowPlayingStationLocation" />
@@ -110,6 +114,24 @@
             </options>
         </state>
     </channel-type>
+    <channel-type id="rateEnabled">
+        <item-type>Switch</item-type>
+        <label>Rating enabled</label>
+        <description>Current source allows rating</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="skipEnabled">
+        <item-type>Switch</item-type>
+        <label>Skip enabled</label>
+        <description>Current source allows skipping to next track</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="skipPreviousEnabled">
+        <item-type>Switch</item-type>
+        <label>Skip/Previous enabled</label>
+        <description>Current source allows scrolling through tracks</description>
+        <state readOnly="true" />
+    </channel-type>
     <channel-type id="keyCode">
         <item-type>String</item-type>
         <label>Remote Key Code</label>
@@ -170,6 +192,12 @@
 		<description>Description to current playing song</description>
 		<state readOnly="true" />
 	</channel-type>
+    <channel-type id="nowPlayingGenre" advanced="true">
+        <item-type>String</item-type>
+        <label>Genre</label>
+        <description>Genre of current playing song</description>
+        <state readOnly="true" />
+    </channel-type>
 	<channel-type id="nowPlayingItemName" advanced="true">
 		<item-type>String</item-type>
 		<label>Item Name</label>

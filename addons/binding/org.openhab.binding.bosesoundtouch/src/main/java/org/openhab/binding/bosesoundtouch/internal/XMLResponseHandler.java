@@ -33,8 +33,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XMLResponseHandler extends DefaultHandler {
 
     private Logger logger;
+    private boolean tracing;
 
-    private BoseSoundTouchHandler boseSoundTouchHandler;
+    private BoseSoundTouchHandler handler;
 
     private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
 
@@ -45,20 +46,26 @@ public class XMLResponseHandler extends DefaultHandler {
     private Preset preset;
     private ContentItem contentItem;
     private boolean volumeMuteEnabled;
+    private OnOffType rateEnabled;
+    private OnOffType skipEnabled;
+    private OnOffType skipPreviousEnabled;
     private ZoneMember zoneMember;
 
     public XMLResponseHandler(BoseSoundTouchHandler boseSoundTouchHandler) {
         states = new Stack<>();
         state = XMLHandlerState.INIT;
-        this.boseSoundTouchHandler = boseSoundTouchHandler;
+        this.handler = boseSoundTouchHandler;
         logger = boseSoundTouchHandler.getLogger();
+        tracing = logger.isTraceEnabled();
         init();
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        logger.debug("startElement(\"" + localName + "\"; state: " + state + ")");
+        if (tracing) {
+            logger.trace(handler.getDeviceName() + ": startElement(\"" + localName + "\"; state: " + state + ")");
+        }
         states.push(state);
         XMLHandlerState curState = state; // save for switch statement
         Map<String, XMLHandlerState> stateMap = stateSwitchingMap.get(state);
@@ -69,7 +76,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case INIT:
                 if ("updates".equals(localName)) {
                     // it just seems to be a ping - havn't seen any data on it..
-                    if (checkDeviceId(localName, attributes)) {
+                    if (checkDeviceId(localName, attributes, false)) {
                         state = XMLHandlerState.Updates;
                     } else {
                         state = XMLHandlerState.Unprocessed;
@@ -87,7 +94,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case Msg:
                 if ("header".equals(localName)) {
                     // message
-                    if (checkDeviceId(localName, attributes)) {
+                    if (checkDeviceId(localName, attributes, false)) {
                         state = XMLHandlerState.MsgHeader;
                         msgHeaderWasValid = true;
                     } else {
@@ -114,42 +121,51 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case MsgBody:
                 if ("nowPlaying".equals(localName)) {
-                    if (!checkDeviceId(localName, attributes)) {
+                    if (!checkDeviceId(localName, attributes, true)) {
                         state = XMLHandlerState.Unprocessed;
                         break;
                     }
+                    rateEnabled = OnOffType.OFF;
+                    skipEnabled = OnOffType.OFF;
+                    skipPreviousEnabled = OnOffType.OFF;
                     state = XMLHandlerState.NowPlaying;
                     String source = attributes.getValue("source");
-                    if (boseSoundTouchHandler.getNowPlayingSource() == null
-                            || !boseSoundTouchHandler.getNowPlayingSource().toString().equals(source)) {
+                    if (handler.getNowPlayingSource() == null
+                            || !handler.getNowPlayingSource().toString().equals(source)) {
                         // source changed
-                        boseSoundTouchHandler.updateNowPlayingSource(new StringType(source));
+                        handler.updateNowPlayingSource(new StringType(source));
+                        // reset enabled states
+                        handler.updateRateEnabled(OnOffType.OFF);
+                        handler.updateSkipEnabled(OnOffType.OFF);
+                        handler.updateSkipPreviousEnabled(OnOffType.OFF);
+
                         // clear all "nowPlaying" details on source change...
-                        boseSoundTouchHandler.updateNowPlayingAlbum(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingArtwork(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingArtist(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingDescription(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingItemName(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingPlayStatus(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingStationLocation(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingStationName(new StringType(""));
-                        boseSoundTouchHandler.updateNowPlayingTrack(new StringType(""));
+                        handler.updateNowPlayingAlbum(new StringType(""));
+                        handler.updateNowPlayingArtwork(new StringType(""));
+                        handler.updateNowPlayingArtist(new StringType(""));
+                        handler.updateNowPlayingDescription(new StringType(""));
+                        handler.updateNowPlayingGenre(new StringType(""));
+                        handler.updateNowPlayingItemName(new StringType(""));
+                        handler.updateNowPlayingPlayStatus(new StringType(""));
+                        handler.updateNowPlayingStationLocation(new StringType(""));
+                        handler.updateNowPlayingStationName(new StringType(""));
+                        handler.updateNowPlayingTrack(new StringType(""));
                     }
                 } else if ("zone".equals(localName)) {
                     String master = attributes.getValue("master");
                     if (master == null || master.isEmpty()) {
-                        boseSoundTouchHandler.setMasterZoneSoundTouchHandler(null);
-                        boseSoundTouchHandler.setZoneState(ZoneState.None);
+                        handler.setMasterZoneSoundTouchHandler(null);
+                        handler.setZoneState(ZoneState.None);
                     } else {
-                        if (master.equals(boseSoundTouchHandler.getMacAddress())) {
+                        if (master.equals(handler.getMacAddress())) {
                             // we are the master...
-                            boseSoundTouchHandler.setZoneState(ZoneState.Master);
+                            handler.setZoneState(ZoneState.Master);
                         } else {
                             // an other device is the master
-                            boseSoundTouchHandler.setZoneState(ZoneState.Master);
-                            boseSoundTouchHandler.setMasterZoneSoundTouchHandler(
-                                    boseSoundTouchHandler.getFactory().getBoseSoundTouchDevice(master));
-                            if (boseSoundTouchHandler.getMasterZoneSoundTouchHandler() == null) {
+                            handler.setZoneState(ZoneState.Master);
+                            handler.setMasterZoneSoundTouchHandler(
+                                    handler.getFactory().getBoseSoundTouchDevice(master));
+                            if (handler.getMasterZoneSoundTouchHandler() == null) {
                                 logger.warn("Zone update: Unable to find master with ID " + master);
                             }
                         }
@@ -160,8 +176,9 @@ public class XMLResponseHandler extends DefaultHandler {
                     if (state == null) {
                         logger.warn("Unhandled XML entity during " + curState + ": " + localName);
                         state = XMLHandlerState.Unprocessed;
-                    } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets) {
-                        if (!checkDeviceId(localName, attributes)) {
+                    } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets
+                            && state != XMLHandlerState.Unprocessed) {
+                        if (!checkDeviceId(localName, attributes, false)) {
                             state = XMLHandlerState.Unprocessed;
                             break;
                         }
@@ -181,24 +198,29 @@ public class XMLResponseHandler extends DefaultHandler {
             case Zone:
                 zoneMember = new ZoneMember();
                 zoneMember.setIp(attributes.getValue("ipaddress"));
-                boseSoundTouchHandler.addZoneMember(zoneMember);
-                state = stateMap.get(localName);
-                if (state == null) {
-                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
-                    state = XMLHandlerState.Unprocessed;
-                }
+                handler.addZoneMember(zoneMember);
+                state = nextState(stateMap, curState, localName);
                 break;
+            case NowPlayingRateEnabled:
+                rateEnabled = OnOffType.ON;
+                state = nextState(stateMap, curState, localName);
+                break;
+            case NowPlayingSkipEnabled:
+                skipEnabled = OnOffType.ON;
+                state = nextState(stateMap, curState, localName);
+                break;
+            case NowPlayingSkipPreviousEnabled:
+                skipPreviousEnabled = OnOffType.ON;
+                state = nextState(stateMap, curState, localName);
+                break;
+
             case ContentItem:
             case Info:
             case NowPlaying:
             case Preset:
             case Updates:
             case Volume:
-                state = stateMap.get(localName);
-                if (state == null) {
-                    logger.warn("Unhandled XML entity during " + curState + ": " + localName);
-                    state = XMLHandlerState.Unprocessed;
-                }
+                state = nextState(stateMap, curState, localName);
                 break;
             // all entities without any children expected..
             case ContentItemItemName:
@@ -207,6 +229,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case NowPlayingAlbum:
             case NowPlayingArt:
             case NowPlayingArtist:
+            case NowPlayingGenre:
             case NowPlayingDescription:
             case NowPlayingPlayStatus:
             case NowPlayingStationLocation:
@@ -257,63 +280,81 @@ public class XMLResponseHandler extends DefaultHandler {
                 contentItem.setOperationMode(OperationModeType.STORED_MUSIC);
             } else {
                 contentItem.setOperationMode(OperationModeType.OTHER);
-                logger.error(boseSoundTouchHandler.getThing() + ": Unknown SourceType: " + source
-                        + " - needs to be defined!");
+                logger.error(handler.getThing() + ": Unknown SourceType: " + source + " - needs to be defined!");
             }
             // TODO Implement other sources
             contentItem.setLocation(attributes.getValue("location"));
             contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
         }
         if (state == XMLHandlerState.Presets) {
-            boseSoundTouchHandler.clearListOfPresets();
+            handler.clearListOfPresets();
         }
         if (state == XMLHandlerState.Volume) {
             volumeMuteEnabled = false;
         }
     }
 
+    private XMLHandlerState nextState(Map<String, XMLHandlerState> stateMap, XMLHandlerState curState,
+            String localName) {
+        XMLHandlerState state = stateMap.get(localName);
+        if (state == null) {
+            logger.warn("Unhandled XML entity during " + curState + ": " + localName);
+            state = XMLHandlerState.Unprocessed;
+        }
+        return state;
+    }
+
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        logger.debug("endElement(\"" + localName + "\")");
+        if (tracing) {
+            logger.trace(handler.getDeviceName() + ": endElement(\"" + localName + "\")");
+        }
         final XMLHandlerState prevState = state;
         state = states.pop();
         if (prevState == XMLHandlerState.Info) {
-            boseSoundTouchHandler.sendRequestInWebSocket("volume");
-            boseSoundTouchHandler.sendRequestInWebSocket("presets");
-            boseSoundTouchHandler.sendRequestInWebSocket("now_playing");
-            boseSoundTouchHandler.sendRequestInWebSocket("getZone");
+            handler.sendRequestInWebSocket("volume");
+            handler.sendRequestInWebSocket("presets");
+            handler.sendRequestInWebSocket("now_playing");
+            handler.sendRequestInWebSocket("getZone");
         }
         if (prevState == XMLHandlerState.ContentItem && state == XMLHandlerState.NowPlaying) {
             // update now playing name...
-            boseSoundTouchHandler.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
-            boseSoundTouchHandler.setCurrentContentItem(contentItem);
-            boseSoundTouchHandler.checkOperationMode();
+            handler.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
+            handler.setCurrentContentItem(contentItem);
+            handler.checkOperationMode();
         }
         if (prevState == XMLHandlerState.ContentItem && state == XMLHandlerState.Preset) {
             preset.setContentItem(contentItem);
         }
         if (prevState == XMLHandlerState.Preset && state == XMLHandlerState.Presets) {
-            boseSoundTouchHandler.addPresetToList(preset);
-            boseSoundTouchHandler.checkOperationMode();
+            handler.addPresetToList(preset);
+            handler.checkOperationMode();
+        }
+        if (prevState == XMLHandlerState.NowPlaying && state == XMLHandlerState.MsgBody) {
+            handler.updateRateEnabled(rateEnabled);
+            handler.updateSkipEnabled(skipEnabled);
+            handler.updateSkipPreviousEnabled(skipPreviousEnabled);
         }
         if (prevState == XMLHandlerState.Volume) {
-            if (boseSoundTouchHandler.isMuted() != volumeMuteEnabled) {
-                boseSoundTouchHandler.setMuted(volumeMuteEnabled);
-                boseSoundTouchHandler.updateVolumeMuted(boseSoundTouchHandler.isMuted() ? OnOffType.ON : OnOffType.OFF);
+            if (handler.isMuted() != volumeMuteEnabled) {
+                handler.setMuted(volumeMuteEnabled);
+                handler.updateVolumeMuted(handler.isMuted() ? OnOffType.ON : OnOffType.OFF);
             }
         }
         if (prevState == XMLHandlerState.ZoneUpdated) {
-            boseSoundTouchHandler.sendRequestInWebSocket("getZone");
+            handler.sendRequestInWebSocket("getZone");
         }
         if (prevState == XMLHandlerState.Zone) {
-            boseSoundTouchHandler.zonesChanged();
+            handler.zonesChanged();
         }
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        logger.debug("Text data during " + state + ": " + new String(ch, start, length));
+        if (tracing) {
+            logger.trace(handler.getDeviceName() + ":Text data during " + state + ": " + new String(ch, start, length));
+        }
         super.characters(ch, start, length);
         switch (state) {
             case INIT:
@@ -326,6 +367,9 @@ public class XMLResponseHandler extends DefaultHandler {
             case Preset:
             case Presets:
             case NowPlaying:
+            case NowPlayingRateEnabled:
+            case NowPlayingSkipEnabled:
+            case NowPlayingSkipPreviousEnabled:
             case ContentItem:
             case UnprocessedNoTextExpected:
             case Zone:
@@ -342,35 +386,38 @@ public class XMLResponseHandler extends DefaultHandler {
                 setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE, new String(ch, start, length));
                 break;
             case NowPlayingAlbum:
-                boseSoundTouchHandler.updateNowPlayingAlbum(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingAlbum(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingArt:
-                boseSoundTouchHandler.updateNowPlayingArtwork(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingArtwork(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingArtist:
-                boseSoundTouchHandler.updateNowPlayingArtist(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingArtist(new StringType(new String(ch, start, length)));
                 break;
             case ContentItemItemName:
                 contentItem.setItemName(new String(ch, start, length));
                 break;
             case NowPlayingDescription:
-                boseSoundTouchHandler.updateNowPlayingDescription(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingDescription(new StringType(new String(ch, start, length)));
+                break;
+            case NowPlayingGenre:
+                handler.updateNowPlayingGenre(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingPlayStatus:
-                boseSoundTouchHandler.updateNowPlayingPlayStatus(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingPlayStatus(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingStationLocation:
-                boseSoundTouchHandler.updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingStationName:
-                boseSoundTouchHandler.updateNowPlayingStationName(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingStationName(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingTrack:
-                boseSoundTouchHandler.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
+                handler.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
                 break;
             case VolumeActual:
                 String temp = new String(ch, start, length);
-                boseSoundTouchHandler.updateVolume(new PercentType(Integer.parseInt(temp)));
+                handler.updateVolume(new PercentType(Integer.parseInt(temp)));
                 break;
             case VolumeMuteEnabled:
                 volumeMuteEnabled = Boolean.parseBoolean(new String(ch, start, length));
@@ -378,7 +425,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case ZoneMember:
                 String mac = new String(ch, start, length);
                 zoneMember.setMac(mac);
-                zoneMember.setHandler(boseSoundTouchHandler.getFactory().getBoseSoundTouchDevice(mac));
+                zoneMember.setHandler(handler.getFactory().getBoseSoundTouchDevice(mac));
                 if (zoneMember.getHandler() == null) {
                     logger.warn("Zone update: Unable to find member with ID " + mac);
                 }
@@ -399,6 +446,7 @@ public class XMLResponseHandler extends DefaultHandler {
         msgBodyMap.put("volume", XMLHandlerState.Volume);
         msgBodyMap.put("presets", XMLHandlerState.Presets);
         msgBodyMap.put("key", XMLHandlerState.Unprocessed); // only confirmation of our key presses...
+        msgBodyMap.put("status", XMLHandlerState.Unprocessed); // only confirmation of commands sent to device...
         msgBodyMap.put("zone", XMLHandlerState.Zone); // only confirmation of our key presses...
 
         // info message states
@@ -422,6 +470,8 @@ public class XMLResponseHandler extends DefaultHandler {
         updatesMap.put("connectionStateUpdated", XMLHandlerState.UnprocessedNoTextExpected);
         updatesMap.put("infoUpdated", XMLHandlerState.Unprocessed);
         updatesMap.put("nowPlayingUpdated", XMLHandlerState.MsgBody);
+        updatesMap.put("nowSelectionUpdated", XMLHandlerState.Unprocessed); // TODO this seems to be quite a useful info
+                                                                            // what is currently played..
         updatesMap.put("recentsUpdated", XMLHandlerState.Unprocessed);
         updatesMap.put("volumeUpdated", XMLHandlerState.MsgBody);
         updatesMap.put("zoneUpdated", XMLHandlerState.ZoneUpdated); // just notifies but dosn't provide details
@@ -440,6 +490,9 @@ public class XMLResponseHandler extends DefaultHandler {
         nowPlayingMap.put("ContentItem", XMLHandlerState.ContentItem);
         nowPlayingMap.put("description", XMLHandlerState.NowPlayingDescription);
         nowPlayingMap.put("playStatus", XMLHandlerState.NowPlayingPlayStatus);
+        nowPlayingMap.put("rateEnabled", XMLHandlerState.NowPlayingRateEnabled);
+        nowPlayingMap.put("skipEnabled", XMLHandlerState.NowPlayingSkipEnabled);
+        nowPlayingMap.put("skipPreviousEnabled", XMLHandlerState.NowPlayingSkipPreviousEnabled);
         nowPlayingMap.put("stationLocation", XMLHandlerState.NowPlayingStationLocation);
         nowPlayingMap.put("stationName", XMLHandlerState.NowPlayingStationName);
         nowPlayingMap.put("track", XMLHandlerState.NowPlayingTrack);
@@ -447,12 +500,13 @@ public class XMLResponseHandler extends DefaultHandler {
         // TODO active when Source==Pandora and maybe also other sources - seems to be rating related
         nowPlayingMap.put("time", XMLHandlerState.Unprocessed);
         nowPlayingMap.put("rating", XMLHandlerState.Unprocessed);
-        nowPlayingMap.put("skipEnabled", XMLHandlerState.Unprocessed);
         nowPlayingMap.put("rateEnabled", XMLHandlerState.Unprocessed);
 
+        // ContentItem specifies a resource (that also could be bookmarked in a preset)
         Map<String, XMLHandlerState> contentItemMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.ContentItem, contentItemMap);
         contentItemMap.put("itemName", XMLHandlerState.ContentItemItemName);
+        contentItemMap.put("containerArt", XMLHandlerState.Unprocessed);
 
         Map<String, XMLHandlerState> presetMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Preset, presetMap);
@@ -463,26 +517,30 @@ public class XMLResponseHandler extends DefaultHandler {
         zoneMap.put("member", XMLHandlerState.ZoneMember);
     }
 
-    private boolean checkDeviceId(String localName, Attributes attributes) {
+    private boolean checkDeviceId(String localName, Attributes attributes, boolean allowFromMaster) {
         String did = attributes.getValue("deviceID");
         if (did == null) {
             logger.warn("No Device-ID in Entity " + localName);
             return false;
         }
-        if (!did.equals(boseSoundTouchHandler.getMacAddress())) {
-            logger.warn("Wrong Device-ID in Entity " + localName + ": Got: " + did + " expected: "
-                    + boseSoundTouchHandler.getMacAddress());
-            return false;
+        if (did.equals(handler.getMacAddress())) {
+            return true;
         }
-        return true;
+        if (allowFromMaster && handler.getMasterZoneSoundTouchHandler() != null
+                && did.equals(handler.getMasterZoneSoundTouchHandler().getMacAddress())) {
+            return true;
+        }
+        logger.warn(
+                "Wrong Device-ID in Entity " + localName + ": Got: " + did + " expected: " + handler.getMacAddress());
+        return false;
     }
 
     private void setConfigOption(String option, String value) {
-        Map<String, String> prop = boseSoundTouchHandler.getThing().getProperties();
+        Map<String, String> prop = handler.getThing().getProperties();
         String cur = prop.get(option);
         if (cur == null || !cur.equals(value)) {
             logger.info("Option \"" + option + "\" updated: From \"" + cur + "\" to \"" + value + "\"");
-            boseSoundTouchHandler.getThing().setProperty(option, value);
+            handler.getThing().setProperty(option, value);
         }
     }
 }
