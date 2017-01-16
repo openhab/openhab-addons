@@ -12,6 +12,7 @@
 			<channel id="volume" typeId="volume" />
 			<channel id="mute" typeId="mute" />
 			<channel id="control" typeId="control" />
+			<channel id="stop" typeId="stop" />
 			<channel id="playuri" typeId="playuri" />
 			<channel id="shownotification" typeId="shownotification" />
 			<channel id="input" typeId="input" />
@@ -60,6 +61,11 @@
 		<label>Control</label>
 		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind</description>
 		<category>Player</category>
+	</channel-type>
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop the player</description>
 	</channel-type>
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
