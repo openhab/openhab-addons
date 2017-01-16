@@ -123,6 +123,14 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     connection.updatePlayerStatus();
                 }
                 break;
+            case CHANNEL_STOP:
+                if (command instanceof OnOffType) {
+                    connection.playerStop();
+                    updateState(CHANNEL_STOP, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_STOP, UnDefType.UNDEF);
+                }
+                break;
             case CHANNEL_PLAYURI:
                 if (command instanceof StringType) {
                     playURI(command);
