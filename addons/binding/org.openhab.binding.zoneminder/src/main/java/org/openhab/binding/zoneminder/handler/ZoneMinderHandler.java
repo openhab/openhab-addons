@@ -13,8 +13,8 @@ import java.security.GeneralSecurityException;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
+import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderConnectionInfo;
 
 /**
  * Interface for ZoneMinder handlers.

@@ -13,7 +13,7 @@
         <description>Camera in ZoneMinder</description>
 
         <channels>
-            <channel id="is-alive" typeId="monitor_is_alive" />
+            <channel id="online" typeId="monitor_online" />
             <channel id="enabled" typeId="monitor_enabled" />
             <channel id="force-alarm" typeId="monitor_force_alarm" />
             <channel id="alarm" typeId="monitor_alarm" />
@@ -31,10 +31,10 @@
 
 
     <!-- Channel definitions of ZoneMinder Server -->
-    <channel-type id="monitor_is_alive">
+    <channel-type id="monitor_online">
         <item-type>Switch</item-type>
-        <label>Is Alive</label>
-        <description>Switch telling if the monitor is alive</description>
+        <label>Online</label>
+        <description>Switch telling if the monitor is online</description>
         <state readOnly="true" />
     </channel-type>
 

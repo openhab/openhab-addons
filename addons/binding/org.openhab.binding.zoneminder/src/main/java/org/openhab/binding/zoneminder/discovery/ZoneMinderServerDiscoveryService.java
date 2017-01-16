@@ -64,8 +64,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-
-        // Background discovery disabled - doesn't give much sense
+        // Background discovery disabled - doesn't give much sense 
     }
 
     /*
@@ -97,10 +96,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             subnetInfo = subnetUtils.getInfo();
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
-            /*
-             * lowIP = convertIPToNumber("192.168.1.53");
-             * highIP = convertIPToNumber("192.168.1.56");
-             */
+
         } catch (IllegalArgumentException e) {
             logger.error("[DISCOVERY] -discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
             return;
@@ -206,9 +202,8 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             return;
         }
 
-        if (response.contains("<title>ZM - Login</title>") || response.contains("<title>ZM - Console</title>")
-                || response.contains("ZoneMinder")) {
-            logger.info("[DOSCOVERY] - Discovered ZoneMinder Server at '{}'", ipAddress);
+        if (response.contains("ZoneMinder login") || response.contains(">ZoneMinder</a> Console -")) {
+            logger.info("[DISCOVERY] - Discovered ZoneMinder Server at '{}'", ipAddress);
 
             ThingUID uid = new ThingUID(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER,
                     ZoneMinderConstants.BRIDGE_ZONEMINDER_SERVER);
@@ -216,6 +211,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             properties.put(ZoneMinderConstants.PARAM_HOSTNAME, ipAddress);
             properties.put(ZoneMinderConstants.PARAM_PORT, new Integer(80));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    // .withLabel(BuildMonitorLabel(monitor.getId(), monitor.getName()))
                     .withLabel(ZoneMinderConstants.ZONEMINDER_SERVER_NAME).build();
             thingDiscovered(result);
         }

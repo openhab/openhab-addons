@@ -49,6 +49,13 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
     }
 
     public Integer getHttpPort() {
+        if ((http_port == null) || (http_port == 0)) {
+            if (getProtocol().equalsIgnoreCase("http")) {
+                http_port = 80;
+            } else {
+                http_port = 443;
+            }
+        }
         return http_port;
     }
 

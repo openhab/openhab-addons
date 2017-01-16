@@ -59,7 +59,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
 
-            logger.trace("creating handler for bridge thing {}", thing);
+            logger.trace("creating handler for bridge thing '{}'", thing);
             ZoneMinderServerBridgeHandler bridge = new ZoneMinderServerBridgeHandler((Bridge) thing);
             registerZoneMinderMonitorDiscoveryService(bridge);
 
@@ -113,8 +113,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingHandler instanceof ZoneMinderThingMonitorHandler) {
             ZoneMinderThingMonitorHandler thingMonitor = (ZoneMinderThingMonitorHandler) thingHandler;
-            ZoneMinderServerBridgeHandler bridge = (ZoneMinderServerBridgeHandler) thingMonitor
-                    .getZoneMinderBridgeHandler();
+            ZoneMinderServerBridgeHandler bridge = thingMonitor.getZoneMinderBridgeHandler();
 
             if (bridge != null) {
                 logger.trace("removing handler for monitor thing {}", thingHandler.getThing());

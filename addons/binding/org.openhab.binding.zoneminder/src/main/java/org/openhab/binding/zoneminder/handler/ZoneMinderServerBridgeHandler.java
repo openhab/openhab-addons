@@ -42,6 +42,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
+import name.eskildsen.zoneminder.IZoneMinderMonitorData;
+import name.eskildsen.zoneminder.IZoneMinderServer;
 import name.eskildsen.zoneminder.ZoneMinderFactory;
 import name.eskildsen.zoneminder.api.ZoneMinderDiskUsage;
 import name.eskildsen.zoneminder.api.config.ZoneMinderConfig;
@@ -49,9 +52,6 @@ import name.eskildsen.zoneminder.api.config.ZoneMinderConfigEnum;
 import name.eskildsen.zoneminder.api.host.ZoneMinderHostLoad;
 import name.eskildsen.zoneminder.api.host.ZoneMinderHostVersion;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderConnectionInfo;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderMonitorData;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderServer;
 
 /**
  * Handler for a ZoneMinder Server.
@@ -99,11 +99,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     private String channelCpuLoad = "";
     private String channelDiskUsage = "";
 
-    /**
-     * Bridge configuration from OpenHAB
-     */
-    ZoneMinderBridgeServerConfig config = null;
-
     Boolean isInitialized = false;
 
     private IZoneMinderConnectionInfo zoneMinderConnection = null;
@@ -124,10 +119,11 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
                 refreshCycleCount++;
 
-                if ((refreshCycleCount * refreshFrequency >= config.getRefreshInterval())) {
+                if ((refreshCycleCount * refreshFrequency >= getBridgeConfig().getRefreshInterval())) {
 
                     // Is it time to query DiskUsage??
-                    if ((refreshCycleCount * refreshFrequency) >= (config.getRefreshIntervalLowPriorityTask() * 60)) {
+                    if ((refreshCycleCount * refreshFrequency) >= (getBridgeConfig().getRefreshIntervalLowPriorityTask()
+                            * 60)) {
                         refreshCycleCount = 0;
                         logger.debug("'refreshDataRunnable()': (diskUsage='true'");
                         fetchDiskUsage = true;
@@ -211,17 +207,17 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         try {
             updateStatus(ThingStatus.OFFLINE);
 
-            this.config = getBridgeConfig();
+            // this.config = getBridgeConfig();
 
-            logger.info("ZoneMinder Server Bridge Handler Initialized");
-            logger.debug("   HostName:           {}", config.getHostName());
-            logger.debug("   Protocol:           {}", config.getProtocol());
-            logger.debug("   Port HTTP(S)        {}", config.getHttpPort());
-            logger.debug("   Port Telnet         {}", config.getTelnetPort());
-            logger.debug("   Server Path         {}", config.getServerBasePath());
-            logger.debug("   User:               {}", config.getUserName());
-            logger.debug("   Refresh interval:   {}", config.getRefreshInterval());
-            logger.debug("   Low  prio. refresh: {}", config.getRefreshIntervalLowPriorityTask());
+            logger.info("[BRIDGE] ZoneMinder Server Bridge Handler Initialized");
+            logger.debug("[BRIDGE]    HostName:           {}", getBridgeConfig().getHostName());
+            logger.debug("[BRIDGE]    Protocol:           {}", getBridgeConfig().getProtocol());
+            logger.debug("[BRIDGE]    Port HTTP(S)        {}", getBridgeConfig().getHttpPort());
+            logger.debug("[BRIDGE]    Port Telnet         {}", getBridgeConfig().getTelnetPort());
+            logger.debug("[BRIDGE]    Server Path         {}", getBridgeConfig().getServerBasePath());
+            logger.debug("[BRIDGE]    User:               {}", getBridgeConfig().getUserName());
+            logger.debug("[BRIDGE]    Refresh interval:   {}", getBridgeConfig().getRefreshInterval());
+            logger.debug("[BRIDGE]    Low  prio. refresh: {}", getBridgeConfig().getRefreshIntervalLowPriorityTask());
 
             closeConnection();
 
@@ -278,13 +274,16 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
      */
     @Override
     public void dispose() {
-        logger.debug("[BRIDGE] - Stop polling of ZoneMinder Server API");
+        try {
+            logger.debug("[BRIDGE] - Stop polling of ZoneMinder Server API");
 
-        logger.info("[BRIDGE] - Stopping WatchDog task");
-        stopWatchDogTask();
+            logger.info("[BRIDGE] - Stopping WatchDog task");
+            stopWatchDogTask();
 
-        logger.info("[BRIDGE] - Stopping refresh data task");
-        stopTask(taskRefreshData);
+            logger.info("[BRIDGE] - Stopping refresh data task");
+            stopTask(taskRefreshData);
+        } catch (Exception ex) {
+        }
     }
 
     @Override
@@ -360,7 +359,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
             ZoneMinderHostLoad hostLoad = zoneMinderServerProxy.getHostCpuLoad();
             channelCpuLoad = hostLoad.getCpuLoad().toString();
 
-            if (config.getRefreshIntervalLowPriorityTask() != 0) {
+            if (getBridgeConfig().getRefreshIntervalLowPriorityTask() != 0) {
                 ZoneMinderDiskUsage du = zoneMinderServerProxy.getHostDiskUsage();
                 channelDiskUsage = du.getDiskUsage();
             }
@@ -518,29 +517,9 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     @Override
     public void updateAvaliabilityStatus(IZoneMinderConnectionInfo connection) {
         ThingStatus newStatus = ThingStatus.OFFLINE;
-        boolean hasValidConnection = false;
         boolean _isAlive = false;
 
         ThingStatus prevStatus = getThing().getStatus();
-
-        // Connection valid since we sare already online
-        if (prevStatus == ThingStatus.ONLINE) {
-            hasValidConnection = true;
-        }
-
-        // If we we are already ONLINE and have a session
-        else if ((prevStatus == ThingStatus.OFFLINE) && (connection != null)) {
-            hasValidConnection = ZoneMinderFactory.validateConnection(connection);
-            try {
-                if (hasValidConnection) {
-                    ZoneMinderFactory.Initialize(connection, 5);
-                }
-            } catch (IllegalArgumentException | GeneralSecurityException | IOException
-                    | ZoneMinderUrlNotFoundException e) {
-            }
-        }
-
-        IZoneMinderServer zoneMinderServerProxy = ZoneMinderFactory.getServerProxy();
 
         try {
 
@@ -558,54 +537,27 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                 return;
             }
 
-            if (zoneMinderServerProxy == null) {
+            if (!isZoneMinderLoginValid(connection)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Cannot access ZoneMinder Server. Check provided usercredentials");
                 setBridgeConnectionStatus(false);
                 return;
-            } else if (zoneMinderServerProxy.getHostDaemonCheckState() == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "ZoneMinder Server Daemon state is unknown.");
-                setBridgeConnectionStatus(false);
-                return;
             }
-
-            else if (!zoneMinderServerProxy.getHostDaemonCheckState().isDaemonRunning()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "ZoneMinder Server Daemon isn't running.");
-                setBridgeConnectionStatus(false);
-                return;
-            }
-
-            // Set Status to OFFLINE if it is OFFLINE
 
             // Check if server API can be accessed
-            if (!isZoneMinderApiEnabled()) {
+            else if (!isZoneMinderApiEnabled(connection)) {
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "ZoneMinder Server API isn't enabled. In ZoneMinder make sure option 'ZM_OPT_USE_API' is enabled");
+                        "ZoneMinder Server 'OPT_USE_API' not enabled");
                 setBridgeConnectionStatus(false);
                 return;
             }
-
-            if (!isZoneMinderExternalTriggerEnabled()) {
+            // Verify that 'OPT_TRIGGER' is set to true in ZoneMinder
+            else if (!isZoneMinderExternalTriggerEnabled(connection)) {
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "ZoneMinder Server External trigger isn't enabled. In ZoneMinder enabled ZM_xxx");
+                        "ZoneMinder Server option 'OPT_TRIGGERS' not enabled");
                 setBridgeConnectionStatus(false);
-                return;
-            }
-
-            // 4. Check server version
-            // 5. Check server API version
-
-            // Check if refresh jobs is running
-            if (!isZoneMinderServerDaemonEnabled()) {
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        "ZoneMinder Server cannot be reached. Daemon appears to be stopped.");
-                setBridgeConnectionStatus(false);
-                _alive = _isAlive;
                 return;
             } else {
                 _isAlive = true;
@@ -686,22 +638,29 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         return true;
     }
 
-    protected Boolean isZoneMinderApiEnabled() {
-
-        return true;
+    protected boolean isZoneMinderLoginValid(IZoneMinderConnectionInfo connection) {
+        try {
+            return ZoneMinderFactory.validateLogin(connection);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    protected Boolean isZoneMinderExternalTriggerEnabled() {
-        return true;
+    protected boolean isZoneMinderApiEnabled(IZoneMinderConnectionInfo connection) {
+        try {
+            return ZoneMinderFactory.isApiEnabled(connection);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    // 4. Check server version
-    // 5. Check server API version
-
-    // Check if refresh jobs is running
-    protected Boolean isZoneMinderServerDaemonEnabled() {
-
-        return true;
+    protected Boolean isZoneMinderExternalTriggerEnabled(IZoneMinderConnectionInfo connection) {
+        try {
+            boolean result = ZoneMinderFactory.isTriggerOptionEnabled(connection);
+            return ZoneMinderFactory.validateConnection(connection) && result;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -710,8 +669,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         try {
 
             switch (channel.getId()) {
-                case ZoneMinderConstants.CHANNEL_IS_ALIVE:
-
+                case ZoneMinderConstants.CHANNEL_ONLINE:
                     updateState(channel, (isAlive() ? OnOffType.ON : OnOffType.OFF));
                     break;
 
@@ -846,11 +804,18 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     @Override
     public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, IZoneMinderConnectionInfo connection) {
         logger.info("Brigde with Id='{}'' went ONLINE", getZoneMinderId());
+        try {
+            ZoneMinderFactory.Initialize(connection, 5);
+        } catch (IllegalArgumentException | GeneralSecurityException | IOException | ZoneMinderUrlNotFoundException e) {
+            // Well, we just checked for all these problems, so they shouldn't really appear here....
+            logger.error("[BRIDGE] Exception occurred when initializing ZoneMidner API '{}'", e.getMessage());
+        }
+
         if (taskRefreshData == null) {
-            if (config.getRefreshIntervalLowPriorityTask() != 0) {
-                refreshFrequency = calculateCommonRefreshFrequency(config.getRefreshInterval());
+            if (getBridgeConfig().getRefreshIntervalLowPriorityTask() != 0) {
+                refreshFrequency = calculateCommonRefreshFrequency(getBridgeConfig().getRefreshInterval());
             } else {
-                refreshFrequency = config.getRefreshInterval();
+                refreshFrequency = getBridgeConfig().getRefreshInterval();
             }
             if (taskRefreshData == null) {
                 taskRefreshData = startTask(refreshDataRunnable, 0, refreshFrequency, TimeUnit.SECONDS);
@@ -913,10 +878,14 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
      * Method to stop the datarefresh task.
      */
     protected void stopTask(ScheduledFuture<?> task) {
-        logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
-        if (task != null && !task.isCancelled()) {
-            task.cancel(true);
+        try {
+            logger.debug("Stopping ZoneMinder Bridge Monitor Task. Task='{}'", task.toString());
+            if (task != null && !task.isCancelled()) {
+                task.cancel(true);
+            }
+        } catch (Exception ex) {
         }
+
     }
 
     /*
