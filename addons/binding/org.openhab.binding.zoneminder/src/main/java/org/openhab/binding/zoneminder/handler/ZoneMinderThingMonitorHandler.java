@@ -38,15 +38,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
+import name.eskildsen.zoneminder.IZoneMinderMonitor;
+import name.eskildsen.zoneminder.IZoneMinderMonitorData;
 import name.eskildsen.zoneminder.ZoneMinderFactory;
 import name.eskildsen.zoneminder.api.event.ZoneMinderEvent;
 import name.eskildsen.zoneminder.api.telnet.ZoneMinderTriggerEvent;
 import name.eskildsen.zoneminder.common.ZoneMinderMonitorFunctionEnum;
 import name.eskildsen.zoneminder.common.ZoneMinderMonitorStatusEnum;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderConnectionInfo;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderMonitor;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderMonitorData;
 import name.eskildsen.zoneminder.trigger.ZoneMinderEventSubscriber;
 
 /**
@@ -244,7 +244,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 case ZoneMinderConstants.CHANNEL_MONITOR_EVENT_STATE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_DETAILED_STATUS:
                 case ZoneMinderConstants.CHANNEL_MONITOR_RECORD_STATE:
-                case ZoneMinderConstants.CHANNEL_IS_ALIVE:
+                case ZoneMinderConstants.CHANNEL_ONLINE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_EVENT_CAUSE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_CAPTURE_DAEMON_STATE:
                 case ZoneMinderConstants.CHANNEL_MONITOR_ANALYSIS_DAEMON_STATE:
@@ -442,8 +442,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                     state = getChannelBoolAsOnOffState(channelEnabled);
                     break;
 
-                case ZoneMinderConstants.CHANNEL_IS_ALIVE:
-                    // Ask super class to handle, because this is shared for all things
+                case ZoneMinderConstants.CHANNEL_ONLINE:
+                    // Ask super class to handle, because this channel is shared for all things
                     super.updateChannel(channel);
                     break;
                 case ZoneMinderConstants.CHANNEL_MONITOR_FORCE_ALARM:
@@ -514,7 +514,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
-        updateState(ZoneMinderConstants.CHANNEL_IS_ALIVE,
+        updateState(ZoneMinderConstants.CHANNEL_ONLINE,
                 ((status == ThingStatus.ONLINE) ? OnOffType.ON : OnOffType.OFF));
 
     }

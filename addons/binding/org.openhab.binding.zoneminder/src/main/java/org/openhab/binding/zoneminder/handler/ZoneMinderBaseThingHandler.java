@@ -33,9 +33,10 @@ import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import name.eskildsen.zoneminder.ZoneMinderSessionMgr;
+import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
+import name.eskildsen.zoneminder.IZoneMinderSessionManager;
+import name.eskildsen.zoneminder.ZoneMinderFactory;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
-import name.eskildsen.zoneminder.interfaces.IZoneMinderConnectionInfo;
 
 /**
  * The {@link ZoneMinderBaseThingHandler} is responsible for handling commands, which are
@@ -100,7 +101,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
     }
 
     protected boolean isConnected() {
-        return ZoneMinderSessionMgr.getInstance().isConnected();
+        IZoneMinderSessionManager sessionMgr = ZoneMinderFactory.getSessionManager();
+        return sessionMgr.isConnected();
     }
 
     /**
@@ -218,7 +220,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         OnOffType onOffType;
 
         switch (channel.getId()) {
-            case ZoneMinderConstants.CHANNEL_IS_ALIVE:
+            case ZoneMinderConstants.CHANNEL_ONLINE:
                 updateState(channel, getChannelBoolAsOnOffState(isAlive));
                 break;
             default:

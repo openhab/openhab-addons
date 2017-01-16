@@ -41,7 +41,7 @@ public class ZoneMinderConstants {
             BRIDGE_ZONEMINDER_SERVER);
 
     // Shared channel for all bridges / things
-    public final static String CHANNEL_IS_ALIVE = "is-alive";
+    public final static String CHANNEL_ONLINE = "online";
 
     // Channel Id's for the ZoneMinder Server
     public final static String CHANNEL_SERVER_DISKUSAGE = "disk-usage";
