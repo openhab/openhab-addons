@@ -9,8 +9,8 @@
         <description>ZoneMinder Server</description>
         <channels>
             <channel id="online" typeId="server_online">
-                <label>Is Alive</label>
-                <description>ON / OFF value to determine from openHAB if the server is actually up and running</description>
+                <label>Online</label>
+                <description>Switch telling if the ZoneMinder Server is online</description>
             </channel>
  
             <channel id="cpu-load" typeId="server_cpu_load">
