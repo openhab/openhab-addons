@@ -35,7 +35,11 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (object == null || object instanceof Integer) {
             return (Integer) object;
         }
-        return NumberUtils.createInteger(ObjectUtils.toString(object));
+        try {
+            return Double.valueOf(ObjectUtils.toString(object)).intValue();
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     /**
@@ -101,19 +105,19 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
-     * Converts the type of the value if necessary and sets the value of the datapoint.
+     * Converts the value to the correct type if necessary.
      */
-    protected void setDatapointValue(HmDatapoint dp, Object value) {
+    protected Object convertToType(HmDatapoint dp, Object value) {
         if (dp.isBooleanType()) {
-            dp.setValue(toBoolean(value));
+            return toBoolean(value);
         } else if (dp.isIntegerType()) {
-            dp.setValue(toInteger(value));
+            return toInteger(value);
         } else if (dp.isFloatType()) {
-            dp.setValue(toNumber(value));
+            return toNumber(value);
         } else if (dp.isStringType()) {
-            dp.setValue(toString(value));
+            return toString(value);
         } else {
-            dp.setValue(value);
+            return value;
         }
     }
 

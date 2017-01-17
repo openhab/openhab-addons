@@ -42,7 +42,7 @@ public class CcuValueParser extends CommonRpcParser<TclScriptDataList, Void> {
                 HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, entry.name);
                 HmDatapoint dp = channel.getDatapoint(dpInfo);
                 if (dp != null) {
-                    setDatapointValue(dp, entry.value);
+                    dp.setValue(convertToType(dp, entry.value));
                     adjustRssiValue(dp);
                 } else {
                     // should never happen, but in case ...

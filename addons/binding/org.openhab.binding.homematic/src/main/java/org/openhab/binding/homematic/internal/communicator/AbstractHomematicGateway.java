@@ -96,6 +96,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private Map<HmInterface, TransferMode> availableInterfaces = new TreeMap<HmInterface, TransferMode>();
     private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<VirtualDatapointHandler>();
     private boolean cancelLoadAllMetadata;
+    private boolean initialized;
 
     static {
         // loads all virtual datapoints
@@ -143,6 +144,9 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             if (gatewayInfo.isCuxdInterface()) {
                 availableInterfaces.put(HmInterface.CUXD, TransferMode.BIN_RPC);
             }
+            if (gatewayInfo.isGroupInterface()) {
+                availableInterfaces.put(HmInterface.GROUP, TransferMode.XML_RPC);
+            }
         } else {
             // other
             availableInterfaces.put(HmInterface.RF, TransferMode.XML_RPC);
@@ -166,6 +170,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         startClients();
         startServers();
         startWatchdogs();
+        initialized = true;
     }
 
     /**
@@ -173,6 +178,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     @Override
     public void dispose() {
+        initialized = false;
         stopWatchdogs();
         delayedExecutor.stop();
         stopServers();
@@ -635,24 +641,25 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     @Override
     public void newDevices(List<String> adresses) {
-        if (adresses.size() == 1) {
-            try {
-                String address = adresses.get(0);
-                logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
-                List<HmDevice> deviceDescriptions = getDeviceDescriptions();
-                for (HmDevice device : deviceDescriptions) {
-                    if (device.getAddress().equals(address)) {
-                        for (HmChannel channel : device.getChannels()) {
-                            HmInterface hmInterface = channel.getDevice().getHmInterface();
-                            getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.MASTER);
-                            getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.VALUES);
+        if (initialized) {
+            for (String address : adresses) {
+                try {
+                    logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
+                    List<HmDevice> deviceDescriptions = getDeviceDescriptions();
+                    for (HmDevice device : deviceDescriptions) {
+                        if (device.getAddress().equals(address)) {
+                            for (HmChannel channel : device.getChannels()) {
+                                HmInterface hmInterface = channel.getDevice().getHmInterface();
+                                getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.MASTER);
+                                getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.VALUES);
+                            }
+                            prepareDevice(device);
+                            eventListener.onNewDevice(device);
                         }
-                        prepareDevice(device);
-                        eventListener.onNewDevice(device);
                     }
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
                 }
-            } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
             }
         }
     }
@@ -662,11 +669,13 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     @Override
     public void deleteDevices(List<String> addresses) {
-        for (String address : addresses) {
-            logger.debug("Device '{}' removed from gateway with id '{}'", address, id);
-            HmDevice device = devices.remove(address);
-            if (device != null) {
-                eventListener.onDeviceDeleted(device);
+        if (initialized) {
+            for (String address : addresses) {
+                logger.debug("Device '{}' removed from gateway with id '{}'", address, id);
+                HmDevice device = devices.remove(address);
+                if (device != null) {
+                    eventListener.onDeviceDeleted(device);
+                }
             }
         }
     }
@@ -728,9 +737,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Loaded device '{}' ({}) with {} datapoints", device.getAddress(), device.getType(),
                 device.getDatapointCount());
 
-        if (logger.isTraceEnabled())
-
-        {
+        if (logger.isTraceEnabled()) {
             logger.trace("{}", device);
             for (HmChannel channel : device.getChannels()) {
                 logger.trace("  {}", channel);

@@ -74,7 +74,7 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
             if (isHmIpDevice && dp.isEnumType()) {
                 dp.setDefaultValue(dp.getOptionIndex(toString(dpMeta.get("DEFAULT"))));
             } else {
-                dp.setDefaultValue(dpMeta.get("DEFAULT"));
+                dp.setDefaultValue(convertToType(dp, dpMeta.get("DEFAULT")));
             }
             dp.setValue(dp.getDefaultValue());
             channel.addDatapoint(dp);

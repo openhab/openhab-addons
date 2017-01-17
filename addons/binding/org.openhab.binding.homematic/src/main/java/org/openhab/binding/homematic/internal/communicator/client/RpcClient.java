@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    protected static final int MAX_RPC_RETRY = 1;
 
     protected HomematicConfig config;
 
@@ -245,6 +246,10 @@ public abstract class RpcClient {
 
         if (gatewayInfo.isCCU() || config.hasCuxdPort()) {
             gatewayInfo.setCuxdInterface(hasInterface(HmInterface.CUXD, id));
+        }
+
+        if (gatewayInfo.isCCU() || config.hasGroupPort()) {
+            gatewayInfo.setGroupInterface(hasInterface(HmInterface.GROUP, id));
         }
 
         return gatewayInfo;
