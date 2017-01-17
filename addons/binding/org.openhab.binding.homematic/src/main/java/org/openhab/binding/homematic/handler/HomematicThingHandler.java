@@ -154,7 +154,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 dpInfo = new HmDatapointInfo(dpInfo.getAddress(), HmParamsetType.VALUES, 0,
                         VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY);
                 dp = gateway.getDatapoint(dpInfo);
-                gateway.sendDatapoint(dp, new HmDatapointConfig(true), Boolean.TRUE);
+                gateway.sendDatapoint(dp, new HmDatapointConfig(), Boolean.TRUE);
             } else {
                 Channel channel = getThing().getChannel(channelUID.getId());
                 if (channel == null) {
@@ -320,11 +320,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the config for a channel.
      */
     private HmDatapointConfig getChannelConfig(Channel channel, HmDatapoint dp) {
-        HmDatapointConfig dpConfig = channel.getConfiguration().as(HmDatapointConfig.class);
-        if (DATAPOINT_NAME_STOP.equals(dp.getName()) && CHANNEL_TYPE_BLIND.equals(dp.getChannel().getType())) {
-            dpConfig.setForceUpdate(true);
-        }
-        return dpConfig;
+        return channel.getConfiguration().as(HmDatapointConfig.class);
     }
 
     /**
@@ -381,7 +377,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                                 }
                                 if (ObjectUtils.notEqual(dp.isEnumType() ? dp.getOptionValue() : dp.getValue(),
                                         newValue)) {
-                                    gateway.sendDatapoint(dp, new HmDatapointConfig(true), newValue);
+                                    gateway.sendDatapoint(dp, new HmDatapointConfig(), newValue);
                                 }
                             }
                         } catch (IOException ex) {
