@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -547,10 +546,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
         if (dp.isReadOnly()) {
             logger.warn("Datapoint is readOnly, it is not published to the gateway with id '{}': '{}'", id, dpInfo);
-        } else if (!dp.isVirtual() && !dpConfig.isForceUpdate() && ObjectUtils.equals(dp.getValue(), newValue)) {
-            logger.debug(
-                    "Value '{}' equals cached gateway value '{}' with id '{}' and forceUpdate is false, ignoring '{}'",
-                    dp.getValue(), newValue, id, dpInfo);
         } else if (HmValueType.ACTION == dp.getType() && MiscUtils.isFalseValue(newValue)) {
             logger.warn(
                     "Datapoint of type ACTION cannot be set to false, it is not published to the gateway with id '{}': '{}'",
