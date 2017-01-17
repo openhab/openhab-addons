@@ -47,10 +47,10 @@ The following configuration options are available for the Kodi binding:
 The Kodi thing requires the IP address of the device hosting your Kodi media center instance and the TCP port to access it on (default: `9090`).
 These parameters will be found by the auto-discovery feature.
 
-A manual setup through a `things` file could look like this:
+A manual setup through a `things/kodi.things` file could look like this:
 
 ```
-Kodi:Kodi:myKodi [ipAddress="192.168.1.100", port="9090"]
+kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"]
 ```
 
 ## Channels
@@ -62,6 +62,7 @@ The Kodi thing supports the following channels:
 | mute                    | Switch       | Mute/unmute your playback |
 | volume                  | Dimmer       | Read or control the volume of your playback |
 | control                 | Player       | Control the Kodi player, e.g.  play/pause/next/previous/ffward/rewind |
+| stop                    | Switch       | Stops the Kodi player |
 | title                   | String       | Title of the currently played song/movie/tv episode |
 | showtitle               | String       | Title of the currently played tv-show; empty for other types |
 | album                   | String       | Album name of the currently played song |
