@@ -15,7 +15,7 @@ These switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/frit
 
 ### FRITZ!DECT Repeater 100
 
-This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol. It only supports temperature readings.
+This DECT repeater [FRITZ!DECT Repeater 100](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol. It only supports temperature readings.
 
 ### FRITZ!Powerline 546E
 
@@ -23,7 +23,7 @@ This [powerline adapter](https://avm.de/produkte/fritzpowerline/fritzpowerline-5
 
 ### FRITZ!Powerline 1240E / FRITZ!Powerline 1220E / FRITZ!Powerline 1000E / FRITZ!Powerline 540E / FRITZ!Powerline 530E / FRITZ!Powerline 510E
 
-These powerline adapter [FRITZ!Powerline 1240E](https://avm.de/produkte/fritzpowerline/fritzpowerline-1240e/) ###TODO### can only be used in standalone mode. They neither support switching outlets nor reading current power or accumulated energy consumption and have no temperature sensors.
+These powerline adapter [FRITZ!Powerline 1240E](https://avm.de/produkte/fritzpowerline/fritzpowerline-1240e/), [FRITZ!Powerline 1220E](https://avm.de/produkte/fritzpowerline/fritzpowerline-1220e/), [FRITZ!Powerline 1000E](https://avm.de/produkte/fritzpowerline/fritzpowerline-1000e/), [FRITZ!Powerline 540E](https://avm.de/produkte/fritzpowerline/fritzpowerline-540e/), [FRITZ!Powerline 530E](https://avm.de/produkte/fritzpowerline/fritzpowerline-530e/) and [FRITZ!Powerline 510E](https://avm.de/produkte/fritzpowerline/fritzpowerline-510e/) can only be used in standalone mode. They neither support switching outlets nor reading current power or accumulated energy consumption and have no temperature sensors.
 
 ## Discovery
 
