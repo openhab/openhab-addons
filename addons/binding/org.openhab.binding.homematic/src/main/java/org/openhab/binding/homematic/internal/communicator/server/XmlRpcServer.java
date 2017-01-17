@@ -147,6 +147,8 @@ public class XmlRpcServer implements RpcServer {
                     handleMethodCall(method, data);
                 }
                 return XML_EMPTY_EVENT_LIST;
+            } else if (RPC_METHODNAME_SET_CONFIG_READY.equals(methodName)) {
+                return XML_EMPTY_EVENT_LIST;
             } else {
                 logger.warn("Unknown method called by Homematic gateway: " + methodName);
                 return XML_EMPTY_EVENT_LIST;
