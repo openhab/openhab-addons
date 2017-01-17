@@ -89,6 +89,6 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
             throws IOException, HomematicClientException {
         HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, dpName);
         HmDatapoint dp = gateway.getDatapoint(dpInfo);
-        gateway.sendDatapoint(dp, new HmDatapointConfig(true), newValue);
+        gateway.sendDatapoint(dp, new HmDatapointConfig(), newValue);
     }
 }
