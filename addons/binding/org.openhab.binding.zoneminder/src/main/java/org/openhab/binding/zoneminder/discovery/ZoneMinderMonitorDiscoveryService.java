@@ -24,7 +24,8 @@ import org.openhab.binding.zoneminder.handler.ZoneMinderThingMonitorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import name.eskildsen.zoneminder.api.monitor.ZoneMinderMonitor;
+import name.eskildsen.zoneminder.IZoneMinderMonitorData;
+import name.eskildsen.zoneminder.ZoneMinderFactory;
 
 /**
  * When a {@link ZoneMinderMonitorDiscoveryService} finds a new Monitor we will
@@ -56,8 +57,7 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     protected void startScan() {
-        // Intentionally left blank
-
+        discoverZoneMinderMonitors();
     }
 
     /*
@@ -71,7 +71,21 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         }
     }
 
-    public void monitorAdded(ZoneMinderMonitor monitor) {
+    public static String BuildMonitorLabel(String id, String name) {
+        return String.format("%s [%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, name);
+    }
+
+    protected synchronized void discoverZoneMinderMonitors() {
+        if (ZoneMinderFactory.getSessionManager().isConnected()) {
+            ArrayList<IZoneMinderMonitorData> monitors = ZoneMinderFactory.getServerProxy().getMonitors();
+
+            for (IZoneMinderMonitorData monitor : monitors) {
+                monitorAdded(monitor);
+            }
+        }
+    }
+
+    protected void monitorAdded(IZoneMinderMonitorData monitor) {
 
         try {
             ThingUID bridgeUID = zoneMinderServerHandler.getThing().getUID();
@@ -79,22 +93,24 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
             ThingUID thingUID = new ThingUID(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR, bridgeUID,
                     monitorUID);
 
+            // Does Monitor exist?
             if (!monitorThingExists(thingUID)) {
-                logger.debug("monitor added {} : {} ", monitor.getId(), monitor.getName());
+                logger.info("[DISCOVERY] Monitor added '{}':'{}'", monitor.getId(), monitor.getName());
                 Map<String, Object> properties = new HashMap<>(0);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_ID, Integer.valueOf(monitor.getId()));
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT,
                         ZoneMinderConstants.PARAMETER_MONITOR_TRIGGER_TIMEOUT_DEFAULTVALUE);
                 properties.put(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT,
-                        ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT_DEFAULTVALUE);
+                        ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(String.format("%s", monitor.getName())).build();
+                        .withBridge(bridgeUID).withLabel(BuildMonitorLabel(monitor.getId(), monitor.getName())).build();
 
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception ex) {
-            logger.error("Error occurred when calling 'monitorAdded' from Discovery. Exception={}", ex.getMessage());
+            logger.error("[DISCOVERY] Error occurred when calling 'monitorAdded' from Discovery. Exception={}",
+                    ex.getMessage());
         }
     }
 
@@ -109,16 +125,13 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                ArrayList<ZoneMinderMonitor> monitors = zoneMinderServerHandler.getMonitors();
-
-                for (ZoneMinderMonitor monitor : monitors) {
-                    monitorAdded(monitor);
-                }
+                discoverZoneMinderMonitors();
             }
+
         };
 
-        logger.debug("request monitor discovery job scheduled to run every {} seconds", TIMEOUT);
-        requestMonitorJob = scheduler.scheduleWithFixedDelay(runnable, 10, TIMEOUT, TimeUnit.SECONDS);
+        logger.debug("[DISCOVERY] - request monitor discovery job scheduled to run every {} seconds", TIMEOUT);
+        requestMonitorJob = scheduler.scheduleWithFixedDelay(runnable, 0, TIMEOUT, TimeUnit.SECONDS);
     }
 
 }
