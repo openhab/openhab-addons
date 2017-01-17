@@ -12,6 +12,7 @@
         <channels>
             <channel id="power" typeId="power"/>
             <channel id="netradiotune" typeId="netradiotune"/>
+            <channel id="netradiostation" typeId="netradiostation"/>
             <channel id="input" typeId="input"/>
             <channel id="surroundProgram" typeId="surroundProgram"/>
             <channel id="volume" typeId="volume"/>
@@ -37,6 +38,12 @@
                 <default>2.0</default>
                 <advanced>true</advanced>
             </parameter>
+            <parameter name="NETRADIOMENU" type="text" required="false">
+                <label>Net radio menu</label>
+                <description>Menu used for menu-based net radio tuning.</description>
+                <default>Bookmarks/__My_Favorites</default>
+                <advanced>true</advanced>
+            </parameter>
         </config-description>
         
     </thing-type>
@@ -57,6 +64,12 @@
         <item-type>Number</item-type>
         <label>NetRadio Channel</label>
         <description>Select the net radio channel of the AVR</description>
+    </channel-type>
+
+    <channel-type id="netradiostation">
+        <item-type>String</item-type>
+        <label>NetRadio Station</label>
+        <description>Select the net radio station of the AVR</description>
     </channel-type>
     
     <channel-type id="surroundProgram">

@@ -56,6 +56,10 @@ public class YamahaReceiverCommunication {
     public static final int VOLUME_MAX = 12;
     public static final int VOLUME_RANGE = -VOLUME_MIN + VOLUME_MAX;
 
+    // Menu navigation timeouts
+    public static final int MENU_RETRY_DELAY = 500;
+    public static final int MENU_MAX_WAITING_TIME = 5000;
+
     // We need a lot of xml parsing. Create a document builder beforehand.
     private final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -175,6 +179,19 @@ public class YamahaReceiverCommunication {
                         + lineNo + "</Preset_Sel></Preset></Play_Control></NET_RADIO></YAMAHA_AV>");
     }
 
+    /**
+     * Set the radio station by the menu path and station name.
+     *
+     * @param menuDir The menu path.
+     * @param stationName The station name.
+     * @param modelTypeName Some models support a different set of features or need different commands.
+     */
+    public void setNetRadio(String menuDir, String stationName, String modelTypeName) throws IOException {
+        NetRadioMenu menu = new NetRadioMenu(this, modelTypeName);
+        menu.goToPath(menuDir);
+        menu.selectItem(stationName);
+    }
+
     public void updateState(YamahaReceiverState state) throws IOException {
         Document doc = postAndGetXmlResponse("<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><" + zone
                 + "><Basic_Status>GetParam</Basic_Status></" + zone + "></YAMAHA_AV>");
@@ -210,6 +227,14 @@ public class YamahaReceiverCommunication {
         state.netRadioChannel = Integer.parseInt(value);
     }
 
+    // Get currently playing net radio station for menu based receivers
+    public void updateNetRadioStationList(YamahaReceiverState state) throws IOException {
+        Document doc = postAndGetXmlResponse(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><NET_RADIO><Play_Info>GetParam</Play_Info></NET_RADIO></YAMAHA_AV>");
+        Node node = getNode(doc.getFirstChild(), "NET_RADIO/Play_Info/Meta_Info/Station");
+        state.netRadioStation = node != null ? node.getTextContent() : "";
+    }
+
     public void updateInputsList(YamahaReceiverState state) throws IOException {
         Document doc = postAndGetXmlResponse("<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><" + zone
                 + "><Input><Input_Sel_Item>GetParam</Input_Sel_Item></Input></" + zone + "></YAMAHA_AV>");
@@ -226,7 +251,7 @@ public class YamahaReceiverCommunication {
         }
     }
 
-    private static Node getNode(Node root, String nodePath) {
+    static Node getNode(Node root, String nodePath) {
         String[] nodePathArr = nodePath.split("/");
         return getNode(root, nodePathArr, 0);
     }
@@ -242,7 +267,7 @@ public class YamahaReceiverCommunication {
         }
     }
 
-    private Document postAndGetXmlResponse(String message) throws IOException {
+    Document postAndGetXmlResponse(String message) throws IOException {
         String response = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + postAndGetResponse(message);
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -256,8 +281,11 @@ public class YamahaReceiverCommunication {
         }
     }
 
-    private String postAndGetResponse(String message) throws IOException {
+    String postAndGetResponse(String message) throws IOException {
         HttpURLConnection connection = null;
+        if (!message.startsWith("<?xml")) {
+            message = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
+        }
         try {
             URL url = new URL("http://" + host + "/YamahaRemoteControl/ctrl");
             connection = (HttpURLConnection) url.openConnection();

@@ -31,6 +31,7 @@ public class YamahaReceiverBindingConstants {
     public final static String CHANNEL_VOLUME_DB = "volumeDB";
     public final static String CHANNEL_MUTE = "mute";
     public final static String CHANNEL_NETRADIO_TUNE = "netradiotune";
+    public final static String CHANNEL_NETRADIO_STATION = "netradiostation";
 
     public static final String UPNP_TYPE = "MediaRenderer";
 
@@ -40,5 +41,5 @@ public class YamahaReceiverBindingConstants {
     public static final String CONFIG_HOST_NAME = "HOST";
     public static final String CONFIG_ZONE = "ZONE";
     public static final String CONFIG_RELVOLUMECHANGE = "RELVOLUMECHANGE";
-
+    public static final String CONFIG_NETRADIOMENU = "NETRADIOMENU";
 }
