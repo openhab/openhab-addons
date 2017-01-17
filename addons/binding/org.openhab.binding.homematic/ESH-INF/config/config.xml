@@ -6,11 +6,6 @@
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
   <config-description uri="channel-type:homematic:config">
-	<parameter name="forceUpdate" type="boolean" required="false">
-	    <label>Force update</label>
-	    <description>If true, the new value is always sent to the Homematic gateway even it equals the current value</description>
-	    <default>false</default>
-	</parameter>
 	<parameter name="delay" type="decimal" min="0.0" max="86400.0">
 	    <label>Delay</label>
 	    <description>Delays transmission of a command to the Homematic gateway (in seconds)</description>
