@@ -40,31 +40,29 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     private ChannelUID channelVolumeUID;
     private ChannelUID channelMuteUID;
     private ChannelUID channelPlayerControlUID;
-    private ChannelUID channelChannelNumberUID;
+    private ChannelUID channelChannelUID;
 
-    private ChannelUID channelNowPlaylingChannelUID;
     private ChannelUID channelNowPlaylingTitleUID;
     private ChannelUID channelNowPlaylingDescriptionUID;
     private ChannelUID channelNowPlaylingDescriptionExtendedUID;
 
     private Enigma2CommandHandler commandHandler;
 
-    Refresher refresher;
+    private Refresher refresher;
     boolean hadWarned = false;
 
     public Enigma2Handler(Thing thing) {
         super(thing);
-        commandHandler = new Enigma2CommandHandler(this);
+        commandHandler = new Enigma2CommandHandler(getHostName(), getUserName(), getPassword());
     }
 
     @Override
     public void initialize() {
         channelPowerUID = getChannelUID(Enigma2BindingConstants.CHANNEL_POWER);
         channelVolumeUID = getChannelUID(Enigma2BindingConstants.CHANNEL_VOLUME);
-        channelNowPlaylingChannelUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_CHANNEL);
-        channelChannelNumberUID = getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL_NUMBER);
         channelMuteUID = getChannelUID(Enigma2BindingConstants.CHANNEL_MUTE);
         channelPlayerControlUID = getChannelUID(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL);
+        channelChannelUID = getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL);
 
         channelNowPlaylingTitleUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE);
         channelNowPlaylingDescriptionUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION);
@@ -73,6 +71,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
 
         refresher = new Refresher();
         refresher.addListener(this);
+        commandHandler.generateServiceMaps();
         updateStatus(ThingStatus.ONLINE);
         refresher.start();
     }
@@ -82,14 +81,13 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
         logger.debug("handleCommand() called, channelUID={}, command={}", channelUID, command);
         if (command instanceof RefreshType) {
             updateCurrentStates();
-            commandHandler.generateServiceMaps();
         } else {
             if (channelUID.equals(channelPowerUID)) {
                 commandHandler.togglePowerState(command);
             } else if (channelUID.equals(channelVolumeUID)) {
                 commandHandler.setVolume(command);
-            } else if (channelUID.equals(channelChannelNumberUID)) {
-                commandHandler.setChannelNumber(command);
+            } else if (channelUID.equals(channelChannelUID)) {
+                commandHandler.setChannel(command);
             } else if (channelUID.equals(channelMuteUID)) {
                 commandHandler.setMute(command);
             } else if (channelUID.equals(channelPlayerControlUID)) {
@@ -143,20 +141,20 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     }
 
     private void updateCurrentStates() {
-        updateState(channelPowerUID, commandHandler.getPowerState());
+        if (commandHandler.getPowerState() != null) {
+            updateState(channelPowerUID, commandHandler.getPowerState());
+        }
         if (commandHandler.getPowerState() == OnOffType.ON) {
             if (commandHandler.getVolumeState() != null) {
                 updateState(channelVolumeUID, commandHandler.getVolumeState());
             }
-            if (commandHandler.getChannelNameState() != null) {
-                updateState(channelNowPlaylingChannelUID, commandHandler.getChannelNameState());
-            }
-            if (commandHandler.getChannelNumberState() != null) {
-                updateState(channelChannelNumberUID, commandHandler.getChannelNumberState());
-            }
             if (commandHandler.getMutedState() != null) {
                 updateState(channelMuteUID, commandHandler.getMutedState());
             }
+            if (commandHandler.getChannelState() != null) {
+                updateState(channelChannelUID, commandHandler.getChannelState());
+            }
+            updateState(channelPlayerControlUID, new StringType(""));
 
             if (commandHandler.getNowPlayingTitle() != null) {
                 updateState(channelNowPlaylingTitleUID, commandHandler.getNowPlayingTitle());
@@ -170,9 +168,9 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
             }
         } else {
             updateState(channelVolumeUID, new StringType(""));
-            updateState(channelNowPlaylingChannelUID, new StringType(""));
-            updateState(channelChannelNumberUID, new StringType(""));
             updateState(channelMuteUID, new StringType(""));
+            updateState(channelChannelUID, new StringType(""));
+            updateState(channelPlayerControlUID, new StringType(""));
 
             updateState(channelNowPlaylingTitleUID, new StringType(""));
             updateState(channelNowPlaylingDescriptionUID, new StringType(""));

@@ -13,9 +13,8 @@ Switch  Enigma2_Power                          "Power: [%s]"          <switch>  
 Dimmer  Enigma2_Volume                         "Volume: [%d %%]"      <volume>      { channel="benigma2:device:IPADDRESS:volume" }
 Number  Enigma2_Volume                         "Volume: [%d %%]"      <volume>      { channel="benigma2:device:IPADDRESS:volume" }
 Switch  Enigma2_Mute                           "mute: [%s]"           <volume_mute> { channel="benigma2:device:IPADDRESS:mute" }
+String  Enigma2_Channel                        "Zone: [%s]"           <text>        { channel="benigma2:device:IPADDRESS:channel" }
 String  Enigma2_PlayerControl                  "Mode: [%s]"           <text>        { channel="benigma2:device:IPADDRESS:playerControl" }
-String  Enigma2_ChannelNumber                  "Zone: [%s]"           <text>        { channel="benigma2:device:IPADDRESS:channelNumber" }
-String  Enigma2_nowPlayingChannel              "Zone control: [%s]"   <text>        { channel="benigma2:device:IPADDRESS:nowPlayingChannel" }
 String  Enigma2_nowPlayingTitle                "Preset: [%s]"         <text>        { channel="benigma2:device:IPADDRESS:nowPlayingTitle" }
 String  Enigma2_nowPlayingDescription          "Key Code: [%s]"       <text>        { channel="benigma2:device:IPADDRESS:nowPlayingDescription" }
 String  Enigma2_nowPlayingDescriptionExtended  "Album: [%s]"          <text>        { channel="benigma2:device:IPADDRESS:nowPlayingDescriptionExtended" }
