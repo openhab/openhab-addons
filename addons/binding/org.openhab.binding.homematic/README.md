@@ -20,6 +20,7 @@ These ports are used by the binding by default to communicate **TO** the gateway
 - HMIP components: 2010 
 - CUxD: 8701
 - TclRegaScript: 8181
+- Groups: 9292
 
 And **FROM** the gateway to openHab:
 - XML-RPC: 9125
@@ -32,6 +33,7 @@ And **FROM** the gateway to openHab:
     * **WIRED**: BIN-RPC
     * **HMIP**: XML-RPC
     * **CUxD**: BIN-RPC (CUxD version >= 1.6 required)
+    * **Groups**: XML-RPC
 * **Homegear**
     * BIN-RPC
 * **Other**

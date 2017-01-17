@@ -25,4 +25,8 @@ public interface RpcRequest {
      */
     public byte[] createMessage();
 
+    /**
+     * Returns the name of the rpc method.
+     */
+    public String getMethodName();
 }

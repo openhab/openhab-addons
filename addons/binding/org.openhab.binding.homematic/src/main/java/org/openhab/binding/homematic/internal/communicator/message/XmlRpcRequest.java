@@ -74,6 +74,14 @@ public class XmlRpcRequest implements RpcRequest {
      * {@inheritDoc}
      */
     @Override
+    public String getMethodName() {
+        return methodName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         sb = new StringBuilder();
 
