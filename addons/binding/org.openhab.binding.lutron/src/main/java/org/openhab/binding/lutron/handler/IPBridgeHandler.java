@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -60,6 +61,13 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
 
+    private static final Integer ACTION_PRESS = 3;
+    private static final Integer ACTION_RELEASE = 4;
+    private static final Integer BUTTON_STATE = 9;
+
+    private static final Integer BUTTON_OFF = 4;
+    private static final Integer BUTTON_ON = 3;
+
     private Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private IPBridgeConfig config;
@@ -96,7 +104,24 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, Command command) {
+        String scene;
+
+        if (channelUID.toString().contains("pbutton")) {
+            scene = channelUID.getId().toString();
+            scene = scene.replace("pbutton", "");
+            if (command.equals(OnOffType.ON)) {
+                // Example ON
+                // #DEVICE,1,3,3
+                device(scene, ACTION_PRESS);
+            } else if (command.equals(OnOffType.OFF)) {
+                device(scene, ACTION_RELEASE);
+            }
+        }
+    }
+
+    protected void device(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.DEVICE, 1, parameters));
     }
 
     @Override
@@ -313,6 +338,13 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 }
 
                 Integer integrationId = new Integer(matcher.group(2));
+
+                if (integrationId == 1) {
+                    String paramString = matcher.group(3);
+                    this.handleUpdate(type, paramString.split(","));
+                    return;
+                }
+
                 LutronHandler handler = findThingHandler(integrationId);
 
                 if (handler != null) {
@@ -385,6 +417,46 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
         if (needsReconnect) {
             initialize();
+        }
+    }
+
+    private ChannelUID channelFromComponent(int component) {
+        String channel;
+        // Increase this value if we add more channels
+        if (component >= 1 && component <= 100) {
+            channel = "pbutton" + String.valueOf(component);
+
+        } else {
+            this.logger.error("Unknown Phantom Button {}", component);
+            channel = null;
+        }
+
+        return channel == null ? null : new ChannelUID(getThing().getUID(), channel);
+
+    }
+
+    public void handleUpdate(LutronCommandType type, String... parameters) {
+
+        if (type == LutronCommandType.DEVICE && parameters.length >= 2) {
+            int component;
+
+            try {
+                component = Integer.parseInt(parameters[0]);
+            } catch (NumberFormatException e) {
+                this.logger.error("Invalid Phantom Button {} in keypad update event message", parameters[0]);
+
+                return;
+            }
+            ChannelUID channelUID = channelFromComponent(component);
+
+            if (channelUID != null) {
+                if (BUTTON_ON.toString().equals(parameters[1])) {
+                    updateState(channelUID, OnOffType.ON);
+                } else if (BUTTON_OFF.toString().equals(parameters[1])) {
+                    updateState(channelUID, OnOffType.OFF);
+                }
+
+            }
         }
     }
 

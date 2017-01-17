@@ -6,7 +6,308 @@
 
     <bridge-type id="ipbridge">
         <label>Lutron IP Access Point</label>
-        <description>Ethernet access point to Lutron lighting control system</description>
+        <description>Ethernet access point to Lutron lighting control system</description><channels>
+             <channel id="pbutton1" typeId="button">
+                <label>Phantom Button 1</label>
+            </channel>
+            <channel id="pbutton2" typeId="button">
+                <label>Phantom Button 2</label>
+            </channel>
+            <channel id="pbutton3" typeId="button">
+                <label>Phantom Button 3</label>
+            </channel>
+            <channel id="pbutton4" typeId="button">
+                <label>Phantom Button 4</label>
+            </channel>
+            <channel id="pbutton5" typeId="button">
+                <label>Phantom Button 5</label>
+            </channel>
+            <channel id="pbutton6" typeId="button">
+                <label>Phantom Button 6</label>
+            </channel>
+            <channel id="pbutton7" typeId="button">
+                <label>Phantom Button 7</label>
+            </channel>
+            <channel id="pbutton8" typeId="button">
+                <label>Phantom Button 8</label>
+            </channel>
+            <channel id="pbutton9" typeId="button">
+                <label>Phantom Button 9</label>
+            </channel>
+            <channel id="pbutton10" typeId="button">
+                <label>Phantom Button 10</label>
+            </channel>
+            <channel id="pbutton11" typeId="button">
+                <label>Phantom Button 11</label>
+            </channel>
+            <channel id="pbutton12" typeId="button">
+                <label>Phantom Button 12</label>
+            </channel>
+            <channel id="pbutton13" typeId="button">
+                <label>Phantom Button 13</label>
+            </channel>
+            <channel id="pbutton14" typeId="button">
+                <label>Phantom Button 14</label>
+            </channel>
+            <channel id="pbutton15" typeId="button">
+                <label>Phantom Button 15</label>
+            </channel>
+            <channel id="pbutton16" typeId="button">
+                <label>Phantom Button 16</label>
+            </channel>
+            <channel id="pbutton17" typeId="button">
+                <label>Phantom Button 17</label>
+            </channel>
+            <channel id="pbutton18" typeId="button">
+                <label>Phantom Button 18</label>
+            </channel>
+            <channel id="pbutton19" typeId="button">
+                <label>Phantom Button 19</label>
+            </channel>
+            <channel id="pbutton20" typeId="button">
+                <label>Phantom Button 20</label>
+            </channel>
+            <channel id="pbutton21" typeId="button">
+                <label>Phantom Button 21</label>
+            </channel>
+            <channel id="pbutton22" typeId="button">
+                <label>Phantom Button 22</label>
+            </channel>
+            <channel id="pbutton23" typeId="button">
+                <label>Phantom Button 23</label>
+            </channel>
+            <channel id="pbutton24" typeId="button">
+                <label>Phantom Button 24</label>
+            </channel>
+            <channel id="pbutton25" typeId="button">
+                <label>Phantom Button 25</label>
+            </channel>
+            <channel id="pbutton26" typeId="button">
+                <label>Phantom Button 26</label>
+            </channel>
+            <channel id="pbutton27" typeId="button">
+                <label>Phantom Button 27</label>
+            </channel>
+            <channel id="pbutton28" typeId="button">
+                <label>Phantom Button 28</label>
+            </channel>
+            <channel id="pbutton29" typeId="button">
+                <label>Phantom Button 29</label>
+            </channel>
+            <channel id="pbutton30" typeId="button">
+                <label>Phantom Button 30</label>
+            </channel>
+            <channel id="pbutton31" typeId="button">
+                <label>Phantom Button 31</label>
+            </channel>
+            <channel id="pbutton32" typeId="button">
+                <label>Phantom Button 32</label>
+            </channel>
+            <channel id="pbutton33" typeId="button">
+                <label>Phantom Button 33</label>
+            </channel>
+            <channel id="pbutton34" typeId="button">
+                <label>Phantom Button 34</label>
+            </channel>
+            <channel id="pbutton35" typeId="button">
+                <label>Phantom Button 35</label>
+            </channel>
+            <channel id="pbutton36" typeId="button">
+                <label>Phantom Button 36</label>
+            </channel>
+            <channel id="pbutton37" typeId="button">
+                <label>Phantom Button 37</label>
+            </channel>
+            <channel id="pbutton38" typeId="button">
+                <label>Phantom Button 38</label>
+            </channel>
+            <channel id="pbutton39" typeId="button">
+                <label>Phantom Button 39</label>
+            </channel>
+            <channel id="pbutton40" typeId="button">
+                <label>Phantom Button 40</label>
+            </channel>
+            <channel id="pbutton41" typeId="button">
+                <label>Phantom Button 41</label>
+            </channel>
+            <channel id="pbutton42" typeId="button">
+                <label>Phantom Button 42</label>
+            </channel>
+            <channel id="pbutton43" typeId="button">
+                <label>Phantom Button 43</label>
+            </channel>
+            <channel id="pbutton44" typeId="button">
+                <label>Phantom Button 44</label>
+            </channel>
+            <channel id="pbutton45" typeId="button">
+                <label>Phantom Button 45</label>
+            </channel>
+            <channel id="pbutton46" typeId="button">
+                <label>Phantom Button 46</label>
+            </channel>
+            <channel id="pbutton47" typeId="button">
+                <label>Phantom Button 47</label>
+            </channel>
+            <channel id="pbutton48" typeId="button">
+                <label>Phantom Button 48</label>
+            </channel>
+            <channel id="pbutton49" typeId="button">
+                <label>Phantom Button 49</label>
+            </channel>
+            <channel id="pbutton50" typeId="button">
+                <label>Phantom Button 50</label>
+            </channel>
+            <channel id="pbutton51" typeId="button">
+                <label>Phantom Button 51</label>
+            </channel>
+            <channel id="pbutton52" typeId="button">
+                <label>Phantom Button 52</label>
+            </channel>
+            <channel id="pbutton53" typeId="button">
+                <label>Phantom Button 53</label>
+            </channel>
+            <channel id="pbutton54" typeId="button">
+                <label>Phantom Button 54</label>
+            </channel>
+            <channel id="pbutton55" typeId="button">
+                <label>Phantom Button 55</label>
+            </channel>
+            <channel id="pbutton56" typeId="button">
+                <label>Phantom Button 56</label>
+            </channel>
+            <channel id="pbutton57" typeId="button">
+                <label>Phantom Button 57</label>
+            </channel>
+            <channel id="pbutton58" typeId="button">
+                <label>Phantom Button 58</label>
+            </channel>
+            <channel id="pbutton59" typeId="button">
+                <label>Phantom Button 59</label>
+            </channel>
+            <channel id="pbutton60" typeId="button">
+                <label>Phantom Button 60</label>
+            </channel>
+            <channel id="pbutton61" typeId="button">
+                <label>Phantom Button 61</label>
+            </channel>
+            <channel id="pbutton62" typeId="button">
+                <label>Phantom Button 62</label>
+            </channel>
+            <channel id="pbutton63" typeId="button">
+                <label>Phantom Button 63</label>
+            </channel>
+            <channel id="pbutton64" typeId="button">
+                <label>Phantom Button 64</label>
+            </channel>
+            <channel id="pbutton65" typeId="button">
+                <label>Phantom Button 65</label>
+            </channel>
+            <channel id="pbutton66" typeId="button">
+                <label>Phantom Button 66</label>
+            </channel>
+            <channel id="pbutton67" typeId="button">
+                <label>Phantom Button 67</label>
+            </channel>
+            <channel id="pbutton68" typeId="button">
+                <label>Phantom Button 68</label>
+            </channel>
+            <channel id="pbutton69" typeId="button">
+                <label>Phantom Button 69</label>
+            </channel>
+            <channel id="pbutton70" typeId="button">
+                <label>Phantom Button 70</label>
+            </channel>
+            <channel id="pbutton71" typeId="button">
+                <label>Phantom Button 71</label>
+            </channel>
+            <channel id="pbutton72" typeId="button">
+                <label>Phantom Button 72</label>
+            </channel>
+            <channel id="pbutton73" typeId="button">
+                <label>Phantom Button 73</label>
+            </channel>
+            <channel id="pbutton74" typeId="button">
+                <label>Phantom Button 74</label>
+            </channel>
+            <channel id="pbutton75" typeId="button">
+                <label>Phantom Button 75</label>
+            </channel>
+            <channel id="pbutton76" typeId="button">
+                <label>Phantom Button 76</label>
+            </channel>
+            <channel id="pbutton77" typeId="button">
+                <label>Phantom Button 77</label>
+            </channel>
+            <channel id="pbutton78" typeId="button">
+                <label>Phantom Button 78</label>
+            </channel>
+            <channel id="pbutton79" typeId="button">
+                <label>Phantom Button 79</label>
+            </channel>
+            <channel id="pbutton80" typeId="button">
+                <label>Phantom Button 80</label>
+            </channel>
+            <channel id="pbutton81" typeId="button">
+                <label>Phantom Button 81</label>
+            </channel>
+            <channel id="pbutton82" typeId="button">
+                <label>Phantom Button 82</label>
+            </channel>
+            <channel id="pbutton83" typeId="button">
+                <label>Phantom Button 83</label>
+            </channel>
+            <channel id="pbutton84" typeId="button">
+                <label>Phantom Button 84</label>
+            </channel>
+            <channel id="pbutton85" typeId="button">
+                <label>Phantom Button 85</label>
+            </channel>
+            <channel id="pbutton86" typeId="button">
+                <label>Phantom Button 86</label>
+            </channel>
+            <channel id="pbutton87" typeId="button">
+                <label>Phantom Button 87</label>
+            </channel>
+            <channel id="pbutton88" typeId="button">
+                <label>Phantom Button 88</label>
+            </channel>
+            <channel id="pbutton89" typeId="button">
+                <label>Phantom Button 89</label>
+            </channel>
+            <channel id="pbutton90" typeId="button">
+                <label>Phantom Button 90</label>
+            </channel>
+            <channel id="pbutton91" typeId="button">
+                <label>Phantom Button 91</label>
+            </channel>
+            <channel id="pbutton92" typeId="button">
+                <label>Phantom Button 92</label>
+            </channel>
+            <channel id="pbutton93" typeId="button">
+                <label>Phantom Button 93</label>
+            </channel>
+            <channel id="pbutton94" typeId="button">
+                <label>Phantom Button 94</label>
+            </channel>
+            <channel id="pbutton95" typeId="button">
+                <label>Phantom Button 95</label>
+            </channel>
+            <channel id="pbutton96" typeId="button">
+                <label>Phantom Button 96</label>
+            </channel>
+            <channel id="pbutton97" typeId="button">
+                <label>Phantom Button 97</label>
+            </channel>
+            <channel id="pbutton98" typeId="button">
+                <label>Phantom Button 98</label>
+            </channel>
+            <channel id="pbutton99" typeId="button">
+                <label>Phantom Button 99</label>
+            </channel>
+            <channel id="pbutton100" typeId="button">
+                <label>Phantom Button 100</label>
+            </channel>
+        </channels>
 
         <config-description>
             <parameter name="ipAddress" type="text" required="true">
@@ -24,6 +325,7 @@
                 <description>The user password to log in to the integration access point</description>
             </parameter>
         </config-description>
+                
     </bridge-type>
 
     <thing-type id="dimmer">
@@ -156,54 +458,6 @@
             </channel>
             <channel id="led7" typeId="ledIndicator">
                 <label>LED 7</label>
-            </channel>
-        </channels>
-
-        <config-description>
-            <parameter name="integrationId" type="integer" required="true">
-                <label>Integration ID</label>
-                <description>Address of keypad in the Lutron lighting system</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-<thing-type id="phantom">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="ipbridge"/>
-        </supported-bridge-type-refs>
-
-        <label>Phantom Buttons</label>
-        <description>This provides access to the phantom button on the repeater.</description>
-
-        <channels>
-            <channel id="pbutton1" typeId="button">
-                <label>Phantom Button 1</label>
-            </channel>
-            <channel id="pbutton2" typeId="button">
-                <label>Phantom Button 2</label>
-            </channel>
-            <channel id="pbutton3" typeId="button">
-                <label>Phantom Button 3</label>
-            </channel>
-            <channel id="pbutton4" typeId="button">
-                <label>Phantom Button 4</label>
-            </channel>
-            <channel id="pbutton5" typeId="button">
-                <label>Phantom Button 5</label>
-            </channel>
-            <channel id="pbutton6" typeId="button">
-                <label>Phantom Button 6</label>
-            </channel>
-            <channel id="pbutton7" typeId="button">
-                <label>Phantom Button 7</label>
-            </channel>
-            <channel id="pbutton8" typeId="button">
-                <label>Phantom Button 8</label>
-            </channel>
-            <channel id="pbutton9" typeId="button">
-                <label>Phantom Button 9</label>
-            </channel>
-            <channel id="pbutton10" typeId="button">
-                <label>Phantom Button 10</label>
             </channel>
         </channels>
 
