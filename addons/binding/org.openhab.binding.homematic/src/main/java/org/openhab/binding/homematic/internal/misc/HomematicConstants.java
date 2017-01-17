@@ -86,4 +86,5 @@ public class HomematicConstants {
     public static final String RPC_METHODNAME_NEW_DEVICES = "newDevices";
     public static final String RPC_METHODNAME_SYSTEM_LISTMETHODS = "system.listMethods";
     public static final String RPC_METHODNAME_SYSTEM_MULTICALL = "system.multicall";
+    public static final String RPC_METHODNAME_SET_CONFIG_READY = "setReadyConfig";
 }
