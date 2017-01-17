@@ -150,7 +150,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler
         }
 
         if (refreshPriority == DataRefreshPriorityEnum.HIGH_PRIORITY) {
-            logger.info("[MONITOR:{}] - Performing HIGH PRIORITY UPDATE for monitor.....", getZoneMinderId());
+            logger.info("MONITOR-{}: Performing HIGH PRIORITY UPDATE for monitor.....", getZoneMinderId());
         }
 
         if (getZoneMinderBridgeHandler() != null) {
