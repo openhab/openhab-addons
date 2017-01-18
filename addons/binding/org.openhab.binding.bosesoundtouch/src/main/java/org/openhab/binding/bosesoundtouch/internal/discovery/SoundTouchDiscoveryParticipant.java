@@ -99,6 +99,10 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     private byte[] getMacAddress(ServiceInfo info) {
         if (info != null) {
+            // sometimes we see empty messages - ignore them..
+            if (!info.hasData()) {
+                return null;
+            }
             byte[] mac = info.getPropertyBytes("MAC");
             if (mac == null) {
                 logger.warn("SoundTouch Device " + info.getName() + " delivered no MAC Address!");

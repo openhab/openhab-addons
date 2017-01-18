@@ -18,6 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BoseSoundTouchHandlerFactory} is responsible for creating things and thing
@@ -26,6 +28,8 @@ import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
  * @author Christian Niessner - Initial contribution
  */
 public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
+
+    private Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandlerFactory.class);
 
     private Map<String, BoseSoundTouchHandler> mapOfAllSoundTouchDevices = new HashMap<>();
 
@@ -39,10 +43,25 @@ public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
-            return new BoseSoundTouchHandler(thing, this);
+            BoseSoundTouchHandler ret = new BoseSoundTouchHandler(thing, this);
+            logger.info("Initialized Bose SoundTouch '" + ret.getDeviceName() + "'");
+            return ret;
         }
 
         return null;
+    }
+
+    @Override
+    public void unregisterHandler(Thing thing) {
+        ThingHandler handler = thing.getHandler();
+        super.unregisterHandler(thing);
+        if (handler instanceof BoseSoundTouchHandler) {
+            BoseSoundTouchHandler bh = (BoseSoundTouchHandler) handler;
+            logger.info("Unregistered Bose SoundTouch '" + bh.getDeviceName() + "'");
+            bh.dispose();
+        } else {
+            logger.warn("unrigsterHandler called for unknown handler: " + handler);
+        }
     }
 
     public void registerSoundTouchDevice(BoseSoundTouchHandler handler) {
