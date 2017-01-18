@@ -54,7 +54,7 @@ public class IsyWebSocketSubscription implements WebSocketListener {
             Future<Session> future = client.connect(this, echoUri, request);
 
             future.get();
-            logger.info("Connecting to : %s%n", echoUri);
+            logger.info("Connecting to :" + echoUri);
 
         } catch (Throwable t) {
             t.printStackTrace();
