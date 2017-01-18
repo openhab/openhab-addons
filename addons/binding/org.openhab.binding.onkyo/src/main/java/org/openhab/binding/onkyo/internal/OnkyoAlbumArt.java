@@ -1,7 +1,13 @@
 package org.openhab.binding.onkyo.internal;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +28,18 @@ public class OnkyoAlbumArt {
         READY;
     }
 
-    private StringBuilder albumArtStringBuilder = new StringBuilder();
-    private String imageType = "unknown";
-    private State state = State.NOTSTARTED;
-
-    public String getImageType() {
-        return imageType;
+    private enum ImageType {
+        BMP,
+        JPEG,
+        URL,
+        NONE,
+        UNKNOWN;
     }
+
+    private StringBuilder albumArtStringBuilder = new StringBuilder();
+    private ImageType imageType = ImageType.UNKNOWN;
+    private State state = State.NOTSTARTED;
+    String coverArtUrl = null;
 
     public boolean isAlbumCoverTransferStarted() {
         return state == State.STARTED;
@@ -40,8 +51,9 @@ public class OnkyoAlbumArt {
 
     public void clearAlbumArt() {
         albumArtStringBuilder.setLength(0);
-        imageType = "unknown";
+        imageType = ImageType.UNKNOWN;
         state = State.NOTSTARTED;
+        coverArtUrl = null;
     }
 
     public void addFrame(String data) {
@@ -51,20 +63,9 @@ public class OnkyoAlbumArt {
         }
 
         char imgType = data.charAt(0);
-
-        switch (imgType) {
-            case '0':
-                imageType = "bmp";
-                break;
-            case '1':
-                imageType = "jpeg";
-                break;
-            default:
-                imageType = "unknown";
-        }
+        imageType = getImageType(imgType);
 
         char packetFlag = data.charAt(1);
-
         String packetFlagStr = "unknown";
 
         switch (packetFlag) {
@@ -75,7 +76,6 @@ public class OnkyoAlbumArt {
                     state = State.INVALID;
                 }
                 packetFlagStr = "Start";
-
                 albumArtStringBuilder.setLength(0);
                 break;
             case '1':
@@ -94,16 +94,34 @@ public class OnkyoAlbumArt {
                     state = State.INVALID;
                 }
                 break;
+            case '-':
+                packetFlagStr = "notUsed";
+                state = State.READY;
+                break;
             default:
                 state = State.INVALID;
                 logger.debug("Unknown album art packet flag '{}'", packetFlag);
         }
 
         if (state != State.INVALID) {
-            String picData = data.substring(2, data.length());
-            logger.debug("Received album art fragment in '{}' format, packet flag '{}', picData '{}'", imageType,
-                    packetFlagStr, picData);
-            albumArtStringBuilder.append(picData);
+            switch (imageType) {
+                case BMP:
+                case JPEG:
+                    String picData = data.substring(2, data.length());
+                    logger.debug("Received album art fragment in '{}' format, packet flag '{}', picData '{}'",
+                            imageType, packetFlagStr, picData);
+                    albumArtStringBuilder.append(picData);
+                    break;
+                case URL:
+                    coverArtUrl = data.substring(2);
+                    logger.debug("Received album art url '{}'", coverArtUrl);
+                    break;
+                case NONE:
+                    logger.debug("Received information: album art not available");
+                    break;
+                default:
+            }
+
         } else {
             logger.debug("Received album art fragment in wrong order, format '{}', packet flag '{}'", imageType,
                     packetFlagStr);
@@ -111,12 +129,60 @@ public class OnkyoAlbumArt {
     }
 
     public byte[] getAlbumArt() throws IllegalArgumentException {
+        byte[] data = null;
+
         if (state == State.READY) {
-            if (albumArtStringBuilder.length() > 2) {
-                return DatatypeConverter.parseHexBinary(albumArtStringBuilder.toString());
+            switch (imageType) {
+                case BMP:
+                case JPEG:
+                    data = DatatypeConverter.parseHexBinary(albumArtStringBuilder.toString());
+                    break;
+                case URL:
+                    data = downloadAlbumArt(coverArtUrl);
+                    break;
+                case NONE:
+                default:
             }
+
+            return data;
         }
 
         throw new IllegalArgumentException("Illegal Album Art");
+    }
+
+    private byte[] downloadAlbumArt(String coverArtUrl) {
+        try {
+            URL url = new URL(coverArtUrl);
+            URLConnection connection = url.openConnection();
+            return IOUtils.toByteArray(connection.getInputStream());
+        } catch (MalformedURLException e) {
+            logger.warn("Album Art download failed from url '{}', reason {}", coverArtUrl, e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Album Art download failed from url '{}', reason {}", coverArtUrl, e.getMessage());
+        }
+
+        return null;
+    }
+
+    private ImageType getImageType(char imgType) {
+        ImageType it = ImageType.UNKNOWN;
+        switch (imgType) {
+            case '0':
+                it = ImageType.BMP;
+                break;
+            case '1':
+                it = ImageType.JPEG;
+                break;
+            case '2':
+                it = ImageType.URL;
+                break;
+            case 'n':
+                it = ImageType.NONE;
+                break;
+            default:
+                it = ImageType.UNKNOWN;
+        }
+
+        return it;
     }
 }

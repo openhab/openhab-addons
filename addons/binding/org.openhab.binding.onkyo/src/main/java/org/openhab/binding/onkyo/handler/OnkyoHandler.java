@@ -526,9 +526,13 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         onkyoAlbumArt.addFrame(data);
 
         if (onkyoAlbumArt.isAlbumCoverReady()) {
-
             try {
-                updateState(CHANNEL_ALBUM_ART, new RawType(onkyoAlbumArt.getAlbumArt()));
+                byte[] imgData = onkyoAlbumArt.getAlbumArt();
+                if (imgData != null && imgData.length > 0) {
+                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData));
+                } else {
+                    updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
+                }
             } catch (IllegalArgumentException e) {
                 updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
             }
