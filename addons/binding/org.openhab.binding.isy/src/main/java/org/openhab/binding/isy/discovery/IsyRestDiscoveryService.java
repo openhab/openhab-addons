@@ -65,9 +65,21 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        discoverNodes();
-        discoverVariables();
-        discoverPrograms();
+        try {
+            discoverNodes();
+        } catch (Exception e) {
+            logger.error("error in discover nodes", e);
+        }
+        try {
+            discoverVariables();
+        } catch (Exception e) {
+            logger.error("error in discover variables", e);
+        }
+        try {
+            discoverPrograms();
+        } catch (Exception e) {
+            logger.error("error in discover programs", e);
+        }
 
     }
 
