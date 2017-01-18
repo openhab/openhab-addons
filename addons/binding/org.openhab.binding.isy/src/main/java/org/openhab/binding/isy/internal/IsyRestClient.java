@@ -117,7 +117,7 @@ public class IsyRestClient implements OHIsyClient {
     @Override
     public List<Node> getNodes() {
         return nodesTarget.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
-                .accept(MediaType.APPLICATION_XML).get(new GenericType<List<Node>>() {
+                .accept(MediaType.TEXT_XML).get(new GenericType<List<Node>>() {
                 });
     }
 
@@ -126,12 +126,12 @@ public class IsyRestClient implements OHIsyClient {
         // stateVariablesTarget
 
         List<Variable> integerVariables = integerVariablesTarget.request()
-                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.APPLICATION_XML)
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.TEXT_XML)
                 .get(new GenericType<List<Variable>>() {
                 });
 
         List<Variable> stateVariables = stateVariablesTarget.request()
-                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.APPLICATION_XML)
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.TEXT_XML)
                 .get(new GenericType<List<Variable>>() {
                 });
         List<Variable> returnValue = new ArrayList<Variable>();
