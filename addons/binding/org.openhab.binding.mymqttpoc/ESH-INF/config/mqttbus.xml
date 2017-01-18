@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+  <config-description uri="thing-type:mqttbus:config">
+<!--             <parameter name="hostname" type="text" required="true">
+                <context>network-address</context>
+                <label>Hostname / IP Address</label>
+                <description>The local IP address or hostname of the to access the ZoneMinder Server
+                </description>
+                <default></default>
+            </parameter>
+            <parameter name="http_port" type="integer" required="false" min="0"
+                max="65335">
+                <label>Port</label>
+                <description>Port of the ZoneMinder Server API</description>
+                <default>80</default>
+            </parameter>
+            <parameter name="protocol" type="text" required="false">
+                <label>Protocol</label>
+                <description>Protocol to connect to the ZoneMinder Server API (http or https)</description>
+                <default>http</default>
+                <options>
+                    <option value="http">HTTP</option>
+                    <option value="https">HTTPS</option>
+                </options>
+            </parameter>
+            <parameter name="urlpath" type="text" required="false">
+                <label>Additional path on ZoneMinder Server to access API</label>
+                <description>Additional path on ZoneMinder Server to access API. In a standard installation this is' /zm'
+                </description>
+                <default>/zm</default>
+            </parameter>
+            <parameter name="user" type="text" required="false">
+                <label>Username</label>
+                <description>User name to access the ZoneMinder Server API.
+                </description>
+            </parameter>
+            <parameter name="password" type="text" required="false">
+                <context>password</context>
+                <label>Password</label>
+                <description>Password to access the ZoneMinder Server API.
+                </description>
+            </parameter>
+            <parameter name="telnet_port" type="integer" required="true" min="0" max="65335">
+                <label>Telnet Port</label>
+                <description>Port to listen for events in (Telnet).</description>
+                <default>6802</default>
+            </parameter>
+            <parameter name="refresh_interval" type="integer" required="true" min="1" max="65335">
+                <label>API Polling interval (priority)</label>
+                <description>Seconds between each call to ZoneMinder Server API to refresh values in OpenHAB.</description>
+                <default>10</default>
+            </parameter>
+            
+            <parameter name="refresh_interval_disk_usage" type="integer" required="true" min="0" max="65335">
+                <label>Refresh Interval for Disk Usage</label>
+                <description>Seconds between each call to ZoneMinder Server to refresh Server DiskUsage in ZoneMinder. Default value is '0' (Disabled).</description>
+                <default>0</default>
+            </parameter>
+            
+ -->
+  </config-description>
+
+</config-description:config-descriptions>

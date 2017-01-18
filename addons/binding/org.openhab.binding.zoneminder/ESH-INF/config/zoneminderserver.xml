@@ -32,7 +32,6 @@
                 <context>network-address</context>
                 <label>Hostname / IP Address</label>
                 <description>The local IP address or hostname of the to access the ZoneMinder Server</description>
-                <default></default>
             </parameter>
             
             <parameter name="protocol" type="text" required="false" groupName="basic">
@@ -53,22 +52,20 @@
             <parameter name="user" type="text" required="false" groupName="credentials">
                 <label>Username</label>
                 <description>User name to access the ZoneMinder Server API</description>
-                <default></default>
             </parameter>
             <parameter name="password" type="text" required="false" groupName="credentials">
                 <context>password</context>
                 <label>Password</label>
                 <description>Password to access the ZoneMinder Server API</description>
-                <default></default>
             </parameter>
             
-            <parameter name="http_port" type="integer" required="true" min="0" max="65335" groupName="network">
+            <parameter name="http_port" type="integer" required="false" min="0" max="65335" groupName="network">
                 <label>Port</label>
                 <description>Port of the ZoneMinder Server API</description>
                 <default>0</default>
                  <advanced>true</advanced>
             </parameter>
-             <parameter name="telnet_port" type="integer" required="true" min="1" max="65335" groupName="network">
+             <parameter name="telnet_port" type="integer" required="false" min="1" max="65335" groupName="network">
                 <label>Telnet Port</label>
                 <description>Port to listen for events in (Telnet)</description>
                 <default>6802</default>

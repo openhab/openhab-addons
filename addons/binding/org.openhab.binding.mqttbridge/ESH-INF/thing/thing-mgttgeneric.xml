@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqttbridge"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="mqtt-generic">
+        <label>MQTT Thing</label>
+        <description>Generic MQTT Thing</description>
+
+        <channels>
+            <channel id="publish" typeId="publish"/>
+            <channel id="subscribe" typeId="subscribe"/>
+        </channels>
+    </thing-type>
+
+    <!-- Publish Channel Type -->
+    <channel-type id="publish">
+        <item-type>mqttbridgeItem</item-type>
+        <label>MQTT publish</label>
+        <description>Channel MQTT publish subscription</description>
+    </channel-type>
+
+    <channel-type id="subscribe">
+        <item-type>mqttbridgeItem1</item-type>
+        <label>MQTT subscribe</label>
+        <description>Channel MQTT subscribe subscription</description>
+    </channel-type>
+
+</thing:thing-descriptions>

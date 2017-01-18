@@ -8,21 +8,9 @@
         <label>ZoneMinder Server</label>
         <description>ZoneMinder Server</description>
         <channels>
-            <channel id="online" typeId="server_online">
-                <label>Online</label>
-                <description>Switch telling if the ZoneMinder Server is online</description>
-            </channel>
- 
-            <channel id="cpu-load" typeId="server_cpu_load">
-                <label>CPU load</label>
-                <description>CPU load on ZoneMinder server</description>
-            </channel>
-            
-            <channel id="disk-usage" typeId="server_disk_usage">
-                <label>Disk Usage</label>
-                <description>Disk Usage on ZoneMinder server</description>
-            </channel>
-    
+            <channel id="online" typeId="server_online" />
+            <channel id="cpu-load" typeId="server_cpu_load"/>
+            <channel id="disk-usage" typeId="server_disk_usage"/>
         </channels>
     
         <config-description-ref uri="thing-type:zoneminderserver:config"/>
@@ -37,14 +25,14 @@
  
     <channel-type id="server_cpu_load">
         <item-type>Number</item-type>
-        <label>CPU Load on ZoneMinder Server</label>
+        <label>CPU load</label>
         <description>ZoneMinder Server CPU Load</description>
         <state readOnly="true"/>
     </channel-type>
     <channel-type id="server_disk_usage">    
         <item-type>Number</item-type>
         <label>Diskusage</label>
-        <description>ZoneMinder Server DiskUsage</description>
+        <description>ZoneMinder Server Disk Usage</description>
         <state readOnly="true"/>
     </channel-type>
  

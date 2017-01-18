@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqttbridge" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Supported ZoneMinder devices and features -->
+    <thing-type id="owntracks-person">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="server" />
+        </supported-bridge-type-refs>
+
+        <label>OwnTracks Person</label>
+        <description>Person in OwnTracks</description>
+
+        <channels>
+            <channel id="sample" typeId="sample" />
+        </channels>
+
+        <config-description-ref uri="thing-type:owntracks-person:config" />
+    </thing-type>
+
+
+    <!-- Channel definitions of ZoneMinder Server -->
+    <channel-type id="sample">
+        <item-type>String</item-type>
+        <label>Sample</label>
+        <description>Sample</description>
+        <category>General</category>
+        <state readOnly="true" />
+    </channel-type>
+            
+</thing:thing-descriptions>

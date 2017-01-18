@@ -29,7 +29,6 @@
         <config-description-ref uri="thing-type:monitor-channels:config" />
     </thing-type>
 
-
     <!-- Channel definitions of ZoneMinder Server -->
     <channel-type id="monitor_online">
         <item-type>Switch</item-type>
@@ -82,7 +81,6 @@
         </state>
     </channel-type>
     
-    
     <channel-type id="monitor_function" advanced="true">
         <item-type>String</item-type>
         <label>Operating mode</label>
@@ -99,8 +97,6 @@
         </state>
         
     </channel-type>
-
-
     
     <channel-type id="monitor_event_cause" advanced="true">
         <item-type>String</item-type>

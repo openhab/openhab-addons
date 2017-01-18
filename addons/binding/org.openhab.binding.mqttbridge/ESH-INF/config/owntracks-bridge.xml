@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+  <config-description uri="thing-type:owntracks-bridge:config">
+            <parameter name="hostname" type="text" required="true">
+                <context>network-address</context>
+                <label>Hostname / IP Address</label>
+                <description>The local IP address or hostname of the to access the ZoneMinder Server
+                </description>
+                <default></default>
+            </parameter>
+            <parameter name="port" type="integer" required="false" min="0"
+                max="65335">
+                <label>Port</label>
+                <description>Port of the MQTT Server</description>
+                <default>1883</default>
+            </parameter>
+            <parameter name="user" type="text" required="false">
+                <label>Username</label>
+                <description>User name to access the ZoneMinder Server API.
+                </description>
+            </parameter>
+            <parameter name="password" type="text" required="false">
+                <context>password</context>
+                <label>Password</label>
+                <description>Password to access the ZoneMinder Server API.
+                </description>
+            </parameter>
+            
+
+  </config-description>
+
+</config-description:config-descriptions>
