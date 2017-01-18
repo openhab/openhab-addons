@@ -101,16 +101,16 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
         if (configuration.refreshInterval > 0) {
             // Start resource refresh updater
-            resourceUpdaterFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        logger.debug("Send resource update requets to Onkyo Receiver @{}",
+                        logger.debug("Send resource update requests to Onkyo Receiver @{}",
                                 connection.getConnectionName());
                         checkStatus();
                     } catch (LinkageError e) {
-                        logger.warn("Failed to send resource update requets to Onkyo Receiver @{}. Cause: {}",
+                        logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
                                 connection.getConnectionName(), e.getMessage());
                     } catch (Exception ex) {
                         logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
