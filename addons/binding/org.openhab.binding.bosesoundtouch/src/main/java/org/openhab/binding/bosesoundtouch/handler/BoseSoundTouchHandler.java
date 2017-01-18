@@ -9,7 +9,6 @@
 package org.openhab.binding.bosesoundtouch.handler;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingFactory;
 import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
@@ -35,7 +33,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
-import org.openhab.binding.bosesoundtouch.internal.XMLResponseHandler;
+import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
+import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
 import org.openhab.binding.bosesoundtouch.internal.ZoneState;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
 import org.openhab.binding.bosesoundtouch.internal.items.Preset;
@@ -44,9 +43,6 @@ import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -66,9 +62,9 @@ import okio.Buffer;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */
-public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocketListener {
+public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implements WebSocketListener {
 
-    private Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
 
     private ChannelUID channelPowerUID;
     private ChannelUID channelVolumeUID;
@@ -78,20 +74,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelZoneControlUID;
     private ChannelUID channelPresetUID;
-    private ChannelUID channelRateEnabled;
-    private ChannelUID channelSkipEnabled;
-    private ChannelUID channelSkipPreviousEnabled;
     private ChannelUID channelKeyCodeUID;
-    private ChannelUID channelNowPlayingAlbumUID;
-    private ChannelUID channelNowPlayingArtistUID;
-    private ChannelUID channelNowPlayingArtworkUID;
-    private ChannelUID channelNowPlayingDescriptionUID;
-    private ChannelUID channelNowPlayingGenreUID;
-    private ChannelUID channelNowPlayingItemNameUID;
-    private ChannelUID channelNowPlayingPlayStatusUID;
-    private ChannelUID channelNowPlayingStationLocationUID;
-    private ChannelUID channelNowPlayingStationNameUID;
-    private ChannelUID channelNowPlayingTrackUID;
 
     private ArrayList<Preset> listOfPresets;
 
@@ -102,6 +85,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private WebSocket socket;
 
+    private XMLResponseProcessor xmlResponseProcessor;
+
     private BoseSoundTouchHandlerFactory factory;
     private ZoneState zoneState;
     private BoseSoundTouchHandler zoneMaster;
@@ -110,6 +95,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public BoseSoundTouchHandler(Thing thing, BoseSoundTouchHandlerFactory factory) {
         super(thing);
         this.factory = factory;
+        xmlResponseProcessor = new XMLResponseProcessor(this);
     }
 
     @Override
@@ -128,22 +114,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
         channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
-        channelRateEnabled = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_RATEENABLED);
-        channelSkipEnabled = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPENABLED);
-        channelSkipPreviousEnabled = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPPREVIOUSENABLED);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
-
-        channelNowPlayingAlbumUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGALBUM);
-        channelNowPlayingArtworkUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTWORK);
-        channelNowPlayingArtistUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTIST);
-        channelNowPlayingDescriptionUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGDESCRIPTION);
-        channelNowPlayingItemNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGGENRE);
-        channelNowPlayingGenreUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGITEMNAME);
-        channelNowPlayingPlayStatusUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGPLAYSTATUS);
-        channelNowPlayingStationLocationUID = getChannelUID(
-                BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONLOCATION);
-        channelNowPlayingStationNameUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONNAME);
-        channelNowPlayingTrackUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGTRACK);
 
         factory.registerSoundTouchDevice(this);
         openConnection();
@@ -505,7 +476,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 if (psFound != null) {
                     updateState(channelPresetUID, new StringType(psFound.toString()));
                 } else {
-                    logger.warn(getDeviceName() + ": Invalid preset active");
                     updateState(channelPresetUID, new StringType(""));
                 }
 
@@ -603,58 +573,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         nowPlayingSource = state;
     }
 
-    public void updateNowPlayingAlbum(State state) {
-        updateState(channelNowPlayingAlbumUID, state);
-    }
-
-    public void updateNowPlayingArtwork(State state) {
-        updateState(channelNowPlayingArtworkUID, state);
-    }
-
-    public void updateNowPlayingArtist(State state) {
-        updateState(channelNowPlayingArtistUID, state);
-    }
-
-    public void updateNowPlayingDescription(State state) {
-        updateState(channelNowPlayingDescriptionUID, state);
-    }
-
-    public void updateNowPlayingGenre(State state) {
-        updateState(channelNowPlayingGenreUID, state);
-    }
-
-    public void updateNowPlayingItemName(State state) {
-        updateState(channelNowPlayingItemNameUID, state);
-    }
-
-    public void updateNowPlayingPlayStatus(State state) {
-        updateState(channelNowPlayingPlayStatusUID, state);
-    }
-
-    public void updateNowPlayingStationLocation(State state) {
-        updateState(channelNowPlayingStationLocationUID, state);
-    }
-
-    public void updateNowPlayingStationName(State state) {
-        updateState(channelNowPlayingStationNameUID, state);
-    }
-
-    public void updateNowPlayingTrack(State state) {
-        updateState(channelNowPlayingTrackUID, state);
-    }
-
-    public void updateRateEnabled(State state) {
-        updateState(channelRateEnabled, state);
-    }
-
-    public void updateSkipEnabled(State state) {
-        updateState(channelSkipEnabled, state);
-    }
-
-    public void updateSkipPreviousEnabled(State state) {
-        updateState(channelSkipPreviousEnabled, state);
-    }
-
     public void updateVolume(State state) {
         updateState(channelVolumeUID, state);
     }
@@ -691,16 +609,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void onMessage(ResponseBody message) throws IOException {
         String msg = message.string();
         logger.debug(getDeviceName() + ": onMessage(\"" + msg + "\")");
-        try {
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-            reader.setContentHandler(new XMLResponseHandler(this));
-            reader.parse(new InputSource(new StringReader(msg)));
-        } catch (IOException e) {
-            // This should never happen - we're not performing I/O!
-            logger.error(getDeviceName() + ": Could not parse XML from string '{}'; exception is: ", msg, e);
-        } catch (Throwable s) {
-            logger.error(getDeviceName() + ": Could not parse XML from string '{}'; exception is: ", msg, s);
-        }
+        xmlResponseProcessor.handleMessage(msg);
     }
 
     @Override
@@ -721,11 +630,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         return thing.getUID().getId();
     }
 
-    public Logger getLogger() {
-        return logger;
-    }
-
-    private ChannelUID getChannelUID(String channelId) {
+    public ChannelUID getChannelUID(String channelId) {
         Channel chann = thing.getChannel(channelId);
         if (chann == null) {
             // refresh thing...

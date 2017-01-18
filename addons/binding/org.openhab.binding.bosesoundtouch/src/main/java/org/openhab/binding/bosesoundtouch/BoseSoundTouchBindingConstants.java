@@ -15,7 +15,7 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link BoseSoundTouchBinding} class defines common constants, which are
+ * The {@link BoseSoundTouchBindinConstantsg} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Christian Niessner - Initial contribution
