@@ -4,10 +4,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 
 public class IsyHandlerBuilder {
 
-    IsyHandler handler;
+    IsyInsteonDeviceHandler handler;
 
     protected IsyHandlerBuilder(Thing thing) {
-        this.handler = new IsyHandler(thing);
+        this.handler = new IsyInsteonDeviceHandler(thing);
     }
 
     public static IsyHandlerBuilder builder(Thing thing) {
@@ -19,7 +19,7 @@ public class IsyHandlerBuilder {
         return this;
     }
 
-    public IsyHandler build() {
+    public IsyInsteonDeviceHandler build() {
         return this.handler;
     }
 

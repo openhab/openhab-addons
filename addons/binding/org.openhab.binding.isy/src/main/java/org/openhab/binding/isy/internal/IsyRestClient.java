@@ -1,6 +1,9 @@
 package org.openhab.binding.isy.internal;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -38,6 +41,7 @@ public class IsyRestClient implements OHIsyClient {
     protected WebTarget stateVariablesTarget;
     private IsyWebSocketSubscription isySubscription;
 
+    // TODO should support startup, shutdown lifecycle
     public IsyRestClient(String url, String userName, String password, ISYModelChangeListener listener) {
         String usernameAndPassword = userName + ":" + password;
         this.authorizationHeaderValue = "Basic "
@@ -66,10 +70,48 @@ public class IsyRestClient implements OHIsyClient {
         return endpoint.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).get(String.class);
     }
 
-    public List<Program> getPrograms(String programId) {
-        return programsTarget.path(programId).request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
+    public List<Program> getPrograms(String parentId) {
+        return programsTarget.path(parentId).request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
                 .accept(MediaType.APPLICATION_XML).get(new GenericType<List<Program>>() {
                 });
+    }
+
+    private void recursiveGetPrograms(String id, Set<Program> programs) {
+
+        WebTarget endPoint = this.programsTarget;
+        // add id if we have it
+        if (id != null) {
+            endPoint = endPoint.path(id);
+        }
+        logger.debug("Programs rest endpoint as string"
+                + endPoint.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
+                        .accept(MediaType.APPLICATION_XML).get(String.class));
+        List<Program> programsList = endPoint.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
+                .accept(MediaType.APPLICATION_XML).get(new GenericType<List<Program>>() {
+                });
+        for (Program aProgram : programsList) {
+            if ("true".equals(aProgram.folder)) {
+                // recurse. first return value of rest call is same id, so skip that one
+                if (!aProgram.id.equals(id)) {
+                    recursiveGetPrograms(aProgram.id, programs);
+                }
+            } else {
+                programs.add(aProgram);
+            }
+
+        }
+    }
+
+    @Override
+    public Set<Program> getPrograms() {
+        Set<Program> returnValue = new HashSet<Program>();
+        recursiveGetPrograms(null, returnValue);
+        return returnValue;
+    }
+
+    public Program getProgram(String programId) {
+        return programsTarget.path(programId).request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
+                .accept(MediaType.APPLICATION_XML).get(Program.class);
     }
 
     @Override
@@ -77,6 +119,25 @@ public class IsyRestClient implements OHIsyClient {
         return nodesTarget.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
                 .accept(MediaType.APPLICATION_XML).get(new GenericType<List<Node>>() {
                 });
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        // stateVariablesTarget
+
+        List<Variable> integerVariables = integerVariablesTarget.request()
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.APPLICATION_XML)
+                .get(new GenericType<List<Variable>>() {
+                });
+
+        List<Variable> stateVariables = stateVariablesTarget.request()
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.APPLICATION_XML)
+                .get(new GenericType<List<Variable>>() {
+                });
+        List<Variable> returnValue = new ArrayList<Variable>();
+        returnValue.addAll(integerVariables);
+        returnValue.addAll(stateVariables);
+        return returnValue;
     }
 
     private Variable testGetIntVar(String variableId) {
@@ -97,8 +158,8 @@ public class IsyRestClient implements OHIsyClient {
 
     public void doTests() {
         System.out.println("programs text value: " + testGetString(programsTarget));
-        List<Program> returnValue = getPrograms("0045");
-        System.out.println("text value: " + returnValue);
+        // List<Program> returnValue = getPrograms("0045");
+        // System.out.println("text value: " + returnValue);
 
         System.out.println("vars text value: " + testGetString(integerVariablesTarget.path("1")));
         Variable vars = testGetIntVar("1");
@@ -121,6 +182,13 @@ public class IsyRestClient implements OHIsyClient {
         // IsyRestClient test = new IsyRestClient();
         // test.doTests();
 
+    }
+
+    @Override
+    public boolean changeVariableState(String type, String id, int value) {
+        // TODO Auto-generated method stub
+        logger.warn("Unimplemented change variable state");
+        return false;
     }
 
 }

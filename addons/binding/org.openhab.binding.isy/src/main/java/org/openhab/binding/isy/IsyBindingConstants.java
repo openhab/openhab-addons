@@ -22,7 +22,11 @@ public class IsyBindingConstants {
     public final static ThingTypeUID THING_TYPE_ISYBRIDGE = new ThingTypeUID(BINDING_ID, "isyBridge");
 
     // List of all Thing Type UIDs
+
     public final static ThingTypeUID MOTION_THING_TYPE = new ThingTypeUID(BINDING_ID, "motion");
+    public final static ThingTypeUID PROGRAM_THING_TYPE = new ThingTypeUID(BINDING_ID, "program");
+    public final static ThingTypeUID VARIABLE_THING_TYPE = new ThingTypeUID(BINDING_ID, "variable");
+
     public final static ThingTypeUID DIMMER_THING_TYPE = new ThingTypeUID(BINDING_ID, "dimmer");
     public final static ThingTypeUID SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, "switch");
     public final static ThingTypeUID LEAKDETECTOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "leakdetector");
@@ -58,5 +62,12 @@ public class IsyBindingConstants {
     public final static String CHANNEL_KEYPAD_LINC_F = "button_f";
     public final static String CHANNEL_KEYPAD_LINC_G = "button_g";
     public final static String CHANNEL_KEYPAD_LINC_H = "button_h";
+
+    // program
+    public final static String CHANNEL_PROGRAM_RUN_IF = "runIf";
+    public final static String CHANNEL_PROGRAM_RUN_THEN = "runThen";
+
+    // variables
+    public final static String CHANNEL_VARIABLE_VALUE = "value";
 
 }

@@ -25,14 +25,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link IsyHandler} is responsible for handling commands, which are
+ * The {@link IsyInsteonDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Craig Hamilton - Initial contribution
  */
-public class IsyHandler extends BaseThingHandler {
+public class IsyInsteonDeviceHandler extends BaseThingHandler implements IsyThingHandler {
 
-    protected Logger logger = LoggerFactory.getLogger(IsyHandler.class);
+    protected Logger logger = LoggerFactory.getLogger(IsyInsteonDeviceHandler.class);
 
     protected Map<Integer, String> mDeviceidToChannelMap = new HashMap<Integer, String>();
 
@@ -49,12 +49,13 @@ public class IsyHandler extends BaseThingHandler {
         throw new IllegalArgumentException("Could not find device id for channel: '" + channel + "'");
     }
 
+    @Override
     public void handleUpdate(Object... parameters) {
         InsteonAddress insteonAddress = new InsteonAddress((String) parameters[2]);
         int deviceId = insteonAddress.getDeviceId();
         if ("ST".equals(parameters[0])) {
             updateState(mDeviceidToChannelMap.get(deviceId),
-                    IsyHandler.statusValuetoState(Integer.parseInt((String) parameters[1])));
+                    IsyInsteonDeviceHandler.statusValuetoState(Integer.parseInt((String) parameters[1])));
         }
     }
 
@@ -62,7 +63,7 @@ public class IsyHandler extends BaseThingHandler {
         return (IsyBridgeHandler) getBridge().getHandler();
     }
 
-    protected IsyHandler(Thing thing) {
+    protected IsyInsteonDeviceHandler(Thing thing) {
         super(thing);
     }
 
@@ -108,6 +109,10 @@ public class IsyHandler extends BaseThingHandler {
         // "Can not access device as username and/or password are invalid");
     }
 
+    protected void addChannelToDevice(String channel, int deviceId) {
+        this.mDeviceidToChannelMap.put(deviceId, channel);
+    }
+
     public static State statusValuetoState(int updateValue) {
         State returnValue;
         if (updateValue > 0) {
@@ -117,10 +122,6 @@ public class IsyHandler extends BaseThingHandler {
         }
         return returnValue;
 
-    }
-
-    protected void addChannelToDevice(String channel, int deviceId) {
-        this.mDeviceidToChannelMap.put(deviceId, channel);
     }
 
 }

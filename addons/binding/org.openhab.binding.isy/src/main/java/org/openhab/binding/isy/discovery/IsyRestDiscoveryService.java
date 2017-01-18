@@ -15,6 +15,8 @@ import org.openhab.binding.isy.handler.IsyBridgeHandler;
 import org.openhab.binding.isy.internal.InsteonAddress;
 import org.openhab.binding.isy.internal.Node;
 import org.openhab.binding.isy.internal.OHIsyClient;
+import org.openhab.binding.isy.internal.Program;
+import org.openhab.binding.isy.internal.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +65,64 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        discoverNodes();
+        discoverVariables();
+        discoverPrograms();
+
+    }
+
+    private void discoverPrograms() {
+        OHIsyClient insteon = this.bridgeHandler.getInsteonClient();
+        Map<String, Object> properties = null;
+        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
+        for (Program program : insteon.getPrograms()) {
+            logger.debug("discovered program: " + program);
+            properties = new HashMap<>(0);
+            properties.put(IsyInsteonDeviceConfiguration.ID, program.getId());
+            properties.put(IsyInsteonDeviceConfiguration.NAME, program.getName());
+
+            ThingTypeUID theThingTypeUid = IsyBindingConstants.PROGRAM_THING_TYPE;
+            String thingID = program.getName().replace(" ", "").replaceAll("\\.", "");
+            ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(program.getName()).build();
+            thingDiscovered(discoveryResult);
+            break;
+        }
+    }
+
+    private void discoverVariables() {
+        // TODO implement
+        OHIsyClient insteon = this.bridgeHandler.getInsteonClient();
+        Map<String, Object> properties = null;
+        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
+        for (Variable variable : insteon.getVariables()) {
+            logger.debug("discovered program: " + variable);
+            properties = new HashMap<>(0);
+            properties.put(IsyInsteonDeviceConfiguration.ID, variable.id);
+            properties.put(IsyInsteonDeviceConfiguration.TYPE, variable.type);
+
+            String typeAsText;
+            if ("1".equals(variable.type)) {
+                typeAsText = "integer";
+            } else if ("2".equals(variable.type)) {
+                typeAsText = "state";
+            } else {
+                throw new IllegalStateException("Invalid type for variable:" + variable.type);
+            }
+            String variableName = "var_" + typeAsText + "_" + variable.id;
+            properties.put(IsyInsteonDeviceConfiguration.NAME, variableName);
+
+            ThingTypeUID theThingTypeUid = IsyBindingConstants.VARIABLE_THING_TYPE;
+            String thingID = variable.type + "_" + variable.id;
+            ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(variableName).build();
+            thingDiscovered(discoveryResult);
+        }
+    }
+
+    private void discoverNodes() {
         logger.debug("startScan called for Isy");
         Map<String, Object> properties = null;
         OHIsyClient insteon = this.bridgeHandler.getInsteonClient();
@@ -90,9 +150,7 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
                             + node.getTypeReadable() + ", address: " + node.getAddress());
                 }
             }
-            // for (scene:insteon.)
         }
-
     }
 
 }

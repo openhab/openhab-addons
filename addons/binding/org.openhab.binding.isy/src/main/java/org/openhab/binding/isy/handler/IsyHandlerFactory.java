@@ -40,7 +40,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ISYBRIDGE,
             MOTION_THING_TYPE, DIMMER_THING_TYPE, LEAKDETECTOR_THING_TYPE, SWITCH_THING_TYPE, RELAY_THING_TYPE,
             GARAGEDOORKIT_THING_TYPE, KEYPAD_LINC_6_THING_TYPE, KEYPAD_LINC_5_THING_TYPE, REMOTELINC_8_THING_TYPE,
-            INLINELINC_SWITCH_THING_TYPE);
+            INLINELINC_SWITCH_THING_TYPE, PROGRAM_THING_TYPE, VARIABLE_THING_TYPE);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -54,7 +54,11 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         // TODO: can we figure this out from the things-types.xml, it's really duplicate work.
-        if (thingTypeUID.equals(MOTION_THING_TYPE)) {
+        if (thingTypeUID.equals(PROGRAM_THING_TYPE)) {
+            return new IsyProgramHandler(thing);
+        } else if (thingTypeUID.equals(VARIABLE_THING_TYPE)) {
+            return new IsyVariableHandler(thing);
+        } else if (thingTypeUID.equals(MOTION_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).forChannel(CHANNEL_MOTION_MOTION, 1)
                     .forChannel(CHANNEL_MOTION_DUSK, 2).forChannel(CHANNEL_MOTION_BATTERY, 3).build();
         } else if (thingTypeUID.equals(LEAKDETECTOR_THING_TYPE)) {
@@ -69,7 +73,6 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             return IsyHandlerBuilder.builder(thing).forChannel(CHANNEL_SWITCH, 1).build();
         } else if (thingTypeUID.equals(DIMMER_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).forChannel(CHANNEL_LIGHTLEVEL, 1).build();
-
         } else if (thingTypeUID.equals(KEYPAD_LINC_6_THING_TYPE) || thingTypeUID.equals(KEYPAD_LINC_5_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).forChannel(CHANNEL_LIGHTLEVEL, 1)
                     .forChannel(CHANNEL_KEYPAD_LINC_A, 3).forChannel(CHANNEL_KEYPAD_LINC_B, 4)

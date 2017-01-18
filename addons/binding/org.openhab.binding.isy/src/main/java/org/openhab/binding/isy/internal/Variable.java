@@ -11,12 +11,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Variable {
 
     @XmlAttribute(name = "type")
-    protected String type;
+    public String type;
     @XmlAttribute(name = "id")
-    protected String id;
+    public String id;
 
-    protected Integer init;
-    protected Integer val;
+    public Integer init;
+    public Integer val;
     // protected String ts;
 
     @Override

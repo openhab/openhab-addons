@@ -17,11 +17,23 @@ public class Program {
     protected String running;
     @XmlAttribute(name = "enabled")
     protected String enabled;
+    @XmlAttribute(name = "folder")
+    protected String folder;
+
+    @XmlAttribute(name = "status")
+    protected String status;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     // protected String uri;
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         return new StringBuilder("Isy Program: name=").append(name).append(", id=").append(id).append(", running=")
                 .append(running).toString();
     }

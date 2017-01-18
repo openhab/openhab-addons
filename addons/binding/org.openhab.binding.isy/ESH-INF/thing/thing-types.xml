@@ -28,7 +28,51 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
+	<thing-type id="program">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge" />
+		</supported-bridge-type-refs>
+		<label>Program</label>
+		<description>Program</description>
+		<channels>
+			<channel id="runIf" typeId="runIf" />
+			<channel id="runThen" typeId="runThen" />
+		</channels>
+		<config-description>
+			<parameter name="ID" type="text" required="true">
+				<label>Program Id</label>
+				<description>Program's Id.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Text description of program.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+    <thing-type id="variable">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+        <label>Variable</label>
+        <description>Isy Variable</description>
+        <channels>
+            <channel id="value" typeId="variable_value" />
+        </channels>
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>Variable Id</label>
+                <description>Variable's Id.</description>
+            </parameter>
+            <parameter name="type" type="text" required="true">
+                <label>Type (Integer or State)</label>
+                <description>Variable's Type.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of variable.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 	<thing-type id="motion">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge" />
@@ -447,4 +491,23 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="runIf">
+		<item-type>Run If</item-type>
+		<label>Off/On</label>
+		<description>Run If Clause for Program</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="runThen">
+		<item-type>Run Then</item-type>
+		<label>Off/On</label>
+		<description>Run If Clause for Program</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="variable_value">
+    <item-type>Number</item-type>
+    <label>Value</label>
+    <description>Current value of variable</description>
+    <category>Variables</category>
+    <state readOnly="false" />
+</channel-type>
 </thing:thing-descriptions>

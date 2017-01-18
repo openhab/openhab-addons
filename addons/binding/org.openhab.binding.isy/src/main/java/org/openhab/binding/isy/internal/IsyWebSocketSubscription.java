@@ -108,7 +108,12 @@ public class IsyWebSocketSubscription implements WebSocketListener {
 
     @Override
     public void onWebSocketText(String arg0) {
+        // logger.debug("rest subscription: " + arg0);
         parseXml(arg0);
+    }
+
+    private void parseVariableEvent(String message) {
+
     }
 
     private void parseXml(String message) {
@@ -133,6 +138,17 @@ public class IsyWebSocketSubscription implements WebSocketListener {
                     logger.debug("Action: " + action);
                     logger.debug("Node: " + node);
                     listener.onModelChanged(control, action, node);
+                } else if ("_1".equals(control) && "6".equals(action)) {
+                    logger.debug("Possible variable event: " + message);
+                    XPathExpression valueExp = xpath.compile("//Event/eventInfo/var/val");
+                    String value = (String) valueExp.evaluate(doc, XPathConstants.STRING);
+                    String id = (String) xpath.compile("//Event/eventInfo/var/@id").evaluate(doc,
+                            XPathConstants.STRING);
+                    String type = (String) xpath.compile("//Event/eventInfo/var/@type").evaluate(doc,
+                            XPathConstants.STRING);
+                    logger.debug("Variable with id: " + id + " type: " + type + ", value:" + value);
+                    String theEvent = type + " " + id + " " + value;
+                    listener.onModelChanged(control, action, theEvent);
                 }
             } catch (SAXException | IOException e) {
                 logger.error("parse exception", e);
