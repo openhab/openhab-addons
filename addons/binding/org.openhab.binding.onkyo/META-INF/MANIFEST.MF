@@ -28,4 +28,4 @@ Import-Package: com.google.common.base,
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.onkyo,
  org.openhab.binding.onkyo.handler
-Require-Bundle: org.slf4j.log4j
+Bundle-ActivationPolicy: lazy
