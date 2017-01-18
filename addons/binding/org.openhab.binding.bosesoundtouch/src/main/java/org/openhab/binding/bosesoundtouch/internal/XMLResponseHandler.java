@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -49,7 +51,10 @@ public class XMLResponseHandler extends DefaultHandler {
     private OnOffType rateEnabled;
     private OnOffType skipEnabled;
     private OnOffType skipPreviousEnabled;
-    private ZoneMember zoneMember;
+    private ZoneState zoneState;
+    private BoseSoundTouchHandler zoneMaster;
+    private List<ZoneMember> zoneMembers;
+    private String zoneMemberIp;
 
     public XMLResponseHandler(BoseSoundTouchHandler boseSoundTouchHandler) {
         states = new Stack<>();
@@ -152,21 +157,22 @@ public class XMLResponseHandler extends DefaultHandler {
                         handler.updateNowPlayingTrack(new StringType(""));
                     }
                 } else if ("zone".equals(localName)) {
+                    zoneMembers = new ArrayList<>();
                     String master = attributes.getValue("master");
                     if (master == null || master.isEmpty()) {
-                        handler.setMasterZoneSoundTouchHandler(null);
-                        handler.setZoneState(ZoneState.None);
+                        zoneMaster = null;
+                        zoneState = ZoneState.None;
                     } else {
                         if (master.equals(handler.getMacAddress())) {
                             // we are the master...
-                            handler.setZoneState(ZoneState.Master);
+                            zoneState = ZoneState.Master;
                         } else {
                             // an other device is the master
-                            handler.setZoneState(ZoneState.Master);
-                            handler.setMasterZoneSoundTouchHandler(
-                                    handler.getFactory().getBoseSoundTouchDevice(master));
-                            if (handler.getMasterZoneSoundTouchHandler() == null) {
-                                logger.warn("Zone update: Unable to find master with ID " + master);
+                            zoneState = ZoneState.Member;
+                            zoneMaster = handler.getFactory().getBoseSoundTouchDevice(master);
+                            if (zoneMaster == null) {
+                                logger.warn(handler.getDeviceName() + ": Zone update: Unable to find master with ID "
+                                        + master);
                             }
                         }
                     }
@@ -196,9 +202,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             case Zone:
-                zoneMember = new ZoneMember();
-                zoneMember.setIp(attributes.getValue("ipaddress"));
-                handler.addZoneMember(zoneMember);
+                zoneMemberIp = attributes.getValue("ipaddress");
                 state = nextState(stateMap, curState, localName);
                 break;
             case NowPlayingRateEnabled:
@@ -346,7 +350,7 @@ public class XMLResponseHandler extends DefaultHandler {
             handler.sendRequestInWebSocket("getZone");
         }
         if (prevState == XMLHandlerState.Zone) {
-            handler.zonesChanged();
+            handler.updateZoneState(zoneState, zoneMaster, zoneMembers);
         }
     }
 
@@ -424,10 +428,15 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case ZoneMember:
                 String mac = new String(ch, start, length);
-                zoneMember.setMac(mac);
-                zoneMember.setHandler(handler.getFactory().getBoseSoundTouchDevice(mac));
-                if (zoneMember.getHandler() == null) {
+                BoseSoundTouchHandler memberHandler = handler.getFactory().getBoseSoundTouchDevice(mac);
+                if (memberHandler == null) {
                     logger.warn("Zone update: Unable to find member with ID " + mac);
+                } else {
+                    ZoneMember zoneMember = new ZoneMember();
+                    zoneMember.setIp(zoneMemberIp);
+                    zoneMember.setMac(mac);
+                    zoneMember.setHandler(memberHandler);
+                    zoneMembers.add(zoneMember);
                 }
                 break;
         }
@@ -526,8 +535,7 @@ public class XMLResponseHandler extends DefaultHandler {
         if (did.equals(handler.getMacAddress())) {
             return true;
         }
-        if (allowFromMaster && handler.getMasterZoneSoundTouchHandler() != null
-                && did.equals(handler.getMasterZoneSoundTouchHandler().getMacAddress())) {
+        if (allowFromMaster && handler.getZoneMaster() != null && did.equals(handler.getZoneMaster().getMacAddress())) {
             return true;
         }
         logger.warn(

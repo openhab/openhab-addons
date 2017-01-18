@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -103,8 +104,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private BoseSoundTouchHandlerFactory factory;
     private ZoneState zoneState;
-    private BoseSoundTouchHandler masterZoneSoundTouchHandler;
-    private ArrayList<ZoneMember> zoneMembers;
+    private BoseSoundTouchHandler zoneMaster;
+    private List<ZoneMember> zoneMembers;
 
     public BoseSoundTouchHandler(Thing thing, BoseSoundTouchHandlerFactory factory) {
         super(thing);
@@ -115,6 +116,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void initialize() {
         currentOperationMode = OperationModeType.OFFLINE;
         listOfPresets = new ArrayList<Preset>();
+        zoneMembers = new ArrayList<ZoneMember>();
+
         nowPlayingSource = null;
 
         channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
@@ -356,16 +359,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                                     updateZones();
                                 }
                             } else if ("remove".equals(action)) {
-                                boolean found = false;
-                                for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
-                                    ZoneMember m = mi.next();
-                                    if (oh.getMacAddress().equals(m.getMac())) {
-                                        mi.remove();
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
+                                if (!removeZoneMember(oh)) {
                                     logger.warn(getDeviceName() + ": Zone remove: ID " + oh.getMacAddress()
                                             + " is not a member in zone!");
                                 } else {
@@ -526,6 +520,12 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         updateState(channelOperationModeUID, new StringType(om.name()));
         currentOperationMode = om;
         if (om == OperationModeType.STANDBY) {
+            // zone is leaved / destroyed if turned off
+            zoneMembers.clear();
+            if (zoneMaster != null) {
+                zoneMaster.removeZoneMember(this);
+                zoneMaster = null;
+            }
             updateState(channelPowerUID, OnOffType.OFF);
         } else {
             updateState(channelPowerUID, OnOffType.ON);
@@ -560,26 +560,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         this.muted = muted;
     }
 
-    public ZoneState getZoneState() {
-        return zoneState;
-    }
-
-    public void setZoneState(ZoneState zoneState) {
+    public void updateZoneState(ZoneState zoneState, BoseSoundTouchHandler zoneMaster, List<ZoneMember> zoneMembers) {
         this.zoneState = zoneState;
+        this.zoneMaster = zoneMaster;
+        this.zoneMembers = zoneMembers;
+        zonesChanged();
     }
 
-    public BoseSoundTouchHandler getMasterZoneSoundTouchHandler() {
-        return masterZoneSoundTouchHandler;
-    }
-
-    public void setMasterZoneSoundTouchHandler(BoseSoundTouchHandler masterZoneSoundTouchHandler) {
-        this.masterZoneSoundTouchHandler = masterZoneSoundTouchHandler;
-    }
-
-    public void addZoneMember(ZoneMember zoneMember) {
-        if (zoneMembers == null) {
-            zoneMembers = new ArrayList<ZoneMember>();
-        }
+    private void addZoneMember(ZoneMember zoneMember) {
         boolean found = false;
         for (ZoneMember m : zoneMembers) {
             if (zoneMember.getHandler().getMacAddress().equals(m.getMac())) {
@@ -592,6 +580,23 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (!found) {
             zoneMembers.add(zoneMember);
         }
+    }
+
+    private boolean removeZoneMember(BoseSoundTouchHandler oh) {
+        boolean found = false;
+        for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
+            ZoneMember m = mi.next();
+            if (oh == m.getHandler()) {
+                mi.remove();
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
+    public BoseSoundTouchHandler getZoneMaster() {
+        return zoneMaster;
     }
 
     public void updateNowPlayingSource(State state) {
@@ -744,15 +749,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 break;
             case Member:
                 sb.append("Member; Master is: ");
-                if (masterZoneSoundTouchHandler == null) {
+                if (zoneMaster == null) {
                     sb.append("<null>");
                 } else {
-                    sb.append(masterZoneSoundTouchHandler.getDeviceName());
+                    sb.append(zoneMaster.getDeviceName());
                 }
                 sb.append("; Members: ");
                 break;
             case None:
-                sb.append("");
+                sb.append("Standalone");
                 break;
         }
         for (int i = 0; i < zoneMembers.size(); i++) {
@@ -761,6 +766,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             }
             sb.append(zoneMembers.get(i).getHandler().getDeviceName());
         }
+        logger.debug(getDeviceName() + ": zoneInfo updated: " + sb.toString());
         updateState(channelZoneInfoUID, new StringType(sb.toString()));
     }
 
@@ -778,8 +784,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private void openConnection() {
         closeConnection();
         zoneState = ZoneState.None;
-        masterZoneSoundTouchHandler = null;
-        zoneMembers = new ArrayList<ZoneMember>();
+        zoneMaster = null;
         // updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
         OkHttpClient client = new OkHttpClient();
         // we need longer timeouts for websocket.
@@ -799,8 +804,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (socket != null) {
             try {
                 socket.close(1000, "Binding shutdown");
-            } catch (IOException e) {
-                logger.error(thing + ": Error while closing websocket communication: ", e);
+            } catch (IOException | IllegalStateException e) {
+                logger.error(getDeviceName() + ": Error while closing websocket communication: "
+                        + e.getClass().getName() + "(" + e.getMessage() + ")");
             }
             socket = null;
         }
