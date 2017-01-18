@@ -536,6 +536,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             } catch (IllegalArgumentException e) {
                 updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
             }
+            onkyoAlbumArt.clearAlbumArt();
         }
     }
 
