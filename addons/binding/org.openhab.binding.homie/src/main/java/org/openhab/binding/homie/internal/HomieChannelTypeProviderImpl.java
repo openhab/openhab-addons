@@ -53,7 +53,8 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
         String itemType = "String";
         URI configDescriptionURI = null;
         ChannelKind kind = ChannelKind.STATE;
-        StateDescription state = new StateDescription(null, null, null, null, readOnly, null);
+        StateDescription state = new StateDescription(state_min, state_max, state_step, state_pattern, state_readOnly,
+                state_options);
         Set<String> tags = Collections.emptySet();
         String label = uid.getId();
         String category = "";

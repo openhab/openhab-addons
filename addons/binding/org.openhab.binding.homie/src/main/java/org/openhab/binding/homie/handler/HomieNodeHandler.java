@@ -92,28 +92,18 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                 if (ht.isInternalProperty()) {
                     String prop = ht.getCombinedInternalPropertyName();
                     if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                        NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
-                        NodePropertiesList propslist = parser.parse(message.toString());
-                        propslist.getProperties().forEach(property -> {
-                            boolean readonly=propslist.isPropertySettable(property);
-                            createChannel(property,readonly,
-                                    ImmutableMap.of(CHANNELPROPERTY_TOPICSUFFIX, property)));
-                        });
+                        createChannels(message);
                     } else if (StringUtils.equals(prop, HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                        String type = message;
-                        logger.debug("Updating node (thing) type " + ht.getNodeId() + " to " + type);
-                        Map<String, String> props = new HashMap<>(getThing().getProperties());
-                        props.put("type", type);
-                        ThingBuilder builder = editThing();
-                        Thing newThing = builder.withProperties(getThing().getProperties()).build();
-                        updateThing(newThing);
+                        updateThingType(ht, message);
+                    } else if (StringUtils.equals(prop, HOMIE_NODE_VALUE_TOPIC_SUFFIX)) {
+
+                    } else if (StringUtils.equals(prop, HOMIE_NODE_ITEMTYPE_TOPIC_SUFFIX)) {
+
+                    } else if (StringUtils.equals(prop, HOMIE_NODE_UNIT_TOPIC_SUFFIX)) {
+
                     }
                 } else {
-                    String channelId = ht.getNodeId();
-                    Channel channel = getThing().getChannel(channelId);
-                    if (channel != null) {
-                        updateState(channel.getUID(), new StringType(message));
-                    }
+                    updateChannelState(ht, message);
                 }
             }
         } catch (ParseException e) {
@@ -121,9 +111,44 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
         }
     }
 
-    private void createChannel(String channelId, Map<String, String> properties) {
+    private void updateChannelState(HomieTopic ht, String message) {
+        String channelId = ht.getNodeId();
+        Channel channel = getThing().getChannel(channelId);
+
+        if (channel != null) {
+            updateState(channel.getUID(), new StringType(message));
+        }
+    }
+
+    private void createChannels(String message) {
+        NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
+        NodePropertiesList propslist = parser.parse(message.toString());
+        propslist.getProperties().forEach(property -> {
+            boolean readonly = propslist.isPropertySettable(property);
+            createChannel(property, readonly, ImmutableMap.of(CHANNELPROPERTY_TOPICSUFFIX, property));
+        });
+    }
+
+    private void updateThingType(HomieTopic ht, String message) {
+        String type = message;
+        logger.debug("Updating node (thing) type " + ht.getNodeId() + " to " + type);
+
+        Map<String, String> props = new HashMap<>(getThing().getProperties());
+        props.put("type", type);
+        if (message.startsWith(HOMIE_NODE_ESH_TYPE_PREFIX)) {
+            props.put("ESHSupported", "true");
+
+        }
+
+        ThingBuilder builder = editThing();
+        Thing newThing = builder.withProperties(getThing().getProperties()).build();
+        updateThing(newThing);
+
+    }
+
+    private void createChannel(String channelId, boolean readOnly, Map<String, String> properties) {
         if (getThing().getChannel(channelId) == null) {
-            boolean readonly=
+
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, "ct-" + channelId);
             channelTypeProvider.addChannelType(channelTypeUID, readOnly);
 
@@ -134,6 +159,7 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
             builder.withChannel(channel);
             updateThing(builder.build());
             handleCommand(channelUID, RefreshType.REFRESH);
+
         }
     }
 
