@@ -128,7 +128,7 @@ public class IsyRestClient implements OHIsyClient {
                 .accept(MediaType.TEXT_XML).get(String.class);
         logger.debug("variables string is: " + variables);
         List<Variable> integerVariables = integerVariablesTarget.request()
-                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.TEXT_XML)
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.APPLICATION_XML_TYPE)
                 .get(new GenericType<List<Variable>>() {
                 });
 
