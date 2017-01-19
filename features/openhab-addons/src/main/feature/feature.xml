@@ -300,13 +300,6 @@
 
     <!-- misc -->
 
-    <feature name="openhab-misc-myopenhab" description="my.openHAB" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>esh-model-script</feature>
-        <feature>esh-ui</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.myopenhab/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.openhabcloud/${project.version}</bundle>
