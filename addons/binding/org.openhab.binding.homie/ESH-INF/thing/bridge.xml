@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Bridge - Homie Convention V2.0 -->
-	<bridge-type id="homieDeviceV2">
-		<label>Homie Device (Bridge)</label>
-		<description>This bridge represents a Homie Device that complies with the Homie MQTT Convention V2.0.0</description>
+	<thing-type id="homieDeviceV2">
+		<label>Homie Device</label>
+		<description>This thing represents a Homie Device that complies with the Homie MQTT Convention V2.0.0</description>
 
 		<channels>
 			<channel id="homie" typeId="homie-channel">
@@ -75,11 +75,6 @@
 				</properties>
 			</channel>
 		</channels>
-	</bridge-type>
-	<!-- Thing - Homie Convention V2.0 -->
-	<thing-type id="homieNodeV2">
-		<label>Homie Node</label>
-		<description>This thing represents a Homie Node that complies with the Homie MQTT Convention V2.0.0</description>
 	</thing-type>
 
 

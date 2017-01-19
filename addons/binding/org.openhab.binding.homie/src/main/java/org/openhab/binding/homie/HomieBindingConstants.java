@@ -22,7 +22,6 @@ public class HomieBindingConstants {
     public static final String BINDING_ID = "homie";
 
     public final static ThingTypeUID HOMIE_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieDeviceV2");
-    public final static ThingTypeUID HOMIE_NODE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieNodeV2");
 
     public final static int DEVICE_DISCOVERY_TIMEOUT_SECONDS = 30;
     public final static int NODE_DISCOVERY_TIMEOUT_SECONDS = 60;

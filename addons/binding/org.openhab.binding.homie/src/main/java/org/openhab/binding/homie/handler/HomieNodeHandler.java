@@ -4,7 +4,6 @@ import static org.openhab.binding.homie.HomieBindingConstants.*;
 import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +43,13 @@ import com.google.common.collect.ImmutableMap;
  *
  */
 public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageListener {
+    public static final String VALUE_TOPIC_SUFFIX = "value";
+    public static final String ITEMTYPE_TOPIC_SUFFIX = "itemtype";
+    public static final String UNIT_TOPIC_SUFFIX = "unit";
+    public static final String MIN_TOPIC_SUFFIX = "min";
+    public static final String MAX_TOPIC_SUFFIX = "max";
+    public static final String STEP_TOPIC_SUFFIX = "step";
+    public static final String ESH_TYPE_PREFIX = "ESH:";
 
     private Logger logger = LoggerFactory.getLogger(HomieNodeHandler.class);
     private final MqttConnection mqttconnection;
@@ -92,14 +98,20 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
                 if (ht.isInternalProperty()) {
                     String prop = ht.getCombinedInternalPropertyName();
                     if (StringUtils.equals(prop, HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                        createChannels(message);
+                        subscribeSubtopics(message);
                     } else if (StringUtils.equals(prop, HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX)) {
-                        updateThingType(ht, message);
-                    } else if (StringUtils.equals(prop, HOMIE_NODE_VALUE_TOPIC_SUFFIX)) {
 
-                    } else if (StringUtils.equals(prop, HOMIE_NODE_ITEMTYPE_TOPIC_SUFFIX)) {
+                    } else if (StringUtils.equals(prop, VALUE_TOPIC_SUFFIX)) {
 
-                    } else if (StringUtils.equals(prop, HOMIE_NODE_UNIT_TOPIC_SUFFIX)) {
+                    } else if (StringUtils.equals(prop, ITEMTYPE_TOPIC_SUFFIX)) {
+
+                    } else if (StringUtils.equals(prop, UNIT_TOPIC_SUFFIX)) {
+
+                    } else if (StringUtils.equals(prop, MIN_TOPIC_SUFFIX)) {
+
+                    } else if (StringUtils.equals(prop, MAX_TOPIC_SUFFIX)) {
+
+                    } else if (StringUtils.equals(prop, STEP_TOPIC_SUFFIX)) {
 
                     }
                 } else {
@@ -120,7 +132,7 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
         }
     }
 
-    private void createChannels(String message) {
+    private void subscribeSubtopics(String message) {
         NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
         NodePropertiesList propslist = parser.parse(message.toString());
         propslist.getProperties().forEach(property -> {
@@ -130,19 +142,19 @@ public class HomieNodeHandler extends BaseThingHandler implements IMqttMessageLi
     }
 
     private void updateThingType(HomieTopic ht, String message) {
-        String type = message;
-        logger.debug("Updating node (thing) type " + ht.getNodeId() + " to " + type);
-
-        Map<String, String> props = new HashMap<>(getThing().getProperties());
-        props.put("type", type);
-        if (message.startsWith(HOMIE_NODE_ESH_TYPE_PREFIX)) {
-            props.put("ESHSupported", "true");
-
-        }
-
-        ThingBuilder builder = editThing();
-        Thing newThing = builder.withProperties(getThing().getProperties()).build();
-        updateThing(newThing);
+        // String type = message;
+        // logger.debug("Updating node (thing) type " + ht.getNodeId() + " to " + type);
+        //
+        // Map<String, String> props = new HashMap<>(getThing().getProperties());
+        // props.put("type", type);
+        // if (message.startsWith(HOMIE_NODE_ESH_TYPE_PREFIX)) {
+        // props.put("ESHSupported", "true");
+        // props.put("category", message.replaceAll(HOMIE_NODE_ESH_TYPE_PREFIX, ""));
+        // }
+        //
+        // ThingBuilder builder = editThing();
+        // Thing newThing = builder.withProperties(getThing().getProperties()).build();
+        // updateThing(newThing);
 
     }
 

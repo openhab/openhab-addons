@@ -7,24 +7,18 @@
  */
 package org.openhab.binding.homie.internal;
 
-import static org.openhab.binding.homie.HomieBindingConstants.*;
+import static org.openhab.binding.homie.HomieBindingConstants.HOMIE_DEVICE_THING_TYPE;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.homie.HomieChannelTypeProvider;
 import org.openhab.binding.homie.handler.HomieDeviceHandler;
-import org.openhab.binding.homie.handler.HomieNodeHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +35,9 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
     private static Logger logger = LoggerFactory.getLogger(HomieHandlerFactory.class);
 
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
-            .newArrayList(HOMIE_DEVICE_THING_TYPE, HOMIE_NODE_THING_TYPE);
+            .newArrayList(HOMIE_DEVICE_THING_TYPE);
 
     private HomieConfiguration configuration;
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private HomieChannelTypeProvider provider;
 
@@ -71,34 +64,13 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof HomieNodeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
-        }
-    }
-
-    private synchronized void registerDiscoveryService(HomieDeviceHandler thingHandler) {
-
-        NodeDiscoveryService discoveryService = new NodeDiscoveryService(thingHandler, configuration);
-        this.discoveryServiceRegs.put(thingHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-    }
-
-    @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(HOMIE_DEVICE_THING_TYPE)) {
             logger.info("Create homie thing for " + thing.toString());
             MqttConnection mqtt = MqttConnection.fromConfiguration(configuration, this);
-            HomieDeviceHandler handler = new HomieDeviceHandler((Bridge) thing, mqtt);
-            registerDiscoveryService(handler);
+            HomieDeviceHandler handler = new HomieDeviceHandler(thing, mqtt, provider);
             return handler;
-        } else if (thingTypeUID.equals(HOMIE_NODE_THING_TYPE)) {
-            return new HomieNodeHandler(thing, configuration, provider);
         }
         return null;
     }

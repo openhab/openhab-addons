@@ -69,8 +69,9 @@ public class MqttConnection {
     public void listenForNodeProperties(Bridge device, Thing node, IMqttMessageListener messageListener)
             throws MqttException {
         String topic = String.format("%s/%s/%s/", basetopic, device.getUID().getId(), node.getUID().getId());
-        client.subscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, messageListener);
         client.subscribe(topic + HomieConventions.HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX, messageListener);
+        client.subscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, messageListener);
+
     }
 
     public void subscribe(Thing thing, IMqttMessageListener messageListener) throws MqttException {
@@ -134,8 +135,11 @@ public class MqttConnection {
      * @param handler
      */
     public void subscribeChannel(Channel channel, HomieDeviceHandler handler) {
+
         String topic = String.format("%s/%s/%s", basetopic, handler.getThing().getUID().getId(),
                 channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX));
+        logger.debug(
+                "(Re-)Subscribing to topic '" + topic + "' to listen for events of channel '" + channel.getUID() + "'");
         try {
             client.unsubscribe(topic);
             client.subscribe(topic, handler);

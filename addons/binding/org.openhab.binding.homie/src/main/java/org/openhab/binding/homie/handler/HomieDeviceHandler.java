@@ -10,6 +10,8 @@ package org.openhab.binding.homie.handler;
 import static org.openhab.binding.homie.HomieBindingConstants.*;
 
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -18,17 +20,24 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.homie.HomieChannelTypeProvider;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
+import org.openhab.binding.homie.internal.conventionv200.NodePropertiesList;
+import org.openhab.binding.homie.internal.conventionv200.NodePropertiesListAnnouncementParser;
 import org.openhab.binding.homie.internal.conventionv200.TopicParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,20 +48,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Kolb - Initial contribution
  */
-public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessageListener {
+public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessageListener {
 
     private Logger logger = LoggerFactory.getLogger(HomieDeviceHandler.class);
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
+    private final HomieChannelTypeProvider provider;
+    private final NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
 
     /**
      * Constructor
      *
      * @param thing The Bridge that will be handled
+     * @param provider
      */
-    public HomieDeviceHandler(Bridge thing, MqttConnection connection) {
+    public HomieDeviceHandler(Thing thing, MqttConnection connection, HomieChannelTypeProvider provider) {
         super(thing);
         this.mqttconnection = connection;
+        this.provider = provider;
         topicParser = new TopicParser(mqttconnection.getBasetopic());
 
     }
@@ -88,25 +101,18 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
 
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-
+        logger.debug("Message for topic '" + topic + "' arrived");
         String message = mqttMessage.toString();
         try {
-
             HomieTopic ht = topicParser.parse(topic);
-            if (ht.isDeviceProperty()) {
-                String prop = ht.getCombinedInternalPropertyName();
-
-                getThing().getChannels().forEach(channel -> {
-                    String topicSuffix = channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX);
-
-                    boolean topicMatchesChannel = StringUtils.equals(topicSuffix, prop);
-                    if (topicMatchesChannel) {
-                        updateChannelState(channel, message);
-
-                    }
-
-                });
-
+            String prop = ht.getCombinedNodePropertyName();
+            if (ht.isNodeTypeAnnouncement()) {
+                updateChannelType(ht, message);
+            } else if (ht.isNodePropertyAnnouncement()) {
+                NodePropertiesList properties = parser.parse(message);
+                createChannel(ht, properties);
+            } else {
+                updateChannelState(prop, message);
             }
 
         } catch (ParseException e) {
@@ -115,32 +121,75 @@ public class HomieDeviceHandler extends BaseBridgeHandler implements IMqttMessag
 
     }
 
-    private void updateChannelState(Channel channel, String message) {
-        ChannelUID chId = channel.getUID();
-        State result = null;
+    private void updateChannelType(HomieTopic ht, String message) {
+        String channelId = ht.getNodeId();
+        logger.debug("Updating type of channel with ID " + channelId);
+    }
 
-        // Special handling for topics that not only change a channel, but also update a thing state
-        String indicatedState = channel.getProperties().get(CHANNELPROPERTY_THINGSTATEINDICATOR);
-        if (StringUtils.equals(indicatedState, "online")) {
-            boolean isOnline = Boolean.parseBoolean(message);
-            updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+    private void createChannel(HomieTopic ht, NodePropertiesList properties) {
+        String channelId = ht.getNodeId();
+        if (getThing().getChannel(channelId) == null) {
+            logger.debug("Creating channel with ID " + channelId);
+
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, "ct-" + channelId);
+            provider.addChannelType(channelTypeUID, true);
+
+            Map<String, String> channelProperties = new HashMap<>();
+            channelProperties.put(CHANNELPROPERTY_TOPICSUFFIX, ht.getNodeId() + "/#");
+
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+            Channel channel = ChannelBuilder.create(channelUID, "String").withLabel(channelId)
+                    .withKind(ChannelKind.STATE).withType(channelTypeUID).withProperties(channelProperties).build();
+            ThingBuilder builder = editThing();
+            builder.withChannel(channel);
+            updateThing(builder.build());
+            handleCommand(channelUID, RefreshType.REFRESH);
+        } else {
+            logger.debug("Channel with ID " + channelId + " already exists");
+        }
+    }
+
+    private void updateChannelState(String topicSuffix, String message) {
+        boolean processedAtLeastOnce = false;
+        for (Channel channel : getThing().getChannels()) {
+            String chanTopSuffix = channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX);
+            boolean topicMatchesChannel = StringUtils.equals(chanTopSuffix, topicSuffix);
+            if (topicMatchesChannel) {
+                processedAtLeastOnce = true;
+                ChannelUID chId = channel.getUID();
+
+                // Special handling for topics that not only change a channel, but also update a thing state
+                String indicatedState = channel.getProperties().get(CHANNELPROPERTY_THINGSTATEINDICATOR);
+                if (StringUtils.equals(indicatedState, "online")) {
+                    boolean isOnline = Boolean.parseBoolean(message);
+                    updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+                }
+
+                State result = castToState(channel, message);
+                if (result != null) {
+                    logger.debug("Updating channel " + channel.getUID() + " with parsed state " + result
+                            + " which was parsed out of " + message);
+                    updateState(chId, result);
+                }
+            }
         }
 
+        if (!processedAtLeastOnce) {
+            logger.debug("Topic '" + topicSuffix + "' with message '" + message + "' was not processed");
+        }
+
+    }
+
+    private State castToState(Channel channel, String message) {
         if (StringUtils.equals(channel.getAcceptedItemType(), "Number")) {
-            result = new DecimalType(message);
+            return new DecimalType(message);
         } else if (StringUtils.equals(channel.getAcceptedItemType(), "String")) {
-            result = new StringType(message);
+            return new StringType(message);
         } else if (StringUtils.equals(channel.getAcceptedItemType(), "Switch")) {
             boolean value = Boolean.parseBoolean(message);
-            result = value ? OnOffType.ON : OnOffType.OFF;
+            return value ? OnOffType.ON : OnOffType.OFF;
         }
-
-        if (result != null) {
-            logger.debug("Updating channel " + channel.getUID() + " with parsed state " + result
-                    + " which was parsed out of " + message);
-            updateState(chId, result);
-        }
-
+        return null;
     }
 
 }

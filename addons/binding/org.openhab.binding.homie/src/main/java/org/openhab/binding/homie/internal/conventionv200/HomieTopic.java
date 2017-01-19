@@ -1,5 +1,6 @@
 package org.openhab.binding.homie.internal.conventionv200;
 
+import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 import static org.openhab.binding.homie.internal.conventionv200.TopicParser.*;
 
 import java.util.regex.Matcher;
@@ -74,6 +75,41 @@ public class HomieTopic {
 
     public String getInternalPropertyName() {
         return internalPropertyName;
+    }
+
+    /**
+     * Check if this is a $type announcement
+     *
+     * @return
+     */
+    public boolean isNodeTypeAnnouncement() {
+        return isNodeProperty() && isInternalProperty()
+                && internalPropertyName.endsWith(HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX);
+    }
+
+    public boolean isNodePropertyAnnouncement() {
+        return isNodeProperty() && isInternalProperty()
+                && internalPropertyName.endsWith(HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX);
+    }
+
+    /**
+     * Get the combined name of an node property (nodeid + property name + subproperty)
+     *
+     * @return
+     */
+    public String getCombinedNodePropertyName() {
+
+        String result = isNodeProperty() ? getNodeId() + "/" : "";
+        if (isInternalProperty()) {
+            result += getCombinedInternalPropertyName();
+        } else {
+            result += propertyName;
+            if (StringUtils.isNotBlank(subproperty)) {
+                result += "/" + subproperty;
+            }
+        }
+
+        return result;
     }
 
     /**

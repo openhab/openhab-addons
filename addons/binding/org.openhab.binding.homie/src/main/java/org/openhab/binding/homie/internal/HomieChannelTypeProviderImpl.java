@@ -1,5 +1,6 @@
 package org.openhab.binding.homie.internal;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.EventDescription;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.homie.HomieChannelTypeProvider;
 
 public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
@@ -53,6 +55,12 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
         String itemType = "String";
         URI configDescriptionURI = null;
         ChannelKind kind = ChannelKind.STATE;
+        BigDecimal state_min = null;
+        BigDecimal state_max = null;
+        BigDecimal state_step = null;
+        String state_pattern = null;
+        boolean state_readOnly = readOnly;
+        List<StateOption> state_options = Collections.emptyList();
         StateDescription state = new StateDescription(state_min, state_max, state_step, state_pattern, state_readOnly,
                 state_options);
         Set<String> tags = Collections.emptySet();
