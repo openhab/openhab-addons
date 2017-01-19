@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enigma2.internal.tool;
+package org.openhab.binding.enigma2.internal;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +17,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.enigma2.internal.Enigma2ServiceContainer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
