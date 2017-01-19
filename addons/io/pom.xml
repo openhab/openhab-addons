@@ -17,7 +17,6 @@
 
   <modules>
     <module>org.openhab.io.openhabcloud</module>
-    <module>org.openhab.io.myopenhab</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.transport.feed</module>
     <module>org.openhab.io.imperihome</module>
