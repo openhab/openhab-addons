@@ -176,9 +176,9 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             }
             updateState(channelPlayerControlUID, new StringType(""));
             updateState(channelRemoteKeyUID, new StringType(""));
-            updateState(channelSendMessageUID, new StringType("asdf"));
-            updateState(channelSendWarningUID, new StringType("asdf"));
-            updateState(channelSendQuestionUID, new StringType("asdf"));
+            updateState(channelSendMessageUID, new StringType(""));
+            updateState(channelSendWarningUID, new StringType(""));
+            updateState(channelSendQuestionUID, new StringType(""));
             if (commandHandler.getAnswerState() != null) {
                 updateState(channelGetAnswerUID, commandHandler.getAnswerState());
             }
