@@ -17,7 +17,7 @@ Import-Package:
  javax.ws.rs.ext,
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
- org.eclipse.jetty.io;version="9.2.12",
+ org.eclipse.jetty.io,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
