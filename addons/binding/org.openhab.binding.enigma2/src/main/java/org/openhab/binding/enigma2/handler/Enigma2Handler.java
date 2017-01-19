@@ -54,7 +54,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     private Enigma2CommandExecutor commandExecutor;
 
     private Refresher refresher;
-    boolean hadWarned = false;
 
     public Enigma2Handler(Thing thing) {
         super(thing);
@@ -139,10 +138,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             returnVal = Integer
                     .parseInt((String) thing.getConfiguration().get(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH));
         } catch (Exception e) {
-            if (!hadWarned) {
-                logger.warn(thing + ": Error during parsing refresh time. Set to default 5000", e);
-                hadWarned = true;
-            }
             returnVal = 5000;
         }
         return returnVal;
