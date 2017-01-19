@@ -50,14 +50,16 @@ public class Enigma2CommandExecutor {
     private static final String SUFFIX_CHANNEL = "/web/subservices";
     private static final String SUFFIX_POWERSTATE = "/web/powerstate";
     private static final String SUFFIX_DOWNMIX = "/web/downmix";
+    private static final String SUFFIX_MESSAGE = "/web/message?type=1&timeout=10&text=";
+    private static final String SUFFIX_WARNING = "/web/message?type=2&timeout=30&text=";
+    private static final String SUFFIX_QUESTION = "/web/message?type=0&text=";
+    private static final String SUFFIX_ANSWER = "/web/messageanswer?getanswer=now";
 
     private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
 
     private static final int timeout = 5000;
 
-    // private Map<String, String> mapOfServices = new HashMap<>();
     private Enigma2ServiceContainer serviceContainer = new Enigma2ServiceContainer();
-    // private Map<String, Integer> mapOfServicesName = new HashMap<>();
 
     private String hostName;
     private String userName;
@@ -199,6 +201,52 @@ public class Enigma2CommandExecutor {
         }
     }
 
+    public void sendRemoteKey(Command command) {
+        if (command instanceof StringType) {
+            try {
+                int key = Integer.parseInt(command.toString());
+                sendRcCommand(key);
+            } catch (Exception e) {
+                logger.error("Error during send Command: {}", e);
+            }
+        } else {
+            logger.error("Unsupported command type: {}", command.getClass().getName());
+        }
+    }
+
+    public void sendMessage(Command command) {
+        if (command instanceof StringType) {
+            try {
+                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_MESSAGE + command.toString(),
+                        timeout);
+            } catch (IOException e) {
+                logger.error("Error during send Command: {}", e);
+            }
+        }
+    }
+
+    public void sendWarning(Command command) {
+        if (command instanceof StringType) {
+            try {
+                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_WARNING + command.toString(),
+                        timeout);
+            } catch (IOException e) {
+                logger.error("Error during send Command: {}", e);
+            }
+        }
+    }
+
+    public void sendQuestion(Command command) {
+        if (command instanceof StringType) {
+            try {
+                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_QUESTION + command.toString(),
+                        timeout);
+            } catch (IOException e) {
+                logger.error("Error during send Command: {}", e);
+            }
+        }
+    }
+
     /**
      * Requests, whether the device is on or off
      *
@@ -245,6 +293,29 @@ public class Enigma2CommandExecutor {
             content = XmlUtil.getContentOfElement(content, "e2servicename");
             content = Enigma2ServiceContainer.cleanString(content);
             State returnState = new StringType(content);
+            return returnState;
+        } catch (IOException e) {
+            logger.error("Error during send Command: {}", e);
+        }
+        return null;
+    }
+
+    /**
+     * Requests the current channel name
+     *
+     * @return StringType(channel/e2servicename)
+     */
+    public State getAnswerState() {
+        try {
+            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_ANSWER, timeout);
+            content = XmlUtil.getContentOfElement(content, "e2statetext");
+            State returnState = null;
+            if ((content.toLowerCase().contains("yes") || content.toLowerCase().contains("ja"))) {
+                returnState = OnOffType.ON;
+            }
+            if ((content.toLowerCase().contains("no") || content.toLowerCase().contains("nein"))) {
+                returnState = OnOffType.OFF;
+            }
             return returnState;
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
@@ -428,19 +499,6 @@ public class Enigma2CommandExecutor {
             HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_REMOTE_CONTROL + key, timeout);
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
-        }
-    }
-
-    public void sendRemoteKey(Command command) {
-        if (command instanceof StringType) {
-            try {
-                int key = Integer.parseInt(command.toString());
-                sendRcCommand(key);
-            } catch (Exception e) {
-                logger.error("Error during send Command: {}", e);
-            }
-        } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
         }
     }
 

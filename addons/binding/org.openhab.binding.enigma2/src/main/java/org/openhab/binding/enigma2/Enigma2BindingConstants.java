@@ -37,6 +37,10 @@ public class Enigma2BindingConstants {
     public final static String CHANNEL_PLAYER_CONTROL = "playerControl";
     public final static String CHANNEL_CHANNEL = "channel";
     public final static String CHANNEL_REMOTE_KEY = "remoteKey";
+    public final static String CHANNEL_SEND_MESSAGE = "sendMessage";
+    public final static String CHANNEL_SEND_WARNING = "sendWarning";
+    public final static String CHANNEL_SEND_QUESTION = "sendQuestion";
+    public final static String CHANNEL_GET_ANSWER = "getAnswer";
 
     public final static String CHANNEL_NOW_PLAYING_TITLE = "nowPlayingTitle";
     public final static String CHANNEL_NOW_PLAYING_DESCRIPTION = "nowPlayingDescription";

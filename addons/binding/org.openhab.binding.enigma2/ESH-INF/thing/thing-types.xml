@@ -15,6 +15,10 @@
             <channel id="playerControl" typeId="playerControl" />
             <channel id="channel" typeId="channel" />
             <channel id="remoteKey" typeId="remoteKey" />
+            <channel id="sendMessage" typeId="sendMessage" />
+            <channel id="sendWarning" typeId="sendWarning" />
+            <channel id="sendQuestion" typeId="sendQuestion" />
+            <channel id="getAnswer" typeId="getAnswer" />
             
             <channel id="nowPlayingTitle" typeId="nowPlayingTitle" />
             <channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
@@ -71,6 +75,27 @@
         <item-type>String</item-type>
         <label>Remote Key</label>
         <description>Sends a Remote Key</description>
+    </channel-type>
+    <channel-type id="sendMessage">
+        <item-type>String</item-type>
+        <label>Send Message</label>
+        <description>Sends a Message to device</description>
+    </channel-type>
+    <channel-type id="sendWarning">
+        <item-type>String</item-type>
+        <label>Send Warning</label>
+        <description>Sends a Warning to device</description>
+    </channel-type>
+    <channel-type id="sendQuestion">
+        <item-type>String</item-type>
+        <label>Send Question</label>
+        <description>Sends a Question to device</description>
+    </channel-type>
+    <channel-type id="getAnswer">
+        <item-type>Switch</item-type>
+        <label>Get Answer</label>
+        <description>Get the Answer to the last sent Question</description>
+        <state readOnly="true" />
     </channel-type>
     
     <channel-type id="nowPlayingTitle">

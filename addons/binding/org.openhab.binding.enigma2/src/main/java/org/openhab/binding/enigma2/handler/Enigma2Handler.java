@@ -42,6 +42,10 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelChannelUID;
     private ChannelUID channelRemoteKeyUID;
+    private ChannelUID channelSendMessageUID;
+    private ChannelUID channelSendWarningUID;
+    private ChannelUID channelSendQuestionUID;
+    private ChannelUID channelGetAnswerUID;
 
     private ChannelUID channelNowPlaylingTitleUID;
     private ChannelUID channelNowPlaylingDescriptionUID;
@@ -65,6 +69,10 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         channelPlayerControlUID = getChannelUID(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL);
         channelChannelUID = getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL);
         channelRemoteKeyUID = getChannelUID(Enigma2BindingConstants.CHANNEL_REMOTE_KEY);
+        channelSendMessageUID = getChannelUID(Enigma2BindingConstants.CHANNEL_SEND_MESSAGE);
+        channelSendWarningUID = getChannelUID(Enigma2BindingConstants.CHANNEL_SEND_WARNING);
+        channelSendQuestionUID = getChannelUID(Enigma2BindingConstants.CHANNEL_SEND_QUESTION);
+        channelGetAnswerUID = getChannelUID(Enigma2BindingConstants.CHANNEL_GET_ANSWER);
 
         channelNowPlaylingTitleUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE);
         channelNowPlaylingDescriptionUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION);
@@ -96,6 +104,12 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 commandHandler.setPlayControl(command);
             } else if (channelUID.equals(channelRemoteKeyUID)) {
                 commandHandler.sendRemoteKey(command);
+            } else if (channelUID.equals(channelSendMessageUID)) {
+                commandHandler.sendMessage(command);
+            } else if (channelUID.equals(channelSendWarningUID)) {
+                commandHandler.sendWarning(command);
+            } else if (channelUID.equals(channelSendQuestionUID)) {
+                commandHandler.sendQuestion(command);
             }
         }
     }
@@ -159,6 +173,13 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 updateState(channelChannelUID, commandHandler.getChannelState());
             }
             updateState(channelPlayerControlUID, new StringType(""));
+            updateState(channelRemoteKeyUID, new StringType(""));
+            updateState(channelSendMessageUID, new StringType("asdf"));
+            updateState(channelSendWarningUID, new StringType("asdf"));
+            updateState(channelSendQuestionUID, new StringType("asdf"));
+            if (commandHandler.getAnswerState() != null) {
+                updateState(channelGetAnswerUID, commandHandler.getAnswerState());
+            }
 
             if (commandHandler.getNowPlayingTitle() != null) {
                 updateState(channelNowPlaylingTitleUID, commandHandler.getNowPlayingTitle());
@@ -175,6 +196,11 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             updateState(channelMuteUID, new StringType(""));
             updateState(channelChannelUID, new StringType(""));
             updateState(channelPlayerControlUID, new StringType(""));
+            updateState(channelRemoteKeyUID, new StringType(""));
+            updateState(channelSendMessageUID, new StringType(""));
+            updateState(channelSendWarningUID, new StringType(""));
+            updateState(channelSendQuestionUID, new StringType(""));
+            updateState(channelGetAnswerUID, new StringType(""));
 
             updateState(channelNowPlaylingTitleUID, new StringType(""));
             updateState(channelNowPlaylingDescriptionUID, new StringType(""));
