@@ -58,7 +58,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
 
     public Enigma2Handler(Thing thing) {
         super(thing);
-        commandHandler = new Enigma2CommandExecutor(getHostName(), getUserName(), getPassword());
     }
 
     @Override
@@ -79,11 +78,14 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         channelNowPlaylingDescriptionExtendedUID = getChannelUID(
                 Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED);
 
+        commandHandler = new Enigma2CommandExecutor(getHostName(), getUserName(), getPassword());
+        commandHandler.initialize();
+
         refresher = new Refresher();
         refresher.addListener(this);
-        commandHandler.generateServiceMaps();
-        updateStatus(ThingStatus.ONLINE);
         refresher.start();
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             updateCurrentStates();
         } else {
             if (channelUID.equals(channelPowerUID)) {
-                commandHandler.togglePowerState(command);
+                commandHandler.setPowerState(command);
             } else if (channelUID.equals(channelVolumeUID)) {
                 commandHandler.setVolume(command);
             } else if (channelUID.equals(channelChannelUID)) {

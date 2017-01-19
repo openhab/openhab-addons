@@ -7,13 +7,9 @@
  */
 package org.openhab.binding.enigma2.internal;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -22,14 +18,10 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.enigma2.internal.xml.XmlUtil;
+import org.openhab.binding.enigma2.internal.tool.Enigma2Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * The {@link Enigma2CommandExecutor} is responsible for handling commands, which are
@@ -50,16 +42,13 @@ public class Enigma2CommandExecutor {
     private static final String SUFFIX_CHANNEL = "/web/subservices";
     private static final String SUFFIX_POWERSTATE = "/web/powerstate";
     private static final String SUFFIX_DOWNMIX = "/web/downmix";
-    private static final String SUFFIX_MESSAGE = "/web/message?type=1&timeout=10&text=";
-    private static final String SUFFIX_WARNING = "/web/message?type=2&timeout=30&text=";
+    private static final String SUFFIX_MESSAGE = "/web/message?type=1&TIMEOUT=10&text=";
+    private static final String SUFFIX_WARNING = "/web/message?type=2&TIMEOUT=30&text=";
     private static final String SUFFIX_QUESTION = "/web/message?type=0&text=";
     private static final String SUFFIX_ANSWER = "/web/messageanswer?getanswer=now";
-
     private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
 
-    private static final int timeout = 5000;
-
-    private Enigma2ServiceContainer serviceContainer = new Enigma2ServiceContainer();
+    private Enigma2ServiceContainer serviceContainer;
 
     private String hostName;
     private String userName;
@@ -71,15 +60,32 @@ public class Enigma2CommandExecutor {
         this.password = password;
     }
 
+    public void initialize() {
+        try {
+            serviceContainer = Enigma2Util.generateServiceMaps();
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            logger.error("Error during initialization: {}", e);
+        }
+    }
+
     /**
-     * Toggles on and off
+     * Sets the PowerState
+     *
+     * @param command, OnOffType
      */
-    public void togglePowerState(Command command) {
+    public void setPowerState(Command command) {
         if (command instanceof OnOffType) {
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE + "?newstate="
+                    + Enigma2PowerState.TOGGLE_STANDBY.getValue();
             try {
-                String com = createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE + "?newstate="
-                        + Enigma2PowerState.TOGGLE_STANDBY.getValue();
-                HttpUtil.executeUrl("GET", com, timeout);
+                OnOffType currentState = (OnOffType) getPowerState();
+                OnOffType onOffType = (OnOffType) command;
+                if (currentState == OnOffType.OFF && onOffType == OnOffType.ON) {
+                    Enigma2Util.executeUrl(url);
+                }
+                if (currentState == OnOffType.ON && onOffType == OnOffType.OFF) {
+                    Enigma2Util.executeUrl(url);
+                }
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
             }
@@ -90,19 +96,18 @@ public class Enigma2CommandExecutor {
 
     /**
      * Sets the volume
-     * either an int value
-     * or an IncreaseDecreaseType
+     *
+     * @param command, IncreaseDecreaseType or DecimalType
      */
     public void setVolume(Command command) {
-        // up or down one step
         if (command instanceof IncreaseDecreaseType) {
             sendRcCommand(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? Enigma2RemoteKey.VOLUME_UP
                     : Enigma2RemoteKey.VOLUME_DOWN);
         } else if (command instanceof DecimalType) {
-            // set absolute value
             int value = ((DecimalType) command).intValue();
             try {
-                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_VOLUME_SET + value, timeout);
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_VOLUME_SET + value;
+                Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
             }
@@ -112,7 +117,9 @@ public class Enigma2CommandExecutor {
     }
 
     /**
-     * Toggles mute
+     * Sets mute
+     *
+     * @param command, OnOffType
      */
     public void setMute(Command command) {
         if (command instanceof OnOffType) {
@@ -129,13 +136,15 @@ public class Enigma2CommandExecutor {
 
     /**
      * Sets downmix
+     *
+     * @param command, OnOffType
      */
     public void setDownmix(Command command) {
         if (command instanceof OnOffType) {
             String enable = (OnOffType) command == OnOffType.ON ? "True" : "False";
             try {
-                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX + "?enable=" + enable,
-                        timeout);
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX + "?enable=" + enable;
+                Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
             }
@@ -145,9 +154,9 @@ public class Enigma2CommandExecutor {
     }
 
     /**
-     * Sets play command
-     * either PlayPauseType
-     * or NextPreviousType
+     * Sets PlayControl
+     *
+     * @param command, NextPreviousType or StringType
      */
     public void setPlayControl(Command command) {
         if (command instanceof NextPreviousType) {
@@ -176,22 +185,19 @@ public class Enigma2CommandExecutor {
     }
 
     /**
-     * Sets the channel number
-     * either a StringType
-     * or an IncreaseDecreaseType
+     * Sets Channel
+     *
+     * @param command, IncreaseDecreaseType
      */
     public void setChannel(Command command) {
         if (command instanceof StringType) {
-            if (command.toString().toLowerCase().equals("0")) {
-                sendRcCommand(Enigma2RemoteKey.KEY0);
-            }
             String servicereference = serviceContainer.get(command.toString());
             if ((servicereference == null) || (servicereference.length() == 0)) {
                 logger.error("Can not find Channel {}", command.toString());
             } else {
                 try {
-                    HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_ZAP + servicereference,
-                            timeout);
+                    String url = createUserPasswordHostnamePrefix() + SUFFIX_ZAP + servicereference;
+                    Enigma2Util.executeUrl(url);
                 } catch (IOException e) {
                     logger.error("Error during send Command: {}", e);
                 }
@@ -201,6 +207,11 @@ public class Enigma2CommandExecutor {
         }
     }
 
+    /**
+     * Sends RemoteKey
+     *
+     * @param command, StringType
+     */
     public void sendRemoteKey(Command command) {
         if (command instanceof StringType) {
             try {
@@ -214,33 +225,48 @@ public class Enigma2CommandExecutor {
         }
     }
 
+    /**
+     * Sends Message
+     *
+     * @param command, StringType
+     */
     public void sendMessage(Command command) {
         if (command instanceof StringType) {
             try {
-                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_MESSAGE + command.toString(),
-                        timeout);
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_MESSAGE + command.toString();
+                Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
             }
         }
     }
 
+    /**
+     * Sends Warning
+     *
+     * @param command, StringType
+     */
     public void sendWarning(Command command) {
         if (command instanceof StringType) {
             try {
-                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_WARNING + command.toString(),
-                        timeout);
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_WARNING + command.toString();
+                Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
             }
         }
     }
 
+    /**
+     * Sends Question
+     *
+     * @param command, StringType
+     */
     public void sendQuestion(Command command) {
         if (command instanceof StringType) {
             try {
-                HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_QUESTION + command.toString(),
-                        timeout);
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_QUESTION + command.toString();
+                Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
             }
@@ -254,9 +280,9 @@ public class Enigma2CommandExecutor {
      */
     public State getPowerState() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE,
-                    timeout);
-            content = XmlUtil.getContentOfElement(content, "e2instandby");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2instandby");
             State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
             return returnState;
         } catch (IOException e) {
@@ -268,12 +294,13 @@ public class Enigma2CommandExecutor {
     /**
      * Requests the current value of the volume
      *
-     * @return StringType(vol/e2current)
+     * @return StringType
      */
     public State getVolumeState() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_VOLUME, timeout);
-            content = XmlUtil.getContentOfElement(content, "e2current");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_VOLUME;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2current");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -283,14 +310,15 @@ public class Enigma2CommandExecutor {
     }
 
     /**
-     * Requests the current channel name
+     * Requests the current channel
      *
-     * @return StringType(channel/e2servicename)
+     * @return StringType
      */
     public State getChannelState() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL, timeout);
-            content = XmlUtil.getContentOfElement(content, "e2servicename");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2servicename");
             content = Enigma2ServiceContainer.cleanString(content);
             State returnState = new StringType(content);
             return returnState;
@@ -301,14 +329,15 @@ public class Enigma2CommandExecutor {
     }
 
     /**
-     * Requests the current channel name
+     * Requests the last answer of a question
      *
-     * @return StringType(channel/e2servicename)
+     * @return OnOffType
      */
     public State getAnswerState() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_ANSWER, timeout);
-            content = XmlUtil.getContentOfElement(content, "e2statetext");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_ANSWER;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2statetext");
             State returnState = null;
             if ((content.toLowerCase().contains("yes") || content.toLowerCase().contains("ja"))) {
                 returnState = OnOffType.ON;
@@ -330,8 +359,9 @@ public class Enigma2CommandExecutor {
      */
     public State getMutedState() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_VOLUME, timeout);
-            content = XmlUtil.getContentOfElement(content, "e2ismuted");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_VOLUME;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2ismuted");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
@@ -347,8 +377,9 @@ public class Enigma2CommandExecutor {
      */
     public State isDownmixActiveState() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX, timeout);
-            content = XmlUtil.getContentOfElement(content, "e2state");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2state");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
@@ -360,13 +391,13 @@ public class Enigma2CommandExecutor {
     /**
      * Requests the now playing title
      *
-     * @return StringType(e2eventtitle)
+     * @return StringType
      */
     public State getNowPlayingTitle() {
         try {
-            String content = HttpUtil.executeUrl("GET",
-                    createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference(), timeout);
-            content = XmlUtil.getContentOfElement(content, "e2eventtitle");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference();
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2eventtitle");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -378,13 +409,13 @@ public class Enigma2CommandExecutor {
     /**
      * Requests the now playing description
      *
-     * @return StringType(e2eventdescription)
+     * @return StringType
      */
     public State getNowPlayingDescription() {
         try {
-            String content = HttpUtil.executeUrl("GET",
-                    createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference(), timeout);
-            content = XmlUtil.getContentOfElement(content, "e2eventdescription");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference();
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2eventdescription");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -396,13 +427,13 @@ public class Enigma2CommandExecutor {
     /**
      * Requests the now playing description extended
      *
-     * @return StringType(e2eventdescriptionExtended)
+     * @return StringType
      */
     public State getNowPlayingDescriptionExtended() {
         try {
-            String content = HttpUtil.executeUrl("GET",
-                    createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference(), timeout);
-            content = XmlUtil.getContentOfElement(content, "e2eventdescriptionextended");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference();
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2eventdescriptionextended");
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
@@ -411,56 +442,11 @@ public class Enigma2CommandExecutor {
         return null;
     }
 
-    /**
-     * Scans "http://enigma2/web/getallservices" and generates map
-     */
-    public void generateServiceMaps() {
-        try {
-            File inputFile = new File("services.xml");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile));
-
-            String content = HttpUtil.executeUrl("GET", "http://192.168.0.166/web/getallservices", 5000);
-            writer.write(content);
-            writer.close();
-
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputFile);
-            doc.getDocumentElement().normalize();
-            NodeList listOfBouquets = doc.getElementsByTagName("e2bouquet");
-            for (int bouquetIndex = 0; bouquetIndex < listOfBouquets.getLength(); bouquetIndex++) {
-                NodeList listOfServices = doc.getElementsByTagName("e2servicelist");
-                for (int serviceIndex = 0; serviceIndex < listOfServices.getLength(); serviceIndex++) {
-                    NodeList serviceList = doc.getElementsByTagName("e2service");
-                    for (int i = 0; i < serviceList.getLength(); i++) {
-                        Node service = serviceList.item(i);
-                        if (service.getNodeType() == Node.ELEMENT_NODE) {
-                            Element eElement = (Element) service;
-                            String e2servicereference = eElement.getElementsByTagName("e2servicereference").item(0)
-                                    .getTextContent();
-                            String e2servicename = eElement.getElementsByTagName("e2servicename").item(0)
-                                    .getTextContent();
-
-                            serviceContainer.add(e2servicename, e2servicereference);
-                        }
-                    }
-                }
-            }
-            inputFile.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Requests the current channel ServiceReference
-     *
-     * @return StringType(channel/e2servicereference)
-     */
     private String getChannelServiceReference() {
         try {
-            String content = HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL, timeout);
-            content = XmlUtil.getContentOfElement(content, "e2servicereference");
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL;
+            String content = Enigma2Util.executeUrl(url);
+            content = Enigma2Util.getContentOfElement(content, "e2servicereference");
             return content;
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
@@ -483,9 +469,6 @@ public class Enigma2CommandExecutor {
         return returnString;
     }
 
-    /**
-     * Sends any custom rc command
-     */
     private void sendRcCommand(Enigma2RemoteKey commandValue) {
         if (commandValue == null) {
             logger.error("Error in item configuration. No remote control code provided (third part of item config)");
@@ -496,10 +479,10 @@ public class Enigma2CommandExecutor {
 
     private void sendRcCommand(int key) {
         try {
-            HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_REMOTE_CONTROL + key, timeout);
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_REMOTE_CONTROL + key;
+            Enigma2Util.executeUrl(url);
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
         }
     }
-
 }
