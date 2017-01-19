@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: AmazonDashButton Binding
+Bundle-Name: openHAB AmazonDashButton Binding
 Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier

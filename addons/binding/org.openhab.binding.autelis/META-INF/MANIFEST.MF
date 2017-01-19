@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Autelis Binding
+Bundle-Name: openHAB Autelis Binding
 Bundle-SymbolicName: org.openhab.binding.autelis;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
