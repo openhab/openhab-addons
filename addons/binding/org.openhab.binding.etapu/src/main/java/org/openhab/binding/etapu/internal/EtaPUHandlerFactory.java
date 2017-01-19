@@ -24,11 +24,18 @@ public class EtaPUHandlerFactory extends BaseThingHandlerFactory {
     // List of all Thing Type UIDs
     public final static ThingTypeUID ETA_THING_TYPE = new ThingTypeUID("etapu", "etapu");
 
+    /**
+     * Checks if a Thing Type UID is supported by this handler factory
+     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return ETA_THING_TYPE.equals(thingTypeUID);
     }
 
+    /**
+     * If thing is supported returns a new instance of {@link EtaPUHandler}.
+     * If unsupported returns null
+     */
     @Override
     protected ThingHandler createHandler(Thing thing) {
 

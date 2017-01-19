@@ -41,7 +41,7 @@
 			<parameter name="refreshInterval" type="integer" required="true">
 				<label>Refresh Interval</label>
 				<description>States how often the information is polled (in seconds).</description>
-				<default>60</default>
+				<default>300</default>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -44,6 +44,11 @@ public class EtaPUHandler extends BaseThingHandler {
     // List of all Channel ids
     private final Set<ETAChannel> channels = new HashSet<>();
 
+    /**
+     * Constructor
+     *
+     * @param thing
+     */
     public EtaPUHandler(Thing thing) {
         super(thing);
 
@@ -75,11 +80,20 @@ public class EtaPUHandler extends BaseThingHandler {
         addChannel("aussentemperatur", "/user/var//112/10241/0/0/12197");
     }
 
+    /**
+     * This method is not implemented as the current version of the binding only supports read only channels
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Read only
     }
 
+    /**
+     * Initializes the Handler, reads the config and starts a scheduler that starts a refresh of all channels in the
+     * configured interval.
+     * If configuration is invalid the thing is set to offline.
+     * If no channel can be updated successfully the thing is set to offline.
+     */
     @Override
     public void initialize() {
         sourceConfig = getConfigAs(SourceConfig.class);
@@ -110,6 +124,11 @@ public class EtaPUHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Refreshes all channels and returns the number of channels that have been updated successfully.
+     *
+     * @return
+     */
     private synchronized int refresh() {
         int channelsupdated = 0;
         for (ETAChannel channel : channels) {
