@@ -32,16 +32,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * The {@link Enigma2CommandHandler} is responsible for handling commands, which are
+ * The {@link Enigma2CommandExecutor} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Thomas Traunbauer - Initial contribution
  */
-public class Enigma2CommandHandler {
+public class Enigma2CommandExecutor {
     // Source found on
     // https://dream.reichholf.net/wiki/Enigma2:WebInterface#RemoteControl
 
-    private Logger logger = LoggerFactory.getLogger(Enigma2CommandHandler.class);
+    private Logger logger = LoggerFactory.getLogger(Enigma2CommandExecutor.class);
 
     private static final String SUFFIX_REMOTE_CONTROL = "/web/remotecontrol?command=";
     private static final String SUFFIX_VOLUME = "/web/vol";
@@ -63,7 +63,7 @@ public class Enigma2CommandHandler {
     private String userName;
     private String password;
 
-    public Enigma2CommandHandler(String hostName, String userName, String password) {
+    public Enigma2CommandExecutor(String hostName, String userName, String password) {
         this.hostName = hostName;
         this.userName = userName;
         this.password = password;

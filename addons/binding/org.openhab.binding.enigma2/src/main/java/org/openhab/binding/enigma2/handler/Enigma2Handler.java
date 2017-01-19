@@ -21,8 +21,8 @@ import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.enigma2.Enigma2BindingConstants;
-import org.openhab.binding.enigma2.internal.Enigma2CommandHandler;
-import org.openhab.binding.enigma2.internal.Enigma2CommandHandlerListener;
+import org.openhab.binding.enigma2.internal.Enigma2CommandExecutor;
+import org.openhab.binding.enigma2.internal.Enigma2CommandExecutorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Thomas Traunbauer - Initial contribution
  */
-public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHandlerListener {
+public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandExecutorListener {
 
     private Logger logger = LoggerFactory.getLogger(Enigma2Handler.class);
 
@@ -47,14 +47,14 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     private ChannelUID channelNowPlaylingDescriptionUID;
     private ChannelUID channelNowPlaylingDescriptionExtendedUID;
 
-    private Enigma2CommandHandler commandHandler;
+    private Enigma2CommandExecutor commandHandler;
 
     private Refresher refresher;
     boolean hadWarned = false;
 
     public Enigma2Handler(Thing thing) {
         super(thing);
-        commandHandler = new Enigma2CommandHandler(getHostName(), getUserName(), getPassword());
+        commandHandler = new Enigma2CommandExecutor(getHostName(), getUserName(), getPassword());
     }
 
     @Override
@@ -188,13 +188,13 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     }
 
     private class Refresher extends Thread {
-        private ArrayList<Enigma2CommandHandlerListener> listOfListener;
+        private ArrayList<Enigma2CommandExecutorListener> listOfListener;
 
         public Refresher() {
-            listOfListener = new ArrayList<Enigma2CommandHandlerListener>();
+            listOfListener = new ArrayList<Enigma2CommandExecutorListener>();
         }
 
-        public void removeListener(Enigma2CommandHandlerListener listener) {
+        public void removeListener(Enigma2CommandExecutorListener listener) {
             for (int i = 0; i < listOfListener.size(); i++) {
                 if (listOfListener.get(i) == listener) {
                     listOfListener.remove(i);
@@ -203,7 +203,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
             listOfListener.add(listener);
         }
 
-        public void addListener(Enigma2CommandHandlerListener listener) {
+        public void addListener(Enigma2CommandExecutorListener listener) {
             listOfListener.add(listener);
         }
 
